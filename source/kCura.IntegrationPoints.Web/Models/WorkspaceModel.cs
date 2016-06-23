@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -218,7 +218,7 @@
       <HintPath>..\packages\Relativity.Services.Interfaces.9.4.212.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.68\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -323,6 +323,7 @@
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
     <Compile Include="Controllers\API\FolderPathController.cs" />
+    <Compile Include="Controllers\API\FtpProviderAPIController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
     <Compile Include="Controllers\API\JobController.cs" />
@@ -338,6 +339,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
     <Compile Include="Controllers\API\CustodianController.cs" />
+    <Compile Include="Controllers\FtpProviderController.cs" />
     <Compile Include="Controllers\IntegrationPointsController.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="DataStructures\FolderTree.cs" />
@@ -391,6 +393,8 @@
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
+    <Content Include="Content\Images\grey_close.png" />
+    <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\sprite.png" />
     <Content Include="Content\integration-points-fonts.css" />
@@ -459,6 +463,7 @@
     <Content Include="Scripts\EventHandlers\job-history.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
     <Content Include="Scripts\Export\export-provider.js" />
+    <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
@@ -663,9 +668,11 @@
     <Content Include="Views\IntegrationPoints\_IntegrationMapFieldsReversed.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderConfiguration.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderFields.cshtml" />
+    <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Toggles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -691,9 +698,33 @@
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Connection\kCura.IntegrationPoints.FtpProvider.Connection.csproj">
+      <Project>{fb8830ae-7369-44d1-80f7-d61760f050a6}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider.Connection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj">
+      <Project>{3e33dd7e-266f-48f8-86a2-3cdb836f2947}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider.Helpers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Parser\kCura.IntegrationPoints.FtpProvider.Parser.csproj">
+      <Project>{f49b9ffa-f3ef-4870-9e78-fed4c72b3249}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj">
+      <Project>{8a61be46-3c1d-4d31-91f0-2731a01860fc}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{e7d6a21d-acc6-4140-9e18-c2e6bca85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>

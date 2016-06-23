@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Explicit]
+	[Category("Integration Tests")]
 	public class ScratchTableRepositoryTests : WorkspaceDependentTemplate
 	{
 		private IExtendedRelativityToggle _toggle;
@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private ICaseServiceContext _mockedCaseServiceContext;
 		private IDocumentRepository _documentRepository;
 		private IFieldRepository _fieldRepository;
+		private ScratchTableRepository _currentScratchTableRepository;
 		private const string _DOC_IDENTIFIER = "SCRATCH_";
 
 		public ScratchTableRepositoryTests() : base("Scratch table", null)
@@ -48,7 +49,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[TestCase(true, 1000)]
 		[TestCase(false, 1000)]
 		[TestCase(true, 0)]
-		[Explicit]
 		public void CreateScratchTableAndVerifyEntries(bool useEDDSResource, int numberOfDocuments)
 		{
 			//ARRANGE
@@ -61,23 +61,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
 
 			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
-			string tableName = useEDDSResource? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
-            DataTable tempTable = GetTempTable(tableName, useEDDSResource);
+			string tableName = useEDDSResource ? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
+			DataTable tempTable = GetTempTable(tableName, useEDDSResource);
 
 			//ASSERT
 			VerifyTempTableCountAndEntries(tempTable, tableName, documentIds);
-
-			//CLEANUP
-			scratchTableRepository.Dispose();
-			VerifyTableDisposal(tableName, useEDDSResource);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
-		[Explicit]
 		public void CreateScratchTableAndDeleteErroredDocuments(bool useEDDSResource)
 		{
 			//ARRANGE
@@ -90,6 +86,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
 
 			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
@@ -102,14 +99,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//ASSERT
 			VerifyErroredDocumentRemoval(tableName, docArtifactIdToRemove, documentIds.Count - 1, useEDDSResource);
-
-			//CLEANUP
-			scratchTableRepository.Dispose();
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
-		[Explicit]
 		public void CreateScratchTableAndErroredDocumentDoesntExist(bool useEDDSResource)
 		{
 			//ARRANGE
@@ -122,6 +115,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
 
 			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
@@ -135,9 +129,61 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				Assert.IsTrue(ex.Message == "Unable to retrieve Document Artifact ID. Object Query failed.");
 			}
+		}
 
-			//CLEANUP
+		[TestCase(true)]
+		[TestCase(false)]
+		public void CreateScratchTableAndInsertDuplicateEntries(bool useEDDSResource)
+		{
+			//ARRANGE
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
+			string tablePrefix = "RKO";
+			string tableSuffix = Guid.NewGuid().ToString();
+			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
+			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
+
+			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
+
+			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			_currentScratchTableRepository = scratchTableRepository;
+
+			//ACT
+			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+
+			//ASSERT
+			try
+			{
+				scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+			}
+			catch (Exception ex)
+			{
+				Assert.IsTrue(ex.InnerException.Message.Contains("Cannot insert duplicate key in object"));
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void DeletionOfScratchTable(bool useEDDSResource)
+		{
+			//ARRANGE
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
+			string tablePrefix = "RKO";
+			string tableSuffix = Guid.NewGuid().ToString();
+			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
+			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
+
+			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
+
+			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			_currentScratchTableRepository = scratchTableRepository;
+			string tableName = useEDDSResource ? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
+
+			//ACT
+			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
 			scratchTableRepository.Dispose();
+
+			//ASSERT
+			VerifyTableDisposal(tableName, useEDDSResource);
 		}
 
 		private DataTable GetTempTable(string tempTableName, bool isScratchTableOnEDDSResource)
@@ -225,11 +271,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-
 		private void VerifyTableDisposal(string tableName, bool isScratchTableOnEDDSResource)
 		{
 			string targetDatabaseFormat = isScratchTableOnEDDSResource ? "[EDDSResource]." : String.Empty;
-			string query = String.Format(@"SELECT COUNT(*) FROM {0}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{1}'", targetDatabaseFormat, tableName);
+			string query = $@"SELECT COUNT(*) FROM {targetDatabaseFormat}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
 
 			bool tableExists = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<bool>(query);
 
@@ -237,6 +282,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				throw new Exception($"Error: {tableName} still exists and was not properly disposed.");
 			}
+		}
+
+		[TearDown]
+		public void TestTearDown()
+		{
+			_currentScratchTableRepository.Dispose();
 		}
 	}
 }

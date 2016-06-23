@@ -80,7 +80,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			else
 			{
-
 				string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
 				baseContext = new kCura.Data.RowDataGateway.Context(connectionString);
 			}
@@ -123,9 +122,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _serviceManager;
 		}
 
-		#region Extended classes
+        #region Extended classes
 
-		public class ExtendedIRSAPIClient : IRSAPIClient
+        public class ExtendedIRSAPIClient : IRSAPIClient
 		{
 			private readonly ITestHelper _helper;
 			private readonly ExecutionIdentity _identity;
@@ -306,10 +305,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 
 			public event CancelEventHandler Cancel { add { Client.Cancel += value; } remove { Client.Cancel -= value; } }
+
 			public event DownloadCompleteEventHandler DownloadComplete { add { Client.DownloadComplete += value; } remove { Client.DownloadComplete -= value; } }
+
 			public event FailureEventHandler Failure { add { Client.Failure += value; } remove { Client.Failure -= value; } }
+
 			public event ProgressEventHandler Progress { add { Client.Progress += value; } remove { Client.Progress -= value; } }
+
 			public event UploadCompleteEventHandler UploadComplete { add { Client.UploadComplete += value; } remove { Client.UploadComplete -= value; } }
+
 			public QueryResult Query(APIOptions apiOpt, Relativity.Client.Query queryObject, int length = 0)
 			{
 				return Client.Query(apiOpt, queryObject, length);
@@ -340,13 +344,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return Client.MonitorProcessState(apiOpt, processID);
 			}
 
-			public event ProcessCancelEventHandler ProcessCancelled {  add { Client.ProcessCancelled += value; } remove { Client.ProcessCancelled -= value;} }
+			public event ProcessCancelEventHandler ProcessCancelled { add { Client.ProcessCancelled += value; } remove { Client.ProcessCancelled -= value; } }
+
 			public event ProcessFailureEventHandler ProcessFailure { add { Client.ProcessFailure += value; } remove { Client.ProcessFailure -= value; } }
+
 			public event ProcessProgressEventHandler ProcessProgress { add { Client.ProcessProgress += value; } remove { Client.ProcessProgress -= value; } }
+
 			public event ProcessCompleteEventHandler ProcessComplete { add { Client.ProcessComplete += value; } remove { Client.ProcessComplete -= value; } }
+
 			public event ProcessCompleteWithErrorEventHandler ProcessCompleteWithError { add { Client.ProcessCompleteWithError += value; } remove { Client.ProcessCompleteWithError -= value; } }
 
-			object obj = new object();	
+			private object obj = new object();
+
 			public void Dispose()
 			{
 				lock (obj)
@@ -364,8 +373,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 			public AuthenticationType AuthType { get { return Client.AuthType; } set { Client.AuthType = value; } }
 			public Uri EndpointUri { get { return Client.EndpointUri; } set { Client.EndpointUri = value; } }
 			public APIOptions APIOptions { get { return Client.APIOptions; } set { Client.APIOptions = value; } }
-			public RepositoryGroup Repositories { get { return Client.Repositories;  } }
+			public RepositoryGroup Repositories { get { return Client.Repositories; } }
+
 			public event RSAPIClientServiceOperationFailedHandler RSAPIClientServiceOperationFailed { add { Client.RSAPIClientServiceOperationFailed += value; } remove { Client.RSAPIClientServiceOperationFailed -= value; } }
+
 			public List<RelativityScriptInput> ConvertToScriptInputList(List<RelativityScriptInputDetails> inputDetails)
 			{
 				return Client.ConvertToScriptInputList(inputDetails);
@@ -386,7 +397,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				_managerWrapper = new Lazy<IObjectQueryManager>(helper.CreateUserProxy<IObjectQueryManager>);
 			}
 
-			object _lock = new object();
+			private object _lock = new object();
+
 			public void Dispose()
 			{
 				lock (_lock)
@@ -399,7 +411,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken)
 			{
-				return Manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions,  queryToken);
+				return Manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken);
 			}
 
 			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken, IProgress<ProgressReport> progress)
@@ -457,7 +469,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				await Manager.DeleteSingleAsync(workspaceArtifactID, permissionID).ConfigureAwait(false);
 			}
 
-			object obj = new object();
+			private object obj = new object();
+
 			public void Dispose()
 			{
 				lock (obj)
@@ -602,6 +615,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				await Manager.UpdateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
 			}
 		}
-		#endregion
+
+		#endregion Extended classes
 	}
 }

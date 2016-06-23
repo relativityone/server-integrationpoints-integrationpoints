@@ -30,9 +30,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="claimsPrincipal">A ClaimsPrincipal object that contains the identity of the user</param>
 		/// <param name="numberOfDocs">The number of documents to tag</param>
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
+		/// <param name="jobHistoryInstanceId">Artifact ID of the JobHistory RDO instance</param>
 		/// <param name="tableSuffix">Unique suffix that is appended to the scratch table</param>
 		/// <param name="sourceWorkspaceId">Artifact ID of the source workspace</param>
-		void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix,
+		void TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, int jobHistoryInstanceId, string tableSuffix,
 			int sourceWorkspaceId);
 
 		/// <summary>

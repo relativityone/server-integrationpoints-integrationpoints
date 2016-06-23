@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {

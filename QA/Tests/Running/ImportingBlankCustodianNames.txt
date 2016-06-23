@@ -45,17 +45,22 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 
 | | Update a User's Show Filter Value	| ${USERNAME}	| Visible
 
-| | @{Step1Fields}=		| Create List | ${IntegrationName} | Append/Overlay |
-| | ... | LDAP | Custodian | No
+# --------------------------------------------------------------------------------------------------------
 
-| | @{Step2Fields}=		| Create List | 
-| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| 
-| | ... | (department=BlankNames)	| 
-| | ... | FastBind | 
+| | @{Step1Fields}=	| Create List |
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+
+| | @{Step2Fields}=	| Create List | 
+| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp
+| | ... | (department=BlankNames)
+| | ... | FastBind
 | | ... | testing\\rellockdown | P@ssw0rd@1
 
 | | @{Step3Mapping}=	| Create List	|
@@ -65,11 +70,13 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}
 
-| | Go to the Method tab | Custodian
+# --------------------------------------------------------------------------------------------------------
+
+| | Go to the tab | Custodian
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Department | BlankNames
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
@@ -89,6 +96,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

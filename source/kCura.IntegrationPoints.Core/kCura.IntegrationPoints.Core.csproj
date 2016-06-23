@@ -341,7 +341,7 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -353,7 +353,7 @@
       <HintPath>..\packages\Relativity.Data.9.4.212.3\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataGrid, Version=10.0.40.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.DataGrid, Version=10.0.55.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -385,7 +385,7 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SDK.Services.Query, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.SDK.Services.Query, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -429,11 +429,11 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.68\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.68\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -548,17 +548,17 @@
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
+    <Compile Include="Managers\DestinationWorkspaceFieldManagerBase.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
     <Compile Include="Managers\IErrorManager.cs" />
     <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\IIntegrationPointManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceBatchUpdateManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\SourceObjectBatchUpdateManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryBatchUpdateStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\JobHistoryBatchUpdateManager.cs" />
     <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
     <Compile Include="Managers\Implementations\ErrorManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
@@ -592,10 +592,6 @@
     <Compile Include="Services\DeleteHistoryService.cs" />
     <Compile Include="Services\DeleteIntegrationPoints.cs" />
     <Compile Include="Services\DestinationTypes\DestinationTypeFactory.cs" />
-    <Compile Include="Services\Domain\AssemblyDomainLoader.cs" />
-    <Compile Include="Services\Domain\DataReaderWrapper.cs" />
-    <Compile Include="Services\Domain\DomainHelper.cs" />
-    <Compile Include="IPluginProvider.cs" />
     <Compile Include="ISourcePluginProvider.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -605,8 +601,6 @@
     <Compile Include="IContextService.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
-    <Compile Include="Services\Domain\ProviderWrapper.cs" />
-    <Compile Include="Services\Domain\RelativityFeaturePathService.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
     <Compile Include="Factories\Implementations\ExporterFactory.cs" />
@@ -635,13 +629,10 @@
     <Compile Include="Services\Keywords\SourceEmailBodyDataKeyword.cs" />
     <Compile Include="Services\Keywords\RipNameKeyword.cs" />
     <Compile Include="Services\Keywords\WorkspaceNameKeyword.cs" />
-    <Compile Include="Services\Marshaller\IAppDomainDataMarshaller.cs" />
     <Compile Include="Services\Marshaller\ISerializationHelper.cs" />
-    <Compile Include="Services\Marshaller\SecureAppDomainDataMarshaller.cs" />
     <Compile Include="Services\Marshaller\SerializationHelper.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
-    <Compile Include="Services\Provider\ProviderManager.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
     <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />
@@ -709,6 +700,14 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

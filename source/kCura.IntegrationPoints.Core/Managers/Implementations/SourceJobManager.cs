@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class SourceJobManager : ISourceJobManager
+	public class SourceJobManager : DestinationWorkspaceFieldManagerBase, ISourceJobManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
 		public SourceJobManager(IRepositoryFactory repositoryFactory)
+			: base(repositoryFactory,
+				  IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				  SourceJobDTO.ObjectTypeGuid,
+				  "Unable to create Relativity Source Job object. Please contact the system administrator.")
 		{
 			_repositoryFactory = repositoryFactory;
 		}
@@ -21,129 +25,55 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			int sourceWorkspaceArtifactId,
 			int destinationWorkspaceArtifactId,
 			int sourceWorkspaceArtifactTypeId,
-			int sourceWorkspaceRDOInstanceArtifactId,
+			int sourceWorkspaceRdoInstanceArtifactId,
 			int jobHistoryArtifactId)
 		{
 			// Set up repositories
 			ISourceJobRepository sourceJobRepository = _repositoryFactory.GetSourceJobRepository(destinationWorkspaceArtifactId);
-			ISourceWorkspaceJobHistoryRepository sourceWorkspaceJobHistoryRepository =
-				_repositoryFactory.GetSourceWorkspaceJobHistoryRepository(sourceWorkspaceArtifactId);
-			IArtifactGuidRepository artifactGuidRepository =
-				_repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
-			IObjectTypeRepository objectTypeRepository =
-				_repositoryFactory.GetObjectTypeRepository(destinationWorkspaceArtifactId);
+			ISourceWorkspaceJobHistoryRepository sourceWorkspaceJobHistoryRepository = _repositoryFactory.GetSourceWorkspaceJobHistoryRepository(sourceWorkspaceArtifactId);
+			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
 			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
-			
-			int sourceJobDescriptorArtifactTypeId;
-			try
-			{
-				sourceJobDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid);
-			}
-			catch (TypeLoadException)
-			{
-				// Create object type if it does not exist
-				int sourceJobArtifactTypeId = sourceJobRepository.CreateObjectType(sourceWorkspaceArtifactTypeId);
-
-				// Insert entry to the ArtifactGuid table for new object type
-				try
-				{
-					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceJobArtifactTypeId, SourceJobDTO.ObjectTypeGuid);
-				}
-				catch (Exception e)
-				{
-					objectTypeRepository.Delete(sourceJobArtifactTypeId);
-					throw new Exception(
-						"Unable to create Source Job object type: Unable to associate new object type with Artifact Guid", e);
-				}
-
-				// Get the descriptor id
-				sourceJobDescriptorArtifactTypeId =
-					objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid);
-			}
-
-			// Create Job History fields if they do not exist
-			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(new[]
-			{
-				SourceJobDTO.Fields.JobHistoryIdFieldGuid, SourceJobDTO.Fields.JobHistoryNameFieldGuid
-			});
-			IList<Guid> missingFieldGuids = objectTypeFields.Where(x => x.Value == false).Select(y => y.Key).ToList();
-			if (missingFieldGuids.Any())
-			{
-				IDictionary<Guid, int> guidToIdDictionary =
-					sourceJobRepository.CreateObjectTypeFields(sourceJobDescriptorArtifactTypeId, missingFieldGuids);
-
-				try
-				{
-					artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
-				}
-				catch (Exception e)
-				{
-					fieldRepository.Delete(guidToIdDictionary.Values);
-					throw new Exception("Unable to create Source Job fields: Unable to associate new fields with Artifact Guids", e);
-				}
-			}
-
-			// Create fields on document if they do not exist
-			bool jobHistoryFieldOnDocumentExists =
-				artifactGuidRepository.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
-			if (!jobHistoryFieldOnDocumentExists)
-			{
-				int fieldArtifactId = sourceJobRepository.CreateSourceJobFieldOnDocument(sourceJobDescriptorArtifactTypeId);
-
-				try
-				{
-					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
-					if (!retrieveArtifactViewFieldId.HasValue)
-					{
-						throw new Exception("Unable to retrieve artifact view field id for field");
-					}
-
-					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
-				}
-				catch (Exception e)
-				{
-					fieldRepository.Delete(new[] { fieldArtifactId });
-					throw new Exception("Unable to create Source Job multi-object field on Document" + e);	
-				}
-
-				try
-				{
-					fieldRepository.SetOverlayBehavior(fieldArtifactId, true);
-				}
-				catch (Exception e)
-				{
-					fieldRepository.Delete(new[] { fieldArtifactId });
-					throw new Exception("Unable to create Source Job multi-object field on Document: Unable to set the default Overlay Behavior", e);
-				}
-
-				try
-				{
-					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
-				}
-				catch (Exception e)
-				{
-					fieldRepository.Delete(new[] { fieldArtifactId });
-					throw new Exception("Unable to create Source Job multi-object field on Document: Unable to associate new Artifact Guids", e);
-				}
-			}
+			int sourceJobDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceJobRepository, artifactGuidRepository, sourceWorkspaceArtifactTypeId);
+			var fieldGuids = new List<Guid>(2) { SourceJobDTO.Fields.JobHistoryIdFieldGuid, SourceJobDTO.Fields.JobHistoryNameFieldGuid };
+			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceJobRepository, fieldRepository, sourceJobDescriptorArtifactTypeId);
+			CreateDocumentsFields(sourceJobDescriptorArtifactTypeId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, artifactGuidRepository, sourceJobRepository, fieldRepository);
 
 			// Create instance of Job History object
 			SourceWorkspaceJobHistoryDTO sourceWorkspaceJobHistoryDto = sourceWorkspaceJobHistoryRepository.Retrieve(jobHistoryArtifactId);
 			var jobHistoryDto = new SourceJobDTO()
 			{
 				Name = Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspaceJobHistoryDto.Name, jobHistoryArtifactId),
-				SourceWorkspaceArtifactId = sourceWorkspaceRDOInstanceArtifactId,
+				SourceWorkspaceArtifactId = sourceWorkspaceRdoInstanceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				JobHistoryName = sourceWorkspaceJobHistoryDto.Name,
 			};
 
-			int artifactId = sourceJobRepository.Create(sourceJobDescriptorArtifactTypeId,
-				jobHistoryDto);
-
+			int artifactId = sourceJobRepository.Create(sourceJobDescriptorArtifactTypeId, jobHistoryDto);
 			jobHistoryDto.ArtifactId = artifactId;
 
 			return jobHistoryDto;
+		}
+
+		protected override IDictionary<Guid, FieldDefinition> GetObjectFieldDefinitions()
+		{
+			return new Dictionary<Guid, FieldDefinition>()
+			{
+				{
+					SourceJobDTO.Fields.JobHistoryIdFieldGuid, new FieldDefinition()
+					{
+						FieldName = IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
+						FieldType = Relativity.Client.FieldType.WholeNumber
+					}
+				},
+				{
+					SourceJobDTO.Fields.JobHistoryNameFieldGuid, new FieldDefinition()
+					{
+						FieldName = IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
+						FieldType = Relativity.Client.FieldType.FixedLengthText
+					}
+				}
+			};
 		}
 	}
 }

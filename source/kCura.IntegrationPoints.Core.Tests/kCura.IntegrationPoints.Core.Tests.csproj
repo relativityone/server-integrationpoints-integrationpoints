@@ -26,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Core.Tests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,7 +35,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Core.Tests\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,11 +43,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Core.Tests\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Core.Tests\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.Core.Jobs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -169,12 +169,28 @@
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Notification.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.OI.FileID, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.OI.FileID.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Print, Version=9.4.212.3, Culture=neutral, PublicKeyToken=2cc1b8ab562ca316, processorArchitecture=AMD64">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\kCura.Print.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.Relativity.ImportAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI.Extension, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.SearchProvider, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
@@ -187,6 +203,22 @@
     </Reference>
     <Reference Include="kCura.Utility.MassAssign, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Windows.Forms, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.Windows.Forms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Windows.Process, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.Windows.Process.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.WinEDDS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -318,7 +350,7 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -326,7 +358,7 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.CustomPages.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataGrid, Version=10.0.40.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.DataGrid, Version=10.0.55.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -358,7 +390,7 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SDK.Services.Query, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.SDK.Services.Query, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -402,11 +434,11 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.68\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.68\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -486,7 +518,10 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Serialization" />
-    <Reference Include="WebDriver, Version=2.53.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="WebDriver, Version=2.53.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.2.53.0\lib\net40\WebDriver.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SystemInterface, Version=0.7.0.0, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
       <HintPath>..\packages\SystemWrapper.Interfaces.0.7.0.0\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
@@ -521,8 +556,7 @@
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceBatchUpdateManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\JobHistoryBatchUpdateManagerTest.cs" />
+    <Compile Include="Unit\BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
@@ -537,6 +571,8 @@
     <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
     <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
+    <Compile Include="Unit\Managers\SourceJobManagerTests.cs" />
+    <Compile Include="Unit\Managers\SourceWorkspaceManagerTests.cs" />
     <Compile Include="Unit\Managers\StateManagerTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
     <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />
@@ -577,13 +613,23 @@
       <Project>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -610,8 +656,8 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir  "$(SolutionDir)bin\UnitTests"
-$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\UnitTests\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\UnitTests\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -622,4 +668,5 @@ $(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir
     <Error Condition="!Exists('..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets'))" />
   </Target>
   <Import Project="..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets')" />
+  <Import Project="..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets')" />
 </Project>

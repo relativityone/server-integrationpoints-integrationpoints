@@ -26,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Web.Tests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,7 +35,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Web.Tests\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,11 +43,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Web.Tests\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Web.Tests\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
@@ -146,6 +146,14 @@
       <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Administration.7.0.0.0\lib\net20\Microsoft.Web.Administration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -170,7 +178,11 @@
       <HintPath>..\packages\Relativity.API.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.DataContracts, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.4.212.3\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.68\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -180,6 +192,10 @@
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Toggles.1.0.0.68\lib\net45\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Sodium, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\libsodium-net.0.8.0\lib\Net40\Sodium.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -236,6 +252,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\TestBase.cs" />
+    <Compile Include="Integration\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />
@@ -247,6 +264,10 @@
     <Compile Include="Unit\DataStructures\FolderTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
@@ -270,6 +291,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{e7d6a21d-acc6-4140-9e18-c2e6bca85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
@@ -308,8 +333,8 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir  "$(SolutionDir)bin\UnitTests"
-$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\UnitTests\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\UnitTests\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

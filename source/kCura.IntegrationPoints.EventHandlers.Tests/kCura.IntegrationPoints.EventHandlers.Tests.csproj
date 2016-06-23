@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -24,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.EventHandlers.Tests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,7 +33,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.EventHandlers.Tests\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,56 +41,80 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.EventHandlers.Tests\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.EventHandlers.Tests\</OutputPath>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc" />
-    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.227.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.EventHandler, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.4.212.3\lib\net45\kCura.EventHandler.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Utility">
-      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Utility.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.API, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.212.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc" >
+			<HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+		</Reference>
+		<Reference Include="kCura.Apps.Common.Utils, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\packages\kCura.Apps.Common.Utils.1.0.227.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+		</Reference>
+		<Reference Include="kCura.Data, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+			<HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Data.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="kCura.Data.RowDataGateway, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+			<HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="kCura.EventHandler, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+			<HintPath>..\packages\kCura.EventHandler.9.4.212.3\lib\net45\kCura.EventHandler.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+			<HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Injection.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="kCura.Notification, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+			<HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Notification.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="kCura.Relativity.Client, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+			<HintPath>..\packages\kCura.Relativity.Client.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="kCura.Utility, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+			<HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Utility.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="kCura.Utility.MassAssign, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+			<HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+		</Reference>
+		<Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\packages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
+		</Reference>
+		<Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+		</Reference>
+		<Reference Include="Relativity.API, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+			<HintPath>..\packages\Relativity.API.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="System" />
+		<Reference Include="System.Core">
+			<RequiredTargetFramework>3.5</RequiredTargetFramework>
+		</Reference>
+		<Reference Include="System.Data" />
+		<Reference Include="System.Drawing" />
+		<Reference Include="System.Xml" />
+		<Reference Include="WebDriver, Version=2.53.0.0, Culture=neutral, processorArchitecture=MSIL">
+			<HintPath>..\packages\Selenium.WebDriver.2.53.0\lib\net40\WebDriver.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+	</ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
       <ItemGroup>
@@ -153,6 +177,12 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\packages\Selenium.WebDriver.ChromeDriver.2.21.0.0\driver\chromedriver.exe">
+      <Link>chromedriver.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
@@ -175,8 +205,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-      mkdir  "$(SolutionDir)bin\UnitTests"
-      $(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\UnitTests\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\UnitTests\$(TargetName).pdb"
     </PostBuildEvent>
   </PropertyGroup>
 </Project>

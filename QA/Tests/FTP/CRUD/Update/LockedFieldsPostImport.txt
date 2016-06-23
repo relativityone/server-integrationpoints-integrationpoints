@@ -1,0 +1,97 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Integration Name, Source Provider, and Destination RDO fields are locked after an import is performed.
+| Metadata			| Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.game_of_holds	| feature.integration_points
+| Suite Setup		| Create Suite Setup Data
+| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}	 | LDAP Sync
+| ${IntegrationName} | Locked Fields
+| ${IntegrationNameField} | name
+| ${SourceProviderField}  | s2id_sourceProvider
+| ${DestinationRDO}       | s2id_destinationRdo
+
+
+*** Test Cases ***
+| Integration Name field is Locked after Import 
+| | [Documentation] | Verify that once an import has been run, that the Integration Name field on Step 1 is locked.
+| | ...	| [id] daa59800-3240-11e6-b97d-989096e24b46
+| | [Tags] | untested
+| | Verify that the following field is disabled | ${IntegrationNameField} 
+
+| Source Provide field is Locked after Import 
+| | [Documentation] | Verify that once an import has been run, that the Source Provider field on Step 1 is locked.
+| | ...	| [id] ed4bc380-3240-11e6-ae8f-989096e24b46
+| | [Tags] | untested
+| | Verify that the following list is disabled | ${SourceProviderField} 
+
+| Destination RDO field is Locked after Import 
+| | [Documentation] | Verify that once an import has been run, that the Destination RDO field on Step 1 is locked.
+| | ...	| [id] e9c5d10f-3240-11e6-8a14-989096e24b46
+| | [Tags] | untested
+| | Verify that the following list is disabled |  ${DestinationRDO}
+
+*** Keywords *** 
+
+| Create Suite Setup Data
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Legal Hold
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+# --------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/LockedFields.csv
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Department	| Department 
+| | ... | Email			| Email		 
+| | ... | First Name	| FirstName 
+| | ... | Last Name		| LastName	 
+| | ... | UniqueID		| unique_id
+
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
+| | Run Import Now on the Following Integration Point	| ${IntegrationName}
+| | View Integration Point | ${IntegrationName}
+| | Click | Edit
+| | Wait for then Select iFrame	| id=_externalPage	| 10s | The Page never redirected after clicking "Edit".
+| | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
+
+| Verify that the following field is disabled
+| | [Documentation] | Verify that the following field is disabled on the edit screen.
+| | [ARGUMENTS] | ${FieldName}
+| | Wait until Keyword succeeds | 10s | 2s | Element should be visible | xpath=//input[@id='${FieldName}' and (@disabled)]
+
+| Verify that the following list is disabled
+| | [Documentation] | Verify that the following field is not disabled on the edit screen.
+| | [ARGUMENTS] | ${FieldName}
+| | Wait until Keyword succeeds | 10s | 2s | Element should not be visible | xpath=//div[@id='${FieldName}' and (@disabled)]
+| | Wait until Keyword succeeds | 10s | 2s | Element should be visible | xpath=//div[@id='${FieldName}']
+ 
+| Delete the Objects created in the Suite then Close All Browsers
+| | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+| | Delete the Custodians in the Following Department using API	| LockedFields
+| | Delete the following Integration Point | ${IntegrationName}
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

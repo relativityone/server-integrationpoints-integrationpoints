@@ -28,7 +28,7 @@
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.227.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.IntegrationPoints, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\bin\kCura.IntegrationPoints.dll</HintPath>
     </Reference>

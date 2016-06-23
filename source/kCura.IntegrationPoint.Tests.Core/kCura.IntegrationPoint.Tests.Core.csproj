@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoint.Tests.Core\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,14 +27,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoint.Tests.Core\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoint.Tests.Core\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -42,7 +42,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\bin\UnitTests\kCura.IntegrationPoint.Tests.Core\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -327,7 +327,7 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -339,7 +339,7 @@
       <HintPath>..\packages\Relativity.Data.9.4.212.3\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataGrid, Version=10.0.40.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.DataGrid, Version=10.0.55.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -371,7 +371,7 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SDK.Services.Query, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.SDK.Services.Query, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -411,11 +411,11 @@
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.68\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.68.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.68.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.68\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -482,19 +482,12 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.1\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
@@ -514,8 +507,8 @@
       <HintPath>..\packages\Selenium.WebDriver.2.53.0\lib\net40\WebDriver.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebDriver.Support, Version=2.52.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.Support.2.52.0\lib\net40\WebDriver.Support.dll</HintPath>
+    <Reference Include="WebDriver.Support, Version=2.53.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.Support.2.53.0\lib\net40\WebDriver.Support.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -523,11 +516,14 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Agent.cs" />
+    <Compile Include="AuditHelper.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InjectionPoints.cs" />
     <Compile Include="Kepler.cs" />
+    <Compile Include="Models\Audit.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Models\ImportOverwriteMode.cs" />
     <Compile Include="Models\FieldOverlayBehavior.cs" />
@@ -545,6 +541,7 @@
     <Compile Include="Status.cs" />
     <Compile Include="IntegrationPoint.cs" />
     <Compile Include="Group.cs" />
+    <Compile Include="Templates\SingleWorkspaceTestTemplate.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Templates\WorkspaceDependentTemplate.cs" />
     <Compile Include="TestHelper.cs" />
@@ -556,9 +553,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
@@ -581,6 +576,10 @@
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -592,8 +591,14 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets'))" />
+    <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets'))" />
     <Error Condition="!Exists('..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets')" />
   <Import Project="..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

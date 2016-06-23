@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -158,9 +158,7 @@
       <HintPath>..\packages\Relativity.Core.9.4.212.3\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api">
-      <HintPath>..\..\..\Mainline\EDDS\Relativity.Core.Api\bin\Relativity.Core.Api.dll</HintPath>
-    </Reference>
+
     <Reference Include="Relativity.Data, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.Data.9.4.212.3\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
@@ -189,6 +187,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Thinktecture.IdentityModel.Client.Net45, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Thinktecture.IdentityModel.Client.4.0.1\lib\net45\Thinktecture.IdentityModel.Client.Net45.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseRdo.cs" />
@@ -203,6 +205,8 @@
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="Models\MassEditObject.cs" />
+    <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
@@ -244,6 +248,7 @@
     <Compile Include="Repositories\Implementations\SourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepository.cs" />
     <Compile Include="Repositories\IPermissionRepository.cs" />
+    <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
@@ -285,7 +290,6 @@
     <Compile Include="Migrations\IMigration.cs" />
     <Compile Include="Migrations\MigrationRunner.cs" />
     <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
-    <Compile Include="Models\ApplicationBinary.cs" />
     <Compile Include="Queries\JobResourceTracker.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
@@ -322,7 +326,6 @@
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
     <Compile Include="Transformers\IntegrationPointTransformer.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneratedStringConstants.cs">
@@ -375,6 +378,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AddWebApiConfig.sql" />
+    <Content Include="Resources\GetJobsCount.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />
     <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
     <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />
@@ -394,6 +398,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

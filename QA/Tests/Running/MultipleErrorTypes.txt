@@ -44,7 +44,7 @@
 | | [Documentation] | Verify that new Custodians are Appended when getting both  the suppressed Append encountering existing Objects
 | | ...				| errors and a different type of error.
 | | [Tags]			| automated
-| | Go to the Method Tab	| Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
 
 | | @{Header}=	| Create List	| Name
@@ -56,7 +56,7 @@
 | | [Documentation] | Verify that existing Custodians are not updated when getting both the suppressed Append encountering existing Objects
 | | ...				| errors and a different type of error.
 | | [Tags]			| automated
-| | Go to the Method Tab	| Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
 
 | | @{Header}=	| Create List	| Name
@@ -69,34 +69,44 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+#------------------------------------------------------------------------------------------------------------------------
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingNoChangeObject}	|
-| | ... | Email			| eUser@lh.kcura.com		|
+| | ... | Full Name		| ${ExistingNoChangeObject}
+| | ... | Email			| eUser@lh.kcura.com
 | | ... | Department	| Multi Error Test
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingAndUpdatedObject}	|
-| | ... | Email			| uUser@lh.kcura.com			|
+| | ... | Full Name		| ${ExistingAndUpdatedObject}
+| | ... | Email			| uUser@lh.kcura.com
 | | ... | Department	| Multi Error Test
 
-| | @{Step1Fields}=		| Create list | 
-| | ... | ${IntegrationName} | Append | LDAP | Custodian | No
+#------------------------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create list | 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+
 | | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=Multi Error Test)	| FastBind | testing\\rellockdown | P@ssw0rd@1
+
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| department	| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Drop connection to the relativity services api
@@ -117,7 +127,7 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

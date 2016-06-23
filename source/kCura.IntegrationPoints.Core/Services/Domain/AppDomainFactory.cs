@@ -1,7 +1,7 @@
 ﻿using System;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Domain;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Domain

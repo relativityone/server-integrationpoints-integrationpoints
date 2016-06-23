@@ -35,7 +35,10 @@
 	});
 	
 	$('#save').on('click', function () {
-		IP.messaging.publish('save');
+	    var save = $(this).attr('save');
+	    if (typeof (save) == 'undefined') {
+	        IP.messaging.publish('save');
+	    }
 	});
 
 

@@ -10,9 +10,10 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
-using Relativity.Core;
 using Relativity.Data;
 using System.Text.RegularExpressions;
+using Relativity.Core;
+using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -120,11 +121,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				_exportJobInfo = _exporter.InitializeExport(savedSearchArtifactId, _avfIds, startAt);
 			}
-			catch
+			catch(Exception exception)
 			{
 				// NOTE: If we get an exception, we cannot be exactly sure what the real error is,
 				// however, it is more than likely that you do not have Export or Saved Search permissions.
-				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT);				
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT, exception);				
 			}
 
 			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, settings.SourceWorkspaceArtifactId);
