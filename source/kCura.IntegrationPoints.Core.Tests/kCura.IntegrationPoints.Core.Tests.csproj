@@ -229,6 +229,7 @@
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\QueueManagerTests.cs" />
+    <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Integration\PermissionErrorMessageTest.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
@@ -302,7 +303,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
