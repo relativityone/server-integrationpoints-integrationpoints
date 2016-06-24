@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (missingFields.Count > 0)
 			{
 				// TODO : We may want to just update the field's name instead. Sorawit - 6/24/2016.
-				throw new Exception("The destination field(s) that has been mapped may no longer be available. This may due to the field's name was modified. Please validate your field mapping.");
+				throw new Exception("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
 			}
 		}
 
