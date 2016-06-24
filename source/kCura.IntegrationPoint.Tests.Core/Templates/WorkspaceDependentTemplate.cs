@@ -123,7 +123,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
 				ImportNativeFile = false,
 				ExtractedTextFieldContainsFilePath = false,
-				FieldOverlayBehavior = "Use Field Settings"
+				FieldOverlayBehavior = "Use Field Settings",
+				RelativityUsername = SharedVariables.RelativityUserName,
+				RelativityPassword = SharedVariables.RelativityPassword
 			};
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
@@ -137,6 +139,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		protected string CreateDefaultFieldMap()
+		{
+			FieldMap[] map = GetDefaultFieldMap();
+			return Container.Resolve<ISerializer>().Serialize(map);
+		}
+
+		protected FieldMap[] GetDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldRepository sourceFieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
@@ -164,7 +172,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					},
 				}
 			};
-			return Container.Resolve<ISerializer>().Serialize(map);
+			return map;
 		}
 
 		protected void AssignJobToAgent(int agentId, long jobId)
