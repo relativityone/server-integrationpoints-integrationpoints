@@ -40,7 +40,7 @@
 *** Keywords ***
 
 | Create LDAP Integration Point
-# This LDAP Integration Point should generate 10 records
+# This LDAP Integration Point should generate 73 records
 | | Fill out the Following Fields of the Integration Point Step 1 form | ${IntegrationName1}	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 
@@ -62,7 +62,7 @@
 | | Click	| Save
 
 | Create FTP Integration Point
-# This FTP Integration Point should generate 4 records
+# This FTP Integration Point should generate 5 records
 | | Fill out the Following Fields of the Integration Point Step 1 form | ${IntegrationPoint2}	| FTP (CSV File) | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the FTP Integration Point Step 2 form	| 

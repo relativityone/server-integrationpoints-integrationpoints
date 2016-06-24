@@ -6,86 +6,66 @@
 
 *** Variables ***
 
-| ${WorkspaceName}	          | LDAP Sync
-| ${IntegrationName1}         | Successful RIP
-| ${IntegrationName2}         | Job Error RIP
-| ${IntegrationName3}         | Item Level RIP
+| ${WorkspaceName}		| LDAP Sync
+| ${IntegrationName1}	| Successful RIP
+| ${IntegrationName2}	| Job Error RIP
+| ${IntegrationName3}	| Item Level RIP
+
 
 *** Test Cases ***
-
-| Entering an invalid address shows an Error Message
-| | [Documentation]	| Verifies that the correct message is shown when an invalid email address is entered 
-| | ...				| [id] 0a369d70-c41b-11e4-9dce-90b11c6c5ae4
-| | [tags] | manual | automateable 
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Enter valid values into each required field
-| | ... | 2. Enter the following into the Email Notification Recipients field: fred@law
-| | ... | 3. Click | Next
-| | ... |
-| | ... | Expected Results:
-| | ... | An error message should appear saying "Email(s) are improperly formatted."
-
-| Proceeding Post-Invalid email message
-| | [Documentation]	| Verifies that you can correct an email address that failed the email validation logic and proceeed to step 2
-| | ...				| [id] 0822ffb0-c41b-11e4-b3dd-90b11c6c5ae4
-| | [Setup]		| Require Test Case | Entering an invalid address shows an Error Message
-| | [tags] | manual | automateable 
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Change the email address to fred@law.com
-| | ... | 2. Click | Next
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that Step 2 is shown
 
 | Unpopulated SMTP Configuration values will log an error
 | | [Documentation]	| Verify that when trying to send a notification with unpopulated SMTP configuration fields, that an error is logged in Relativity
 | | ...				| [id] 05e2aca1-c41b-11e4-9a53-90b11c6c5ae4
-| | [tags] | manual 
+| | [tags]			| manual	| destructive
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Clear the values of the kCura.Notification SMTP fields
+| | ... | 1. Write down then Clear the value of the SMTPPort Instance Setting
 | | ... | 2. Run an Integration Point that has Email Notifications enabled
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that an error is logged in Relativity
+| | ... |
+| | ... | Teardown Steps:
+| | ... | 1. Restore the SMTPPort Instance Setting 
 
 | Notifications can be sent with Encrypted SMTP
 | | [Documentation]	| 
 | | ...				| [id] 15ab4261-def0-11e4-9434-90b11c6c5ae4
-| | [tags] | manual 
+| | [tags]			| manual 
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to the tab Relativity Script Library
-| | ... | 2. View | Relativity SMTP Configuration
+| | ... | 1. Go to the Tab: Relativity Script Library
+| | ... | 2. View: Relativity SMTP Configuration
 | | ... | 3. Run Script with Encrypt Password set to Yes
-| | ... | 4. Run an RIP Import
+| | ... | 4. Run a RIP Import that has your email in the Email Notification Recipients
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the import email is sent
+
 
 | Notifications can be sent with Unencrypted SMTP
 | | [Documentation]	| 
 | | ...				| [id] 199b1a30-def0-11e4-9bd5-90b11c6c5ae4
-| | [tags] | manual 
+| | [tags]			| manual 
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to the tab Relativity Script Library
-| | ... | 2. View | Relativity SMTP Configuration
+| | ... | 1. Go to the Tab: Relativity Script Library
+| | ... | 2. View: Relativity SMTP Configuration
 | | ... | 3. Run Script with Encrypt Password set to No
-| | ... | 4. Run an RIP Import
+| | ... | 4. Run a RIP Import that has your email in the Email Notification Recipients
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the import email is sent
 
+
 | Notifications are sent as the EmailFrom address in the configuration table
 | | [Documentation] | Verify that the sent Email's From address uses the value of kCura.Notification EmailFrom
-| | ... | [id] 015200ee-c41b-11e4-9458-90b11c6c5ae4
-| | [tags] | manual
+| | ...				| [id] 015200ee-c41b-11e4-9458-90b11c6c5ae4
+| | [tags]			| manual
 | | Run the following manual steps:
 | | ... | Pre-conditions:
-| | ... | 1. The Configuration table has valid values for each kCura.Notification SMTP field and kCura.Notification EmailFrom 
+| | ... | 1. The Instance Settings has a valid (and populated) value for the EmailFrom setting 
 | | ... | 2. An Integration Point has Email Notifications with your address
 | | ... | 3. The Integration Point will run without error
 | | ... |
@@ -96,10 +76,11 @@
 | | ... | Expected Results:
 | | ... | Verify that the from address of the Email Notification matches the Configuration's kCura.Notification EmailFrom value
 
+
 | Verify Successful Notification Subject line
 | | [Documentation]	| Verify that the email's subject line is correct for successful RIP jobs
-| | ... | [id] c6abba00-c423-11e4-8dc6-90b11c6c5ae4
-| | [tags] | manual
+| | ...				| [id] c6abba00-c423-11e4-8dc6-90b11c6c5ae4
+| | [tags]			| manual
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. The ${IntegrationName1} RIP has Email Notifications with your address
@@ -112,6 +93,7 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the email's subject line is "Relativity Integration Point import successfully completed for ${IntegrationName1}"
+
 
 | Verify Successful Notification Email Body
 | | [Documentation]	| Verify that the email's body is correct for successful RIP jobs
@@ -130,14 +112,15 @@
 | | ... | Name: [RIP Name]
 | | ... | Workspace: [Workspace Name]
 
+
 | Verify Job Error Notification Subject line
 | | [Documentation]	| Verify that the email's subject line is correct for job level errored RIP jobs
-| | ... | [id] cdbf85c0-c431-11e4-9b95-90b11c6c5ae4
-| | [tags] | manual
+| | ...				| [id] cdbf85c0-c431-11e4-9b95-90b11c6c5ae4
+| | [tags]			| manual	| destructive
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. The ${IntegrationName2} RIP has Email Notifications with your address
-| | ... | 2. It will run with Job level errors (disable RelativityWebAPI Authentication )
+| | ... | 2. It will run with Job level errors (disable RelativityWebAPI Authentication)
 | | ... |
 | | ... | Steps:
 | | ... | 1. Run the ${IntegrationName2} Integration Point
@@ -147,6 +130,7 @@
 | | ... | Expected Results:
 | | ... | Verify that the email's subject line is:
 | | ... | An error has occurred for Relativity import "${IntegrationName2}" 
+
 
 | Verify Job Error Notification Email Body
 | | [Documentation]	| Verify that the email's body is correct for errored RIP jobs
@@ -166,6 +150,7 @@
 | | ... | Workspace: [Workspace Name]
 | | ... | Error: [Full stack trace error for the most recent error]
 
+
 | Verify Item Error Notification Subject line
 | | [Documentation]	| Verify that the email's subject line is correct for item level errored RIP jobs
 | | ... | [id] f8df7dcf-c433-11e4-8bea-90b11c6c5ae4
@@ -173,7 +158,7 @@
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. The ${IntegrationName3} RIP has Email Notifications with your address
-| | ... | 2. It will run with errors (Duplicate Uniqiue Identifier)
+| | ... | 2. It will run with errors (Duplicate Unique Identifier)
 | | ... |
 | | ... | Steps:
 | | ... | 1. Run the ${IntegrationName3} Integration Point
@@ -183,6 +168,7 @@
 | | ... | Expected Results:
 | | ... | Verify that the email's subject line is:
 | | ... | Relativity import completed with errors for "${IntegrationName3}" 
+
 
 | Verify Item Error Notification Email Body
 | | [Documentation]	| Verify that the email's body is correct for item level errored RIP jobs
@@ -200,4 +186,3 @@
 | | ... | An import for the below Relativity Integration Point has completed with errors.
 | | ... | Name: ${IntegrationName3}
 | | ... | Workspace: [Workspace Name]
-

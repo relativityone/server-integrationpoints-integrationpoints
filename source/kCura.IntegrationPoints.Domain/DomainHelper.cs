@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Domain
             domaininfo.PrivateBinPath = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath);
             string domainName = Guid.NewGuid().ToString();
             var newDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
-            DeployLibraryFiles(newDomain, relativityFeaturePathService);
+            DeployLibraryFiles(domainPath, relativityFeaturePathService);
             return newDomain;
         }
 
@@ -174,9 +174,8 @@ namespace kCura.IntegrationPoints.Domain
             return manager;
         }
 
-        private void DeployLibraryFiles(AppDomain domain, RelativityFeaturePathService relativityFeaturePathService)
+        private void DeployLibraryFiles(string finalDllPath, RelativityFeaturePathService relativityFeaturePathService)
         {
-            string finalDllPath = domain.BaseDirectory;
             string libDllPath = null;
 
             libDllPath = relativityFeaturePathService.LibraryPath;

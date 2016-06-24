@@ -46,7 +46,7 @@
 
 | The Columns on the "All Jobs" View are correct
 | | [Documentation] | Verifies that the "All Jobs" View on the Job History list view page has the correct columns.
-| | [Tags]			| automated
+| | [Tags]			| outdated
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs
 | | Verify that the item list contains the following fields	| 
@@ -86,7 +86,7 @@
 
 | The Columns on the "All Jobs with Errors" View are correct
 | | [Documentation] | Verifies that the "All Jobs with Errors" View on the Job History list view page has the correct columns.
-| | [Tags]			| automated
+| | [Tags]			| outdated
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs with Errors
 | | Verify that the item list contains the following fields	| 
@@ -313,13 +313,13 @@
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| Integration Point Sort Testing
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point | Integration Point Sort Testing
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point List View Testing
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| Integration Point List View Testing
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point | Integration Point List View Testing
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| List View Sort Testing
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| List View Sort Testing
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point | List View Sort Testing
 
 | | Drop connection to the relativity services api
 | | Close All Browsers

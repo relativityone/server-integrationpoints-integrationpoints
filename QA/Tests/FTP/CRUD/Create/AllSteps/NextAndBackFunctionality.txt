@@ -74,7 +74,7 @@
 | | ... | - Protocol: ${Protocol}
 | | ... | - Port: ${Port}
 | | ... | - Username: ${FTPUsername}
-| | ... | - Password: ${FTPPassword}
+| | ... | - Password: [A number of dots equal to the number of characters in "${FTPPassword}"]
 | | ... | - Filepath: ${Filepath}
 
 

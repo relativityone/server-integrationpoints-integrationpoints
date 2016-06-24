@@ -26,12 +26,12 @@
 | | ... | Custodian
 | | ... | No
 | | @{Step2Fields}=	| Create List	|
-| | ... | filetransfer.kcura.com
+| | ... | kcurallc.smartfile.com
 | | ... | SFTP
 | | ... | 22
-| | ... | admin
+| | ... | mkhan@kcura.com
 | | ... | C@m3l!ts
-| | ... | /Custom Development/sftp/LegalHold/SFTP.csv
+| | ... | /LegalHold/SFTP.csv
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 
 | | ... | Email			| Email		 
