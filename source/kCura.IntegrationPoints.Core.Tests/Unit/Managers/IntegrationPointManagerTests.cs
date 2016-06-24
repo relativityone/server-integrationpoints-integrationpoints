@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private const int _ARTIFACT_TYPE_ID = 1232;
 		private const int _SOURCE_PROVIDER_ID = 39309;
 		private const int _SAVED_SEARCH_ID = 9492;
+		private Guid _DESTINATION_PROVIDER_GUID = new Guid(ObjectTypeGuids.DestinationProvider);
 
 		[SetUp]
 		public void Setup()
@@ -73,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Explicit("This tests every possible permission combination but takes a while")]
 		public void UserHasPermissionToRunJob_NonRelativityProvider_AllCombinations()
 		{
-			int paramCount = 9;
+			int paramCount = 10;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
 				this.ClearAllReceivedCalls();
@@ -90,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				bool[] inputs = numList.Select(x => x == '1').ToArray();
 				try
 				{
-					this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8]);
+					this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8], inputs[9]);
 				}
 				catch (Exception e)
 				{
@@ -103,20 +104,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissionToRunJob_NonRelativityProvider_AllPermissions()
 		{
-			this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(true, true, true, true, true, true, true, true, true);
+			this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(true, true, true, true, true, true, true, true, true, true);
 		}
 
 		[Test]
 		public void UserHasPermissionToRunJob_NonRelativityProvider_NoPermissions()
 		{
-			this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(false, false, false, false, false, false, false, false, false);
+			this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(false, false, false, false, false, false, false, false, false, false);
 		}
 
 		[Test]
 		[Explicit("This tests every possible permission combination but takes a (very long) while")]
 		public void UserHasPermissionToRunJob_RelativityProvider_AllCombinations()
 		{
-			int paramCount = 14;
+			int paramCount = 15;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
 				this.ClearAllReceivedCalls();
@@ -133,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				bool[] inputs = numList.Select(x => x == '1').ToArray();
 				try
 				{
-					this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8], inputs[9], inputs[10], inputs[11], inputs[12], inputs[13]);
+					this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8], inputs[9], inputs[10], inputs[11], inputs[12], inputs[13], inputs[14]);
 				}
 				catch (Exception e)
 				{
@@ -146,41 +147,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissionToRunJob_RelativityProvider_AllPermissions()
 		{
-			this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+			this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
 		}
 
 		[Test]
 		public void UserHasPermissionToRunJob_RelativityProvider_NoPermissions()
 		{
-			this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(false, false, false, false, false, false, false, false, false, false, false, false, false, false);
+			this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_AllPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true);
+			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true, true);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_NoPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false);
+			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false, false);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_AllPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_NoPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
+			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 		}
 
 		[TestCase(true, null)]
@@ -256,7 +257,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool destinationRdoPermissions,
 			bool sourceProviderIsProvided,
 			bool sourceProviderTypeViewPermission,
-			bool sourceProviderInstanceViewPermission)
+			bool sourceProviderInstanceViewPermission,
+			bool destinationProviderViewPermission)
 		{
 			var integrationPointDto = new IntegrationPointDTO()
 			{
@@ -291,6 +293,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is(sourceProviderGuid), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderTypeViewPermission);
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is(sourceProviderGuid), Arg.Is(_SOURCE_PROVIDER_ID), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderInstanceViewPermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(_DESTINATION_PROVIDER_GUID, ArtifactPermission.View).Returns(destinationProviderViewPermission);
 
 			if (!sourceProviderIsProvided)
 			{
@@ -347,6 +350,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			if (!integrationPointInstanceViewPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!destinationProviderViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_PROVIDER_NO_VIEW);
 			}
 
 			if (!sourceProviderTypeViewPermission)
@@ -414,7 +422,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool savedSearchIsPublic,
 			bool sourceProviderIsProvided,
 			bool sourceProviderTypeViewPermission,
-			bool sourceProviderInstanceViewPermission)
+			bool sourceProviderInstanceViewPermission,
+			bool destinationProviderViewPermission)
 		{
 			// ARRANGE
 			var integrationPointDto = new IntegrationPointDTO()
@@ -453,6 +462,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_destinationPermissionRepository.UserHasPermissionToAccessWorkspace().Returns(destinationWorkspacePermission);
 			_destinationPermissionRepository.UserCanImport().Returns(destinationImportPermission);
 			_sourcePermissionRepository.UserCanEditDocuments().Returns(sourceDocumentEditPermissions);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(_DESTINATION_PROVIDER_GUID, ArtifactPermission.View).Returns(destinationProviderViewPermission);
 
 			SavedSearchDTO savedSearchDto = null;
 			if (savedSearchPermissions)
@@ -519,6 +529,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			if (!integrationPointInstanceViewPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!destinationProviderViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_PROVIDER_NO_VIEW);
 			}
 
 			if (!sourceProviderTypeViewPermission)
@@ -606,7 +621,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool destinationRdoPermissions,
 			bool sourceProviderIsProvided,
 			bool sourceProviderTypeViewPermission,
-			bool sourceProviderInstanceViewPermission)
+			bool sourceProviderInstanceViewPermission,
+			bool destinationProviderRdoPermission)
 		{
 			// ARRANGE
 			var integrationPointDto = new IntegrationPointDTO()
@@ -631,6 +647,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is(sourceProviderGuid), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderTypeViewPermission);
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is(sourceProviderGuid), Arg.Is(_SOURCE_PROVIDER_ID), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderInstanceViewPermission);
+
+			_sourcePermissionRepository.UserHasArtifactTypePermission(_DESTINATION_PROVIDER_GUID, ArtifactPermission.View).Returns(destinationProviderRdoPermission);
 
 			if (!sourceProviderIsProvided)
 			{
@@ -666,6 +684,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			if (!integrationPointInstanceViewPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!destinationProviderRdoPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_PROVIDER_NO_VIEW);
 			}
 
 			if (!sourceProviderTypeViewPermission)
@@ -726,7 +749,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool savedSearchIsPublic,
 			bool sourceProviderIsProvided,
 			bool sourceProviderTypeViewPermission,
-			bool sourceProviderInstanceViewPermission)
+			bool sourceProviderInstanceViewPermission,
+			bool destinationProviderViewPermission)
 		{
 			// ARRANGE
 			var integrationPointDto = new IntegrationPointDTO()
@@ -753,6 +777,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.UserCanExport().Returns(exportPermission);
 			_destinationPermissionRepository.UserHasPermissionToAccessWorkspace().Returns(destinationWorkspacePermission);
 			_destinationPermissionRepository.UserCanImport().Returns(destinationImportPermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(_DESTINATION_PROVIDER_GUID, ArtifactPermission.View).Returns(destinationProviderViewPermission);
 			_sourcePermissionRepository.UserCanEditDocuments().Returns(sourceDocumentEditPermissions);
 
 			SavedSearchDTO savedSearchDto = null;
@@ -799,6 +824,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			if (!integrationPointInstanceViewPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!destinationProviderViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_PROVIDER_NO_VIEW);
 			}
 
 			if (!sourceProviderTypeViewPermission)
