@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[TestFixtureSetUp]
-		[Explicit]
 		public override void SetUp()
 		{
 			base.SetUp();
