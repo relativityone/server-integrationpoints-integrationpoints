@@ -618,7 +618,7 @@ self.settings.templateID = "step4";
 					var destination = mapping.mappedWorkspace[i];
 
 					if (this.model.importNativeFile() === "true" && source.name === this.model.nativeFilePathValue()) {
-						IP.message.error.raise("Cannot map Native File Path.");
+						IP.message.error.raise("You cannot map a field used for the Native File Path.");
 						return;
 					}
 					if (mapping.selectedUniqueId === destination.name) {
