@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
 			List<int> documents = new List<int>();
-			while ((_containsData = _scratchTableReader.Read()) && documents.Count < _BATCH_SIZE)
+			while (documents.Count < _BATCH_SIZE && (_containsData = _scratchTableReader.Read()))
 			{
 				int artifactId = _scratchTableReader.GetInt32(0);
 				documents.Add(artifactId);
