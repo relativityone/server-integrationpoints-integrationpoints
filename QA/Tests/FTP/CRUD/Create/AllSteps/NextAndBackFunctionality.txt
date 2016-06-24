@@ -29,14 +29,14 @@
 | Returning to Step 3 from Step 2 without changing anything Saves all Step 3 data
 | | [Documentation]	| Verify that if you fill out steps 1 through 3 (FTP), go back to step 2 (FTP), then return to step 3 (FTP), that all of the previously entered data on step 3 (FTP) will still be present.
 | | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | @{Step1Fields}=		| Create List	| ${IntegrationName}	| FTP	| Custodian	| No
 | | @{Step2Fields}=		| Create List	| ${Host}	| ${Protocol}	| ${Port}	| ${FTPUsername}	| ${FTPPassword}	| ${Filepath}
 | | @{Step3Mapping}=	| Create List	| 
 | | ... | UniqueID		| unique_id
 | | ... | First Name	| FirstName
 
-| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
+| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
 
 | | Proceed to the Previous Step of the Integration Point wizard
 | | Proceed to the Next Step of the Integration Point wizard
@@ -50,12 +50,12 @@
 | Returning to Step 2 from Step 1 without changing anything Saves all Step 2 data
 | | [Documentation]	| Verify that if you fill out steps 1 and 2 (FTP), go back to step 1, then return to step 2 (FTP), that all of the previously entered data on step 2 (FTP) will still be present.
 | | ...				| 
-| | [Tags]			| untested	| manual	| field_reading
+| | [Tags]			| partially_automated	| manual	| field_reading	| day508
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | ${IntegrationName}	| FTP	| Custodian	| No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| ${IntegrationName}	| FTP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Fill out the Following Fields of the LDAP Integration Point Step 2 form |
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form |
 | | ... | Host=${Host}
 | | ... | Protocol=${Protocol}
 | | ... | Port=${Port}
@@ -74,21 +74,21 @@
 | | ... | - Protocol: ${Protocol}
 | | ... | - Port: ${Port}
 | | ... | - Username: ${FTPUsername}
-| | ... | - Password: ${FTPPassword}
+| | ... | - Password: [A number of dots equal to the number of characters in "${FTPPassword}"]
 | | ... | - Filepath: ${Filepath}
 
 
 | Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
 | | [Documentation]	| Verify that if you fill out steps 1 through (FTP) 3, go back to step 1, then return to step 3, that all of the previously entered data on step 3 (FTP) will still be present.
 | | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | @{Step1Fields}=		| Create List	| ${IntegrationName}	| FTP	| Custodian	| No
 | | @{Step2Fields}=		| Create List	| ${Host}	| ${Protocol}	| ${Port}	| ${FTPUsername}	| ${FTPPassword}	| ${Filepath}
 | | @{Step3Mapping}=	| Create List	| 
 | | ... | UniqueID		| unique_id
 | | ... | First Name	| FirstName
 
-| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
+| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
 
 | | Proceed to the Previous Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
@@ -112,7 +112,7 @@
 #| | @{Step3Mapping}=	| Create List	|
 #| | ... | Department	| objectguid	|
 #| | ... | Email			| mail 
-#| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
+#| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
 #| | Select Radio Button	| ${ManagerRadioButton}	| false
 #| | Proceed to the Previous Step of the Integration Point wizard
 #| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ${ConnectionPath2}
@@ -124,18 +124,18 @@
 #| | Radio button should be set to	| ${ManagerRadioButton}	| false
 
 
-| Going back from Step 3 and changing Step 1's Destination RDO resets everything on Step 3 except the Source Attribute selections
+| Going back from Step 3 and changing Step 1's Destination RDO resets everything on Step 3
 | | [Documentation]	| Verify that if you fill out steps 1 through (FTP) 3, go back to step 1 and change the Destination RDO, then when you return to step 3 (FTP)
-| | ...				| all of the Workspace Fields selections and the dropdowns will be reset, but the Source Attribute selections will be saved.
+| | ...				| all of the Fields selections and the dropdowns will be reset.
 | | ...				| 
-| | [Tags]			| untested
+#| | [Tags]			| automated
 | | @{Step1Fields}=		| Create List	| ${IntegrationName}	| FTP	| Custodian	| No
 | | @{Step2Fields}=		| Create List	| ${Host}	| ${Protocol}	| ${Port}	| ${FTPUsername}	| ${FTPPassword}	| ${Filepath}
 | | @{Step3Mapping}=	| Create List	| 
 | | ... | UniqueID		| unique_id
 | | ... | First Name	| FirstName
 
-| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email
+| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email
  
 | | Proceed to the Previous Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
@@ -144,10 +144,10 @@
 | | Proceed to the Next Step of the Integration Point wizard
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Verify that the Selected Field Mapping list is empty
-| | Verify that the Selected Source Attribute fields are in the following order	| unique_id	| FirstName
-| | Verify that the following select2 Dropdown currently has the following value selected	| ${OverwriteList}			| Select...
-| | Verify that the following select2 Dropdown currently has the following value selected	| ${UniqueIdentifierList}	| Select...
+| | Run Keyword And Continue On Failure	| Verify that the Selected Field Mapping list is empty
+| | Run Keyword And Continue On Failure	| Verify that the Selected Source Attributes list is empty
+| | Run Keyword And Continue On Failure	| Verify that the following select2 Dropdown currently has the following value selected	| ${OverwriteList}			| Append Only				| # Default Value
+| | Run Keyword And Continue On Failure	| Verify that the following select2 Dropdown currently has the following value selected	| ${UniqueIdentifierList}	| Name [Object Identifier]	| # Default Value
 
 
 *** Keywords ***
@@ -156,18 +156,18 @@
 | | [Documentation]	| A keyword that confirms that the Selected Source Attribute list does not have any fields allocated to it
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Fields list box was not visible.
 
-| | Element should not be visible	| xpath=//select[@id='selected-source-fields']/child::option]
+| | Element should not be visible	| xpath=//select[@id='selected-source-fields']/child::option
 
 | Verify that the Selected Field Mapping list is empty
 | | [Documentation]	| A keyword that confirms that the Selected Field Mapping list does not have any fields allocated to it
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
 
-| | Element should not be visible	| xpath=//select[@id='selected-workspace-fields']/child::option]
+| | Element should not be visible	| xpath=//select[@id='selected-workspace-fields']/child::option
 
-| Create LDAP Integration Point without Saving
+| Create FTP Integration Point without Saving
 | | [Documentation]	| A keyword that creates an Integration Point but does not click Save.
 | | ...				| The value of Step1Fields should be the arguments from "Fill out the Following Fields of the Integration Point Step 1 form" in a list variable.
-| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the LDAP Integration Point Step 2 form" in a list variable.
+| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the FTP Integration Point Step 2 form" in a list variable.
 | | ...				| The value of Step3Mapping should be the arguments from "Map the Following Fields on the Integration Point Step 3 form" in a list variable.
 | | ... 			| The value of Overwrite should be "Overlay Only", "Overlay Only", or "ppend/Overlay".
 | | [ARGUMENTS]		| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| ${Step3Overwrite}	| ${Step3UniqueID}
@@ -175,7 +175,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| @{Step2Fields}
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form	| @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 

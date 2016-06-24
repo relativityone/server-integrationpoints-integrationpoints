@@ -48,23 +48,24 @@
 | | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint1}
 | | Verify the buttons are available on the layout	| 
-| | ... | Edit				| 
-| | ... | Delete			| 
-| | ... | Back				| 
-| | ... | Edit Permissions	| 
+| | ... | Edit
+| | ... | Delete
+| | ... | Back
+| | ... | Edit Permissions
 | | ... | View Audit
 
 
 | The Category Headings are in the correct order
 | | [Documentation]	| Verify that the Category headings are sorted correctly on the Integration Point Details" Layout.
 | | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| manual
 | | [Setup]			| View Integration Point	| ${IntegrationPoint1}
-| | Verify that the current Layout has the following Categories in Order	| 
-| | ... | General			| 
-| | ... | Status			| 
-| | ... | Import Scheduling	| 
-| | ... | Source Connection
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the current Layout has the following Categories in Order	| 
+| | ... | General (First Category Tab, First Card)
+| | ... | Scheduling (Second Category Tab, First Card)
+| | ... | Status (Second Card)
 
 
 | The correct Fields are present when Enable Scheduler is set to No
@@ -74,29 +75,28 @@
 | | [Setup]			| View Integration Point	| ${IntegrationPoint1}
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
-| | ... | - Name			| 
-| | ... | - Overwrite		| 
-| | ... | - Source Provider	| 
-| | ... | - Destination RDO	| 
-| | ... | - Log Errors      | 
-| | ... | - Email Notification Recipients
-| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Next Scheduled Runtime (UTC)	| 
-| | ... | - Last Runtime (UTC)
-| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
-| | ... | - Enable Scheduler	|
-| | ... | - Frequency			| 
-| | ... | - Start Date			| 
-| | ... | - End Date			| 
-| | ... | - Scheduled Time (UTC)
-| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
-| | ... | - Connection Path			| 
-| | ... | - Object Filter String	| 
-| | ... | - Authentication			| 
-| | ... | - Username				| 
-| | ... | - Password				| 
-| | ... | - Import Nested Items
+| | ... | 1. Verify that the "General" Category Tab has the following fields in order:
+| | ... | - Name (1st Row, Left)
+| | ... | - Log Errors (1st Row, Right)
+| | ... | - Has Errors (2nd Row, Right)
+| | ... | - Overwrite (3rd Row, Left)
+| | ... | - Email Notification Recipients (3rd Row, Right)
+| | ... | - Source Provider (4th Row, Left)
+| | ... | - Destination RDO (5th Row, Left)
+| | ... | - Connection Path (6th Row, Left)
+| | ... | - Object Filter String (7th Row, Left)
+| | ... | - Authentication (8th Row, Left)
+| | ... | - Username (9th Row, Left)
+| | ... | - Password (10th Row, Left)
+| | ... | - Import Nested Items (11th Row, Left)
+| | ... | 2. Verify that the "Scheduling" Category Tab has the following fields in order:
+| | ... | - Enable Scheduler (1st Row, Left)
+| | ... | - Next Scheduled Runtime (UTC) (1st Row, Right)
+| | ... | - Frequency (2nd Row, Left)
+| | ... | - Last Runtime (UTC) (2nd Row, Right)
+| | ... | - Start Date (3rd Row, Right)
+| | ... | - End Date (4th Row, Left)
+| | ... | - Scheduled Time (UTC) (5th Row, Left)
 
 
 | The correct Fields are present when Frequency is set to Daily
@@ -106,29 +106,28 @@
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
-| | ... | - Name			| 
-| | ... | - Overwrite		| 
-| | ... | - Source Provider	| 
-| | ... | - Destination RDO	| 
-| | ... | - Log Errors      | 
-| | ... | - Email Notification Recipients
-| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Next Scheduled Runtime (UTC)	| 
-| | ... | - Last Runtime (UTC)
-| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
-| | ... | - Enable Scheduler	|
-| | ... | - Frequency			| 
-| | ... | - Start Date			| 
-| | ... | - End Date			| 
-| | ... | - Scheduled Time (UTC)
-| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
-| | ... | - Connection Path			| 
-| | ... | - Object Filter String	| 
-| | ... | - Authentication			| 
-| | ... | - Username				| 
-| | ... | - Password				| 
-| | ... | - Import Nested Items
+| | ... | 1. Verify that the "General" Category Tab has the following fields in order:
+| | ... | - Name (1st Row, Left)
+| | ... | - Log Errors (1st Row, Right)
+| | ... | - Has Errors (2nd Row, Right)
+| | ... | - Overwrite (3rd Row, Left)
+| | ... | - Email Notification Recipients (3rd Row, Right)
+| | ... | - Source Provider (4th Row, Left)
+| | ... | - Destination RDO (5th Row, Left)
+| | ... | - Connection Path (6th Row, Left)
+| | ... | - Object Filter String (7th Row, Left)
+| | ... | - Authentication (8th Row, Left)
+| | ... | - Username (9th Row, Left)
+| | ... | - Password (10th Row, Left)
+| | ... | - Import Nested Items (11th Row, Left)
+| | ... | 2. Verify that the "Scheduling" Category Tab has the following fields in order:
+| | ... | - Enable Scheduler (1st Row, Left)
+| | ... | - Next Scheduled Runtime (UTC) (1st Row, Right)
+| | ... | - Frequency (2nd Row, Left)
+| | ... | - Last Runtime (UTC) (2nd Row, Right)
+| | ... | - Start Date (3rd Row, Right)
+| | ... | - End Date (4th Row, Left)
+| | ... | - Scheduled Time (UTC) (5th Row, Left)
 
 
 | The Password Field shows six asterixes when not populated
@@ -176,18 +175,18 @@
 | | ... | 12:30 PM
 
 | | @{Step2Fields}=		| Create List	| 
-| | ... | ${ConnectionPath}		| 
-| | ... | ${ObjectFilterString}	| 
-| | ... | ${Authentication}		| 
-| | ... | ${ConnectionUsername}	| 
-| | ... | ${ConnectionPassword}	| 
+| | ... | ${ConnectionPath} 
+| | ... | ${ObjectFilterString}
+| | ... | ${Authentication}
+| | ... | ${ConnectionUsername}
+| | ... | ${ConnectionPassword}
 | | ... | ${ImportNestedItems}
 
 | | @{Step3Mapping}=	| Create List	| 
-| | ... | Email			| mail			| 
-| | ... | Department	| countrycode	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
+| | ... | Email			| mail 
+| | ... | Department	| countrycode 
+| | ... | First Name	| givenname 
+| | ... | Last Name		| sn
 | | ... | UniqueID		| objectguid
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
@@ -196,31 +195,30 @@
 
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
-| | ... | - Name			| 
-| | ... | - Overwrite		| 
-| | ... | - Source Provider	| 
-| | ... | - Destination RDO	| 
-| | ... | - Log Errors      | 
-| | ... | - Email Notification Recipients
-| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Next Scheduled Runtime (UTC)	| 
-| | ... | - Last Runtime (UTC)
-| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
-| | ... | - Enable Scheduler	|
-| | ... | - Frequency			| 
-| | ... | -	Reoccur				| 
-| | ... | -	Send On				| 
-| | ... | - Start Date			| 
-| | ... | - End Date			| 
-| | ... | - Scheduled Time (UTC)
-| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
-| | ... | - Connection Path			| 
-| | ... | - Object Filter String	| 
-| | ... | - Authentication			| 
-| | ... | - Username				| 
-| | ... | - Password				| 
-| | ... | - Import Nested Items
+| | ... | 1. Verify that the "General" Category Tab has the following fields in order:
+| | ... | - Name (1st Row, Left)
+| | ... | - Log Errors (1st Row, Right)
+| | ... | - Has Errors (2nd Row, Right)
+| | ... | - Overwrite (3rd Row, Left)
+| | ... | - Email Notification Recipients (3rd Row, Right)
+| | ... | - Source Provider (4th Row, Left)
+| | ... | - Destination RDO (5th Row, Left)
+| | ... | - Connection Path (6th Row, Left)
+| | ... | - Object Filter String (7th Row, Left)
+| | ... | - Authentication (8th Row, Left)
+| | ... | - Username (9th Row, Left)
+| | ... | - Password (10th Row, Left)
+| | ... | - Import Nested Items (11th Row, Left)
+| | ... | 2. Verify that the "Scheduling" Category Tab has the following fields in order:
+| | ... | - Enable Scheduler (1st Row, Left)
+| | ... | - Next Scheduled Runtime (UTC) (1st Row, Right)
+| | ... | - Frequency (2nd Row, Left)
+| | ... | - Last Runtime (UTC) (2nd Row, Right)
+| | ... | - Reoccur: (3rd Row, Right)
+| | ... | - Send On: (4th Row, Left)
+| | ... | - Start Date: (5th Row, Left)
+| | ... | - End Date: (6th Row, Left)
+| | ... | - Scheduled Time (UTC): (7th Row, Left)
 
 
 | All Fields are present when Frequency is set to Monthly
@@ -240,18 +238,18 @@
 | | ... | 12:30 PM
 
 | | @{Step2Fields}=		| Create List	| 
-| | ... | ${ConnectionPath}		| 
-| | ... | ${ObjectFilterString}	| 
-| | ... | ${Authentication}		| 
-| | ... | ${ConnectionUsername}	| 
-| | ... | ${ConnectionPassword}	| 
+| | ... | ${ConnectionPath}
+| | ... | ${ObjectFilterString}
+| | ... | ${Authentication}
+| | ... | ${ConnectionUsername}
+| | ... | ${ConnectionPassword} 
 | | ... | ${ImportNestedItems}
 
 | | @{Step3Mapping}=	| Create List	| 
-| | ... | Email			| mail			| 
-| | ... | Department	| countrycode	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
+| | ... | Email			| mail
+| | ... | Department	| countrycode
+| | ... | First Name	| givenname
+| | ... | Last Name		| sn
 | | ... | UniqueID		| objectguid
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
@@ -260,31 +258,30 @@
 
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
-| | ... | - Name			| 
-| | ... | - Overwrite		| 
-| | ... | - Source Provider	| 
-| | ... | - Destination RDO	| 
-| | ... | - Log Errors      | 
-| | ... | - Email Notification Recipients
-| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Next Scheduled Runtime (UTC)	| 
-| | ... | - Last Runtime (UTC)
-| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
-| | ... | - Enable Scheduler	|
-| | ... | - Frequency			| 
-| | ... | -	Reoccur				| 
-| | ... | -	Send On				| 
-| | ... | - Start Date			| 
-| | ... | - End Date			| 
-| | ... | - Scheduled Time (UTC)
-| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
-| | ... | - Connection Path			| 
-| | ... | - Object Filter String	| 
-| | ... | - Authentication			| 
-| | ... | - Username				| 
-| | ... | - Password				| 
-| | ... | - Import Nested Items
+| | ... | 1. Verify that the "General" Category Tab has the following fields in order:
+| | ... | - Name (1st Row, Left)
+| | ... | - Log Errors (1st Row, Right)
+| | ... | - Has Errors (2nd Row, Right)
+| | ... | - Overwrite (3rd Row, Left)
+| | ... | - Email Notification Recipients (3rd Row, Right)
+| | ... | - Source Provider (4th Row, Left)
+| | ... | - Destination RDO (5th Row, Left)
+| | ... | - Connection Path (6th Row, Left)
+| | ... | - Object Filter String (7th Row, Left)
+| | ... | - Authentication (8th Row, Left)
+| | ... | - Username (9th Row, Left)
+| | ... | - Password (10th Row, Left)
+| | ... | - Import Nested Items (11th Row, Left)
+| | ... | 2. Verify that the "Scheduling" Category Tab has the following fields in order:
+| | ... | - Enable Scheduler (1st Row, Left)
+| | ... | - Next Scheduled Runtime (UTC) (1st Row, Right)
+| | ... | - Frequency (2nd Row, Left)
+| | ... | - Last Runtime (UTC) (2nd Row, Right)
+| | ... | - Reoccur: (3rd Row, Right)
+| | ... | - Send On: (4th Row, Left)
+| | ... | - Start Date: (5th Row, Left)
+| | ... | - End Date: (6th Row, Left)
+| | ... | - Scheduled Time (UTC): (7th Row, Left)
 
 
 *** Keywords ***
@@ -413,4 +410,4 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

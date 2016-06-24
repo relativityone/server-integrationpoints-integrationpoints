@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation 	| Verify that the Import Now button is placed and functions correctly.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points	| outdated
 | Suite Setup		| Open the Browser and Create the Integration Points needed by the Suite
 #| Test Setup		| NONE
 | Test Teardown 	| Capture screenshot if test fails
@@ -80,7 +80,7 @@
 
 | The Importing Now success message is correct
 | | [Documentation] | Verify that using the Import Now button shows a success message with the text "Data will now be imported from the source provider.".
-| | [Tags]			| automated
+| | [Tags]			| outdated
 | | View Integration Point	| ${IntegrationPoint1}
 | | Click	| Import Now
 | | Click	| Import Now
@@ -170,4 +170,4 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

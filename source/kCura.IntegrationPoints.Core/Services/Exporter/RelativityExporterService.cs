@@ -10,9 +10,10 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
-using Relativity.Core;
 using Relativity.Data;
 using System.Text.RegularExpressions;
+using Relativity.Core;
+using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
-		private readonly global::Relativity.Core.Api.Shared.Manager.Export.IExporter _exporter;
+		private readonly IExporter _exporter;
 		private readonly IILongTextStreamFactory _longTextStreamFactory;
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
@@ -61,6 +62,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_baseContext = claimsPrincipal.GetUnversionContext(settings.SourceWorkspaceArtifactId);
+
+			ValidateDestinationFields(claimsPrincipal, settings.TargetWorkspaceArtifactId, mappedFields);
 
 			IQueryFieldLookup fieldLookupHelper = new global::Relativity.Core.QueryFieldLookup(_baseContext, (int)Relativity.Client.ArtifactType.Document);
 
@@ -106,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
 
-			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.SavedSearchExporter
+			_exporter = new SavedSearchExporter
 			(
 					_baseContext,
 					new global::Relativity.Core.UserPermissionsMatrix(_baseContext),
@@ -128,6 +131,43 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 
 			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, settings.SourceWorkspaceArtifactId);
+		}
+
+		private void ValidateDestinationFields(ClaimsPrincipal claimsPrincipal, int destinationWorkspace, FieldMap[] mappedFields)
+		{
+			IList<string> missingFields = new List<string>();
+			BaseServiceContext destinationWorkspaceContext = claimsPrincipal.GetUnversionContext(destinationWorkspace);
+			IQueryFieldLookup fieldLookupHelper = new global::Relativity.Core.QueryFieldLookup(destinationWorkspaceContext, (int)Relativity.Client.ArtifactType.Document);
+
+			for (int index = 0; index < mappedFields.Length; index++)
+			{
+				FieldEntry fieldEntry = mappedFields[index].DestinationField;
+				if (fieldEntry != null && !String.IsNullOrEmpty(fieldEntry.FieldIdentifier))
+				{
+					int artifactId = 0;
+					if (Int32.TryParse(fieldEntry.FieldIdentifier, out artifactId))
+					{
+						try
+						{
+							ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
+							if (fieldInfo == null || String.Equals(fieldInfo.DisplayName, fieldEntry.ActualName, StringComparison.OrdinalIgnoreCase) == false)
+							{
+								missingFields.Add(fieldEntry.ActualName);
+							}
+						}
+						catch
+						{
+							missingFields.Add(fieldEntry.ActualName);
+						}
+					}
+				}
+			}
+
+			if (missingFields.Count > 0)
+			{
+				// TODO : We may want to just update the field's name instead. Sorawit - 6/24/2016.
+				throw new Exception("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
+			}
 		}
 
 		private void VerifyValidityOfTheNestedOrMultiValuesField(string fieldName, ArtifactDTO[] dtos, Regex invalidPattern)

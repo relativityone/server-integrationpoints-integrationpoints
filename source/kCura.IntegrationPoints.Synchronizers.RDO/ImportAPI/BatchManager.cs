@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
@@ -70,6 +72,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             {
                 finalDt.Columns.Add(column);
             }
+
+			// Non Relativity providers will not have the Native File Path column passed in.
+			// We must add it here for them.
+	        bool? dataSourceContainsNativeFilePath = dataSource.FirstOrDefault()?.Keys.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
+	        if (dataSourceContainsNativeFilePath.HasValue 
+				&& dataSourceContainsNativeFilePath.Value 
+				&& !finalDt.Columns.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME))
+	        {
+		        finalDt.Columns.Add(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
+	        }
 
             foreach (var dictionary in dataSource)
             {

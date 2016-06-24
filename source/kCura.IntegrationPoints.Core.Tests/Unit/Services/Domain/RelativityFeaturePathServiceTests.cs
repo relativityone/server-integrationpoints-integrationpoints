@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using kCura.IntegrationPoints.Core.Domain;
+using kCura.IntegrationPoints.Domain;
 using NSubstitute;
 using NUnit.Framework;
 

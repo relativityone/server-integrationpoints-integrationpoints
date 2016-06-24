@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.Data.Queries
 					}
 				}
 			};
-
 			return _client.Query(_client.APIOptions, query);
 		}
 	}

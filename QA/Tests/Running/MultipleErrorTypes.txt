@@ -43,25 +43,30 @@
 | Custodians are still Imported when using Append and encountering existing User(s) and another error Type
 | | [Documentation] | Verify that new Custodians are Appended when getting both  the suppressed Append encountering existing Objects
 | | ...				| errors and a different type of error.
-| | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
+| | [Tags]			| manual
+| | Go to the Tab	| Custodians
+| | Run the following manual steps:
+| | ... | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
 
-| | @{Header}=	| Create List	| Name
-| | @{Values}=	| Create List	| ${NewObject}	| ${DuplicateUsers}
-| | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Header}	| ${Values}
+| | ... | @{Header}=	| Create List	| Name
+| | ... | @{Values}=	| Create List	| ${NewObject}	| ${DuplicateUsers}
+
+| | ... | Expected Results:
+| | ... | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Header}	| ${Values}
 
 
 | Custodians are still not Updated when using Append and encountering existing User(s) and another error Type
 | | [Documentation] | Verify that existing Custodians are not updated when getting both the suppressed Append encountering existing Objects
 | | ...				| errors and a different type of error.
-| | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
+| | [Tags]			| manual
+| | Go to the Tab	| Custodians
+| | Run the following manual steps:
+| | ... | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
+| | ... | @{Header}=	| Create List	| Name
+| | ... | @{Values}=	| Create List	| ${ExistingAndUpdatedObject}	| ${ExistingNoChangeObject}
 
-| | @{Header}=	| Create List	| Name
-| | @{Values}=	| Create List	| ${ExistingAndUpdatedObject}	| ${ExistingNoChangeObject}
-| | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Header}	| ${Values}
+| | ... | Expected Results:
+| | ... | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Header}	| ${Values}
 
 
 *** Keywords *** 
@@ -130,4 +135,4 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

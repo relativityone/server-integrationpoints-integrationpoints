@@ -66,7 +66,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                 Dictionary<string, int> fieldMapping = _inputMappings;
                 _mappings = ValidateAllMappedFieldsAreInWorkspace(fieldMapping, _idToFieldDictionary);
                 HashSet<string> columnNames = new HashSet<string>();
-                _mappings.Values.ToList().ForEach(x => { if (!columnNames.Contains(x.Name)) columnNames.Add(x.Name); });
+                _mappings.Values.ToList().ForEach(x =>
+                {
+	                if (!columnNames.Contains(x.Name))
+	                {
+		                columnNames.Add(x.Name);
+	                }
+                });
+
                 this._batchManager.ColumnNames = columnNames;
             }
         }

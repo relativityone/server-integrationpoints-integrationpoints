@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
@@ -77,8 +78,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			{
 				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				JobHistoryFields.DestinationWorkspace,
-				IntegrationPointFields.JobHistory
+				DocumentFields.RelativityDestinationCase,
+				DocumentFields.JobHistory
 			};
 
 			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));

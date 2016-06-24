@@ -24,26 +24,27 @@
 | An Append and Overlay import Creates new records
 | | [Documentation] | Verify that when an Append and Overlay RIP is run which has new Source records, that it creates new records in the Target RDO.
 | | ...				| [id] 130ad15e-a89f-11e4-9aa5-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| manual
 | | Go to the Tab	| Custodians
-| | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
+| | Run the following manual steps:
+| | ... | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
 | | ... | Name			| ${NewObject} 
 | | ... | Department	| AppendAndOverlay
-
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+| | ... | Expected Results:
+| | ... | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
 
 | An Append and Overlay import updates existing modified records
 | | [Documentation] | Verify that when an Append and Overlay RIP is run with an existing record in the Target RDO with updated details in the Source, 
 | | ...				| that it does update the existing records in the Target RDO. In this test, the Custodian's Department has been updated.
 | | ...				| [id] 130fda6e-a89f-11e4-8313-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| manual
 | | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
-| | ... | Name			| ${ExistingAndUpdatedObject}
+| | Run the following manual steps:
+| | ... | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | Name | ${ExistingAndUpdatedObject} |
 | | ... | Department	| AppendAndOverlay
-
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+| | ... | Expected Results:
+| | ... | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
 
 | An Append and Overlay import does not update existing unmodified records
@@ -114,7 +115,7 @@
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the following Integration Point | ${IntegrationName}
 | | Delete the Custodians in the Following Department using API	| AppendAndOverlay
 
 | | Drop connection to the relativity services api
@@ -128,4 +129,4 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

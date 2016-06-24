@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Security.Claims;
-using System.ServiceProcess;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Data.Contexts;
 
 namespace kCura.IntegrationPoint.Tests.Core

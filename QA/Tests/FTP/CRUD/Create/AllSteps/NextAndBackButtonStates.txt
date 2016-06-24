@@ -26,56 +26,35 @@
 
 *** Test Cases ***
 
-| The Back button is disabled when you return to Step 1 from Step 2
+| Only the Back button is disabled when you return to Step 1 from Step 2
 | | [Documentation] | Verify that The Back button is disabled when you return to Step 1 from Step 2.
 | | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
 
-| | Verify that the following Progress Bar Button is Disabled	| ${Back Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Disabled	| ${Back Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Enabled	| ${Next Button}
 
 
-| The Next button is enabled when you return to Step 1 from Step 2
-| | [Documentation] | Verify that The Next button is enabled when you return to Step 1 from Step 2.
+| Both Buttons are enabled when you first arrive on Step 2 (FTP)
+| | [Documentation] | Verify that the buttons is enabled when you first arrive on Step 2.
 | | ...				| 
-| | [Tags]			| untested
-| | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
-| | Proceed to the Next Step of the Integration Point wizard
-| | Proceed to the Previous Step of the Integration Point wizard
-
-| | Verify that the following Progress Bar Button is Enabled	| ${Next Button}
-
-
-| The Back button is enabled when you first arrive on Step 2  (FTP)
-| | [Documentation] | Verify that The Back button is enabled when you first arrive on Step 2.
-| | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Verify that the following Progress Bar Button is Enabled	| ${Back Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Enabled	| ${Back Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Enabled	| ${Next Button}
 
 
-| The Next button is enabled when you first arrive on Step 2 (FTP)
-| | [Documentation] | Verify that The Next button is enabled when you first arrive on Step 2.
+| The Buttons are both enabled when you return to Step 2 from Step 3
+| | [Documentation] | Verify that both buttons are enabled when you return to Step 2 from Step 3.
 | | ...				| 
-| | [Tags]			| untested
-| | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
-| | Proceed to the Next Step of the Integration Point wizard
-
-| | Verify that the following Progress Bar Button is Enabled	| ${Next Button}
-
-
-| The Back button is enabled when you return to Step 2 from Step 3
-| | [Documentation] | Verify that The Back button is enabled when you return to Step 2 from Step 3.
-| | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
@@ -89,33 +68,14 @@
 | | Proceed to the Next Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
 
-| | Verify that the following Progress Bar Button is Enabled	| ${Back Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Enabled	| ${Back Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Enabled	| ${Next Button}
 
 
-| The Next button is enabled when you return to Step 2 from Step 3
-| | [Documentation] | Verify that The Next button is enabled when you return to Step 2 from Step 3.
+| The Buttons are both Enabled when you first arrive on Step 3
+| | [Documentation] | Verify that both Buttons are Enabled when you first arrive on Step 3.
 | | ...				| 
-| | [Tags]			| untested
-| | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
-| | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form	| 
-| | ... | Host=${Host}
-| | ... | Protocol=${Protocol}
-| | ... | Port=${Port}
-| | ... | Username=${FTPUsername}
-| | ... | Password=${FTPPassword}
-| | ... | Filepath=${Filepath}
-| | Proceed to the Next Step of the Integration Point wizard
-| | Proceed to the Previous Step of the Integration Point wizard
-
-| | Verify that the following Progress Bar Button is Enabled	| ${Next Button}
-
-
-| The Back button is enabled when you first arrive on Step 3
-| | [Documentation] | Verify that The Back button is enabled when you first arrive on Step 3.
-| | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
@@ -128,26 +88,8 @@
 | | ... | Filepath=${Filepath}
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Verify that the following Progress Bar Button is Enabled	| ${Back Button}
-
-
-| The Save button is enabled when you first arrive on Step 3
-| | [Documentation] | Verify that The Next (Save) button is enabled when you first arrive on Step 3.
-| | ...				| 
-| | [Tags]			| untested
-| | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
-| | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form	| 
-| | ... | Host=${Host}
-| | ... | Protocol=${Protocol}
-| | ... | Port=${Port}
-| | ... | Username=${FTPUsername}
-| | ... | Password=${FTPPassword}
-| | ... | Filepath=${Filepath}
-| | Proceed to the Next Step of the Integration Point wizard
-
-| | Verify that the following Progress Bar Button is Enabled	| ${Save Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Enabled	| ${Back Button}
+| | Run Keyword and Continue on Failure	| Verify that the following Progress Bar Button is Enabled	| ${Save Button}
 
 
 *** Keywords ***

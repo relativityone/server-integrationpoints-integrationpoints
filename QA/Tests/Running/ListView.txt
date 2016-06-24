@@ -42,14 +42,15 @@
 | | [Tags]			| automated
 | | Go to the Tab	| Integration Points
 | | Verify that the item list contains the following fields	| 
-| | ... | Name					| 
-| | ... | Source Provider		| 
-| | ... | Enable Scheduler		| 
-| | ... | Last Runtime (UTC)	| 
+| | ... | Name
+| | ... | Source Provider
+| | ... | Enable Scheduler
+| | ... | Has Errors
+| | ... | Last Runtime (UTC)
 | | ... | Next Scheduled Runtime (UTC)
 
 
-| The New Job History Button is visible on the page
+| The New Integration Point is visible on the page
 | | [Documentation] | Verifies that the "New Integration Point" Button is visible on the page.
 | | [Tags]			| untested
 | | Go to the Tab	| Integration Points
@@ -58,7 +59,7 @@
 
 | The Item List on the "All Integration Points" View is sorted by Name
 | | [Documentation] | Verifies that the Item List on the "All Integration Points" View is sorted by Name by default.
-| | [Tags]			| automated
+| | [Tags]			| outdated
 | | [Setup]			| Create Three Integration Points
 | | Go to the Tab	| Integration Points
 | | Verify that the Item List is sorted by the following Text Column in Ascending Order	| Name
@@ -180,4 +181,4 @@
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Views/ItemListKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

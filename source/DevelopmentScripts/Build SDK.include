@@ -3,13 +3,13 @@
 <project name="LDAPSync.Package">
 	
 	<!-- Package properties -->
-	<property name="Package.SDK.Output" value="${target.code.directory}\sdk" />
+	<property name="Package.SDK.Output" value="${target.bin.directory}\sdk" />
 	
 	<target name="copy_sdk_files">
 		<exec program="${ldap.scripts.directory}\copy.sdk.files.bat">
 			<environment>
 				<variable name="LDAPSync" value="${root}" />
-				<variable name="SDK_TARGET" value="${target.code.directory}" />
+				<variable name="SDK_TARGET" value="${target.bin.directory}" />
 				<variable name="IPSdkOutput" value="${Package.SDK.Output}" />
 			</environment>
 		</exec>
@@ -26,7 +26,7 @@
 	</target>
 
 	<target name="package_sdk" depends="copy_sdk_files"  description="Creates sdk package for integration points">
-		<zip zipfile="${target.code.directory}\IntegrationPoints.SDK.zip">
+		<zip zipfile="${target.bin.directory}\IntegrationPoints.SDK.zip">
 			<fileset basedir="${Package.SDK.Output}">
 				<include name="*"/>
 			</fileset>

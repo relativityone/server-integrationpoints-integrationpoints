@@ -4,33 +4,27 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Castle.Core.Internal;
-using Castle.MicroKernel.Registration;
-using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class WorkspaceDependentTemplate : IntegrationTestBase
+	public class WorkspaceDependentTemplate : SingleWorkspaceTestTemplate
 	{
-		private readonly string _sourceWorkspaceName;
 		private readonly string _targetWorkspaceName;
 
 		protected SourceProvider LdapProvider;
@@ -41,33 +35,32 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int SourceWorkspaceArtifactId { get; protected set; }
 		public int TargetWorkspaceArtifactId { get; protected set; }
 		public int SavedSearchArtifactId { get; set; }
+		public int AgentArtifactId { get; set; }
 
 		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName)
+			: base(sourceWorkspaceName)
 		{
-			_sourceWorkspaceName = sourceWorkspaceName;
 			_targetWorkspaceName = targetWorkspaceName;
 		}
 
 		[TestFixtureSetUp]
 		public virtual void SetUp()
 		{
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
-			const string template = "New Case Template";
-			SourceWorkspaceArtifactId = Workspace.CreateWorkspace(_sourceWorkspaceName, template);
+			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
 			if (!_targetWorkspaceName.IsNullOrEmpty())
 			{
-				TargetWorkspaceArtifactId = Workspace.CreateWorkspace(_targetWorkspaceName, template);
+				TargetWorkspaceArtifactId = Workspace.CreateWorkspace(_targetWorkspaceName, "New Case Template");
 			}
 			else
 			{
 				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
 			}
 
-
 			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+			AgentArtifactId = Agent.CreateIntegrationPointAgent();
+
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
-			Install();
 
 			CaseContext = Container.Resolve<ICaseServiceContext>();
 			IEnumerable<SourceProvider> providers = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
@@ -76,48 +69,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 		}
 
-		protected virtual void Install()
-		{
-			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
-			Container.Register(Component.For<IServiceContextHelper>()
-				.UsingFactoryMethod(k =>
-				{
-					IHelper helper = k.Resolve<IHelper>();
-					return new TestServiceContextHelper(helper, SourceWorkspaceArtifactId);
-				}));
-			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
-			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
-			Container.Register(
-				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspaceArtifactId)))
-					.LifeStyle.Transient);
-
-			Container.Register(
-				Component.For<IRSAPIClient>()
-				.UsingFactoryMethod(k =>
-				{
-					IRSAPIClient client = Rsapi.CreateRsapiClient();
-					client.APIOptions.WorkspaceID = SourceWorkspaceArtifactId;
-					return client;
-				})
-				.LifeStyle.Transient);
-
-			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
-			Container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
-
-			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };
-			foreach (IWindsorInstaller dependency in dependencies)
-			{
-				dependency.Install(Container, ConfigurationStore);
-			}
-		}
-
 		[TestFixtureTearDown]
-		public virtual void TearDown()
+		public override void TearDown()
 		{
-			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
-			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			base.TearDown();
+			Agent.DeleteAgent(AgentArtifactId);
 		}
 
 		protected IList<Audit> GetLastAuditsForIntegrationPoint(string integrationPointName, int take)
@@ -125,18 +81,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			var auditHelper = new AuditHelper(Helper);
 
 			IList<Audit> audits = auditHelper.RetrieveLastAuditsForArtifact(
-				SourceWorkspaceArtifactId, 
-				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
+				SourceWorkspaceArtifactId,
+				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME,
 				integrationPointName,
 				take);
 
 			return audits;
 		}
 
-		protected Tuple<string, string> GetAuditDetailsFieldValues(Audit audit, string fieldName)
+		protected IDictionary<string, Tuple<string, string>> GetAuditDetailsFieldValues(Audit audit, HashSet<string> fieldNames)
 		{
 			var auditHelper = new AuditHelper(Helper);
-			Tuple<string, string> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldName);
+			IDictionary<string, Tuple<string, string>> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldNames);
 
 			return fieldValues;
 		}
@@ -167,7 +123,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
 				ImportNativeFile = false,
 				ExtractedTextFieldContainsFilePath = false,
-				FieldOverlayBehavior = "Use Field Settings"
+				FieldOverlayBehavior = "Use Field Settings",
+				RelativityUsername = SharedVariables.RelativityUserName,
+				RelativityPassword = SharedVariables.RelativityPassword
 			};
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
@@ -181,6 +139,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		protected string CreateDefaultFieldMap()
+		{
+			FieldMap[] map = GetDefaultFieldMap();
+			return Container.Resolve<ISerializer>().Serialize(map);
+		}
+
+		protected FieldMap[] GetDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldRepository sourceFieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
@@ -208,7 +172,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					},
 				}
 			};
-			return Container.Resolve<ISerializer>().Serialize(map);
+			return map;
 		}
 
 		protected void AssignJobToAgent(int agentId, long jobId)
@@ -233,6 +197,39 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SqlParameter toEnabled = new SqlParameter("@enabled", SqlDbType.Bit) { Value = enable };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { toEnabled });
+		}
+
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
+		{
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			jobHistory.EndTimeUTC = DateTime.Now;
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
+			jobHistoryService.UpdateRdo(jobHistory);
+			return jobHistory;
+		}
+
+		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Choice errorStatus, Choice type)
+		{
+			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
+			JobHistoryError jobHistoryError = new JobHistoryError
+			{
+				ParentArtifactId = jobHistoryArtifactId,
+				JobHistory = jobHistoryArtifactId,
+				Name = Guid.NewGuid().ToString(),
+				SourceUniqueID = type == ErrorTypeChoices.JobHistoryErrorItem ? Guid.NewGuid().ToString() : null,
+				ErrorType = type,
+				ErrorStatus = errorStatus,
+				Error = "Inserted Error for testing.",
+				StackTrace = "Error created from JobHistoryErrorsBatchingTests",
+				TimestampUTC = DateTime.Now,
+			};
+
+			jobHistoryErrors.Add(jobHistoryError);
+
+			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			return jobHistoryErrorArtifactIds;
 		}
 	}
 }

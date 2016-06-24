@@ -1,8 +1,8 @@
 
 *** Settings ***
 | Documentation 	| Verify that the specifics of the Custodian RDO Integration Point functions correctly when creating a new Custodian IP.
-| Metadata			| Authors	  | Daniel Oliver	| William Sehy
-| Force Tags		| in-progress | team.game_of_holds	| feature.integration_points
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Go to and Step 3 on the Integration Points Wizard
 | Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
@@ -26,9 +26,9 @@
 | | [Tags]			| required	| automated
 | | Move the Following Workspace Fields to the Selected List		| UniqueID		| Last Name
 | | Move the Following Source Attribute Fields to the Selected List	| objectguid	| sn
-| | Click | Save
+| | Click	| Save
 
-| | Verify the current Method Page Error has the following Text  | The First Name field must be mapped.
+| | Verify the current Method Page Error has the following Text	| The First Name field must be mapped.
 
 
 | A Custodian RIP can be saved after fixing the missing First Name error
@@ -37,9 +37,9 @@
 | | [Setup]			| Require Test Case	| First Name is a required field
 | | Move the Following Workspace Fields to the Selected List		| First Name
 | | Move the Following Source Attribute Fields to the Selected List	| givenname
-| | Click | Save
+| | Click	| Save
 
-| | Wait until page contains | Integration Point Details
+| | Wait Until Keyword Succeeds	| 30s	| 3s	| Verify we are on the	| Integration Point View Page
 
 
 | Last Name is a required field
@@ -48,9 +48,9 @@
 | | [Tags]			| required	| automated
 | | Move the Following Workspace Fields to the Selected List		| UniqueID		| First Name
 | | Move the Following Source Attribute Fields to the Selected List	| objectguid	| givenname
-| | Click | Save
+| | Click	| Save
 
-| | Verify the current Method Page Error has the following Text  | The Last Name field must be mapped.
+| | Verify the current Method Page Error has the following Text	| The Last Name field must be mapped.
 
 
 | A Custodian RIP can be saved after fixing the missing Last Name error
@@ -59,9 +59,9 @@
 | | [Setup]			| Require Test Case	| Last Name is a required field
 | | Move the Following Workspace Fields to the Selected List		| Last Name
 | | Move the Following Source Attribute Fields to the Selected List	| sn
-| | Click | Save
+| | Click	| Save
 
-| | Wait until page contains | Integration Point Details
+| | Wait Until Keyword Succeeds	| 30s	| 3s	| Verify we are on the	| Integration Point View Page
 
 
 | Warning message is shown when both First Name and Last Name are not mapped
@@ -70,9 +70,9 @@
 | | [Tags]			| required	| automated
 | | Move the Following Workspace Fields to the Selected List		| UniqueID
 | | Move the Following Source Attribute Fields to the Selected List	| objectguid
-| | Click | Save
+| | Click	| Save
 
-| | Verify the current Method Page Error has the following Text  | The First Name and Last Name fields must be mapped.
+| | Verify the current Method Page Error has the following Text	| The First Name and Last Name fields must be mapped.
 
 
 | A Custodian RIP can be saved after fixing the missing First and Last Name error
@@ -82,9 +82,9 @@
 | | [Setup]			| Require Test Case	| Warning message is shown when both First Name and Last Name are not mapped
 | | Move the Following Workspace Fields to the Selected List		| Last Name	| First Name
 | | Move the Following Source Attribute Fields to the Selected List	| sn		| givenname
-| | Click | Save
+| | Click	| Save
 
-| | Wait until page contains | Integration Point Details
+| | Wait Until Keyword Succeeds	| 30s	| 3s	| Verify we are on the	| Integration Point View Page
 
 
 *** Keywords *** 
@@ -92,25 +92,37 @@
 | Go to and Step 3 on the Integration Points Wizard
 | | [Documentation]	| A keyword that is used as the test case setup. It goes to Step 3 of RIP for Custodians and maps the Email and ID fields.
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Required Custodian Fields	| LDAP	| Custodian	| No
+
+| | Fill out the Following Fields of the Integration Point Step 1 form	| 
+| | ... | Required Custodian Fields
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the LDAP Integration Point Step 2 form | ConnectionPath=${ConnectionPath} | Authentication=${AuthenticationType}	| ConnectionUsername=${ConnectionUsername}	| ConnectionPassword=${ConnectionPassword}
+
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 
+| | ... | ConnectionPath=${ConnectionPath}
+| | ... | Authentication=${AuthenticationType}
+| | ... | ConnectionUsername=${ConnectionUsername}
+| | ... | ConnectionPassword=${ConnectionPassword}
 | | Proceed to the Next Step of the Integration Point wizard
 
 | Delete the Objects created in this Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Points created in this Suite.
-| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
-
-| | Delete All Integration Points with the following Name using API	| Required Custodian Fields
+| | :FOR	| ${i}	| IN RANGE	| 3
+| | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Required Custodian Fields
+| | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point 	| Required Custodian Fields
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
 
 *** Settings ***
-| Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt

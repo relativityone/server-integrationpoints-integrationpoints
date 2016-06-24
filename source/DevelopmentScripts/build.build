@@ -33,7 +33,8 @@
 	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.227.4\lib\net45" />
 	<property name="target.bin.directory" value="${root}\bin" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
-	<property name="bin.directory" value="${root}\bin\" />
+	<property name="example.directory" value="${root}\..\example" />
+	<property name="provider.includes.directory" value="${root}\..\example\ProviderIncludes\" />
 	<property name="ldap.build.server.share" value="\\tt-img-app-9-0.testing.corp\BuildShare\LDAPSync\release-1.0" unless="${property::exists('ldap.build.server.share')}"/>
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
@@ -42,7 +43,7 @@
 	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
 	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
 	<property name="caseId" value="" unless="${property::exists('caseId')}" />
-	<property name="relativityDependencyVersion" value="9.4.205.3" />
+	<property name="relativityDependencyVersion" value="9.4.212.3" />
 	
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
@@ -87,7 +88,7 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_integrationPoint_core, merge_binaries, copy_kCura.IntegrationPoints.Contracts, copy_kCura.IntegrationPoints.Security, copy_ftpProvider_files, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_initialize_nuget, build_integrationPoint_core, merge_binaries, copy_files, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, copy_example_dependencies, build_ip_sdk">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -97,6 +98,25 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
+	<target name="build_myfirstprovider" description="Builds MyFirstProvider" depends="build_initialize, build_myfirstprovider_sln, deploy_myfirstprovider_web_project, build_myfirstprovider_rap">
+		<if test="${file::exists(logfile)}">
+			<delete file="${logfile}" failonerror="true"/>
+		</if>
+		<if test="${string::contains(action, 'build')}">
+			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
+		</if>
+		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
+	</target>
+	
+	<target name="build_jsonloader" description="Builds JsonLoader" depends="build_initialize, build_jsonloader_sln, deploy_jsonloader_web_project, build_jsonloader_rap">
+		<if test="${file::exists(logfile)}">
+			<delete file="${logfile}" failonerror="true"/>
+		</if>
+		<if test="${string::contains(action, 'build')}">
+			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
+		</if>
+		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
+	</target>
 	
 	<target name="build_initialize">
 		<echo message="Initializing a ${buildconfig} ${action}..." />
@@ -147,7 +167,9 @@
 		<if test="${file::exists(buildLoggerLogFile)}">
 			<delete file="${buildLoggerLogFile}" failonerror="true"/>
 		</if>
-		
+	</target>
+
+	<target name="build_initialize_nuget">	
 		<exec program="..\Dependencies\NuGet.exe">
 		  <arg value="restore" />
 		  <arg value="..\kCura.IntegrationPoints.sln" />
@@ -197,10 +219,15 @@
 			<!-- kCura Dependencies -->
 			<arg line='/lib:"${source.packages.directory}\kCura.Agent.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\kCura.HTMLSanitizer.0.0.21.7\lib"' />
+			<arg line='/lib:"${source.packages.directory}\Nito.AsyncEx.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\AutoMapper.4.2.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Remotion.Linq.2.0.2\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Dynamitey.1.0.2.0\lib\portable-win+net45+sl40+wp80"' />
 			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCura.Agent.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
+			<!--<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />-->
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.149\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.16\lib"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ServiceBus.1.1.17\lib\net45"' />
@@ -226,16 +253,29 @@
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
 			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\FreeImageNET.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\Ionic.Zip.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.ImageValidator.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.OI.FileID.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.DataReaderClient.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.Extension.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Windows.Forms.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Windows.Process.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.WinEDDS.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.WinEDDS.ImportExtension.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Method.Injection.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
+			<arg line='"${target.code.directory}\kCura.ScheduleQueue.Core.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Config.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
@@ -245,7 +285,6 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
-			<arg line='/closed' />
 		</exec>
 	</target>
 
@@ -327,7 +366,6 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
-			
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
 			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
@@ -348,42 +386,12 @@
 		</exec>
 	</target>
 	
-	<target name="copy_kCura.IntegrationPoints.Contracts" description="Copy kCura.IntegrationPoints.Contracts.dll to \bin">
-		<copy todir="${bin.directory}">
-			<fileset basedir="${target.code.directory}">
-				<include name="kCura.IntegrationPoints.Contracts.dll" />
-			</fileset>
-		</copy>
-	</target>
-
-	<target name="copy_kCura.IntegrationPoints.Security" description="Copy kCura.IntegrationPoints.Contracts.dll to \bin">
-		<copy todir="${bin.directory}">
-			<fileset basedir="${target.code.directory}">
-				<include name="kCura.IntegrationPoints.Security.dll" />
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="copy_ftpProvider_files" description="Copy all dlls for rap to \bin">
-		<copy todir="${bin.directory}">
-			<fileset basedir="${target.code.directory}">
-				<include name="kCura.IntegrationPoints.FtpProvider.Connection.dll" />
-				<include name="kCura.IntegrationPoints.FtpProvider.dll" />
-				<include name="kCura.IntegrationPoints.FtpProvider.Helpers.dll" />
-				<include name="kCura.IntegrationPoints.FtpProvider.Parser.dll" />
-			</fileset>
-		</copy>
-		<copy todir="${bin.directory}">
-			<fileset basedir="${source.packages.directory}\SSH.NET.2013.4.7\lib\net40\">
-				<include name="Renci.SshNet.dll" />
-			</fileset>
-		</copy>
-	</target>
-
 	<target name="copy_files" description="Copy all dlls for rap to \bin">
-		<copy todir="${bin.directory}">
+		<copy todir="${target.bin.directory}">
 			<fileset basedir="${target.code.directory}">
 				<include name="kCura.IntegrationPoints.Contracts.dll" />
+				<include name="kCura.IntegrationPoints.Domain.dll" />
+				<include name="kCura.IntegrationPoints.Security.dll" />
 				<include name="kCura.IntegrationPoints.dll" />
 				<include name="kCura.LDAPProvider.dll" />
 				<include name="kCura.DocumentTransferProvider.dll" />
@@ -395,12 +403,75 @@
 				<include name="kCura.IntegrationPoints.FtpProvider.Parser.dll" />
 			</fileset>
 		</copy>
-		<copy todir="${bin.directory}">
-			<fileset basedir="${source.packages.directory}\RelativityCore.9.4.205.3\lib\net45">
+		<copy todir="${target.bin.directory}">
+			<fileset basedir="${source.packages.directory}\RelativityCore.9.4.212.3\lib\net45">
 				<include name="kCura.Image.Viewer.dll" />
 				<include name="kCura.Print.dll" />
 			</fileset>
 		</copy>
+		<copy todir="${target.bin.directory}">
+			<fileset basedir="${source.packages.directory}\SSH.NET.2013.4.7\lib\net40\">
+				<include name="Renci.SshNet.dll" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="copy_example_dependencies" description="Copy all dlls for example projects to ..\example\ProviderIncludes">
+		<copy todir="${provider.includes.directory}">
+			<fileset basedir="${target.bin.directory}">
+				<include name="kCura.IntegrationPoints.Contracts.dll" />
+				<include name="kCura.SourceProviderInstaller.dll" />
+				<include name="kCura.IntegrationPoints.Domain.dll" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="build_myfirstprovider_sln">
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\..\example\MyFirstProvider\MyFirstProvider.sln" />
+		</exec>
+	
+		<exec program="${msbuild}">
+			<arg line='"msbuild_myfirstprovider.targets"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line='/property:Platform="ANY CPU"' />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg line="/noconsolelogger" />
+			<arg line="/filelogger" />
+			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg line="/target:BuildMethod" />
+			<arg line="/verbosity:${verbosity}" />
+			<arg line='/p:DefineConstants="${DevEnv},${TimeMachine},${Injections}"' />
+			<arg line="/nologo" />
+		</exec>
+	</target>
+	
+	<target name="build_jsonloader_sln">
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\..\example\JsonLoader\JsonLoader.sln" />
+		</exec>
+	
+		<exec program="${msbuild}">
+			<arg line='"msbuild_jsonloader.targets"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line='/property:Platform="ANY CPU"' />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg line="/noconsolelogger" />
+			<arg line="/filelogger" />
+			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg line="/target:BuildMethod" />
+			<arg line="/verbosity:${verbosity}" />
+			<arg line='/p:DefineConstants="${DevEnv},${TimeMachine},${Injections}"' />
+			<arg line="/nologo" />
+		</exec>
 	</target>
 	
 	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">		
