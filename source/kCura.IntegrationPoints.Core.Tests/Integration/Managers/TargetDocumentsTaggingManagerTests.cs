@@ -50,9 +50,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-		[TestCase(999, "UnderBatch")]
-		[TestCase(1000, "EqualBatch")]
-		[TestCase(1001, "OverBatch")]
+		[TestCase(499, "UnderBatch")]
+		[TestCase(500, "EqualBatch")]
+		[TestCase(502, "OverBatch")]
 		public void test(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
