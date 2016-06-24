@@ -1,36 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Web.Models
 {
-	public class WorkspaceModel
-	{
-		private WorkspaceModel()
-		{
-		}
+    public class WorkspaceModel
+    {
+        private WorkspaceModel()
+        {
+        }
 
-		public int Value { get; private set; }
-		public String DisplayName { get; private set; }
+        public int Value { get; private set; }
+        public String DisplayName { get; private set; }
 
-		public static List<WorkspaceModel> GetWorkspaceModels(IRSAPIClient context)
-		{
-			GetWorkspacesQuery query = new GetWorkspacesQuery(context);
-			var resultSet = query.ExecuteQuery();
-			IEnumerable<Result<Workspace>> workspaces = resultSet.Results;
-			List<WorkspaceModel> result = workspaces.Select(
-				workspace => new WorkspaceModel()
-				{
-					DisplayName = Utils.GetFormatForWorkspaceOrJobDisplay(workspace.Artifact.Name, workspace.Artifact.ArtifactID),
-					Value = workspace.Artifact.ArtifactID
-				}).ToList();
+        public static List<WorkspaceModel> GetWorkspaceModels(IRSAPIClient context, IHtmlSanitizerManager htmlSanitizerManager)
+        {
+            GetWorkspacesQuery query = new GetWorkspacesQuery(context);
+            var resultSet = query.ExecuteQuery();
+            IEnumerable<Result<Workspace>> workspaces = resultSet.Results;
+            List<WorkspaceModel> result = workspaces.Select(
+                workspace => new WorkspaceModel()
+                {
+                    DisplayName = Utils.GetFormatForWorkspaceOrJobDisplay(htmlSanitizerManager.Sanitize(workspace.Artifact.Name).CleanHTML, workspace.Artifact.ArtifactID),
+                    Value = workspace.Artifact.ArtifactID
+                }).ToList();
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }
