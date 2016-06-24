@@ -126,6 +126,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			bool integrationPointInstanceViewPermission = sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
 			bool jobHistoryAddPermission = sourcePermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Create);
 
+			var destinationProviderGuid = new Guid(ObjectTypeGuids.DestinationProvider);
+			bool destinationProviderTypeView = sourcePermissionRepository.UserHasArtifactTypePermission(destinationProviderGuid,
+				ArtifactPermission.View);
+
 			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
 			bool sourceProviderTypeView = sourcePermissionRepository.UserHasArtifactTypePermission(sourceProviderGuid,
 				ArtifactPermission.View);
@@ -199,6 +203,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			if (!integrationPointInstanceViewPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!destinationProviderTypeView)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_PROVIDER_NO_VIEW);
 			}
 
 			if (!sourceProviderTypeView)

@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 	public class DeleteHistoryServiceTest
 	{
 		[Test]
-		public void deleteHistoriesAssociatedWithIPs_integrationPoint_setJobHistoryNull()
+		public void DeleteHistoriesAssociatedWithIPs_IntegrationPoint_SetJobHistoryNull()
 		{
 			//ARRANGE
 			var service = NSubstitute.Substitute.For<IRSAPIService>();
@@ -34,44 +34,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			deleteError.DeleteErrorAssociatedWithHistories(Arg.Any<List<int>>());
 
 			service.IntegrationPointLibrary.Query(Arg.Any<Query<RDO>>()).Returns(integrationPoint);
-			deleteHistoryService.DeleteHistoriesAssociatedWithIPs(new List<int>() { 1, 2 });
 
 			//ACT
-
-			//do call
-
-			//ASSERT
-			service.IntegrationPointLibrary.Received().Update(Arg.Is<IEnumerable<Data.IntegrationPoint>>(x => x.All(y => !y.JobHistory.Any()))); //
-		}
-
-		[Test]
-		public void deleteHistoriesAssociatedWithIPs_integrationPoint_correctIdsSentToRemove()
-		{
-			//ARRANGE
-			var service = NSubstitute.Substitute.For<IRSAPIService>();
-			var deleteError = NSubstitute.Substitute.For<IDeleteHistoryErrorService>();
-			var deleteHistoryService = new DeleteHistoryService(service, deleteError);
-			var integrationPoint = new List<Data.IntegrationPoint>()
-			{
-				new Data.IntegrationPoint()
-				{
-					JobHistory = new int[] {1, 2, 3}
-				},
-					new Data.IntegrationPoint()
-				{
-					JobHistory = new int[] {4,5, 6}
-				}
-			};
-			service.IntegrationPointLibrary.Query(Arg.Any<Query<RDO>>()).Returns(integrationPoint);
 			deleteHistoryService.DeleteHistoriesAssociatedWithIPs(new List<int>() { 1, 2 });
 
-			//ACT
-
-			//do call
-
 			//ASSERT
-			var allJobHistory = new int[] { 1, 2, 3, 4, 5, 6 };
-			service.JobHistoryLibrary.Received().Delete(Arg.Is<IEnumerable<int>>(x => x.All(allJobHistory.Contains)));
+			service.IntegrationPointLibrary.Received().Update(Arg.Is<IEnumerable<Data.IntegrationPoint>>(x => x.All(y => !y.JobHistory.Any())));
 		}
 	}
 }

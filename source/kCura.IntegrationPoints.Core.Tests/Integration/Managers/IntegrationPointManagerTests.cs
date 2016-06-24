@@ -12,7 +12,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
-	[Explicit]
+	[TestFixture]
+	[Category("Integration Tests")]
 	public class IntegrationPointManagerTests : WorkspaceDependentTemplate
 	{
 		private IIntegrationPointService _integrationPointService;

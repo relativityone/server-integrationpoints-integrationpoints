@@ -342,7 +342,85 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Last Runtime (UTC)" });
 		}
 
-	
+		[TestCase("")]
+		[TestCase(null)]
+		[TestCase("02/31/3000")]
+		[TestCase("01-31-3000")]
+		[TestCase("abcdefg")]
+		[TestCase("12345")]
+		[TestCase("-01/31/3000")]
+		public void CreateScheduledIntegrationPoint_WithInvalidStartDate_ExpectError(string startDate)
+		{
+			//Arrange
+			DateTime utcNow = DateTime.UtcNow;
+
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = GetDestinationConfigWithOverlayOnly(),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				SelectedOverwrite = "Overlay Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = true,
+					StartDate = startDate,
+					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy"),
+					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(1).ToString("mm"),
+					SelectedFrequency = ScheduleInterval.Daily.ToString(),
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			//Act & Assert
+			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(integrationModel), "Unable to save Integration Point.");
+		}
+
+		[TestCase("")]
+		[TestCase(null)]
+		[TestCase("02/31/3000")]
+		[TestCase("01-31-3000")]
+		[TestCase("abcdefg")]
+		[TestCase("12345")]
+		[TestCase("-01/31/3000")]
+		public void CreateScheduledIntegrationPoint_WithInvalidEndDate_ExpectError(string endDate)
+		{
+			//Arrange
+			DateTime utcNow = DateTime.UtcNow;
+
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = GetDestinationConfigWithOverlayOnly(),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				SelectedOverwrite = "Overlay Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = true,
+					StartDate = utcNow.ToString("MM/dd/yyyy"),
+					EndDate = endDate,
+					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(1).ToString("mm"),
+					SelectedFrequency = ScheduleInterval.Daily.ToString(),
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			//Act
+			try
+			{
+				CreateOrUpdateIntegrationPoint(integrationModel);
+			}
+			//Assert
+			catch (Exception ex)
+			{
+				Assert.IsTrue(ex.Message == "Unable to save Integration Point.");
+			}
+		}
 
 		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
 		{

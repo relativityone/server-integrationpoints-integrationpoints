@@ -177,6 +177,10 @@
     <Reference Include="Relativity.API">
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Core, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.Core.9.4.212.3\lib\net45\Relativity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Services.DataContracts.dll</HintPath>

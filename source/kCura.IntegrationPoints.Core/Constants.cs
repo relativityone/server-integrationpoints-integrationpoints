@@ -61,10 +61,11 @@ namespace kCura.IntegrationPoints.Core
                 public const string SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
                 public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or the user does not have access.";
                 public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
-                public const string UNABLE_TO_EXPORT = "Job failed due to insufficient permissions. Please ensure that you have valid export and saved search permissions";
+                public const string UNABLE_TO_EXPORT = "Job failed. Please ensure that you have valid permissions and a valid saved search.";
                 public const string JOB_HISTORY_NO_VIEW = "User does not have permission to view Job History RDOs.";
                 public const string JOB_HISTORY_ERROR_NO_VIEW = "User does not have permission to view Job History Errors RDOs.";
-                public const string SOURCE_PROVIDER_NO_VIEW = "User does not have permission to view Source Provider RDOs.";
+				public const string DESTINATION_PROVIDER_NO_VIEW = "User does not have permission to view Destination Provider RDOs.";
+				public const string SOURCE_PROVIDER_NO_VIEW = "User does not have permission to view Source Provider RDOs.";
                 public const string SOURCE_PROVIDER_NO_INSTANCE_VIEW = "User does not have permission to view the Source Provider RDO.";
                 public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE = "User does not have permissions to save an Integration Point.";
                 public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX = "User does not have the following permissions required to save an Integration Point:";
