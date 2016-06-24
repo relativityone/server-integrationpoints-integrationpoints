@@ -159,7 +159,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-		this.AllowUserToMapNativeFileField = ko.observable(model.SourceProviderConfiguration.importSettingVisibility.allowUserToMapNativeFileField || true);
+		this.AllowUserToMapNativeFileField = ko.observable(model.SourceProviderConfiguration.importSettingVisibility.allowUserToMapNativeFileField);
 
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
@@ -616,6 +616,11 @@ self.settings.templateID = "step4";
 				for (var i = 0; i < mapping.sourceMapped.length; i++) {
 					var source = mapping.sourceMapped[i];
 					var destination = mapping.mappedWorkspace[i];
+
+					if (this.model.importNativeFile() === "true" && source.name === this.model.nativeFilePathValue()) {
+						IP.message.error.raise("You cannot map a field used for the Native File Path.");
+						return;
+					}
 					if (mapping.selectedUniqueId === destination.name) {
 						map.push({
 							sourceField: _createEntry(source),
