@@ -2,7 +2,7 @@
 <#@ assembly name="System.Core.dll" #>
 <#@ assembly name="System.Xml.dll" #>
 <#@ assembly name="System.Xml.Linq.dll" #>
-<#@ assembly name="C:\SourceCode\LDAPSync\source\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
+<#@ assembly name="C:\SourceCode\IntegrationPoints\source\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Xml" #>
@@ -16,14 +16,10 @@ var objTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 var tabTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 string nameSpaceName = "kCura.IntegrationPoints.Data"; 
 #>
-using System;
-using kCura.Relativity.Client;
-
 namespace kCura.IntegrationPoints.Data
 {
 	public partial interface IRSAPIService
 	{
-		
 		<#
 		foreach  (ObjectTypeDTO objType in objTypes)
 		{
@@ -32,9 +28,6 @@ IGenericLibrary<<#=objType.Name.ToPascalCase()#>> <#=objType.Name.ToPascalCase()
 		<#
 		}
 		#>
-
-
-
 
 	}
 }

@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			StartedRetrieving = true;
 
-			var query = new Query<Document>
+			var query = new Query<kCura.Relativity.Client.DTOs.Document>
 			{
 				Condition = new SavedSearchCondition(_savedSearchId),
 				Fields = new List<FieldValue>()
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			};
 
-			QueryResultSet<Document> resultSet;
+			QueryResultSet<kCura.Relativity.Client.DTOs.Document> resultSet;
 			if (_queryToken == null)
 			{
 				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))

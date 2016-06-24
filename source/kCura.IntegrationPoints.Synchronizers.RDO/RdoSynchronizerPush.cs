@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				JobHistoryFields.DestinationWorkspace,
+				DocumentFields.RelativityDestinationCase,
 				IntegrationPointFields.JobHistory
 			};
 
