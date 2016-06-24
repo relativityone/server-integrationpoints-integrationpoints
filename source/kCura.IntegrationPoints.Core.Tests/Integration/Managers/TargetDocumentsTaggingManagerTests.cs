@@ -137,12 +137,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			foreach (ArtifactDTO artifact in documentArtifacts)
 			{
-				if (!artifact.Fields[0].Value.ToString().Contains(expectedSourceJob))
+				if (artifact.Fields[0].Value == null || !artifact.Fields[0].Value.ToString().Contains(expectedSourceJob))
 				{
 					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Job'. Expected value: {expectedSourceJob}. Actual: {artifact.Fields[1].Value}.");
 				}
 
-				if (!artifact.Fields[1].Value.ToString().Contains(expectedSourceCase))
+				if (artifact.Fields[1].Value == null || !artifact.Fields[1].Value.ToString().Contains(expectedSourceCase))
 				{
 					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Case'. Expected value: {expectedSourceCase}. Actual: {artifact.Fields[0].Value}.");
 				}
