@@ -192,9 +192,9 @@ $(function () {
     $field.text('');
     _getSource(settings).then(function (result) {
        
-        IP.utils.createFields($field, result);
-    }, function () {
-        $field.text('There was an error retrieving the source configuration.');
-    });
-
+            IP.utils.createFields($field, result);
+        }, function () {
+            $field.text('There was an error retrieving the source configuration.');
+        });
 });
+
