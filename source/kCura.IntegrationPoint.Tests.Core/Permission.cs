@@ -20,10 +20,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			foreach (var service in toReset)
 			{
-				var directoryEntry = new DirectoryEntry(service);
+				DirectoryEntry directoryEntry = new DirectoryEntry(service);
 				directoryEntry.Invoke("Stop", null);
 				directoryEntry.Invoke("Start", null);
 				directoryEntry.Invoke("Recycle", null);
+				directoryEntry.Close();
 			}
 		}
 
