@@ -35,7 +35,7 @@
 | | [Documentation] | Verify that an imported Custodian who has a manager is linked to the Manager on the Custodian Detail View.
 | | ...				| [id] b8e6c261-b605-11e4-aaf4-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | View Custodian	| ${Custodian1} 
 
 | | Click Section Tab	| Detail
@@ -46,7 +46,7 @@
 | | [Documentation] | Verify that new Managers have their own Custodian record created.
 | | ...				| [id] bb77584f-b605-11e4-8ae0-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | Filter the following Grid on the following Column by the following Value | ${CustodianGrid}  | Email | alphamanager@gameofholds.testing.corp
 
 | | Verify that the following Grid contains the following number of Rows | ${CustodianGrid}  | 1
@@ -56,7 +56,7 @@
 | | [Documentation] | Verify that newly imported Managers have the correct name format on their own Custodian record.
 | | ...				| [id] bf3068b0-b605-11e4-8b69-90b11c6c5ae4
 | | [Tags]			| automated 
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | View Custodian	| ${Manager1} 
 
 | | Click Section Tab	| Detail
@@ -72,7 +72,7 @@
 | | [Documentation] | Verify that a Manager who already existed is linked to their Reports on the Custodian Detail View.
 | | ...				| [id] c28279de-b605-11e4-b74f-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | View Custodian	| ${Custodian2} 
 
 | | Click Section Tab	| Detail
@@ -83,7 +83,7 @@
 | | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians.
 | | ...				| [id] c7a41aee-b605-11e4-91e0-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | View Custodian	| ${Custodian3} 
 
 | | Click Section Tab	| Detail
@@ -94,7 +94,7 @@
 | | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians.
 | | ...				| [id] cab886de-b605-11e4-bdd1-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | View Custodian	| ${Custodian4} 
 
 | | Click Section Tab	| Detail
@@ -105,7 +105,7 @@
 | | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers.
 | | ...				| [id] cf715400-b605-11e4-a0ec-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | View Custodian	| ${Custodian5} 
 
 | | Click Section Tab	| Detail
@@ -116,7 +116,7 @@
 | | [Documentation] | Verify that Existing Custodians can be given new existing Managers.
 | | ...				| [id]  d20656c0-b605-11e4-8c82-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | View Custodian	| ${Custodian6} 
 
 | | Click Section Tab	| Detail
@@ -224,8 +224,6 @@
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
-
-| | Go to the Tab | Custodian
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
@@ -244,8 +242,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/FormKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
-

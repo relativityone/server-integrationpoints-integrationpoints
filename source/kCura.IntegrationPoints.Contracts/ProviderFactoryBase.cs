@@ -5,8 +5,16 @@ using kCura.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Contracts
 {
+	/// <summary>
+	/// The abstract class required to inherit from in order to create a Provider factory.
+	/// </summary>
 	public abstract class ProviderFactoryBase : IProviderFactory
 	{
+		/// <summary>
+		/// Defines how to construct Providers.
+		/// </summary>
+		/// <param name="providerType">The type of the Provider.</param>
+		/// <returns>The concrete class implementing the <see cref="IDataSourceProvider"/> interface.</returns>
 		public abstract IDataSourceProvider CreateInstance(Type providerType);
 
 		/// <summary>
@@ -23,9 +31,9 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <summary>
 		/// Gets the Type of the current instance.
 		/// </summary>
-		/// <param name="identifer"></param>
-		/// <returns></returns>
-		private Type GetType(Guid identifer)
+		/// <param name="identifier">The guid to identify the Provider.</param>
+		/// <returns>The type of the Provider.</returns>
+		private Type GetType(Guid identifier)
 		{
 			List<Type> types = new List<Type>();
 			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -35,14 +43,14 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 
 			var providerTypes = types.Where(x => x.GetCustomAttributes(typeof(DataSourceProviderAttribute), true)
-													.Cast<DataSourceProviderAttribute>().Any(y => y.Identifier.Equals(identifer))).ToList();
+													.Cast<DataSourceProviderAttribute>().Any(y => y.Identifier.Equals(identifier))).ToList();
 			if (providerTypes.Count() > 1)
 			{
-				throw new Exception(string.Format(Properties.Resources.MoreThanOneProviderFound, providerTypes.Count(), identifer));
+				throw new Exception(string.Format(Properties.Resources.MoreThanOneProviderFound, providerTypes.Count(), identifier));
 			}
 			if (!providerTypes.Any())
 			{
-				throw new Exception(string.Format(Properties.Resources.NoProvidersFound, identifer));
+				throw new Exception(string.Format(Properties.Resources.NoProvidersFound, identifier));
 			}
 			return providerTypes.First();
 		}
