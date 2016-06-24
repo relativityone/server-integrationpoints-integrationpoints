@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				JobHistoryFields.DestinationWorkspace,
-				IntegrationPointFields.JobHistory
+				DocumentFields.RelativityDestinationCase,
+				DocumentFields.JobHistory
 			};
 
 			FieldEntry[] fields = base.GetFields(options).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();

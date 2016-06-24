@@ -2,7 +2,7 @@
 <#@ assembly name="System.Core.dll" #>
 <#@ assembly name="System.Xml.dll" #>
 <#@ assembly name="System.Xml.Linq.dll" #>
-<#@ assembly name="C:\SourceCode\LDAPSync\source\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
+<#@ assembly name="C:\SourceCode\IntegrationPoints\source\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Xml" #>
@@ -17,11 +17,8 @@ var objTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 var tabTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 string nameSpaceName = "kCura.IntegrationPoints.Data"; 
 #>
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using kCura.Relativity.Client;
+using Relativity.API;
+
 namespace kCura.IntegrationPoints.Data
 {
 	public partial class RSAPIService : IRSAPIService
@@ -40,13 +37,13 @@ namespace kCura.IntegrationPoints.Data
 
 		public RSAPIService(){}
 
-		public RSAPIService(IRSAPIClient client)
+		public RSAPIService(IHelper helper, int workspaceArtifactId)
 		{
 		<#
 		foreach  (ObjectTypeDTO objType in objTypes)
 		{
 		#>
-	this.<#=objType.Name.ToPascalCase()#>Library = new RsapiClientLibrary<<#=objType.Name.ToPascalCase()#>>(client);
+	this.<#=objType.Name.ToPascalCase()#>Library = new RsapiClientLibrary<<#=objType.Name.ToPascalCase()#>>(helper, workspaceArtifactId);
 		<#
 		}
 		#>

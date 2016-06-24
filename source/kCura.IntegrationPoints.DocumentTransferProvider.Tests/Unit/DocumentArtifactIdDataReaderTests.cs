@@ -18,14 +18,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private ISavedSearchRepository _savedSearchRepository;
 		private IDataReader _instance;
 		private const int SAVED_SEARCH_ID = 123;
-		private Query<Document> _expectedQuery;
+		private Query<kCura.Relativity.Client.DTOs.Document> _expectedQuery;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_savedSearchRepository = NSubstitute.Substitute.For<ISavedSearchRepository>();
 
-			_expectedQuery = new Query<Document>
+			_expectedQuery = new Query<kCura.Relativity.Client.DTOs.Document>
 			{
 				Condition = new SavedSearchCondition(SAVED_SEARCH_ID),
 				Fields = FieldValue.NoFields // we only want the ArtifactId
