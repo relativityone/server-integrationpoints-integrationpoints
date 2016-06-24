@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
@@ -63,8 +64,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				documents.Add(artifactId);
 			}
 
-			ArtifactDTO[] artifacts = _documentRepository.RetrieveDocumentsAsync(documents,
-				new HashSet<int>(new[] { _identifierFieldId })).ConfigureAwait(false).GetAwaiter().GetResult();
+			ArtifactDTO[] artifacts = null;
+			if (documents.Count > 0)
+			{
+				artifacts = _documentRepository.RetrieveDocumentsAsync(documents,
+					new HashSet<int>(new[] {_identifierFieldId})).GetResultsWithoutContextSync();
+			}
+			else
+			{
+				artifacts = new ArtifactDTO[0];
+			}
 			return artifacts;
 		}
 

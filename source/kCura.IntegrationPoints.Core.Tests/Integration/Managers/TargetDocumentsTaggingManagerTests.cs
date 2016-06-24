@@ -50,9 +50,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-		[TestCase(999, "UnderBatch")]
-		[TestCase(1000, "EqualBatch")]
-		[TestCase(1001, "OverBatch")]
+		[TestCase(499, "UnderBatch")]
+		[TestCase(500, "EqualBatch")]
+		[TestCase(502, "OverBatch")]
 		public void test(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
@@ -137,12 +137,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			foreach (ArtifactDTO artifact in documentArtifacts)
 			{
-				if (!artifact.Fields[0].Value.ToString().Contains(expectedSourceJob))
+				if (artifact.Fields[0].Value == null || !artifact.Fields[0].Value.ToString().Contains(expectedSourceJob))
 				{
 					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Job'. Expected value: {expectedSourceJob}. Actual: {artifact.Fields[1].Value}.");
 				}
 
-				if (!artifact.Fields[1].Value.ToString().Contains(expectedSourceCase))
+				if (artifact.Fields[1].Value == null || !artifact.Fields[1].Value.ToString().Contains(expectedSourceCase))
 				{
 					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Case'. Expected value: {expectedSourceCase}. Actual: {artifact.Fields[0].Value}.");
 				}

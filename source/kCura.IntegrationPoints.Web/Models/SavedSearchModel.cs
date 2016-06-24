@@ -39,27 +39,11 @@ namespace kCura.IntegrationPoints.Web.Models
                 if (textIdentifierField != null && textIdentifierField.Value != null)
                 {
                     String searchName = Encoding.Unicode.GetString((byte[])artifact.getFieldByName(identifier).Value);
-                    searchName = SanitizeSearchName(searchName, htmlSanitizerManager);
-                    if (!string.IsNullOrWhiteSpace(searchName))
-                    {
-                        result.Add(new SavedSearchModel() { DisplayName = searchName, Value = artifact.ArtifactID });
-                    }
+                    searchName = htmlSanitizerManager.Sanitize(searchName).CleanHTML;
+                    result.Add(new SavedSearchModel() { DisplayName = searchName, Value = artifact.ArtifactID });
                 }
             }
             return result;
-        }
-
-        private static string SanitizeSearchName(string searchName, IHtmlSanitizerManager htmlSanitizerManage)
-        {
-            SanitizeResult result = htmlSanitizerManage.Sanitize(searchName);
-            if (result.HasErrors)
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return result.CleanHTML;
-            }
         }
     }
 }
