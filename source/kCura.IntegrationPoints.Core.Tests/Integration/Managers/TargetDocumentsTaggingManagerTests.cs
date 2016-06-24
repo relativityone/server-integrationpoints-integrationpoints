@@ -18,7 +18,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
-	[Explicit]
+	[TestFixture]
+	[Category("Integration Tests")]
 	public class TargetDocumentsTaggingManagerTests : WorkspaceDependentTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
