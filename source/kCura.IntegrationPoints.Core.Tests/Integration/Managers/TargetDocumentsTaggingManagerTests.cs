@@ -18,7 +18,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
-	[Explicit]
+	[TestFixture]
+	[Category("Integration Tests")]
 	public class TargetDocumentsTaggingManagerTests : WorkspaceDependentTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
@@ -37,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[TestFixtureSetUp]
-		[Explicit]
 		public override void SetUp()
 		{
 			base.SetUp();
@@ -50,10 +50,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-		[TestCase(999, "UnderBatch")]
-		[TestCase(1000, "EqualBatch")]
-		[TestCase(1001, "OverBatch")]
-		public void test(int numberOfDocuments, string documentIdentifier)
+		[Test]
+		[TestCase(499, "UnderBatch")]
+		[TestCase(500, "EqualBatch")]
+		[TestCase(502, "OverBatch")]
+		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
 			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
@@ -137,12 +138,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			foreach (ArtifactDTO artifact in documentArtifacts)
 			{
-				if (!artifact.Fields[0].Value.ToString().Contains(expectedSourceJob))
+				if (artifact.Fields[0].Value == null || !artifact.Fields[0].Value.ToString().Contains(expectedSourceJob))
 				{
 					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Job'. Expected value: {expectedSourceJob}. Actual: {artifact.Fields[1].Value}.");
 				}
 
-				if (!artifact.Fields[1].Value.ToString().Contains(expectedSourceCase))
+				if (artifact.Fields[1].Value == null || !artifact.Fields[1].Value.ToString().Contains(expectedSourceCase))
 				{
 					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Case'. Expected value: {expectedSourceCase}. Actual: {artifact.Fields[0].Value}.");
 				}
