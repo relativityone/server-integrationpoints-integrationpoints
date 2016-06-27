@@ -342,6 +342,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Last Runtime (UTC)" });
 		}
 
+		[Test]
 		[TestCase("")]
 		[TestCase(null)]
 		[TestCase("02/31/3000")]
@@ -378,6 +379,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(integrationModel), "Unable to save Integration Point.");
 		}
 
+		[Test]
 		[TestCase("")]
 		[TestCase(null)]
 		[TestCase("02/31/3000")]
