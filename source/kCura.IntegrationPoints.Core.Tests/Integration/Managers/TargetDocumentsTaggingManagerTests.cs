@@ -50,10 +50,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
+		[Test]
 		[TestCase(499, "UnderBatch")]
 		[TestCase(500, "EqualBatch")]
 		[TestCase(502, "OverBatch")]
-		public void test(int numberOfDocuments, string documentIdentifier)
+		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
 			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
