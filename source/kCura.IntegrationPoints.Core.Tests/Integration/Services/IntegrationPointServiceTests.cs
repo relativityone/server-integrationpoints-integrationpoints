@@ -412,16 +412,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Map = CreateDefaultFieldMap()
 			};
 
-			//Act
-			try
-			{
-				CreateOrUpdateIntegrationPoint(integrationModel);
-			}
-			//Assert
-			catch (Exception ex)
-			{
-				Assert.IsTrue(ex.Message == "Unable to save Integration Point.");
-			}
+			//Act & Assert
+			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(integrationModel), "Unable to save Integration Point.");
 		}
 
 		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
