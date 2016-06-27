@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
 				keywordSearch.SearchCriteria = searchCriteria;
-				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).Wait(TimeSpan.FromSeconds(5));
+				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).GetAwaiter().GetResult();
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			if(savedSearchArtifactId == 0) {  return; }
 			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				proxy.DeleteSingleAsync(workspaceArtifactId, savedSearchArtifactId).Wait(TimeSpan.FromSeconds(5));
+				proxy.DeleteSingleAsync(workspaceArtifactId, savedSearchArtifactId).GetAwaiter().GetResult();
 			}
 		}
 
