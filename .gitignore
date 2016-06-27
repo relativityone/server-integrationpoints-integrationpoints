@@ -112,6 +112,7 @@ source/DevelopmentScripts/kCura.RAPBuilder.exe
 source/publish/*
 *.pubxml.user
 *.rap
+source/UpgradeLog.htm
 
 source/packages/*
 source/TestLogs/output64.xml
