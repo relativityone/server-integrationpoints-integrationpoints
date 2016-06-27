@@ -1,10 +1,135 @@
 ﻿using System;
+using System.Collections.Generic;  
+using System.Text;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Data.Attributes;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Data
 {
+ 
+	[DynamicObject(ObjectTypes.Document, ObjectTypes.Folder, "", ObjectTypeGuids.Document)]
+	public partial class Document : BaseRdo
+	{
+		[DynamicField(DocumentFields.RelativityDestinationCase, DocumentFieldGuids.RelativityDestinationCase, FieldTypes.MultipleObject)]
+		public int[] RelativityDestinationCase
+		{
+			get
+			{
+				return GetField<int[]>(new System.Guid(DocumentFieldGuids.RelativityDestinationCase));
+			}
+			set
+			{
+				SetField<int[]>(new System.Guid(DocumentFieldGuids.RelativityDestinationCase), value);
+			}
+		}
+		[DynamicField(DocumentFields.JobHistory, DocumentFieldGuids.JobHistory, FieldTypes.MultipleObject)]
+		public int[] JobHistory
+		{
+			get
+			{
+				return GetField<int[]>(new System.Guid(DocumentFieldGuids.JobHistory));
+			}
+			set
+			{
+				SetField<int[]>(new System.Guid(DocumentFieldGuids.JobHistory), value);
+			}
+		}
+		public const int ControlNumberFieldLength = 255;
+		[DynamicField(DocumentFields.ControlNumber, DocumentFieldGuids.ControlNumber, FieldTypes.FixedLengthText, 255)]
+		public string ControlNumber
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(DocumentFieldGuids.ControlNumber));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(DocumentFieldGuids.ControlNumber), value);
+			}
+		}
+		[DynamicField(DocumentFields.MarkupSetPrimary, DocumentFieldGuids.MarkupSetPrimary, FieldTypes.MultipleChoice)]
+		public Choice[] MarkupSetPrimary
+		{
+			get
+			{
+				return GetField<Choice[]>(new System.Guid(DocumentFieldGuids.MarkupSetPrimary));
+			}
+			set
+			{
+				SetField<Choice[]>(new System.Guid(DocumentFieldGuids.MarkupSetPrimary), value);
+			}
+		}
+		[DynamicField(DocumentFields.Batch, DocumentFieldGuids.Batch, FieldTypes.MultipleObject)]
+		public int[] Batch
+		{
+			get
+			{
+				return GetField<int[]>(new System.Guid(DocumentFieldGuids.Batch));
+			}
+			set
+			{
+				SetField<int[]>(new System.Guid(DocumentFieldGuids.Batch), value);
+			}
+		}
+		[DynamicField(DocumentFields.BatchBatchSet, DocumentFieldGuids.BatchBatchSet, FieldTypes.SingleObject)]
+		public int? BatchBatchSet
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(DocumentFieldGuids.BatchBatchSet));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(DocumentFieldGuids.BatchBatchSet), value);
+			}
+		}
+		[DynamicField(DocumentFields.BatchAssignedTo, DocumentFieldGuids.BatchAssignedTo, FieldTypes.User)]
+		public User BatchAssignedTo
+		{
+			get
+			{
+				return GetField<User>(new System.Guid(DocumentFieldGuids.BatchAssignedTo));
+			}
+			set
+			{
+				SetField<User>(new System.Guid(DocumentFieldGuids.BatchAssignedTo), value);
+			}
+		}
+		[DynamicField(DocumentFields.BatchStatus, DocumentFieldGuids.BatchStatus, FieldTypes.SingleChoice)]
+		public Choice BatchStatus
+		{
+			get
+			{
+				return GetField<Choice>(new System.Guid(DocumentFieldGuids.BatchStatus));
+			}
+			set
+			{
+				SetField<Choice>(new System.Guid(DocumentFieldGuids.BatchStatus), value);
+			}
+		}
+		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
+		{
+			get
+			{
+				if (!(_fieldMetadata == null))
+					return _fieldMetadata;
+				_fieldMetadata = GetFieldMetadata(typeof(Document));
+				return _fieldMetadata;
+			}
+		}
+		private static DynamicObjectAttribute _objectMetadata;
+		public override DynamicObjectAttribute ObjectMetadata
+		{
+			get
+			{
+				if (!(_objectMetadata == null))
+					return _objectMetadata;
+				_objectMetadata = GetObjectMetadata(typeof(Document));
+				return _objectMetadata;
+			}
+		}
+	}
  
 	[DynamicObject(ObjectTypes.IntegrationPoint, ObjectTypes.Workspace, "", ObjectTypeGuids.IntegrationPoint)]
 	public partial class IntegrationPoint : BaseRdo
@@ -153,18 +278,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.LogErrors), value);
 			}
 		}
-		[DynamicField(IntegrationPointFields.HasErrors, IntegrationPointFieldGuids.HasErrors, FieldTypes.YesNo)]
-		public bool? HasErrors
-		{
-			get
-			{
-				return GetField<bool?>(new System.Guid(IntegrationPointFieldGuids.HasErrors));
-			}
-			set
-			{
-				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.HasErrors), value);
-			}
-		}
 		[DynamicField(IntegrationPointFields.EmailNotificationRecipients, IntegrationPointFieldGuids.EmailNotificationRecipients, FieldTypes.LongText)]
 		public string EmailNotificationRecipients
 		{
@@ -175,6 +288,18 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<string>(new System.Guid(IntegrationPointFieldGuids.EmailNotificationRecipients), value);
+			}
+		}
+		[DynamicField(IntegrationPointFields.HasErrors, IntegrationPointFieldGuids.HasErrors, FieldTypes.YesNo)]
+		public bool? HasErrors
+		{
+			get
+			{
+				return GetField<bool?>(new System.Guid(IntegrationPointFieldGuids.HasErrors));
+			}
+			set
+			{
+				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.HasErrors), value);
 			}
 		}
 		public const int NameFieldLength = 255;
@@ -267,6 +392,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(SourceProviderFieldGuids.ViewConfigurationUrl), value);
 			}
 		}
+		[DynamicField(SourceProviderFields.Configuration, SourceProviderFieldGuids.Configuration, FieldTypes.LongText)]
+		public string Configuration
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(SourceProviderFieldGuids.Configuration));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(SourceProviderFieldGuids.Configuration), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(SourceProviderFields.Name, SourceProviderFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
@@ -280,34 +417,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(SourceProviderFieldGuids.Name), value);
 			}
 		}
-
-		public SourceProviderConfiguration Config
-		{
-			get
-			{
-				string config = Configuration;
-				return config == null ? new SourceProviderConfiguration() : JsonConvert.DeserializeObject<SourceProviderConfiguration>(config);
-			}
-			set
-			{
-				string val = value == null ? JsonConvert.SerializeObject(new SourceProviderConfiguration()) : JsonConvert.SerializeObject(value); 
-				Configuration = val;
-			}
-		}
-
-		[DynamicField(SourceProviderFields.Configuration, SourceProviderFieldGuids.Configuration, FieldTypes.LongText)]
-		public string Configuration 
-		{
-			get
-			{
-				return GetField<string>(new System.Guid(SourceProviderFieldGuids.Configuration));
-			}
-			private set
-			{
-				SetField<string>(new System.Guid(SourceProviderFieldGuids.Configuration), value);
-			}
-		}
-
 		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
 		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
 		{
@@ -401,19 +510,30 @@ namespace kCura.IntegrationPoints.Data
 	[DynamicObject(ObjectTypes.JobHistory, ObjectTypes.Workspace, "", ObjectTypeGuids.JobHistory)]
 	public partial class JobHistory : BaseRdo
 	{
-		[DynamicField(JobHistoryFields.JobType, JobHistoryFieldGuids.JobType, FieldTypes.SingleChoice)]
-		public Choice JobType
+		[DynamicField(JobHistoryFields.Documents, JobHistoryFieldGuids.Documents, FieldTypes.MultipleObject)]
+		public int[] Documents
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType));
+				return GetField<int[]>(new System.Guid(JobHistoryFieldGuids.Documents));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType), value);
+				SetField<int[]>(new System.Guid(JobHistoryFieldGuids.Documents), value);
 			}
 		}
-
+		[DynamicField(JobHistoryFields.IntegrationPoint, JobHistoryFieldGuids.IntegrationPoint, FieldTypes.MultipleObject)]
+		public int[] IntegrationPoint
+		{
+			get
+			{
+				return GetField<int[]>(new System.Guid(JobHistoryFieldGuids.IntegrationPoint));
+			}
+			set
+			{
+				SetField<int[]>(new System.Guid(JobHistoryFieldGuids.IntegrationPoint), value);
+			}
+		}
 		[DynamicField(JobHistoryFields.JobStatus, JobHistoryFieldGuids.JobStatus, FieldTypes.SingleChoice)]
 		public Choice JobStatus
 		{
@@ -426,21 +546,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
 			}
 		}
-
-		[DynamicField(JobHistoryFields.DestinationWorkspace, JobHistoryFieldGuids.DestinationWorkspace, FieldTypes.FixedLengthText, 400)]
-		public string DestinationWorkspace
-		{
-			get
-			{
-				return GetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace));
-			}
-			set
-			{
-				SetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace), value);
-			}
-		}
-
-
 		[DynamicField(JobHistoryFields.ItemsImported, JobHistoryFieldGuids.ItemsImported, FieldTypes.WholeNumber)]
 		public int? ItemsImported
 		{
@@ -453,20 +558,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsImported), value);
 			}
 		}
-
-		[DynamicField(JobHistoryFields.TotalItems, JobHistoryFieldGuids.TotalItems, FieldTypes.WholeNumber)]
-		public int? TotalItems
-		{
-			get
-			{
-				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems));
-			}
-			set
-			{
-				SetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems), value);
-			}
-		}
-
 		[DynamicField(JobHistoryFields.ItemsWithErrors, JobHistoryFieldGuids.ItemsWithErrors, FieldTypes.WholeNumber)]
 		public int? ItemsWithErrors
 		{
@@ -479,7 +570,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsWithErrors), value);
 			}
 		}
-
 		[DynamicField(JobHistoryFields.StartTimeUTC, JobHistoryFieldGuids.StartTimeUTC, FieldTypes.Date)]
 		public DateTime? StartTimeUTC
 		{
@@ -504,18 +594,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<DateTime?>(new System.Guid(JobHistoryFieldGuids.EndTimeUTC), value);
 			}
 		}
-		[DynamicField(JobHistoryFields.IntegrationPoint, JobHistoryFieldGuids.IntegrationPoint, FieldTypes.MultipleObject)]
-		public int[] IntegrationPoint
-		{
-			get
-			{
-				return GetField<int[]>(new System.Guid(JobHistoryFieldGuids.IntegrationPoint));
-			}
-			set
-			{
-				SetField<int[]>(new System.Guid(JobHistoryFieldGuids.IntegrationPoint), value);
-			}
-		}
 		public const int BatchInstanceFieldLength = 50;
 		[DynamicField(JobHistoryFields.BatchInstance, JobHistoryFieldGuids.BatchInstance, FieldTypes.FixedLengthText, 50)]
 		public string BatchInstance
@@ -527,6 +605,55 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<string>(new System.Guid(JobHistoryFieldGuids.BatchInstance), value);
+			}
+		}
+		public const int DestinationWorkspaceFieldLength = 400;
+		[DynamicField(JobHistoryFields.DestinationWorkspace, JobHistoryFieldGuids.DestinationWorkspace, FieldTypes.FixedLengthText, 400)]
+		public string DestinationWorkspace
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace), value);
+			}
+		}
+		[DynamicField(JobHistoryFields.TotalItems, JobHistoryFieldGuids.TotalItems, FieldTypes.WholeNumber)]
+		public int? TotalItems
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems), value);
+			}
+		}
+		[DynamicField(JobHistoryFields.DestinationWorkspaceInformation, JobHistoryFieldGuids.DestinationWorkspaceInformation, FieldTypes.MultipleObject)]
+		public int[] DestinationWorkspaceInformation
+		{
+			get
+			{
+				return GetField<int[]>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspaceInformation));
+			}
+			set
+			{
+				SetField<int[]>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspaceInformation), value);
+			}
+		}
+		[DynamicField(JobHistoryFields.JobType, JobHistoryFieldGuids.JobType, FieldTypes.SingleChoice)]
+		public Choice JobType
+		{
+			get
+			{
+				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType));
+			}
+			set
+			{
+				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType), value);
 			}
 		}
 		public const int NameFieldLength = 255;
@@ -594,19 +721,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(JobHistoryErrorFieldGuids.Error), value);
 			}
 		}
-
-		[DynamicField(JobHistoryErrorFields.StackTrace, JobHistoryErrorFieldGuids.StackTrace, FieldTypes.LongText)]
-		public string StackTrace
-		{
-			get
-			{
-				return GetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace));
-			}
-			set
-			{
-				SetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace), value);
-			}
-		}
 		[DynamicField(JobHistoryErrorFields.TimestampUTC, JobHistoryErrorFieldGuids.TimestampUTC, FieldTypes.Date)]
 		public DateTime? TimestampUTC
 		{
@@ -629,6 +743,18 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorType), value);
+			}
+		}
+		[DynamicField(JobHistoryErrorFields.StackTrace, JobHistoryErrorFieldGuids.StackTrace, FieldTypes.LongText)]
+		public string StackTrace
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace), value);
 			}
 		}
 		[DynamicField(JobHistoryErrorFields.ErrorStatus, JobHistoryErrorFieldGuids.ErrorStatus, FieldTypes.SingleChoice)]
@@ -687,6 +813,95 @@ namespace kCura.IntegrationPoints.Data
 				if (!(_objectMetadata == null))
 					return _objectMetadata;
 				_objectMetadata = GetObjectMetadata(typeof(JobHistoryError));
+				return _objectMetadata;
+			}
+		}
+	}
+ 
+	[DynamicObject(ObjectTypes.DestinationWorkspace, ObjectTypes.Workspace, "", ObjectTypeGuids.DestinationWorkspace)]
+	public partial class DestinationWorkspace : BaseRdo
+	{
+		[DynamicField(DestinationWorkspaceFields.Documents, DestinationWorkspaceFieldGuids.Documents, FieldTypes.MultipleObject)]
+		public int[] Documents
+		{
+			get
+			{
+				return GetField<int[]>(new System.Guid(DestinationWorkspaceFieldGuids.Documents));
+			}
+			set
+			{
+				SetField<int[]>(new System.Guid(DestinationWorkspaceFieldGuids.Documents), value);
+			}
+		}
+		[DynamicField(DestinationWorkspaceFields.JobHistory, DestinationWorkspaceFieldGuids.JobHistory, FieldTypes.MultipleObject)]
+		public int[] JobHistory
+		{
+			get
+			{
+				return GetField<int[]>(new System.Guid(DestinationWorkspaceFieldGuids.JobHistory));
+			}
+			set
+			{
+				SetField<int[]>(new System.Guid(DestinationWorkspaceFieldGuids.JobHistory), value);
+			}
+		}
+		[DynamicField(DestinationWorkspaceFields.DestinationWorkspaceArtifactID, DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID, FieldTypes.WholeNumber)]
+		public int? DestinationWorkspaceArtifactID
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID), value);
+			}
+		}
+		public const int DestinationWorkspaceNameFieldLength = 400;
+		[DynamicField(DestinationWorkspaceFields.DestinationWorkspaceName, DestinationWorkspaceFieldGuids.DestinationWorkspaceName, FieldTypes.FixedLengthText, 400)]
+		public string DestinationWorkspaceName
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName), value);
+			}
+		}
+		public const int NameFieldLength = 255;
+		[DynamicField(DestinationWorkspaceFields.Name, DestinationWorkspaceFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
+		public string Name
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(DestinationWorkspaceFieldGuids.Name));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(DestinationWorkspaceFieldGuids.Name), value);
+			}
+		}
+		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
+		{
+			get
+			{
+				if (!(_fieldMetadata == null))
+					return _fieldMetadata;
+				_fieldMetadata = GetFieldMetadata(typeof(DestinationWorkspace));
+				return _fieldMetadata;
+			}
+		}
+		private static DynamicObjectAttribute _objectMetadata;
+		public override DynamicObjectAttribute ObjectMetadata
+		{
+			get
+			{
+				if (!(_objectMetadata == null))
+					return _objectMetadata;
+				_objectMetadata = GetObjectMetadata(typeof(DestinationWorkspace));
 				return _objectMetadata;
 			}
 		}

@@ -21,7 +21,7 @@
 | ${APPLICATION_NAME}	| Integration Points
 
 *** Test Cases ***
-| The RIP configuration value uses the DBMT WebAPIPath when RIP is installed on an environment without Processing
+| The RIP configuration value uses the DBMT WebAPIPath when RIP is installed
 | | [Documentation] | Verify that the RIP configuration value is the same as the kCura.EDDS.DBMT>WebAPIPath value
 | | ...				| [id] e6eaf60f-b7b1-11e4-9fe6-90b11c6c5ae4
 | | [Tags] | automation
@@ -32,23 +32,13 @@
 | | ${rip_value} | Get Configuration Value by section and name	| ${RIP_SECTION} | ${RIP_NAME}
 | | Should Be Equal As Strings | ${rip_value} | ${dbmt_value}
 
-| The RIP configuration value uses the ProcessingWebAPIPath when RIP is installed on an environment with Processing
-| | [Documentation] | Verify that the RIP configuration value is the same as the Relativity.Core>ProcessingWebAPIPath value
-| | ...				| [id] 809d02c0-b7b3-11e4-b2be-90b11c6c5ae4
-| | [Tags] | automation
-| | Delete Configuration value | ${RIP_SECTION} | ${RIP_NAME}
-| | Set Configuration value | ${PROCESSING_SECTION} | ${PROCESSING_NAME} | ${Processing_value}
-| | Install Integration Points application
-| | ${rip_value} | Get Configuration Value by section and name	| ${RIP_SECTION} | ${RIP_NAME}
-| | Should Be Equal As Strings | ${rip_value} | ${Processing_value}
-
 | Check that the IntegrationPointsWebAPIPath description is correct
 | | [Documentation] | Verify that the Description is correct for the IntegrationPointsWebAPIPath
 | | ...				| [id] e6eaf60f-b7b1-11e4-9fe6-90b11c6c5ae48313cf21-b7b3-11e4-8964-90b11c6c5ae4
 | | [Tags] | automation
 | | Install Integration Points application
 | | ${description} | Get Configuration Description by section and name	| ${RIP_SECTION} | ${RIP_NAME}
-| | Should Be Equal As Strings | ${description} | The URL for the Windows Authenticated Relativity Web API endpoint used by integration points.
+| | Should Be Equal As Strings | ${description} | Relativity WebAPI URL for Relativity Integration Points
 
 *** Keywords ***
 | Setup environment

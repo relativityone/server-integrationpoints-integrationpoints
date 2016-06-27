@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -311,6 +311,9 @@
       <DependentUpon>RSAPIService.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+	<Compile Include="GeneratedDTOs.Extended.cs">
+      <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
     <Compile Include="GeneratedDTOs.cs">
       <AutoGen>True</AutoGen>

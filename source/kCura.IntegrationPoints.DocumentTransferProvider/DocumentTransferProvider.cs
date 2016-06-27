@@ -78,8 +78,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			{
 				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				JobHistoryFields.DestinationWorkspace,
-				IntegrationPointFields.JobHistory
+				DocumentFields.RelativityDestinationCase,
+				DocumentFields.JobHistory
 			};
 
 			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
