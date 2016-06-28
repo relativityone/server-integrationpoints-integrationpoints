@@ -1,0 +1,57 @@
+﻿@model kCura.IntegrationPoints.Contracts.Models.ExportUsingSavedSearchSettings
+
+
+@{
+    ViewBag.Title = "Settings";
+}
+
+<tr>
+    <td class="editTableColumn">
+        <table>
+            <tr>
+                <td class="dynamicViewFieldName">Saved Search:</td>
+                <td class="dynamicViewFieldValue">@Model.SavedSearch</td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="editTableColumn">
+        <table>
+            <tr>
+                <td class="dynamicViewFieldName">Fileshare:</td>
+                <td class="dynamicViewFieldValue">@Model.Fileshare</td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="editTableColumn">
+        <table>
+            <tr>
+                <td class="dynamicViewFieldName">Copy Files From Repository:</td>
+                <td class="dynamicViewFieldValue">@(Model.CopyFileFromRepository ? "YES" : "NO")</td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="editTableColumn">
+        <table>
+            <tr>
+                <td class="dynamicViewFieldName">Overwrite Files:</td>
+                <td class="dynamicViewFieldValue">@(Model.OverwriteFiles ? "YES" : "NO")</td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td class="editTableColumn">
+        <table>
+            <tr>
+                <td class="dynamicViewFieldName">Export Images:</td>
+                <td class="dynamicViewFieldValue">@(Model.ExportImagesChecked ? "YES" : "NO")</td>
+            </tr>
+        </table>
+    </td>
+</tr>

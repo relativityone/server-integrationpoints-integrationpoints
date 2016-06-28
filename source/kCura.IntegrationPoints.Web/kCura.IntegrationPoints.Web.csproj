@@ -473,6 +473,7 @@
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
+    <Content Include="Scripts\Export\export-details-helper.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
     <Content Include="Scripts\Export\export-provider.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
@@ -681,10 +682,10 @@
     <Content Include="Views\IntegrationPoints\ExportProviderConfiguration.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderFields.cshtml" />
     <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
+    <Content Include="Views\IntegrationPoints\ExportDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Toggles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
