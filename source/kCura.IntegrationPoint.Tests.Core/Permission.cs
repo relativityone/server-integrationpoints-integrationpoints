@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
@@ -10,23 +11,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Permission
 	{
-		private static void ResetRelativityServices()
-		{
-			string[] toReset = new string[]
-			{
-				$"IIS://{SharedVariables.TargetHost}/W3SVC/APPPOOLS/Relativity.Services",
-				$"IIS://{SharedVariables.TargetHost}/W3SVC/APPPOOLS/Relativity.REST"
-			};
-
-			foreach (var service in toReset)
-			{
-				DirectoryEntry directoryEntry = new DirectoryEntry(service);
-				directoryEntry.Invoke("Stop", null);
-				directoryEntry.Invoke("Start", null);
-				directoryEntry.Invoke("Recycle", null);
-				directoryEntry.Close();
-			}
-		}
 
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
@@ -41,18 +25,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).Wait(TimeSpan.FromSeconds(2));
+				Task.Run(async () => await proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions)).Wait();
 			}
-			ResetRelativityServices();
 		}
 
 		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
 		{
+			GroupSelector originalGroupSelector = null;
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(2));
+				originalGroupSelector = proxy.GetAdminGroupSelectorAsync().GetResultsWithoutContextSync();
+				originalGroupSelector.DisabledGroups = groupSelector.DisabledGroups;
+				originalGroupSelector.EnabledGroups = groupSelector.EnabledGroups;
 			}
-			ResetRelativityServices();
+
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, originalGroupSelector).GetAwaiter().GetResult();
+			}
 		}
 
 		public static void AddRemoveItemGroups(int workspaceId, int itemArtifactId, GroupSelector groupSelector)
@@ -61,7 +51,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				ItemLevelSecurity itemLevel = proxy.GetItemLevelSecurityAsync(workspaceId, itemArtifactId).Result;
 				itemLevel.Enabled = true;
-				proxy.SetItemLevelSecurityAsync(workspaceId, itemLevel).Wait(TimeSpan.FromSeconds(10));
+				proxy.SetItemLevelSecurityAsync(workspaceId, itemLevel).GetAwaiter().GetResult();
 			}
 
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
@@ -69,7 +59,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				GroupSelector originalSelector = proxy.GetItemGroupSelectorAsync(workspaceId, itemArtifactId).Result;
 				originalSelector.DisabledGroups = groupSelector.DisabledGroups;
 				originalSelector.EnabledGroups = groupSelector.EnabledGroups;
-				proxy.AddRemoveItemGroupsAsync(workspaceId, itemArtifactId, originalSelector).Wait(TimeSpan.FromSeconds(10));
+				proxy.AddRemoveItemGroupsAsync(workspaceId, itemArtifactId, originalSelector).GetAwaiter().GetResult();
 			}
 		}
 
@@ -89,7 +79,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
 			}
-			ResetRelativityServices();
 		}
 
 		public static void SetGroupPermissions(int workspaceId, GroupPermissions groupPermissions)
@@ -102,7 +91,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					true))
 
 			{
-				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).GetAwaiter().GetResult();
 			}
 		}
 
@@ -124,7 +113,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				SetTabVisibility(groupPermissions, permissionProperty.Tab);
 				SetBrowserPermissions(groupPermissions, permissionProperty.Browser);
 
-				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).GetAwaiter().GetResult();
 			}
 		}
 
