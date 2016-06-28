@@ -1,9 +1,7 @@
 ﻿using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using NUnit.Framework;
 

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	public class ItShouldExportImageDataFileAsOpticon : MetadataExportTestCaseBase
+	internal class ItShouldExportImageDataFileAsOpticon : MetadataExportTestCaseBase
     {
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
