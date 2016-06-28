@@ -5,6 +5,8 @@ task default -depends getversion
 
 
 task getversion {
+   if ($psake.build_success -eq $false) { exit 1 }
+   
    $Conn = New-Object System.Data.SqlClient.SqlConnection
    $Conn.ConnectionString = "server='$server';Database='$database';user=StoryboardUser;password=Test1234!;"
 
