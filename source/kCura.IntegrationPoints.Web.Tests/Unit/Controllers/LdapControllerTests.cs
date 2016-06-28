@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.Results;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.LDAPProvider;
+﻿using System.Web.Http.Results;
+using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;

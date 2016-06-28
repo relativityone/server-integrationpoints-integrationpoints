@@ -251,6 +251,11 @@ $(function () {
 	var $field = IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue');
 	var settings = $field.text();
 	$field.text('');
+
+	if (settings.indexOf('Fileshare') > 0 && IP.params['sourceUrl'].indexOf('/api/relativity/view') > 0) {
+        return ExportDetailsHelper.modifySummaryPage(settings, $field);
+	}
+
 	_getSource(settings).then(function (result) {
 		result = result.filter(function (setting) {
 			if (setting.value !== -1 && setting.value !== 0 && setting.key.indexOf("Id") === -1 && setting.value != null) {

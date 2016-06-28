@@ -55,7 +55,7 @@ ko.bindingHandlers.select2searchable = {
 			$(el).select2('destroy');
 		});
 		var allBindings = allBindingsAccessor(),
-			select2 = ko.utils.unwrapObservable(allBindings.select2),
+			select2 = ko.utils.unwrapObservable(allBindings.select2searchable),
 			$element = $(el);
 		$element.select2({
 			dropdownAutoWidth: false,

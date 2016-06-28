@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Newtonsoft.Json;
@@ -63,14 +64,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (_ignoredList == null)
 				{
 					_ignoredList = new HashSet<string>
-		  {
-			"Is System Artifact",
-			"System Created By",
-			"System Created On",
-			"System Last Modified By",
-			"System Last Modified On",
-			"Artifact ID"
-		  };
+					{
+					"Is System Artifact",
+					"System Created By",
+					"System Created On",
+					"System Last Modified By",
+					"System Last Modified On",
+					"Artifact ID"
+					};
 				}
 				return _ignoredList;
 			}
@@ -85,8 +86,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
+			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+			{
+				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				DocumentFields.RelativityDestinationCase,
+				DocumentFields.JobHistory
+			};
+
+			FieldEntry[] fields = GetFieldsInternal(options).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
+
+			foreach (var field in fields.Where(field => field.IsIdentifier))
+			{
+				field.IsRequired = true;
+			}
+			return fields;
+		}
+
+		private IEnumerable<FieldEntry> GetFieldsInternal(string options)
+		{
 			ImportSettings settings = GetSettings(options);
-			var fields = GetRelativityFields(settings);
+			List<Relativity.Client.Artifact> fields = GetRelativityFields(settings);
 			return ParseFields(fields);
 		}
 
@@ -273,12 +293,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
 			{
 				settings.ParentObjectIdSourceFieldName =
-				  fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
 			}
 			if (settings.IdentityFieldId < 1 && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
 			{
 				settings.IdentityFieldId =
-				  fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
 					.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
 					.First();
 			}
@@ -370,7 +390,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected bool IncludeFieldInImport(FieldMap fieldMap)
 		{
 			bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
-							 fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
+								fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
 			if (toInclude && fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 			{
 				toInclude = fieldMap.DestinationField != null && fieldMap.DestinationField.FieldIdentifier != null;

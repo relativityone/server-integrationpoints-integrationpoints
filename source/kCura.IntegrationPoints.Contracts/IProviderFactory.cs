@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Contracts
 	/// <summary>
     /// Provides a method for creating a data source provider in an external application domain.
 	/// </summary>
-	public interface IProviderFactory
+	internal interface IProviderFactory
 	{
 		/// <summary>
 		/// Creates a provider using the GUID specified as an identifier.

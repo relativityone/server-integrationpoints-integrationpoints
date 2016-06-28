@@ -67,6 +67,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				int sourceProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceProvider));
 				int lastRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.LastRuntimeUTC));
 				int sourceConfigurationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceConfiguration));
+				int overwriteFieldsId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.OverwriteFields));
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL2343243453", Script = "<script>var IP = IP ||{};IP.nextTimeid= ['" + nextScheduledRuntimeFieldId + "', '" + lastRuntimeFieldId + "'] ;</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.destinationid= '" + destinationFieldId + "';</script>" });
@@ -75,6 +76,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.artifactid= '" + base.ActiveArtifact.ArtifactID + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.appid= '" + base.Application.ArtifactID + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.sourceConfiguration= '" + sourceConfigurationFieldId + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.overwriteFields= '" + overwriteFieldsId + "';</script>" });
 				this.RegisterClientScriptBlock(new kCura.EventHandler.ScriptBlock() { Key = "refreshFunc", Script = "<script type=\"text/javascript\"> function refreshList(){ $('.associative-list').load(document.URL +  ' .associative-list'); setTimeout(refreshList, 5000);};</script>" });
 
 				StringBuilder script = new StringBuilder();
@@ -90,16 +92,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = script.ToString() });
 				
 				int sourceProvider = (int)this.ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view-destination.js");
+
 				if (ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME) 
 				{
 					this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/relativity-provider-view.js");
+					this.RegisterLinkedClientScript(applicationPath + "/Scripts/Export/export-details-helper.js");
 				}
 				else
 				{
 					this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
 				}
 				
-				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view-destination.js");
+				
 
 				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
 				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/i18n/grid.locale-en.js");

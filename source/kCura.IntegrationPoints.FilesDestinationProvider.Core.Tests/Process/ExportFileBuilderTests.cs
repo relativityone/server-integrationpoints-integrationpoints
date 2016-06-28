@@ -182,6 +182,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(subdirectoryDigitPadding, exportFile.SubdirectoryDigitPadding);
 		}
 
+		[Test]
+		public void ItShouldThrowExceptionForNegativeVolumeDigitPadding()
+		{
+			_exportSettings.VolumeDigitPadding = -1;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Volume Digit Padding must be non-negative number"));
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionForNegativeSubdirectoryDigitPadding()
+		{
+			_exportSettings.SubdirectoryDigitPadding = -1;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Subdirectory Digit Padding must be non-negative number"));
+		}
+
 		public void ItShouldRewriteOtherSettings()
 		{
 			const int artifactTypeId = 10;

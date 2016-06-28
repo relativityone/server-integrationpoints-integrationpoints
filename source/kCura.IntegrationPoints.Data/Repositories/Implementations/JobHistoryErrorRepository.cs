@@ -91,7 +91,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return jobHistoryErrors;
 		}
 
-
 		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int numberOfErrors, int jobHistoryErrorTypeId, int errorStatusArtifactId, string tableName)
 		{
 			if (numberOfErrors <= 0)
@@ -165,7 +164,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			KeywordSearch itemLevelSearch = new KeywordSearch
 			{
-				Name = $"{Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME} - {integrationPointArtifactId} - {jobHistoryArtifactId}",
+				Name = $"{Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME} - {integrationPointArtifactId} - {jobHistoryArtifactId}",
 				ArtifactTypeID = (int)Relativity.Client.ArtifactType.Document,
 				SearchCriteria = searchCondition
 			};
@@ -184,26 +183,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void DeleteItemLevelErrorsSavedSearch(int searchArtifactId, int retryAttempts)
+		public void DeleteItemLevelErrorsSavedSearch(int searchArtifactId)
 		{
-			try
+			for (int i = 0; i < 3; i++)
 			{
-				using (
-					IKeywordSearchManager searchManager =
-						_helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
+				try
 				{
-					var task = searchManager.DeleteSingleAsync(_workspaceArtifactId, searchArtifactId);
-					task.ConfigureAwait(false).GetAwaiter().GetResult();
-
-					if (task.IsFaulted && retryAttempts < 3)
+					using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 					{
-						DeleteItemLevelErrorsSavedSearch(searchArtifactId, retryAttempts + 1);
+						var task = searchManager.DeleteSingleAsync(_workspaceArtifactId, searchArtifactId);
+						task.ConfigureAwait(false).GetAwaiter().GetResult();
+						return;
 					}
 				}
-			}
-			catch
-			{
-				//Do nothing as we don't want to throw an error at the end of the job just because we couldn't delete the temp saved search
+				catch
+				{
+					// ignored
+				}
 			}
 		}
 

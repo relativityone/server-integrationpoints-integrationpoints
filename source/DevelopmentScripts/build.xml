@@ -76,15 +76,22 @@
         <ApplicationSchema>application\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Domain.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.dll</Assembly>
           <Assembly>bin\kCura.LDAPProvider.dll</Assembly>
           <Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.Services.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-          <Assembly>packages\RelativityCore.9.3.433.7\lib\net45\kCura.Image.Viewer.dll</Assembly>
-          <Assembly>packages\RelativityCore.9.3.433.7\lib\net45\kCura.Print.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.4.212.3\lib\net45\kCura.Image.Viewer.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.4.212.3\lib\net45\kCura.Print.dll</Assembly>
 	  <Assembly>packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</Assembly>
 	  <Assembly>packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Security.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.Parser.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.Helpers.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.Connection.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
+          <Assembly>packages\SSH.NET.2013.4.7\lib\net40\Renci.SshNet.dll</Assembly>
 	 </Assemblies>
         <ResourceFiles />
         <CustomPages>

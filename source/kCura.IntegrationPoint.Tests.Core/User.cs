@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Relativity.Services;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -15,13 +14,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (groupIds == null)
 			{
-				groups.Add(new BaseField {ArtifactId = 20}); // System Administrators
+				groups.Add(new BaseField { ArtifactId = 20 }); // System Administrators
 			}
 			else
 			{
 				foreach (int groupId in groupIds)
 				{
-					groups.Add(new BaseField {ArtifactId = groupId});
+					groups.Add(new BaseField { ArtifactId = groupId });
 				}
 			}
 
@@ -100,10 +99,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return user;
 		}
 
-		public static bool DeleteUser(int userArtifactId)
+		public static void DeleteUser(int userArtifactId)
 		{
-			string response = Rest.DeleteRequestAsJson("localhost", $"Relativity/User/{userArtifactId}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false);
-			return true;
+			if (userArtifactId != 0)
+			{
+				Rest.DeleteRequestAsJson(SharedVariables.TargetHost, $"Relativity/User/{userArtifactId}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false);
+			}
 		}
 
 		#region Deprecated RSAPI
@@ -286,7 +287,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		//	}
 		//	return artifactId;
 		//}
-		#endregion
 
+		#endregion Deprecated RSAPI
 	}
 }

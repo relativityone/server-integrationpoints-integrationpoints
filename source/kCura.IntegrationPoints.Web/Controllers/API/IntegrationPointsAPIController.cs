@@ -40,7 +40,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			if (model.DestinationProvider == 0)
 			{
-				model.DestinationProvider = _provider.GetRdoSynchronizerId(); //hard coded for your ease of use
+				try
+				{
+					model.DestinationProvider = _provider.GetRdoSynchronizerId(); //hard coded for your ease of use
+				}
+				catch (Exception e)
+				{
+					model.DestinationProvider = 0;
+				}
 			}
 			return Request.CreateResponse(HttpStatusCode.Accepted, model);
 		}

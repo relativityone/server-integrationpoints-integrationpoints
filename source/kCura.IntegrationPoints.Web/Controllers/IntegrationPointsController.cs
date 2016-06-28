@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
@@ -7,6 +8,8 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
+using Relativity.API;
+using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -16,6 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IAPILog _apiLog;
 
 		public IntegrationPointsController(
 			IIntegrationPointService reader,
@@ -27,6 +31,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			_rdoQuery = relativityRdoQuery;
 			_tabService = tabService;
 			_repositoryFactory = repositoryFactory;
+			_apiLog = ConnectionHelper.Helper().GetLoggerFactory().GetLogger().ForContext<IntegrationPointsController>();
 		}
 
 		public ActionResult Edit(int? id)
@@ -88,6 +93,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		public ActionResult ExportProviderConfiguration()
 		{
 			return View("ExportProviderConfiguration", "_StepLayout");
+		}
+
+		[HttpPost]
+		public ActionResult ExportDetails(ExportUsingSavedSearchSettings settings)
+		{
+			_apiLog.LogDebug("Requesting summary page for export with model: {@Model}", settings);
+			return PartialView(settings);
 		}
 
 		public ActionResult Details(int id)

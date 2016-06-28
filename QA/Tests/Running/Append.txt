@@ -15,8 +15,7 @@
 | ${NewObject}					| Man, Cat
 | ${ExistingAndUpdatedObject}	| Man, Dog
 | ${ExistingNoChangeObject}		| Man, Bird 
-| ${Manager}                 | Man, Bigdog
-| ${Custodians Grid}	| gbox_custodianGrid
+| ${Manager}					| Man, Bigdog
 
 
 *** Test Cases ***
@@ -24,48 +23,48 @@
 | An Append import Creates new objects
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
 | | ...				| [id] 9632b8ae-b203-11e4-8099-90b11c6c5ae4
-| | [Tags]			| automated
-| | Go to the Method Tab | Custodian
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Email | catman@gameofholdstesting.corp
+| | [Tags]			| automated	| rewrite_me
+| | View Custodian	| ${NewObject}	
+| | Verify the current layout has fields with the following values | Email | catman@gameofholdstesting.corp
 
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
 | An Append imports will Overlay Managers
 | | [Documentation] | Verify that Append imports will Overlay Manager information by linking an Existing Custodians to a new Manager.
-| | ... | [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
+| | ...				| [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab	| Custodian
 | | View Custodian	| ${ExistingAndUpdatedObject} 
 
-| | Verify that the current Custodian has the Following Manager	| ${Manager}
+| | Verify the current layout has fields with the following values | Manager | ${Manager}
+
 
 | An Append import Creates new History objects
 | | [Documentation] | Verify that when an Append RIP is run which has new source recods, 
 | | ...				| that there are history entries for the newly created objects in the target RDO.
 | | ...				| [id] 12e9dbe1-a89f-11e4-b55e-b8ca3a83048f
 | | [Tags]			| manual
-| | Go to the Tab	| History
+| | Go to the Tab	| Custodians
 
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Change to the All History View
-| | ... | 2. View the History objects for "${NewObject}"
+| | ... | 1. View Custodian: ${NewObject} (if multiple Custodians with that Name exist then this failed)
+| | ... | 2. Click: View Audit
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that there is an entry for the Custodian "${NewObject}" with the Action of "Update - Import"
+| | ... | Verify that the only entry for the Custodian "${NewObject}" has the Action of "Create"
 
 
-| An Append import does not update existing objects
+| An Append import does not update existing modified objects
 | | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, 
 | | ...				| that it does not update the existing objects in the target RDO.
 | | ...				| [id] 12ea02f0-a89f-11e4-b98c-b8ca3a83048f
-| | [Tags]			| manual
-| | Go to the Tab	| History
+| | [Tags]			| manual	| broken
+| | # Broken by Manager Update
+| | Go to the Tab	| Custodians
 
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Change to the All History View
-| | ... | 2. View the History objects for "${ExistingAndUpdatedObject}"
+| | ... | 1. View Custodian: ${ExistingAndUpdatedObject} (if multiple Custodians with that Name exist then this failed)
+| | ... | 2. Click: View Audit
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that there is no entry for "${ExistingAndUpdatedObject}" with the Action of "Update - Import"
@@ -76,27 +75,27 @@
 | | ...				| that it does not update the existing objects in the target RDO.
 | | ...				| [id] 12ea02f1-a89f-11e4-a719-b8ca3a83048f
 | | [Tags]			| manual
-| | Go to the Tab	| History
+| | Go to the Tab	| Custodians
 
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Change to the All History View
-| | ... | 2. View the History objects for "${ExistingNoChangeObject}"
+| | ... | 1. View Custodian: ${ExistingNoChangeObject} (if multiple Custodians with that Name exist then this failed)
+| | ... | 2. Click: View Audit
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that there is no entry for "${ExistingNoChangeObject}" with the Action of "Update - Import"
 
 
-| An Append import's Job History does not fail when there are Existing Objects
+| An Append import's Job History counts Existing Objects as errors
 | | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects,
-| | ...				| that the Import's Job History has not errors.
+| | ...				| that the Import's Job History counts them as errors.
 | | ...				| 
 | | [Tags]			| manual
+| | Go to the Tab	| Job History
+
 | | Run the following manual steps:
-| | ... | Steps:
-| | ... | Go to the Method Tab	| Job History
 | | ... | Expected Results:
-| | ... | Verify that the newest entry for "${IntegrationName}" has no Errors
+| | ... | Verify that the newest entry for "${IntegrationName}" has 2 Errors
 
 
 *** Keywords *** 
@@ -104,8 +103,16 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+# --------------------------------------------------------------------------------------------------------
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${NewObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${NewObject}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
@@ -119,30 +126,50 @@
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingAndUpdatedObject}		|
 | | ... | Email			| dogman@gameofholdstesting.corp	|
-| | ... | Department	| Append
+| | ... | Department	| Appendix
 
-| | @{Step1Fields}=		| Create list | ${IntegrationName} | Append |
-| | ... | LDAP | Custodian | no
-| | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=Append) | FastBind | testing\\rellockdown | P@ssw0rd@1
+# --------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create List	|
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+
+| | @{Step2Fields}=		| Create list | 
+| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
+| | ... | (department=Append)
+| | ... | FastBind
+| | ... | testing\\rellockdown
+| | ... | P@ssw0rd@1
+
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			| 
-| | ... | Department	| department	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
-| | ... | Manager       | manager       | 
+| | ... | Email			| mail
+| | ... | Department	| department
+| | ... | First Name	| givenname
+| | ... | Last Name		| sn
+| | ... | Manager       | manager
 | | ... | UniqueID		| objectguid
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
-| | Run Import Now on the Following Integration Point	| ${IntegrationName}
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
+
+| | Run Import Now on the Following Integration Point | ${IntegrationName}
 | | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API | ${IntegrationName}
-| | Delete the Custodians in the Following Department using API	| Append
+| | Delete the following Integration Point | ${IntegrationName}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${NewObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${NewObject}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager}
+
+| | Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
+| | Delete the following Custodian using API	| ${ExistingNoChangeObject}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
@@ -153,6 +180,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

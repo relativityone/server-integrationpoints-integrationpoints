@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Connect to Source step of Integration Points field validation works correctly.
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup        | Go to Step 2 of the Create Integration Point Process
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers
@@ -24,7 +24,7 @@
 | | [Documentation]	| Verify that when the Connection Path Field is blank the correct warning message is shown when clicking Next.
 | | ...				| [id] 102e1740-a89f-11e4-9647-b8ca3a83048f
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 2 form	| Authentication=FastBind
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| Authentication=FastBind
 | | Click	| Next
 | | Verify the following Integration Point Field has the following Error	| ${Connection Path Field}	| This field is required.
 
@@ -34,7 +34,7 @@
 | | ...				| [id] 10332051-a89f-11e4-9be6-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| A Blank Connection Path Field shows a message after clicking Next
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
@@ -42,7 +42,7 @@
 | A Blank Authentication Field shows a message after clicking Next
 | | [Documentation]	| Verify that when the Authentication Field is blank the correct warning message is shown when clicking Next.
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
 | | Click	| Next
 | | Verify the following Integration Point Field has the following Error	| ${Authentication Field}	| This field is required.
 
@@ -51,7 +51,7 @@
 | | [Documentation]	| Verify that the next screen can be reached after the Authentication required field message is shown.
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| A Blank Authentication Field shows a message after clicking Next
-| | Fill out the Following Fields of the Integration Point Step 2 form	| Authentication=FastBind
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| Authentication=FastBind
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
@@ -60,7 +60,7 @@
 | | [Documentation]	| Verify that the "Unable to connect to source using the specified settings" warning message is displayed after clicking Next while a Connection Path is specified.
 | | ...				| [id] 10332053-a89f-11e4-9135-b8ca3a83048f
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${InvalidConnectionPath}	| Authentication=FastBind
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${InvalidConnectionPath}	| Authentication=FastBind
 | | Click	| Next
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify the current Method Page Error has the following Text  | Unable to connect to source using the specified settings.
 
@@ -70,7 +70,7 @@
 | | ...				| [id] 10332054-a89f-11e4-a009-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | [Setup]			| Require Test Case	| Invalid Connection message is displayed when unable to connect using the given values
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
@@ -86,7 +86,7 @@
 
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Step 2 Testing	| Append/Overlay	| LDAP	| Custodian	| No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Step 2 Testing	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 
 | Verify the following Integration Point Field does not have the following Error
@@ -104,6 +104,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/FormKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

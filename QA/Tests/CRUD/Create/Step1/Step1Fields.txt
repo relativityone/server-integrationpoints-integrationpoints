@@ -1,20 +1,19 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Set Intergration Details step of Integration Points shows the correct fields and data.
+| Documentation		| Verify that the Set Intergration Details step of Integration Points shows the correct fields and data.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Open Create Integration Point
-| Test Teardown 	| Capture screenshot if test fails
-| Suite Teardown	| Close all browsers
+| Test Teardown		| Capture screenshot if test fails
+| Suite Teardown	| Close All Browsers
 
 
 *** Variables ***
 
 | ${WorkspaceName}					| LDAP Sync
 | ${Integration Name Field}			| name
-| ${Email Notification Recipients Field} | notificationEmails
-| ${Overwrite DropDown}				| s2id_overwrite
+| ${Email Notification Recipients Field}	| notificationEmails
 | ${Source Provider Drop Down}		| s2id_sourceProvider
 | ${Destination RDO Drop Down}		| s2id_destinationRdo
 | ${Enable Scheduler Button Name}	| enable
@@ -34,7 +33,7 @@
 | | [Documentation]	| Verify that the Set Integration Details sections are sorted correctly.
 | | ...				| [id] 0f5e1d0f-a89f-11e4-bf47-b8ca3a83048f
 | | [Tags]			| automated
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify the sections are ordered correctly	| General	| Integration	| Import Scheduling
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify the sections are ordered correctly	| General	| Integration	| Scheduling
 
 
 | The General fields are in the correct order
@@ -42,8 +41,7 @@
 | | ...				| [id] 0f5e1d10-a89f-11e4-a35c-b8ca3a83048f
 | | [Tags]			| automated 
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | General | 
-| | ... | Integration Name: | 
-| | ... | Overwrite:		| 
+| | ... | Integration Name:
 | | ... | Email Notification Recipients:\nSeparate by semi-colon  | 
 | | ... | Log Errors:
 
@@ -64,14 +62,6 @@
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | Import Scheduling | Enable Scheduler:
 
 
-| The Overwrite list has the correct values
-| | [Documentation]	| Verify that the Overwrite List has the correct options
-| | ...				| [id] 0f5e6b31-a89f-11e4-98af-b8ca3a83048f
-| | [Tags]			| automated
-| | Click  | ${Overwrite DropDown}
-| | Verify that the currently opened select2 Dropdown has the following choices in order | Append/Overlay | Append	| Overlay Only
-
-
 | The Source Provider dropdown contains an alphabetically sorted list of Source Providers
 | | [Documentation]	| Verify that the Source Provider dropdown contains the value Select... followed by an alphabetically sorted list of all of the Source Providers in the current Workspace.
 | | ...				| Since Source Provider is going to be a hidden object type we are not creating any new objects to test alphabetization.
@@ -80,13 +70,6 @@
 | | @{SourceProviders}=	| Get a List of all Source Providers in the current Workspace	| # Already alphabetized
 | | Click	| ${Source Provider Drop Down}
 | | Verify that the currently opened select2 Dropdown has the following choices in order | Select...	| @{SourceProviders}
-
-
-| The Overwrite Field's default value is Append/Overlay
-| | [Documentation]	| Verify that the Overwrite Field's default value is Append/Overlay.
-| | ...				| [id] 0f5e6b33-a89f-11e4-b10b-b8ca3a83048f
-| | [Tags]			| automated
-| | Verify that the following select2 Dropdown currently has the following value selected	| ${Overwrite DropDown}	| Append/Overlay
 
 
 | The Log Errors field's default value is Yes
@@ -151,14 +134,6 @@
 | | ... | Verify that the following field is not required | Log Errors:
 
 
-| Overwrite is not a Required Field
-| | [Documentation]	| Verify that the Required Field indicator is not present for the Overwrite field.
-| | ...				| [id] 0f5ee064-a89f-11e4-9d80-b8ca3a83048f
-| | [Tags]			| automated
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
-| | ... | Verify that the following field is not required | Overwrite:
-
-
 | Enable Scheduler is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the Enable Scheduler field.
 | | ...				| [id] 0f5ee065-a89f-11e4-97d3-b8ca3a83048f
@@ -170,14 +145,13 @@
 | The Set Integration Details Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type.
 | | ...				| [id] 0f5ee066-a89f-11e4-bdce-b8ca3a83048f
-| | [Tags]			| automated | broken
-| | Run keyword and continue on failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
-| | ... | Run keyword and continue on failure	| Verify that the following field ID has a text input		| ${Integration Name Field}  | 
-| | Run keyword and continue on failure	| Verify that the following field ID has a textarea input	| ${Email Notification Recipients Field} |
-| | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Overwrite DropDown} | 
-| | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Source Provider Drop Down} | 
+| | [Tags]			| automated
+| | Run keyword and continue on failure	| Verify that the following field ID has a text input		| ${Integration Name Field} 
+| | Run keyword and continue on failure	| Verify that the following field ID has a textarea input	| ${Email Notification Recipients Field}
+| | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Source Provider Drop Down}
 | | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Destination RDO Drop Down}
 | | # Enable Scheduler and Log Errors are checked in the next test cases.
+
 
 | The Enable Scheduler options are Yes and No
 | | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No
@@ -194,29 +168,31 @@
 | | ... | Verify that the following radio buttons are grouped together | ${Enable Scheduler Button Name}  | Yes | No
 
 
-| The Destination RDO dropdown has the correct values for Admins
+| The Destination RDO dropdown has the correct values for Admins when the Source Provider is LDAP
 | | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options when you are a user with Admin permissions.
 | | ...				| The expected values are Select..., followed by an alphabetized list of every non-System object type
 | | ...				| [id] 0f5f2e80-a89f-11e4-bde1-b8ca3a83048f
 | | [Tags]			| automated
+| | Fill out the Following Fields of the Integration Point Step 1 form	| SourceProvider=LDAP
 | | @{ExpectedFields}=	| Get a List of All Non-System Object Types in the Workspace	| # Already alphabetized
 | | Click	| ${Destination RDO Drop Down}
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ExpectedFields}
 
 
-| The Destination RDO dropdown hides Object Types the User does not have Add Permissions for
+| The Destination RDO dropdown hides Object Types the User does not have Add Permissions for when the Source Provider is LDAP
 | | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options (i.e. you are a user without permission to some RDOs).
 | | ...				| [id] 0f5f2e81-a89f-11e4-961b-b8ca3a83048f
 | | [Tags]			| manual	| unautomateable
 | | Run the following manual steps:
 | | ... | Notes:
 | | ... | - The Destination RDO only shows values that you have Add permissions for.
-| | ... | - The System RDOs are never shown (See "Get a List of All Non-System Object Types in the Workspace" for a list of the System RDOs). 
+| | ... | - The System RDOs are never shown (See "Get a List of All Non-System Object Types in the Workspace" for a list of the System RDOs).
 | | ... |
 | | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click	| New Integration Point
-| | ... | 3. Click Destination RDO Dropdown
+| | ... | 1. Go to the Tab: Integration Points
+| | ... | 2. Click: New Integration Point
+| | ... | 3. Select Source Provider: LDAP
+| | ... | 4. Click Destination RDO Dropdown
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the RDOs that you do not have permission for are not visible.
@@ -237,14 +213,15 @@
 | Verify the sections are ordered correctly
 | | [Documentation]	| A keyword that compares the actual section headings to the expected section headings
 | | [ARGUMENTS]		| @{ExpectedSections}
-| | @{ActualSections}=	| Get Element Text	| css=div.card > span.label	| False 
+| | @{ActualSections}=	| Get Element Text	| css=div.card > span.label	| False
 | | Lists should be Equal	| ${ActualSections}	| ${ExpectedSections}
 
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource  | ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt

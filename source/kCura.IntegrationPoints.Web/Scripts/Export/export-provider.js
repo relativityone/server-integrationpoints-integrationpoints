@@ -235,46 +235,49 @@
 			});
 		}
 
-		this.DataFileEncodingType = ko.observable(state.DataFileEncodingType).extend({
-			required: true
+		this.DataFileEncodingType = ko.observable().extend({
+		    required: true
 		});
 
 		this.updateSelectedDataFileEncodingType = function (value) {
-			if (self.DataFileEncodingTypeList().length == 2) {
-				var ungroupedFileEncodingList = self.DataFileEncodingTypeList()[0].children().concat(self.DataFileEncodingTypeList()[1].children())
-				var selectedDataFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
-					return item.name === value;
-				});
+		    if (self.DataFileEncodingTypeList().length == 3) {
+		        var ungroupedFileEncodingList = self.DataFileEncodingTypeList()[0].children()
+																					.concat(self.DataFileEncodingTypeList()[1].children())
+																					.concat(self.DataFileEncodingTypeList()[2].children())
+		        var selectedDataFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
+		            return item.name === value;
+		        });
 
-				self.DataFileEncodingType(selectedDataFileEncodingType.name);
-			}
+		        self.DataFileEncodingType(selectedDataFileEncodingType.name);
+		    }
 		}
 
 		this.DataFileEncodingTypeList = ko.observableArray([]);
 		if (self.DataFileEncodingTypeList.length === 0) {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
-				function Group(label, children) {
-					this.label = ko.observable(label);
-					this.children = ko.observableArray(children);
-				}
-				var favorite = [];
-				var others = [];
-				for (var i = 0; i < result.length; i++) {
-					if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
-						favorite.push(result[i]);
-					}
-					else {
-						others.push(result[i]);
-					}
-				}
-				// By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-				self.DataFileEncodingTypeList([new Group("Favorite", favorite), new Group("Others", others)]
+		    IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+		        function Group(label, children) {
+		            this.label = ko.observable(label);
+		            this.children = ko.observableArray(children);
+		        }
+		        var defaultOption = { displayName: "Select..", name: "" };
+		        var favorite = [];
+		        var others = [];
+		        for (var i = 0; i < result.length; i++) {
+		            if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
+		                favorite.push(result[i]);
+		            }
+		            else {
+		                others.push(result[i]);
+		            }
+		        }
+		        // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
+		        self.DataFileEncodingTypeList([new Group("", [defaultOption]), new Group("Favorite", favorite), new Group("Others", others)]
                 );
-				self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
-			});
+		        self.updateSelectedDataFileEncodingType(state.DataFileEncodingType || "");
+		    });
 		}
 		else {
-			self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+		    self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
 		}
 
 		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({

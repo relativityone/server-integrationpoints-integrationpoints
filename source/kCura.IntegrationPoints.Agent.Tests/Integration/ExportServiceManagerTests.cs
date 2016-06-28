@@ -27,7 +27,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	[Explicit]
+	[Category("Integration Tests")]
 	public class ExportServiceManagerTests : WorkspaceDependentTemplate
 	{
 		private ExportServiceManager _exportManager;
@@ -317,14 +317,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				do
 				{
 					job = _jobServiceManager.GetNextQueueJob(resourcePool, _jobServiceManager.AgentTypeInformation.AgentTypeID);
+
+					if (job != null)
+					{
 						// pick up job
-					if (job?.RelatedObjectArtifactID == integrationPointId)
-					{
-						return job;
-					}
-					else
-					{
-						pickedUpJobs.Add(job);
+						if (job.RelatedObjectArtifactID == integrationPointId)
+						{
+							return job;
+						}
+						else
+						{
+							pickedUpJobs.Add(job);
+						}
 					}
 				} while (job != null);
 			}
@@ -335,7 +339,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					_jobServiceManager.UnlockJobs(pickedUpJob.AgentTypeID);
 				}
 			}
-			return null;
+			throw new Exception("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
 		}
 	}
 }

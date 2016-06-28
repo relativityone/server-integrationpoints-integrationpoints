@@ -23,8 +23,9 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class SyncWorker : IntegrationPointTaskBase, ITask
-	{
+    public class SyncWorker : IntegrationPointTaskBase, ITask
+    {
+		internal IJobHistoryService _jobHistoryService;
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
 
@@ -166,58 +167,68 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return new List<string>();
 		}
 
-		protected void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
-		{
-			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
-			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
-		}
+        protected void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+        {
+            SetupStatisticsSubscriptions(synchronizer, job);
+            SetupJobHistoryErrorSubscriptions(synchronizer, job);
+        }
 
-		internal virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
-		  string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
-		  Data.SourceProvider sourceProviderRdo, Data.DestinationProvider destinationProvider, Job job)
-		{
-			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+        protected void SetupStatisticsSubscriptions(IDataSynchronizer synchronizer, Job job)
+        {
+            _statisticsService.Subscribe(synchronizer as IBatchReporter, job);
+        }
 
-			IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
+        protected void SetupJobHistoryErrorSubscriptions(IDataSynchronizer synchronizer, Job job)
+        {
+            _jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
+        }
 
-			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
+        internal virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
+          string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
+          Data.SourceProvider sourceProviderRdo, Data.DestinationProvider destinationProvider, Job job)
+        {
+            FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 
-			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
+            IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
 
-			IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+            List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-			SetupSubscriptions(dataSynchronizer, job);
+            IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
 
-			if (SourceProvider.Config.GetDataProvideAllFieldsRequired)
-			{
-				dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
-			}
-			else
-			{
-				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
-			}
-		}
+            IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
 
-		private void InjectErrors()
-		{
-			try
-			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
-			}
-			catch (Exception ex)
-			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-			}
+            SetupSubscriptions(dataSynchronizer, job);
 
-			try
-			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
-			}
-			catch (Exception ex)
-			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message, ex.StackTrace);
-			}
-		}
-	}
+            if (SourceProvider.Config.GetDataProvideAllFieldsRequired)
+            {
+                dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
+            }
+            else
+            {
+                IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+                dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+            }
+        }
+
+        private void InjectErrors()
+        {
+            try
+            {
+                kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
+            }
+            catch (Exception ex)
+            {
+                _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+            }
+
+            try
+            {
+                kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
+            }
+            catch (Exception ex)
+            {
+                _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message, ex.StackTrace);
+            }
+        }
+    }
 }

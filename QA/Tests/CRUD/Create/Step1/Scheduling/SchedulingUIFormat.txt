@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Import Scheduling section of the Create Integration Points is correct with different Frequency options selected.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| sprint-3.1.2	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Open Create Integration Point
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers
@@ -23,14 +23,14 @@
 | The Import Scheduling Section's Fields are ordered correctly when no Frequency is selected
 | | [Documentation] | Verify that the Import Scheduling fields are correctly order when no Frequency has been selected.
 | | ...				| [id] 0fd6cf80-a89f-11e4-9059-b8ca3a83048f
-| | [Tags]			| golden	| automated1
+| | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following Card contains the following fields	| Import Scheduling	| 
-| | ... | Enable Scheduler:	| 
-| | ... | Frequency:		| 
-| | ... | Start Date:		| 
-| | ... | End Date:			| 
+| | Verify that the following Card contains the following fields	| Scheduling	| 
+| | ... | Enable Scheduler:
+| | ... | Frequency:
+| | ... | Start Date: 
+| | ... | End Date:
 | | ... | Scheduled Time:\n (local)
 
 
@@ -40,11 +40,11 @@
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Daily
 
-| | Verify that the following Card contains the following fields	| Import Scheduling	| 
-| | ... | Enable Scheduler:	| 
-| | ... | Frequency:		| 
-| | ... | Start Date:		| 
-| | ... | End Date:			| 
+| | Verify that the following Card contains the following fields	| Scheduling	| 
+| | ... | Enable Scheduler:
+| | ... | Frequency:
+| | ... | Start Date:
+| | ... | End Date:
 | | ... | Scheduled Time:\n (local)
 
 
@@ -54,13 +54,13 @@
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 
-| | Verify that the following Card contains the following fields	| Import Scheduling	| 
-| | ... | Enable Scheduler:	| 
-| | ... | Frequency:		| 
-| | ... | Reoccur:			| 
-| | ... | Send On:			| 
-| | ... | Start Date:		| 
-| | ... | End Date:			| 
+| | Verify that the following Card contains the following fields	| Scheduling	| 
+| | ... | Enable Scheduler:
+| | ... | Frequency:
+| | ... | Reoccur:
+| | ... | Send On:
+| | ... | Start Date:
+| | ... | End Date:
 | | ... | Scheduled Time:\n (local)
 
 
@@ -70,13 +70,13 @@
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
 
-| | Verify that the following Card contains the following fields	| Import Scheduling	| 
-| | ... | Enable Scheduler:	| 
-| | ... | Frequency:		| 
-| | ... | Reoccur:			| 
-| | ... | Send On:			| 
-| | ... | Start Date:		| 
-| | ... | End Date:			| 
+| | Verify that the following Card contains the following fields	| Scheduling	| 
+| | ... | Enable Scheduler: 
+| | ... | Frequency:
+| | ... | Reoccur:
+| | ... | Send On:
+| | ... | Start Date:
+| | ... | End Date: 
 | | ... | Scheduled Time:\n (local)
 
 
@@ -115,9 +115,9 @@
 | | Click	| ${Frequency Field}
 
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| 
-| | ... | Select...	| 
-| | ... | Daily		| 
-| | ... | Weekly	| 
+| | ... | Select...
+| | ... | Daily
+| | ... | Weekly
 | | ... | Monthly
 
  
@@ -127,12 +127,12 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 | | Verify that the Following field has Checkboxes with the following text	| Send On	| 
-| | ... | Monday	| 
-| | ... | Tuesday	| 
-| | ... | Wednesday	| 
-| | ... | Thursday	| 
-| | ... | Friday	| 
-| | ... | Saturday	| 
+| | ... | Monday 
+| | ... | Tuesday 
+| | ... | Wednesday
+| | ... | Thursday
+| | ... | Friday
+| | ... | Saturday
 | | ... | Sunday
 
 
@@ -145,11 +145,11 @@
 
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
-| | ... | Frequency			| Single Choice			| 
-| | ... | Start Date		| Date					| 
-| | ... | End Date			| Date					| 
-| | ... | Scheduled Time	| Text and Dropdown
+| | ... | Enable Scheduler: Yes/No Radio Buttons
+| | ... | Frequency: Single Choice
+| | ... | Start Date: Date
+| | ... | End Date: Date
+| | ... | Scheduled Time: Text and Dropdown
 
 
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Weekly
@@ -161,13 +161,13 @@
 
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
-| | ... | Frequency			| Single Choice			| 
-| | ... | Reoccur			| Text					|
-| | ... | Send On			| Checkboxes			| 
-| | ... | Start Date		| Date					| 
-| | ... | End Date			| Date					| 
-| | ... | Scheduled Time	| Text and Dropdown
+| | ... | Enable Scheduler: Yes/No Radio Buttons
+| | ... | Frequency: Single Choice
+| | ... | Reoccur: Text
+| | ... | Send On: Checkboxes
+| | ... | Start Date: Date
+| | ... | End Date: Date
+| | ... | Scheduled Time: Text and Dropdown
 
 
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Monthly
@@ -180,13 +180,13 @@
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Verify that the Following fields are of the following types:	| 
-| | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
-| | ... | Frequency			| Single Choice			| 
-| | ... | Reoccur			| Text					| 
-| | ... | Send On			| A Combination of Single Choice and dropdowns	| 
-| | ... | Start Date		| Date					| 
-| | ... | End Date			| Date					| 
-| | ... | Scheduled Time	| Text and Dropdown
+| | ... | Enable Scheduler: Yes/No Radio Buttons
+| | ... | Frequency: Single Choice
+| | ... | Reoccur: Text
+| | ... | Send On: A Combination of Single Choice and dropdowns
+| | ... | Start Date: Date
+| | ... | End Date: Date
+| | ... | Scheduled Time: Text and Dropdown
 
 
 | The Scheduled Time field has the (local) label
@@ -211,6 +211,7 @@
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt

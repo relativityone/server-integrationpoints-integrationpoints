@@ -3,16 +3,14 @@
 | Documentation		| This suite of tests verifies the Job History RDO used within the LDAP Sync application.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| rdo	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Go to the Fields tab and use the Automated RDO Checking view then filter to the following object type	| Job History
-#| Test Setup 		| NONE
-| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
-| Suite Teardown	| Close All Browsers
+| Suite Setup		| Clear Then Set Filter Value	| Object Type	| Job History
+| Suite Teardown	| Run Keyword If Any Tests Failed	| Capture Page Screenshot
 
 
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
-| ${FieldCount}		| 13
+| ${FieldCount}		| 19
 
 
 *** Test Cases ***
@@ -40,11 +38,27 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
+| Destination Workspace
+| | Find A Row With The Following Data	|
+| | ... | Name						| Destination Workspace
+| | ... | Field Type				| Fixed-Length Text
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Destination Workspace Information
+| | Find A Row With The Following Data	|
+| | ... | Name						| Destination Workspace Information
+| | ... | Field Type				| Multiple Object
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| DestinationWorkspace
+
+
 | End Time (UTC)
 | | Find A Row With The Following Data	|
-| | ... | Name						| End Time (UTC)	|
-| | ... | Field Type				| Date				|
-| | ... | Is Required				| No				|
+| | ... | Name						| End Time (UTC)
+| | ... | Field Type				| Date
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -56,75 +70,91 @@
 | | ... | Associative Object Type	| IntegrationPoint
 
 
+| Items Imported
+| | Find A Row With The Following Data	|
+| | ... | Name						| Items Imported
+| | ... | Field Type				| Whole Number
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Items with Errors
+| | Find A Row With The Following Data	|
+| | ... | Name						| Items with Errors
+| | ... | Field Type				| Whole Number
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| ${EMPTY}
+
+
 | Job Status
 | | Find A Row With The Following Data	|
-| | ... | Name						| Job Status	|
-| | ... | Field Type				| Single Choice	|
-| | ... | Is Required				| No			|
+| | ... | Name						| Job Status
+| | ... | Field Type				| Single Choice
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Job Type
+| | Find A Row With The Following Data	|
+| | ... | Name						| Job Type
+| | ... | Field Type				| Single Choice
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
 | Name
 | | Find A Row With The Following Data	|
-| | ... | Name						| Name				|
-| | ... | Field Type				| Fixed-Length Text	|
-| | ... | Is Required				| No				|
-| | ... | Associative Object Type	| ${EMPTY}
-
-
-| Records Imported
-| | Find A Row With The Following Data	|
-| | ... | Name						| Records Imported	|
-| | ... | Field Type				| Whole Number		|
-| | ... | Is Required				| No				|
-| | ... | Associative Object Type	| ${EMPTY}
-
-
-| Records with Errors
-| | Find A Row With The Following Data	|
-| | ... | Name						| Records with Errors 	|
-| | ... | Field Type				| Whole Number			|
-| | ... | Is Required				| No					|
+| | ... | Name						| Name
+| | ... | Field Type				| Fixed-Length Text
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
 | Start Time (UTC)
 | | Find A Row With The Following Data	|
-| | ... | Name						| Start Time (UTC)	|
-| | ... | Field Type				| Date				|
-| | ... | Is Required				| No				|
+| | ... | Name						| Start Time (UTC)
+| | ... | Field Type				| Date
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
 | System Created By
 | | Find A Row With The Following Data	|
-| | ... | Name						| System Created By |
-| | ... | Field Type				| Fixed-Length Text	|
-| | ... | Is Required				| No				|
+| | ... | Name						| System Created By
+| | ... | Field Type				| Fixed-Length Text
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
 | System Created On
 | | Find A Row With The Following Data	|
-| | ... | Name						| System Created On	|
-| | ... | Field Type				| Date				|
-| | ... | Is Required				| No				|
+| | ... | Name						| System Created On
+| | ... | Field Type				| Date
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
 | System Last Modified By
 | | Find A Row With The Following Data	|
-| | ... | Name						| System Last Modified By 	|
-| | ... | Field Type				| Fixed-Length Text			|
-| | ... | Is Required				| No						|
+| | ... | Name						| System Last Modified By
+| | ... | Field Type				| Fixed-Length Text
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
 | System Last Modified On
 | | Find A Row With The Following Data	|
-| | ... | Name						| System Last Modified On	|
-| | ... | Field Type				| Date						|
-| | ... | Is Required				| No						|
+| | ... | Name						| System Last Modified On
+| | ... | Field Type				| Date
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Total Items
+| | Find A Row With The Following Data	|
+| | ... | Name						| Total Items
+| | ... | Field Type				| Whole Number
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 

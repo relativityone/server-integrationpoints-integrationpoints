@@ -39,10 +39,9 @@
 | | [Documentation]	| Verify that the correct buttons appear at the top of the page.
 | | [Tags]			| automated
 | | Verify the buttons are available on the layout	| 
-| | ... | Edit				| 
-| | ... | Delete			| 
-| | ... | Back				| 
-| | ... | Edit Permissions	| 
+| | ... | Edit
+| | ... | Back
+| | ... | Edit Permissions
 | | ... | View Audit
 
 
@@ -50,8 +49,9 @@
 | | [Documentation]	| Verify that the Category headings are sorted correctly on the "Job Details" Layout.
 | | [Tags]			| automated
 | | Verify that the current Layout has the following Categories in Order	| 
-| | ... | Job Details		| 
+| | ... | Job Details
 | | ... | Import Statistics 
+| | ... | Job History Error
 
 
 | The correct Fields are present on the Job Details Layout
@@ -59,15 +59,16 @@
 | | [Tags]			| manual	| field_placement
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | 1. Verify that the Job Details Category has the following fields in order:	| 
-| | ... | - Name
-| | ... | - Integration Point	| 
-| | ... | - Status				| 
-| | ... | - Start Time (UTC)	| 
-| | ... | - End Time (UTC)		|
-| | ... | 2. Verify that the Import Statistics Category has the following fields in order:	| 
-| | ... | - Records Imported	| 
-| | ... | - Records with Errors
+| | ... | 1. Verify that the Job Details Category has the following fields in order:
+| | ... | - Name:
+| | ... | - Integration Point:
+| | ... | - Job Type:
+| | ... | - Status: 
+| | ... | - Start Time (UTC):
+| | ... | - End Time (UTC):
+| | ... | 2. Verify that the Import Statistics Category has the following fields in order:
+| | ... | - Items Imported:
+| | ... | - Items with Errors:
 
 
 | The Table has the Title Job History Error
@@ -80,7 +81,7 @@
 
 | The Columns on the Job History Error table are correct
 | | [Documentation] | Verifies that the Job History Error table on the Job History View page has the correct columns.
-| | [Tags]			| manual	| automateable?
+| | [Tags]			| manual	| outdated
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Verify that the item list contains the following fields	| 
@@ -92,7 +93,7 @@
 
 | The Sorting on the Job History Error table is correct
 | | [Documentation] | Verifies that the Job History Error table on the Job History View page has the correct sorting.
-| | [Tags]			| manual	| 
+| | [Tags]			| manual	| outdated
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. At least three records appear in the ItemList
@@ -133,17 +134,16 @@
 | Suite Setup Keyword
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 | | Enable Strict Mode for Layouts	| # Makes 'Verify the current layout has the following fields' ensure that only the given fields are present
 
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=		| Create List	| 
-| | ... | ${IntegrationPoint1}	| 
-| | ... | Append/Overlay		| 
-| | ... | LDAP					| 
-| | ... | Custodian				| 
+| | ... | ${IntegrationPoint1}
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
 
 | | @{Step2Fields}=		| Create List	| 
@@ -163,7 +163,8 @@
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationPoint1}
 | | [Teardown]		| Drop connection to the relativity services api
@@ -186,7 +187,7 @@
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Views/ItemListKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

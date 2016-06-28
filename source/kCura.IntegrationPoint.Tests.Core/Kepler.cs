@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Kepler
 	{
-		public static T CreateProxy<T>(string username, string password, bool isHttp, bool isApiService ) where T : class, IDisposable
+		public static T CreateProxy<T>(string username, string password, bool isHttp, bool isApiService) where T : class, IDisposable
 		{
 			Uri serviceUri = GetServiceUrl(isHttp, isApiService);
 			Uri restUri = Rest.GetRestUrl(isHttp, isApiService);

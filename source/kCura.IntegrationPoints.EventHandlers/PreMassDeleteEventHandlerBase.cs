@@ -1,57 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Data;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {
-	public abstract class PreMassDeleteEventHandlerBase :  PreMassDeleteEventHandler
-	{
-	private IWorkspaceDBContext _workspaceDbContext;
-		public IWorkspaceDBContext GetWorkspaceDbContext()
-		{
-			return _workspaceDbContext ??
-			       (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
-		}
+    public abstract class PreMassDeleteEventHandlerBase : PreMassDeleteEventHandler
+    {
+        private IRepositoryFactory _repositoryFactory;
+        public PreMassDeleteEventHandlerBase()
+        {
+            //cant be initialized in constractor. IHelper is not initialized at that time and equals null.
+            //_repositoryFactory = new RepositoryFactory(this.Helper);
+        }
 
-	private  GetArtifactForMassAction _massAction;
+        internal PreMassDeleteEventHandlerBase(IRepositoryFactory repositoryFactory)
+        {
+            _repositoryFactory = repositoryFactory;
+        }
 
-	public GetArtifactForMassAction MassAction()
-	{
-		return _massAction ?? (_massAction = new GetArtifactForMassAction());
-	}
+        internal IRepositoryFactory RepositoryFactory
+        {
+            get
+            {
+                if (_repositoryFactory == null)
+                {
+                    _repositoryFactory = new RepositoryFactory(this.Helper);
+                }
+                return _repositoryFactory;
+            }
+        }
 
-	public override void Commit()
-	{}
+        private IWorkspaceDBContext _workspaceDbContext;
+        public IWorkspaceDBContext GetWorkspaceDbContext()
+        {
+            return _workspaceDbContext ??
+                   (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
+        }
 
-	public override void Rollback()
-	{}
+        private GetArtifactForMassAction _massAction;
 
-	public sealed override Response Execute()
-	{
-		List<int> ids = GetIds();
-		return ExecutePreDelete(ids);
-	}
+        public GetArtifactForMassAction MassAction()
+        {
+            return _massAction ?? (_massAction = new GetArtifactForMassAction(RepositoryFactory));
+        }
 
-	private List<int> GetIds()
-	{
-		//Get a dbContext for the current workspace
-		Int32 currentWorkspaceArtifactId = this.Helper.GetActiveCaseID();
-		//Get the temp table name of the artifactIDs to be deleted
-		String tempTableName = this.TempTableNameWithParentArtifactsToDelete;
-		//Get a list of the artifactIDs to be deleted
-		List<Int32> artifactIDsToBeDeleted = MassAction().GetArtifactsToBeDeleted(_workspaceDbContext, tempTableName);
-		
-		return artifactIDsToBeDeleted;
-	}
-	
-	public abstract Response ExecutePreDelete(List<int> artifactIDs);
+        public override void Commit()
+        { }
 
-	public override FieldCollection RequiredFields
-	{
-		get { return new FieldCollection(); }
-	}
+        public override void Rollback()
+        { }
 
-	
-	}
+        public sealed override Response Execute()
+        {
+            List<int> ids = GetIds();
+            return ExecutePreDelete(ids);
+        }
+
+        private List<int> GetIds()
+        {
+            Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+            //Get a dbContext for the current workspace
+            Int32 currentWorkspaceArtifactId = this.Helper.GetActiveCaseID();
+            //Get the temp table name of the artifactIDs to be deleted
+            String tempTableName = this.TempTableNameWithParentArtifactsToDelete;
+            //Get a list of the artifactIDs to be deleted
+            List<Int32> artifactIDsToBeDeleted = MassAction().GetArtifactsToBeDeleted(_workspaceDbContext, tempTableName, currentWorkspaceArtifactId);
+
+            return artifactIDsToBeDeleted;
+        }
+
+        public abstract Response ExecutePreDelete(List<int> artifactIDs);
+
+        public override FieldCollection RequiredFields
+        {
+            get { return new FieldCollection(); }
+        }
+    }
 }
