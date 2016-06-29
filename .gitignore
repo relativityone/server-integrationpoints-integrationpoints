@@ -114,7 +114,6 @@ source/publish/*
 *.rap
 source/UpgradeLog.htm
 
-source/Help/
 source/packages/*
 source/TestLogs/output64.xml
 
