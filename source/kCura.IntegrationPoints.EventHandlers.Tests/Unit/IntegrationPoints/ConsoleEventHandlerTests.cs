@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
@@ -8,7 +6,6 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -68,16 +65,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasRunPermissions, bool hasViewErrorsPermissions)
 		{
 			// ARRANGE
-			var integrationPointDto = new Contracts.Models.IntegrationPointDTO()
+			var integrationPointDto = new IntegrationPointDTO()
 			{
 				HasErrors = true,
 				SourceProvider = 8392
-			};
-
-			var permissionCheck = new PermissionCheckDTO()
-			{
-				Success = hasRunPermissions,
-				ErrorMessages = hasRunPermissions ? null : new[] { "GOBBLYGOOK!" }
 			};
 
 			string[] viewErrorMessages = new[] { Core.Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW };
@@ -112,13 +103,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				{
 					RunNowOnClickEvent = hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value && hasViewErrorsPermissions? "Really long string" : String.Empty,
+					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
 				};
 
 				_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(
 					new PermissionCheckDTO()
 					{
-						Success	= hasViewErrorsPermissions,
+						Success = hasViewErrorsPermissions,
 						ErrorMessages = hasViewErrorsPermissions ? null : viewErrorMessages
 					});
 
