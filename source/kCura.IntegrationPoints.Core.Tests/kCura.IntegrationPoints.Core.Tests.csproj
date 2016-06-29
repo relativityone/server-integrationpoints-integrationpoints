@@ -225,6 +225,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="ImportTest.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Integration\PermissionErrorMessageTest.cs" />

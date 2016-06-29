@@ -169,7 +169,6 @@
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
-    <Compile Include="Commands\MassEdit\RelativityMassEdit.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Repositories\IErrorRepository.cs" />
@@ -268,7 +267,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-	<Compile Include="GeneratedDTOs.Extended.cs">
+    <Compile Include="GeneratedDTOs.Extended.cs">
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
     <Compile Include="GeneratedDTOs.cs">
