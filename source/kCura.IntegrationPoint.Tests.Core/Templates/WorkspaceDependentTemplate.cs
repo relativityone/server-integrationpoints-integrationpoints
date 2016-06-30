@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	public class WorkspaceDependentTemplate : SingleWorkspaceTestTemplate
 	{
 		private readonly string _targetWorkspaceName;
-
+		private string _destinationConfig;
 		protected SourceProvider LdapProvider;
 		protected SourceProvider RelativityProvider;
 		protected DestinationProvider DestinationProvider;
@@ -48,19 +49,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
-			if (!_targetWorkspaceName.IsNullOrEmpty())
-			{
-				TargetWorkspaceArtifactId = Workspace.CreateWorkspace(_targetWorkspaceName, "New Case Template");
-			}
-			else
-			{
-				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
-			}
-
-			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
-			AgentArtifactId = Agent.CreateIntegrationPointAgent();
-
-			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
+			Task.Run(async () => await SetupAsync()).Wait();
 
 			CaseContext = Container.Resolve<ICaseServiceContext>();
 			IEnumerable<SourceProvider> providers = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
@@ -110,7 +99,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateDefaultSourceConfig()
 		{
-			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{TargetWorkspaceArtifactId}}}";
+			if (_destinationConfig == null)
+			{
+				_destinationConfig = $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{TargetWorkspaceArtifactId}}}";
+			}
+			return _destinationConfig;
 		}
 
 		protected string CreateDefaultDestinationConfig()
@@ -230,6 +223,21 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
 			return jobHistoryErrorArtifactIds;
+		}
+
+		protected async Task SetupAsync()
+		{
+			if (!_targetWorkspaceName.IsNullOrEmpty())
+			{
+				TargetWorkspaceArtifactId = await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, "New Case Template"));
+			}
+			else
+			{
+				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
+			}
+			await Task.Run(() => Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING)));
+			AgentArtifactId = await Task.Run(() => Agent.CreateIntegrationPointAgent());
+			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
 		}
 	}
 }

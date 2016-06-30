@@ -18,7 +18,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
-	[Explicit]
+	[TestFixture]
+	[Category("Integration Tests")]
 	public class TargetDocumentsTaggingManagerTests : WorkspaceDependentTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
@@ -37,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[TestFixtureSetUp]
-		[Explicit]
 		public override void SetUp()
 		{
 			base.SetUp();
@@ -50,10 +50,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
+		[Test]
 		[TestCase(499, "UnderBatch")]
 		[TestCase(500, "EqualBatch")]
 		[TestCase(502, "OverBatch")]
-		public void test(int numberOfDocuments, string documentIdentifier)
+		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
 			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
