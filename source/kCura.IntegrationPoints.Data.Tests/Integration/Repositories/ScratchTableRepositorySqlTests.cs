@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class ScratchTableRepositorySqlTests : WorkspaceDependentTemplate
+	public class ScratchTableRepositorySqlTests : RelativityProviderTemplate
 	{
 		private IHelper _helper;
 		private IExtendedRelativityToggle _toggle;

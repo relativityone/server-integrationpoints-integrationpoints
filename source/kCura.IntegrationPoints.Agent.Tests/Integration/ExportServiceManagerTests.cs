@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class ExportServiceManagerTests : WorkspaceDependentTemplate
+	public class ExportServiceManagerTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;
 		private IIntegrationPointService _integrationPointService;

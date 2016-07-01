@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class JobHistoryErrorsBatchingTests : WorkspaceDependentTemplate
+	public class JobHistoryErrorsBatchingTests : RelativityProviderTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
@@ -440,7 +440,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			return table;
 		}
 
-		[TestFixtureSetUp]
 		private void ResolveServices()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();

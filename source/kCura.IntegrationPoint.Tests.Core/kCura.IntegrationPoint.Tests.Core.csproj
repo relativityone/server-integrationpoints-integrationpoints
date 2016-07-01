@@ -218,7 +218,6 @@
     <Compile Include="Models\FieldOverlayBehavior.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="IntegrationTestBase.cs" />
-    <Compile Include="SampleTest.cs" />
     <Compile Include="Models\BaseField.cs" />
     <Compile Include="Models\BaseFields.cs" />
     <Compile Include="Models\UserModel.cs" />
@@ -230,9 +229,10 @@
     <Compile Include="Status.cs" />
     <Compile Include="IntegrationPoint.cs" />
     <Compile Include="Group.cs" />
-    <Compile Include="Templates\SingleWorkspaceTestTemplate.cs" />
+    <Compile Include="Templates\OtherProvidersTemplate.cs" />
+    <Compile Include="Templates\RelativityProviderTemplate.cs" />
+    <Compile Include="Templates\SourceProviderTemplate.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="Templates\WorkspaceDependentTemplate.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Workspace.cs" />

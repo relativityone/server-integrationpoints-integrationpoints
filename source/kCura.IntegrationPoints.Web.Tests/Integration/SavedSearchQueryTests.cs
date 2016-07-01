@@ -20,19 +20,40 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
     [TestFixture]
     [Category("Integration Tests")]
     public class SavedSearchQueryTests
-        : SingleWorkspaceTestTemplate
-    {
+        : SourceProviderTemplate
+	{
         private List<int> _savedSearchesArtifactIds;
         private List<int> _userIds;
         private List<int> _groupIds;
         private IHtmlSanitizerManager _htmlSanitizerManage;
 
-        public SavedSearchQueryTests()
+		private string _oldInstanceSettingValue;
+
+		public SavedSearchQueryTests()
             : base("SavedSearchQueryTests")
         {
         }
 
-        [SetUp]
+		[TestFixtureSetUp]
+		public override void SetUp()
+		{
+			base.SetUp();
+
+			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+		}
+
+		[TestFixtureTearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+
+			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
+			{
+				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
+			}
+		}
+
+		[SetUp]
         public void TestSetup()
         {
             _groupIds = new List<int>();

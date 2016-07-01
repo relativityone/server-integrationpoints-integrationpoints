@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class DeleteHistoryServiceTest : WorkspaceDependentTemplate
+	public class DeleteHistoryServiceTest : RelativityProviderTemplate
 	{
 		private IJobHistoryService _jobHistoryService;
 		private IRepositoryFactory _repositoryFactory;

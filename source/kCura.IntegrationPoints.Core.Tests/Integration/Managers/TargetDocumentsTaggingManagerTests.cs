@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class TargetDocumentsTaggingManagerTests : WorkspaceDependentTemplate
+	public class TargetDocumentsTaggingManagerTests : RelativityProviderTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
 		private IDocumentRepository _documentRepository;
