@@ -205,14 +205,17 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="AuditHelper.cs" />
+    <Compile Include="Choice.cs" />
     <Compile Include="EHHelper.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
+    <Compile Include="Fields.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InjectionPoints.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
+    <Compile Include="ObjectType.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Models\ImportOverwriteMode.cs" />
     <Compile Include="Models\FieldOverlayBehavior.cs" />

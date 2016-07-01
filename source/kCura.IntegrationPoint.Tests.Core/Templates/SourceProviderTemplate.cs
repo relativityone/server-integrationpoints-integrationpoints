@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return jobHistory;
 		}
 
-		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Choice errorStatus, Choice type)
+		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Relativity.Client.Choice errorStatus, Relativity.Client.Choice type)
 		{
 			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
 			JobHistoryError jobHistoryError = new JobHistoryError
