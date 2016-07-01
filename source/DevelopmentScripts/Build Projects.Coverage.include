@@ -31,7 +31,7 @@
 	</target>
 	
 	<target name="run_codeCoverage">
-		<exec program="${nCoverExe}" commandline="&quot;${NUnit64}&quot; &quot;${fileset::to-string('unitTestAssembliesX64', '&quot; &quot;')}&quot; /exclude:Integration,Integration Tests //w &quot;${dllDirectoryToCover}&quot; //at &quot;${trendFilePaths}${trendFile}&quot; //x &quot;${coverageFilePaths}${coverageFile}&quot; //p &quot;${projectName}&quot;  //eas ${excludedAssemblies} //ea ${excludeAttributes}  //onlywithsource"  />
+		<exec program="${nCoverExe}" commandline="&quot;${NUnit64}&quot; &quot;${fileset::to-string('unitTestAssembliesX64', '&quot; &quot;')}&quot; /exclude:Integration,&quot;Integration Tests&quot; //w &quot;${dllDirectoryToCover}&quot; //at &quot;${trendFilePaths}${trendFile}&quot; //x &quot;${coverageFilePaths}${coverageFile}&quot; //p &quot;${projectName}&quot;  //eas ${excludedAssemblies} //ea ${excludeAttributes}  //onlywithsource"  />
 	</target>
 	
 	<target name="create_report" depends="create_htmlreport, create_trendreport, create_fullcoveragereport" />

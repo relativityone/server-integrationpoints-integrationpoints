@@ -67,13 +67,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				try
 				{
 					//Query for template workspace id
-					TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, templateName);
-					Query<Relativity.Client.DTOs.Workspace> query = new Query<Relativity.Client.DTOs.Workspace>
-					{
-						Condition = workspaceNameCondition
-					};
-					query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
-					int templateWorkspaceId = QueryWorkspace(query, 0).Results[0].Artifact.ArtifactID;
+					Relativity.Client.DTOs.Workspace workspace = FindWorkspaceByName(templateName);
+					int templateWorkspaceId = workspace.ArtifactID;
 
 					ProcessOperationResult result = proxy.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspaceDto);
 
@@ -109,6 +104,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new Exception($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
 				}
 			}
+		}
+
+		public static Relativity.Client.DTOs.Workspace FindWorkspaceByName(string workspaceName)
+		{
+			TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
+			Query<Relativity.Client.DTOs.Workspace> query = new Query<Relativity.Client.DTOs.Workspace>
+			{
+				Condition = workspaceNameCondition
+			};
+			query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
+			Relativity.Client.DTOs.Workspace workspace = QueryWorkspace(query, 0).Results[0].Artifact;
+			return workspace;
 		}
 
 		public static Relativity.Client.DTOs.Workspace GetWorkspaceDto(int workspaceArtifactId)

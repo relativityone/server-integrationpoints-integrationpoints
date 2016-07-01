@@ -205,6 +205,7 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="AuditHelper.cs" />
+    <Compile Include="EHHelper.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Injection.cs" />

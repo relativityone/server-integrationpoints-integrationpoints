@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
 		private IRepositoryFactory _repositoryFactory;
-		private IQueueRepository _queueRepository;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IBatchStatus _batchStatus;
@@ -441,11 +440,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			return table;
 		}
 
+		[TestFixtureSetUp]
 		private void ResolveServices()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_queueRepository = Container.Resolve<IQueueRepository>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
 		}
