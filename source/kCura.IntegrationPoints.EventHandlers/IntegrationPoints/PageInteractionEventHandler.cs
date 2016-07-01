@@ -97,7 +97,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME) 
 				{
 					this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/relativity-provider-view.js");
-					this.RegisterLinkedClientScript(applicationPath + "/Scripts/Export/export-details-helper.js");
+
+					int destinationProvider = (int)this.ActiveArtifact.Fields[IntegrationPointFields.DestinationProvider].Value.Value;
+					if (ServiceContext.RsapiService.DestinationProviderLibrary.Read(Int32.Parse(destinationProvider.ToString())).Name == Core.Constants.IntegrationPoints.FILESHARE_PROVIDER_NAME)
+					{
+						this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/export-details-view.js");
+					}
 				}
 				else
 				{
@@ -140,7 +145,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		
 		public override FieldCollection RequiredFields
 		{
-			get { return new FieldCollection(); }
+			get
+			{
+				var fieldCollection = new FieldCollection {new Field(IntegrationPointFields.DestinationProvider)};
+				return fieldCollection;
+			}
 		}
 	}
 }

@@ -8,7 +8,6 @@
 		var expiredErrorsMessage = " Any existing errors will be marked as expired.";
 		var proceedWarningMessage = " Would you still like to proceed?";
          var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
-        var fileshareProviderIsDefined = $("#fileshare").length === 1;
         
 		var selectedMessage = "";
 		if (overwriteOption === "Append Only") {
@@ -22,7 +21,7 @@
 		} else if (overwriteOption === "Append/Overlay") {
 			selectedMessage = appendOverlayMesssage;
 		}
-		if (fileshareProviderIsDefined) {
+		if (IP.isFileshareProvider) {
             		selectedMessage = "Please confirm running the export from Relativity. If you set up a scheduled action export process will start at the set time";
         	}
 		var consoleContainer = $(".ConsoleControl");
@@ -214,6 +213,10 @@ $(function () {
 });
 
 $(function () {
+    if (IP.isFileshareProvider) {
+        return;
+    }
+
 	var _getAppPath = function () {
 		var newPath = window.location.pathname.split('/')[1];
 		var url = window.location.protocol + '//' + window.location.host + '/' + newPath;
@@ -251,11 +254,6 @@ $(function () {
 	var $field = IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue');
 	var settings = $field.text();
 	$field.text('');
-
-	if (settings.indexOf('Fileshare') > 0 && IP.params['sourceUrl'].indexOf('/api/relativity/view') > 0) {
-        return ExportDetailsHelper.modifySummaryPage(settings, $field);
-	}
-
 	_getSource(settings).then(function (result) {
 		result = result.filter(function (setting) {
 			if (setting.value !== -1 && setting.value !== 0 && setting.key.indexOf("Id") === -1 && setting.value != null) {

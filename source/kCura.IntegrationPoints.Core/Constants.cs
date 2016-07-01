@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Core
             public const string RELATIVITY_PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
             public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Contracts.Constants.RELATIVITY_PROVIDER_GUID;
             public const string RELATIVITY_PROVIDER_NAME = "Relativity";
+	        public const string FILESHARE_PROVIDER_NAME = "Fileshare";
             public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
             public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
             public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";

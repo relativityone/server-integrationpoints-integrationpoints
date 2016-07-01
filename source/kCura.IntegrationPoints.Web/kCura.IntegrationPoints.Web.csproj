@@ -473,7 +473,7 @@
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
-    <Content Include="Scripts\Export\export-details-helper.js" />
+    <Content Include="Scripts\EventHandlers\export-details-view.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
     <Content Include="Scripts\Export\export-provider.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
