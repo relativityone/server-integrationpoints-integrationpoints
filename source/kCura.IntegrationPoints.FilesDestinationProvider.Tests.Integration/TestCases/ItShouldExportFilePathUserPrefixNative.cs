@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Concordance;
 			settings.IncludeNativeFilesPath = true;
 			settings.CopyFileFromRepository = true;
-			settings.FilePath = ExportSettings.FilePathType.Prefix;
+			settings.FilePath = ExportSettings.FilePathType.UserPrefix;
 			settings.UserPrefix = "USER1";
 
 			return base.Prepare(settings);

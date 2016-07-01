@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			settings.ExportImages = true;
 			settings.CopyFileFromRepository = true;
 			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.Opticon;
-			settings.FilePath = ExportSettings.FilePathType.Prefix;
+			settings.FilePath = ExportSettings.FilePathType.UserPrefix;
 			settings.UserPrefix = "USER1";
 
 			return base.Prepare(settings);

@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		[TestCase(ExportSettings.FilePathType.Relative, ExportFile.ExportedFilePathType.Relative)]
 		[TestCase(ExportSettings.FilePathType.Absolute, ExportFile.ExportedFilePathType.Absolute)]
-		[TestCase(ExportSettings.FilePathType.Prefix, ExportFile.ExportedFilePathType.Prefix)]
+		[TestCase(ExportSettings.FilePathType.UserPrefix, ExportFile.ExportedFilePathType.Prefix)]
 		public void ItShouldSetCorrectFilePathWhenCopyingFilesFromRepository(ExportSettings.FilePathType givenSetting, ExportFile.ExportedFilePathType expectedSetting)
 		{
 			_exportSettings.FilePath = givenSetting;

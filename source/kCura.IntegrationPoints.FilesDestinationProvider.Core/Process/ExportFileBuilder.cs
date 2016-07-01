@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					return ExportFile.ExportedFilePathType.Relative;
 				case ExportSettings.FilePathType.Absolute:
 					return ExportFile.ExportedFilePathType.Absolute;
-				case ExportSettings.FilePathType.Prefix:
+				case ExportSettings.FilePathType.UserPrefix:
 					return ExportFile.ExportedFilePathType.Prefix;
 				default:
 					throw new InvalidEnumArgumentException($"Unknown ExportSettings.FilePathType ({filePath})");

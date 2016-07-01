@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		{
 			Relative,
 			Absolute,
-			Prefix
+			UserPrefix
 		}
 
 		public int ExportedObjArtifactId { get; set; }
