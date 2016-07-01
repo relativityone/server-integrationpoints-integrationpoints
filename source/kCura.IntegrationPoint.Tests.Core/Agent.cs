@@ -48,6 +48,37 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
+		public static global::Relativity.Services.Agent.Agent ReadIntegrationPointAgent(int agentArtifactId)
+		{
+			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				try
+				{
+					global::Relativity.Services.Agent.Agent agent = proxy.ReadSingleAsync(agentArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
+					return agent;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Error: Failed to read agent. Exception: {ex.Message}");
+				}
+			}
+		}
+
+		public static void UpdateIntegrationPointAgent(global::Relativity.Services.Agent.Agent agent)
+		{
+			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				try
+				{
+					proxy.UpdateSingleAsync(agent).ConfigureAwait(false).GetAwaiter().GetResult();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Error: Failed to update agent. Exception: {ex.Message}");
+				}
+			}
+		}
+
 		public static List<ResourceServer> GetAgentServers()
 		{
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
