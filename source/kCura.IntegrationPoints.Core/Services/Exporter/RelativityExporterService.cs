@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Relativity;
 using Relativity.Data;
 using System.Text.RegularExpressions;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
 
