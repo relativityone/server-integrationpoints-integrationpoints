@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private readonly string _targetWorkspaceTemplate;
 		private string _destinationConfig;
 		protected SourceProvider RelativityProvider;
+		protected SourceProvider LdapProvider;
 
 		public int SourceWorkspaceArtifactId { get; protected set; }
 		public int TargetWorkspaceArtifactId { get; protected set; }
@@ -43,6 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Task.Run(async () => await SetupAsync()).Wait();
 			
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
+			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
 		}
 
 		[TestFixtureTearDown]

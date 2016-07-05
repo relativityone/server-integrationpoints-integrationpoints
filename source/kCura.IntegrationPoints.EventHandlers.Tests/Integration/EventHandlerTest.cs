@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class EventHandlerTest : WorkspaceDependentTemplate
+	public class EventHandlerTest : RelativityProviderTemplate
 	{
 		private IJobHistoryService _jobHistoryService;
 		private IRepositoryFactory _repositoryFactory;
