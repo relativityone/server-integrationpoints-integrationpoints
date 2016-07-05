@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class JobHistoryErrorsBatchingTests : WorkspaceDependentTemplate
+	public class JobHistoryErrorsBatchingTests : RelativityProviderTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
@@ -440,7 +440,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			return table;
 		}
 
-		[TestFixtureSetUp]
 		private void ResolveServices()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
@@ -449,7 +448,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
 		}
 
-		private List<int> CreateItemLevelJobHistoryErrors(int jobHistoryArtifactId, Choice errorStatus, DataTable importedDocuments)
+		private List<int> CreateItemLevelJobHistoryErrors(int jobHistoryArtifactId, Relativity.Client.Choice errorStatus, DataTable importedDocuments)
 		{
 			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
 
@@ -475,7 +474,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			return jobHistoryErrorArtifactIds;
 		}
 
-		private List<int> CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Choice errorStatus)
+		private List<int> CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Relativity.Client.Choice errorStatus)
 		{
 			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
 			JobHistoryError jobHistoryError = new JobHistoryError

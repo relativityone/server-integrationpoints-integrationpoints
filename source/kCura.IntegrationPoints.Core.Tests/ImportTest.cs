@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class ImportTest : SingleWorkspaceTestTemplate
+	public class ImportTest : SourceProviderTemplate
 	{
 		private IObjectTypeRepository _objectTypeRepository;
 		private IWebDriver _webDriver;

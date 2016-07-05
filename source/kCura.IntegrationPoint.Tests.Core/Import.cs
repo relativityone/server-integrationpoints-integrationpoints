@@ -45,22 +45,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			};
 
-			FieldMap datefield2 = new FieldMap
-			{
-				FieldMapType = FieldMapTypeEnum.None,
-				SourceField = new FieldEntry()
-				{
-					DisplayName = "Date Sent",
-					IsIdentifier = false,
-					FieldIdentifier = "Date Sent",
-				},
-				DestinationField = new FieldEntry()
-				{
-					DisplayName = "Date Sent",
-					FieldIdentifier = "1035355",
-					IsIdentifier = false,
-				}
-			};
+			//FieldMap datefield2 = new FieldMap
+			//{
+			//	FieldMapType = FieldMapTypeEnum.None,
+			//	SourceField = new FieldEntry()
+			//	{
+			//		DisplayName = "Date Sent",
+			//		IsIdentifier = false,
+			//		FieldIdentifier = "Date Sent",
+			//	},
+			//	DestinationField = new FieldEntry()
+			//	{
+			//		DisplayName = "Date Sent",
+			//		FieldIdentifier = "1035355",
+			//		IsIdentifier = false,
+			//	}
+			//};
 
 			// TODO: make this work
 			//FieldMap mapIdentifier2 = new FieldMap
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			//	}
 			//};
 
-			pusher.SyncData(importTable.CreateDataReader(), new FieldMap[] { mapIdentifier, datefield2 }, settings);
+			pusher.SyncData(importTable.CreateDataReader(), new FieldMap[] { mapIdentifier, /*datefield2*/ }, settings);
 		}
 	}
 }

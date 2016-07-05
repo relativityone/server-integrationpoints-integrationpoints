@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 	using Data.Repositories;
 
 	[Explicit]
-	public class ViewErrors : WorkspaceDependentTemplate
+	public class ViewErrors : RelativityProviderTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryRepository _jobHistoryRepository;

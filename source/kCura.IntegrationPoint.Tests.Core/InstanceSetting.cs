@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+using Relativity.API;
+using Relativity.Core.Exception;
+using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 using ValueType = Relativity.Services.InstanceSetting.ValueType;
 
@@ -6,6 +10,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class InstanceSetting
 	{
+		public const string INSTANCE_SETTING_VALUE_UNCHANGED = "##VALUE_ALREADY_SAME##";
+
 		public static int Create(string section, string name, string value, ValueType valueType)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
@@ -27,6 +33,62 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{
 					throw new Exception($"Error: Failed to create Instance Setting. Exception: {ex.Message}");
 				}
+			}
+		}
+
+		public static global::Relativity.Services.InstanceSetting.InstanceSetting Query(string section, string name)
+		{
+			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				Query query = new Query();
+				Condition sectionCondition = new TextCondition(InstanceSettingFieldNames.Section, TextConditionEnum.EqualTo, section);
+				Condition nameCondition = new TextCondition(InstanceSettingFieldNames.Name, TextConditionEnum.EqualTo, name);
+				Condition queryCondition = new CompositeCondition(sectionCondition, CompositeConditionEnum.And, nameCondition);
+				query.Condition = queryCondition.ToQueryString();
+
+				try
+				{
+					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
+					global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = instanceSettingQueryResultSet.Results.FirstOrDefault().Artifact;
+					return instanceSetting;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Error: Failed to query Instance Setting. Exception: {ex.Message}");
+				}
+			}
+		}
+
+		public static string Update(string section, string name, string value)
+		{
+			global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = Query(section, name);
+
+			if (instanceSetting.Value == value)
+			{
+				return INSTANCE_SETTING_VALUE_UNCHANGED;
+			}
+
+			string oldValue = instanceSetting.Value;
+			instanceSetting.Value = value;
+			Update(instanceSetting);
+
+			return oldValue;
+		}
+
+		private static bool Update(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
+		{
+			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				try
+				{
+					instanceSettingManager.UpdateSingleAsync(instanceSetting).ConfigureAwait(false).GetAwaiter().GetResult();
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Error: Failed to update Instance Setting. Exception: {ex.Message}");
+				}
+
+				return true;
 			}
 		}
 	}

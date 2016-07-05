@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class PermissionRepositoryTests : WorkspaceDependentTemplate
+	public class PermissionRepositoryTests : RelativityProviderTemplate
 	{
 		private PermissionRepository _permissionRepo;
 		private int _groupId;
@@ -26,10 +26,31 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IObjectTypeRepository _typeRepo;
 		private Random _rand;
 
+		private string _oldInstanceSettingValue;
+
 		public PermissionRepositoryTests()
 			: base("PermissionRepositoryTests", null)
 		{
 			_rand = new Random();
+		}
+
+		[TestFixtureSetUp]
+		public override void SetUp()
+		{
+			base.SetUp();
+
+			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+		}
+
+		[TestFixtureTearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+
+			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
+			{
+				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
+			}
 		}
 
 		[SetUp]
