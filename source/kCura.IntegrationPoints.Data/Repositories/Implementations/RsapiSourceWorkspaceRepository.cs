@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
 			{
-				Name = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Name = Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				ParentArtifactTypeID = parentArtifactTypeId,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnWorkspaceCreation = false,
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				new kCura.Relativity.Client.DTOs.Field()
 				{
-					Name = Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+					Name = Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 					Guids = new List<Guid>() { SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.WholeNumber,
 					ObjectType = objectType,
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				},
 				new kCura.Relativity.Client.DTOs.Field()
 				{
-					Name = Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+					Name = Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 					Guids = new List<Guid>() { SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
 					ObjectType = objectType,
@@ -123,10 +123,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					switch (x.Artifact.Name)
 					{
-						case Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME:
+						case Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME:
 							return SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid;
 
-						case Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME:
+						case Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME:
 							return SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid;
 
 						default:
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				new kCura.Relativity.Client.DTOs.Field()
 				{
-					Name = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+					Name = Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 					FieldTypeID = kCura.Relativity.Client.FieldType.MultipleObject,
 					ObjectType = documentObjectType,
 					AssociativeObjectType = sourceWorkspaceObjectType,
@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId)
 		{
-			var condition = new WholeNumberCondition(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
+			var condition = new WholeNumberCondition(Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
 			var query = new Query<RDO>()
 			{
 				ArtifactTypeGuid = SourceWorkspaceDTO.ObjectTypeGuid,
@@ -205,15 +205,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			foreach (FieldValue fieldValue in rdo.Artifact.Fields)
 			{
-				if (fieldValue.Name == Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME)
+				if (fieldValue.Name == Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME)
 				{
 					sourceWorkspaceDto.SourceCaseArtifactId = fieldValue.ValueAsWholeNumber.Value;
 				}
-				else if (fieldValue.Name == Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME)
+				else if (fieldValue.Name == Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME)
 				{
 					sourceWorkspaceDto.SourceCaseName = fieldValue.ValueAsFixedLengthText;
 				}
-				else if (fieldValue.Name == Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME)
+				else if (fieldValue.Name == Domain.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME)
 				{
 					sourceWorkspaceDto.Name = fieldValue.ValueAsFixedLengthText;
 				}
@@ -226,9 +226,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fields = new List<FieldValue>()
 			{
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name),
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, sourceWorkspaceDto.SourceCaseArtifactId),
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName)
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name),
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, sourceWorkspaceDto.SourceCaseArtifactId),
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName)
 			};
 			var rdo = new RDO()
 			{
@@ -257,8 +257,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fields = new List<FieldValue>()
 			{
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name, true),
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName, true),
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name, true),
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName, true),
 			};
 
 			var rdo = new RDO(sourceWorkspaceDto.ArtifactTypeId, sourceWorkspaceDto.ArtifactId)

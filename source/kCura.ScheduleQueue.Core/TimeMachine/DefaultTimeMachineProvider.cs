@@ -24,7 +24,7 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
 		}
 
 		private static IDictionary _instanceSettings;
-		protected static IDictionary InstanceSettings => _instanceSettings ?? (_instanceSettings = Manager.Instance.GetConfig(kCura.IntegrationPoints.Contracts.Constants.SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION));
+		protected static IDictionary InstanceSettings => _instanceSettings ?? (_instanceSettings = Manager.Instance.GetConfig(kCura.IntegrationPoints.Domain.Constants.SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION));
 
 		private void GetTimeMachineData()
 		{

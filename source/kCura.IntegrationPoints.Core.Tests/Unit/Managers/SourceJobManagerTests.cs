@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepo.DidNotReceive().InsertArtifactGuidForArtifactId(Arg.Any<int>(), SourceJobDTO.ObjectTypeGuid);
 			_sourceJobRepo.DidNotReceive().CreateObjectTypeFields(Arg.Any<int>(), Arg.Any<IEnumerable<Guid>>());
 			_artifactGuidRepo.DidNotReceive().InsertArtifactGuidsForArtifactIds(Arg.Any<IDictionary<Guid, int>>());
-			_fieldRepo.DidNotReceive().RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject);
+			_fieldRepo.DidNotReceive().RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject);
 			_sourceJobRepo.DidNotReceive().CreateFieldOnDocument(typeId);
 		}
 
@@ -114,10 +114,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid)
 				.Returns(x => { throw new TypeLoadException(); }, x => typeId);
 			// no type found in the workspace
-			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 			_sourceJobRepo.CreateObjectType(_sourceWorkspaceArtifactTypeId).Returns(artifactId);
 			// no tab created after creating an object type
-			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 
 			// object fields are not found when searching by guid
 			_artifactGuidRepo.GuidsExist(Arg.Any<List<Guid>>()).Returns(new Dictionary<Guid, bool>
@@ -127,8 +127,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
 
 			// defined the behavior when we try to create fields
 			_sourceJobRepo.CreateObjectTypeFields(typeId,
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// can't find when searching by name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns((int?)null);
 
 			_sourceJobRepo.CreateFieldOnDocument(typeId).Returns(documentFieldArtifactId);
 			_fieldRepo.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
@@ -193,10 +193,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid)
 				.Returns(x => { throw new TypeLoadException(); }, x => typeId);
 			// no type found in the workspace
-			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 			_sourceJobRepo.CreateObjectType(_sourceWorkspaceArtifactTypeId).Returns(artifactId);
 			// no tab created after creating an object type
-			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 
 			// object fields are not found when searching by guid
 			_artifactGuidRepo.GuidsExist(Arg.Any<List<Guid>>()).Returns(new Dictionary<Guid, bool>
@@ -206,9 +206,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			});
 
 			// fails to retrieve field
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId,
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId,
 				(int) Relativity.Client.FieldType.WholeNumber).Throws<Exception>();
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
 
 			// defined the behavior when we try to create fields
 			_sourceJobRepo.CreateObjectTypeFields(typeId,
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// can't find when searching by name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns((int?)null);
 
 			_sourceJobRepo.CreateFieldOnDocument(typeId).Returns(documentFieldArtifactId);
 			_fieldRepo.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
@@ -265,10 +265,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid)
 				.Returns(x => { throw new TypeLoadException(); }, x => typeId);
 			// no type found in the workspace
-			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 			_sourceJobRepo.CreateObjectType(_sourceWorkspaceArtifactTypeId).Returns(artifactId);
 			// no tab created after creating an object type
-			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 
 			// object fields are not found when searching by guid
 			_artifactGuidRepo.GuidsExist(Arg.Any<List<Guid>>()).Returns(new Dictionary<Guid, bool>
@@ -278,8 +278,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
 
 			// defined the behavior when we try to create fields
 			_sourceJobRepo.CreateObjectTypeFields(typeId,
@@ -290,7 +290,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
 			_fieldRepo.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
 
 			_sourceJobRepo.Create(typeId, Arg.Any<SourceJobDTO>()).Returns(sourceJobArtifactId);
@@ -344,10 +344,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid)
 				.Returns(x => { throw new TypeLoadException(); }, x => typeId);
 			// no type found in the workspace
-			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 			_sourceJobRepo.CreateObjectType(_sourceWorkspaceArtifactTypeId).Returns(artifactId);
 			// no tab created after creating an object type
-			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 
 			// object fields are not found when searching by guid
 			_artifactGuidRepo.GuidsExist(Arg.Any<List<Guid>>()).Returns(new Dictionary<Guid, bool>
@@ -357,8 +357,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			});
 
 			// error occurs when trying to retrieve field's artifact id
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId,(int) Relativity.Client.FieldType.WholeNumber).Throws(new Exception());
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId,(int) Relativity.Client.FieldType.WholeNumber).Throws(new Exception());
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
 
 			// defined the behavior when we try to create fields
 			_sourceJobRepo.CreateObjectTypeFields(typeId,
@@ -369,7 +369,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
 
 			// can't find artifact view field id
 			_fieldRepo.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns((int?)null);
@@ -410,10 +410,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid)
 				.Returns(x => { throw new TypeLoadException(); }, x => typeId);
 			// no type found in the workspace
-			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 			_sourceJobRepo.CreateObjectType(_sourceWorkspaceArtifactTypeId).Returns(artifactId);
 			// no tab created after creating an object type
-			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 
 			// object fields are not found when searching by guid
 			_artifactGuidRepo.GuidsExist(Arg.Any<List<Guid>>()).Returns(new Dictionary<Guid, bool>
@@ -423,8 +423,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
 
 			// defined the behavior when we try to create fields
 			_sourceJobRepo.CreateObjectTypeFields(typeId,
@@ -435,7 +435,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
 
 			// can't find artifact view field id
 			_fieldRepo.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
@@ -485,10 +485,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid)
 				.Returns(x => { throw new TypeLoadException(); }, x => typeId);
 			// no type found in the workspace
-			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_objectTypeRepository.RetrieveObjectTypeArtifactId(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 			_sourceJobRepo.CreateObjectType(_sourceWorkspaceArtifactTypeId).Returns(artifactId);
 			// no tab created after creating an object type
-			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
+			_tabRepository.RetrieveTabArtifactId(typeId, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME).Returns((int?)null);
 
 			// object fields are not found when searching by guid
 			_artifactGuidRepo.GuidsExist(Arg.Any<List<Guid>>()).Returns(new Dictionary<Guid, bool>
@@ -498,8 +498,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.WholeNumber).Returns((int?)null);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, typeId, (int)Relativity.Client.FieldType.FixedLengthText).Returns((int?)null);
 
 			// defined the behavior when we try to create fields
 			_sourceJobRepo.CreateObjectTypeFields(typeId,
@@ -510,7 +510,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepo.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
+			_fieldRepo.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).Returns(documentFieldArtifactId);
 
 			
 			_fieldRepo.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);

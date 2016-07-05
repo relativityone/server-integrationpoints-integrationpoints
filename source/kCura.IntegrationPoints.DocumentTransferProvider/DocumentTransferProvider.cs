@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public bool ExtractedTextFieldContainsFilePath;
 	}
 
-	[Contracts.DataSourceProvider(Contracts.Constants.RELATIVITY_PROVIDER_GUID)]
+	[Contracts.DataSourceProvider(Domain.Constants.RELATIVITY_PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IHelper _helper;
@@ -77,8 +77,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
-				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 				DocumentFields.RelativityDestinationCase,
 				DocumentFields.JobHistory
 			};

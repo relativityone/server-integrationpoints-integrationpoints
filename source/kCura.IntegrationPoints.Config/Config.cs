@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using kCura.Apps.Common.Config;
+using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Config
 {
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Config
 		private const string _BATCH_SIZE = "BatchSize";
 
 		protected Config() :
-			this(Manager.Instance.GetConfig(Contracts.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION))
+			this(Manager.Instance.GetConfig(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION))
 		{
 		}
 
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Config
 			kCura.Apps.Common.Config.Manager.Settings.ConfigCacheTimeout = 1;
 		}
 
-		public string WebApiPath => GetValue(Contracts.Constants.WEB_API_PATH, string.Empty);
+		public string WebApiPath => GetValue(Constants.WEB_API_PATH, string.Empty);
 
 		public bool DisableNativeLocationValidation => GetValue(_DISABLE_NATIVE_LOCATION_VALIDATION, false);
 

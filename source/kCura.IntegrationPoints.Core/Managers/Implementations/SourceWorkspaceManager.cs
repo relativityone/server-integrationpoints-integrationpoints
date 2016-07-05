@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
 			: base(repositoryFactory, 
-				  IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, 
+				  IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, 
 				  SourceWorkspaceDTO.ObjectTypeGuid,
 				  Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE)
 		{
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid,
 					new FieldDefinition
 					{
-						FieldName = IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.WholeNumber
 					}
 				},
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid,
 					new FieldDefinition
 					{
-						FieldName = IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.FixedLengthText
 					}
 				}

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Domain</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Domain</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -494,6 +494,7 @@
     </Compile>
     <Compile Include="ApplicationBinary.cs" />
     <Compile Include="AssemblyDomainLoader.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DataReaderWrapper.cs" />
     <Compile Include="DomainHelper.cs" />
     <Compile Include="IAppDomainDataMarshaller.cs" />

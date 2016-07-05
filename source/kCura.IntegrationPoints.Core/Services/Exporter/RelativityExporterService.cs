@@ -115,8 +115,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					_baseContext,
 					new global::Relativity.Core.UserPermissionsMatrix(_baseContext),
 					global::Relativity.ArtifactType.Document,
-					IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER,
-					IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER,
+					IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
+					IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
 					global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
 			);
 
@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (exceptions.Count > 0)
 			{
 				string message = $"Invalid '{fieldName}' found." +
-								 $" Please remove invalid character(s) - {kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER} or {kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
+								 $" Please remove invalid character(s) - {IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER} or {IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
 				AggregateException exception = new AggregateException(message, exceptions);
 				throw exception;
 			}

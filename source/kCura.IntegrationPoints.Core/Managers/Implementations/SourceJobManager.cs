@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public SourceJobManager(IRepositoryFactory repositoryFactory)
 			: base(repositoryFactory,
-				  IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				  IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 				  SourceJobDTO.ObjectTypeGuid,
 				  "Unable to create Relativity Source Job object. Please contact the system administrator.")
 		{
@@ -63,14 +63,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					SourceJobDTO.Fields.JobHistoryIdFieldGuid, new FieldDefinition()
 					{
-						FieldName = IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
+						FieldName = IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.WholeNumber
 					}
 				},
 				{
 					SourceJobDTO.Fields.JobHistoryNameFieldGuid, new FieldDefinition()
 					{
-						FieldName = IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
+						FieldName = IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.FixedLengthText
 					}
 				}
