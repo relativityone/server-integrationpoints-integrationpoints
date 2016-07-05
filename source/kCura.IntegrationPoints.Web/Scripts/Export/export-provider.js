@@ -97,14 +97,7 @@
 		});
 
 		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || "true");
-
-		this.dataFileFormats = [
-          { key: "Concordance (.dat)", value: "Concordance" },
-          { key: "HTML (.html)", value: "HTML" },
-          { key: "Comma-separated (.csv)", value: "CSV" },
-          { key: "Custom (.txt)", value: "Custom" }
-		];
-
+        
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
 		});
@@ -112,35 +105,35 @@
 		this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
 			required: {
 				onlyIf: function () {
-					return self.SelectedDataFileFormat() === "Custom";
+				    return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
 		this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
 			required: {
 				onlyIf: function () {
-					return self.SelectedDataFileFormat() === "Custom";
+				    return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
 		this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
 			required: {
 				onlyIf: function () {
-					return self.SelectedDataFileFormat() === "Custom";
+				    return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
 		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
 			required: {
 				onlyIf: function () {
-					return self.SelectedDataFileFormat() === "Custom";
+				    return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
 		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
 			required: {
 				onlyIf: function () {
-					return self.SelectedDataFileFormat() === "Custom";
+				    return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
@@ -158,14 +151,14 @@
 
 		this.SelectedDataFileFormat.subscribe(function (value) {
 			//default values have been taken from RDC application
-			if (value === 'Concordance') {
+		    if (value === ExportEnums.DataFileFormatEnum.Concordance) {
 				self.ColumnSeparator(20);
 				self.QuoteSeparator(254);
 				self.NewlineSeparator(174);
 				self.MultiValueSeparator(59);
 				self.NestedValueSeparator(92);
 			}
-			if (value === 'CSV') {
+		    if (value === ExportEnums.DataFileFormatEnum.CSV) {
 				self.ColumnSeparator(44);
 				self.QuoteSeparator(34);
 				self.NewlineSeparator(10);
@@ -175,8 +168,8 @@
 		});
 
 		this.SelectedDataFileFormat.subscribe(function (value) {
-			self.isCustom(value === 'Custom');
-			if (value === 'Custom') {
+		    self.isCustom(value === ExportEnums.DataFileFormatEnum.Custom);
+		    if (value === ExportEnums.DataFileFormatEnum.Custom) {
 				self.isCustomDisabled(undefined);
 			} else {
 				self.isCustomDisabled(true);
@@ -240,7 +233,7 @@
 		});
 
 		this.updateSelectedDataFileEncodingType = function (value) {
-		    if (self.DataFileEncodingTypeList().length == 3) {
+		    if (self.DataFileEncodingTypeList().length === 3) {
 		        var ungroupedFileEncodingList = self.DataFileEncodingTypeList()[0].children()
 																					.concat(self.DataFileEncodingTypeList()[1].children())
 																					.concat(self.DataFileEncodingTypeList()[2].children())
@@ -283,13 +276,7 @@
 		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({
 			required: true
 		});
-
-		this.imageDataFileFormats = ko.observableArray([
-            { key: 0, value: "Opticon" },
-            { key: 1, value: "IPRO" },
-            { key: 2, value: "IPRO (FullText)" }
-		]);
-
+        
 		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
 			required: {
 				onlyIf: function () {
@@ -297,13 +284,7 @@
 				}
 			}
 		});
-
-		this.imageFileTypes = ko.observableArray([
-            { key: 0, value: "Single page TIFF/JPEG" },
-            { key: 1, value: "Multi page TIFF/JPEG" },
-            { key: 2, value: "PDF" }
-		]);
-
+        
 		this.SelectedImageFileType = ko.observable(self.CopyFileFromRepository() === 'false' ? 0 : state.SelectedImageFileType).extend({
 			required: {
 				onlyIf: function () {
@@ -343,14 +324,14 @@
 			required: true
 		});
 
-		this.FilePath = ko.observable(state.FilePath || "Relative").extend({
+		this.FilePath = ko.observable(state.FilePath || ExportEnums.FilePathTypeEnum.Relative).extend({
 			required: true
 		});
 
 		this.UserPrefix = ko.observable(state.UserPrefix).extend({
 			required: {
 				onlyIf: function () {
-					return self.FilePath() === "UserPrefix";
+				    return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
 				}
 			}
 		});
@@ -358,7 +339,7 @@
 		this.isUserPrefix = ko.observable(false);
 
 		this.FilePath.subscribe(function (value) {
-			self.isUserPrefix(value === "UserPrefix");
+		    self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
 		});
 
 		this.errors = ko.validation.group(this, { deep: true });

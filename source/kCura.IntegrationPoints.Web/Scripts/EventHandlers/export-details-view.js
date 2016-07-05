@@ -2,24 +2,91 @@
 
 IP.isFileshareProvider = true;
 
-ExportDetailsView.modifySummaryPage = function (settings, $rootField) {
-    IP.utils.getViewField(IP.overwriteFields).closest('.editTableColumn').parent().hide();
-    IP.utils.getViewField(IP.sourceConfiguration).closest('.editTableColumn').parent().hide();
-    IP.utils.getViewField(IP.destinationid).closest('.editTableColumn').parent().hide();
+ExportDetailsView.downloadSummaryPage = function () {
     IP.data.ajax({
         url: IP.utils.generateWebURL('IntegrationPoints', 'ExportDetails'),
         type: 'post',
-        data: settings,
         dataType: 'html'
     }).then(function (result) {
-        $rootField.closest('.innerTabTable').children('tbody').append(result);
+        var dataContainer = new DataContainer();
+
+        IP.utils.getViewField(IP.nameId).closest('.innerTabTable').replaceWith(result);
+
+        var viewModel = new Model(dataContainer);
+        ko.applyBindings(viewModel, document.getElementById('exportSummaryPage'));
     });
 }
 
-$(function () {
-    var $field = IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue');
-    var settings = $field.text();
-    $field.text('');
+var DataContainer = function () {
+    this.hasErrors = IP.utils.getViewField(IP.hasErrorsId).siblings('.dynamicViewFieldValue').text();
+    this.logErrors = IP.utils.getViewField(IP.logErrorsId).siblings('.dynamicViewFieldValue').text();
+    this.emailNotification = IP.utils.getViewField(IP.emailNotificationId).siblings('.dynamicViewFieldValue').text();
+    this.name = IP.utils.getViewField(IP.nameId).siblings('.dynamicViewFieldValue').text();
+    this.settings = JSON.parse(IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue').text());
+}
 
-    ExportDetailsView.modifySummaryPage(settings, $field);
-})
+var Model = function (dataContainer) {
+    var self = this;
+
+    this.hasErrors = dataContainer.hasErrors;
+    this.logErrors = dataContainer.logErrors;
+    this.emailNotification = dataContainer.emailNotification;
+    this.name = dataContainer.name;
+    this.settings = dataContainer.settings;
+
+    this.volumeInfo = function () {
+        return self.settings.VolumePrefix + "; " + self.settings.VolumeStartNumber + "; " + self.settings.VolumeDigitPadding + "; " + self.settings.VolumeMaxSize;
+    };
+
+    this.subdirectoryInfo = function () {
+        return self.settings.SubdirectoryNativePrefix + "; " + self.settings.SubdirectoryImagePrefix + "; " + self.settings.SubdirectoryTextPrefix + "; " + self.settings.SubdirectoryStartNumber + "; " + self.settings.SubdirectoryDigitPadding + "; " + self.settings.SubdirectoryMaxFiles
+    };
+
+    this.exportType = function () {
+        return "Load file"
+        + (self.settings.ExportImagesChecked ? "; Images" : "")
+        + (self.settings.CopyFileFromRepository ? "; Natives" : "");
+    };
+
+    this.filePath = function () {
+        var filePathType = "";
+        for (var i = 0; i < ExportEnums.FilePathType.length; i++) {
+            if (ExportEnums.FilePathType[i].value == self.settings.FilePath) {
+                filePathType = ExportEnums.FilePathType[i].key;
+            }
+        }
+        return (self.settings.IncludeNativeFilesPath ? "Include" : "Do not include")
+        + ("; " + filePathType)
+        + (self.settings.FilePath == ExportEnums.FilePathTypeEnum.UserPrefix ? (": " + self.settings.UserPrefix) : "");
+    };
+
+    this.loadFileInfo = function () {
+        var fileFormat = "";
+        for (var i = 0; i < ExportEnums.DataFileFormats.length; i++) {
+            if (ExportEnums.DataFileFormats[i].value == self.settings.SelectedDataFileFormat) {
+                fileFormat = ExportEnums.DataFileFormats[i].key;
+            }
+        }
+        return fileFormat + "; " + self.settings.DataFileEncodingType.toUpperCase();
+    };
+
+    this.imageFileType = function () {
+        for (var i = 0; i < ExportEnums.ImageFileTypes.length; i++) {
+            if (ExportEnums.ImageFileTypes[i].value == self.settings.SelectedImageFileType) {
+                return ExportEnums.ImageFileTypes[i].key;
+            }
+        }
+    };
+
+    this.imageDataFileFormat = function () {
+        for (var i = 0; i < ExportEnums.ImageDataFileFormats.length; i++) {
+            if (ExportEnums.ImageDataFileFormats[i].value == self.settings.SelectedImageDataFileFormat) {
+                return ExportEnums.ImageDataFileFormats[i].key;
+            }
+        }
+    };
+};
+
+$(function () {
+    ExportDetailsView.downloadSummaryPage();
+});

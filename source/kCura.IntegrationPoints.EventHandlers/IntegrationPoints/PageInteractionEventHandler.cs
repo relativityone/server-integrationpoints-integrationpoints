@@ -67,7 +67,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				int sourceProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceProvider));
 				int lastRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.LastRuntimeUTC));
 				int sourceConfigurationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceConfiguration));
+
 				int overwriteFieldsId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.OverwriteFields));
+				int hasErrorsId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.HasErrors));
+				int logErrorsId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.LogErrors));
+				int nameId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.Name));
+				int emailNotificationId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.EmailNotificationRecipients));
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL2343243453", Script = "<script>var IP = IP ||{};IP.nextTimeid= ['" + nextScheduledRuntimeFieldId + "', '" + lastRuntimeFieldId + "'] ;</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.destinationid= '" + destinationFieldId + "';</script>" });
@@ -76,7 +81,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.artifactid= '" + base.ActiveArtifact.ArtifactID + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.appid= '" + base.Application.ArtifactID + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.sourceConfiguration= '" + sourceConfigurationFieldId + "';</script>" });
-				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.overwriteFields= '" + overwriteFieldsId + "';</script>" });
+
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.overwriteFieldsId= '" + overwriteFieldsId + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.hasErrorsId= '" + hasErrorsId + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.logErrorsId= '" + logErrorsId + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.nameId= '" + nameId + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.emailNotificationId= '" + emailNotificationId + "';</script>" });
+
 				this.RegisterClientScriptBlock(new kCura.EventHandler.ScriptBlock() { Key = "refreshFunc", Script = "<script type=\"text/javascript\"> function refreshList(){ $('.associative-list').load(document.URL +  ' .associative-list'); setTimeout(refreshList, 5000);};</script>" });
 
 				StringBuilder script = new StringBuilder();
@@ -102,6 +113,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					if (ServiceContext.RsapiService.DestinationProviderLibrary.Read(Int32.Parse(destinationProvider.ToString())).Name == Core.Constants.IntegrationPoints.FILESHARE_PROVIDER_NAME)
 					{
 						this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/export-details-view.js");
+
+
 					}
 				}
 				else

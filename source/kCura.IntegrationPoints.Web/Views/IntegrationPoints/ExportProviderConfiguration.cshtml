@@ -64,7 +64,7 @@
 									Data File Format:
 								</td>
 								<td class="editFieldValue">
-									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: dataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun()"></select>
+									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun()"></select>
 								</td>
 							</tr>
 							<tr>
@@ -326,7 +326,7 @@
 						Data File Format:
 					</td>
 					<td class="editFieldValue">
-						<select id="imageDataFileFormatSelector" data-bind="options: imageDataFileFormats, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun()"></select>
+						<select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun()"></select>
 					</td>
 				</tr>
         
@@ -335,7 +335,7 @@
 						File Type :
 					</td>
 					<td class="editFieldValue">
-						<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository() === 'true' && !HasBeenRun(), options: imageFileTypes, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
+						<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository() === 'true' && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
 					</td>
 				</tr>
 			</table>
@@ -348,25 +348,17 @@
                     <td class="editFieldNameRequired">File Path:</td>
                     <td class="editFieldValue">
                         <table class="RadioButtonListRelativePosition">
-                            <tr>
-                                <td>
-                                    <input id="file-path-radio-0" type="radio" name="filePath" value="Relative" data-bind="checked: FilePath"/>
-                                    <label>Use Relative Path</label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input id="file-path-radio-1" type="radio" name="filePath" value="Absolute" data-bind="checked: FilePath"/>
-                                    <label>Use Absolute Path</label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="editFieldValue">
-                                    <input id="file-path-radio-2" type="radio" name="filePath" value="UserPrefix" data-bind="checked: FilePath"/>
-                                    <label>User Prefix</label>
-                                    <input id="userprefix-input" type="text" data-bind="enable: isUserPrefix(), value: UserPrefix" />
-                                </td>
-                            </tr>
+                            <tbody data-bind="foreach: ExportEnums.FilePathType">
+                                <tr>
+                                    <td>
+                                        <input type="radio" name="filePath" data-bind="attr: {value: value}, checked: $root.FilePath" />
+                                        <label data-bind="text: key"></label>
+                                        <!-- ko if: value==2 -->
+                                        <input id="userprefix-input" type="text" data-bind="enable: $root.isUserPrefix(), value: $root.UserPrefix" />
+                                        <!-- /ko -->
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </td>
                 </tr>
@@ -383,5 +375,6 @@
 	<script src="~/Scripts/integration-point/binding.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script src="~/Scripts/frame-messaging.js"></script>
+    <script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/export/export-provider.js"></script>
 }
