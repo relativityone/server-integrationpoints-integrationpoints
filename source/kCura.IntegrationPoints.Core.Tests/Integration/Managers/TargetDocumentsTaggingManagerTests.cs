@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -15,6 +12,10 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -86,13 +87,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
 			//Act
-			Job job = new Job(SourceWorkspaceArtifactId, integrationModelCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationModelCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			targetDocumentsTaggingManager.OnJobStart(job);
 			targetDocumentsTaggingManager.OnJobComplete(job);
 
 			//Assert
 			VerifyRelativitySourceJobAndSourceCase(documentArtifactIds, jobHistory.Name, expectedRelativitySourceCase);
-	}
+		}
 
 		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
 		{
@@ -131,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			ArtifactDTO[] documentArtifacts =
 				_documentRepository.RetrieveDocumentsAsync(documentArtifactIds,
-					new HashSet<int>() {relativitySourceJobdArtifactId, relativitySourceCaseFieldArtifactId})
+					new HashSet<int>() { relativitySourceJobdArtifactId, relativitySourceCaseFieldArtifactId })
 					.ConfigureAwait(false)
 					.GetAwaiter()
 					.GetResult();

@@ -23,6 +23,8 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
+	using kCura.IntegrationPoint.Tests.Core.Extensions;
+
 	[TestFixture]
 	[Category("Integration Tests")]
 	public class JobHistoryErrorsBatchingTests : RelativityProviderTemplate
@@ -196,7 +198,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
 			//Create Job and temp table suffix
-			Job job = new Job(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
 
@@ -258,7 +260,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
 			//Create Job and temp table suffix
-			Job job = new Job(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
 			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
@@ -372,7 +374,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
 			//Create Job and temp table suffix
-			Job job = new Job(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
 			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);

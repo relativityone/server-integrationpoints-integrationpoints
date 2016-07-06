@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -19,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent
 		public void TestSetup()
 		{
 			_jobManager = Substitute.For<IJobManager>();
-			_testJob = null;
+			_testJob = JobExtensions.CreateJob();
 			_testGuid = Guid.NewGuid();
 			_task = TaskType.None;
 			_instance = new TaskJobSubmitter(_jobManager, _testJob, _task, _testGuid);
