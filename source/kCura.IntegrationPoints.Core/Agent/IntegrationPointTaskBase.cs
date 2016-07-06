@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             try { emailRecipients = IntegrationPoint.EmailNotificationRecipients; }
             catch
             {
-                //this property might be not loaded on RDO if it's null, so supress exception
+                //this property might be not loaded on RDO if it's null, so suppress exception
             }
             IEnumerable<string> emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim());
             return emailRecipientList;
