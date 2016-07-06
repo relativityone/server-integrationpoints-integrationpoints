@@ -224,6 +224,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var dataFileEncoding = Encoding.UTF8;
 			const string exportedObjName = "files_prefix";
 			const bool exportImages = true;
+			const bool exportMultipleChoiceFieldsAsNested = true;
 
 			_exportSettings.ArtifactTypeId = artifactTypeId;
 			_exportSettings.ExportedObjArtifactId = exportedObjArtifactId;
@@ -234,6 +235,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportSettings.DataFileEncoding = dataFileEncoding;
 			_exportSettings.ExportedObjName = exportedObjName;
 			_exportSettings.ExportImages = exportImages;
+			_exportSettings.ExportMultipleChoiceFieldsAsNested = exportMultipleChoiceFieldsAsNested;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
@@ -246,6 +248,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(exportFile.LoadFileEncoding, dataFileEncoding);
 			Assert.AreEqual(exportFile.LoadFilesPrefix, exportedObjName);
 			Assert.AreEqual(exportFile.ExportImages, exportImages);
+			Assert.AreEqual(exportFile.MulticodesAsNested, exportMultipleChoiceFieldsAsNested);
 		}
 	}
 }

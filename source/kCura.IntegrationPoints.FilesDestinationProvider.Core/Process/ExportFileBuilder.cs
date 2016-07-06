@@ -40,6 +40,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.TypeOfExportedFilePath = ParseFilePath(exportSettings.FilePath);
 			exportFile.FilePrefix = exportSettings.UserPrefix;
 
+			exportFile.MulticodesAsNested = exportSettings.ExportMultipleChoiceFieldsAsNested;
+
 			_delimitersBuilder.SetDelimiters(exportFile, exportSettings);
 
 			return exportFile;

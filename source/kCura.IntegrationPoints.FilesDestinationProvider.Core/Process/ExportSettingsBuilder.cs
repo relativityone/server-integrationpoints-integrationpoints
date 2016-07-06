@@ -54,7 +54,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				VolumeStartNumber = sourceSettings.VolumeStartNumber,
 				VolumePrefix = sourceSettings.VolumePrefix,
 				FilePath = filePath,
-				UserPrefix  = sourceSettings.UserPrefix
+				UserPrefix  = sourceSettings.UserPrefix,
+				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested
 			};
 
 			return exportSettings;

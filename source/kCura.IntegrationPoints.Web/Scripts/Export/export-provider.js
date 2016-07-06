@@ -345,6 +345,8 @@
 		this.FilePath.subscribe(function (value) {
 		    self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
 		});
+        
+		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
 		this.errors = ko.validation.group(this, { deep: true });
 
@@ -380,7 +382,8 @@
 				"VolumeDigitPadding": self.VolumeDigitPadding(),
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"FilePath": self.FilePath(),
-				"UserPrefix": self.UserPrefix()
+				"UserPrefix": self.UserPrefix(),
+				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested()
 			}
 		}
 	}
