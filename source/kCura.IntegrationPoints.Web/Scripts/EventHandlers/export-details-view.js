@@ -3,13 +3,14 @@
 IP.isFileshareProvider = true;
 
 ExportDetailsView.downloadSummaryPage = function () {
+    var dataContainer = new DataContainer();
+    dataContainer.hideContainer();
+
     IP.data.ajax({
         url: IP.utils.generateWebURL('IntegrationPoints', 'ExportDetails'),
         type: 'post',
         dataType: 'html'
     }).then(function (result) {
-        var dataContainer = new DataContainer();
-
         IP.utils.getViewField(IP.nameId).closest('.innerTabTable').replaceWith(result);
 
         var viewModel = new Model(dataContainer);
@@ -23,6 +24,14 @@ var DataContainer = function () {
     this.emailNotification = IP.utils.getViewField(IP.emailNotificationId).siblings('.dynamicViewFieldValue').text();
     this.name = IP.utils.getViewField(IP.nameId).siblings('.dynamicViewFieldValue').text();
     this.settings = JSON.parse(IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue').text());
+
+    this.hideContainer = function () {
+        IP.utils.getViewField(IP.sourceConfiguration).parent().hide();
+        IP.utils.getViewField(IP.overwriteFieldsId).parent().hide();
+        IP.utils.getViewField(IP.sourceProviderId).parent().hide();
+        IP.utils.getViewField(IP.destinationid).parent().hide();
+        IP.utils.getViewField(IP.destinationProviderid).parent().hide();
+    };
 }
 
 var Model = function (dataContainer) {
