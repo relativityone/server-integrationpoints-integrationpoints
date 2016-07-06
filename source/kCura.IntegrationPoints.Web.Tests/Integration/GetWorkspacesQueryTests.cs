@@ -14,8 +14,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
     [TestFixture]
     [Category("Integration Tests")]
     [Ignore("These tests are inconsistent - GetWorkspaceModels sometime returns 0 workspaces")]
-    public class GetWorkspacesQueryTests : SingleWorkspaceTestTemplate
-    {
+    public class GetWorkspacesQueryTests : SourceProviderTemplate
+	{
         private const string _userName = "gbadman@kcura.com";
         private const string _workspaceName = "GetWorkspacesQueryTests";
 
@@ -24,12 +24,33 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
         private List<int> _workspaceIds;
         private IHtmlSanitizerManager _htmlSanitizerManage;
 
-        public GetWorkspacesQueryTests() :
+		private string _oldInstanceSettingValue;
+
+		public GetWorkspacesQueryTests() :
             base(_workspaceName)
         {
         }
 
-        [SetUp]
+		[TestFixtureSetUp]
+		public override void SetUp()
+		{
+			base.SetUp();
+
+			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+		}
+
+		[TestFixtureTearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+
+			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
+			{
+				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
+			}
+		}
+
+		[SetUp]
         public void TestSetup()
         {
             _groupIds = new List<int>();

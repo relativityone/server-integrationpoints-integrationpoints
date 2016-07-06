@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class JobHistoryErrorRepositoryTests : WorkspaceDependentTemplate
+	public class JobHistoryErrorRepositoryTests : RelativityProviderTemplate
 	{
 		private IJobHistoryErrorRepository _instance;
 		private JobHistory _jobHistory;

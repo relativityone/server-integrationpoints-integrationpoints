@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class IntegrationPointServiceTests : WorkspaceDependentTemplate
+	public class IntegrationPointServiceTests : RelativityProviderTemplate
 	{
 		private const string _SOURCECONFIG = "Source Config";
 		private const string _NAME = "Name";
