@@ -1,25 +1,18 @@
-﻿namespace kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent
+﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.ScheduleQueue.Core;
+using NSubstitute;
+using NUnit.Framework;
+using System;
+
+namespace kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent
 {
-	using System;
-
-	using kCura.IntegrationPoints.Core.Contracts.Agent;
-	using kCura.ScheduleQueue.Core;
-
-	using NSubstitute;
-
-	using NUnit.Framework;
-
 	[TestFixture]
 	public class TaskJobSubmitterTests
 	{
 		private TaskJobSubmitter _instance;
-
 		private IJobManager _jobManager;
-
 		private Job _testJob;
-
 		private Guid _testGuid;
-
 		private TaskType _task;
 
 		[SetUp]
@@ -35,11 +28,16 @@
 		[Test]
 		public void TestJobSubmitter()
 		{
+			//Arrange
 			string sorawit = "sorawit";
+
+			//Act
 			_instance.SubmitJob(sorawit);
+
+			//Assert
 			_jobManager.Received(1).CreateJobWithTracker(
-				_testJob, 
-				Arg.Is<TaskParameters>(x => x.BatchInstance == _testGuid && (string)x.BatchParameters == sorawit), 
+				_testJob,
+				Arg.Is<TaskParameters>(x => x.BatchInstance == _testGuid && (string)x.BatchParameters == sorawit),
 				_task,
 				_testGuid.ToString());
 		}
