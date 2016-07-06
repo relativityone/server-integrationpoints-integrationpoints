@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Synchronizers.RDO
+﻿using kCura.IntegrationPoints.Domain;
+
+namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class NativeFileImportService
 	{
@@ -9,7 +11,7 @@
 		public NativeFileImportService()
 		{
 			ImportNativeFiles = false;
-			DestinationFieldName = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
+			DestinationFieldName = Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
 		}
 	}
 }

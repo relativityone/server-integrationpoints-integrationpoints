@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -145,10 +146,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid)
 				.Returns(x => { throw new TypeLoadException(); }, x => _OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID);
 			_objectTypeRepository.RetrieveObjectTypeArtifactId(
-				IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME).Returns(_OBJECT_TYPE_ARTIFACT_ID);
+				IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME).Returns(_OBJECT_TYPE_ARTIFACT_ID);
 
 			_tabRepository.RetrieveTabArtifactId(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID,
-				IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME).Returns(_OBJECT_TYPE_TAB_ID);
+				IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME).Returns(_OBJECT_TYPE_TAB_ID);
 
 			// Create Object Fields
 			IDictionary<Guid, bool> fieldGuids = new Dictionary<Guid, bool>(2)
@@ -159,15 +160,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_artifactGuidRepository.GuidsExist(Arg.Is<List<Guid>>(x => VerifyListOfGuids(fieldGuids.Keys, x)))
 				.Returns(fieldGuids);
 
-			_fieldRepository.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+			_fieldRepository.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int) Relativity.Client.FieldType.WholeNumber).Returns(1);
-			_fieldRepository.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+			_fieldRepository.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int) Relativity.Client.FieldType.FixedLengthText).Returns(2);
 
 			// Create Document Fields
 			_artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid).Returns(false);
 
-			_fieldRepository.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+			_fieldRepository.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				(int) Relativity.Client.ArtifactType.Document, (int) Relativity.Client.FieldType.MultipleObject)
 				.Returns(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID);
 
@@ -196,24 +197,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			// Create Object Type
 			_objectTypeRepository.Received(2)
 				.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
-			_objectTypeRepository.Received(1).RetrieveObjectTypeArtifactId(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
+			_objectTypeRepository.Received(1).RetrieveObjectTypeArtifactId(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 			_artifactGuidRepository.Received(1).InsertArtifactGuidForArtifactId(_OBJECT_TYPE_ARTIFACT_ID, SourceWorkspaceDTO.ObjectTypeGuid);
 
 			_repositoryFactory.Received(1).GetTabRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
-			_tabRepository.Received(1).RetrieveTabArtifactId(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
+			_tabRepository.Received(1).RetrieveTabArtifactId(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 			_tabRepository.Received(1).Delete(_OBJECT_TYPE_TAB_ID);
 
 			// Create Object Fields
-			_fieldRepository.Received(1).RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+			_fieldRepository.Received(1).RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int)Relativity.Client.FieldType.WholeNumber);
-			_fieldRepository.Received(1).RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+			_fieldRepository.Received(1).RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int)Relativity.Client.FieldType.FixedLengthText);
 			_artifactGuidRepository.Received(1).InsertArtifactGuidsForArtifactIds(Arg.Any<Dictionary<Guid, int>>());
 			
 			// Create Document Fields
 			_artifactGuidRepository.Received(1).GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
 			_fieldRepository.Received(1)
-				.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				.RetrieveField(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 					(int) Relativity.Client.ArtifactType.Document, (int) Relativity.Client.FieldType.MultipleObject);
 			_fieldRepository.Received(1).RetrieveArtifactViewFieldId(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID);
 			_fieldRepository.Received(1).UpdateFilterType(_DOCUMENT_SOURCE_WORKSPACE_ARTIFACT_VIEW_FIELD_ID, "Popup");

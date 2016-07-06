@@ -195,6 +195,10 @@
       <Project>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>

@@ -53,11 +53,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return documents.FirstOrDefault();
 		}
 
-		public async Task<ArtifactDTO> RetrieveDocumentAsync(string docIdentifierField, string docIdentifierValue)
+		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(string docIdentifierField, ICollection<string> docIdentifierValues)
 		{
 			var documentsQuery = new Query()
 			{
-				Condition = $@"'{docIdentifierField}' == '{docIdentifierValue}'",
+				Condition = $@"'{docIdentifierField}' in ['{String.Join("','", docIdentifierValues)}']",
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception("Unable to retrieve document", e);
 			}
 
-			return documents.FirstOrDefault();
+			return documents;
 		}
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)

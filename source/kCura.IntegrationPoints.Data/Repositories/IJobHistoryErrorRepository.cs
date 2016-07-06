@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -12,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="jobHistoryArtifactId">Job History Artifact Id to gather job history errors for</param>
 		/// <param name="errorType">Error Type choice to gather job history errors for</param>
 		/// <returns>List of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
-		IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType);
+		ICollection<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType);
 
 		/// <summary>
 		/// Mass edits the Job History Errors 

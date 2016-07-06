@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Toggle;
 using kCura.IntegrationPoints.Data.Transformers;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;

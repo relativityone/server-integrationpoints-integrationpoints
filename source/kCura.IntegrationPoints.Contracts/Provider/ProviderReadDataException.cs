@@ -12,6 +12,10 @@ namespace kCura.IntegrationPoints.Contracts.Provider
 	{
 		private string _identifier;
 
+		/// <summary>
+		/// Gets or sets the item identifier.
+		/// <remarks>This idenfier will be the identfier of the data that the Data Source Provider excepts on when reading.</remarks>
+		/// </summary>
 		public String Identifier
 		{
 			set
