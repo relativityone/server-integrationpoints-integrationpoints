@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Domain
+﻿namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// Makes an initial call into an application domain to perform setup work.

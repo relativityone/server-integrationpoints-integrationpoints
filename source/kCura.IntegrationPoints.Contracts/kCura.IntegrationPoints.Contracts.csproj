@@ -82,6 +82,7 @@
     <Compile Include="AssemblyExtension.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="IProviderFactory.cs" />
+    <Compile Include="IStartUp.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
