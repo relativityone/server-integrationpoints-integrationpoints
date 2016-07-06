@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -27,17 +23,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             return TaskType.ExportWorker;
         }
 
-		/// <summary>
-		/// This method returns record (batch) ids that should be processed by ExportWorker class
-		/// </summary>
-		/// <param name="job">Details of the export job</param>
-		/// <returns>List of batch ids to be processed</returns>
-	    public override IEnumerable<string> GetUnbatchedIDs(Job job)
+		public override int BatchSize
 		{
-			//Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
-			//so for now we need to create only one worker job
-			yield return job.JobId.ToString();
+			get
+			{
+				//Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
+				//so for now we need to create only one worker job
+				//Instead of overriding GetUnbatchedIDs we change BatchSize
+				//Overriding GetUnbatchedIDs would result in incorrect "Items Imported" property value (1 instead of document count)
+				return int.MaxValue;
+			}
 		}
-
 	}
 }
