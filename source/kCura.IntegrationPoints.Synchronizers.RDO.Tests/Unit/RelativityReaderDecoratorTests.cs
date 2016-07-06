@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				new DataColumn(_Column1Name),
 				new DataColumn(_Column2Name),
 				new DataColumn(_Column3Name),
-				new DataColumn(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD) });
+				new DataColumn(kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD) });
 			table.Rows.Add(1, "ABC", "EFG", _ExpectNativeFilePath, _ExpectFolderInformationPath);
 			table.Rows.Add(2, "Name", "DataTable");
 			table.Rows.Add(3, "9", "Testing");
@@ -112,8 +112,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 					FieldMapType = FieldMapTypeEnum.FolderPathInformation,
 					SourceField = new FieldEntry()
 					{
-						DisplayName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
-						FieldIdentifier = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD,
+						DisplayName = kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
+						FieldIdentifier = kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
 						FieldType = FieldType.String,
 						IsIdentifier = false
 					}

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;

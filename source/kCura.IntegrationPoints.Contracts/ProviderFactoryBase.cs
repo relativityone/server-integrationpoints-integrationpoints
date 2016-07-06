@@ -11,9 +11,10 @@ namespace kCura.IntegrationPoints.Contracts
 	public abstract class ProviderFactoryBase : IProviderFactory
 	{
 		/// <summary>
-		/// Defines how to construct Providers.
+		/// Creates an instance of the given Provider.
 		/// </summary>
-		/// <param name="providerType">The type of the Provider.</param>
+		/// <remarks>If your Provider requires constructor parameters, create a class that implements this method and it will be called an instance of your Provider is needed.</remarks>
+		/// <param name="providerType">The type of the Provider to create.</param>
 		/// <returns>The concrete class implementing the <see cref="IDataSourceProvider"/> interface.</returns>
 		public abstract IDataSourceProvider CreateInstance(Type providerType);
 

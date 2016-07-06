@@ -2,11 +2,12 @@
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Readers;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
@@ -81,8 +82,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					DataColumn[] columns = new[]
 					{
 						new DataColumn(identifier.SourceField.FieldIdentifier),
-						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
-						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD , _sourceJobDto.Name)
+						new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
+						new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD , _sourceJobDto.Name)
 					};
 
 					int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Readers;
 using NSubstitute;
 using NUnit.Framework;
 

@@ -7,6 +7,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Security;
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 string encryptedSettings = _securityManager.Encrypt(data.ToString());
                 IDataSourceProvider ftpProvider = _providerFactory.GetDataProvider(Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler), _helper);
-                IEnumerable<Contracts.Models.FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
+                IEnumerable<FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
                 result = fields.ToList();
             }
             catch (Exception ex)

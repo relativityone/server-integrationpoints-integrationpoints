@@ -72,12 +72,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyTempTableCountAndEntries(tempTable, tableName, documentIds);
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void CreateScratchTableAndDeleteErroredDocuments(bool useEDDSResource)
+		[TestCase(true, 5, 1)]
+		[TestCase(false, 1500, 1500)]
+		public void CreateScratchTableAndDeleteErroredDocuments(bool useEDDSResource, int numDocs, int numDocsWithErrors)
 		{
 			//ARRANGE
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numDocs));
 			string tablePrefix = "RKO";
 			string tableSuffix = Guid.NewGuid().ToString();
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
@@ -93,17 +93,25 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			string tableName = useEDDSResource ? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
 			int docArtifactIdToRemove = controlNumbersByDocumentIds.Keys.ElementAt(2);
-			string docIdentifierToRemove = controlNumbersByDocumentIds[docArtifactIdToRemove];
 
-			scratchTableRepository.RemoveErrorDocument(docIdentifierToRemove);
+			if (numDocsWithErrors == 1)
+			{
+				string docIdentifierToRemove = controlNumbersByDocumentIds[docArtifactIdToRemove];
+				scratchTableRepository.RemoveErrorDocuments(new List<string> { docIdentifierToRemove});
+			}
+			else //all docs have errors
+			{
+				List<string> docIdentifiers = controlNumbersByDocumentIds.Values.ToList();
+				scratchTableRepository.RemoveErrorDocuments(docIdentifiers);
+			}
 
 			//ASSERT
-			VerifyErroredDocumentRemoval(tableName, docArtifactIdToRemove, documentIds.Count - 1, useEDDSResource);
+			VerifyErroredDocumentRemoval(tableName, docArtifactIdToRemove, documentIds.Count - numDocsWithErrors, useEDDSResource);
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void CreateScratchTableAndErroredDocumentDoesntExist(bool useEDDSResource)
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		public void CreateScratchTableAndErroredDocumentDoesntExist(bool useEDDSResource, bool emptyList)
 		{
 			//ARRANGE
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
@@ -123,7 +131,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//ASSERT
 			try
 			{
-				scratchTableRepository.RemoveErrorDocument("Doesn't Exist");
+				if (!emptyList)
+				{
+					scratchTableRepository.RemoveErrorDocuments(new List<string> { "Doesn't Exist" });
+				}
+				else
+				{
+					scratchTableRepository.RemoveErrorDocuments(new List<string> {});
+				}
+				
 			}
 			catch (Exception ex)
 			{
@@ -249,25 +265,29 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		private void VerifyErroredDocumentRemoval(string tableName, int erroredDocumentArtifactId, int newCount, bool isScratchTableOnEDDSResource)
+		private void VerifyErroredDocumentRemoval(string tableName, int erroredDocumentArtifactId, int expectedNewCount, bool isScratchTableOnEDDSResource)
 		{
 			string targetDatabaseFormat = isScratchTableOnEDDSResource ? "[EDDSResource].." : "[Resource].";
-			string getErroredDocumentQuery =
+
+			if (expectedNewCount != 0)
+			{
+				string getErroredDocumentQuery =
 				$"SELECT COUNT(*) FROM {targetDatabaseFormat}[{tableName}] WHERE [ArtifactID] = {erroredDocumentArtifactId}";
 
-			bool entryExists = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<bool>(getErroredDocumentQuery);
-			if (entryExists)
-			{
-				throw new Exception(
-					$"Error: {tableName} still contains Document ArtifactID {erroredDocumentArtifactId}, it should have been removed.");
+				bool entryExists = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<bool>(getErroredDocumentQuery);
+				if (entryExists)
+				{
+					throw new Exception(
+						$"Error: {tableName} still contains Document ArtifactID {erroredDocumentArtifactId}, it should have been removed.");
+				}
 			}
 
 			string scratchTableCountQuery = $"SELECT COUNT(*) FROM {targetDatabaseFormat}[{tableName}]";
 			int entryCount = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<int>(scratchTableCountQuery);
 
-			if (entryCount != newCount)
+			if (entryCount != expectedNewCount)
 			{
-				throw new Exception($"Error: {tableName} has an incorrect count. Expected: {newCount}. Actual: {entryCount}");
+				throw new Exception($"Error: {tableName} has an incorrect count. Expected: {expectedNewCount}. Actual: {entryCount}");
 			}
 		}
 

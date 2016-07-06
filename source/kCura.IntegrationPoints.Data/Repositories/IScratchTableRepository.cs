@@ -20,13 +20,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// Allows you to add artifact ids into temp tables
         /// </summary>
         /// <param name="artifactIds">List of artifact ids to add to temp table</param>
-        void AddArtifactIdsIntoTempTable(IList<int> artifactIds);
+        void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds);
 
         /// <summary>
         /// Removes error documents from temp table list (goes in line with ignoring errored documents)
         /// </summary>
-        /// <param name="docIdentifier">Identifier for the doc being removed from the list</param>
-        void RemoveErrorDocument(string docIdentifier);
+        /// <param name="docIdentifiers">Identifiers for the documents being removed from the scratch table</param>
+        void RemoveErrorDocuments(ICollection<string> docIdentifiers);
 
         /// <summary>
         /// Retrieve a datareader for reading from the temp table

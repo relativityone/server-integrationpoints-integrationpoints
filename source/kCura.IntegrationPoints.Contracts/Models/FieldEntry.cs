@@ -32,6 +32,10 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		/// </summary>
 		public string FieldIdentifier { get; set; }
 
+		/// <summary>
+		/// Gets or sets the actual field name.
+		/// <remarks>This is commonly the field's display name without spaces.</remarks>
+		/// </summary>
 		public string ActualName
 		{
 			get

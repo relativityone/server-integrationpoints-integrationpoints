@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
