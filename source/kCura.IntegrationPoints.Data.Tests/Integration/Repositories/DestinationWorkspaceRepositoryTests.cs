@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain.Models;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
