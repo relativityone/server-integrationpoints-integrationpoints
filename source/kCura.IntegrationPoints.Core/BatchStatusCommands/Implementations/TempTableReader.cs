@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Readers;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {

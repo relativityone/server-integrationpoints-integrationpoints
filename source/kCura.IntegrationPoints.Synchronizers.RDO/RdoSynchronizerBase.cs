@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public abstract class RdoSynchronizerBase : Contracts.Synchronizer.IDataSynchronizer, IBatchReporter, IEmailBodyData
+	public abstract class RdoSynchronizerBase : IDataSynchronizer, IBatchReporter, IEmailBodyData
 	{
 		public event BatchCompleted OnBatchComplete;
 

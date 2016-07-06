@@ -81,11 +81,7 @@
     </Compile>
     <Compile Include="AssemblyExtension.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
-    <Compile Include="DefaultProviderFactory.cs" />
-    <Compile Include="DefaultSynchronizerFactory.cs" />
-    <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IProviderFactory.cs" />
-    <Compile Include="ISynchronizerFactory.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
@@ -99,13 +95,7 @@
     <Compile Include="ProviderFactoryBase.cs" />
     <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
-    <Compile Include="IStartUp.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
-    <Compile Include="Readers\DataColumnWithValue.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Readers\RelativityReaderBase.cs" />
-    <Compile Include="Synchronizer\IDataSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -116,6 +106,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"

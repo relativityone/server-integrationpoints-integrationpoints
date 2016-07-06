@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		  IHelper helper,
 		  IDataProviderFactory dataProviderFactory,
 		  kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-		  kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 		  IJobHistoryService jobHistoryService,
 		  JobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager) : base(caseServiceContext,

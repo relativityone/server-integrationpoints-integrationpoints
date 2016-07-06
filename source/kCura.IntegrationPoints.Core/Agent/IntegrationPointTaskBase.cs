@@ -5,7 +5,6 @@ using System.Linq;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services;
@@ -15,7 +14,9 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Agent
         protected kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
         protected IJobHistoryService _jobHistoryService;
         protected JobHistoryErrorService _jobHistoryErrorService;
-        protected kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
+        protected ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
         protected IJobManager _jobManager;
 
 
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Agent
           IHelper helper,
           IDataProviderFactory dataProviderFactory,
           kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-          kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+          ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
           IJobHistoryService jobHistoryService,
           JobHistoryErrorService jobHistoryErrorService,
           IJobManager jobManager)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Readers;
+using kCura.IntegrationPoints.Domain.Readers;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit

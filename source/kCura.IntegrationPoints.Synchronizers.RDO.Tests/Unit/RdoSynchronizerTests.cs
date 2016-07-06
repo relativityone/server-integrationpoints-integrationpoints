@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
