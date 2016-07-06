@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void RetrieveJobHistoryErrorArtifactIds_NoError(JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			//act
-			IList<int> result = _instance.RetrieveJobHistoryErrorArtifactIds(_jobHistory.ArtifactId, errorType);
+			ICollection<int> result = _instance.RetrieveJobHistoryErrorArtifactIds(_jobHistory.ArtifactId, errorType);
 
 			//assert
 			Assert.IsNotNull(result);
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				: JobHistoryErrorDTO.Choices.ErrorType.Values.Job;
 
 			// act
-			IList <int> result = _instance.RetrieveJobHistoryErrorArtifactIds(_jobHistory.ArtifactId, type);
+			ICollection<int> result = _instance.RetrieveJobHistoryErrorArtifactIds(_jobHistory.ArtifactId, type);
 
 			// assert
 			Assert.IsNotNull(result);
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				: JobHistoryErrorDTO.Choices.ErrorType.Values.Job;
 
 			// act
-			IList<int> result = _instance.RetrieveJobHistoryErrorArtifactIds(_jobHistory.ArtifactId, type);
+			ICollection<int> result = _instance.RetrieveJobHistoryErrorArtifactIds(_jobHistory.ArtifactId, type);
 
 			// assert
 			Assert.IsNotNull(result);
