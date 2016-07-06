@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			var exportSettings = new ExportSettings
 			{
+				StartExportAtRecord = sourceSettings.StartExportAtRecord,
 				ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
 				ExportedObjName = sourceSettings.SavedSearch,
 				ExportImages = sourceSettings.ExportImagesChecked,

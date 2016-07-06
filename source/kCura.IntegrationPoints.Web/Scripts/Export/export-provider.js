@@ -92,6 +92,10 @@
 
 		this.HasBeenRun = ko.observable(IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun());
 
+		this.StartExportAtRecord = ko.observable(state.StartExportAtRecord || 1).extend({
+			required: true
+		});
+
 		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
 		});
@@ -348,6 +352,7 @@
 			return {
 				"SavedSearchArtifactId": self.SavedSearch().value,
 				"SavedSearch": self.SavedSearch().displayName,
+				"StartExportAtRecord": self.StartExportAtRecord(),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"CopyFileFromRepository": self.CopyFileFromRepository(),

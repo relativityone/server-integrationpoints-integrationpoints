@@ -200,6 +200,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Subdirectory Digit Padding must be non-negative number"));
 		}
 
+		[Test]
+		[TestCase(1)]
+		[TestCase(10)]
+		[TestCase(9876)]
+		public void ItShouldSetStartExportAtRecordDecreasedByOne(int startExportAtRecord)
+		{
+			_exportSettings.StartExportAtRecord = startExportAtRecord;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.AreEqual(startExportAtRecord - 1, exportFile.StartAtDocumentNumber);
+		}
+
 		public void ItShouldRewriteOtherSettings()
 		{
 			const int artifactTypeId = 10;

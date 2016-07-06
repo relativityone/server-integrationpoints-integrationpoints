@@ -16,10 +16,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             var imagePrecs = new List<Pair>();
             imagePrecs.Add(new Pair("-1", "Original"));
             expFile.ImagePrecedence = imagePrecs.ToArray();
-            expFile.LogFileFormat = LoadFileType.FileFormat.Opticon;
             expFile.ObjectTypeName = "Document";
             expFile.RenameFilesToIdentifier = true;
-            expFile.StartAtDocumentNumber = 0;
             expFile.TextFileEncoding = null;
             expFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch;
             expFile.ViewID = 0;

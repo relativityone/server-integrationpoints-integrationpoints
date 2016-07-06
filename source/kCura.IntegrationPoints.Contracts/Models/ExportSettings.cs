@@ -12,6 +12,7 @@
 	{
 		public int SavedSearchArtifactId { set; get; }
 		public string SavedSearch { set; get; }
+		public int StartExportAtRecord { get; set; }
 		public string Fileshare { get; set; }
 		public bool CopyFileFromRepository { get; set; }
 		public bool OverwriteFiles { get; set; }

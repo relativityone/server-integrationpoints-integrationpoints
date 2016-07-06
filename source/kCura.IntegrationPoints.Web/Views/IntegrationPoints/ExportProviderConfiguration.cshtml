@@ -29,6 +29,14 @@
 						<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun()"></select>
 					</td>
 				</tr>
+				<tr>
+					<td class="editFieldNameRequired">
+						Start #:
+					</td>
+					<td class="editFieldValue">
+						<input id="start-export-at-record" type="number" min="1" data-bind="value: StartExportAtRecord, disable: HasBeenRun()" />
+					</td>
+				</tr>
 			</table>
 		</div>
 
@@ -176,13 +184,13 @@
 									Start #:
 								</td>
 								<td class="editFieldValue">
-									<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
+									<input id="subdirectory-start-files-input" type="number" min="1" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
 								</td>
 								<td class="editFieldNameRequired">
 									# of digits:
 								</td>
 								<td class="editFieldValue">
-									<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
+									<input id="subdirectory-digit-padding-input" type="number" min="1" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
 								</td>
 							</tr>
 							<tr>
@@ -190,7 +198,7 @@
 									Max Files:
 								</td>
 								<td class="editFieldValue">
-									<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
+									<input id="subdirectory-max-files-input" type="number" min="1" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
 								</td>
 							</tr>
 						</table>
@@ -222,13 +230,13 @@
 									Start #:
 								</td>
 								<td class="editFieldValue">
-									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
+									<input id="volume-start-files-input" type="number" min="1" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
 								</td>
 								<td class="editFieldNameRequired">
 									# of digits:
 								</td>
 								<td class="editFieldValue">
-									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
+									<input id="volume-digit-padding-input" type="number" min="1" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
 								</td>
 							</tr>
 							<tr>
@@ -236,7 +244,7 @@
 									Max Size (MB):
 								</td>
 								<td class="editFieldValue">
-									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
+									<input id="volume-max-size-input" type="number" min="1" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
 								</td>
 							</tr>
 						</table>

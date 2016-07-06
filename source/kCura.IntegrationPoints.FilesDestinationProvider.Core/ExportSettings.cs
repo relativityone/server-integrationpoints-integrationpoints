@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			UserPrefix = 2
 		}
 
+		public int StartExportAtRecord { get; set; }
 		public int ExportedObjArtifactId { get; set; }
 		public string ExportedObjName { get; set; }
 		public int WorkspaceId { get; set; }
