@@ -40,21 +40,20 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
 			{
-
 				switch (_updateStatusType.ErrorTypes)
 				{
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress);
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobError, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress, false);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobError, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress, false);
 						break;
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress);
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStartExcluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress, false);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemErrorsExcluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 				}
 			}
@@ -63,16 +62,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				switch (_updateStatusType.ErrorTypes)
 				{
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobError, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobError, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 				}
 			}
@@ -87,19 +86,17 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 				{
-					UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemComplete, jobHistoryErrorRepository,
-						ErrorStatusChoices.JobHistoryErrorRetried);
+					UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorRetried);
 				}
 				else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly ||
 						_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem)
 				{
-					UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobComplete, jobHistoryErrorRepository,
-						ErrorStatusChoices.JobHistoryErrorRetried);
+					UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobError, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorRetried);
 				}
 			}
 		}
 
-		private void UpdateStatuses(IScratchTableRepository scratchTable, IJobHistoryErrorRepository jobHistoryErrorRepository, Relativity.Client.Choice errorStatus)
+		private void UpdateStatuses(IScratchTableRepository scratchTable, IJobHistoryErrorRepository jobHistoryErrorRepository, Relativity.Client.Choice errorStatus, bool disposeTempTable = true)
 		{
 			try
 			{
@@ -114,7 +111,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("C2B46E70-20EF-4A08-8BCF-9A15274ECC55");
 
-				scratchTable.Dispose();
+				if (disposeTempTable)
+				{
+					scratchTable.Dispose();
+				}
 			}
 		}
 

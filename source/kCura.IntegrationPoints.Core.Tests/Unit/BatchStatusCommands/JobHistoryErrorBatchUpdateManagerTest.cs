@@ -40,10 +40,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 
 
-		private const string _SCRATCHTABLE_ITEMSTART = "ItemStart";
-		private const string _SCRATCHTABLE_ITEMCOMPLETE = "ItemComplete";
-		private const string _SCRATCHTABLE_JOBSTART = "JobStart";
-		private const string _SCRATCHTABLE_JOBCOMPLETE = "JobComplete";
+		private const string _SCRATCHTABLE_ITEMERRORS_INCLUDED = "ItemErrorsIncluded";
+		private const string _SCRATCHTABLE_JOBERROR = "JobError";
 
 		[SetUp]
 		public void Setup()
@@ -61,15 +59,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_repositoryFactory.GetObjectTypeRepository(_sourceWorkspaceId).Returns(_objectTypeRepository);
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(_jobHistoryErrorTypeId);
 
-			_jobHistoryErrorManager.JobHistoryErrorItemStart.Returns(Substitute.For<IScratchTableRepository>());
-			_jobHistoryErrorManager.JobHistoryErrorItemComplete.Returns(Substitute.For<IScratchTableRepository>());
-			_jobHistoryErrorManager.JobHistoryErrorJobStart.Returns(Substitute.For<IScratchTableRepository>());
-			_jobHistoryErrorManager.JobHistoryErrorJobComplete.Returns(Substitute.For<IScratchTableRepository>());
+			_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded.Returns(Substitute.For<IScratchTableRepository>());
+			_jobHistoryErrorManager.JobHistoryErrorJobError.Returns(Substitute.For<IScratchTableRepository>());
 
-			_jobHistoryErrorManager.JobHistoryErrorItemStart.GetTempTableName().Returns(_SCRATCHTABLE_ITEMSTART);
-			_jobHistoryErrorManager.JobHistoryErrorItemComplete.GetTempTableName().Returns(_SCRATCHTABLE_ITEMCOMPLETE);
-			_jobHistoryErrorManager.JobHistoryErrorJobStart.GetTempTableName().Returns(_SCRATCHTABLE_JOBSTART);
-			_jobHistoryErrorManager.JobHistoryErrorJobComplete.GetTempTableName().Returns(_SCRATCHTABLE_JOBCOMPLETE);
+			_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded.GetTempTableName().Returns(_SCRATCHTABLE_ITEMERRORS_INCLUDED);
+			_jobHistoryErrorManager.JobHistoryErrorJobError.GetTempTableName().Returns(_SCRATCHTABLE_JOBERROR);
 
 			_testInstance = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,
 				_sourceWorkspaceId, _submittedBy, _updateStatusType);
@@ -113,8 +107,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
-			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_JOBERROR);
+			_jobHistoryErrorManager.JobHistoryErrorJobError.Received(1).Dispose();
 		}
 
 		[Test]
@@ -129,11 +123,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
-			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_JOBERROR);
+			_jobHistoryErrorManager.JobHistoryErrorJobError.Received(1).Dispose();
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
-			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMERRORS_INCLUDED);
+			_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded.Received(1).Dispose();
 		}
 
 		[Test]
@@ -148,8 +142,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
-			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMERRORS_INCLUDED);
+			_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded.Received(1).Dispose();
 		}
 
 		[Test]
@@ -179,8 +173,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
-			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
+				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBERROR);
+			_jobHistoryErrorManager.JobHistoryErrorJobError.Received(0).Dispose();
 		}
 
 		[Test]
@@ -195,11 +189,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
-			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
+				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBERROR);
+			_jobHistoryErrorManager.JobHistoryErrorJobError.Received(0).Dispose();
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
-			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMERRORS_INCLUDED);
+			_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded.Received(1).Dispose();
 		}
 
 		[Test]
@@ -214,8 +208,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
-			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
+				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_ITEMERRORS_INCLUDED);
+			_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded.Received(0).Dispose();
 		}
 
 		[Test]
@@ -305,8 +299,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusRetriedChoiceArtifactId, _SCRATCHTABLE_JOBCOMPLETE);
-			_jobHistoryErrorManager.JobHistoryErrorJobComplete.Received(1).Dispose();
+				_errorStatusRetriedChoiceArtifactId, _SCRATCHTABLE_JOBERROR);
+			_jobHistoryErrorManager.JobHistoryErrorJobError.Received(1).Dispose();
 		}
 
 		[Test]
@@ -321,8 +315,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusRetriedChoiceArtifactId, _SCRATCHTABLE_JOBCOMPLETE);
-			_jobHistoryErrorManager.JobHistoryErrorJobComplete.Received(1).Dispose();
+				_errorStatusRetriedChoiceArtifactId, _SCRATCHTABLE_JOBERROR);
+			_jobHistoryErrorManager.JobHistoryErrorJobError.Received(1).Dispose();
 		}
 
 		[Test]
@@ -337,8 +331,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
-				_errorStatusRetriedChoiceArtifactId,_SCRATCHTABLE_ITEMCOMPLETE);
-			_jobHistoryErrorManager.JobHistoryErrorItemComplete.Received(1).Dispose();
+				_errorStatusRetriedChoiceArtifactId, _SCRATCHTABLE_ITEMERRORS_INCLUDED);
+			_jobHistoryErrorManager.JobHistoryErrorItemErrorsIncluded.Received(1).Dispose();
 		}
 	}
 }

@@ -137,7 +137,7 @@
     </Compile>
     <Compile Include="Integration\Installers\InstallEveryTimeTests.cs" />
     <Compile Include="Integration\InstallDllTests.cs" />
-    <Compile Include="Integration\DeleteHistoryServiceTest.cs" />
+    <Compile Include="Integration\EventHandlerTest.cs" />
     <Compile Include="Integration\Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Integration\Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Integration\ViewErrors.cs" />
@@ -153,6 +153,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
@@ -173,6 +177,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
       <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
       <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

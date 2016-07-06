@@ -9,29 +9,19 @@ namespace kCura.IntegrationPoints.Core.Managers
 	public interface IJobHistoryErrorManager
 	{
 		/// <summary>
-		/// Scratch table repository for updating job-level Job History Errors at the start of a job
+		/// Scratch table repository for updating a job-level Job History Error
 		/// </summary>
-		IScratchTableRepository JobHistoryErrorJobStart { get; }
+		IScratchTableRepository JobHistoryErrorJobError { get; }
 
 		/// <summary>
-		/// Scratch table repository for updating job-level Job History Errors at the end of a job
+		/// Scratch table repository for updating item-level Job History Errors that are included in the new job (only used for Retry jobs)
 		/// </summary>
-		IScratchTableRepository JobHistoryErrorJobComplete { get; }
+		IScratchTableRepository JobHistoryErrorItemErrorsIncluded { get; }
 
 		/// <summary>
-		/// Scratch table repository for updating item-level Job History Errors that are included in the retry at the start of a job
+		/// Scratch table repository for updating item-level Job History Errors that are excluded the new job
 		/// </summary>
-		IScratchTableRepository JobHistoryErrorItemStart { get; }
-
-		/// <summary>
-		/// Scratch table repository for updating item-level Job History Errors at the end of a job
-		/// </summary>
-		IScratchTableRepository JobHistoryErrorItemComplete { get; }
-
-		/// <summary>
-		/// Scratch table repository for updating item-level Job History Errors that are excluded from the retry at the start of a job
-		/// </summary>
-		IScratchTableRepository JobHistoryErrorItemStartExcluded { get; }
+		IScratchTableRepository JobHistoryErrorItemErrorsExcluded { get; }
 
 		/// <summary>
 		/// Prepares the temp tables and determines the Update Status Type for updating errors at start and complete
