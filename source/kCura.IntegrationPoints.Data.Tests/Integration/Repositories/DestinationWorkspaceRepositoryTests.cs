@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyDocumentTagging(documentArtifactIds, jobHistory.Name);
 		}
 
-	[Test]
+		[Test]
 		public void Create_DestinationWorkspaceDTOWithInvalidWorkspaceId_ThrowsException()
 		{
 			//Arrange
