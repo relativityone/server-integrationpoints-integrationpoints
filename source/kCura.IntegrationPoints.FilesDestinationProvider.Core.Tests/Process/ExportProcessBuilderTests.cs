@@ -172,7 +172,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
             _exportProcessBuilder.Create(settings);
 
-            CollectionAssert.AreEquivalent(expectedFilteredFields, _exportFile.SelectedViewFields.Select(x => x.FieldArtifactId));
+            CollectionAssert.AreEquivalent(expectedFilteredFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
         }
 
         [Test]
@@ -194,6 +194,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             _loggingMediator.Received().RegisterEventHandlers(_userMessageNotification, exporter);
             exporter.Received().InteractionManager = _userNotification;
         }
+
+		[Test]
+		public void ItShouldMaintainFieldsOrder()
+		{
+			// arrange
+			var exportableFieldIds = new List<int> { 1, 2, 3, 4, 5, 6 };
+			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(exportableFieldIds));
+
+			var expectedFieldIds = new List<int> { 2, 3, 1 };
+
+			var settings = new ExportSettings
+			{
+				SelViewFieldIds = expectedFieldIds
+			};
+
+			// act
+			_exportProcessBuilder.Create(settings);
+
+			// assert
+			CollectionAssert.AreEqual(expectedFieldIds, _exportFile.SelectedViewFields.Select(x => x.AvfId));
+		}
 
         private void MockSearchManagerReturnValue(ViewFieldInfo[] expectedExportableFields)
         {

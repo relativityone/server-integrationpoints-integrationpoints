@@ -14,26 +14,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 
 		public enum ImageDataFileFormat
 		{
-			Opticon,
-			IPRO,
-			IPRO_FullText
+			Opticon = 0,
+			IPRO = 1,
+			IPRO_FullText = 2
 		}
 
 		public enum DataFileFormat
 		{
-			Concordance,
-			HTML,
-			CSV,
-			Custom
+			Concordance = 0,
+			HTML = 1,
+			CSV = 2,
+			Custom = 3
 		}
 
 		public enum FilePathType
 		{
-			Relative,
-			Absolute,
-			UserPrefix
+			Relative = 0,
+			Absolute = 1,
+			UserPrefix = 2
 		}
 
+		public int StartExportAtRecord { get; set; }
 		public int ExportedObjArtifactId { get; set; }
 		public string ExportedObjName { get; set; }
 		public int WorkspaceId { get; set; }
@@ -65,5 +66,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public int VolumeMaxSize { get; set; }
 		public FilePathType FilePath { get; set; }
 		public string UserPrefix { get; set; }
+		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
 	}
 }

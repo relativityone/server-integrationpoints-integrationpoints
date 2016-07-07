@@ -131,6 +131,7 @@ var IP = IP || {};
 
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
+		this.isSourceProviderDisabled = ko.observable(false);
 
 		this.SourceProviderConfiguration = ko.observable();
 
@@ -232,16 +233,20 @@ var IP = IP || {};
 		this.artifactTypeID = ko.observable().extend({ required: true });
    
 
-		//this.selectedDestinationType.subscribe(function (selectedValue) {
-		//    if (selectedValue === "Fileshare") {
-		//        self.artifactTypeID(10);
-		//    }
-		//    else {
-		//        self.artifactTypeID(settings.artifactTypeID);
-		//    }
-		//});
-		//CaseArtifactId
-		//ParentObjectIdSourceFieldName
+		this.selectedDestinationType.subscribe(function (selectedValue) {
+		    var fileshareChoice = self.destinationTypes().filter(function (obj) {
+		        return obj.displayName === "Fileshare";
+		    });
+
+		    if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID) {
+		        var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+		        parentModel.source.selectedType(relativitySourceProviderGuid);
+		        parentModel.source.isSourceProviderDisabled(true);
+		    }
+		    else {
+		        parentModel.source.isSourceProviderDisabled(false);
+		    }
+		});
 
 		this.UpdateSelectedItem = function () {
 			self.artifactTypeID(settings.artifactTypeID);

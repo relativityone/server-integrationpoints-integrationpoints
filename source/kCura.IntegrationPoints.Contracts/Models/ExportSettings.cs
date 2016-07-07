@@ -12,6 +12,7 @@
 	{
 		public int SavedSearchArtifactId { set; get; }
 		public string SavedSearch { set; get; }
+		public int StartExportAtRecord { get; set; }
 		public string Fileshare { get; set; }
 		public bool CopyFileFromRepository { get; set; }
 		public bool OverwriteFiles { get; set; }
@@ -38,5 +39,6 @@
 		public int VolumeMaxSize { get; set; }
 		public string FilePath { get; set; }
 		public string UserPrefix { get; set; }
+		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
 	}
 }

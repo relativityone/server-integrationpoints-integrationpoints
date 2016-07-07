@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -96,10 +97,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult ExportDetails(ExportUsingSavedSearchSettings settings)
+		public ActionResult ExportDetails()
 		{
-			_apiLog.LogDebug("Requesting summary page for export with model: {@Model}", settings);
-			return PartialView(settings);
+			return PartialView();
 		}
 
 		public ActionResult Details(int id)
