@@ -92,6 +92,10 @@
 
 		this.HasBeenRun = ko.observable(IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun());
 
+		this.StartExportAtRecord = ko.observable(state.StartExportAtRecord || 1).extend({
+			required: true
+		});
+
 		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
 		});
@@ -341,6 +345,8 @@
 		this.FilePath.subscribe(function (value) {
 		    self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
 		});
+        
+		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
 		this.errors = ko.validation.group(this, { deep: true });
 
@@ -348,6 +354,7 @@
 			return {
 				"SavedSearchArtifactId": self.SavedSearch().value,
 				"SavedSearch": self.SavedSearch().displayName,
+				"StartExportAtRecord": self.StartExportAtRecord(),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"CopyFileFromRepository": self.CopyFileFromRepository(),
@@ -375,7 +382,8 @@
 				"VolumeDigitPadding": self.VolumeDigitPadding(),
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"FilePath": self.FilePath(),
-				"UserPrefix": self.UserPrefix()
+				"UserPrefix": self.UserPrefix(),
+				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested()
 			}
 		}
 	}

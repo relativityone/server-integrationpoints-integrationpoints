@@ -24,6 +24,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			exportFile.ArtifactID = exportSettings.ExportedObjArtifactId;
 
+			SetStartDocumentNumber(exportSettings, exportFile);
+
 			exportFile.ExportNative = exportSettings.IncludeNativeFilesPath;
 			exportFile.FolderPath = exportSettings.ExportFilesLocation;
 			exportFile.Overwrite = exportSettings.OverwriteFiles;
@@ -38,9 +40,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.TypeOfExportedFilePath = ParseFilePath(exportSettings.FilePath);
 			exportFile.FilePrefix = exportSettings.UserPrefix;
 
+			exportFile.MulticodesAsNested = exportSettings.ExportMultipleChoiceFieldsAsNested;
+
 			_delimitersBuilder.SetDelimiters(exportFile, exportSettings);
 
 			return exportFile;
+		}
+
+		private static void SetStartDocumentNumber(ExportSettings exportSettings, ExportFile exportFile)
+		{
+			exportFile.StartAtDocumentNumber = exportSettings.StartExportAtRecord - 1;
 		}
 
 		private static void SetCaseInfo(ExportSettings exportSettings, ExportFile exportFile)
