@@ -208,6 +208,7 @@
     <Compile Include="Choice.cs" />
     <Compile Include="EHHelper.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
+    <Compile Include="Extensions\JobExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="Injection.cs" />
@@ -263,6 +264,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

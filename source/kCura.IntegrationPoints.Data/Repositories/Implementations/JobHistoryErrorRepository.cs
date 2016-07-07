@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Transformers;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;

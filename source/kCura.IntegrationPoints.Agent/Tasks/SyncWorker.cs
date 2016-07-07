@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Authentication;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -15,6 +14,8 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
           IHelper helper,
           IDataProviderFactory dataProviderFactory,
           kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-          kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+          ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
                 IJobHistoryService jobHistoryService,
           JobHistoryErrorService jobHistoryErrorService,
           IJobManager jobManager,
