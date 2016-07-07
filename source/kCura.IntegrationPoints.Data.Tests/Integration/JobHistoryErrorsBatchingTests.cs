@@ -35,9 +35,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IBatchStatus _batchStatus;
 		private const int _ADMIN_USER_ID = 9;
-		private const string jobTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobError";
-		private const string itemIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemErrors_Included";
-		private const string itemExcludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemErrors_Excluded";
 
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
@@ -210,9 +207,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string jobTempTableName = jobTempTablePrefix + $"_{ tempTableSuffix }";
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE}_{ tempTableSuffix }";
 
-			DataTable jobTempTable = GetTempTable(jobTempTableName);
+			DataTable startTempTable = GetTempTable(startTempTableName);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
 
 			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
@@ -223,7 +222,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
 
 			//Assert
-			VerifyTempTableCountAndEntries(jobTempTable, jobTempTableName, expectedJobHistoryErrorArtifactIds);
+			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorArtifactIds);
+			VerifyTempTableCountAndEntries(completedTempTable, completeTempTableName, expectedJobHistoryErrorArtifactIds);
 		}
 
 		[Test]
@@ -271,11 +271,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string jobTempTableName = jobTempTablePrefix + $"_{ tempTableSuffix }";
-			string itemTempTableName = itemIncludedTempTablePrefix + $"_{ tempTableSuffix }";
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
 
-			DataTable jobTempTable = GetTempTable(jobTempTableName);
-			DataTable itemTempTable = GetTempTable(itemTempTableName);
+			DataTable startTempTable = GetTempTable(startTempTableName);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
+			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
 			{
@@ -292,8 +294,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
 
 			//Assert
-			VerifyTempTableCountAndEntries(jobTempTable, jobTempTableName, expectedJobHistoryErrorsForRetry);
-			VerifyTempTableCountAndEntries(itemTempTable, itemTempTableName, expectedJobHistoryErrorExpired);
+			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(completedTempTable, completeTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(otherTempTable, otherTempTableName, expectedJobHistoryErrorExpired);
 		}
 
 		[Test]
@@ -386,11 +389,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			ModifySavedSearch(documentPrefix, true);
 			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactId);
 
-			string itemIncludedTempTableName = itemIncludedTempTablePrefix + $"_{ tempTableSuffix }";
-			string itemExcludedTempTableName = itemExcludedTempTablePrefix + $"_{ tempTableSuffix }";
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
 
-			DataTable itemIncludedTempTable = GetTempTable(itemIncludedTempTableName);
-			DataTable itemExcludedTempTable = GetTempTable(itemExcludedTempTableName);
+			DataTable startTempTable = GetTempTable(startTempTableName);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
+			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
 			{
@@ -407,8 +412,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
 
 			//Assert
-			VerifyTempTableCountAndEntries(itemIncludedTempTable, itemIncludedTempTableName, expectedJobHistoryErrorsForRetry);
-			VerifyTempTableCountAndEntries(itemExcludedTempTable, itemExcludedTempTableName, expectedJobHistoryErrorExpired);
+			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(completedTempTable, completeTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(otherTempTable, otherTempTableName, expectedJobHistoryErrorExpired);
 		}
 
 		private DataTable GetImportTable(int startingDocNumber, int numberOfDocuments, string documentPrefix, string expiredDocumentPrefix)
