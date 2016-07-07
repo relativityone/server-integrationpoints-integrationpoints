@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Models
                 Field textIdentifierField = artifact.getFieldByName(identifier);
                 if (textIdentifierField != null && textIdentifierField.Value != null)
                 {
-                    String searchName = Encoding.Unicode.GetString((byte[])artifact.getFieldByName(identifier).Value);
+                    String searchName = Encoding.Unicode.GetString((byte[])textIdentifierField.Value);
                     searchName = htmlSanitizerManager.Sanitize(searchName).CleanHTML;
                     result.Add(new SavedSearchModel() { DisplayName = searchName, Value = artifact.ArtifactID });
                 }
