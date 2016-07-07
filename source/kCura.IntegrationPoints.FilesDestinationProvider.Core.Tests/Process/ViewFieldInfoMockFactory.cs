@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             foreach (var i in expected)
             {
                 var row = dataTable.NewRow();
-                row["FieldArtifactID"] = i;
+                row["AvfId"] = i;
                 viewFieldInfo.Add(new ViewFieldInfo(row));
             }
 
