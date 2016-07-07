@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class PermissionErrorMessageTest : WorkspaceDependentTemplate
+	public class PermissionErrorMessageTest : RelativityProviderTemplate
 	{
 		private IObjectTypeRepository _objectTypeRepository;
 		private IWebDriver _webDriver;
@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private int _userCreated;
 		private string _email;
 		private int _groupId;
+
+		private string _oldInstanceSettingValue;
 
 		public PermissionErrorMessageTest()
 			: base("Error Source", "Error Target Workspace")
@@ -33,7 +35,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		public override void SetUp()
 		{
 			base.SetUp();
+
+			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+
 			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
+		}
+
+		[TestFixtureTearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+
+			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
+			{
+				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
+			}
 		}
 
 		[SetUp]
@@ -86,7 +102,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
 			IntegrationModel model = new IntegrationModel()
 			{
-				SourceProvider = useRelativityProvider ? RelativityProvider.ArtifactId : LdapProvider.ArtifactId,
+				//todo: fix this!
+				//SourceProvider = useRelativityProvider ? RelativityProvider.ArtifactId : LdapProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
 				Name = ( useRelativityProvider ? "RIP test"  : "LDAP test" ) + DateTime.Now,
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -251,7 +269,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
 
 		[TearDown]
-		public void TearDown()
+		public void TestTearDown()
 		{
 			_webDriver.CloseSeleniumBrowser();
 			User.DeleteUser(_userCreated);

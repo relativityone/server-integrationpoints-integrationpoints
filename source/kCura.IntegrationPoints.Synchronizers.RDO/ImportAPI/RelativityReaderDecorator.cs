@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -43,7 +45,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				{
 					if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
 					{
-						RegisterField(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, map.SourceField.FieldIdentifier);
+						RegisterField(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, map.SourceField.FieldIdentifier);
 					}
 					else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 					{
@@ -56,13 +58,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			// then we will use this as a way to map native file path location
 			// this is only used when the reader is associate with native fields.
 			HashSet<string> columns = new HashSet<string>(Enumerable.Range(0, sourceReader.FieldCount).Select(sourceReader.GetName));
-			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD);
-			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, Contracts.Constants.SPECIAL_FOLDERPATH_FIELD);
+			RegisterSpecialField(columns, Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD);
+			RegisterSpecialField(columns, Constants.SPECIAL_FOLDERPATH_FIELD_NAME, Constants.SPECIAL_FOLDERPATH_FIELD);
 
 			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
-			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME, Contracts.Constants.SPECIAL_FILE_NAME_FIELD);
-			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD);
-			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, Contracts.Constants.SPECIAL_SOURCEJOB_FIELD);
+			RegisterSpecialField(columns, Constants.SPECIAL_FILE_NAME_FIELD_NAME, Constants.SPECIAL_FILE_NAME_FIELD);
+			RegisterSpecialField(columns, Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, Constants.SPECIAL_SOURCEWORKSPACE_FIELD);
+			RegisterSpecialField(columns, Constants.SPECIAL_SOURCEJOB_FIELD_NAME, Constants.SPECIAL_SOURCEJOB_FIELD);
 		}
 
 		private void RegisterSpecialField(HashSet<string> columns, string targetName, string sourceIdentifier)

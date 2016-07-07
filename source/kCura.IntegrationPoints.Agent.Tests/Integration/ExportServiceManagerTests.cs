@@ -7,7 +7,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -19,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class ExportServiceManagerTests : WorkspaceDependentTemplate
+	public class ExportServiceManagerTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;
 		private IIntegrationPointService _integrationPointService;

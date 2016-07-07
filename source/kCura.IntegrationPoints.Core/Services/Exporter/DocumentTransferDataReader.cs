@@ -4,8 +4,9 @@ using System.Data;
 using System.Linq;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.Core;
 using Relativity.Core.Service;
 
@@ -72,14 +73,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			// we will always import this native file location
 			fields.Add(new FieldEntry()
 			{
-				DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
-				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
 				FieldType = FieldType.String
 			});
 			fields.Add(new FieldEntry
 			{
-				DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
-				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD,
+				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD,
 				FieldType = FieldType.String
 			});
 
@@ -94,8 +95,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 				fields.Add(new FieldEntry()
 				{
-					DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
-					FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD,
+					DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
+					FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
 					FieldType = FieldType.String
 				});
 			}
@@ -133,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
 				return retrievedField.Value;
 			}
-			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
+			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
 				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId);
 				return retrievedField.Value;
@@ -160,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 				switch (fieldIdentifier)
 				{
-					case IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD:
+					case IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD:
 						if (_nativeFileLocations.ContainsKey(CurrentArtifact.ArtifactId))
 						{
 							result = _nativeFileLocations[CurrentArtifact.ArtifactId];
@@ -168,7 +169,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						}
 						break;
 
-					case IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD:
+					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD:
 						if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
 						{
 							result = _nativeFileNames[CurrentArtifact.ArtifactId];

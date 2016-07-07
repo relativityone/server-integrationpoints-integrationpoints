@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class ImportTest : SingleWorkspaceTestTemplate
+	public class ImportTest : SourceProviderTemplate
 	{
 		private IObjectTypeRepository _objectTypeRepository;
 		private IWebDriver _webDriver;
@@ -32,21 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		[Test]
 		public void TestingImportSadFace()
 		{
-			Import.ImportNewDocuments(WorkspaceArtifactId, GetImportTable("ImportDoc", 30));
-		}
-
-		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
-		{
-			DataTable table = new DataTable();
-			table.Columns.Add("Control Number", typeof(string));
-			table.Columns.Add("Date Sent", typeof(DateTime));
-
-			for (int index = 1; index <= numberOfDocuments; index++)
-			{
-				string controlNumber = $"{documentPrefix}{index}";
-				table.Rows.Add(controlNumber, DateTime.Now);
-			}
-			return table;
+			Import.ImportNewDocuments(WorkspaceArtifactId, Import.GetImportTable("ImportDoc", 30));
 		}
 	}
 }

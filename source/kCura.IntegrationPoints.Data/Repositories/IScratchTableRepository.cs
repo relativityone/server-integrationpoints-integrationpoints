@@ -25,8 +25,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// <summary>
         /// Removes error documents from temp table list (goes in line with ignoring errored documents)
         /// </summary>
-        /// <param name="docIdentifier">Identifier for the doc being removed from the list</param>
-        void RemoveErrorDocument(string docIdentifier);
+        /// <param name="docIdentifiers">Identifiers for the documents being removed from the scratch table</param>
+        void RemoveErrorDocuments(ICollection<string> docIdentifiers);
 
         /// <summary>
         /// Retrieve a datareader for reading from the temp table

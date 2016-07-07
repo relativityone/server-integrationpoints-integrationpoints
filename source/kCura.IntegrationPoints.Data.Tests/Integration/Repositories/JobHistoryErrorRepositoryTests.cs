@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 
@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class JobHistoryErrorRepositoryTests : WorkspaceDependentTemplate
+	public class JobHistoryErrorRepositoryTests : RelativityProviderTemplate
 	{
 		private IJobHistoryErrorRepository _instance;
 		private JobHistory _jobHistory;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Domain;
 using Newtonsoft.Json;
 using Relativity.Core;
 using Relativity.Core.Service;
@@ -28,9 +29,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_context = context;
 			ImportAuditLevel = ImportAuditLevelEnum.NoSnapshot;
 			ExtractedTextFieldContainsFilePath = false;
-			MultiValueDelimiter = Contracts.Constants.MULTI_VALUE_DELIMITER;
+			MultiValueDelimiter = Constants.MULTI_VALUE_DELIMITER;
 			ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
-			NestedValueDelimiter = Contracts.Constants.NESTED_VALUE_DELIMITER;
+			NestedValueDelimiter = Constants.NESTED_VALUE_DELIMITER;
 			ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
 		}
 

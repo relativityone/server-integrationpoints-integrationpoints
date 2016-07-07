@@ -8,7 +8,6 @@ using Castle.Core.Internal;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -25,6 +24,9 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.DataReaderClient;
 using kCura.ScheduleQueue.Core;
@@ -167,7 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
 				.Select(observer => observer.ScratchTableRepository).ToArray();
 
-			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError);
+			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
 
 			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);

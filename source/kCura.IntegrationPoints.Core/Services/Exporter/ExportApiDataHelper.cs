@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						}
 						else
 						{
-							value = String.Join(IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER.ToString(), data.Object);
+							value = String.Join(IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER.ToString(), data.Object);
 						}
 					}
 					return value;

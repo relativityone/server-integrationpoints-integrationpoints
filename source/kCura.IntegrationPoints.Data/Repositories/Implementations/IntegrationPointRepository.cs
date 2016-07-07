@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Transformers;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations

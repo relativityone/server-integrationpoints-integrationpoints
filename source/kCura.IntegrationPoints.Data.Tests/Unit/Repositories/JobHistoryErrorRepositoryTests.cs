@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Transformers;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Search;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 {
