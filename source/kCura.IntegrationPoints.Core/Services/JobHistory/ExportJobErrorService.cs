@@ -66,8 +66,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		internal void SetBatchSize()
 		{
-			string configuredBatchSize = _instanceSettingRepository.GetConfigurationValue(IntegrationPoints.Contracts.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
-				IntegrationPoints.Contracts.Constants.REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME);
+			string configuredBatchSize = _instanceSettingRepository.GetConfigurationValue(IntegrationPoints.Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+				IntegrationPoints.Domain.Constants.REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME);
 
 			if (String.IsNullOrEmpty(configuredBatchSize))
 			{

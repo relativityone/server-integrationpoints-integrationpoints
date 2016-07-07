@@ -286,6 +286,10 @@
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>

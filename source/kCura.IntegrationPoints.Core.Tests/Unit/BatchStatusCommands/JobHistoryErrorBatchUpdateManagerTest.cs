@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;

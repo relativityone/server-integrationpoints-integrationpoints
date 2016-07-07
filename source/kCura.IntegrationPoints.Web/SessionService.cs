@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web

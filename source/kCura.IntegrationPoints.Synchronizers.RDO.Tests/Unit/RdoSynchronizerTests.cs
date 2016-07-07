@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 	{
 		public static RdoSynchronizerBase ChangeWebAPIPath(RdoSynchronizerBase synchronizer)
 		{
-			var prop = synchronizer.GetType().GetProperty(kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH);
+			var prop = synchronizer.GetType().GetProperty(kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH);
 			prop.SetValue(synchronizer, "Mock value");
 			return synchronizer;
 		}
@@ -286,7 +287,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
 			//ASSERT
-			Assert.AreEqual(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
+			Assert.AreEqual(kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
 			Assert.AreEqual(0, result.DestinationFolderArtifactId);
 		}
 
@@ -463,7 +464,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		public TestRdoSynchronizer()
 		  : base(null, null)
 		{
-			WebAPIPath = kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH;
+			WebAPIPath = kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH;
 			DisableNativeLocationValidation = false;
 			DisableNativeValidation = false;
 		}

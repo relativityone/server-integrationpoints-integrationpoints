@@ -9,14 +9,17 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Newtonsoft.Json;
 using Artifact = kCura.Relativity.Client.Artifact;
+using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public abstract class RdoSynchronizerBase : Contracts.Synchronizer.IDataSynchronizer, IBatchReporter, IEmailBodyData
+	public abstract class RdoSynchronizerBase : IDataSynchronizer, IBatchReporter, IEmailBodyData
 	{
 		public event BatchCompleted OnBatchComplete;
 
@@ -88,8 +91,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
-				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 				DocumentFields.RelativityDestinationCase,
 				DocumentFields.JobHistory
 			};
@@ -307,7 +310,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				nativeFileImportService.ImportNativeFiles = true;
 				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
-				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
 				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
 				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
 				settings.DisableNativeValidation = this.DisableNativeValidation;
@@ -320,19 +323,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
 				settings.DisableNativeValidation = this.DisableNativeValidation;
 				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
-				nativeFileImportService.SourceFieldName = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+				nativeFileImportService.SourceFieldName = Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
 			}
 
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
 				// NOTE :: If you expect to import the folder path, the import API will expect this field to be specified upon import. This is to avoid the field being both mapped and used as a folder path.
-				settings.FolderPathSourceFieldName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
+				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
 
 			if (SourceProvider != null && SourceProvider.Config.AlwaysImportNativeFileNames)
 			{
 				// So that the destination workspace file icons correctly display, we give the import API the file name of the document
-				settings.FileNameColumn = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+				settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
 			}
 
 			if (SourceProvider != null && SourceProvider.Config.OnlyMapIdentifierToIdentifier)

@@ -1,10 +1,10 @@
 ﻿using System;
 using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;

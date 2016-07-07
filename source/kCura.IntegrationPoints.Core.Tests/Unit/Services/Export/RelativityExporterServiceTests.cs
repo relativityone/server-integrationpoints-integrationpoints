@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;

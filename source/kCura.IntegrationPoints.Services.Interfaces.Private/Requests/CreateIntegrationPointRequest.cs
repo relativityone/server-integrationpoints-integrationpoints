@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 

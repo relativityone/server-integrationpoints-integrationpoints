@@ -2,16 +2,19 @@
 using System.Linq;
 using System.Reflection;
 
-namespace kCura.IntegrationPoints
+namespace kCura.IntegrationPoints.Contracts
 {
+	/// <summary>
+	/// A helper class reponsible for loading assemblies and their types.
+	/// </summary>
 	public static class AssemblyExtension
 	{
 		/// <summary>
-		/// Get all loadable type from an assembly. This method will exclude private and internal classes
+		/// Retrieves all public types from a given assembly. This method will exclude private and internal classes.
 		/// </summary>
-		/// <param name="assembly">the target assembly to retrieve types</param>
-		/// <returns>an array of types from the given assembly</returns>
-		public static Type[] GetLoadableTypes(this Assembly assembly)
+		/// <param name="assembly">The target assembly to retrieve types from.</param>
+		/// <returns>Returns an array of types from the given assembly.</returns>
+		public static Type[] GetLoadableTypes(this System.Reflection.Assembly assembly)
 		{
 			Type[] loadableTypes = null;
 			try
