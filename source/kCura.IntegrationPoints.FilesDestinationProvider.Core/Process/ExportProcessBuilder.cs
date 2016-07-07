@@ -74,13 +74,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             }
         }
 
-        private static void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds,
-            ISearchManager searchManager)
+        private static void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds, ISearchManager searchManager)
         {
             exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID);
 
             exportFile.SelectedViewFields =
-                exportFile.AllExportableFields.Where(item => selectedViewFieldIds.Any(selViewFieldId => selViewFieldId == item.FieldArtifactId)).ToArray();
+                exportFile.AllExportableFields.Where(item => selectedViewFieldIds.Any(selViewFieldId => selViewFieldId == item.AvfId)).ToArray();
         }
 
         private void AttachHandlers(IExporter exporter)

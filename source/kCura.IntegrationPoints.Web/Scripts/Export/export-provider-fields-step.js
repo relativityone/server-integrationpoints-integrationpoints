@@ -190,6 +190,7 @@ ko.validation.init({
 			var d = root.data.deferred().defer();
 
 			var fieldMap = [];
+			var hasIdentifier = false;
 
 			self.model.mappedFields().forEach(function (e, i) {
 				fieldMap.push({
@@ -208,6 +209,14 @@ ko.validation.init({
 					fieldMapType: e.isIdentifier ? "Identifier" : "None"
 				});
 			});
+
+			// we need to have an identifier field in order not to break export
+			// based on sync worker which performs field mapping
+			if (!hasIdentifier) {
+				fieldMap[0].sourceField.isIdentifier = true;
+				fieldMap[0].destinationField.isIdentifier = true;
+				fieldMap[0].fieldMapType = "Identifier";
+			}
 
 			self.ipModel.Map = JSON.stringify(fieldMap);
 

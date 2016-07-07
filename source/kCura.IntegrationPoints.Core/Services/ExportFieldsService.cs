@@ -30,14 +30,18 @@ namespace kCura.IntegrationPoints.Core.Services
 			var fields = new List<FieldEntry>();
 			for (int i = 0; i < dataview.Count; i++)
 			{
+				var fieldCategory = default(global::Relativity.FieldCategory);
+				Enum.TryParse(dataview[i]["FieldCategoryID"].ToString(), out fieldCategory);
+
 				fields.Add(new FieldEntry
 				{
 					FieldIdentifier = dataview[i]["AvfId"].ToString(),
-					DisplayName = dataview[i]["DisplayName"].ToString()
+					DisplayName = dataview[i]["DisplayName"].ToString(),
+					IsIdentifier = fieldCategory == global::Relativity.FieldCategory.Identifier
 				});
 			}
 
-			return fields.ToArray();
+			return fields.OrderBy(x => x.DisplayName).ToArray();
 		}
 
 		public FieldEntry[] GetAllViewFields(int workspaceArtifactID, int viewArtifactID, int artifactTypeID)
