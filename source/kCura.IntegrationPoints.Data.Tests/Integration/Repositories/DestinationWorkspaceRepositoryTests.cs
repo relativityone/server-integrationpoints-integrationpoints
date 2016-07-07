@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IJobHistoryService _jobHistoryService;
 		private IScratchTableRepository _scratchTableRepository;
 		private IDocumentRepository _documentRepository;
+		private IFieldRepository _fieldRepository;
 
 		public DestinationWorkspaceRepositoryTests() : base("DestinationWorkspaceRepositoryTests", null)
 		{
@@ -40,6 +41,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_scratchTableRepository = repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, "Documents2Tag", "LikeASir");
 			_documentRepository = repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
+			_fieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 		}
 
 		[TearDown]
@@ -132,7 +134,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Tag_DocumentsWithDestinationWorkspaceAndJobHistory_Success()
 		{
 			//Arrange
-			DataTable dataTable = GetImportTable("DocsToTag", 10);
+			DataTable dataTable = Import.GetImportTable("DocsToTag", 10);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
 			List<int> documentArtifactIds = GetDocumentArtifactIdsByIdentifier("DocsToTag");
 			_scratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
@@ -204,19 +206,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.Throws<Exception>(() => _destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal.Current, 1, -1, -1, "None", SourceWorkspaceArtifactId), "Tagging Documents with DestinationWorkspace and JobHistory object failed - Mass Edit failure.");
 		}
 
-		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
-		{
-			DataTable table = new DataTable();
-			table.Columns.Add("Control Number", typeof(string));
-
-			for (int index = 1; index <= numberOfDocuments; index++)
-			{
-				string controlNumber = $"{documentPrefix}{index}";
-				table.Rows.Add(controlNumber);
-			}
-			return table;
-		}
-
 		private List<int> GetDocumentArtifactIdsByIdentifier(string documentIdentifier)
 		{
 			List<int> documentArtifactIds = new List<int>();
@@ -231,19 +220,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 			return documentArtifactIds;
 		}
-		private int GetDocumentFieldArtifactId(string fieldName)
-		{
-			const int documentArtifactTypeId = 10;
-			string query = $"SELECT [ArtifactID] FROM [Field] WHERE [DisplayName] = '{fieldName}' AND [FieldArtifactTypeID] = {documentArtifactTypeId}";
-			int artifactId = CaseContext.SqlContext.ExecuteSqlStatementAsScalar<int>(query);
-			return artifactId;
-		}
 
 		private void VerifyDocumentTagging(List<int> documentArtifactIds, string expectedJobHistory)
 		{
 			string expectedDestinationCase = $"DestinationWorkspaceRepositoryTests - { SourceWorkspaceArtifactId }";
-			int documentJobHistoryFieldArtifactId = GetDocumentFieldArtifactId("Job History");
-			int documentDestinationCaseFieldArtifactId = GetDocumentFieldArtifactId("Relativity Destination Case");
+			int documentJobHistoryFieldArtifactId = _fieldRepository.RetrieveField("Job History", (int) Relativity.Client.ArtifactType.Document, (int) Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
+			int documentDestinationCaseFieldArtifactId = _fieldRepository.RetrieveField("Relativity Destination Case", (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
 			ArtifactDTO[] documentArtifacts = _documentRepository.RetrieveDocumentsAsync(documentArtifactIds, new HashSet<int>() { documentDestinationCaseFieldArtifactId, documentJobHistoryFieldArtifactId }).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			foreach (ArtifactDTO artifact in documentArtifacts)

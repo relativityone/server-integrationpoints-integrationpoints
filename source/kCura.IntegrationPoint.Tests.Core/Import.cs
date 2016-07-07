@@ -82,5 +82,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			pusher.SyncData(importTable.CreateDataReader(), new FieldMap[] { mapIdentifier, /*datefield2*/ }, settings);
 		}
+
+		public static DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
+		{
+			DataTable table = new DataTable();
+			table.Columns.Add("Control Number", typeof(string));
+
+			for (int index = 1; index <= numberOfDocuments; index++)
+			{
+				string controlNumber = $"{documentPrefix}{index}";
+				table.Rows.Add(controlNumber);
+			}
+			return table;
+		}
 	}
 }
