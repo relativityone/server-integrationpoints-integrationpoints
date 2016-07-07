@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(tempTableName, numberToUpdate, false);
 			using (SqlMassProcessBatch batch = new SqlMassProcessBatch(context, initArgs, _BATCH_SIZE))
 			{
-				Edit massEdit = new Edit(context, batch, fieldsToUpdate, _BATCH_SIZE, String.Empty, true, true, true, objectType);
+				Edit massEdit = new Edit(context, batch, fieldsToUpdate, _BATCH_SIZE, String.Empty, true, true, true, objectType, true);
 				massEdit.Execute(true);
 			}
 		}
