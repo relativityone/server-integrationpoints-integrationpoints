@@ -128,9 +128,9 @@ ko.validation.init({
 				return;
 			}
 
-			var availableFieldsPromise = root.data.ajax({
+			var exportableFieldsPromise = root.data.ajax({
 				type: 'post',
-				url: root.utils.generateWebAPIURL('SourceFields'),
+				url: root.utils.generateWebAPIURL('ExportFields/Exportable'),
 				data: JSON.stringify({
 					options: self.ipModel.sourceConfiguration,
 					type: self.ipModel.source.selectedType
@@ -139,88 +139,16 @@ ko.validation.init({
 				IP.message.error.raise("No attributes were returned from the source provider.");
 			});
 
-			/* // mocking data
-			var availableFieldsPromise = [
-				{
-					"displayName": "Analytics Index",
-					"isIdentifier": false,
-					"fieldIdentifier": "1037169",
-					"isRequired": false
-				},
-				{
-					"displayName": "Control Number [Object Identifier]",
-					"isIdentifier": true,
-					"fieldIdentifier": "1003667",
-					"isRequired": true
-				},
-				{
-					"displayName": "Extracted Text",
-					"isIdentifier": false,
-					"fieldIdentifier": "1003668",
-					"isRequired": false
-				},
-				{
-					"displayName": "Group Identifier",
-					"isIdentifier": false,
-					"fieldIdentifier": "1003671",
-					"isRequired": false
-				},
-				{
-					"displayName": "Imaging Set",
-					"isIdentifier": false,
-					"fieldIdentifier": "1037175",
-					"isRequired": false
-				},
-				{
-					"displayName": "Lists",
-					"isIdentifier": false,
-					"fieldIdentifier": "1037193",
-					"isRequired": false
-				},
-				{
-					"displayName": "MD5 Hash",
-					"isIdentifier": false,
-					"fieldIdentifier": "1003669",
-					"isRequired": false
-				},
-				{
-					"displayName": "OCR Results",
-					"isIdentifier": false,
-					"fieldIdentifier": "1035426",
-					"isRequired": false
-				},
-				{
-					"displayName": "Production",
-					"isIdentifier": false,
-					"fieldIdentifier": "1037527",
-					"isRequired": false
-				},
-				{
-					"displayName": "Production Errors",
-					"isIdentifier": false,
-					"fieldIdentifier": "1033814",
-					"isRequired": false
-				},
-				{
-					"displayName": "Relativity Destination Case",
-					"isIdentifier": false,
-					"fieldIdentifier": "1037938",
-					"isRequired": false
-				},
-				{
-					"displayName": "Relativity Native Time Zone Offset",
-					"isIdentifier": false,
-					"fieldIdentifier": "1035244",
-					"isRequired": false
-				},
-				{
-					"displayName": "Time Zone Field",
-					"isIdentifier": false,
-					"fieldIdentifier": "1036939",
-					"isRequired": false
-				}
-			];
-			*/
+			var availableFieldsPromise = root.data.ajax({
+				type: 'post',
+				url: root.utils.generateWebAPIURL('ExportFields/Available'),
+				data: JSON.stringify({
+					options: self.ipModel.sourceConfiguration,
+					type: self.ipModel.source.selectedType
+				})
+			}).fail(function (error) {
+				IP.message.error.raise("No attributes were returned from the source provider.");
+			});
 
 			var mappedFieldsPromise;
 			if (self.ipModel.artifactID > 0) {
@@ -231,21 +159,29 @@ ko.validation.init({
 			} else {
 				mappedFieldsPromise = [];
 			}
+			
+			var getMappedFields = function (fields) {
+				var _fields = ko.utils.arrayMap(fields, function (_item1) {
+					var _field = ko.utils.arrayFilter(self.model.availableFields(), function (_item2) {
+						return (_item1.sourceField) ? 
+							(_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) : 
+							(_item2.fieldIdentifier === _item1.fieldIdentifier);
+					});
+					return _field[0];
+				});
+				return _fields;
+			};
 
 			root.data.deferred()
-				.all([availableFieldsPromise, mappedFieldsPromise])
+				.all([exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise])
 				.then(function (result) {
-					self.model.availableFields(result[0]); // that's the easy part
+					self.model.availableFields(result[0]);
 
-					var _fields = ko.utils.arrayMap(result[1], function (_item1) {
-						var _field = ko.utils.arrayFilter(self.model.availableFields(), function (_item2) {
-							return _item2.fieldIdentifier === _item1.sourceField.fieldIdentifier;
-						});
-
-						return _field[0];
-					});
-
-					self.model.selectedAvailableFields(_fields);
+					var mappedFields = (result[2] && result[2].length) ? 
+						getMappedFields(result[2]) :
+						getMappedFields(result[1]);
+					
+					self.model.selectedAvailableFields(mappedFields);
 					self.model.addField();
 				});
 		}
@@ -254,6 +190,7 @@ ko.validation.init({
 			var d = root.data.deferred().defer();
 
 			var fieldMap = [];
+			var hasIdentifier = false;
 
 			self.model.mappedFields().forEach(function (e, i) {
 				fieldMap.push({
@@ -272,6 +209,14 @@ ko.validation.init({
 					fieldMapType: e.isIdentifier ? "Identifier" : "None"
 				});
 			});
+
+			// we need to have an identifier field in order not to break export
+			// based on sync worker which performs field mapping
+			if (!hasIdentifier) {
+				fieldMap[0].sourceField.isIdentifier = true;
+				fieldMap[0].destinationField.isIdentifier = true;
+				fieldMap[0].fieldMapType = "Identifier";
+			}
 
 			self.ipModel.Map = JSON.stringify(fieldMap);
 

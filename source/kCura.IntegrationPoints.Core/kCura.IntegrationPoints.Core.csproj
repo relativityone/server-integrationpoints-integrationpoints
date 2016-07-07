@@ -611,6 +611,7 @@
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
+    <Compile Include="Services\IExportFieldsService.cs" />
     <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
@@ -673,6 +674,7 @@
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
     <Compile Include="Agent\IntegrationPointTaskBase.cs" />
+    <Compile Include="Services\ExportFieldsService.cs" />
     <Compile Include="Telemetry\ExportTelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\ITelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryManager.cs" />
