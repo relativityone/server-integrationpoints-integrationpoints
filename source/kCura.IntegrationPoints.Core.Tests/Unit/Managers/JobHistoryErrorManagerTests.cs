@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoints.Contracts.Models;
+﻿using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
@@ -58,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			_testInstance = new JobHistoryErrorManager(_repositoryFactory, _workspaceArtifactId, _uniqueJobId);
 
-			_job = JobExtensions.CreateJob(_workspaceArtifactId, _integrationPointArtifactId, _submittedByArtifactId);
+			_job = new Job(_workspaceArtifactId, _integrationPointArtifactId, _submittedByArtifactId);
 		}
 
 		[Test]

@@ -56,22 +56,22 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			table.Columns.Add(new DataColumn("ScheduleRule"));
 
 			DataRow jobData = table.NewRow();
-			jobData["JobID"] = default(long);
-			jobData["RootJobId"] = default(long);
-			jobData["ParentJobId"] = default(long);
-			jobData["AgentTypeID"] = default(int);
-			jobData["LockedByAgentID"] = default(int?);
-			jobData["WorkspaceID"] = default(int);
-			jobData["RelatedObjectArtifactID"] = default(int);
-			jobData["TaskType"] = default(string);
+			jobData["JobID"] = 1;
+			jobData["RootJobId"] = 1;
+			jobData["ParentJobId"] = 1;
+			jobData["AgentTypeID"] = 1;
+			jobData["LockedByAgentID"] = 1;
+			jobData["WorkspaceID"] = 1;
+			jobData["RelatedObjectArtifactID"] = 1;
+			jobData["TaskType"] = "1";
 			jobData["NextRunTime"] = default(DateTime);
 			jobData["LastRunTime"] = default(DateTime);
-			jobData["JobDetails"] = default(string);
-			jobData["JobFlags"] = default(int);
+			jobData["JobDetails"] = "1";
+			jobData["JobFlags"] = 1;
 			jobData["SubmittedDate"] = default(DateTime);
-			jobData["SubmittedBy"] = default(int);
-			jobData["ScheduleRuleType"] = default(string);
-			jobData["ScheduleRule"] = default(string);
+			jobData["SubmittedBy"] = 1;
+			jobData["ScheduleRuleType"] = "1";
+			jobData["ScheduleRule"] = "1";
 
 			return jobData;
 		}

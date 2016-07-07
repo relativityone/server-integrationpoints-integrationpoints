@@ -464,7 +464,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			Guid batchInstance = Guid.NewGuid();
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = new Job(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, 1);
 
 			Assert.IsTrue(this._manager.CheckBatchOnJobComplete(job, batchInstance.ToString()));
 		}

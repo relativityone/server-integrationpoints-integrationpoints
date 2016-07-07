@@ -7,6 +7,8 @@ using System;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent
 {
+	using System.Data;
+
 	[TestFixture]
 	public class TaskJobSubmitterTests
 	{
@@ -20,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent
 		public void TestSetup()
 		{
 			_jobManager = Substitute.For<IJobManager>();
-			_testJob = JobExtensions.CreateJob();
+			_testJob = new Job(1,1,1);
 			_testGuid = Guid.NewGuid();
 			_task = TaskType.None;
 			_instance = new TaskJobSubmitter(_jobManager, _testJob, _task, _testGuid);
