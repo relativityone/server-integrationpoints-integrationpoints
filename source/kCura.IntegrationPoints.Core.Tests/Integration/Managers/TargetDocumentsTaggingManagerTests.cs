@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
 			//Act
-			Job job = new Job(SourceWorkspaceArtifactId, integrationModelCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationModelCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			targetDocumentsTaggingManager.OnJobStart(job);
 			targetDocumentsTaggingManager.OnJobComplete(job);
 

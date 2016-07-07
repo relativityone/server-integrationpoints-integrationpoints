@@ -1,10 +1,12 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
@@ -16,11 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
-	using kCura.IntegrationPoint.Tests.Core.Extensions;
 	using kCura.IntegrationPoints.Data.Queries;
 	using kCura.ScheduleQueue.Core;
 
@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Has Errors" });
 		}
 
-		#endregion
+		#endregion UpdateProperties
 
 		[Test]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
@@ -303,7 +303,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors.Name, jobHistory.JobType.Name);
-
 
 			Assert.AreEqual(4, postRunAudits.Count, "There should be 4 audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
@@ -464,7 +463,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			Guid batchInstance = Guid.NewGuid();
-			Job job = new Job(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, 1);
 
 			Assert.IsTrue(this._manager.CheckBatchOnJobComplete(job, batchInstance.ToString()));
 		}

@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
@@ -57,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			_testInstance = new JobHistoryErrorManager(_repositoryFactory, _workspaceArtifactId, _uniqueJobId);
 
-			_job = new Job(_workspaceArtifactId, _integrationPointArtifactId, _submittedByArtifactId);
+			_job = JobExtensions.CreateJob(_workspaceArtifactId, _integrationPointArtifactId, _submittedByArtifactId);
 		}
 
 		[Test]
@@ -470,8 +471,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_savedSearchRepository.Received(2).RetrieveNextDocuments();
 
 			_jobHistoryErrorJobError.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<List<int>>());
-			_jobHistoryErrorItemErrorIncluded.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new [] {error2, error3})));
-			_jobHistoryErrorItemErrorExcluded.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new [] {error1, error4})));
+			_jobHistoryErrorItemErrorIncluded.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new[] { error2, error3 })));
+			_jobHistoryErrorItemErrorExcluded.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new[] { error1, error4 })));
 		}
 	}
 }
