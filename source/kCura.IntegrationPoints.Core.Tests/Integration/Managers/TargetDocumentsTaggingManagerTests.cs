@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
