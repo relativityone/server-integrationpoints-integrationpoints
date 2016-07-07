@@ -1,7 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -11,7 +9,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using System;
@@ -31,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private SourceJobManager _sourceJobManager;
 		private ISynchronizerFactory _synchronizerFactory;
 		private IJobHistoryService _jobHistoryService;
+		private IFieldRepository _fieldRepository;
 		private FieldMap[] _fieldMaps;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _RELATIVITY_SOURCE_CASE = "Relativity Source Case";
@@ -50,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_sourceJobManager = new SourceJobManager(_repositoryFactory);
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
+			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
@@ -61,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		{
 			//Act
 			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
-			DataTable dataTable = GetImportTable(documentIdentifier, numberOfDocuments);
+			DataTable dataTable = Import.GetImportTable(documentIdentifier, numberOfDocuments);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
 			List<int> documentArtifactIds = GetDocumentArtifactIdsByIdentifier(documentIdentifier);
 
@@ -97,19 +96,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			VerifyRelativitySourceJobAndSourceCase(documentArtifactIds, jobHistory.Name, expectedRelativitySourceCase);
 		}
 
-		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
-		{
-			DataTable table = new DataTable();
-			table.Columns.Add("Control Number", typeof(string));
-
-			for (int index = 1; index <= numberOfDocuments; index++)
-			{
-				string controlNumber = $"{documentPrefix}{index}";
-				table.Rows.Add(controlNumber);
-			}
-			return table;
-		}
-
 		private List<int> GetDocumentArtifactIdsByIdentifier(string documentIdentifier)
 		{
 			List<int> documentArtifactIds = new List<int>();
@@ -129,8 +115,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		{
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 
-			int relativitySourceCaseFieldArtifactId = GetDocumentFieldArtifactId(_RELATIVITY_SOURCE_CASE);
-			int relativitySourceJobdArtifactId = GetDocumentFieldArtifactId(_RELATIVITY_SOURCE_JOB);
+			int relativitySourceCaseFieldArtifactId = _fieldRepository.RetrieveField(_RELATIVITY_SOURCE_CASE, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
+			int relativitySourceJobdArtifactId = _fieldRepository.RetrieveField(_RELATIVITY_SOURCE_JOB, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
 
 			ArtifactDTO[] documentArtifacts =
 				_documentRepository.RetrieveDocumentsAsync(documentArtifactIds,
@@ -151,14 +137,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 					throw new Exception($"Failed to correctly tag Document field 'Relativity Source Case'. Expected value: {expectedSourceCase}. Actual: {artifact.Fields[0].Value}.");
 				}
 			}
-		}
-
-		private int GetDocumentFieldArtifactId(string fieldName)
-		{
-			const int documentArtifactTypeId = 10;
-			string query = $"SELECT [ArtifactID] FROM [Field] WHERE [DisplayName] = '{fieldName}' AND [FieldArtifactTypeID] = {documentArtifactTypeId}";
-			int artifactId = CaseContext.SqlContext.ExecuteSqlStatementAsScalar<int>(query);
-			return artifactId;
 		}
 	}
 }
