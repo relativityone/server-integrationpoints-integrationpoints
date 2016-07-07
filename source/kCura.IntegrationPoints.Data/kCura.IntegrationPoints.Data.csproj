@@ -54,6 +54,10 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Config, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Config.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Data, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
@@ -172,8 +176,10 @@
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Repositories\IErrorRepository.cs" />
+    <Compile Include="Repositories\IInstanceSettingRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\InstanceSettingRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepository.cs" />

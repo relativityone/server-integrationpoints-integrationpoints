@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
 				.Select(observer => observer.ScratchTableRepository).ToArray();
 
-			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError);
+			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
 
 			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);

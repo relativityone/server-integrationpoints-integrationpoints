@@ -20,6 +20,7 @@
         public const string SPECIAL_FILE_NAME_FIELD_NAME = "REL_FILE_NAME_001";
         public const string SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION = "kCura.ScheduleQueue.Core";
         public const string INTEGRATION_POINT_INSTANCE_SETTING_SECTION = "kCura.IntegrationPoints";
+	    public const string REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME = "RemoveErrorsFromScratchTableBatchSize";
         public const string WEB_API_PATH = "WebAPIPath";
         public const string SOURCEPROVIDER_ARTIFACTID_FIELD = "4A091F69-D750-441C-A4F0-24C990D208AE";
         public const string RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
