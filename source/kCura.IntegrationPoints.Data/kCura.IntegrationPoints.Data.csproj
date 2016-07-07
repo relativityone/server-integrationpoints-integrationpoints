@@ -158,9 +158,12 @@
       <HintPath>..\packages\Relativity.Core.9.4.212.3\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-
     <Reference Include="Relativity.Data, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.Data.9.4.212.3\lib\net45\Relativity.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.149\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
@@ -169,6 +172,18 @@
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.Interfaces.9.4.212.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.149\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.69.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.69\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.69.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.69\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
@@ -312,7 +327,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-	<Compile Include="GeneratedDTOs.Extended.cs">
+    <Compile Include="GeneratedDTOs.Extended.cs">
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
     <Compile Include="GeneratedDTOs.cs">
