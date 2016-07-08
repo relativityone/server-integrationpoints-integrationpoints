@@ -109,9 +109,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			VerifyErroredDocumentRemoval(tableName, docArtifactIdToRemove, documentIds.Count - numDocsWithErrors, useEDDSResource);
 		}
 
-		[TestCase(true, false)]
-		[TestCase(false, true)]
-		public void CreateScratchTableAndErroredDocumentDoesntExist(bool useEDDSResource, bool emptyList)
+		[TestCase(true)]
+		[TestCase(false)]
+		public void CreateScratchTableAndErroredDocumentDoesntExist(bool useEDDSResource)
 		{
 			//ARRANGE
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
@@ -131,15 +131,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//ASSERT
 			try
 			{
-				if (!emptyList)
-				{
-					scratchTableRepository.RemoveErrorDocuments(new List<string> { "Doesn't Exist" });
-				}
-				else
-				{
-					scratchTableRepository.RemoveErrorDocuments(new List<string> {});
-				}
-				
+				scratchTableRepository.RemoveErrorDocuments(new List<string> { "Doesn't Exist" });
 			}
 			catch (Exception ex)
 			{

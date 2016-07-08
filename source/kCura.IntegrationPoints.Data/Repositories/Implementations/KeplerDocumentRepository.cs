@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.Relativity.Client;
-using Relativity.Services.ObjectQuery;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -28,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<ArtifactDTO> RetrieveDocumentAsync(int documentId, ICollection<int> fieldIds)
 		{
-			var documentsQuery = new Query()
+			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Condition = $"'Artifact ID' == {documentId}",
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
@@ -55,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(string docIdentifierField, ICollection<string> docIdentifierValues)
 		{
-			var documentsQuery = new Query()
+			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Condition = $@"'{docIdentifierField}' in ['{String.Join("','", docIdentifierValues)}']",
 				IncludeIdWindow = false,
@@ -81,7 +79,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)
 		{
-			var documentsQuery = new Query()
+			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Condition = $"'Artifact ID' in [{String.Join(",", documentIds)}]",
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),

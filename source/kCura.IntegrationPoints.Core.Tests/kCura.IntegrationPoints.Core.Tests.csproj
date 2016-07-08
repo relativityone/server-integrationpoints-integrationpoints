@@ -229,6 +229,7 @@
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Integration\PermissionErrorMessageTest.cs" />
+    <Compile Include="Integration\Services\AgentJobManagerTests.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
@@ -255,6 +256,7 @@
     <Compile Include="Unit\Services\Export\ArgumentMatcher.cs" />
     <Compile Include="Unit\Services\Export\DocumentTransferDataReaderTests.cs" />
     <Compile Include="Unit\Services\Export\ExportApiHelperTests.cs" />
+    <Compile Include="Unit\Services\Export\ExportJobErrorServiceTest.cs" />
     <Compile Include="Unit\Services\Export\InMemoryILongTextStream.cs" />
     <Compile Include="Unit\Services\Export\LazyExceptArtifactFieldDtoTests.cs" />
     <Compile Include="Unit\Services\Export\RelativityExporterServiceTests.cs" />

@@ -197,6 +197,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
+		public IInstanceSettingRepository GetInstanceSettingRepository()
+		{
+			return new InstanceSettingRepository();
+		}
+
 		#region Helper Methods
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)

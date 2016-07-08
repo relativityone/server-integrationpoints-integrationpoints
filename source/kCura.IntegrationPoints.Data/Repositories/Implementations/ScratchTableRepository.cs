@@ -52,10 +52,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
         {
-            _count -= 1;
+            _count -= docIdentifiers.Count;
 
             ICollection<int> docIds = GetErroredDocumentId(docIdentifiers);
-	        string documentList = "(" + String.Join(",", docIds) + ")";
+
+			if (docIds.Count == 0)
+			{
+				return;
+			}
+			string documentList = "(" + String.Join(",", docIds) + ")";
 
 			string fullTableName = GetTempTableName();
             string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] in {1}", fullTableName, documentList, FullDatabaseFormat);
@@ -94,7 +99,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
+        public void AddArtifactIdsIntoTempTable(IList<int> artifactIds)
         {
             _count += artifactIds.Count;
 
@@ -248,7 +253,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 throw new Exception(queryFailureMessage, ex);
             }
 
-            if (documents == null || documents.Length == 0)
+            if (documents == null)
             {
                 throw new Exception(queryFailureMessage);
             }

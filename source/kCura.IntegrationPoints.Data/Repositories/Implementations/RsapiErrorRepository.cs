@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch
 				{
-					// surpress errors (if we can't write relativity errors we're in trouble)
+					// suppress errors (if we can't write relativity errors we're in trouble)
 				}
 			}
 		}

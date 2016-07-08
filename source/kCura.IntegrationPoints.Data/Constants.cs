@@ -34,10 +34,11 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 		public const string TEMPORARY_DOC_TABLE_SOURCE_OBJECTS = "IntegrationPoint_Relativity_DestinationWorkspace_JobHistory";
-
-		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_ERROR = "IntegrationPoint_Relativity_JobHistoryErrors_JobError";
-		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_ERRORS_INCLUDED = "IntegrationPoint_Relativity_JobHistoryErrors_ItemErrors_Included";
-		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_ERRORS_EXCLUDED = "IntegrationPoint_Relativity_JobHistoryErrors_ItemErrors_Excluded";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME = "Temporary Retry Errors Search";
 		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "IntegrationPoint_Relativity_SourceWorkspace";
 		public static Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
