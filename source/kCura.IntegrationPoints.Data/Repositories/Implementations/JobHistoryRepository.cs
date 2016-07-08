@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!results.Success)
 			{
-				throw new Exception($"Unable to retrieve Job Hisory: {results.Message}");
+				throw new Exception($"Unable to retrieve Job History: {results.Message}");
 			}
 
 			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();

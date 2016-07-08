@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="jobHistoryArtifactId">Job History Artifact Id to gather job history errors for</param>
 		/// <param name="errorType">Error Type choice to gather job history errors for</param>
 		/// <returns>List of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
-		ICollection<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType);
+		IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType);
 
 		/// <summary>
 		/// Mass edits the Job History Errors 
