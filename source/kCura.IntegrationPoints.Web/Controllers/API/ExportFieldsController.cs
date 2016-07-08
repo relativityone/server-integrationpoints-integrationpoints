@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-			var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, 10); // artifactTypeId = 10 - Document
+			var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
 
 			return Request.CreateResponse(HttpStatusCode.OK, fields);
 		}
@@ -34,8 +35,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-			var viewFields = _exportFieldsService.GetAllViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, 15); // artifactTypeId = 15 - Saved Search
-			var allFields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, 10); // artifactTypeId = 10 - Document
+			var viewFields = _exportFieldsService.GetAllViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, (int)ArtifactType.Search);
+			var allFields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
 
 			var fields = viewFields.Where(x => allFields.Any(f => f.FieldIdentifier.Equals(x.FieldIdentifier))).ToArray();
 

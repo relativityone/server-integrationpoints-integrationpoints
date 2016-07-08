@@ -22,8 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public FieldEntry[] GetAllExportableFields(int workspaceArtifactID, int artifactTypeID)
 		{
-			ClaimsPrincipal principal = _claimsPrincipalFactory.CreateClaimsPrincipal(9); // TODO: get current user id, admin for now
-			ICoreContext context = principal.GetUnversionContext(workspaceArtifactID);
+			ICoreContext context = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactID);
 
 			kCura.Data.DataView dataview = (new SearchQuery()).RetrieveAllExportableViewFields(context, artifactTypeID);
 
@@ -46,8 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public FieldEntry[] GetAllViewFields(int workspaceArtifactID, int viewArtifactID, int artifactTypeID)
 		{
-			ClaimsPrincipal principal = _claimsPrincipalFactory.CreateClaimsPrincipal(9); // TODO: get current user id, admin for now
-			ICoreContext context = principal.GetUnversionContext(workspaceArtifactID);
+			ICoreContext context = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactID);
 
 			IPermissionsMatrix permissions = UserPermissionsMatrixFactory.Instance.CreateUserPermissionsMatrix(context);
 			var fieldDTOs = ViewHelper.GetViewFields(context as BaseServiceContext, viewArtifactID, artifactTypeID, permissions);
