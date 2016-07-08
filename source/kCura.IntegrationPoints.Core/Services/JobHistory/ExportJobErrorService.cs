@@ -9,16 +9,37 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 	public class ExportJobErrorService
 	{
 		private readonly IScratchTableRepository[] _scratchTable;
-		private readonly IInstanceSettingRepository _instanceSettingRepository;
-		private int FLUSH_ERROR_BATCH_SIZE = 1000;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private int? _flushErrorBatchSize = null;
 		private List<string> _erroredDocumentIds;
 		private static readonly object _lock = new Object();
+		public int FlushErrorBatchSize
+		{
+			get
+			{
+				if (!_flushErrorBatchSize.HasValue)
+				{
+					_flushErrorBatchSize = RetrieveBatchSizeInstanceSetting();
+				}
+				return _flushErrorBatchSize.Value;
+			}
+		}
 
 		public ExportJobErrorService(IScratchTableRepository[] scratchTable, IRepositoryFactory repositoryFactory)
 		{
 			_scratchTable = scratchTable;
-			_instanceSettingRepository = repositoryFactory.GetInstanceSettingRepository();
+			_repositoryFactory = repositoryFactory;
 			_erroredDocumentIds = new List<string>();
+		}
+
+		/// <summary>
+		/// For unit tests only
+		/// </summary>
+		internal ExportJobErrorService(IScratchTableRepository[] scratchTable, IRepositoryFactory repositoryFactory, List<string> documentIds)
+		{
+			_scratchTable = scratchTable;
+			_repositoryFactory = repositoryFactory;
+			_erroredDocumentIds = documentIds;
 		}
 
 		public void SubscribeToBatchReporterEvents(object batchReporter)
@@ -29,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				((IBatchReporter)batchReporter).OnBatchComplete += new BatchCompleted(OnBatchComplete);
 			}
 
-			SetBatchSize();
 		}
 
 		internal void OnRowError(string documentIdentifier, string errorMessage)
@@ -37,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			lock (_lock)
 			{
 				_erroredDocumentIds.Add(documentIdentifier);
-				if (_erroredDocumentIds.Count == FLUSH_ERROR_BATCH_SIZE)
+				if (_erroredDocumentIds.Count == FlushErrorBatchSize)
 				{
 					FlushDocumentLevelErrors();
 				}
@@ -64,24 +84,24 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_erroredDocumentIds.Clear();
 		}
 
-		internal void SetBatchSize()
+		internal int RetrieveBatchSizeInstanceSetting()
 		{
-			string configuredBatchSize = _instanceSettingRepository.GetConfigurationValue(IntegrationPoints.Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+			IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
+
+			string configuredBatchSize = instanceSettingRepository.GetConfigurationValue(IntegrationPoints.Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
 				IntegrationPoints.Domain.Constants.REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME);
 
+			int batchSize;
 			if (String.IsNullOrEmpty(configuredBatchSize))
 			{
-				return;
+				batchSize = 1000;
+			}
+			else
+			{
+				batchSize = Convert.ToInt32(configuredBatchSize);
 			}
 
-			try
-			{
-				FLUSH_ERROR_BATCH_SIZE = Convert.ToInt32(configuredBatchSize);
-			}
-			catch
-			{
-				//suppress invalid casts, default to 1000
-			}
+			return batchSize;
 		}
 	}
 }
