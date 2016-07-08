@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Extensions;
-using NUnit.Framework;
-using ValueType = Relativity.Services.InstanceSetting.ValueType;
+using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
+using NUnit.Framework;
 using Relativity.API;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {

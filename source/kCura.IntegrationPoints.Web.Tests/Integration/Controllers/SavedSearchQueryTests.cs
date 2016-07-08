@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -12,8 +12,7 @@ using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using Relativity.Services.Search;
 using Relativity.Services.User;
-using Permission = kCura.IntegrationPoint.Tests.Core.Permission;
-using User = kCura.IntegrationPoint.Tests.Core.User;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration
 {
@@ -34,19 +33,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
         {
         }
 
-		[TestFixtureSetUp]
 		public override void SetUp()
 		{
 			base.SetUp();
-
 			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
-		[TestFixtureTearDown]
 		public override void TearDown()
 		{
 			base.TearDown();
-
 			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
 			{
 				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
@@ -73,7 +68,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
             }
             foreach (var artifactId in _userIds)
             {
-                User.DeleteUser(artifactId);
+				IntegrationPoint.Tests.Core.User.DeleteUser(artifactId);
             }
             foreach (var artifactId in _groupIds)
             {
@@ -86,24 +81,29 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
         [TestCase(1010)]
         public void GetAllPublicSavedSearches(int savedSearchToCreate)
         {
+			// arrange
             for (int i = 0; i < savedSearchToCreate; i++)
             {
                 int artifactId = SavedSearch.CreateSavedSearch(WorkspaceArtifactId, "GetAllPublicSavedSearches_LotsOfSS_" + i);
                 _savedSearchesArtifactIds.Add(artifactId);
             }
 
+			// act
             IList<SavedSearchModel> results = null;
             using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
             {
                 rsapiClient.APIOptions.WorkspaceID = WorkspaceArtifactId;
                 results = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManage);
             }
+
+			// assert
             Assert.AreEqual(savedSearchToCreate, results.Count);
         }
 
         [Test]
         public void DoNotIncludePrivateSavedSearch()
         {
+			// arrange
             KeywordSearch search = new KeywordSearch()
             {
                 Name = "KWUuuuuuuuu",
@@ -114,18 +114,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
             int savedSearchId = SavedSearch.Create(WorkspaceArtifactId, search);
             _savedSearchesArtifactIds.Add(savedSearchId);
 
+			// act
             IList<SavedSearchModel> results = null;
             using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
             {
                 rsapiClient.APIOptions.WorkspaceID = WorkspaceArtifactId;
                 results = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManage);
             }
+			// assert
             Assert.AreEqual(0, results.Count);
         }
 
         [Test]
         public void PublicSavedSearchInPublicFolder()
         {
+			// arrange
             SearchContainer folder = new SearchContainer()
             {
                 Name = "Testing Folder",
@@ -142,24 +145,28 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
             int savedSearchId = SavedSearch.Create(WorkspaceArtifactId, search);
             _savedSearchesArtifactIds.Add(savedSearchId);
 
+			// act
             IList<SavedSearchModel> results = null;
             using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
             {
                 rsapiClient.APIOptions.WorkspaceID = WorkspaceArtifactId;
                 results = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManage);
             }
+
+			//assert
             Assert.AreEqual(1, results.Count);
         }
 
         [Test]
         public void SecuredSavedSearchWillBeExcluded()
         {
+			// arrange
             string userName = "gbadman@kcura.com";
 
             int groupId = Group.CreateGroup("krowten");
             _groupIds.Add(groupId);
 
-            UserModel user = User.CreateUser("Gerron", "BadMan", userName, new[] { groupId });
+            UserModel user = IntegrationPoint.Tests.Core.User.CreateUser("Gerron", "BadMan", userName, new[] { groupId });
             _userIds.Add(user.ArtifactId);
 
             Group.AddGroupToWorkspace(WorkspaceArtifactId, groupId);
@@ -168,7 +175,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
                 Name = "Testing Folder",
             };
             int folderArtifactId = SavedSearch.CreateSearchFolder(WorkspaceArtifactId, folder);
-            Permission.AddRemoveItemGroups(WorkspaceArtifactId, folderArtifactId, new GroupSelector() { DisabledGroups = new List<GroupRef>(new[] { new GroupRef(groupId) }) });
+			IntegrationPoint.Tests.Core.Permission.AddRemoveItemGroups(WorkspaceArtifactId, folderArtifactId, new GroupSelector() { DisabledGroups = new List<GroupRef>(new[] { new GroupRef(groupId) }) });
 
             KeywordSearch search = new KeywordSearch()
             {
@@ -180,6 +187,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
             int savedSearchId = SavedSearch.Create(WorkspaceArtifactId, search);
             _savedSearchesArtifactIds.Add(savedSearchId);
 
+			//act
             Helper.RelativityUserName = userName;
             IList<SavedSearchModel> results = null;
             using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
@@ -187,7 +195,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
                 rsapiClient.APIOptions.WorkspaceID = WorkspaceArtifactId;
                 results = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManage);
             }
+
+			//assert
             Assert.AreEqual(0, results.Count);
         }
-    }
+	}
 }
