@@ -103,5 +103,38 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			return documents;
 		}
+
+		public async Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix)
+		{
+			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
+			{
+				Condition = $"'{ documentIdentifierFieldName }' like '{ identifierPrefix }%'",
+				Fields = new string[] { "ArtifactID" },
+				IncludeIdWindow = false,
+				SampleParameters = null,
+				RelationalField = null,
+				SearchProviderCondition = null,
+				TruncateTextFields = false
+			};
+
+			int[] documentArtifactIds;
+
+			try
+			{
+				var documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
+				documentArtifactIds = new int[documents.Length];
+
+				for (int index = 0; index < documents.Length; index++)
+				{
+					documentArtifactIds[index] = documents[index].ArtifactId;
+				}
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to retrieve documents", e);
+			}
+
+			return documentArtifactIds;
+		}
 	}
 }

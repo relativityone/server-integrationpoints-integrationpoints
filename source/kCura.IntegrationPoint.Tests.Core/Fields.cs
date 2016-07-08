@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using FieldType = kCura.Relativity.Client.FieldType;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -143,6 +147,46 @@ namespace kCura.IntegrationPoint.Tests.Core
 				Relativity.Client.DTOs.Field fieldArtifact = fieldResult?.Artifact;
 				return fieldArtifact;
 			}
+		}
+
+		public static string GetDocumentIdentifierFieldName(IFieldRepository fieldRepository)
+		{
+			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFieldsAsync(
+				10,
+				new HashSet<string>(new[]
+				{
+					"Name",
+					"Is Identifier"
+				})).ConfigureAwait(false).GetAwaiter().GetResult();
+
+			string fieldName = String.Empty;
+			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
+			{
+				int isIdentifierFieldValue = 0;
+				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
+				{
+					if (field.Name == "Name")
+					{
+						fieldName = field.Value.ToString();
+					}
+					if (field.Name == "Is Identifier")
+					{
+						try
+						{
+							isIdentifierFieldValue = Convert.ToInt32(field.Value);
+						}
+						catch
+						{
+							// suppress error for invalid casts
+						}
+					}
+				}
+				if (isIdentifierFieldValue == 1)
+				{
+					break;
+				}
+			}
+			return fieldName;
 		}
 	}
 }
