@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Has Errors" });
 		}
 
-		#endregion
+		#endregion UpdateProperties
 
 		[Test]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
@@ -278,7 +278,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors.Name, jobHistory.JobType.Name);
-
 
 			Assert.AreEqual(4, postRunAudits.Count, "There should be 4 audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));

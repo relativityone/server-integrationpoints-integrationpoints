@@ -40,11 +40,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_dtoTransformer = dtoTransformer;
 		}
 
-		public ICollection<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
+		public IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			IEnumerable<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
 
-			return (ICollection<int>)results.Select(result => result.ArtifactId);
+			return results.Select(result => result.ArtifactId).ToList();
 		}
 
 		public IDictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)

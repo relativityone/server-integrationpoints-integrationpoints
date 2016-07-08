@@ -24,7 +24,6 @@ namespace kCura.ScheduleQueue.Core
 
 		public Job(DataRow row)
 		{
-
 			JobId = row.Field<long>("JobID");
 			RootJobId = row.Field<long?>("RootJobId");
 			ParentJobId = row.Field<long?>("ParentJobId");
@@ -41,22 +40,6 @@ namespace kCura.ScheduleQueue.Core
 			SubmittedBy = row.Field<int>("SubmittedBy");
 			ScheduleRuleType = row.Field<string>("ScheduleRuleType");
 			SerializedScheduleRule = row.Field<string>("ScheduleRule");
-		}
-
-		//Used for internal unit tests only
-		internal Job(int workspaceArtifactId, int integrationPointArtifactId, int submittedByArtifactId, int jobId)
-		{
-			WorkspaceID = workspaceArtifactId;
-			RelatedObjectArtifactID = integrationPointArtifactId;
-			SubmittedBy = submittedByArtifactId;
-			JobId = jobId;
-		}
-
-		internal Job(int workspaceArtifactId, int integrationPointArtifactId, int submittedByArtifactId)
-		{
-			WorkspaceID = workspaceArtifactId;
-			RelatedObjectArtifactID = integrationPointArtifactId;
-			SubmittedBy = submittedByArtifactId;
 		}
 	}
 }

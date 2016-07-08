@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Web
 {
 	public class WebClientFactory
 	{
-		private int WorkspaceID
+		public int WorkspaceId
 		{
 			get
 			{
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Web
 
 		public IRSAPIClient CreateClient()
 		{
-			return _factory.CreateClientForWorkspace(WorkspaceID);
+			return _factory.CreateClientForWorkspace(WorkspaceId);
 		}
 
 		public IRSAPIClient CreateEddsClient()
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web
 
 		public IDBContext CreateDbContext()
 		{
-			return _factory.CreateDbContext(WorkspaceID);
+			return _factory.CreateDbContext(WorkspaceId);
 		}
 
 		public IServicesMgr CreateServicesMgr()

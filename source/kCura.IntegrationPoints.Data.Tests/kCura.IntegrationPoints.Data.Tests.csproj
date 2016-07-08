@@ -224,6 +224,7 @@
     <Compile Include="Integration\Queries\GetSavedSearchesQueryTests..cs" />
     <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
+    <Compile Include="Integration\Repositories\DestinationWorkspaceRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
