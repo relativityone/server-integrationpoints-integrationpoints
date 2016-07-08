@@ -219,6 +219,17 @@ var IP = IP || {};
 		        return c;
 		    });
 		    self.destinationTypes(types);
+		    var setRelativityAsDestinationProvider = function () {
+		        var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
+		            return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+		        });
+		        if (defaultRelativityProvider.length === 1) {
+		            self.selectedDestinationType(defaultRelativityProvider[0].artifactID);
+		        }
+		    }
+
+		    setRelativityAsDestinationProvider();
+
 		    $.each(self.destinationTypes(), function () {
 
 		        if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
