@@ -1,12 +1,11 @@
-﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts.Models;
+﻿using System.Collections.Generic;
+using kCura.EventHandler;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
-using System;
-using System.Collections.Generic;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -51,16 +50,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(Application.ArtifactID, integrationPointDto, sourceProvider);
+			Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
 
-			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
-				contextContainer);
+			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
-			if (sourceProvider == kCura.IntegrationPoints.Core.Constants.SourceProvider.Relativity)
+			if (sourceProvider == Core.Constants.SourceProvider.Relativity)
 			{
-				bool hasJobsExecutingOrInQueue= queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
+				bool hasJobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
 					ActiveArtifact.ArtifactID);
 				PermissionCheckDTO jobHistoryErrorViewPermissionCheck = integrationPointManager.UserHasPermissionToViewErrors(Application.ArtifactID);
 				bool canViewErrors = jobHistoryErrorViewPermissionCheck.Success;
@@ -74,20 +71,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
 
-				if (!canViewErrors)
-				{
-					permissionCheck.Success = false;
-
-					var errorMessages = new List<string>(jobHistoryErrorViewPermissionCheck.ErrorMessages);
-
-					if (permissionCheck.ErrorMessages != null)
-					{
-						errorMessages.AddRange(permissionCheck.ErrorMessages);
-					}
-
-					permissionCheck.ErrorMessages = errorMessages.ToArray();
-				}
-				else
+				if (canViewErrors)
 				{
 					ConsoleButton viewErrorsLink = GetViewErrorsLink(buttonState.ViewErrorsLinkEnabled, onClickEvents.ViewErrorsOnClickEvent);
 					buttonList.Add(viewErrorsLink);
@@ -97,28 +81,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				ConsoleButton runNowButton = GetRunNowButton();
 				buttonList.Add(runNowButton);
-			}
-
-			if (!permissionCheck.Success)
-			{
-				IErrorManager errorManager = _managerFactory.CreateErrorManager(contextContainer);
-
-				var error = new ErrorDTO()
-				{
-					Message	= Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
-				};
-
-				errorManager.Create(Application.ArtifactID, new[] { error });
-
-				string script = "<script type='text/javascript'>"
-				                + "$(document).ready(function () {"
-				                + "IP.message.error.raise(\""
-				                + Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
-								+ "\", $(\".cardContainer\"));"
-								+ "});"
-								+ "</script>";
-				console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
 			}
 
 			console.ButtonList = buttonList;

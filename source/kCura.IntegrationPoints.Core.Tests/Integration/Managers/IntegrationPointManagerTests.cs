@@ -14,12 +14,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class IntegrationPointManagerTests : WorkspaceDependentTemplate
+	public class IntegrationPointManagerTests : RelativityProviderTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
 		private IDBContext _dbContext;
 		private int _groupId;
 		private UserModel _userModel;
+
+		private string _oldInstanceSettingValue;
 
 		public IntegrationPointManagerTests() : base("IntegrationPointManagerSource", "IntegrationPointManagerTarget")
 		{
@@ -30,9 +32,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		public override void SetUp()
 		{
 			base.SetUp();
+
+			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_dbContext = Helper.GetDBContext(-1);
 			CreateGroupAndUser();
+		}
+
+		[TestFixtureTearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+
+			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
+			{
+				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
+			}
 		}
 
 		[Test]

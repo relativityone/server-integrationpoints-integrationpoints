@@ -58,18 +58,6 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\FreeImageNET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Ionic.Zip, Version=1.8.4.28, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\Ionic.Zip.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\itextsharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.Config, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
@@ -148,19 +136,15 @@
     </Reference>
     <Reference Include="Relativity, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\Relativity.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.API, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.API.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Core, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.Core.9.4.212.3\lib\net45\Relativity.Core.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Data, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.Data.9.4.212.3\lib\net45\Relativity.Data.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.149\lib\net45\Relativity.Kepler.dll</HintPath>
@@ -168,11 +152,9 @@
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.DataContracts.9.4.212.3\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.Interfaces.9.4.212.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.149\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
@@ -187,8 +169,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Relativity.Toggles.1.0.0.68\lib\net45\Relativity.Toggles.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -225,12 +207,13 @@
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
-    <Compile Include="Commands\MassEdit\RelativityMassEdit.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Repositories\IErrorRepository.cs" />
+    <Compile Include="Repositories\IInstanceSettingRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\InstanceSettingRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepository.cs" />
@@ -327,7 +310,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="GeneratedDTOs.Extended.cs">
+	<Compile Include="GeneratedDTOs.Extended.cs">
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
     <Compile Include="GeneratedDTOs.cs">

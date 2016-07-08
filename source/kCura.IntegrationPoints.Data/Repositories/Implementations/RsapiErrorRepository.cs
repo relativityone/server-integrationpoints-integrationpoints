@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch
 				{
-					// surpress errors (if we can't write relativity errors we're in trouble)
+					// suppress errors (if we can't write relativity errors we're in trouble)
 				}
 			}
 		}

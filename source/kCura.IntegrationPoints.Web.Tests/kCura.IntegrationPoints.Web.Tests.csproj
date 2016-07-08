@@ -256,14 +256,15 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\TestBase.cs" />
-    <Compile Include="Integration\GetWorkspacesQueryTests.cs" />
-    <Compile Include="Integration\SavedSearchQueryTests.cs" />
+    <Compile Include="Integration\Controllers\GetWorkspacesQueryTests.cs" />
+    <Compile Include="Integration\Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Unit\Controllers\BaseControllerTests.cs" />
     <Compile Include="Unit\Controllers\LdapControllerTests.cs" />
     <Compile Include="Unit\Controllers\RelativityControllerTests.cs" />
+    <Compile Include="Unit\Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\JobControllerTests.cs" />
     <Compile Include="Unit\DataStructures\FolderTreeTests.cs" />
@@ -292,6 +293,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>

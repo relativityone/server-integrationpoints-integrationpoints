@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new Query<RDO>
 			{
 				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
-				Condition = new WholeNumberCondition(new Guid(Contracts.Constants.SOURCEPROVIDER_ARTIFACTID_FIELD), NumericConditionEnum.EqualTo, artifactId),
+				Condition = new WholeNumberCondition(new Guid(Domain.Constants.SOURCEPROVIDER_ARTIFACTID_FIELD), NumericConditionEnum.EqualTo, artifactId),
 				Fields = new List<FieldValue>()
 				{
 					new FieldValue(new Guid(SourceProviderFieldGuids.Name)),

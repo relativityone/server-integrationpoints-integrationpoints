@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
-	public class GeneralWithCustodianRdoSynchronizerFactory : kCura.IntegrationPoints.Contracts.ISynchronizerFactory
+	public class GeneralWithCustodianRdoSynchronizerFactory : ISynchronizerFactory
 	{
 		private readonly IWindsorContainer _container;
 		private readonly RSAPIRdoQuery _query;

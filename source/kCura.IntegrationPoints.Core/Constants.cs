@@ -7,11 +7,11 @@ namespace kCura.IntegrationPoints.Core
     {
         public static class IntegrationPoints
         {
-            public const string APP_DOMAIN_DATA_CONNECTION_STRING = kCura.IntegrationPoints.Contracts.Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING;
+            public const string APP_DOMAIN_DATA_CONNECTION_STRING = kCura.IntegrationPoints.Domain.Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING;
             public const string APP_DOMAIN_DATA_SYSTEM_TOKEN_PROVIDER = "SystemToken";
-            public const string APP_DOMAIN_SUBSYSTEM_NAME = kCura.IntegrationPoints.Contracts.Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME;
+            public const string APP_DOMAIN_SUBSYSTEM_NAME = kCura.IntegrationPoints.Domain.Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME;
             public const string INTEGRATION_POINT_OBJECT_TYPE_NAME = "IntegrationPoint";
-            public const string APPLICATION_GUID_STRING = kCura.IntegrationPoints.Contracts.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
+            public const string APPLICATION_GUID_STRING = kCura.IntegrationPoints.Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
             public const string DOC_OBJ_GUID = "15C36703-74EA-4FF8-9DFB-AD30ECE7530D";
             public const string INVALID_PARAMETERS = "Invalid parameters";
             public const string JOBS_ALREADY_RUNNING = "There are other jobs currently running or awaiting execution.";
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core
             public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
             public const string RELATIVITY_CUSTOMPAGE_GUID = "dcf6e9d1-22b6-4da3-98f6-41381e93c30c";
             public const string RELATIVITY_PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
-            public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Contracts.Constants.RELATIVITY_PROVIDER_GUID;
+            public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID;
             public const string RELATIVITY_PROVIDER_NAME = "Relativity";
 	        public const string FILESHARE_PROVIDER_NAME = "Fileshare";
             public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
@@ -35,8 +35,8 @@ namespace kCura.IntegrationPoints.Core
             public const string UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to run Integration Point.";
             public const string UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE = "Unable to retry this Integration Point. Please contact your system administrator.";
             public const string UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to retry Integration Point.";
-            public static Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
-            public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+            public static Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+            public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 
             public static class IntegrationPoint
             {

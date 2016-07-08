@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
@@ -12,6 +11,8 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         IDataProviderFactory dataProviderFactory,
                         IHelper helper,
                         kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-                        Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+                        ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
                                             IJobHistoryService jobHistoryService,
                         JobHistoryErrorService jobHistoryErrorService,
                         IJobManager jobManager,

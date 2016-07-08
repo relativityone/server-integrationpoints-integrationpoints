@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -68,21 +65,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasRunPermissions, bool hasViewErrorsPermissions)
 		{
 			// ARRANGE
-			var integrationPointDto = new Contracts.Models.IntegrationPointDTO()
+			var integrationPointDto = new IntegrationPointDTO()
 			{
 				HasErrors = true,
 				SourceProvider = 8392
 			};
 
-			var permissionCheck = new PermissionCheckDTO()
-			{
-				Success = hasRunPermissions,
-				ErrorMessages = hasRunPermissions ? null : new[] { "GOBBLYGOOK!" }
-			};
-
 			string[] viewErrorMessages = new[] { Core.Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW };
 			Core.Constants.SourceProvider sourceProvider = isRelativitySourceProvider ? Core.Constants.SourceProvider.Relativity : Core.Constants.SourceProvider.Other;
-			_integrationPointManager.UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 			_managerFactory.CreateStateManager().Returns(_stateManager);
@@ -113,13 +103,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				{
 					RunNowOnClickEvent = hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value && hasViewErrorsPermissions? "Really long string" : String.Empty,
+					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
 				};
 
 				_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(
 					new PermissionCheckDTO()
 					{
-						Success	= hasViewErrorsPermissions,
+						Success = hasViewErrorsPermissions,
 						ErrorMessages = hasViewErrorsPermissions ? null : viewErrorMessages
 					});
 
@@ -137,7 +127,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			// ASSERT
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
-			_integrationPointManager.Received(1).UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider));
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 			_integrationPointManager.Received(isRelativitySourceProvider ? 1 : 0).UserHasPermissionToViewErrors(_APPLICATION_ID);
 
@@ -187,37 +176,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			{
 				Assert.IsTrue(runNowButton.Enabled);
 				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
-			}
-
-			if (hasRunPermissions && hasViewErrorsPermissions)
-			{
-				Assert.AreEqual(0, console.ScriptBlocks.Count);
-			}
-			else
-			{
-				var expectedError = new ErrorDTO()
-				{
-					Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
-				};
-
-				_errorManager.Received(1).Create(Arg.Is(_APPLICATION_ID), Arg.Is<IEnumerable<ErrorDTO>>(
-					x =>
-						x.Count() == 1 &&
-						x.First().Message == expectedError.Message &&
-						x.First().FullText == expectedError.FullText));
-
-				string expectedKey = "IPConsoleErrorDisplayScript".ToLower();
-				string expectedScript = "<script type='text/javascript'>"
-								+ "$(document).ready(function () {"
-								+ "IP.message.error.raise(\""
-								+ Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
-								+ "\", $(\".cardContainer\"));"
-								+ "});"
-								+ "</script>";
-				Assert.AreEqual(1, console.ScriptBlocks.Count);
-				Assert.AreEqual(expectedKey, console.ScriptBlocks.First().Key);
-				Assert.AreEqual(expectedScript, console.ScriptBlocks.First().Script);
 			}
 		}
 	}

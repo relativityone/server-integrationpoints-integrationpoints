@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API

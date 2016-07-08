@@ -50,13 +50,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        public void RemoveErrorDocument(string docIdentifier)
+        public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
         {
-            _count -= 1;
+            _count -= docIdentifiers.Count;
 
-            int docId = GetErroredDocumentId(docIdentifier);
-            string fullTableName = GetTempTableName();
-            string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId, FullDatabaseFormat);
+            ICollection<int> docIds = GetErroredDocumentId(docIdentifiers);
+
+			if (docIds.Count == 0)
+			{
+				return;
+			}
+			string documentList = "(" + String.Join(",", docIds) + ")";
+
+			string fullTableName = GetTempTableName();
+            string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] in {1}", fullTableName, documentList, FullDatabaseFormat);
 
             _caseContext.ExecuteNonQuerySQLStatement(sql);
         }
@@ -181,15 +188,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return ClaimsPrincipal.Current.ResourceDBPrepend(_workspaceId);
         }
 
-        private int GetErroredDocumentId(string docIdentifier)
+        private ICollection<int> GetErroredDocumentId(ICollection<string> docIdentifiers)
         {
             if (String.IsNullOrEmpty(_docIdentifierFieldName))
             {
                 _docIdentifierFieldName = GetDocumentIdentifierField();
             }
 
-            int documentId = QueryForDocumentArtifactId(docIdentifier);
-            return documentId;
+            ICollection<int> documentIds = QueryForDocumentArtifactId(docIdentifiers);
+            return documentIds;
         }
 
         internal string GetDocumentIdentifierField()
@@ -232,26 +239,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return fieldName;
         }
 
-        internal int QueryForDocumentArtifactId(string docIdentifier)
+        internal List<int> QueryForDocumentArtifactId(ICollection<string> docIdentifiers)
         {
-            ArtifactDTO document;
+            ArtifactDTO[] documents;
             string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
             try
             {
-                Task<ArtifactDTO> documentResult = _documentRepository.RetrieveDocumentAsync(_docIdentifierFieldName, docIdentifier);
-                document = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
+                Task<ArtifactDTO[]> documentResult = _documentRepository.RetrieveDocumentsAsync(_docIdentifierFieldName, docIdentifiers);
+                documents = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
                 throw new Exception(queryFailureMessage, ex);
             }
 
-            if (document == null)
+            if (documents == null)
             {
                 throw new Exception(queryFailureMessage);
             }
 
-            return document.ArtifactId;
+            return documents.Select(x => x.ArtifactId).ToList();
         }
 
         internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these

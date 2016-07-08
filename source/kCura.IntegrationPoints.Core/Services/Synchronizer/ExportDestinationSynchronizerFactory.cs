@@ -4,8 +4,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer

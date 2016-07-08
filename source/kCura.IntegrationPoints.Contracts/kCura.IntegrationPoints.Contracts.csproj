@@ -164,34 +164,13 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyExtension.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
-    <Compile Include="DefaultProviderFactory.cs" />
-    <Compile Include="DefaultSynchronizerFactory.cs" />
-    <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IProviderFactory.cs" />
-    <Compile Include="ISynchronizerFactory.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
-    <Compile Include="Models\BaseDTO.cs" />
-    <Compile Include="Models\ButtonStateDTO.cs" />
-    <Compile Include="Models\DestinationWorkspaceDTO.cs" />
-    <Compile Include="Models\ErrorDTO.cs" />
-    <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
-    <Compile Include="Models\JobHistoryErrorDTO.cs" />
-    <Compile Include="Models\IntegrationPointDTO.cs" />
-    <Compile Include="Models\ObjectTypeDTO.cs" />
-    <Compile Include="Models\OnClickEventDTO.cs" />
-    <Compile Include="Models\PermissionCheckDTO.cs" />
-    <Compile Include="Models\SavedSearchDTO.cs" />
-    <Compile Include="Models\SourceProviderDTO.cs" />
-    <Compile Include="Models\SourceWorkspaceDTO.cs" />
-    <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />
-    <Compile Include="Models\SourceJobDTO.cs" />
-    <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -200,13 +179,7 @@
     <Compile Include="ProviderFactoryBase.cs" />
     <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
-    <Compile Include="IStartUp.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
-    <Compile Include="Readers\DataColumnWithValue.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Readers\RelativityReaderBase.cs" />
-    <Compile Include="Synchronizer\IDataSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -217,6 +190,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"

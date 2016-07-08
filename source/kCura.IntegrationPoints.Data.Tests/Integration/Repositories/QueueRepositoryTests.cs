@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
 	[Explicit]
-	public class QueueRepositoryTests : WorkspaceDependentTemplate
+	public class QueueRepositoryTests : RelativityProviderTemplate
 	{
 		private readonly int _RipObjectArtifactId = 666;
 		private ITestHelper _helper;

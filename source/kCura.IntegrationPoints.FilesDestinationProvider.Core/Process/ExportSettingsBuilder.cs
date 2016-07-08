@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {

@@ -7,6 +7,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.Core.Service;
 

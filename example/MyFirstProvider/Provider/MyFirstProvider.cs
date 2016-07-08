@@ -1,68 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using kCura.IntegrationPoints.Contracts.Models;
 
 namespace Provider
 {
-	[kCura.IntegrationPoints.Contracts.DataSourceProvider(GlobalConstants.FIRST_PROVIDER_GUID)]
-	public class MyFirstProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
-	{
-		public IEnumerable<FieldEntry> GetFields(string options)
-		{
-			string fileLocation = options;
-			XmlDocument doc = new XmlDocument();
-			doc.Load(fileLocation);
-			XmlNodeList nodes = doc.DocumentElement.SelectNodes("/root/columns/column");
-			var fieldEntries = new List<FieldEntry>();
-			foreach (XmlNode node in nodes)
-			{
-				var field = node.InnerText;
-				fieldEntries.Add(new FieldEntry { DisplayName = field, FieldIdentifier = field, IsIdentifier = field.Equals("Name") });
-			}
+    /// <summary>
+    /// This code is a sample fully operational Integration Point Provider
+    /// for demonstration purposes only
+    /// </summary>
+    [kCura.IntegrationPoints.Contracts.DataSourceProvider(GlobalConstants.FIRST_PROVIDER_GUID)]
+    public class MyFirstProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
+    {
+        public IEnumerable<FieldEntry> GetFields(string options)
+        {
+            string fileLocation = options;
+            XmlDocument doc = new XmlDocument();
+            doc.Load(fileLocation);
+            XmlNodeList nodes = doc.DocumentElement.SelectNodes("/root/columns/column");
+            var fieldEntries = new List<FieldEntry>();
+            foreach (XmlNode node in nodes)
+            {
+                var field = node.InnerText;
+                fieldEntries.Add(new FieldEntry { DisplayName = field, FieldIdentifier = field, IsIdentifier = field.Equals("Name") });
+            }
 
-			return fieldEntries;
-		}
+            return fieldEntries;
+        }
 
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
-		{
-			string fileLocation = options;
-			return GetDataReader(fileLocation);
-		}
+        public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+        {
+            string fileLocation = options;
 
-		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
-		{
-			string fileLocation = options;
-			return GetDataReader(fileLocation);
-		}
+            DataTable dt = new DataTable();
+            dt.Columns.Add(identifier.FieldIdentifier);
 
-		private IDataReader GetDataReader(string fileLocation)
-		{
-			var dt = new DataTable();
-			XmlDocument doc = new XmlDocument();
-			doc.Load(fileLocation);
-			XmlNodeList nodes = doc.DocumentElement.SelectNodes("/root/data/document");
-			var fields = this.GetFields(fileLocation);
-			foreach (var field in fields)
-			{
-				dt.Columns.Add(field.FieldIdentifier);
-			}
-			foreach (XmlNode node in nodes)
-			{
-				var row = dt.NewRow();
-				foreach (var fieldEntry in fields)
-				{
-					row[fieldEntry.FieldIdentifier] = node.SelectSingleNode(fieldEntry.FieldIdentifier).InnerText;
-				}
-				dt.Rows.Add(row);
-			}
-			return dt.CreateDataReader();
-		}
+            XmlDocument doc = new XmlDocument();
+            doc.Load(fileLocation);
+            XmlNodeList nodes = doc.DocumentElement.SelectNodes(string.Format("/root/data/document/{0}", identifier.FieldIdentifier));
 
+            foreach (XmlNode node in nodes)
+            {
+                var row = dt.NewRow();
+                row[identifier.FieldIdentifier] = node.InnerText;
+                dt.Rows.Add(row);
+            }
+            return dt.CreateDataReader();
+        }
 
-	}
+        public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
+        {
+            string fileLocation = options;
+            List<string> fieldList = fields.Select(f => f.FieldIdentifier).ToList();
+            string keyFieldName = fields.FirstOrDefault(f => f.IsIdentifier).FieldIdentifier;
+            return new XMLDataReader(entryIds, fieldList, keyFieldName, fileLocation);
+        }
+    }
 }
