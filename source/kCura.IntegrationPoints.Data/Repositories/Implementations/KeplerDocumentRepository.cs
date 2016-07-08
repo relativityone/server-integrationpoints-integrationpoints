@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix)
 		{
-			var documentsQuery = new Query()
+			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Condition = $"'{ documentIdentifierFieldName }' like '{ identifierPrefix }%'",
 				Fields = new string[] { "ArtifactID" },
