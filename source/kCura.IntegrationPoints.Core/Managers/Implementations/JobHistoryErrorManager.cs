@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			if (expiredItemLevelErrors.Any())
 			{
-				JobHistoryErrorItemStartExcluded.AddArtifactIdsIntoTempTable(expiredItemLevelErrors.ToList());
+				JobHistoryErrorItemStartExcluded.AddArtifactIdsIntoTempTable(expiredItemLevelErrors);
 			}
 		}
 	}
