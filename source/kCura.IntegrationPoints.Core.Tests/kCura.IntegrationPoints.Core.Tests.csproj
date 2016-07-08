@@ -229,6 +229,7 @@
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Integration\PermissionErrorMessageTest.cs" />
+    <Compile Include="Integration\Services\AgentJobManagerTests.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
