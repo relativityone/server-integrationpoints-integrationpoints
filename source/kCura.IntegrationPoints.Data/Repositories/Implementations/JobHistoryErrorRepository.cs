@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_dtoTransformer = dtoTransformer;
 		}
 
-		public IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
+		public ICollection<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			IEnumerable<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
 
@@ -49,8 +49,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public IDictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
-
-			IEnumerable<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
+			ICollection<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
 
 			Dictionary<int, string> artifactIdsAndSourceUniqueIds = new Dictionary<int, string>();
 
@@ -62,9 +61,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return artifactIdsAndSourceUniqueIds;
 		}
 
-		private IEnumerable<JobHistoryErrorDTO> RetrieveJobHistoryErrorData(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
+		private ICollection<JobHistoryErrorDTO> RetrieveJobHistoryErrorData(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
-			IEnumerable<JobHistoryErrorDTO> jobHistoryErrors = new List<JobHistoryErrorDTO>();
+			ICollection<JobHistoryErrorDTO> jobHistoryErrors = new List<JobHistoryErrorDTO>();
 			var jobHistoryCondition = $"'{JobHistoryErrorDTO.FieldNames.JobHistory}' == {jobHistoryArtifactId}";
 			
 			var query = new global::Relativity.Services.ObjectQuery.Query()
