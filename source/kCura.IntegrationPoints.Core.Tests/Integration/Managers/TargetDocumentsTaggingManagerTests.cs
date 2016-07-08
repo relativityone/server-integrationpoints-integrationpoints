@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
 			DataTable dataTable = Import.GetImportTable(documentIdentifier, numberOfDocuments);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
-			List<int> documentArtifactIds = GetDocumentArtifactIdsByIdentifier(documentIdentifier);
+			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldRepository), documentIdentifier).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -96,22 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			VerifyRelativitySourceJobAndSourceCase(documentArtifactIds, jobHistory.Name, expectedRelativitySourceCase);
 		}
 
-		private List<int> GetDocumentArtifactIdsByIdentifier(string documentIdentifier)
-		{
-			List<int> documentArtifactIds = new List<int>();
-			string query = $"SELECT [ArtifactID] FROM [Document] WHERE ControlNumber like '{documentIdentifier}%'";
-
-			using (DbDataReader dataReader = CaseContext.SqlContext.ExecuteSqlStatementAsDbDataReader(query))
-			{
-				while (dataReader.Read())
-				{
-					documentArtifactIds.Add(dataReader.GetInt32(0));
-				}
-			}
-			return documentArtifactIds;
-		}
-
-		private void VerifyRelativitySourceJobAndSourceCase(List<int> documentArtifactIds, string expectedSourceJob, string expectedSourceCase)
+		private void VerifyRelativitySourceJobAndSourceCase(int[] documentArtifactIds, string expectedSourceJob, string expectedSourceCase)
 		{
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 

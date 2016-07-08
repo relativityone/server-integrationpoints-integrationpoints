@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("IPTestDocument", 3));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("IPTestDocument", 3));
 
 			_context = Substitute.For<IEddsServiceContext>();
 			_context.UserID = 1234;
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_IntegrationPointWithNoSchedulerAndUpdateWithScheduler()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("RunNow", 3));
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -539,19 +539,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
 			model.LastRun = DateTime.Now;
 			return model;
-		}
-
-		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
-		{
-			DataTable table = new DataTable();
-			table.Columns.Add("Control Number", typeof(string));
-
-			for (int index = 1; index <= numberOfDocuments; index++)
-			{
-				string controlNumber = $"{documentPrefix}{index}";
-				table.Rows.Add(controlNumber);
-			}
-			return table;
 		}
 
 		private string GetDestinationConfigWithOverlayOnly()
