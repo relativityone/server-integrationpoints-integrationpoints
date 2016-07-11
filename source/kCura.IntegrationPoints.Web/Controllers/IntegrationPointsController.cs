@@ -95,8 +95,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return View("ExportProviderConfiguration", "_StepLayout");
 		}
-
-		[HttpPost]
+		
 		public ActionResult ExportDetails()
 		{
 			return PartialView();

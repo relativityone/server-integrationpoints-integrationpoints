@@ -8,7 +8,7 @@ ExportDetailsView.downloadSummaryPage = function () {
 
     IP.data.ajax({
         url: IP.utils.generateWebURL('IntegrationPoints', 'ExportDetails'),
-        type: 'post',
+        type: 'get',
         dataType: 'html'
     }).then(function (result) {
         IP.utils.getViewField(IP.nameId).closest('.innerTabTable').replaceWith(result);
