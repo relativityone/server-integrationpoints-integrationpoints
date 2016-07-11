@@ -170,16 +170,26 @@ namespace kCura.IntegrationPoints.Core.Agent
             return sourceProvider;
         }
 
-        protected IEnumerable<string> GetRecipientEmails()
+		protected List<string> GetRecipientEmails()
         {
             string emailRecipients = string.Empty;
-            try { emailRecipients = IntegrationPoint.EmailNotificationRecipients; }
+	        try
+	        {
+		        emailRecipients = IntegrationPoint.EmailNotificationRecipients;
+	        }
             catch
             {
                 //this property might be not loaded on RDO if it's null, so suppress exception
             }
-            IEnumerable<string> emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim());
-            return emailRecipientList;
+
+	        var emailRecipientList = new List<string>();
+
+	        if (!String.IsNullOrWhiteSpace(emailRecipients))
+	        {
+				emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim()).Where(x=>!String.IsNullOrWhiteSpace(x)).ToList();
+			}
+
+			return emailRecipientList;
         }
     }
 }

@@ -47,18 +47,17 @@ namespace kCura.IntegrationPoints.Core
 		{
 			SetIntegrationPoint(job);
 
-			List<string> emails = GetRecipientEmails().ToList();
-		    if (!emails.Any())
-		    {
-		        return;
-		    }
+			List<string> emails = GetRecipientEmails();
 
-			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			kCura.Relativity.Client.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
+			if (emails!= null && emails.Any())
+			{
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				kCura.Relativity.Client.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
-			EmailMessage message = GenerateEmail(choice);
+				EmailMessage message = GenerateEmail(choice);
 
-			SendEmail(job, message, emails);
+				SendEmail(job, message, emails);
+			}
 		}
 
 		public EmailMessage GenerateEmail(kCura.Relativity.Client.Choice choice)
@@ -83,7 +82,7 @@ namespace kCura.IntegrationPoints.Core
 			return message;
 		}
 
-		private void SendEmail(Job parentJob, EmailMessage message, List<string> emails)
+		private void SendEmail(Job parentJob, EmailMessage message, IEnumerable<string> emails)
 		{
 			message.Emails = emails;
 			message.Subject = _converter.Convert(message.Subject);
