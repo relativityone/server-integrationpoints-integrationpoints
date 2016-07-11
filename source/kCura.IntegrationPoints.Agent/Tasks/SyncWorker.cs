@@ -19,14 +19,19 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.MetricsCollection;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
     public class SyncWorker : IntegrationPointTaskBase, ITask
     {
-        internal IJobHistoryService _jobHistoryService;
-        private JobStatisticsService _statisticsService;
-        private IEnumerable<Core.IBatchStatus> _batchStatus;
+		internal IJobHistoryService _jobHistoryService;
+		private JobStatisticsService _statisticsService;
+		private IEnumerable<Core.IBatchStatus> _batchStatus;
+
+		protected virtual string TelemetryMetricIdentifier => Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR;
 
         public IEnumerable<Core.IBatchStatus> BatchStatus
         {
@@ -57,14 +62,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _statisticsService = statisticsService;
         }
 
-        public void Execute(Job job)
-        {
-            foreach (var batchComplete in BatchStatus)
-            {
-				batchComplete.OnJobStart(job);
-            }
-            ExecuteTask(job);
-        }
+		public void Execute(Job job)
+		{
+			using (Client.MetricsClient.LogDuration(TelemetryMetricIdentifier, Guid.Empty, MetricTargets.SUM))
+			{
+				foreach (var batchComplete in BatchStatus)
+				{
+					batchComplete.OnJobStart(job);
+				}
+				ExecuteTask(job);
+			}
+		}
 
         internal virtual void ExecuteTask(Job job)
         {

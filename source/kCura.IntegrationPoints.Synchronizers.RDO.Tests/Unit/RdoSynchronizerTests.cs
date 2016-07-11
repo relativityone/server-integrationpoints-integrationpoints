@@ -470,12 +470,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			DisableNativeValidation = false;
 		}
 
-		public ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
+		public new ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
 		{
 			return base.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 		}
 
-		public bool IncludeFieldInImport(FieldMap fieldMap)
+		public new bool IncludeFieldInImport(FieldMap fieldMap)
 		{
 			return base.IncludeFieldInImport(fieldMap);
 		}
@@ -491,11 +491,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			DisableNativeLocationValidation = false;
 			DisableNativeValidation = false;
 			_workspaceRef = workspaceRef;
-		}
-
-		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
-		{
-			return base.GetEmailBodyData(fields, options);
 		}
 
 		protected override WorkspaceRef GetWorkspace(ImportSettings settings)

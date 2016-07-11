@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_taskResult = new TaskResult();
 		}
 
-		public IntegrationPoint IntegrationPointDto { get; private set; }
+		public Data.IntegrationPoint IntegrationPointDto { get; private set; }
 		public JobHistory JobHistoryDto { get; private set; }
 		public JobHistoryError JobHistoryErrorDto { get; private set; }
 		public List<FieldMap> MappedFields { get; private set; }

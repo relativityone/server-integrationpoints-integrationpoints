@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Core
             public const string RELATIVITY_PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
             public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID;
             public const string RELATIVITY_PROVIDER_NAME = "Relativity";
+	        public const string FILESHARE_PROVIDER_NAME = "Fileshare";
             public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
             public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
             public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
@@ -71,13 +72,28 @@ namespace kCura.IntegrationPoints.Core
                 public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX = "User does not have the following permissions required to save an Integration Point:";
                 public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
             }
+
+			public class Telemetry
+			{
+				public const string TELEMETRY_CATEGORY = "Integration Points";
+
+				public const string BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncWorker.Execute.Duration";
+				public const string BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Web.Controllers.API.Update.Duaration";
+
+				#region Export
+
+				public const string BUCKET_EXPORT_WORKER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.ExportWorker.Execute.Duration";
+				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.Execute.Duration";
+
+				#endregion //Export
+			}
         }
 
         public static class RelativityProvider
         {
             public const string ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE = "Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
         }
-
+		
         public enum SourceProvider
         {
             Other = 0,

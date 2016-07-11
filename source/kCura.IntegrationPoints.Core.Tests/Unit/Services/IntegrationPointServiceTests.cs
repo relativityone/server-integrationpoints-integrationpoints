@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			{
 				ArtifactId = _integrationPointArtifactId,
 				Name = "IP Name",
-				DestinationConfiguration = "",
+				DestinationConfiguration = $"{{ DestinationProviderType : \"{Core.Services.Synchronizer.RdoSynchronizerProvider.RDO_SYNC_TYPE_GUID}\" }}",
 				DestinationProvider = 0,
 				EmailNotificationRecipients = "emails",
 				EnableScheduler = false,
