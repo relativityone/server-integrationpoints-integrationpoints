@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		}
 
 		[TestFixtureTearDown]
-		public new void TearDown()
+		public new void SuiteTeardown()
 		{
 			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
 			{

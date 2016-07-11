@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestFixtureSetUp]
-		public new void TearDown()
+		public new void SuiteTeardown()
 		{
 			_scratchTableRepository.Dispose();
 		}
