@@ -83,10 +83,6 @@
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="IProviderFactory.cs" />
     <Compile Include="IStartUp.cs" />
-    <Compile Include="Models\ArtifactDTO.cs" />
-    <Compile Include="Models\ArtifactFieldDTO.cs" />
-    <Compile Include="Models\FieldMapTypeEnum.cs" />
-    <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

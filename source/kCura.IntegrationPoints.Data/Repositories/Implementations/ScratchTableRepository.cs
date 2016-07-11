@@ -8,6 +8,7 @@ using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Toggle;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations

@@ -503,11 +503,15 @@
     <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IPluginProvider.cs" />
     <Compile Include="ISynchronizerFactory.cs" />
+    <Compile Include="Models\ArtifactDTO.cs" />
+    <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\BaseDTO.cs" />
     <Compile Include="Models\ButtonStateDTO.cs" />
     <Compile Include="Models\DestinationWorkspaceDTO.cs" />
     <Compile Include="Models\ErrorDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />
+    <Compile Include="Models\FieldMap.cs" />
+    <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\IntegrationPointDTO.cs" />
     <Compile Include="Models\JobHistoryErrorDTO.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
