@@ -58,5 +58,6 @@
     <kCura_Apps_Common_Utils>kCura.Apps.Common.Utils.1.0.192.5</kCura_Apps_Common_Utils>
     <Selenium_Support>Selenium.Support.2.51.0</Selenium_Support>
     <Selenium_WebDriver>Selenium.WebDriver.2.53.0</Selenium_WebDriver>
+    <kCura_Agent>kCura.Agent.9.4.212.3</kCura_Agent>
   </PropertyGroup>
 </Project>
