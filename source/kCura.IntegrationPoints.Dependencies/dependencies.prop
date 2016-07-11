@@ -53,5 +53,10 @@
     <Relativity_API>Relativity.API.9.4.212.3</Relativity_API>
     <Relativity_Data>Relativity.Data.9.4.212.3</Relativity_Data>
     <kCura_Relativity_Client>kCura.Relativity.Client.9.4.212.3</kCura_Relativity_Client>
+    <kCura_Apps_Common_Config>kCura.Apps.Common.Config.1.0.227.4</kCura_Apps_Common_Config>
+    <kCura_Apps_Common_Data>kCura.Apps.Common.Data.1.0.192.5</kCura_Apps_Common_Data>
+    <kCura_Apps_Common_Utils>kCura.Apps.Common.Utils.1.0.192.5</kCura_Apps_Common_Utils>
+    <Selenium_Support>Selenium.Support.2.51.0</Selenium_Support>
+    <Selenium_WebDriver>Selenium.WebDriver.2.53.0</Selenium_WebDriver>
   </PropertyGroup>
 </Project>
