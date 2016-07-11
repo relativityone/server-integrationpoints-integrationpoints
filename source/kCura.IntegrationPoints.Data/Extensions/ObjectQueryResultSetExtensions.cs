@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Extensions
