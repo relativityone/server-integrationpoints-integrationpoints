@@ -544,7 +544,6 @@
     <Compile Include="Selenium.cs" />
     <Compile Include="SharedVariables.cs" />
     <Compile Include="Status.cs" />
-    <Compile Include="IntegrationPoint.cs" />
     <Compile Include="Group.cs" />
     <Compile Include="Templates\OtherProvidersTemplate.cs" />
     <Compile Include="Templates\RelativityProviderTemplate.cs" />
