@@ -158,7 +158,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <HintPath>..\packages\kCura.Relativity.Client.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
@@ -524,7 +524,9 @@
     <None Include="dependencies.prop">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="BuildPropertiesScrubber.exe" />
@@ -543,7 +545,7 @@
   <Import Project="..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.4.212.3\build\RelativityCore.targets')" />
   <Import Project="..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.212.3\build\Relativity.ImportExport.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)\BuildPropertiesScrubber.exe $(ProjectDir)\dependencies.prop $(ProjectDir)\packages.config</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)\BuildPropertiesScrubber.exe $(ProjectDir)dependencies.prop $(ProjectDir)packages.config</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

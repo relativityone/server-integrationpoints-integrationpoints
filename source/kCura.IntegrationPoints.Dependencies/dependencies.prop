@@ -52,5 +52,6 @@
     <Relativity_ImportExport>Relativity.ImportExport.9.4.212.3</Relativity_ImportExport>
     <Relativity_API>Relativity.API.9.4.212.3</Relativity_API>
     <Relativity_Data>Relativity.Data.9.4.212.3</Relativity_Data>
+    <kCura_Relativity_Client>kCura.Relativity.Client.9.4.212.3</kCura_Relativity_Client>
   </PropertyGroup>
 </Project>
