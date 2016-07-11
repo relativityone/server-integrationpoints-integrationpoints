@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.Repositories;
@@ -96,10 +97,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
-		public string ResourceDBPrepend()
-		{
-			throw new NotImplementedException();
-		}
+	    public string ResourceDBPrepend()
+	    {
+	        throw new NotImplementedException();
+	    }
 
 		public string ResourceDBPrepend(IDBContext context)
 		{

@@ -88,6 +88,16 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
+	<target name="build_and_deploy" description="Build the entire codebase, RAP, and deploys binaries" depends="build_all, deploy">				
+		<if test="${file::exists(logfile)}">
+			<delete file="${logfile}" failonerror="true"/>
+		</if>
+		<if test="${string::contains(action, 'build')}">
+			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
+		</if>
+		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
+	</target>
+	
 	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_initialize_nuget, build_integrationPoint_core, merge_binaries, copy_files, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, copy_example_dependencies, build_ip_sdk">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
@@ -225,14 +235,13 @@
 			<arg line='/lib:"${source.packages.directory}\Dynamitey.1.0.2.0\lib\portable-win+net45+sl40+wp80"' />
 			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\kCura.Agent.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
 			<!--<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />-->
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.149\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.16\lib"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ServiceBus.1.1.17\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.DataContracts.Shared.9.4.68\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.MetricsCollection.9.4.68\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.DataContracts.Shared.9.4.69\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.MetricsCollection.9.4.69\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Vfs.IO.1.0.12\lib\net451"' />
 			<arg line='/lib:"${source.packages.directory}\FluentValidation.6.1.0.0\lib\Net45"' />
@@ -284,6 +293,7 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 		</exec>
 	</target>
@@ -386,6 +396,29 @@
 		</exec>
 	</target>
 	
+	<target name="merge_export_provider" description="Merge all related binaries into a single library">
+		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
+			<arg line='/targetplatform:v4' />
+			<arg line='/out:"${target.bin.directory}\kCura.IntegrationPoints.FilesDestinationProvider.dll"' />
+			<arg line='/internalize:ilmergeExcludeExportProvider.txt' />
+			<arg line='/log' />
+			
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />				
+			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
+			
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />				
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
+	<target name="copy_kCura.IntegrationPoints.Contracts" description="Copy kCura.IntegrationPoints.Contracts.dll to \bin">
+		<copy todir="${bin.directory}">
+			<fileset basedir="${target.code.directory}">
+				<include name="kCura.IntegrationPoints.Contracts.dll" />
+			</fileset>
+		</copy>
+	</target>
+	
 	<target name="copy_files" description="Copy all dlls for rap to \bin">
 		<copy todir="${target.bin.directory}">
 			<fileset basedir="${target.code.directory}">
@@ -404,7 +437,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${target.bin.directory}">
-			<fileset basedir="${source.packages.directory}\RelativityCore.9.4.212.3\lib\net45">
+			<fileset basedir="${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45">
 				<include name="kCura.Image.Viewer.dll" />
 				<include name="kCura.Print.dll" />
 			</fileset>
@@ -482,4 +515,14 @@
 			</environment>
 		</exec>
 	</target>
+	
+	<target name="deploy" description="Deploy application into Relativity">
+		<exec program="${ldap.scripts.directory}\deploy.bat" >
+			<arg line='${caseId}' />
+			<environment>
+				<variable name="root" value="${root}" />
+			</environment>
+		</exec>
+	</target>
+	
 </project>

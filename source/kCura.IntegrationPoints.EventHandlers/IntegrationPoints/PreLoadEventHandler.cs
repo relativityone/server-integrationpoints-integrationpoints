@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using kCura.EventHandler;
@@ -16,12 +18,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public class PreLoadEventHandler : PreLoadEventHandlerBase
 	{
-		private ExternalTabURLService _service;
-		public ExternalTabURLService Service
-		{
-			get { return _service ?? (_service = new ExternalTabURLService()); }
-		}
+		#region Fields
 
+		private ExternalTabURLService _service;
+
+		#endregion //Fields
+
+		#region Properties
+
+		public ExternalTabURLService Service => _service ?? (_service = new ExternalTabURLService());
+
+		public override FieldCollection RequiredFields => new FieldCollection();
+
+		#endregion Properties
+
+		#region Methods
 
 		public override Response Execute()
 		{
@@ -32,51 +43,53 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			};
 
 			var scripts = new StringBuilder();
-			var location = "";
 
-
-
-			if (base.PageMode == EventHandler.Helper.PageMode.View)
+			if (PageMode == EventHandler.Helper.PageMode.View)
 			{
-				int sourceProvider = (int)this.ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
+				int sourceProvider = (int) ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
 				// Integration Point Specific Error Handling 
-				if (base.ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name ==
+				if (ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name ==
 					Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
 				{
 
 					StringBuilder errorMessage = new StringBuilder("");
 					StringBuilder folderPathInformation = new StringBuilder("");
-					string  destinationConfiguration = (string)this.ActiveArtifact.Fields[IntegrationPointFields.DestinationConfiguration].Value.Value;
+					string destinationConfiguration =
+						(string) ActiveArtifact.Fields[IntegrationPointFields.DestinationConfiguration].Value.Value;
 					ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
-					IntegrationPointDestinationConfiguration integrationPointDestinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(destinationConfiguration);
-					if (importSettings.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly && integrationPointDestinationConfiguration.UseFolderPathInformation == true)
+					IntegrationPointDestinationConfiguration integrationPointDestinationConfiguration =
+						JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(destinationConfiguration);
+					if (importSettings.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly &&
+						integrationPointDestinationConfiguration.UseFolderPathInformation)
 					{
-						var sqlString = $"SELECT TextIdentifier FROM Artifact WHERE ArtifactID = {integrationPointDestinationConfiguration.FolderPathSourceField}";
-							folderPathInformation.Append(base.ServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(sqlString).Rows[0].ItemArray[0].ToString());
+						var sqlString =
+							$"SELECT TextIdentifier FROM Artifact WHERE ArtifactID = {integrationPointDestinationConfiguration.FolderPathSourceField}";
+						folderPathInformation.Append(
+							ServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(sqlString).Rows[0].ItemArray[0]);
 					}
-					string sourceConfiguration =this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value.ToString();
-					ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
+					string sourceConfiguration = ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value.ToString();
+
+					IDictionary<string, object> settings = JsonConvert.DeserializeObject<ExpandoObject>(sourceConfiguration);
+
 					Result<Workspace> sourceWorkspace;
 					Result<Workspace> targetWorkspace;
 
-					
-					using (IRSAPIClient currentClient = GetRSAPIClient(-1))
+					using (IRSAPIClient currentClient = GetRsapiClient(-1))
 					{
 						QueryResultSet<Workspace> workspaces = new GetWorkspacesQuery(currentClient).ExecuteQuery();
 						targetWorkspace =
-							workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.TargetWorkspaceArtifactId);
+							workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId)));
 						sourceWorkspace =
-							workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.SourceWorkspaceArtifactId);
+							workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId)));
 					}
-
 
 					if (targetWorkspace == null)
 					{
-						settings.TargetWorkspaceArtifactId = 0;
+						settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId)] = 0;
 					}
 					else
 					{
-						settings.TargetWorkspace = targetWorkspace.Artifact.Name;
+						settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspace)] = targetWorkspace.Artifact.Name;
 						if (targetWorkspace.Artifact.Name.Contains(";"))
 						{
 							errorMessage =
@@ -85,76 +98,79 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 						}
 					}
 
-					settings.SourceWorkspace = sourceWorkspace.Artifact.Name;
+					settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)] = sourceWorkspace.Artifact.Name;
 					if (sourceWorkspace.Artifact.Name.Contains(";"))
 					{
 						errorMessage = errorMessage.Append(
 							"Source workspace name contains an invalid character. Please remove before continuing.</br>");
 					}
 					Relativity.Client.Artifact savedSearch;
-					using (IRSAPIClient client = GetRSAPIClient(settings.SourceWorkspaceArtifactId))
+					using (IRSAPIClient client = GetRsapiClient(ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId))))
 					{
 						QueryResult savedSearches = new GetSavedSearchesQuery(client).ExecuteQuery();
-						savedSearch = savedSearches.QueryArtifacts.FirstOrDefault(x => x.ArtifactID == settings.SavedSearchArtifactId);
+						savedSearch = savedSearches.QueryArtifacts.FirstOrDefault(x => x.ArtifactID == ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)));
 					}
 					if (savedSearch == null)
 					{
-						settings.SavedSearchArtifactId = 0;
+						settings[nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)] = 0;
 					}
 					else
 					{
-						settings.SavedSearch = savedSearch.getFieldByName("Text Identifier").ToString();
+						settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] = savedSearch.getFieldByName("Text Identifier").ToString();
 					}
-					using (TagBuilder Relativityprovider = new TagBuilder("script"))
+					using (TagBuilder relativityprovider = new TagBuilder("script"))
 					{
-						Relativityprovider.Attributes.Add("type", "text/javascript");
-						Relativityprovider.InnerHtml = String.Format(" var IP = IP || {{}};$(function(){{IP.errorMessage = '{0}';IP.fieldName ='{1}';}});", errorMessage, folderPathInformation);
-						scripts.Append(Relativityprovider);
+						relativityprovider.Attributes.Add("type", "text/javascript");
+						relativityprovider.InnerHtml =
+							$" var IP = IP || {{}};$(function(){{IP.errorMessage = '{errorMessage}';IP.fieldName ='{folderPathInformation}';}});";
+						scripts.Append(relativityprovider);
 					}
 					response.Message = scripts.ToString();
-					this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value =
+					ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value =
 						JsonConvert.SerializeObject(settings);
 				}
 			}
 
-
-			string action = string.Empty;
-			if (base.PageMode == EventHandler.Helper.PageMode.Edit)
+			if (PageMode == EventHandler.Helper.PageMode.Edit)
 			{
-				action = Constant.URL_FOR_INTEGRATIONPOINTS_EDIT;
+				var action = Constant.URL_FOR_INTEGRATIONPOINTS_EDIT;
 				var id = ActiveArtifact.ArtifactID != 0 ? ActiveArtifact.ArtifactID.ToString() : string.Empty;
-				var url = String.Format(@"{0}/{1}/{2}/{3}?StandardsCompliance=true", Constant.URL_FOR_WEB,
-											Constant.URL_FOR_INTEGRATIONPOINTSCONTROLLER,
-											action,
-											id);
-				var tabID = ServiceContext.SqlContext.GetArtifactIDByGuid(Guid.Parse(Data.IntegrationPointTabGuids.IntegrationPoints));
-				location = Service.EncodeRelativityURL(url, this.Application.ArtifactID, tabID, false);
+				var url = $@"{Constant.URL_FOR_WEB}/{Constant.URL_FOR_INTEGRATIONPOINTSCONTROLLER}/{action}/{id}?StandardsCompliance=true";
+				var tabId =
+					ServiceContext.SqlContext.GetArtifactIDByGuid(Guid.Parse(IntegrationPointTabGuids.IntegrationPoints));
+				var location = Service.EncodeRelativityURL(url, Application.ArtifactID, tabId, false);
 
 				using (var questionnaireBuilderScriptBlock = new TagBuilder("script"))
 				{
 					questionnaireBuilderScriptBlock.Attributes.Add("type", "text/javascript");
-					questionnaireBuilderScriptBlock.InnerHtml = String.Format(@"$(function(){{window.location=""{0}"";}});", location);
-					scripts.Append(questionnaireBuilderScriptBlock.ToString());
+					questionnaireBuilderScriptBlock.InnerHtml = $@"$(function(){{window.location=""{location}"";}});";
+					scripts.Append(questionnaireBuilderScriptBlock);
 				}
 				response.Message = scripts.ToString();
 			}
-
-
+			
 			return response;
 		}
 
-		protected virtual IRSAPIClient GetRSAPIClient(int workspaceArtifactId)
+		#endregion Methods
+
+		protected virtual IRSAPIClient GetRsapiClient(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+			IRSAPIClient rsapiClient = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
 			rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			return rsapiClient;
 		}
 
-		public override FieldCollection RequiredFields
+		private T ParseValue<T>(IDictionary<string, object> settings, string parameterName)
 		{
-			get { return new FieldCollection(); }
+			if (!settings.ContainsKey(parameterName))
+			{
+				return default(T);
+			}
+			return (T)(Convert.ChangeType(settings[parameterName], typeof(T)));
 		}
 	}
+
 	internal class IntegrationPointDestinationConfiguration
 	{
 		public bool UseFolderPathInformation;

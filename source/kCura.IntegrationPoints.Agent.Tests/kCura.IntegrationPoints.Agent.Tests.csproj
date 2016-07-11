@@ -87,6 +87,10 @@
     <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Agent.Tests\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
@@ -95,8 +99,17 @@
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Agent">
       <HintPath>..\packages\kCura.Agent.9.4.212.3\lib\net45\kCura.Agent.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Config, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.227.4\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCura.Apps.Common.Data.1.0.227.4\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
@@ -114,7 +127,7 @@
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Data, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -126,11 +139,15 @@
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Notification, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Notification, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Notification.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Config.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client">
       <HintPath>..\packages\kCura.Relativity.Client.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -157,10 +174,12 @@
       <HintPath>..\packages\Relativity.API.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces">
+    <Reference Include="Relativity.Services.Interfaces, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy">
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.163, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -235,6 +254,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

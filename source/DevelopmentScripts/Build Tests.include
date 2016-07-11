@@ -62,5 +62,6 @@
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll')}" />
 	</assemblyfileset>
 </project>

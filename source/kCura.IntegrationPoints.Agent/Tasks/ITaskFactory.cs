@@ -107,6 +107,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     case TaskType.ExportService:
                         return Container.Resolve<ExportServiceManager>();
 
+                    case TaskType.ExportManager:
+                        return Container.Resolve<ExportManager>();
+
+                    case TaskType.ExportWorker:
+                        return Container.Resolve<ExportWorker>();
+
                     default:
                         return null;
                 }

@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
@@ -7,6 +9,8 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
+using Relativity.API;
+using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -16,6 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IAPILog _apiLog;
 
 		public IntegrationPointsController(
 			IIntegrationPointService reader,
@@ -27,6 +32,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			_rdoQuery = relativityRdoQuery;
 			_tabService = tabService;
 			_repositoryFactory = repositoryFactory;
+			_apiLog = ConnectionHelper.Helper().GetLoggerFactory().GetLogger().ForContext<IntegrationPointsController>();
 		}
 
 		public ActionResult Edit(int? id)
@@ -65,6 +71,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationMapFields");
 		}
 
+        public ActionResult StepDetails3Export()
+        {
+            return PartialView("ExportProviderFields");
+        }
+
 		public ActionResult ConfigurationDetail()
 		{
 			return PartialView("_Configuration");
@@ -78,6 +89,16 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		public ActionResult RelativityProviderConfiguration()
 		{
 			return View("RelativityProviderConfiguration", "_StepLayout");
+		}
+
+		public ActionResult ExportProviderConfiguration()
+		{
+			return View("ExportProviderConfiguration", "_StepLayout");
+		}
+		
+		public ActionResult ExportDetails()
+		{
+			return PartialView();
 		}
 
 		public ActionResult Details(int id)

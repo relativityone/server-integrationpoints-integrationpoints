@@ -33,8 +33,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType)
 		{
-			IList<int> jobLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, JobHistoryErrorDTO.Choices.ErrorType.Values.Job);
-			IList<int> itemLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
+			ICollection<int> jobLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, JobHistoryErrorDTO.Choices.ErrorType.Values.Job);
+			ICollection<int> itemLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = DetermineUpdateStatusType(jobType, jobLevelErrors.Any(), itemLevelErrors.Any());
 
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return updateStatusType;
 		}
 
-		private void CreateErrorListTempTables(IList<int> jobLevelErrors, IList<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
+		private void CreateErrorListTempTables(ICollection<int> jobLevelErrors, ICollection<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
 			try
 			{
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				originalSavedSearchArtifactId, lastJobHistoryArtifactId);
 		}
 
-		private IList<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
+		private ICollection<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
 			int lastJobHistoryArtifactId = GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
@@ -188,16 +188,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			if (currentItemLevelErrors.Any())
 			{
-				IList<int> currentItemLevelErrorList = currentItemLevelErrors.ToList();
-				// TODO: if BatchAddArtifactIdsIntoTempTable took an ICollection instead of IList, 
-				// we wouldn't need to convert from the HashTable. -- biedrzycki: 6/1/2016
-				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
-				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
+				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
+				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
 			}
 
 			if (expiredItemLevelErrors.Any())
 			{
-				JobHistoryErrorItemStartExcluded.AddArtifactIdsIntoTempTable(expiredItemLevelErrors.ToList());
+				JobHistoryErrorItemStartExcluded.AddArtifactIdsIntoTempTable(expiredItemLevelErrors);
 			}
 		}
 	}

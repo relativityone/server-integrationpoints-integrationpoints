@@ -7,7 +7,8 @@
 		var appendWithFolderPathMessage = "You may be creating folders in the destination workspace using the ";
 		var expiredErrorsMessage = " Any existing errors will be marked as expired.";
 		var proceedWarningMessage = " Would you still like to proceed?";
-		var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+         var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+        
 		var selectedMessage = "";
 		if (overwriteOption === "Append Only") {
 			if (IP.fieldName.length !== 0) {
@@ -20,6 +21,9 @@
 		} else if (overwriteOption === "Append/Overlay") {
 			selectedMessage = appendOverlayMesssage;
 		}
+		if (IP.isFileshareProvider) {
+            		selectedMessage = "Please confirm running the export from Relativity. If you set up a scheduled action export process will start at the set time";
+        	}
 		var consoleContainer = $(".ConsoleControl");
 		var hasErrors = $(consoleContainer.find(":contains('Retry Errors')")).hasClass("consoleButtonEnabled");
 		if (hasErrors) {
@@ -37,8 +41,7 @@
 			showCancel: true,
 			width: 450,
 			success: function (calls) {
-				calls.close();
-				var ajax = IP.data.ajax({
+                calls.close();var ajax = IP.data.ajax({
 					type: 'post',
 					url: root.utils.generateWebAPIURL('Job'),
 					data: JSON.stringify({
@@ -210,6 +213,10 @@ $(function () {
 });
 
 $(function () {
+    if (IP.isFileshareProvider) {
+        return;
+    }
+
 	var _getAppPath = function () {
 		var newPath = window.location.pathname.split('/')[1];
 		var url = window.location.protocol + '//' + window.location.host + '/' + newPath;
