@@ -193,18 +193,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             SetupSubscriptions(dataSynchronizer, job);
 
-            if (SourceProvider.Config.GetDataProvideAllFieldsRequired)
-            {
-                dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
-            }
-            else
-            {
-                IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-                dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
-            }
-        }
+			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+			dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+		}
 
-        private void InjectErrors()
+		private void InjectErrors()
         {
             try
             {
