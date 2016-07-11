@@ -1,12 +1,10 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
@@ -21,11 +19,6 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
-	using kCura.IntegrationPoints.Data.Queries;
-	using kCura.ScheduleQueue.Core;
-
-	using NSubstitute;
-
 	[TestFixture]
 	[Category("Integration Tests")]
 	public class IntegrationPointServiceTests : RelativityProviderTemplate
@@ -40,14 +33,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
 
-		private AgentJobManager _manager;
-		private IEddsServiceContext _context;
-		private IJobService _jobService;
-		private ISerializer _serializer;
-		private JobTracker _jobTracker;
-		private IWorkspaceDBContext _workspaceDbContext;
-		private JobResourceTracker _jobResource;
-
 		public IntegrationPointServiceTests()
 			: base("IntegrationPointService Source", null)
 		{
@@ -61,17 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("IPTestDocument", 3));
-
-			_context = Substitute.For<IEddsServiceContext>();
-			_context.UserID = 1234;
-			_jobService = Substitute.For<IJobService>();
-			_serializer = Substitute.For<ISerializer>();
-			_workspaceDbContext = Substitute.For<IWorkspaceDBContext>();
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_jobResource = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
-			_jobTracker = new JobTracker(_jobResource);
-			_manager = new AgentJobManager(_context, _jobService, _serializer, _jobTracker);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("IPTestDocument", 3));
 		}
 
 		#region UpdateProperties
@@ -163,7 +138,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_IntegrationPointWithNoSchedulerAndUpdateWithScheduler()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("RunNow", 3));
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -440,34 +415,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(integrationModel), "Unable to save Integration Point.");
 		}
 
-		[Test]
-		public void VerifyCheckBatchOnComplete()
-		{
-			//Arrange
-			IntegrationModel integrationModel = new IntegrationModel
-			{
-				Destination = GetDestinationConfigWithOverlayOnly(),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = "IntegrationPointCheckBatchOnComplete" + DateTime.Now,
-				SelectedOverwrite = "Append Only",
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				},
-				Map = CreateDefaultFieldMap()
-			};
-
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
-
-			Guid batchInstance = Guid.NewGuid();
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, 1);
-
-			Assert.IsTrue(this._manager.CheckBatchOnJobComplete(job, batchInstance.ToString()));
-		}
-
 		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
 		{
 			IDictionary<string, Tuple<string, string>> auditDetailsFieldValueDictionary = this.GetAuditDetailsFieldValues(audit, fieldNames);
@@ -538,19 +485,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
 			model.LastRun = DateTime.Now;
 			return model;
-		}
-
-		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
-		{
-			DataTable table = new DataTable();
-			table.Columns.Add("Control Number", typeof(string));
-
-			for (int index = 1; index <= numberOfDocuments; index++)
-			{
-				string controlNumber = $"{documentPrefix}{index}";
-				table.Rows.Add(controlNumber);
-			}
-			return table;
 		}
 
 		private string GetDestinationConfigWithOverlayOnly()

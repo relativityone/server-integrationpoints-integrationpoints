@@ -27,6 +27,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
+		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, int jobId, int rootJobId)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = jobId;
+			jobData["RelatedObjectArtifactID"] = integrationPointArtifactId;
+			jobData["SubmittedBy"] = submittedByArtifactId;
+			jobData["WorkspaceID"] = workspaceArtifactId;
+			jobData["RootJobId"] = rootJobId;
+
+			return new Job(jobData);
+		}
+
 		public static Job CreateJob()
 		{
 			DataRow jobData = CreateDefaultJobData();
