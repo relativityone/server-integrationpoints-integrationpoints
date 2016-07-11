@@ -33,15 +33,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
         {
         }
 
-		public override void SetUp()
+		[TestFixtureSetUp]
+		public new void SuiteSetup()
 		{
-			base.SetUp();
 			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
-		public override void TearDown()
+		[TestFixtureTearDown]
+		public new void TearDown()
 		{
-			base.TearDown();
 			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
 			{
 				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);

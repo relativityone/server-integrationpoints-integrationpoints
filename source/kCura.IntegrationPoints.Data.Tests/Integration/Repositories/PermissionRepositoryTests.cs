@@ -35,18 +35,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestFixtureSetUp]
-		public override void SetUp()
+		public new void SuiteSetup()
 		{
-			base.SetUp();
-
 			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
 		[TestFixtureTearDown]
-		public override void TearDown()
+		public new void TearDown()
 		{
-			base.TearDown();
-
 			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
 			{
 				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);

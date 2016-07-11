@@ -32,9 +32,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		}
 
 		[TestFixtureSetUp]
-		public override void SetUp()
+		public new void SuiteSetup()
 		{
-			base.SetUp();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
