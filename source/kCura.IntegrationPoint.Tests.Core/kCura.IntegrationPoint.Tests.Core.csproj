@@ -196,9 +196,9 @@
       <HintPath>..\packages\$(Selenium_Support)\lib\net40\WebDriver.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebDriver.Support, Culture=neutral, processorArchitecture=MSIL">
+	<Reference Include="WebDriver.Support, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Selenium_WebDriver)\lib\net40\WebDriver.Support.dll</HintPath>
-      <Private>True</Private>
+    <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -248,7 +248,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
