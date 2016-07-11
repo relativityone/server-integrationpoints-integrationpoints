@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		[TestFixtureSetUp]
-		public override void SetUp()
+		public new void SuiteSetup()
 		{
-			base.SetUp();
+			base.SuiteSetup();
 
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
@@ -49,10 +49,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		[TestFixtureTearDown]
-		public override void TearDown()
+		public new void SuiteTeardown()
 		{
-			base.TearDown();
-
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 

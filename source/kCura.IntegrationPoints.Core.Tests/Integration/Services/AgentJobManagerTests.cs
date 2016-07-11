@@ -37,9 +37,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[TestFixtureSetUp]
-		public override void SetUp()
+		public new void SuiteSetup()
 		{
-			base.SetUp();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>(); ;
 			_jobService = Container.Resolve<IJobService>();
 			_serializer = Container.Resolve<ISerializer>();
