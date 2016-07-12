@@ -29,8 +29,8 @@
 	<property name="source.reference.CastleCore.directory" value="${source.packages.directory}\Castle.Core.3.3.0\lib\net45" />
 	<property name="source.reference.CastleWindsor.directory" value="${source.packages.directory}\Castle.Windsor.3.3.0\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
-	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.227.4\lib\net45" />
-	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.227.4\lib\net45" />
+	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.192.5\lib\net45" />
+	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
 	<property name="target.bin.directory" value="${root}\bin" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
 	<property name="example.directory" value="${root}\..\example" />
