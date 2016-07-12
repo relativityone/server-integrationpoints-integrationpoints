@@ -26,8 +26,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		private List<int> _groupIds;
 		private IHtmlSanitizerManager _htmlSanitizerManage;
 
-		private string _oldInstanceSettingValue;
-
 		public SavedSearchQueryTests()
 			: base("SavedSearchQueryTests")
 		{
@@ -36,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		[TestFixtureSetUp]
 		public new void SuiteSetup()
 		{
-			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
 		[SetUp]
