@@ -24,8 +24,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
         private List<int> _workspaceIds;
         private IHtmlSanitizerManager _htmlSanitizerManage;
 
-		private string _oldInstanceSettingValue;
-
 		public GetWorkspacesQueryTests() :
             base(_workspaceName)
         {
@@ -34,16 +32,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		[TestFixtureSetUp]
 		public new void SuiteSetup()
 		{
-			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
-		}
-
-		[TestFixtureTearDown]
-		public new void SuiteTeardown()
-		{
-			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
-			{
-				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
-			}
+			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
 		[SetUp]

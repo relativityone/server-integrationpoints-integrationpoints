@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Relativity.API;
-using Relativity.Core.Exception;
+using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 using ValueType = Relativity.Services.InstanceSetting.ValueType;
@@ -10,8 +9,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class InstanceSetting
 	{
-		public const string INSTANCE_SETTING_VALUE_UNCHANGED = "##VALUE_ALREADY_SAME##";
-
 		public static int Create(string section, string name, string value, ValueType valueType)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
@@ -48,7 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				try
 				{
-					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
+					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).GetResultsWithoutContextSync();
 					global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = instanceSettingQueryResultSet.Results.FirstOrDefault().Artifact;
 					return instanceSetting;
 				}
@@ -59,13 +56,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static string Update(string section, string name, string value)
+		public static string UpdateAndReturnOldValue(string section, string name, string value)
 		{
 			global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = Query(section, name);
 
-			if (instanceSetting.Value == value)
+			if (String.Equals(instanceSetting.Value, value, StringComparison.OrdinalIgnoreCase))
 			{
-				return INSTANCE_SETTING_VALUE_UNCHANGED;
+				return value;
 			}
 
 			string oldValue = instanceSetting.Value;
@@ -75,7 +72,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return oldValue;
 		}
 
-		private static bool Update(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
+		private static void Update(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
@@ -87,8 +84,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{
 					throw new Exception($"Error: Failed to update Instance Setting. Exception: {ex.Message}");
 				}
-
-				return true;
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Data;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
 
