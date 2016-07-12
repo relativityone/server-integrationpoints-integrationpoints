@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -26,7 +25,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				AllowGroupBy = false,
 				AllowPivot = false,
 				IgnoreWarnings = true,
-				Width = ""
+				Width = String.Empty
 			};
 
 			switch (fieldType)
@@ -91,7 +90,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return dto;
 		}
 
-		public static int CreateFieldViaRsapi(int workspaceArtifactId, FieldType fieldType, Relativity.Client.DTOs.ObjectType objectType = null, string fieldName = null)
+		public static int CreateField(int workspaceArtifactId, FieldType fieldType, Relativity.Client.DTOs.ObjectType objectType = null, string fieldName = null)
 		{
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
@@ -103,21 +102,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 					fieldDto.AssociativeObjectType = objectType;
 				}
 
-				int fieldArtifactId;
+				WriteResultSet<Relativity.Client.DTOs.Field> writeResult;
 				try
 				{
-					fieldArtifactId = proxy.Repositories.Field.CreateSingle(fieldDto);
+					writeResult = proxy.Repositories.Field.Create(fieldDto);
 				}
 				catch (Exception e)
 				{
 					throw new Exception("Error while creating field: " + e.Message);
 				}
 
+				if (!writeResult.Success)
+				{
+					throw new Exception("Error while creating field, result set failure: " + writeResult.Message);
+				}
+
+				Result<Relativity.Client.DTOs.Field> field = writeResult.Results.FirstOrDefault();
+				int fieldArtifactId = field.Artifact.ArtifactID;
 				return fieldArtifactId;
 			}
 		}
 
-		public static Relativity.Client.DTOs.Field ReadFieldViaRsapi(int workspaceArtifactId, int fieldArtifactId)
+		public static Relativity.Client.DTOs.Field ReadField(int workspaceArtifactId, int fieldArtifactId)
 		{
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
@@ -127,7 +133,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{
 					Fields = FieldValue.AllFields
 				};
-				//fieldDto.Fields.Add(new FieldValue(FieldFieldNames.ChoiceTypeID));
 
 				ResultSet<Relativity.Client.DTOs.Field> fieldReadResult;
 				try

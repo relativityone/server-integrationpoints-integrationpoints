@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class ObjectType
 	{
-		public static int CreateObjectTypeViaRsapi(int workspaceArtifactId, string objectName)
+		public static int CreateObjectType(int workspaceArtifactId, string objectName)
 		{
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
@@ -25,22 +25,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 					CopyInstancesOnParentCopy = false
 				};
 
-				int objectTypeArtifactId;
-
+				WriteResultSet<Relativity.Client.DTOs.ObjectType> writeResult;
 				try
 				{
-					objectTypeArtifactId = proxy.Repositories.ObjectType.CreateSingle(objectTypeDto);
+					writeResult = proxy.Repositories.ObjectType.Create(objectTypeDto);
 				}
 				catch (Exception e)
 				{
 					throw new Exception("Error while creating new object type: " + e.Message);
 				}
 
+				if (!writeResult.Success)
+				{
+					throw new Exception("Error while creating object type, result set failure: " + writeResult.Message);
+				}
+
+				Result<Relativity.Client.DTOs.ObjectType> objectType = writeResult.Results.FirstOrDefault();
+				int objectTypeArtifactId = objectType.Artifact.ArtifactID;
 				return objectTypeArtifactId;
 			}
 		}
 
-		public static Relativity.Client.DTOs.ObjectType ReadObjectTypeViaRsapi(int workspaceArtifactId, int objectTypeArtifactId)
+		public static Relativity.Client.DTOs.ObjectType ReadObjectType(int workspaceArtifactId, int objectTypeArtifactId)
 		{
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
