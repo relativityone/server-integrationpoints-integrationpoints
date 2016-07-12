@@ -4,7 +4,7 @@
         var viewModel = new ViewModel(view, okCallback);
 
         IP.data.ajax({
-            url: IP.utils.generateWebURL('IntegrationPoints', 'SavedSearchPicker'),
+            url: IP.utils.generateWebURL('Fileshare', 'SavedSearchPicker'),
             type: 'get',
             dataType: 'html'
         }).then(function (result) {
