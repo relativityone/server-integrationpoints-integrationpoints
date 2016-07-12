@@ -478,6 +478,7 @@
     <Content Include="Scripts\Export\export-enums.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
     <Content Include="Scripts\Export\export-provider.js" />
+    <Content Include="Scripts\Export\saved-search-picker.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
@@ -685,6 +686,7 @@
     <Content Include="Views\IntegrationPoints\ExportProviderFields.cshtml" />
     <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportDetails.cshtml" />
+    <Content Include="Views\IntegrationPoints\SavedSearchPicker.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -348,6 +348,15 @@
         
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
+		this.savedSearchModal = SavedSearchPicker.create(function (artifactId) {
+		    self.SavedSearchArtifactId(parseInt(artifactId));
+		    self.updateSelectedSavedSearch();
+		});
+
+		this.openModal = function () {
+		    self.savedSearchModal.open(self.SavedSearch());
+		};
+
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.getSelectedOption = function () {

@@ -95,6 +95,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return View("ExportProviderConfiguration", "_StepLayout");
 		}
+
+		public ActionResult SavedSearchPicker()
+		{
+			return PartialView();
+		}
 		
 		public ActionResult ExportDetails()
 		{
