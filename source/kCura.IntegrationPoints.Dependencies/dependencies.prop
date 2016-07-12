@@ -59,5 +59,9 @@
     <Selenium_Support>Selenium.Support.2.51.0</Selenium_Support>
     <Selenium_WebDriver>Selenium.WebDriver.2.53.0</Selenium_WebDriver>
     <kCura_Agent>kCura.Agent.9.4.212.3</kCura_Agent>
+    <Nito_AsyncEx>Nito.AsyncEx.3.0.1</Nito_AsyncEx>
+    <AutoMapper>AutoMapper.4.2.1</AutoMapper>
+    <Remotion_Linq>Remotion.Linq.2.0.2</Remotion_Linq>
+    <Dynamitey>Dynamitey.1.0.2.0</Dynamitey>
   </PropertyGroup>
 </Project>
