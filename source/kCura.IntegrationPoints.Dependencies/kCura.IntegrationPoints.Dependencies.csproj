@@ -142,7 +142,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.EventHandler, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\kCura.EventHandler.dll</HintPath>
+      <HintPath>..\packages\kCura.EventHandler.9.4.212.3\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.HTMLSanitizer, Version=0.0.21.7, Culture=neutral, processorArchitecture=MSIL">
@@ -578,6 +578,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\packages\Selenium.WebDriver.ChromeDriver.2.21.0.0\driver\chromedriver.exe">
+      <Link>chromedriver.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="BuildPropertiesScrubber.exe" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>

@@ -5,7 +5,6 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using Relativity.API;
-using Relativity.CustomPages;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.Services.Metrics;
 

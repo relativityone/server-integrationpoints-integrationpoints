@@ -397,5 +397,4 @@
 mkdir  "$(SolutionDir)bin\$(Configuration)"
 $(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets')" />
 </Project>

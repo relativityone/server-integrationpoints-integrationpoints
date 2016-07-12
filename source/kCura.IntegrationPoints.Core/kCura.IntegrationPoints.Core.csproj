@@ -151,7 +151,7 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Core.Api.QueryParser, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -410,14 +410,4 @@
     <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"
 $(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\$(RelativityCore)\build\RelativityCore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\$(RelativityCore)\build\RelativityCore.targets'))" />
-    <Error Condition="!Exists('..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets'))" />
-  </Target>
-  <Import Project="..\packages\$(RelativityCore)\build\RelativityCore.targets" Condition="Exists('..\packages\$(RelativityCore)\build\RelativityCore.targets')" />
-  <Import Project="..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets')" />
 </Project>

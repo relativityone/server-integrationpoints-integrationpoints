@@ -63,5 +63,7 @@
     <AutoMapper>AutoMapper.4.2.1</AutoMapper>
     <Remotion_Linq>Remotion.Linq.2.0.2</Remotion_Linq>
     <Dynamitey>Dynamitey.1.0.2.0</Dynamitey>
+    <kCura_EventHandler>kCura.EventHandler.9.4.212.3</kCura_EventHandler>
+    <Selenium_WebDriver_ChromeDriver>Selenium.WebDriver.ChromeDriver.2.21.0.0</Selenium_WebDriver_ChromeDriver>
   </PropertyGroup>
 </Project>
