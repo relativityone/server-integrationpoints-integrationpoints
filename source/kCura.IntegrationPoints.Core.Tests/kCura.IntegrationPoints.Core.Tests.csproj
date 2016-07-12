@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Define dependency properties -->
   <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
@@ -189,16 +189,24 @@
       <HintPath>..\packages\$(Relativity_Data)\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.163, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces.Private, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -234,6 +242,8 @@
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
+    <Compile Include="Unit\Agent\IntegrationPointTaskBaseTests.cs" />
+    <Compile Include="Unit\BatchEmailTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
@@ -264,6 +274,8 @@
     <Compile Include="Unit\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Unit\Services\JobHistory\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Unit\Services\JobHistory\JobHistoryServiceTest.cs" />
+    <Compile Include="Unit\Telemetry\ExportTelemetryMetricProviderTest.cs" />
+    <Compile Include="Unit\Telemetry\TelemetryMangerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
