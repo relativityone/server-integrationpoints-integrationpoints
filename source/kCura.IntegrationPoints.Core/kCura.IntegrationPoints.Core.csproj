@@ -53,10 +53,6 @@
     </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Application.Utility, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Application.Utility.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="BCrypt.Net, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
       <HintPath>..\packages\$(BCrypt-Official)\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
@@ -69,10 +65,6 @@
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Assembly.Analysis, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\kCura.Assembly.Analysis.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
@@ -95,10 +87,6 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.EventHandler, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\kCura.EventHandler.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.HTMLSanitizer, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_HTMLSanitizer)\lib\kCura.HTMLSanitizer.dll</HintPath>
       <Private>True</Private>
@@ -106,18 +94,6 @@
     <Reference Include="kCura.Method.Injection, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Notification, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Notification.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.OI.FileID, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.OI.FileID.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Print, Culture=neutral, PublicKeyToken=2cc1b8ab562ca316, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\kCura.Print.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
@@ -143,22 +119,6 @@
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Windows.Forms, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Windows.Forms.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Windows.Process, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Windows.Process.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.WinEDDS, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.WinEDDS.ImportExtension, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
@@ -179,34 +139,6 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.APIHelper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ApplicationBase, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.ApplicationBase.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.ApplicationBase.InvariantApi, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.ApplicationBase.InvariantApi.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Applications.Serialization, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Applications.Serialization.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.AssistedReview.Utility, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.AssistedReview.Utility.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Authentication, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Authentication.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Conversion, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Conversion.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Relativity.Core, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
@@ -223,10 +155,6 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.CustomPages, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.CustomPages.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Relativity.Data, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(Relativity_Data)\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
@@ -235,36 +163,8 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataGrid.Logging, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.DataGrid.Logging.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Eca, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Eca.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Infrastructure, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Logging, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Logging.Interfaces, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.SDK.Services.Query, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
