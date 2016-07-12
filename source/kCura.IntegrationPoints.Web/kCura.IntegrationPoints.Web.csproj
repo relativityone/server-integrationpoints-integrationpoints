@@ -479,7 +479,9 @@
     <Content Include="Scripts\Export\export-enums.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
     <Content Include="Scripts\Export\export-provider.js" />
+    <Content Include="Scripts\Export\picker.js" />
     <Content Include="Scripts\Export\saved-search-picker.js" />
+    <Content Include="Scripts\Export\text-precedence-picker.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
@@ -688,6 +690,7 @@
     <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
     <Content Include="Views\Fileshare\ExportDetails.cshtml" />
     <Content Include="Views\Fileshare\SavedSearchPicker.cshtml" />
+    <Content Include="Views\Fileshare\TextPrecedencePicker.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

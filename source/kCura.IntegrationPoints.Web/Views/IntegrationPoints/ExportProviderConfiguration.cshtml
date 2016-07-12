@@ -27,7 +27,7 @@
                     </td>
                     <td class="editFieldValue">
                         <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun()"></select>
-                        <button data-bind="click: openModal, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>
+                        <button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>
                     </td>
                 </tr>
                 <tr>
@@ -379,6 +379,15 @@
                         <input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested()" />
                     </td>
                 </tr>
+                <tr data-bind="visible: false">
+                    <td class="editFieldNameRequired">
+                        Text Precedence:
+                    </td>
+                    <td class="editFieldValue">
+                        <label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+                        <button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
@@ -395,5 +404,7 @@
     <script src="~/Scripts/frame-messaging.js"></script>
     <script src="~/Scripts/export/export-enums.js"></script>
     <script src="~/Scripts/export/export-provider.js"></script>
+    <script src="~/Scripts/export/picker.js"></script>
     <script src="~/Scripts/export/saved-search-picker.js"></script>
+    <script src="~/Scripts/export/text-precedence-picker.js"></script>
 }
