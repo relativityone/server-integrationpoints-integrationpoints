@@ -22,11 +22,18 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// <param name="artifactIds">Collection of artifact ids to add to temp table</param>
         void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds);
 
-        /// <summary>
-        /// Removes error documents from temp table list (goes in line with ignoring errored documents)
-        /// </summary>
-        /// <param name="docIdentifiers">Identifiers for the documents being removed from the scratch table</param>
-        void RemoveErrorDocuments(ICollection<string> docIdentifiers);
+	    /// <summary>
+	    /// Creates a copy of the current scratch table repository
+	    /// </summary>
+	    /// <param name="newTempTablePrefix">Temp table prefix for the new table</param>
+	    /// <returns>Scratch table repository for the new copied table</returns>
+	    IScratchTableRepository CopyTempTable(string newTempTablePrefix);
+
+		/// <summary>
+		/// Removes error documents from temp table list (goes in line with ignoring errored documents)
+		/// </summary>
+		/// <param name="docIdentifiers">Identifiers for the documents being removed from the scratch table</param>
+		void RemoveErrorDocuments(ICollection<string> docIdentifiers);
 
         /// <summary>
         /// Retrieve a datareader for reading from the temp table
