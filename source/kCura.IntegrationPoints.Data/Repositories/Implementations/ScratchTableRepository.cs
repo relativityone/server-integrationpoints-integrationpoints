@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
-using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Toggle;
@@ -17,7 +16,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
     public class ScratchTableRepository : IScratchTableRepository
     {
         private readonly IDBContext _caseContext;
-		private readonly IDocumentRepository _documentRepository;
+        private readonly IDocumentRepository _documentRepository;
         private readonly IFieldRepository _fieldRepository;
         private readonly string _tablePrefix;
         private readonly string _tableSuffix;
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider, IDocumentRepository documentRepository,
             IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId)
         {
-			_caseContext = helper.GetDBContext(workspaceId);
+            _caseContext = helper.GetDBContext(workspaceId);
             _documentRepository = documentRepository;
             _fieldRepository = fieldRepository;
             _tablePrefix = tablePrefix;
@@ -41,19 +40,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             IgnoreErrorDocuments = false;
             _isAOAGEnabled = toggleProvider.IsAOAGFeatureEnabled();
         }
-
-	    private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldRepository fieldRepository, 
-			string tablePrefix, string tableSuffix, int workspaceId, bool isAOAGEnabled)
-	    {
-			_caseContext = caseContext;
-			_documentRepository = documentRepository;
-			_fieldRepository = fieldRepository;
-			_tablePrefix = tablePrefix;
-			_tableSuffix = tableSuffix;
-			_workspaceId = workspaceId;
-			IgnoreErrorDocuments = false;
-			_isAOAGEnabled = isAOAGEnabled;
-		}
 
         public bool IgnoreErrorDocuments { get; set; }
 
@@ -116,49 +102,28 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
         {
-			_count += artifactIds.Count;
+            _count += artifactIds.Count;
 
             if (!artifactIds.IsNullOrEmpty())
             {
                 string fullTableName = GetTempTableName();
+                List<int> tempArtifactIds = artifactIds.ToList();
+                while (tempArtifactIds.Count > 0)
+                {
+                    List<int> batchIds = RetrieveBatchFromList(tempArtifactIds);
+                    string artifactIdList = String.Join("),(", batchIds.Select(x => x.ToString()));
+                    artifactIdList = $"({artifactIdList})";
 
-				string database = _isAOAGEnabled ? _caseContext.Database : "EDDSRESOURCE";
-				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, database);
-				Context context = new Context(connectionData);
-
-				DataTable artifactIdTable = new DataTable();
-				artifactIdTable.Columns.Add();
-				foreach (int artifactId in artifactIds)
-				{
-					artifactIdTable.Rows.Add(artifactId);
-				}
-
-				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+                    string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
-												CREATE TABLE {2}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
-				_caseContext.ExecuteNonQuerySQLStatement(sql);
+												CREATE TABLE {3}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+											END
+									INSERT INTO {3}[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList, TargetDatabaseFormat, FullDatabaseFormat);
 
-				context.ExecuteBulkCopy(artifactIdTable, new SqlBulkCopyParameters(fullTableName));
+                    _caseContext.ExecuteNonQuerySQLStatement(sql);
+                }
             }
         }
-
-	    public IScratchTableRepository CopyTempTable(string newTempTablePrefix)
-	    {
-		    IScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, newTempTablePrefix, _tableSuffix, _workspaceId, _isAOAGEnabled);
-		    string sourceTableName = GetTempTableName();
-		    string newTableName = copiedScratchTableRepository.GetTempTableName();
-
-			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-										BEGIN
-											CREATE TABLE {3}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-										END
-										SELECT * INTO {3}[{0}] ([ArtifactID]) FROM {3}[{1}]", newTableName, sourceTableName, TargetDatabaseFormat, FullDatabaseFormat);
-			
-			_caseContext.ExecuteNonQuerySQLStatement(sql);
-
-		    return copiedScratchTableRepository;
-	    }
 
         private List<int> RetrieveBatchFromList(List<int> source)
         {

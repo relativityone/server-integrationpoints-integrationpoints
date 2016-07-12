@@ -241,7 +241,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			//Assert
 			_jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
-			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
+			_jobHistoryErrorJobComplete.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
 			_jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorItemStartOther.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -259,7 +259,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			//Assert
 			_jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
-			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
+			_jobHistoryErrorJobComplete.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
 			_jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(_sampleItemErrors);
 			_jobHistoryErrorItemStartOther.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(x => x.Count == 1 && x.Contains(error1)));
-			_jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
+			_jobHistoryErrorItemComplete.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(x => x.Count == 1 && x.Contains(error1)));
 			_jobHistoryErrorItemStartOther.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(x => x.Count == 1 && x.Contains(error2)));
 		}
 
@@ -397,10 +397,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
 			_savedSearchRepository.Received(2).RetrieveNextDocuments();
 
+			_jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)));
+			_jobHistoryErrorItemComplete.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)));
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
-			_jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)));
-			_jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorItemStartOther.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 		}
 
@@ -512,7 +512,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
 			_jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new [] {error2, error3})));
-			_jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
+			_jobHistoryErrorItemComplete.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new [] {error2, error3})));
 			_jobHistoryErrorItemStartOther.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new [] {error1, error4})));
 		}
 	}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Security.Claims;
@@ -43,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public ICollection<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
-			ICollection<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
+			IEnumerable<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
 
 			return results.Select(result => result.ArtifactId).ToList();
 		}
@@ -64,7 +63,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private ICollection<JobHistoryErrorDTO> RetrieveJobHistoryErrorData(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
-			ICollection<JobHistoryErrorDTO> jobHistoryErrors = new Collection<JobHistoryErrorDTO>();
+			ICollection<JobHistoryErrorDTO> jobHistoryErrors = new List<JobHistoryErrorDTO>();
 			var jobHistoryCondition = $"'{JobHistoryErrorDTO.FieldNames.JobHistory}' == {jobHistoryArtifactId}";
 			
 			var query = new global::Relativity.Services.ObjectQuery.Query()

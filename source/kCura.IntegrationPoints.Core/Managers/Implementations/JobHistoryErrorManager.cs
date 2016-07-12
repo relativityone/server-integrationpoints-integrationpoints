@@ -17,16 +17,18 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		internal JobHistoryErrorManager(IRepositoryFactory repositoryFactory, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
 			JobHistoryErrorJobStart = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
+			JobHistoryErrorJobComplete = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
 			JobHistoryErrorItemStart = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+			JobHistoryErrorItemComplete = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
 			JobHistoryErrorItemStartExcluded = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED, uniqueJobId);
 
 			_repositoryFactory = repositoryFactory;
 		}
 
 		public IScratchTableRepository JobHistoryErrorJobStart { get; }
-		public IScratchTableRepository JobHistoryErrorJobComplete { get; set; }
+		public IScratchTableRepository JobHistoryErrorJobComplete { get; }
 		public IScratchTableRepository JobHistoryErrorItemStart { get; }
-		public IScratchTableRepository JobHistoryErrorItemComplete { get; set; }
+		public IScratchTableRepository JobHistoryErrorItemComplete { get; }
 		public IScratchTableRepository JobHistoryErrorItemStartExcluded { get; }
 
 		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType)
@@ -84,11 +86,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					{
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
 							JobHistoryErrorJobStart.AddArtifactIdsIntoTempTable(jobLevelErrors);
+							JobHistoryErrorJobComplete.AddArtifactIdsIntoTempTable(jobLevelErrors);
 							JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(itemLevelErrors);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
 							JobHistoryErrorJobStart.AddArtifactIdsIntoTempTable(jobLevelErrors);
+							JobHistoryErrorJobComplete.AddArtifactIdsIntoTempTable(jobLevelErrors);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
@@ -185,6 +189,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			if (currentItemLevelErrors.Any())
 			{
 				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
+				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
 			}
 
 			if (expiredItemLevelErrors.Any())
