@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Define dependency properties -->
+  <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -156,7 +158,6 @@
     <None Include="App.config.akelenzon">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj">
@@ -170,6 +171,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj">
       <Project>{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A}</Project>
       <Name>kCura.IntegrationPoints.Core.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
+      <Project>{8170466f-7eb5-48cb-bfb0-7e4fac1d6e42}</Project>
+      <Name>kCura.IntegrationPoints.Dependencies</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>

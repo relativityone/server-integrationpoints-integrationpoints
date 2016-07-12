@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -28,6 +29,7 @@ namespace kCura.IntegrationPoints.Data
 		/// <remarks>
 		/// Only available for internal providers.
 		/// </remarks>
+		[JsonProperty()]
 		internal ImportSettingVisibility AvailableImportSettings { set; get; }
 
 		/// <summary>

@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IExtendedRelativityToggle _toggle;
 		private IRepositoryFactory _repositoryFactory;
 		private ICaseServiceContext _caseServiceContext;
-		private ICaseServiceContext _mockedCaseServiceContext;
 		private IDocumentRepository _documentRepository;
 		private IFieldRepository _fieldRepository;
 		private ScratchTableRepository _currentScratchTableRepository;
