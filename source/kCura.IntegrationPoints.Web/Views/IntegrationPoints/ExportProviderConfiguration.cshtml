@@ -1,6 +1,6 @@
 ﻿﻿
 @{
-	ViewBag.Title = "Settings";
+    ViewBag.Title = "Settings";
 }
 
 <link href="~/Content/styles.min.css" rel="stylesheet" />
@@ -9,345 +9,346 @@
 <link href="~/Content/css/select2search.css" rel="stylesheet" />
 
 <div id="_main">
-	<div id="exportProviderConfiguration" class="cardContainer">
-		<div class="cardSection">
-			<h2>Export Source</h2>
-			<table class="fieldTable">
-				<tr style="display: none">
-					<td class="editFieldNameRequired">
-						Workspace :
-					</td>
-					<td class="editFieldValue">
-						<select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, select2: {}"></select>
-					</td>
-				</tr>
-				<tr>
-					<td class="editFieldNameRequired">
-						Saved Search :
-					</td>
-					<td class="editFieldValue">
-						<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun(), select2searchable: {}"></select>
-					</td>
-				</tr>
-				<tr>
-					<td class="editFieldNameRequired">
-						Start #:
-					</td>
-					<td class="editFieldValue">
-						<input id="start-export-at-record" type="number" min="1" data-bind="value: StartExportAtRecord, disable: HasBeenRun()" />
-					</td>
-				</tr>
-			</table>
-		</div>
+    <div id="exportProviderConfiguration" class="cardContainer">
+        <div class="cardSection">
+            <h2>Export Source</h2>
+            <table class="fieldTable">
+                <tr style="display: none">
+                    <td class="editFieldNameRequired">
+                        Workspace :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, select2: {}"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">
+                        Saved Search :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun(),select2searchable: {}"></select>
+                        <button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">
+                        Start #:
+                    </td>
+                    <td class="editFieldValue">
+                        <input id="start-export-at-record" type="number" min="1" data-bind="value: StartExportAtRecord, disable: HasBeenRun()" />
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-		<div class="cardSection">
-			<h2>Natives</h2>
-			<table>
-				<tr>
-					<td class="cardColumn cardFieldLeft">
-						<table class="fieldTable">
-							<tr>
-								<td class="editFieldNameRequired">
-									Include Native Files Path:
-								</td>
-								<td class="editFieldValue">
-									<table class="RadioButtonListRelativePosition">
-										<tr>
-											<td>
-												<input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" value="true" data-bind="checked: IncludeNativeFilesPath, disable: HasBeenRun()" />
-												<label>Yes</label>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" value="false" data-bind="checked: IncludeNativeFilesPath, disable: HasBeenRun()" />
-												<label>No</label>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
-									Data File Format:
-								</td>
-								<td class="editFieldValue">
-									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun()"></select>
-								</td>
-							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
-									Data File Encoding:
-								</td>
-								<td class="editFieldValue">
-								    <select id="dataFileEncodingSelector" data-bind="foreach: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
+        <div class="cardSection">
+            <h2>Natives</h2>
+            <table>
+                <tr>
+                    <td class="cardColumn cardFieldLeft">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Include Native Files Path:
+                                </td>
+                                <td class="editFieldValue">
+                                    <table class="RadioButtonListRelativePosition">
+                                        <tr>
+                                            <td>
+                                                <input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" value="true" data-bind="checked: IncludeNativeFilesPath, disable: HasBeenRun()" />
+                                                <label>Yes</label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" value="false" data-bind="checked: IncludeNativeFilesPath, disable: HasBeenRun()" />
+                                                <label>No</label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Data File Format:
+                                </td>
+                                <td class="editFieldValue">
+                                    <select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun()"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Data File Encoding:
+                                </td>
+                                <td class="editFieldValue">
+                                    <select id="dataFileEncodingSelector" data-bind="foreach: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
                                         <optgroup data-bind="attr: {label: label}, foreach: children">
                                             <option data-bind="text: displayName, value: name"></option>
                                         </optgroup>
-								    </select>
-								</td>
-							</tr>
-						</table>
-					</td>
-					<td class="cardColumn">
-						<table>
-							<td class="cardColumn">
-								<table class="fieldTable">
-									<tr>
-										<td class="editFieldNameRequired">
-											Column:
-										</td>
-										<td class="editFieldValue">
-											<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
-										</td>
-									</tr>
-									<tr>
-										<td class="editFieldNameRequired">
-											Quote:
-										</td>
-										<td class="editFieldValue">
-											<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
-										</td>
-									</tr>
-									<tr>
-										<td class="editFieldNameRequired">
-											Newline:
-										</td>
-										<td class="editFieldValue">
-											<select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator"></select>
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td class="cardColumn">
-								<table class="fieldTable">
-									<tr>
-										<td class="editFieldNameRequired">
-											Multi-Value:
-										</td>
-										<td class="editFieldValue">
-											<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
-										</td>
-									</tr>
-									<tr>
-										<td class="editFieldNameRequired">
-											Nested Value:
-										</td>
-										<td class="editFieldValue">
-											<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</table>
-					</td>
-				</tr>
-			</table>
-		</div>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="cardColumn">
+                        <table>
+                            <td class="cardColumn">
+                                <table class="fieldTable">
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Column:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Quote:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Newline:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator"></select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="cardColumn">
+                                <table class="fieldTable">
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Multi-Value:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Nested Value:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-		<div class="cardSection">
-			<h2>Subdirectory Information</h2>
-			<table>
-				<tr>
-					<td class="cardColumn cardFieldLeft">
-						<table class="fieldTable">
-							<tr>
-								<td class="editFieldNameRequired">
-									Image Prefix:
-								</td>
-								<td class="editFieldValue">
-									<input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix, disable: HasBeenRun()" />
-								</td>
-							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
-									Native Prefix:
-								</td>
-								<td class="editFieldValue">
-									<input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix, disable: HasBeenRun()" />
-								</td>
-							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
-									Text Prefix:
-								</td>
-								<td class="editFieldValue">
-									<input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix, disable: HasBeenRun()" />
-								</td>
-							</tr>
-						</table>
-					</td>
-					<td class="cardColumn">
-						<table class="fieldTable">
-							<tr>
-								<td class="editFieldNameRequired">
-									Start #:
-								</td>
-								<td class="editFieldValue">
-									<input id="subdirectory-start-files-input" type="number" min="1" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
-								</td>
-								<td class="editFieldNameRequired">
-									# of digits:
-								</td>
-								<td class="editFieldValue">
-									<input id="subdirectory-digit-padding-input" type="number" min="1" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
-								</td>
-							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
-									Max Files:
-								</td>
-								<td class="editFieldValue">
-									<input id="subdirectory-max-files-input" type="number" min="1" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
-		</div>
+        <div class="cardSection">
+            <h2>Subdirectory Information</h2>
+            <table>
+                <tr>
+                    <td class="cardColumn cardFieldLeft">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Image Prefix:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Native Prefix:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Text Prefix:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="cardColumn">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Start #:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-start-files-input" type="number" min="1" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
+                                </td>
+                                <td class="editFieldNameRequired">
+                                    # of digits:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-digit-padding-input" type="number" min="1" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Max Files:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-max-files-input" type="number" min="1" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-		<div class="cardSection">
-			<h2>Volume Information</h2>
-			<table>
-				<tr>
-					<td class="cardColumn cardFieldLeft">
-						<table class="fieldTable">
-							<tr>
-								<td class="editFieldNameRequired">
-									Prefix:
-								</td>
-								<td class="editFieldValue">
-									<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
-								</td>
-							</tr>
-						</table>
-					</td>
-					<td class="cardColumn">
-						<table class="fieldTable">
-							<tr>
-								<td class="editFieldNameRequired">
-									Start #:
-								</td>
-								<td class="editFieldValue">
-									<input id="volume-start-files-input" type="number" min="1" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
-								</td>
-								<td class="editFieldNameRequired">
-									# of digits:
-								</td>
-								<td class="editFieldValue">
-									<input id="volume-digit-padding-input" type="number" min="1" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
-								</td>
-							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
-									Max Size (MB):
-								</td>
-								<td class="editFieldValue">
-									<input id="volume-max-size-input" type="number" min="1" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
-		</div>
+        <div class="cardSection">
+            <h2>Volume Information</h2>
+            <table>
+                <tr>
+                    <td class="cardColumn cardFieldLeft">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Prefix:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="cardColumn">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Start #:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="volume-start-files-input" type="number" min="1" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
+                                </td>
+                                <td class="editFieldNameRequired">
+                                    # of digits:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="volume-digit-padding-input" type="number" min="1" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Max Size (MB):
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="volume-max-size-input" type="number" min="1" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
 
-		<div class="cardSection">
-			<h2>Physical File Export</h2>
-			<table class="fieldTable">
-				<tr>
-					<td class="editFieldNameRequired">Copy Files from Repository:</td>
-					<td class="editFieldValue">
-						<table class="RadioButtonListRelativePosition">
-							<tr>
-								<td>
-									<input id="copy-file-radio-0" type="radio" name="copyFiles" value="true" data-bind="checked: CopyFileFromRepository, disable: HasBeenRun()" />
-									<label>Yes</label>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<input id="copy-file-radio-1" type="radio" name="copyFiles" value="false" data-bind="checked: CopyFileFromRepository, disable: HasBeenRun()" />
-									<label>No</label>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td class="editFieldNameRequired">
-						Fileshare:
-					</td>
-					<td class="editFieldValue">
-						<input id="fileshare-input" type="text" data-bind="value: Fileshare, disable: HasBeenRun()" />
-					</td>
-				</tr>
-				<tr>
-					<td class="editFieldNameRequired">Overwrite files:</td>
-					<td class="editFieldValue">
-						<table class="RadioButtonListRelativePosition">
-							<tr>
-								<td>
-									<input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" value="true" data-bind="checked: OverwriteFiles, disable: HasBeenRun()" />
-									<label>Yes</label>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles, disable: HasBeenRun()" />
-									<label>No</label>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
-		</div>
+        <div class="cardSection">
+            <h2>Physical File Export</h2>
+            <table class="fieldTable">
+                <tr>
+                    <td class="editFieldNameRequired">Copy Files from Repository:</td>
+                    <td class="editFieldValue">
+                        <table class="RadioButtonListRelativePosition">
+                            <tr>
+                                <td>
+                                    <input id="copy-file-radio-0" type="radio" name="copyFiles" value="true" data-bind="checked: CopyFileFromRepository, disable: HasBeenRun()" />
+                                    <label>Yes</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="copy-file-radio-1" type="radio" name="copyFiles" value="false" data-bind="checked: CopyFileFromRepository, disable: HasBeenRun()" />
+                                    <label>No</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">
+                        Fileshare:
+                    </td>
+                    <td class="editFieldValue">
+                        <input id="fileshare-input" type="text" data-bind="value: Fileshare, disable: HasBeenRun()" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">Overwrite files:</td>
+                    <td class="editFieldValue">
+                        <table class="RadioButtonListRelativePosition">
+                            <tr>
+                                <td>
+                                    <input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" value="true" data-bind="checked: OverwriteFiles, disable: HasBeenRun()" />
+                                    <label>Yes</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles, disable: HasBeenRun()" />
+                                    <label>No</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-		<div class="cardSection">
-			<h2>Images</h2>
-			<table class="fieldTable">
-				<tr>
-					<td class="editFieldNameRequired">Export Images:</td>
-					<td class="editFieldValue">
-						<table class="RadioButtonListRelativePosition">
-							<tr>
-								<td>
-									<input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ExportImagesChecked, disable: HasBeenRun()" />
-									<label>Yes</label>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ExportImagesChecked, disable: HasBeenRun()" />
-									<label>No</label>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
+        <div class="cardSection">
+            <h2>Images</h2>
+            <table class="fieldTable">
+                <tr>
+                    <td class="editFieldNameRequired">Export Images:</td>
+                    <td class="editFieldValue">
+                        <table class="RadioButtonListRelativePosition">
+                            <tr>
+                                <td>
+                                    <input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ExportImagesChecked, disable: HasBeenRun()" />
+                                    <label>Yes</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ExportImagesChecked, disable: HasBeenRun()" />
+                                    <label>No</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
 
-				<tr data-bind="visible: ExportImagesChecked() === 'true'">
-					<td class="editFieldNameRequired">
-						Data File Format:
-					</td>
-					<td class="editFieldValue">
-						<select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun()"></select>
-					</td>
-				</tr>
-        
-				<tr data-bind="visible: ExportImagesChecked() === 'true'">
-					<td class="editFieldNameRequired">
-						File Type :
-					</td>
-					<td class="editFieldValue">
-						<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository() === 'true' && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
-					</td>
-				</tr>
-			</table>
-		</div>
+                <tr data-bind="visible: ExportImagesChecked() === 'true'">
+                    <td class="editFieldNameRequired">
+                        Data File Format:
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun()"></select>
+                    </td>
+                </tr>
+
+                <tr data-bind="visible: ExportImagesChecked() === 'true'">
+                    <td class="editFieldNameRequired">
+                        File Type :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository() === 'true' && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
         <div class="cardSection">
             <h2>Other</h2>
@@ -375,22 +376,35 @@
                         Export Multiple Choice Fields As Nested:
                     </td>
                     <td class="editFieldValue">
-                        <input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested()"/>
+                        <input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested()" />
+                    </td>
+                </tr>
+                <tr data-bind="visible: false">
+                    <td class="editFieldNameRequired">
+                        Text Precedence:
+                    </td>
+                    <td class="editFieldValue">
+                        <label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+                        <button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
                     </td>
                 </tr>
             </table>
         </div>
+    </div>
 </div>
 
 @section scripts
 {
-	<script src="~/Scripts/core/data.js"></script>
-	<script src="~/Scripts/core/utils.js"></script>
-	<script src="~/Scripts/knockout-2.2.0.js"></script>
-	<script src="~/Scripts/knockout.validation.js"></script>
-	<script src="~/Scripts/integration-point/binding.js"></script>
-	<script src="~/Scripts/jquery-postMessage.js"></script>
-	<script src="~/Scripts/frame-messaging.js"></script>
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
+    <script src="~/Scripts/knockout-2.2.0.js"></script>
+    <script src="~/Scripts/knockout.validation.js"></script>
+    <script src="~/Scripts/integration-point/binding.js"></script>
+    <script src="~/Scripts/jquery-postMessage.js"></script>
+    <script src="~/Scripts/frame-messaging.js"></script>
     <script src="~/Scripts/export/export-enums.js"></script>
-	<script src="~/Scripts/export/export-provider.js"></script>
+    <script src="~/Scripts/export/export-provider.js"></script>
+    <script src="~/Scripts/export/picker.js"></script>
+    <script src="~/Scripts/export/saved-search-picker.js"></script>
+    <script src="~/Scripts/export/text-precedence-picker.js"></script>
 }

@@ -7,7 +7,7 @@ ExportDetailsView.downloadSummaryPage = function () {
     dataContainer.hideContainer();
 
     IP.data.ajax({
-        url: IP.utils.generateWebURL('IntegrationPoints', 'ExportDetails'),
+        url: IP.utils.generateWebURL('Fileshare', 'ExportDetails'),
         type: 'get',
         dataType: 'html'
     }).then(function (result) {
