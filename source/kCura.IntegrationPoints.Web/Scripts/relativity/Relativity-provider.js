@@ -112,7 +112,7 @@
 					self.savedSearches(result);
 				},
 				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the saved searches. Please contract the system administrator.");
+					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the saved searches. Please contact your system administrator.");
 					self.savedSearches([]);
 				}
 			});
@@ -127,7 +127,7 @@
 					self.workspaces(result);
 				},
 				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace informations. Please contract the system administrator.");
+					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
 					self.workspaces([]);
 				}
 			});

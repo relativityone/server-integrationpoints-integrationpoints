@@ -1,6 +1,4 @@
-﻿using kCura.IntegrationPoints.Contracts;
-
-namespace JsonLoader
+﻿namespace JsonLoader
 {
 	public class StartUp : kCura.IntegrationPoints.Contracts.IStartUp
 	{

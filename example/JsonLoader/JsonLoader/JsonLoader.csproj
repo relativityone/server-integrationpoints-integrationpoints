@@ -54,8 +54,8 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler, Version=9.3.440.1, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.3.440.1\lib\net45\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=9.4.237.1, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.EventHandler.9.4.237.1\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">

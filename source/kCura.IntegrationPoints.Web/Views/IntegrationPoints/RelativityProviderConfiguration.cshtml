@@ -3,37 +3,47 @@
     ViewBag.Title = "Settings";
 }
 
+<link href="~/Content/styles.min.css" rel="stylesheet" />
 <link href="~/Content/site.css" rel="stylesheet" />
-<div class="card" id="relativityProviderConfiguration">
+<link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
+<link href="~/Content/css/select2search.css" rel="stylesheet" />
 
-    <label class="section label">Relativity Provider</label>
-    <div class="field-row">
-        <div class="field-label required">
-            Destination Workspace :
-        </div>
-        <div class="field-value">
-            <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, optionsCaption: 'Select...', select2: {}"></select>
-        </div>
-    </div>
-    <div class="field-row">
-        <div class="field-label required">
-            Saved Search :
-        </div>
-        <div class="field-value ">
-            <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2: {}"></select>
+<div id="_main">
+    <div id="relativityProviderConfiguration" class="cardContainer">
+        <div class="cardSection">
+            <h2>Relativity Provider</h2>
+            <table class="fieldTable">
+                <tr>
+                    <td class="editFieldNameRequired">
+                        Destination Workspace :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, optionsCaption: 'Select...', select2searchable: {}"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">
+                        Saved Search :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2searchable: {}"></select>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
 
-@section scripts
+
+    @section scripts
 {
-    <script src="~/Scripts/core/data.js"></script>
-    <script src="~/Scripts/core/utils.js"></script>
-    <script src="~/Scripts/knockout-2.2.0.js"></script>
-    <script src="~/Scripts/knockout.validation.js"></script>
-    <script src="~/Scripts/integration-point/binding.js"></script>
-    <script src="~/Scripts/jquery-postMessage.js"></script>
-    <script src="~/Scripts/frame-messaging.js"></script>
-    
-    <script src="~/Scripts/relativity/Relativity-provider.js"></script>
-}
+        <script src="~/Scripts/core/data.js"></script>
+        <script src="~/Scripts/core/utils.js"></script>
+        <script src="~/Scripts/knockout-2.2.0.js"></script>
+        <script src="~/Scripts/knockout.validation.js"></script>
+        <script src="~/Scripts/integration-point/binding.js"></script>
+        <script src="~/Scripts/jquery-postMessage.js"></script>
+        <script src="~/Scripts/frame-messaging.js"></script>
+
+        <script src="~/Scripts/relativity/Relativity-provider.js"></script>
+    }
