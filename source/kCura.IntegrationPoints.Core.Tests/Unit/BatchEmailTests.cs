@@ -71,11 +71,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			_integrationPointLibrary.Read(_INTEGRATION_POINT_ID).Returns(integrationPoint);
 
-			// ACT
-			_testInstance.OnJobComplete(job);
-
-			// ARRANGE
-			// - Sending of email logic has been skipped (no exceptions up to this point)
+			// ACT + ASSERT
+			Assert.DoesNotThrow(()=> { _testInstance.OnJobComplete(job); }, "Sending of email logic should have been skipped");
 		}
 
 		private Job GetTestJob()

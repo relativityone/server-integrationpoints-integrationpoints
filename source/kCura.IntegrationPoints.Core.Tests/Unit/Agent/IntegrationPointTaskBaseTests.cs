@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			// ACT
 			List<string> resultEmails = _testInstance.GetRecipientEmails();
 
-			// ARRANGE
+			// ASSERT
 			Assert.IsNotNull(resultEmails);
 			Assert.AreEqual(0, resultEmails.Count);
 
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			// ACT
 			List<string> resultEmails = _testInstance.GetRecipientEmails();
 
-			// ARRANGE
+			// ASSERT
 			Assert.IsNotNull(resultEmails);
 			Assert.AreEqual(1, resultEmails.Count);
 			Assert.AreEqual(email1, resultEmails[0]);
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			// ACT
 			List<string> resultEmails = _testInstance.GetRecipientEmails();
 
-			// ARRANGE
+			// ASSERT
 			Assert.IsNotNull(resultEmails);
 			Assert.AreEqual(2, resultEmails.Count);
 			Assert.AreEqual(email1, resultEmails[0]);
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			// ACT
 			List<string> resultEmails = _testInstance.GetRecipientEmails();
 
-			// ARRANGE
+			// ASSERT
 			Assert.IsNotNull(resultEmails);
 			Assert.AreEqual(3, resultEmails.Count);
 			Assert.AreEqual(email1, resultEmails[0]);
