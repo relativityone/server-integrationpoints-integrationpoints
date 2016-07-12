@@ -2,6 +2,7 @@
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders

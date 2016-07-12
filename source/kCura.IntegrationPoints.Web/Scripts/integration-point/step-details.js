@@ -131,6 +131,7 @@ var IP = IP || {};
 
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
+		this.isSourceProviderDisabled = ko.observable(false);
 
 		this.SourceProviderConfiguration = ko.observable();
 
@@ -197,9 +198,66 @@ var IP = IP || {};
 		this.allRdoTypes = ko.observableArray();
 		this.rdoTypes = ko.observableArray();
 
-		self.artifactTypeID = ko.observable().extend({ required: true });
-		//CaseArtifactId
-		//ParentObjectIdSourceFieldName
+		this.destinationTypes = ko.observableArray();
+		this.selectedDestinationType = ko.observable().extend({ required: true });
+
+		var withArtifactId = function(artifacId) {
+		    return function (element) {
+		        return element.artifactID === artifacId;
+		    }
+		}
+		this.selectedDestinationTypeGuid = function () {
+		    var results = this.destinationTypes().filter(withArtifactId(this.selectedDestinationType()));
+		    return results.length > 0 ? results[0].value : "";
+		}
+		
+
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') }).then(function (result) {
+		    var types = $.map(result, function (entry) {
+		        var c = new Choice(entry.name, entry.id, entry.artifactID, entry);
+		        c.href = entry.url;
+		        return c;
+		    });
+		    self.destinationTypes(types);
+		    var setRelativityAsDestinationProvider = function () {
+		        var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
+		            return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+		        });
+		        if (defaultRelativityProvider.length === 1) {
+		            self.selectedDestinationType(defaultRelativityProvider[0].artifactID);
+		        }
+		    }
+
+		    setRelativityAsDestinationProvider();
+
+		    $.each(self.destinationTypes(), function () {
+
+		        if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
+		            self.selectedDestinationType(this.artifactID);
+		        }
+		    });
+		});
+
+
+		
+	
+		this.artifactTypeID = ko.observable().extend({ required: true });
+   
+
+		this.selectedDestinationType.subscribe(function (selectedValue) {
+		    var fileshareChoice = self.destinationTypes().filter(function (obj) {
+		        return obj.displayName === "Fileshare";
+		    });
+
+		    if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID) {
+		        var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+		        parentModel.source.selectedType(relativitySourceProviderGuid);
+		        parentModel.source.isSourceProviderDisabled(true);
+		    }
+		    else {
+		        parentModel.source.isSourceProviderDisabled(false);
+		    }
+		});
 
 		this.UpdateSelectedItem = function () {
 			self.artifactTypeID(settings.artifactTypeID);
@@ -556,8 +614,12 @@ var IP = IP || {};
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 			this.model.submit();
 			if (this.model.errors().length === 0) {
-				this.model.destination = JSON.stringify({
-					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
+			    this.model.destinationProvider = this.model.destination.selectedDestinationType();
+			    var guid = this.model.destination.selectedDestinationTypeGuid();
+			    this.model.destinationProviderGuid = guid;
+			    this.model.destination = JSON.stringify({
+				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
+				    destinationProviderType: ko.toJS(guid),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});

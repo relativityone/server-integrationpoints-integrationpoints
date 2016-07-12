@@ -35,14 +35,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IBatchStatus _batchStatus;
 		private const int _ADMIN_USER_ID = 9;
+		private const string jobStartTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
+		private const string jobCompleteTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
+		private const string itemStartIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
+		private const string itemStartExcludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
+		private const string itemCompleteIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
 
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
 		}
 
-		public override void SetUp()
+		[TestFixtureSetUp]
+		public new void SuiteSetup()
 		{
-			base.SetUp();
 			ResolveServices();
 		}
 
@@ -207,8 +212,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE}_{ tempTableSuffix }";
+			string startTempTableName = $"{ jobStartTempTablePrefix }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ jobCompleteTempTablePrefix }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -265,15 +270,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
 
 			//Create item level error
-			List<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
-			List<int> expectedJobHistoryErrorsForRetry = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
+			ICollection<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
+			ICollection<int> expectedJobHistoryErrorsForRetry = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
 
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
+			string startTempTableName = $"{ jobStartTempTablePrefix }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ jobCompleteTempTablePrefix }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ itemStartIncludedTempTablePrefix }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -389,9 +394,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			ModifySavedSearch(documentPrefix, true);
 			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactId);
 
-			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
+			string startTempTableName = $"{ itemStartIncludedTempTablePrefix }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ itemCompleteIncludedTempTablePrefix }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ itemStartExcludedTempTablePrefix }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -537,7 +542,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 		}
 
-		private void CompareJobHistoryErrorStatuses(List<int> jobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values expectedErrorStatus)
+		private void CompareJobHistoryErrorStatuses(ICollection<int> jobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values expectedErrorStatus)
 		{
 			IList<JobHistoryErrorDTO> jobHistoryErrors = _jobHistoryErrorRepository.Read(jobHistoryErrorArtifactIds);
 			foreach (JobHistoryErrorDTO jobHistoryError in jobHistoryErrors)
@@ -549,7 +554,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 		}
 
-		private void VerifyTempTableCountAndEntries(DataTable tempTable, string tempTableName, List<int> expectedJobHistoryErrorArtifacts)
+		private void VerifyTempTableCountAndEntries(DataTable tempTable, string tempTableName, ICollection<int> expectedJobHistoryErrorArtifacts)
 		{
 			if (tempTable.Rows.Count != expectedJobHistoryErrorArtifacts.Count)
 			{

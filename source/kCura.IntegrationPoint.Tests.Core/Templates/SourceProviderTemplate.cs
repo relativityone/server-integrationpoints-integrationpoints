@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		[TestFixtureSetUp]
-		public virtual void SetUp()
+		public void SuiteSetup()
 		{
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 			WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		[TestFixtureTearDown]
-		public virtual void TearDown()
+		public void SuiteTeardown()
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			Agent.DeleteAgent(AgentArtifactId);

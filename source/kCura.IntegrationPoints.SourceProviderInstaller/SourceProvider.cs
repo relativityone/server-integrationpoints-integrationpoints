@@ -13,8 +13,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		internal Guid GUID { get; set; }
 		
+		/// <summary>
+		/// Gets or sets the GUID identifying the Relativity application.
+		/// </summary>
 		internal Guid ApplicationGUID { get; set; }
+
+		/// <summary>
+		/// Gets or sets the artifact id identifying the Relativity application.
+		/// </summary>
 		internal int ApplicationID { get; set; }
+
 		/// <summary>
 		/// Gets or sets the name of the data source provider displayed in the Relativity UI.
 		/// </summary>
@@ -34,7 +42,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		public string ViewDataUrl { get; set; }
 
 		/// <summary>
-		/// Get or set configuration associate to source provider
+		/// Get or sets configuration to associate with the source provider.
 		/// </summary>
 		public SourceProviderConfiguration Configuration { set; get; }
 	}

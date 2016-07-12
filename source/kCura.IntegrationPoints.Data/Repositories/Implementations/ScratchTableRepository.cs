@@ -8,6 +8,7 @@ using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Toggle;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -99,7 +100,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        public void AddArtifactIdsIntoTempTable(IList<int> artifactIds)
+        public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
         {
             _count += artifactIds.Count;
 

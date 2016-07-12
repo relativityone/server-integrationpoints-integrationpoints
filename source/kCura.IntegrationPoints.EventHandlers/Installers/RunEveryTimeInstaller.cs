@@ -1,5 +1,7 @@
-﻿using kCura.EventHandler;
+﻿using System;
+using kCura.EventHandler;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Core.Telemetry;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Migrations;
 
@@ -12,9 +14,23 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	{
 		public override Response Execute()
 		{
-			
-			new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID()))).Run();
-			return new Response { Success = true };
+			var response = new Response { Success = true };
+			try
+			{
+				new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID()))).Run();
+
+				var telemetryManger = new TelemetryManager(base.Helper);
+				telemetryManger.AddMetricProviders(new TelemetryMetricProvider());
+				telemetryManger.AddMetricProviders(new ExportTelemetryMetricProvider());
+				telemetryManger.InstallMetrics();
+			}
+			catch (Exception ex)
+			{
+				response.Success = false;
+				response.Message = ex.Message;
+				response.Exception = ex;
+			}
+			return response;
 		}
 	}
 }
