@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			public const string KCURA_STARTER_TEMPLATE = "kCura Starter Template";
 		}
 
-		protected void Install()
+		protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IServiceContextHelper>()
