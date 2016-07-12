@@ -19,6 +19,7 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
@@ -552,6 +553,12 @@ namespace kCura.IntegrationPoints.Core.Services
 					sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 						? TaskType.ExportService
 						: TaskType.SyncManager;
+
+	            var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+	            if (importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
+	            {
+	                jobTaskType = TaskType.ExportManager;
+	            }
 
 				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);

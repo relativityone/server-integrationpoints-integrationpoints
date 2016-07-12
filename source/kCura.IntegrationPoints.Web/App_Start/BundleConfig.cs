@@ -33,7 +33,8 @@ namespace kCura.IntegrationPoints.Web
 					"~/Scripts/integration-point/step-import.js ",
 					"~/Scripts/integration-point/step-mapFields-control.js",
 					"~/Scripts/integration-point/step-mapFields.js",
-					"~/Scripts/route.js"
+                    "~/Scripts/Export/export-provider-fields-step.js",
+                    "~/Scripts/route.js"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/grid").Include(

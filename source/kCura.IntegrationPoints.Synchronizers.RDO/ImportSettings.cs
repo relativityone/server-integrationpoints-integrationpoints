@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public bool DisableExtractedTextFileLocationValidation { get; set; }
 		public bool? DisableNativeLocationValidation { get; set; }
 		public bool? DisableNativeValidation { get; set; }
+		public string DestinationProviderType { get; set; }		
 		public bool DisableUserSecurityCheck { get; set; }
 
 		[JsonIgnore]

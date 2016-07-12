@@ -4,6 +4,10 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using Relativity.API;
+using Relativity.CustomPages;
+using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -12,14 +16,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IIntegrationPointService _reader;
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
+		private readonly ICPHelper _cpHelper;
 
 		public IntegrationPointsAPIController(IIntegrationPointService reader,
 			IRelativityUrlHelper urlHelper,
-			Core.Services.Synchronizer.IRdoSynchronizerProvider provider)
+			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
+			ICPHelper cpHelper)
 		{
 			_reader = reader;
 			_urlHelper = urlHelper;
 			_provider = provider;
+			_cpHelper = cpHelper;
 		}
 
 		[HttpGet]
@@ -50,9 +57,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			try
 			{
-				int createdId = _reader.SaveIntegration(model);
-				string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
-				return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+				{
+					using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, 
+						Guid.Empty, model.Name, MetricTargets.APMandSUM ))
+					{
+						int createdId = _reader.SaveIntegration(model);
+						string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+
+						return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
+					}
+				}
 			}
 			catch (Exception exception)
 			{

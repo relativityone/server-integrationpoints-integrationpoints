@@ -2,7 +2,7 @@
 {
 	public interface IRdoSynchronizerProvider
 	{
-		void CreateOrUpdateLdapSourceType();
+		void CreateOrUpdateDestinationProviders();
 		int GetRdoSynchronizerId();
 	}
 }

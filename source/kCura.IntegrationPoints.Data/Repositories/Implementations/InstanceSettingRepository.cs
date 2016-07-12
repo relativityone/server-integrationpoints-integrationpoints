@@ -9,13 +9,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public string GetConfigurationValue(string section, string name)
 		{
 			Manager.ClearCache();
+
+			string configValue = null;
 			IDictionary config = Manager.GetConfig(section);
 			if (config.Contains(name))
 			{
-				return config[name] as string;
+				configValue = config[name] as string;
 			}
 
-			return null;
+			return configValue;
 		}
 	}
 }

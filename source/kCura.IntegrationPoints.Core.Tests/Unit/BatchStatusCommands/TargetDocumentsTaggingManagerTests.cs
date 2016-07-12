@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 		private FieldMap[] _fieldMaps;
 		private TargetDocumentsTaggingManager _instance;
-		private Job _job;
+		private Job _job = null;
 
 		private const string _scratchTableName = "IntegrationPoint_Relativity_SourceWorkspace";
 		private readonly string _uniqueJobId = "1_JobIdGuid";
