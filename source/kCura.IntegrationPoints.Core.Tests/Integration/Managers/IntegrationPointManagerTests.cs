@@ -21,8 +21,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private int _groupId;
 		private UserModel _userModel;
 
-		private string _oldInstanceSettingValue;
-
 		public IntegrationPointManagerTests() : base("IntegrationPointManagerSource", "IntegrationPointManagerTarget")
 		{
 
@@ -31,19 +29,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		[TestFixtureSetUp]
 		public new void SuiteSetup()
 		{
-			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_dbContext = Helper.GetDBContext(-1);
 			CreateGroupAndUser();
-		}
-
-		[TestFixtureTearDown]
-		public new void SuiteTeardown()
-		{
-			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
-			{
-				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
-			}
 		}
 
 		[Test]

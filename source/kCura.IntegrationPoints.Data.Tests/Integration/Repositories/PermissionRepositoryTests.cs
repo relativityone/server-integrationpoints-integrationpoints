@@ -26,8 +26,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IObjectTypeRepository _typeRepo;
 		private Random _rand;
 
-		private string _oldInstanceSettingValue;
-
 		public PermissionRepositoryTests()
 			: base("PermissionRepositoryTests", null)
 		{
@@ -37,16 +35,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[TestFixtureSetUp]
 		public new void SuiteSetup()
 		{
-			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
-		}
-
-		[TestFixtureTearDown]
-		public new void SuiteTeardown()
-		{
-			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
-			{
-				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
-			}
+			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
 		[SetUp]
