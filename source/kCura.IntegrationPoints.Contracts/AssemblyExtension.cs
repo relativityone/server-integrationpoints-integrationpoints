@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Contracts
 	/// <summary>
 	/// A helper class reponsible for loading assemblies and their types.
 	/// </summary>
-	public static class AssemblyExtension
+	internal static class AssemblyExtension
 	{
 		/// <summary>
 		/// Retrieves all public types from a given assembly. This method will exclude private and internal classes.

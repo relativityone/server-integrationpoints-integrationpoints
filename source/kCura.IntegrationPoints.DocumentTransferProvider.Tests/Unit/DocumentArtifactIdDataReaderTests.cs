@@ -3,6 +3,7 @@ using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;

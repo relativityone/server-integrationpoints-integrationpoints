@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <!-- Define dependency properties -->
+  <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -30,13 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.2.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.2.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="nunit.framework, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\$(NUnit)\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,7 +53,7 @@
     <Compile Include="Unit\Agent\TaskJobSubmitterTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -62,6 +63,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
       <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
       <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
+      <Project>{8170466f-7eb5-48cb-bfb0-7e4fac1d6e42}</Project>
+      <Name>kCura.IntegrationPoints.Dependencies</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>

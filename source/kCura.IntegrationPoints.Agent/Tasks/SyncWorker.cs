@@ -15,12 +15,12 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -200,18 +200,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             SetupSubscriptions(dataSynchronizer, job);
 
-            if (SourceProvider.Config.GetDataProvideAllFieldsRequired)
-            {
-                dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
-            }
-            else
-            {
-                IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-                dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
-            }
-        }
+			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+			dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+		}
 
-        private void InjectErrors()
+		private void InjectErrors()
         {
             try
             {

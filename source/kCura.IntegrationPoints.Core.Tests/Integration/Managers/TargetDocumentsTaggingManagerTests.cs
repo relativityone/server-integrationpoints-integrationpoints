@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -40,9 +41,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[TestFixtureSetUp]
-		public override void SetUp()
+		public new void SuiteSetup()
 		{
-			base.SetUp();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_sourceWorkspaceManager = new SourceWorkspaceManager(_repositoryFactory);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using NUnit.Framework;
 

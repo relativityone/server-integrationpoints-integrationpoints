@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IExtendedRelativityToggle _toggle;
 		private IRepositoryFactory _repositoryFactory;
 		private ICaseServiceContext _caseServiceContext;
-		private ICaseServiceContext _mockedCaseServiceContext;
 		private IDocumentRepository _documentRepository;
 		private IFieldRepository _fieldRepository;
 		private ScratchTableRepository _currentScratchTableRepository;
@@ -33,14 +32,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[TestFixtureSetUp]
 		[Explicit]
-		public override void SetUp()
+		public new void SuiteSetup()
 		{
-			base.SetUp();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
-
 			_toggle = Substitute.For<IExtendedRelativityToggle>();
 		}
 
