@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace kCura.IntegrationPoints.Data
+namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// This class contains configurations for a source provider.
