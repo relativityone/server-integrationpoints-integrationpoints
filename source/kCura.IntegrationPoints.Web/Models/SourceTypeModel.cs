@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Web.Models
 {
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Models
 		}
 
 		[DataMember]
-		public ImportSettingVisibility ImportSettingVisibility
+		internal ImportSettingVisibility ImportSettingVisibility
 		{
 			get
 			{
