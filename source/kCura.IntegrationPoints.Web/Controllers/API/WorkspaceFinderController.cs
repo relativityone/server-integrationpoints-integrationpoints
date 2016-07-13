@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
 				ErrorDTO error = new ErrorDTO()
 				{
-					Message = "Unable to retrieve the workspace informations. Please contract the system administrator.",
+					Message = "Unable to retrieve the workspace information. Please contact the system administrator.",
 					FullText = $"{exception.Message}{Environment.NewLine}{exception.StackTrace}",
 				};
 				_errorRepository.Create(new[] { error });
