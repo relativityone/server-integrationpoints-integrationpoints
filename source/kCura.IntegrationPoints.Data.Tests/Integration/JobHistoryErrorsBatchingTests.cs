@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private const int _ADMIN_USER_ID = 9;
 		private const string jobStartTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
 		private const string jobCompleteTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
-		private const string itemStartIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
+		private const string itemStartIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
 		private const string itemStartExcludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		private const string itemCompleteIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
 

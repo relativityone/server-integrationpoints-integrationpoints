@@ -110,6 +110,7 @@
 				async: true,
 				success: function (result) {
 					self.savedSearches(result);
+					self.SavedSearchArtifactId(state.SavedSearchArtifactId);
 				},
 				error: function () {
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the saved searches. Please contact your system administrator.");
@@ -125,6 +126,7 @@
 				async: true,
 				success: function (result) {
 					self.workspaces(result);
+					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
 				},
 				error: function () {
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
