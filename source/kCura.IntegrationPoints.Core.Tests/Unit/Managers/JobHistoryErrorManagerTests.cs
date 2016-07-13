@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private const string _uniqueJobId = "1324_JobIdGuid";
 		private const string _jobErrorOnStartPrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
 		private const string _jobErrorOnCompletePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
-		private const string _itemErrorOnStartPrefix = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
+		private const string _itemErrorOnStartPrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
 		private const string _itemErrorOnCompletePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
 		private const string _itemErrorOnStartOtherPrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		private Job _job;

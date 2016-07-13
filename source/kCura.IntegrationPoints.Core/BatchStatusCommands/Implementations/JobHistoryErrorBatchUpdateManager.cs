@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Claims;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
@@ -44,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				switch (_updateStatusType.ErrorTypes)
 				{
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
+						_jobHistoryErrorManager.JobHistoryErrorJobComplete = _jobHistoryErrorManager.JobHistoryErrorJobStart.CopyTempTable(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE);
 						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorJobStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress);
 						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;

@@ -63,6 +63,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             {
                 return _count;
             }
+	        set
+	        {
+		        _count = value;
+	        }
         }
 
         public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
@@ -116,11 +120,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
         {
-			_count += artifactIds.Count;
-
             if (!artifactIds.IsNullOrEmpty())
-            {
-                string fullTableName = GetTempTableName();
+			{
+				_count += artifactIds.Count;
+
+				string fullTableName = GetTempTableName();
 
 				string database = _isAOAGEnabled ? _caseContext.Database : "EDDSRESOURCE";
 				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, database);
@@ -140,6 +144,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
 
 				context.ExecuteBulkCopy(artifactIdTable, new SqlBulkCopyParameters(fullTableName));
+	            connectionData.Database = "EDDS";
+				context = new Context(connectionData);
             }
         }
 
@@ -149,13 +155,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		    string sourceTableName = GetTempTableName();
 		    string newTableName = copiedScratchTableRepository.GetTempTableName();
 
-			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-										BEGIN
-											CREATE TABLE {3}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-										END
-										SELECT * INTO {3}[{0}] ([ArtifactID]) FROM {3}[{1}]", newTableName, sourceTableName, TargetDatabaseFormat, FullDatabaseFormat);
+			string sql = String.Format(@"SELECT * INTO {2}[{0}] FROM {2}[{1}]", newTableName, sourceTableName, FullDatabaseFormat);
 			
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
+
+		    copiedScratchTableRepository.Count = _count;
 
 		    return copiedScratchTableRepository;
 	    }
@@ -193,7 +197,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         private string FullDatabaseFormat
         {
-            get { return TargetDatabaseFormat == String.Empty ? "[Resource]." : "[EDDSRESOURCE].."; }
+            get { return TargetDatabaseFormat == String.Empty ? "[Resource]." : "[EDDSRESOURCE].eddsdbo."; }
         }
 
         public string GetTempTableName()
