@@ -184,9 +184,9 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.CustomPages, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="Relativity.CustomPages, Version=9.4.238.3, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Relativity.CustomPages.9.4.212.3\lib\net45\Relativity.CustomPages.dll</HintPath>
+      <HintPath>..\packages\Relativity.CustomPages.9.4.238.3\lib\net45\Relativity.CustomPages.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DragonGrid.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -201,7 +201,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.212.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.238.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.69.4, Culture=neutral, processorArchitecture=MSIL">
