@@ -304,7 +304,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Integration\RdoSynchronizerTest.cs" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
