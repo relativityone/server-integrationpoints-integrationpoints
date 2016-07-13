@@ -443,6 +443,7 @@
     <Content Include="Content\scheduler.scss" />
     <Content Include="Content\controls-grid-pager.scss" />
     <Content Include="Content\buttermilk-variables.scss" />
+    <Content Include="Content\buttermilk.9_2.min.css.map" />
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
