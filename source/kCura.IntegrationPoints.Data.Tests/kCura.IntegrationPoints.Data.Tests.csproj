@@ -121,7 +121,7 @@
     <Reference Include="Relativity.Kepler">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.4.238.3, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.DataContracts, Version=9.4.239.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
