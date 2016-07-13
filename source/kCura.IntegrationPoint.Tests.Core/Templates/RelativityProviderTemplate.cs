@@ -38,8 +38,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TestFixtureSetUp]
 		public new void SuiteSetup()
 		{
-			base.SuiteSetup();
-
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
 			Task.Run(async () => await SetupAsync()).Wait();
