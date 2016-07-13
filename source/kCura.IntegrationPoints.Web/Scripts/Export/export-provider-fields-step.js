@@ -159,12 +159,12 @@ ko.validation.init({
 			} else {
 				mappedFieldsPromise = [];
 			}
-			
+
 			var getMappedFields = function (fields) {
 				var _fields = ko.utils.arrayMap(fields, function (_item1) {
 					var _field = ko.utils.arrayFilter(self.model.availableFields(), function (_item2) {
-						return (_item1.sourceField) ? 
-							(_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) : 
+						return (_item1.sourceField) ?
+							(_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) :
 							(_item2.fieldIdentifier === _item1.fieldIdentifier);
 					});
 					return _field[0];
@@ -177,10 +177,10 @@ ko.validation.init({
 				.then(function (result) {
 					self.model.availableFields(result[0]);
 
-					var mappedFields = (result[2] && result[2].length) ? 
+					var mappedFields = (result[2] && result[2].length) ?
 						getMappedFields(result[2]) :
 						getMappedFields(result[1]);
-					
+
 					self.model.selectedAvailableFields(mappedFields);
 					self.model.addField();
 				});
@@ -231,9 +231,14 @@ ko.validation.init({
 		}
 
 		root.messaging.subscribe("back", function () {
-			_cache.availableFields = self.model.availableFields();
-			_cache.mappedFields = self.model.mappedFields();
-			console.log("back");
+			if (self.model) {
+				if (typeof self.model.availableFields === 'function') {
+					_cache.availableFields = self.model.availableFields();
+				}
+				if (typeof self.model.mappedFields === 'function') {
+					_cache.mappedFields = self.model.mappedFields();
+				}
+			}
 		});
 	};
 
