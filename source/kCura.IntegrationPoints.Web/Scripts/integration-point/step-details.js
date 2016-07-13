@@ -200,6 +200,7 @@ var IP = IP || {};
 
 		this.destinationTypes = ko.observableArray();
 		this.selectedDestinationType = ko.observable().extend({ required: true });
+		this.destinationProviderVisible = ko.observable(false);
 
 		var withArtifactId = function(artifacId) {
 		    return function (element) {
@@ -219,6 +220,7 @@ var IP = IP || {};
 		        return c;
 		    });
 		    self.destinationTypes(types);
+			self.destinationProviderVisible(self.destinationTypes().length > 1);
 		    var setRelativityAsDestinationProvider = function () {
 		        var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
 		            return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
