@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -61,15 +62,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 				return result.QueryArtifacts[0].ArtifactID;
 			}
-		}
-
-		internal IEnumerable<int> GetFieldIdsBy(List<string> listName, int workspaceId)
-		{
-			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
-
-			IEnumerable<Relativity.ImportAPI.Data.Field> fields = importApi.GetWorkspaceFields(workspaceId, (int)ArtifactType.Document);
-
-			return fields.Where(field => listName.Contains(field.Name)).Select(field => field.ArtifactID);
 		}
 
 		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable, DataTable imageSourceDataTable)
