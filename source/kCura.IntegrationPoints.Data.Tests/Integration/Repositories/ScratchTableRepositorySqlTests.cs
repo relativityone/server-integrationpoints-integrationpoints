@@ -76,23 +76,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			// arrange
 			_toggle.IsAOAGFeatureEnabled().Returns(true);
-			var instance = new ScratchTableRepository(Helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
-			var list = new List<int>() { 1, 2 };
-
-			// act & assert
-			Assert.DoesNotThrow(() => instance.AddArtifactIdsIntoTempTable(list));
+			using (var instance = new ScratchTableRepository(Helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId))
+			{
+				var list = new List<int>() {1, 2};
+				// act & assert
+				Assert.DoesNotThrow(() => instance.AddArtifactIdsIntoTempTable(list));
+			}
 		}
+	
 
 		[Test]
 		public void AddArtifactIdsIntoScratchTable_EddsResourceScratchTable()
 		{
 			// arrange
 			_toggle.IsAOAGFeatureEnabled().Returns(false);
-			var instance = new ScratchTableRepository(Helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
-			var list = new List<int>() { 1, 2 };
+			using (var instance = new ScratchTableRepository(Helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId))
+			{
+				var list = new List<int>() { 1, 2 };
 
-			// act & assert
-			Assert.DoesNotThrow(() => instance.AddArtifactIdsIntoTempTable(list));
+				// act & assert
+				Assert.DoesNotThrow(() => instance.AddArtifactIdsIntoTempTable(list));
+			}
 		}
 
 		[Test]
