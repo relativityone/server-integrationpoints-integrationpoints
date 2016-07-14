@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
@@ -107,6 +108,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 				enumerated.ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
 				enumerated.ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
 				enumerated.ForEach(x => x.ViewConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.ViewDataUrl).First());
+				enumerated.ForEach(x => x.Config = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Configuration).First());
+				enumerated.ForEach(
+					x => x.Configuration = providers.Where(y => y.GUID.ToString().Equals(x.Identifier))
+											.Select(y => JsonConvert.SerializeObject(y.Configuration)).First());
 				_caseContext.RsapiService.SourceProviderLibrary.Update(enumerated);
 			}
 		}
