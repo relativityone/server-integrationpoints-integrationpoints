@@ -81,7 +81,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-07-14T18:59:24.3490191Z</ExtractionDate>
+  <ExtractionDate>2016-07-14T19:21:19.8942745Z</ExtractionDate>
   <Guid>57151c17-cd92-4a6e-800c-a75bf807d097</Guid>
   <Name>JsonLoader</Name>
   <Objects>
@@ -1303,7 +1303,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.2</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>607464c6-fe04-4139-98ec-568450c2668d</Guid>
@@ -1314,7 +1314,7 @@
           <ArtifactId>1040371</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1003635</CategoryId>
+              <CategoryId>1003637</CategoryId>
               <LayoutArtifactId>1040371</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -1330,7 +1330,7 @@
           <LayoutArtifactTypeId>1000044</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1003635</CategoryId>
+              <CategoryId>1003637</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040369</FieldArtifactId>
@@ -1351,7 +1351,7 @@
           <Name>Sample JSON Object Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.4.0.2</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Sample JSON Object</Name>
@@ -1416,6 +1416,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -1467,6 +1468,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -1518,6 +1520,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -1569,6 +1572,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -1620,6 +1624,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -1671,7 +1676,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.2</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -1686,7 +1691,7 @@
         <ParentArtifactId>1003663</ParentArtifactId>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.4.0.2</ApplicationVersion>
+        <ApplicationVersion>9.4.0.1</ApplicationVersion>
       </Tab>
       <Views>
         <View>
@@ -1725,15 +1730,15 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.4.0.2</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.4.0.2</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
     </Object>
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.4.0.0</RelativityVersion>
-  <Version>9.4.0.2</Version>
+  <Version>9.4.0.1</Version>
   <TabDisplay>false</TabDisplay>
   <OriginSignature>c131c9aa-b5dc-4558-b846-c29ccfb67788</OriginSignature>
   <MasterScripts />
@@ -1742,13 +1747,13 @@
     <CustomPage>
       <ArtifactID>1039370</ArtifactID>
       <Guid>48dae441-8954-433e-9dcb-6513874f0271</Guid>
-      <ApplicationVersion>0.0.0.3</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
       <Name>JsonWeb</Name>
       <FileName>JsonWeb.zip</FileName>
-      <Size>2308755</Size>
+      <Size>2309065</Size>
       <Keywords />
       <Notes />
-      <Hash>65-C6-71-98-A5-59-AB-40-9C-A0-7D-93-BD-C5-39-B4-BE-3F-FE-89</Hash>
+      <Hash />
     </CustomPage>
   </CustomPages>
   <AgentTypes />
@@ -1763,7 +1768,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>JsonLoader.dll</AssemblyName>
-      <ApplicationVersion>9.4.0.2</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -1775,7 +1780,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>JsonLoader.dll</AssemblyName>
-      <ApplicationVersion>9.4.0.2</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
@@ -1795,6 +1800,11 @@
     <Id>1040371</Id>
   </LayoutIds>
   <FieldIds>
+    <Id>1040364</Id>
+    <Id>1040365</Id>
+    <Id>1040366</Id>
+    <Id>1040367</Id>
+    <Id>1040368</Id>
     <Id>1040369</Id>
     <Id>1040374</Id>
   </FieldIds>
