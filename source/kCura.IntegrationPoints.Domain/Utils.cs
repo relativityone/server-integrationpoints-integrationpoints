@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Domain
     /// <summary>
     /// 
     /// </summary>
-    internal static class Utils
+    public static class Utils
     {
         /// <summary>
         /// Generates a no custom exception that can be passed to the host proccess to be proccessed
