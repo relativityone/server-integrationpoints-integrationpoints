@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -92,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				Name = ( useRelativityProvider ? "RIP test"  : "LDAP test" ) + DateTime.Now,
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				Map = CreateDefaultFieldMap(),
 				Scheduler = new Scheduler()
 				{

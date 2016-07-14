@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = GetDestinationConfigWithOverlayOnly(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = GetDestinationConfigWithOverlayOnly(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Update Integration Point's SelectedOverWrite to "Overlay Only"
 			IntegrationModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
 			integrationPointPostRun.SelectedOverwrite = "Overlay Only";
-			integrationPointPostRun.Destination = GetDestinationConfigWithOverlayOnly();
+			integrationPointPostRun.Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly);
 			CreateOrUpdateIntegrationPoint(integrationPointPostRun);
 
 			//Retry Errors
@@ -299,7 +299,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = GetDestinationConfigWithOverlayOnly(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -355,7 +355,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = GetDestinationConfigWithOverlayOnly(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -392,7 +392,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = GetDestinationConfigWithOverlayOnly(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -484,21 +484,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
 			model.LastRun = DateTime.Now;
 			return model;
-		}
-
-		private string GetDestinationConfigWithOverlayOnly()
-		{
-			ImportSettings destinationConfig = new ImportSettings
-			{
-				ArtifactTypeId = 10,
-				CaseArtifactId = SourceWorkspaceArtifactId,
-				Provider = "Relativity",
-				ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly,
-				ImportNativeFile = false,
-				ExtractedTextFieldContainsFilePath = false,
-				FieldOverlayBehavior = "Use Field Settings"
-			};
-			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
 	}
 }

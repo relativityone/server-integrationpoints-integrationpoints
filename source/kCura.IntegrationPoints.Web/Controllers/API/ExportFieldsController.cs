@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
@@ -35,10 +34,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-			var viewFields = _exportFieldsService.GetAllViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, (int)ArtifactType.Search);
-			var allFields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
-
-			var fields = viewFields.Where(x => allFields.Any(f => f.FieldIdentifier.Equals(x.FieldIdentifier))).ToArray();
+			// TODO: isProduction flag should be set accordingly to configuration i.e. settings.ExportType == ExportType.Production, for now it is always Saved Search
+			var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, (int)ArtifactType.Search, false);
 
 			return Request.CreateResponse(HttpStatusCode.OK, fields);
 		}

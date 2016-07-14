@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
@@ -9,7 +10,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		#region Fields
 
 		private const string _SAVEDSEARCH_ARTIFACT_NAME_KEY = "SavedSearchArtifactName";
-		private const string _SELECTED_FIELD_NAMES_KEY = "SelectedFieldNames";
+		private const string _ADDITIONAL_FIELD_NAMES_KEY = "AdditionalFieldNames";
 		private const string _DESTINATION_PATH_KEY = "DestinationPath";
 		private const string _WEBAPI_URL_KEY = "WebApiUrl";
 
@@ -24,16 +25,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		public int ExportedObjArtifactId { get; set; }
 
-		public List<int> SelViewFieldIds { get; set; }
+		public FieldEntry[] DefaultFields { get; set; }
+
+		public FieldEntry[] AdditionalFields { get; set; }
 
 		public string WorkspaceName { get; set; }
 
 		public string SavedSearchArtifactName { get; } = ConfigurationManager.AppSettings[_SAVEDSEARCH_ARTIFACT_NAME_KEY];
 
-		public List<string> SelectedFieldNames { get; } = ConfigurationManager.AppSettings[_SELECTED_FIELD_NAMES_KEY]
+		public string[] AdditionalFieldNames { get; } = ConfigurationManager.AppSettings[_ADDITIONAL_FIELD_NAMES_KEY]
 			.Split(',')
 			.Select(name => name.Trim())
-			.ToList();
+			.ToArray();
 
 		public string DestinationPath { get; } = ConfigurationManager.AppSettings[_DESTINATION_PATH_KEY];
 

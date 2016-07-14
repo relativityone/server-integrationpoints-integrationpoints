@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			_jobService = Container.Resolve<IJobService>();
 			_integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -261,7 +262,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			DateTime utcNow = DateTime.UtcNow;
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = LdapProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),

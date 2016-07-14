@@ -348,7 +348,6 @@
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
     <Compile Include="Agent\IntegrationPointTaskBase.cs" />
-    <Compile Include="Services\ExportFieldsService.cs" />
     <Compile Include="Telemetry\ExportTelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\ITelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryManager.cs" />
