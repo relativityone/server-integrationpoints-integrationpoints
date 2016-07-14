@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -96,7 +94,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 			// Specifies the ArtifactID of a document identifier field, such as a control number.
 			importJob.Settings.IdentityFieldId = identifyFieldArtifactId;
-			importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			importJob.SourceData.SourceData = dataTable;
 
 			Console.WriteLine("Executing native import...");
