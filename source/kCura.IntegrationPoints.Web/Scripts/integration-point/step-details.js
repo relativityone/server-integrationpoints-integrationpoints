@@ -251,7 +251,7 @@ var IP = IP || {};
 		        return obj.displayName === "Fileshare";
 		    });
 
-		    if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID) {
+		    if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID && !parentModel.hasBeenRun()) {
 		        var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 		        parentModel.source.selectedType(relativitySourceProviderGuid);
 		        parentModel.source.isSourceProviderDisabled(true);
