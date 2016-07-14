@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public new void SuiteSetup()
 		{
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
-
+	
 			Task.Run(async () => await SetupAsync()).Wait();
 			
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");

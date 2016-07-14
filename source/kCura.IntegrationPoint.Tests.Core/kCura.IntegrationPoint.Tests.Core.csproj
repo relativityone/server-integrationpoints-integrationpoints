@@ -208,6 +208,7 @@
     <Compile Include="Agent.cs" />
     <Compile Include="AuditHelper.cs" />
     <Compile Include="Choice.cs" />
+    <Compile Include="ClaimsPrincipalFactory.cs" />
     <Compile Include="EHHelper.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
