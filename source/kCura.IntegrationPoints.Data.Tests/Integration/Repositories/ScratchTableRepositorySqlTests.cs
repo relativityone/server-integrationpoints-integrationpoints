@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -74,42 +75,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void AddArtifactIdsIntoScratchTable_WorkspaceScratchTable()
 		{
 			// arrange
-			string expectedQuery = @"IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'EDDSResource_prefix__suffix')
-											BEGIN
-												CREATE TABLE [Resource].[EDDSResource_prefix__suffix] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END
-									INSERT INTO [Resource].[EDDSResource_prefix__suffix] ([ArtifactID]) VALUES (1),(2)";
 			_toggle.IsAOAGFeatureEnabled().Returns(true);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
+			var instance = new ScratchTableRepository(Helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
 			var list = new List<int>() { 1, 2 };
 
-			// act
-			instance.AddArtifactIdsIntoTempTable(list);
-
-			// assert
-			_dbContext.Received(1).ExecuteNonQuerySQLStatement(expectedQuery);
-
+			// act & assert
+			Assert.DoesNotThrow(() => instance.AddArtifactIdsIntoTempTable(list));
 		}
 
 		[Test]
 		public void AddArtifactIdsIntoScratchTable_EddsResourceScratchTable()
 		{
 			// arrange
-			string expectedQuery = @"IF NOT EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__suffix')
-											BEGIN
-												CREATE TABLE [EDDSRESOURCE]..[prefix__suffix] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END
-									INSERT INTO [EDDSRESOURCE]..[prefix__suffix] ([ArtifactID]) VALUES (1),(2)";
 			_toggle.IsAOAGFeatureEnabled().Returns(false);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
+			var instance = new ScratchTableRepository(Helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
 			var list = new List<int>() { 1, 2 };
 
-			// act
-			instance.AddArtifactIdsIntoTempTable(list);
-
-			// assert
-			_dbContext.Received(1).ExecuteNonQuerySQLStatement(expectedQuery);
-
+			// act & assert
+			Assert.DoesNotThrow(() => instance.AddArtifactIdsIntoTempTable(list));
 		}
 
 		[Test]
