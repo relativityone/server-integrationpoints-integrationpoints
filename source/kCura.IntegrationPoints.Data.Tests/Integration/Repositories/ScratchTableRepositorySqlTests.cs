@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			// arrange
 			string expectedQuery = @"IF EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'prefix__suffix')
-										DROP TABLE [EDDSRESOURCE]..[prefix__suffix]";
+										DROP TABLE [EDDSRESOURCE].eddsdbo.[prefix__suffix]";
 			_toggle.IsAOAGFeatureEnabled().Returns(false);
 			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
 
@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			// arrange
 			string expectedQuery = @"IF EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__suffix')
-											SELECT [ArtifactID] FROM [EDDSRESOURCE]..[prefix__suffix]";
+											SELECT [ArtifactID] FROM [EDDSRESOURCE].eddsdbo.[prefix__suffix]";
 			_toggle.IsAOAGFeatureEnabled().Returns(false);
 			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
 

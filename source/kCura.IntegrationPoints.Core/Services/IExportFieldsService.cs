@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		FieldEntry[] GetAllExportableFields(int workspaceArtifactID, int artifactTypeID);
 
-		FieldEntry[] GetAllViewFields(int workspaceArtifactID, int viewArtifactID, int artifactTypeID);
+		FieldEntry[] GetDefaultViewFields(int workspaceArtifactID, int viewArtifactID, int artifactTypeID, bool isProduction);
 	}
 }

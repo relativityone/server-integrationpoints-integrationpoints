@@ -4,8 +4,10 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -26,11 +28,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 	{
 		#region Fields
 
+		private readonly string[] _defaultFields = new[] { "Control Number", "File Name", "Issue Designation" };
+		private readonly ConfigSettings _configSettings = new ConfigSettings { WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss") };
+
 		private ExportProcessRunner _instanceUnderTest;
-		private ConfigSettings _configSettings;
 		private WorkspaceService _workspaceService;
 		private DataTable _documents;
 		private DataTable _images;
+
 		private static WindsorContainer _windsorContainer;
 
 		#endregion //Fields
@@ -38,18 +43,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
-
-		    _configSettings = new ConfigSettings
-		    {
-                WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")
-		    };
+			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...			
 
 			_workspaceService = new WorkspaceService(_configSettings);
 
 			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 			_configSettings.ExportedObjArtifactId = _workspaceService.GetSavedSearchIdBy(_configSettings.SavedSearchArtifactName, _configSettings.WorkspaceId);
-			_configSettings.SelViewFieldIds = _workspaceService.GetFieldIdsBy(_configSettings.SelectedFieldNames, _configSettings.WorkspaceId).ToList();
+
+			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
+			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int)ArtifactType.Document);
+
+			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
+
+			_configSettings.AdditionalFields = (_configSettings.AdditionalFieldNames.Length > 0) ?
+				fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray() :
+				fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
 			_documents = GetDocumentDataTable();
 			_images = GetImageDataTable();
@@ -64,7 +72,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			var exportProcessBuilder = new ExportProcessBuilder(
 				loggingMediator,
-				exportUserNotification, 
+				exportUserNotification,
 				userNotification,
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerWrapperFactory(),
@@ -73,7 +81,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())
 			);
 
-			var exportSettingsBuilder= new ExportSettingsBuilder(); 
+			var exportSettingsBuilder = new ExportSettingsBuilder();
 
 			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder, exportSettingsBuilder);
 		}
@@ -112,7 +120,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			// Arrange
 			var settings = testCase.Prepare(CreateExportSettings());
-			
+
 			// Act
 			_instanceUnderTest.StartWith(settings);
 
@@ -124,6 +132,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private ExportSettings CreateExportSettings()
 		{
+			var fieldIds = _configSettings.DefaultFields
+				.Select(x => int.Parse(x.FieldIdentifier))
+				.ToList();
+
+			fieldIds.AddRange(_configSettings.AdditionalFields.Select(x => int.Parse(x.FieldIdentifier)));
+
 			var settings = new ExportSettings
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
@@ -131,7 +145,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				WorkspaceId = _configSettings.WorkspaceId,
 				ExportedObjArtifactId = _configSettings.ExportedObjArtifactId,
 				ExportedObjName = _configSettings.SavedSearchArtifactName,
-				SelViewFieldIds = _configSettings.SelViewFieldIds,
+				SelViewFieldIds = fieldIds,
 				DataFileEncoding = Encoding.Unicode,
 				VolumeMaxSize = 650
 			};
@@ -203,7 +217,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(_windsorContainer.Kernel));
 			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IExportTestCase>().WithServiceAllInterfaces().AllowMultipleMatches());
 			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IInvalidFileshareExportTestCase>().WithServiceAllInterfaces().AllowMultipleMatches());
-			
+
 			var exportUserNotification = Substitute.ForPartsOf<ExportUserNotification>();
 			_windsorContainer.Register(Component.For<IUserNotification, IUserMessageNotification>().Instance(exportUserNotification).LifestyleSingleton());
 
@@ -215,6 +229,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_windsorContainer.Register(Component.For<LoggingMediatorForTestsFactory>().ImplementedBy<LoggingMediatorForTestsFactory>());
 			_windsorContainer.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorForTestsFactory f) => f.Create()).LifestyleSingleton());
+
+			_windsorContainer.Register(Component.For<ConfigSettings>().Instance(_configSettings).LifestyleTransient());
+			_windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
+			_windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
 		}
 
 		#endregion Methods
