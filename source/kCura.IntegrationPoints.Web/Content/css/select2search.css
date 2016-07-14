@@ -12,6 +12,16 @@ Version: 3.5.1 Timestamp: Tue Jul 22 18:58:56 EDT 2014
     vertical-align: middle;
 }
 
+.select2-container.filter-container span.select2-chosen, .select2-container.subgrid-filter-container span.select2-chosen {
+    float: left;
+    margin: 0;
+    padding-right: 5px;
+    padding-left: 7px;
+    text-align: left;
+    height: 100%;
+    display: block;
+    width: 90%;
+}
 .select2-drop .select2-search {
     display: block;
 }
@@ -19,6 +29,18 @@ Version: 3.5.1 Timestamp: Tue Jul 22 18:58:56 EDT 2014
 .select2-container, .select2-container.select2-container-active, .select2-container.select2-dropdown-open, .select2-drop {
     font-size: 11px;
     width: 218px;
+}
+
+.select2-container.subgrid-filter-container span.select2-chosen {
+  float: left;
+  margin: 0;
+  padding-right: 5px;
+  padding-left: 7px;
+  text-align: left;
+  height: 100%;
+  display: block;
+  width: 90%;
+
 }
 
 .select2-container,
@@ -38,7 +60,7 @@ Version: 3.5.1 Timestamp: Tue Jul 22 18:58:56 EDT 2014
     .select2-container .select2-choice {
         display: block;
         height: 26px;
-        padding: 0 0 0 8px;
+        padding: 0 0 0 0px;
         overflow: hidden;
         position: relative;
         border: 1px solid #aaa;
@@ -62,7 +84,7 @@ Version: 3.5.1 Timestamp: Tue Jul 22 18:58:56 EDT 2014
     }
 
 html[dir="rtl"] .select2-container .select2-choice {
-    padding: 0 8px 0 0;
+    padding: 0;
 }
 
 .select2-container.select2-drop-above .select2-choice {
@@ -228,15 +250,15 @@ html[dir="rtl"] .select2-container .select2-choice .select2-arrow b {
 }
 
     .select2-search input {
-        width: 100%;
+        width: 90%;
         height: auto !important;
         min-height: 26px;
         padding: 4px 20px 4px 5px;
-        margin: 0;
+        margin: 3px;
         outline: 0;
         font-family: sans-serif;
         font-size: 1em;
-        border: 1px solid #aaa;
+        border: 1px solid #c1c1c1;
         border-radius: 0;
         -webkit-box-shadow: none;
         box-shadow: none;
@@ -334,11 +356,15 @@ html[dir="rtl"] .select2-dropdown-open .select2-choice .select2-arrow b {
 .select2-results {
     max-height: 200px;
     padding: 0 0 0 4px;
-    margin: 4px 4px 4px 0;
+    margin: 0px;
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.select2-drop.filter-select ul, .select2-drop.subgrid-filter-select ul {
+     padding-left: 0px;
 }
 
 html[dir="rtl"] .select2-results {
@@ -348,7 +374,7 @@ html[dir="rtl"] .select2-results {
 
 .select2-results ul.select2-result-sub {
     margin: 0;
-    padding-left: 20px;
+    padding-left: 0px;
     font-weight: 500;
 }
 
@@ -359,8 +385,17 @@ html[dir="rtl"] .select2-results {
 }
 
 .select2-results li.select2-result-with-children > .select2-result-label {
-    font-weight: bold;
-    background: aliceblue;
+    font-size: 13px;
+    font-weight: normal;
+    text-transform: uppercase;
+    color:#8b95a5;
+    padding: 8px;
+    background: white;
+    border-bottom: 1px solid #8b95a5;
+}
+
+.select2-drop.filter-select.select2-drop-active {
+    border: 1px solid #aaa;
 }
 
 .select2-results .select2-result-label {
@@ -373,6 +408,10 @@ html[dir="rtl"] .select2-results {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.select2-drop.filter-select ul .select2-result-label {
+    padding-left: 10px;
 }
 
 .select2-results-dept-1 .select2-result-label {
@@ -406,6 +445,11 @@ html[dir="rtl"] .select2-results {
 .select2-results .select2-highlighted {
     background: #3875d7;
     color: #fff;
+}
+
+.select2-drop.subgrid-pager-select ul.select2-results .select2-highlighted {
+    background-color: red;
+    color: blue;
 }
 
 .select2-results li em {
@@ -674,6 +718,19 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
     display: none;
 }
 
+.select2-drop,
+.select2-container .select2-choice {
+  -ms-border-radius: 1px;
+  border-radius: 1px;
+  font-weight: 200;
+  padding: 0;
+  background: none; }
+
+  .select2-arrow, .select2-container .select2-choice, .select2-container .select2-chosen, .select2-drop {
+      color: #000000;
+    }
+
+
 .select2-measure-scrollbar {
     position: absolute;
     top: -10000px;
@@ -682,6 +739,24 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
     height: 100px;
     overflow: scroll;
 }
+
+.select2-drop .select2-results .select2-highlighted {
+        background-color: #e7f2ff;
+        color: black;
+        border-color: #e7f2ff;
+        font-weight: 200;
+    }
+
+  .select2-container.filter-container.select2-dropdown-open a, .select2-drop.filter-select.select2-drop-active {
+      border: 1px solid #A9A;
+  }
+
+  
+    *, a, body, div, html, input, label, p, select {
+        font-family: Arial,Helvetica,sans-serif;
+        font-size: 12px;
+    }
+
 
 /* Retina-ize icons */
 
@@ -699,3 +774,6 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
         background-position: 100% -21px !important;
     }
 }
+
+
+

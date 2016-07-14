@@ -110,9 +110,10 @@
 				async: true,
 				success: function (result) {
 					self.savedSearches(result);
+					self.SavedSearchArtifactId(state.SavedSearchArtifactId);
 				},
 				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the saved searches. Please contract the system administrator.");
+					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the saved searches. Please contact your system administrator.");
 					self.savedSearches([]);
 				}
 			});
@@ -125,9 +126,15 @@
 				async: true,
 				success: function (result) {
 					self.workspaces(result);
+					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
+					self.TargetWorkspaceArtifactId.subscribe(function (value) {
+						if (self.TargetWorkspaceArtifactId !== value) {
+							self.WorkspaceHasChanged = true;
+						}
+					});
 				},
 				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace informations. Please contract the system administrator.");
+					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
 					self.workspaces([]);
 				}
 			});
@@ -191,13 +198,6 @@
 					return (typeof self.savedSearches()) !== "undefined";
 				},
 				params: { savedSearches: self.savedSearches }
-			}
-		});
-
-
-		this.TargetWorkspaceArtifactId.subscribe(function (value) {
-			if (self.TargetWorkspaceArtifactId !== value) {
-				self.WorkspaceHasChanged = true;
 			}
 		});
 

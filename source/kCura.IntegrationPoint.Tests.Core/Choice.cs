@@ -7,13 +7,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Choice
 	{
-		public static Relativity.Client.DTOs.Choice CreateChoiceViaRsapi(int workspaceArtifactId, int fieldArtifactId, string choiceName, int choiceOrder)
+		public static Relativity.Client.DTOs.Choice CreateChoice(int workspaceArtifactId, int fieldArtifactId, string choiceName, int choiceOrder)
 		{
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
 				proxy.APIOptions.WorkspaceID = workspaceArtifactId;
 
-				int? choiceTypeId = Fields.ReadFieldViaRsapi(workspaceArtifactId, fieldArtifactId).ChoiceTypeID;
+				int? choiceTypeId = Fields.ReadField(workspaceArtifactId, fieldArtifactId).ChoiceTypeID;
 
 				Relativity.Client.DTOs.Choice choiceToCreate = new Relativity.Client.DTOs.Choice
 				{

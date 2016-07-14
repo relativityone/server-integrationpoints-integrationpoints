@@ -73,7 +73,10 @@ ko.bindingHandlers.select2searchable = {
 
 		var allBindings = allBindingsAccessor();
 		if ("value" in allBindings) {
-		    $(el).val(allBindings.value()).trigger('change');
+			var value = allBindings.value();
+			if (value) {
+				$(el).val(value).trigger('change');
+			}
 		} else if ("selectedOptions" in allBindings) {
 			var converted = [];
 			var textAccessor = function (value) { return value; };

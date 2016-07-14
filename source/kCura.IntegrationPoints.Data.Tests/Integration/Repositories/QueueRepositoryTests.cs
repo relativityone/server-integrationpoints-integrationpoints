@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
@@ -208,7 +209,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Name = "OneExecutingScheduledJobInTheQueue",
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				Map = CreateDefaultFieldMap(),
 				Scheduler = new Scheduler()
 				{

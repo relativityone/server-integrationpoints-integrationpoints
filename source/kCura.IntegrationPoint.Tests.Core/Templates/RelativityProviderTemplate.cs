@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -63,19 +64,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return _destinationConfig;
 		}
 
-		protected string CreateDefaultDestinationConfig()
+		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
 		{
 			ImportSettings destinationConfig = new ImportSettings
 			{
 				ArtifactTypeId = 10,
 				CaseArtifactId = SourceWorkspaceArtifactId,
 				Provider = "Relativity",
-				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+				ImportOverwriteMode = overwriteMode,
 				ImportNativeFile = false,
 				ExtractedTextFieldContainsFilePath = false,
 				FieldOverlayBehavior = "Use Field Settings",
 				RelativityUsername = SharedVariables.RelativityUserName,
-				RelativityPassword = SharedVariables.RelativityPassword
+				RelativityPassword = SharedVariables.RelativityPassword,
+				DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6"
 			};
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}

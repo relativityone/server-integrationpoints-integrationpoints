@@ -17,6 +17,10 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using kCura.IntegrationPoints.Core.Installers;
+using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -29,6 +33,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int AgentArtifactId { get; set; }
 		protected DestinationProvider DestinationProvider;
 		protected IEnumerable<SourceProvider> SourceProviders;
+
+		protected ICaseServiceContext CaseContext;
 
 		protected SourceProviderTemplate(string workspaceName, string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
 		{
@@ -63,16 +69,17 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			public const string KCURA_STARTER_TEMPLATE = "kCura Starter Template";
 		}
 
-		protected override void Install()
+		protected virtual void Install()
 		{
-			base.Install();
-
+			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{
 					IHelper helper = k.Resolve<IHelper>();
 					return new TestServiceContextHelper(helper, WorkspaceArtifactId);
 				}));
+			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
+			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceContext>()
@@ -87,6 +94,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					return client;
 				})
 				.LifeStyle.Transient);
+			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
+			Container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
+
+			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };
+			foreach (IWindsorInstaller dependency in dependencies)
+			{
+				dependency.Install(Container, ConfigurationStore);
+			}
 		}
 
 		#region Helper methods
@@ -188,5 +203,5 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		#endregion
-		}
+	}
 }

@@ -200,6 +200,7 @@ var IP = IP || {};
 
 		this.destinationTypes = ko.observableArray();
 		this.selectedDestinationType = ko.observable().extend({ required: true });
+		this.destinationProviderVisible = ko.observable(false);
 
 		var withArtifactId = function(artifacId) {
 		    return function (element) {
@@ -219,6 +220,7 @@ var IP = IP || {};
 		        return c;
 		    });
 		    self.destinationTypes(types);
+			self.destinationProviderVisible(self.destinationTypes().length > 1);
 		    var setRelativityAsDestinationProvider = function () {
 		        var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
 		            return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
@@ -249,7 +251,7 @@ var IP = IP || {};
 		        return obj.displayName === "Fileshare";
 		    });
 
-		    if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID) {
+		    if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID && !parentModel.hasBeenRun()) {
 		        var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 		        parentModel.source.selectedType(relativitySourceProviderGuid);
 		        parentModel.source.isSourceProviderDisabled(true);

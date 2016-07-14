@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
@@ -110,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Name = "ARRRRRRRGGGHHHHH - RunRelativityProviderAlone",
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				Map = CreateDefaultFieldMap(),
 				Scheduler = new Scheduler()
 				{
@@ -169,7 +170,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					Name = "ARRRRRRRGGGHHHHH - AgentPickUpRunNowJobWhenScheduledJobIsRunning",
 					DestinationProvider = DestinationProvider.ArtifactId,
 					SourceConfiguration = CreateDefaultSourceConfig(),
-					Destination = CreateDefaultDestinationConfig(),
+					Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 					Map = CreateDefaultFieldMap(),
 					Scheduler = new Scheduler()
 					{
@@ -240,7 +241,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					Name = "ARRRRRRRGGGHHHHH - AgentPickUpScheduledJobJobWhenRunNowJobIsRunning",
 					DestinationProvider = DestinationProvider.ArtifactId,
 					SourceConfiguration = CreateDefaultSourceConfig(),
-					Destination = CreateDefaultDestinationConfig(),
+					Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 					Map = CreateDefaultFieldMap(),
 					Scheduler = new Scheduler()
 					{

@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private const int _ADMIN_USER_ID = 9;
 		private const string jobStartTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
 		private const string jobCompleteTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
-		private const string itemStartIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
+		private const string itemStartIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
 		private const string itemStartExcludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		private const string itemCompleteIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
 
@@ -83,7 +84,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -132,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -181,7 +182,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -214,13 +215,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			string startTempTableName = $"{ jobStartTempTablePrefix }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ jobCompleteTempTablePrefix }_{ tempTableSuffix }";
-
 			DataTable startTempTable = GetTempTable(startTempTableName);
-			DataTable completedTempTable = GetTempTable(completeTempTableName);
-
 			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
 			_batchStatus.OnJobStart(job);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
 
 			_batchStatus.OnJobComplete(job);
@@ -243,7 +242,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -281,7 +280,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string otherTempTableName = $"{ itemStartIncludedTempTablePrefix }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
-			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
@@ -292,6 +290,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired);
 
@@ -316,7 +315,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -357,7 +356,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -399,17 +398,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string otherTempTableName = $"{ itemStartExcludedTempTablePrefix }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
-			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
 			{
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly
 			};
-
 			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired);
 

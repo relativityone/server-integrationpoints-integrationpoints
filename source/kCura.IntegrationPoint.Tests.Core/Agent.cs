@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Castle.Components.DictionaryAdapter.Xml;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
+using Relativity.Services;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
 
@@ -15,6 +18,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
+			List<AgentTypeRef> agentTypes =	proxy.GetAgentTypesAsync().GetResultsWithoutContextSync();
+				AgentTypeRef agentTypeRef = agentTypes.FirstOrDefault(agentType => agentType.Name == "Integration Points Agent");
+				if (agentTypeRef != null)
+				{
+					Query query = new Query();
+					AgentQueryResultSet resultSet =	proxy.QueryAsync(query).GetResultsWithoutContextSync();
+					global::Relativity.Services.Agent.Agent[] agents = resultSet.Results.Where(agent => agent.Success && agent.Artifact.AgentType.ArtifactID == agentTypeRef.ArtifactID).Select(result => result.Artifact).ToArray();
+					if (agents.Length > 3)
+					{
+						return 0;
+					}
+				}
+
 				List<ResourceServer> resourceServers = GetAgentServers();
 
 				if (resourceServers.Count == 0)

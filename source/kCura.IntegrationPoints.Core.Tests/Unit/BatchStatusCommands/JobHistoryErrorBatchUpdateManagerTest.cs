@@ -39,11 +39,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private readonly Job _job;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 
-
-		private const string _SCRATCHTABLE_ITEMSTART = "ItemStart";
-		private const string _SCRATCHTABLE_ITEMCOMPLETE = "ItemComplete";
-		private const string _SCRATCHTABLE_JOBSTART = "JobStart";
-		private const string _SCRATCHTABLE_JOBCOMPLETE = "JobComplete";
+		private const string _SCRATCHTABLE_ITEMSTART = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
+		private const string _SCRATCHTABLE_ITEMCOMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
+		private const string _SCRATCHTABLE_JOBSTART = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
+		private const string _SCRATCHTABLE_JOBCOMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
 
 		[SetUp]
 		public void Setup()
@@ -178,6 +177,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_testInstance.OnJobStart(_job);
 
 			//Assert
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).CopyTempTable(_SCRATCHTABLE_JOBCOMPLETE);
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
 				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
 			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
@@ -194,6 +194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_testInstance.OnJobStart(_job);
 
 			//Assert
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).CopyTempTable(_SCRATCHTABLE_JOBCOMPLETE);
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
 				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
 			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
@@ -213,6 +214,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_testInstance.OnJobStart(_job);
 
 			//Assert
+			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).CopyTempTable(_SCRATCHTABLE_ITEMCOMPLETE);
 			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
 				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
 			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();

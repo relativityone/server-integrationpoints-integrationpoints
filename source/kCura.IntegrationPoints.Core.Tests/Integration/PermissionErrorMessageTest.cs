@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -24,8 +25,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private string _email;
 		private int _groupId;
 
-		private string _oldInstanceSettingValue;
-
 		public PermissionErrorMessageTest()
 			: base("Error Source", "Error Target Workspace")
 		{
@@ -34,17 +33,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		[TestFixtureSetUp]
 		public new void SuiteSetup()
 		{
-			_oldInstanceSettingValue = InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
-		}
-
-		[TestFixtureTearDown]
-		public new void SuiteTeardown()
-		{
-			if (_oldInstanceSettingValue != InstanceSetting.INSTANCE_SETTING_VALUE_UNCHANGED)
-			{
-				InstanceSetting.Update("Relativity.Authentication", "AdminsCanSetPasswords", _oldInstanceSettingValue);
-			}
 		}
 
 		[SetUp]
@@ -103,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				Name = ( useRelativityProvider ? "RIP test"  : "LDAP test" ) + DateTime.Now,
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				Map = CreateDefaultFieldMap(),
 				Scheduler = new Scheduler()
 				{
