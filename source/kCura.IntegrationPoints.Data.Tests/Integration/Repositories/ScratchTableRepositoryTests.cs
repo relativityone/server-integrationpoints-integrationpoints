@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[TestFixtureSetUp]
 		[Explicit]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();

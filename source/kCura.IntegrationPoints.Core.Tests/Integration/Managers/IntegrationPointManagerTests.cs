@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
