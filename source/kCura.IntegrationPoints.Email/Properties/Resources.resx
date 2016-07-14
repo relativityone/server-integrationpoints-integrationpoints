@@ -123,4 +123,7 @@
   <data name="SMTP_Requires_SMTP_Domain" xml:space="preserve">
     <value>The SMTP host was not specified.</value>
   </data>
+  <data name="Invalid_SMTP_Settings" xml:space="preserve">
+    <value>Unable to retrieve email notification configuration. Please verify kCura.Notification's settings to enable emailing functionality.</value>
+  </data>
 </root>
