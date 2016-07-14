@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 			catch (Exception ex)
 			{
-				Assert.IsTrue(ex.InnerException.Message.Contains("Cannot insert duplicate key in object"));
+				Assert.IsTrue(ex.Message.Contains("Cannot insert duplicate key in object"));
 			}
 		}
 
