@@ -2,49 +2,49 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ArtifactViewFields>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001406</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001415</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>ArtifactID</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001407</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001416</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>Edit</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001409</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001418</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>Name</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001408</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001419</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
+      <ColumnName>SampleTextField</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001417</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>AccessControlListIsInherited</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001404</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001413</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>SystemCreatedBy</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001402</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001411</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>SystemCreatedOn</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001405</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001414</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>SystemLastModifiedBy</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001403</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
+      <ArtifactViewFieldId>1001412</ArtifactViewFieldId>
+      <ArtifactTypeId>1000044</ArtifactTypeId>
       <ColumnName>SystemLastModifiedOn</ColumnName>
-    </ArtifactViewField>
-    <ArtifactViewField>
-      <ArtifactViewFieldId>1001410</ArtifactViewFieldId>
-      <ArtifactTypeId>1000043</ArtifactTypeId>
-      <ColumnName>TextField</ColumnName>
     </ArtifactViewField>
   </ArtifactViewFields>
   <Assemblies>
@@ -81,7 +81,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-07-13T23:39:36.4441416Z</ExtractionDate>
+  <ExtractionDate>2016-07-14T19:21:19.8942745Z</ExtractionDate>
   <Guid>57151c17-cd92-4a6e-800c-a75bf807d097</Guid>
   <Name>JsonLoader</Name>
   <Objects>
@@ -1246,32 +1246,32 @@
       </SystemLayouts>
       <SystemViews />
       <Views />
-      <ApplicationVersion>9.4.0.2</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs />
-      <ArtifactId>1039348</ArtifactId>
-      <DescriptorArtifactTypeId>1000043</DescriptorArtifactTypeId>
+      <ArtifactId>1040372</ArtifactId>
+      <DescriptorArtifactTypeId>1000044</DescriptorArtifactTypeId>
       <Fields>
         <Field>
           <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039350</ArtifactId>
-          <ArtifactViewFieldId>1001410</ArtifactViewFieldId>
+          <ArtifactId>1040374</ArtifactId>
+          <ArtifactViewFieldId>1001419</ArtifactViewFieldId>
           <AssociativeArtifactTypeId xsi:nil="true" />
           <Codes />
           <CodeTypeId xsi:nil="true" />
           <ConnectorFieldArtifactId xsi:nil="true" />
-          <DisplayName>Text Field</DisplayName>
+          <DisplayName>Sample Text Field</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1000043</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000044</FieldArtifactTypeId>
           <FieldCategoryId>0</FieldCategoryId>
           <FieldTypeId>0</FieldTypeId>
           <FilterType>Search</FilterType>
           <FormatString />
           <FriendlyName />
-          <Guids>975733ce-284a-4f89-9cd9-93d2bd5f4ec8</Guids>
-          <Guid>975733ce-284a-4f89-9cd9-93d2bd5f4ec8</Guid>
+          <Guids>292b6771-2a92-43b2-beb4-535fcf7652e3</Guids>
+          <Guid>292b6771-2a92-43b2-beb4-535fcf7652e3</Guid>
           <ImportBehavior xsi:nil="true" />
           <EnableDataGrid>false</EnableDataGrid>
           <OverlayBehavior xsi:nil="true" />
@@ -1303,19 +1303,19 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </Field>
       </Fields>
-      <Guid>3e06457e-23c0-43f4-bb28-b924968ff638</Guid>
+      <Guid>607464c6-fe04-4139-98ec-568450c2668d</Guid>
       <KeyWords />
       <Layouts>
         <Layout>
           <OverwriteProtection>true</OverwriteProtection>
-          <ArtifactId>1039347</ArtifactId>
+          <ArtifactId>1040371</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1002632</CategoryId>
-              <LayoutArtifactId>1039347</LayoutArtifactId>
+              <CategoryId>1003637</CategoryId>
+              <LayoutArtifactId>1040371</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
               <Collapsible>false</Collapsible>
@@ -1325,19 +1325,19 @@
               <Type>0</Type>
             </Category>
           </Categories>
-          <Guid>323e204c-4241-46c0-babf-f26388eeb5d3</Guid>
+          <Guid>e36588b9-ab5e-4511-af74-8a68398cc58e</Guid>
           <Keywords />
-          <LayoutArtifactTypeId>1000043</LayoutArtifactTypeId>
+          <LayoutArtifactTypeId>1000044</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1002632</CategoryId>
+              <CategoryId>1003637</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
-              <FieldArtifactId>1039345</FieldArtifactId>
+              <FieldArtifactId>1040369</FieldArtifactId>
               <FieldDisplayTypeId>0</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>false</IsReadOnly>
-              <LayoutArtifactId>1039347</LayoutArtifactId>
+              <LayoutArtifactId>1040371</LayoutArtifactId>
               <Order>1</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn xsi:nil="true" />
@@ -1348,13 +1348,13 @@
           </LayoutFields>
           <LayoutTexts />
           <LayoutViews />
-          <Name>Sample JSON Data Object Layout</Name>
+          <Name>Sample JSON Object Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </Layout>
       </Layouts>
-      <Name>Sample JSON Data Object</Name>
+      <Name>Sample JSON Object</Name>
       <Notes />
       <ObjectRules />
       <MassOperations />
@@ -1368,8 +1368,8 @@
       <SystemFields>
         <SystemField>
           <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039340</ArtifactId>
-          <ArtifactViewFieldId>1001402</ArtifactViewFieldId>
+          <ArtifactId>1040364</ArtifactId>
+          <ArtifactViewFieldId>1001411</ArtifactViewFieldId>
           <AssociativeArtifactTypeId xsi:nil="true" />
           <Codes />
           <CodeTypeId xsi:nil="true" />
@@ -1377,14 +1377,14 @@
           <DisplayName>System Created On</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1000043</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000044</FieldArtifactTypeId>
           <FieldCategoryId>0</FieldCategoryId>
           <FieldTypeId>2</FieldTypeId>
           <FilterType>CustomOnly</FilterType>
           <FormatString>g</FormatString>
           <FriendlyName />
-          <Guids>0dde71ad-1057-4e04-b199-e7c081afbfe3</Guids>
-          <Guid>0dde71ad-1057-4e04-b199-e7c081afbfe3</Guid>
+          <Guids>f92af5b3-4554-4087-862e-e6bb025f2a0f</Guids>
+          <Guid>f92af5b3-4554-4087-862e-e6bb025f2a0f</Guid>
           <ImportBehavior xsi:nil="true" />
           <EnableDataGrid>false</EnableDataGrid>
           <OverlayBehavior xsi:nil="true" />
@@ -1416,12 +1416,12 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039341</ArtifactId>
-          <ArtifactViewFieldId>1001403</ArtifactViewFieldId>
+          <ArtifactId>1040365</ArtifactId>
+          <ArtifactViewFieldId>1001412</ArtifactViewFieldId>
           <AssociativeArtifactTypeId xsi:nil="true" />
           <Codes />
           <CodeTypeId xsi:nil="true" />
@@ -1429,14 +1429,14 @@
           <DisplayName>System Last Modified On</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1000043</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000044</FieldArtifactTypeId>
           <FieldCategoryId>0</FieldCategoryId>
           <FieldTypeId>2</FieldTypeId>
           <FilterType>CustomOnly</FilterType>
           <FormatString>g</FormatString>
           <FriendlyName />
-          <Guids>af45babc-0a59-498a-8032-3c9ebb539406</Guids>
-          <Guid>af45babc-0a59-498a-8032-3c9ebb539406</Guid>
+          <Guids>66dbc312-bea9-41cb-9303-266e35868c3b</Guids>
+          <Guid>66dbc312-bea9-41cb-9303-266e35868c3b</Guid>
           <ImportBehavior xsi:nil="true" />
           <EnableDataGrid>false</EnableDataGrid>
           <OverlayBehavior xsi:nil="true" />
@@ -1468,12 +1468,12 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039342</ArtifactId>
-          <ArtifactViewFieldId>1001404</ArtifactViewFieldId>
+          <ArtifactId>1040366</ArtifactId>
+          <ArtifactViewFieldId>1001413</ArtifactViewFieldId>
           <AssociativeArtifactTypeId xsi:nil="true" />
           <Codes />
           <CodeTypeId xsi:nil="true" />
@@ -1481,14 +1481,14 @@
           <DisplayName>System Created By</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1000043</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000044</FieldArtifactTypeId>
           <FieldCategoryId>0</FieldCategoryId>
           <FieldTypeId>0</FieldTypeId>
           <FilterType>Search</FilterType>
           <FormatString />
           <FriendlyName />
-          <Guids>d4a6b3ba-5407-4abe-9d7d-2ff8be1ed0ab</Guids>
-          <Guid>d4a6b3ba-5407-4abe-9d7d-2ff8be1ed0ab</Guid>
+          <Guids>eec1e36f-8a84-40a1-bfa7-08711fad7f95</Guids>
+          <Guid>eec1e36f-8a84-40a1-bfa7-08711fad7f95</Guid>
           <ImportBehavior xsi:nil="true" />
           <EnableDataGrid>false</EnableDataGrid>
           <OverlayBehavior xsi:nil="true" />
@@ -1520,12 +1520,12 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039343</ArtifactId>
-          <ArtifactViewFieldId>1001405</ArtifactViewFieldId>
+          <ArtifactId>1040367</ArtifactId>
+          <ArtifactViewFieldId>1001414</ArtifactViewFieldId>
           <AssociativeArtifactTypeId xsi:nil="true" />
           <Codes />
           <CodeTypeId xsi:nil="true" />
@@ -1533,14 +1533,14 @@
           <DisplayName>System Last Modified By</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1000043</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000044</FieldArtifactTypeId>
           <FieldCategoryId>0</FieldCategoryId>
           <FieldTypeId>0</FieldTypeId>
           <FilterType>Search</FilterType>
           <FormatString />
           <FriendlyName />
-          <Guids>e4046f5a-f3d8-46b7-94bd-1833e61d3107</Guids>
-          <Guid>e4046f5a-f3d8-46b7-94bd-1833e61d3107</Guid>
+          <Guids>22792d13-d2aa-4614-820b-d81a5464d80c</Guids>
+          <Guid>22792d13-d2aa-4614-820b-d81a5464d80c</Guid>
           <ImportBehavior xsi:nil="true" />
           <EnableDataGrid>false</EnableDataGrid>
           <OverlayBehavior xsi:nil="true" />
@@ -1572,12 +1572,12 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039344</ArtifactId>
-          <ArtifactViewFieldId>1001406</ArtifactViewFieldId>
+          <ArtifactId>1040368</ArtifactId>
+          <ArtifactViewFieldId>1001415</ArtifactViewFieldId>
           <AssociativeArtifactTypeId xsi:nil="true" />
           <Codes />
           <CodeTypeId xsi:nil="true" />
@@ -1585,14 +1585,14 @@
           <DisplayName>Artifact ID</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1000043</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000044</FieldArtifactTypeId>
           <FieldCategoryId>0</FieldCategoryId>
           <FieldTypeId>1</FieldTypeId>
           <FilterType>CustomOnly</FilterType>
           <FormatString />
           <FriendlyName />
-          <Guids>e9e258df-f536-486f-8368-d84cf2a2093b</Guids>
-          <Guid>e9e258df-f536-486f-8368-d84cf2a2093b</Guid>
+          <Guids>159ae6ff-1303-4e03-833d-23a6a137c0f3</Guids>
+          <Guid>159ae6ff-1303-4e03-833d-23a6a137c0f3</Guid>
           <ImportBehavior xsi:nil="true" />
           <EnableDataGrid>false</EnableDataGrid>
           <OverlayBehavior xsi:nil="true" />
@@ -1624,12 +1624,12 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039345</ArtifactId>
-          <ArtifactViewFieldId>1001409</ArtifactViewFieldId>
+          <ArtifactId>1040369</ArtifactId>
+          <ArtifactViewFieldId>1001418</ArtifactViewFieldId>
           <AssociativeArtifactTypeId xsi:nil="true" />
           <Codes />
           <CodeTypeId xsi:nil="true" />
@@ -1637,14 +1637,14 @@
           <DisplayName>Name</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1000043</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000044</FieldArtifactTypeId>
           <FieldCategoryId>2</FieldCategoryId>
           <FieldTypeId>0</FieldTypeId>
           <FilterType>Search</FilterType>
           <FormatString />
           <FriendlyName />
-          <Guids>042dbf96-0e26-4ce8-b430-f84379286f7d</Guids>
-          <Guid>042dbf96-0e26-4ce8-b430-f84379286f7d</Guid>
+          <Guids>51fdec8c-c280-437b-94aa-fa45fcd4a9aa</Guids>
+          <Guid>51fdec8c-c280-437b-94aa-fa45fcd4a9aa</Guid>
           <ImportBehavior xsi:nil="true" />
           <EnableDataGrid>false</EnableDataGrid>
           <OverlayBehavior xsi:nil="true" />
@@ -1676,35 +1676,35 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
       <SystemViews />
       <Tab>
-        <ArtifactId>1039349</ArtifactId>
+        <ArtifactId>1040373</ArtifactId>
         <DisplayOrder>1000000023</DisplayOrder>
-        <Guid>316ecb48-0913-439c-963c-33d72d8d7832</Guid>
+        <Guid>245156d1-c0e5-42b2-af21-fcac283fc926</Guid>
         <IsDefault>false</IsDefault>
-        <Name>Sample JSON Data Object</Name>
-        <ObjectArtifactTypeId>1000043</ObjectArtifactTypeId>
+        <Name>Sample JSON Object</Name>
+        <ObjectArtifactTypeId>1000044</ObjectArtifactTypeId>
         <ParentArtifactId>1003663</ParentArtifactId>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.4.0.3</ApplicationVersion>
+        <ApplicationVersion>9.4.0.1</ApplicationVersion>
       </Tab>
       <Views>
         <View>
-          <ArtifactId>1039346</ArtifactId>
-          <ArtifactTypeId>1000043</ArtifactTypeId>
+          <ArtifactId>1040370</ArtifactId>
+          <ArtifactTypeId>1000044</ArtifactTypeId>
           <AvailableInObjectTab>true</AvailableInObjectTab>
-          <Guid>f1e6045d-8339-44a6-828f-1061738a0bcd</Guid>
+          <Guid>0ae9705e-f365-4b40-91b6-5131d3bd4fc2</Guid>
           <IsRelationalIndexView>false</IsRelationalIndexView>
           <IsReport>false</IsReport>
           <IsVisible>true</IsVisible>
           <IsManualRerun>false</IsManualRerun>
           <Keywords />
-          <Name>All Sample JSON Data Objects</Name>
+          <Name>All Sample JSON Objects</Name>
           <Notes />
           <Order>1</Order>
           <QueryHint />
@@ -1714,12 +1714,12 @@
           <ViewCriteria />
           <ViewFields>
             <ViewField>
-              <ArtifactViewFieldId>1001407</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001416</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001409</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001418</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
@@ -1730,38 +1730,27 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.4.0.3</ApplicationVersion>
+          <ApplicationVersion>9.4.0.1</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.4.0.3</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
     </Object>
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.4.0.0</RelativityVersion>
-  <Version>9.4.0.3</Version>
+  <Version>9.4.0.1</Version>
   <TabDisplay>false</TabDisplay>
   <OriginSignature>c131c9aa-b5dc-4558-b846-c29ccfb67788</OriginSignature>
   <MasterScripts />
   <ApplicationScripts />
   <CustomPages>
     <CustomPage>
-      <ArtifactID>1038101</ArtifactID>
+      <ArtifactID>1039370</ArtifactID>
       <Guid>48dae441-8954-433e-9dcb-6513874f0271</Guid>
-      <ApplicationVersion>9.4.0.2</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
       <Name>JsonWeb</Name>
       <FileName>JsonWeb.zip</FileName>
-      <Size>2309528</Size>
-      <Keywords />
-      <Notes />
-      <Hash />
-    </CustomPage>
-    <CustomPage>
-      <ArtifactID>1038103</ArtifactID>
-      <Guid>48dae441-8954-433e-9dcb-6513874f0271</Guid>
-      <ApplicationVersion />
-      <Name>JsonWeb</Name>
-      <FileName>web.zip</FileName>
-      <Size>8782579</Size>
+      <Size>2309065</Size>
       <Keywords />
       <Notes />
       <Hash />
@@ -1771,7 +1760,7 @@
   <IsRelativityApplication>true</IsRelativityApplication>
   <InstallEventHandlers>
     <InstallEventHandler>
-      <ArtifactId>1038099</ArtifactId>
+      <ArtifactId>1039368</ArtifactId>
       <AssemblyArtifactId>1016610</AssemblyArtifactId>
       <Name>JsonLoader.Installer.RunEveryTimeInstaller</Name>
       <Guid>64110733-03f8-4dac-958d-31e9dfda6071</Guid>
@@ -1779,11 +1768,11 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>JsonLoader.dll</AssemblyName>
-      <ApplicationVersion>9.4.0.3</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1038100</ArtifactId>
+      <ArtifactId>1039369</ArtifactId>
       <AssemblyArtifactId>1016610</AssemblyArtifactId>
       <Name>JsonLoader.Installer.Uninstaller</Name>
       <Guid>a4af9126-a773-4b62-b155-7b54c6bddc19</Guid>
@@ -1791,7 +1780,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>JsonLoader.dll</AssemblyName>
-      <ApplicationVersion>9.4.0.3</ApplicationVersion>
+      <ApplicationVersion>9.4.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
@@ -1805,31 +1794,30 @@
   <GlobalApplication>false</GlobalApplication>
   <RelativityScriptIds />
   <ViewIds>
-    <Id>1039346</Id>
+    <Id>1040370</Id>
   </ViewIds>
   <LayoutIds>
-    <Id>1039347</Id>
+    <Id>1040371</Id>
   </LayoutIds>
   <FieldIds>
-    <Id>1039340</Id>
-    <Id>1039341</Id>
-    <Id>1039342</Id>
-    <Id>1039343</Id>
-    <Id>1039344</Id>
-    <Id>1039345</Id>
-    <Id>1039350</Id>
+    <Id>1040364</Id>
+    <Id>1040365</Id>
+    <Id>1040366</Id>
+    <Id>1040367</Id>
+    <Id>1040368</Id>
+    <Id>1040369</Id>
+    <Id>1040374</Id>
   </FieldIds>
   <ChoiceIds />
   <ObjectTypeIds>
     <Id>1035231</Id>
-    <Id>1039348</Id>
+    <Id>1040372</Id>
   </ObjectTypeIds>
   <TabIds>
-    <Id>1039349</Id>
+    <Id>1040373</Id>
   </TabIds>
   <CustomPageIds>
-    <Id>1038101</Id>
-    <Id>1038103</Id>
+    <Id>1039370</Id>
   </CustomPageIds>
   <Locked>true</Locked>
 </Application>

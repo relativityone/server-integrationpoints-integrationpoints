@@ -30,7 +30,7 @@ namespace JsonLoader.Installer
 							CompatibleRdoTypes = new List<Guid>()
 							{
 								new Guid(GlobalConst.DOCUMENT_RDO_GUID),
-								new Guid(GlobalConst.SAMPLE_JSON_DATA_OBJECT_GUID)
+								new Guid(GlobalConst.SAMPLE_JSON_OBJECT_GUID)
 							}
 						}
 					}
