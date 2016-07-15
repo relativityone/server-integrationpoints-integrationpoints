@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Components.DictionaryAdapter.Xml;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
@@ -14,16 +13,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
 		private const int _MAX_AGENT_TO_CREATE = 3;
+
 		public static int CreateIntegrationPointAgent()
 		{
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-			List<AgentTypeRef> agentTypes =	proxy.GetAgentTypesAsync().GetResultsWithoutContextSync();
+				List<AgentTypeRef> agentTypes = proxy.GetAgentTypesAsync().GetResultsWithoutContextSync();
 				AgentTypeRef agentTypeRef = agentTypes.FirstOrDefault(agentType => agentType.Name == _INTEGRATION_POINT_AGENT_TYPE_NAME);
 				if (agentTypeRef != null)
 				{
 					Query query = new Query();
-					AgentQueryResultSet resultSet =	proxy.QueryAsync(query).GetResultsWithoutContextSync();
+					AgentQueryResultSet resultSet = proxy.QueryAsync(query).GetResultsWithoutContextSync();
 					global::Relativity.Services.Agent.Agent[] agents = resultSet.Results.Where(agent => agent.Success && agent.Artifact.AgentType.ArtifactID == agentTypeRef.ArtifactID).Select(result => result.Artifact).ToArray();
 					if (agents.Length > _MAX_AGENT_TO_CREATE)
 					{
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					LoggingLevel = global::Relativity.Services.Agent.Agent.LoggingLevelEnum.Critical,
 					Server = resourceServerRef
 				};
-				
+
 				try
 				{
 					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void DeleteAgent(int artifactId)
 		{
-			if(artifactId == 0) {  return; }
+			if (artifactId == 0) { return; }
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
 				try
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			foreach (AgentTypeRef agentTypeRef in agentTypeRefs)
 			{
-				if (agentTypeRef.Name == agentTypeName )
+				if (agentTypeRef.Name == agentTypeName)
 				{
 					return agentTypeRef;
 				}

@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Data.Contexts;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -13,7 +12,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public ITestHelper Helper => _help.Value;
 		private readonly Lazy<ITestHelper> _help;
 		private int _ADMIN_USER_ID = 9;
-		
+
 		protected IntegrationTestBase()
 		{
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>

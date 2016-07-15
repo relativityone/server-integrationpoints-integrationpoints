@@ -1,6 +1,6 @@
-﻿using kCura.ScheduleQueue.Core;
-using System;
+﻿using System;
 using System.Data;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
@@ -45,11 +45,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 
 			return new Job(jobData);
 		}
-		
+
 		private static DataRow CreateDefaultJobData()
 		{
 			DataTable table = new DataTable();
-			
+
 			//TODO make DataSet nullable
 			table.Columns.Add(new DataColumn("JobID", typeof(long)));
 			table.Columns.Add(new DataColumn("RootJobId", typeof(long)));
