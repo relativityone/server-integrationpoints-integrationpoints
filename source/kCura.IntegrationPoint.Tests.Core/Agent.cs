@@ -13,20 +13,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public static class Agent
 	{
 		private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
-
+		private const int _MAX_AGENT_TO_CREATE = 3;
 		public static int CreateIntegrationPointAgent()
 		{
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
 			List<AgentTypeRef> agentTypes =	proxy.GetAgentTypesAsync().GetResultsWithoutContextSync();
-				AgentTypeRef agentTypeRef = agentTypes.FirstOrDefault(agentType => agentType.Name == "Integration Points Agent");
+				AgentTypeRef agentTypeRef = agentTypes.FirstOrDefault(agentType => agentType.Name == _INTEGRATION_POINT_AGENT_TYPE_NAME);
 				if (agentTypeRef != null)
 				{
 					Query query = new Query();
 					AgentQueryResultSet resultSet =	proxy.QueryAsync(query).GetResultsWithoutContextSync();
 					global::Relativity.Services.Agent.Agent[] agents = resultSet.Results.Where(agent => agent.Success && agent.Artifact.AgentType.ArtifactID == agentTypeRef.ArtifactID).Select(result => result.Artifact).ToArray();
-					if (agents.Length > 3)
+					if (agents.Length > _MAX_AGENT_TO_CREATE)
 					{
+						// returns 0, so we don't try to delete the agent at the end of the tests.
 						return 0;
 					}
 				}
