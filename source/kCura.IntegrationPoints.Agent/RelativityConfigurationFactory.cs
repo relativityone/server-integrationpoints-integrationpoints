@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Email;
+﻿using System;
+using kCura.IntegrationPoints.Email;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -6,14 +7,23 @@ namespace kCura.IntegrationPoints.Agent
 	{
 		public EmailConfiguration GetConfiguration()
 		{
-			return new EmailConfiguration
+			EmailConfiguration config = null;
+			try
 			{
-				Domain = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPServer,
-				Password = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPassword,
-				Port = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPort,
-				UserName = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPUserName,
-				UseSSL = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPSSLisRequired
-			};
+				config = new EmailConfiguration
+				{
+					Domain = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPServer,
+					Password = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPassword,
+					Port = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPort,
+					UserName = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPUserName,
+					UseSSL = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPSSLisRequired
+				};
+			}
+			catch (Exception)
+			{ 
+				// DO NOT THROW EXCEPTION HERE
+			}
+			return config;
 
 		}
 	}
