@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	{
 		protected SourceProvider LdapProvider;
 
-		public OtherProvidersTemplate(string workspaceName, string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE) 
+		public OtherProvidersTemplate(string workspaceName, string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
 			: base(workspaceName, workspaceTemplate)
 		{
 		}

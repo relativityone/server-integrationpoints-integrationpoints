@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -40,9 +39,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public void RelativityProviderSetup()
 		{
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
-	
+
 			Task.Run(async () => await SetupAsync()).Wait();
-			
+
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
 		}
@@ -128,6 +127,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
 		}
 
-		#endregion
+		#endregion Helper Methods
 	}
 }

@@ -2,7 +2,7 @@
 {
 	public class Audit
 	{
-		public int UserId { get; set; } 
+		public int UserId { get; set; }
 
 		public string UserFullName { get; set; }
 
@@ -13,6 +13,5 @@
 		public string AuditAction { get; set; }
 
 		public string AuditDetails { get; set; }
-
 	}
 }

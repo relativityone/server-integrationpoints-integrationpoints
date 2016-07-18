@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using kCura.IntegrationPoints.Data.Contexts;
@@ -11,7 +10,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public ClaimsPrincipal CreateClaimsPrincipal(int userArtifactId)
 		{
-			Claim[] claims = new Claim[] {new Claim(Claims.USER_ID, userArtifactId.ToString())};
+			Claim[] claims = new Claim[] { new Claim(Claims.USER_ID, userArtifactId.ToString()) };
 			ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			return claimsPrincipal;
 		}
@@ -19,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public ClaimsPrincipal CreateClaimsPrincipal2(int userArtifactId)
 		{
 			string authToken = GetBase64String("relativity.admin@kcura.com:Test!");
-			Claim[] claims = new Claim[] { new Claim(Claims.USER_ID, userArtifactId.ToString()), new Claim(Claims.ACCESS_TOKEN_IDENTIFIER, authToken)};
+			Claim[] claims = new Claim[] { new Claim(Claims.USER_ID, userArtifactId.ToString()), new Claim(Claims.ACCESS_TOKEN_IDENTIFIER, authToken) };
 			ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			return claimsPrincipal;
 		}
