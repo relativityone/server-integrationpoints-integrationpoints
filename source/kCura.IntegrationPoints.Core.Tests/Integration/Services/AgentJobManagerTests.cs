@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using NUnit.Framework;
 using System;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>(); ;
 			_jobService = Container.Resolve<IJobService>();
@@ -79,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -118,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -158,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),

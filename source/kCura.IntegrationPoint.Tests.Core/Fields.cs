@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					dto.Wrapping = true;
 					dto.OpenToAssociations = false;
 					break;
+
 				case FieldType.FixedLengthText:
 					dto.Linked = false;
 					dto.AllowSortTally = true;
@@ -49,6 +50,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					dto.Length = 255;
 					dto.IsRelational = false;
 					break;
+
 				case FieldType.LongText:
 					dto.Linked = false;
 					dto.AllowSortTally = true;
@@ -59,6 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					dto.Unicode = false;
 					dto.AvailableInViewer = true;
 					break;
+
 				case FieldType.MultipleChoice:
 				case FieldType.SingleChoice:
 					dto.Linked = false;
@@ -68,15 +71,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 					dto.Unicode = true;
 					dto.AvailableInFieldTree = true;
 					break;
+
 				case FieldType.MultipleObject:
 					dto.AvailableInFieldTree = true;
 					break;
+
 				case FieldType.SingleObject:
 					dto.Linked = false;
 					dto.AllowSortTally = true;
 					dto.Wrapping = true;
 					dto.AvailableInFieldTree = true;
 					break;
+
 				case FieldType.YesNo:
 					dto.Linked = false;
 					dto.AllowSortTally = true;

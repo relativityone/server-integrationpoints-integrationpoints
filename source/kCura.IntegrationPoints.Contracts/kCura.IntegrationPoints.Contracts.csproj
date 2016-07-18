@@ -152,6 +152,9 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
@@ -159,6 +162,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +171,7 @@
     </Compile>
     <Compile Include="AssemblyExtension.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
+    <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="IProviderFactory.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Models\FieldEntry.cs" />
@@ -179,6 +184,7 @@
     <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
+    <Compile Include="SourceProviderConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

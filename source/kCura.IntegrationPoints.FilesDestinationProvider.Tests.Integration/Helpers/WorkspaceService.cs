@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -63,15 +62,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			}
 		}
 
-		internal IEnumerable<int> GetFieldIdsBy(List<string> listName, int workspaceId)
-		{
-			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
-
-			IEnumerable<Relativity.ImportAPI.Data.Field> fields = importApi.GetWorkspaceFields(workspaceId, (int)ArtifactType.Document);
-
-			return fields.Where(field => listName.Contains(field.Name)).Select(field => field.ArtifactID);
-		}
-
 		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable, DataTable imageSourceDataTable)
 		{
 			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
@@ -104,7 +94,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 			// Specifies the ArtifactID of a document identifier field, such as a control number.
 			importJob.Settings.IdentityFieldId = identifyFieldArtifactId;
-			importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			importJob.SourceData.SourceData = dataTable;
 
 			Console.WriteLine("Executing native import...");

@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[TestFixtureSetUp]
 		[Explicit]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 			catch (Exception ex)
 			{
-				Assert.IsTrue(ex.InnerException.Message.Contains("Cannot insert duplicate key in object"));
+				Assert.IsTrue(ex.Message.Contains("Cannot insert duplicate key in object"));
 			}
 		}
 

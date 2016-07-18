@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-       <!-- Defines dependency properties -->
+  <!-- Defines dependency properties -->
   <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -159,6 +159,14 @@
       <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -230,6 +238,10 @@
       <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
@@ -265,22 +277,28 @@
     <Content Include="TestData\IMAGES\AMEYERS_0001185_001.tif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185_001.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\NATIVES\AMEYERS_0000757.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
-    <Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\NATIVES\AMEYERS_0001185.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
+		<None Include="App.config"/>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="packages.config" />
+		<Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="TestData\NATIVES\AMEYERS_0001185.xls">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<None Include="Release\App.config"/>
+	</ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>

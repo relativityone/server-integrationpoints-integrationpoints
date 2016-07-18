@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Toggle;
 using kCura.IntegrationPoints.Domain.Models;
@@ -26,21 +25,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private string _database;
         private string _tempTableName;
         private string _docIdentifierFieldName;
-        private int _count;
-        private readonly bool _isAOAGEnabled;
+	    private int _count;
+		private readonly bool _isAOAGEnabled;
 
-        public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider, IDocumentRepository documentRepository,
-            IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId)
-        {
-			_caseContext = helper.GetDBContext(workspaceId);
-            _documentRepository = documentRepository;
-            _fieldRepository = fieldRepository;
-            _tablePrefix = tablePrefix;
-            _tableSuffix = tableSuffix;
-            _workspaceId = workspaceId;
-            IgnoreErrorDocuments = false;
-            _isAOAGEnabled = toggleProvider.IsAOAGFeatureEnabled();
-        }
+	    public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider,
+		    IDocumentRepository documentRepository,
+		    IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId) :
+			    this(helper.GetDBContext(workspaceId), documentRepository, fieldRepository,
+				    tablePrefix, tableSuffix, workspaceId, toggleProvider.IsAOAGFeatureEnabled())
+	    {
+			
+		}
 
 	    private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldRepository fieldRepository, 
 			string tablePrefix, string tableSuffix, int workspaceId, bool isAOAGEnabled)
@@ -55,18 +50,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_isAOAGEnabled = isAOAGEnabled;
 		}
 
-        public bool IgnoreErrorDocuments { get; set; }
+		public bool IgnoreErrorDocuments { get; set; }
 
-        public int Count
+		public int Count
         {
             get
             {
                 return _count;
             }
-	        set
-	        {
-		        _count = value;
-	        }
         }
 
         public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
@@ -125,33 +116,44 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_count += artifactIds.Count;
 
 				string fullTableName = GetTempTableName();
-
+			
 				string database = _isAOAGEnabled ? _caseContext.Database : "EDDSRESOURCE";
+
 				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, database);
-				Context context = new Context(connectionData);
-
-				DataTable artifactIdTable = new DataTable();
-				artifactIdTable.Columns.Add();
-				foreach (int artifactId in artifactIds)
-				{
-					artifactIdTable.Rows.Add(artifactId);
-				}
-
+				string connectionString = $"data source={connectionData.Server};initial catalog={connectionData.Database};persist security info=False;user id={connectionData.Username};password={connectionData.Password}; workstation id=localhost;packet size=4096;connect timeout=30;";
+				Context context = new Context(connectionString);
+			
 				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
 												CREATE TABLE {2}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
 
-				context.ExecuteBulkCopy(artifactIdTable, new SqlBulkCopyParameters(fullTableName));
-	            connectionData.Database = "EDDS";
-				context = new Context(connectionData);
-            }
+				using (DataTable artifactIdTable = new DataTable())
+				{
+					artifactIdTable.Columns.Add();
+					foreach (int artifactId in artifactIds)
+					{
+						artifactIdTable.Rows.Add(artifactId);
+					}
+
+					SqlBulkCopyParameters bulkParameters = new SqlBulkCopyParameters
+					{
+						DestinationTableName = $"{FullDatabaseFormat}[{fullTableName}]"
+					};
+					context.ExecuteBulkCopy(artifactIdTable, bulkParameters);
+				}
+
+				//This is the workaround to the RSAPIClient creation issue. When we try to resolve and RSAPIClient, it is reusing this context
+				//which needs to be pointing to EDDS for the authentication part of the creation to complete successfully.
+				//connectionData.Database = "EDDS";
+				//context = new Context(connectionData);
+				}
         }
 
 	    public IScratchTableRepository CopyTempTable(string newTempTablePrefix)
 	    {
-		    IScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, newTempTablePrefix, _tableSuffix, _workspaceId, _isAOAGEnabled);
+		    ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, newTempTablePrefix, _tableSuffix, _workspaceId, _isAOAGEnabled);
 		    string sourceTableName = GetTempTableName();
 		    string newTableName = copiedScratchTableRepository.GetTempTableName();
 
@@ -159,20 +161,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 
-		    copiedScratchTableRepository.Count = _count;
+		    copiedScratchTableRepository._count = _count;
 
 		    return copiedScratchTableRepository;
 	    }
-
-        private List<int> RetrieveBatchFromList(List<int> source)
-        {
-            // The INSERT statement can only have the maximum allowed number of 1000 row values. 
-            const int maxBatchSize = 1000;
-            int sizeToGet = source.Count < maxBatchSize ? source.Count : maxBatchSize;
-            List<int> result = source.GetRange(0, sizeToGet);
-            source.RemoveRange(0, sizeToGet);
-            return result;
-        }
 
         public void DeleteTable()
         {

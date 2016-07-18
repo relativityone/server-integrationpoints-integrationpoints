@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {

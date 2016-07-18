@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				ErrorDTO error = new ErrorDTO()
 				{
-					Message = "Unable to retrieve the saved searches. Please contract the system administrator.",
+					Message = "Unable to retrieve the saved searches. Please contact the system administrator.",
 					FullText = $"{exception.Message}{Environment.NewLine}{exception.StackTrace}",
 				};
 				_errorRepository.Create(new[] { error });

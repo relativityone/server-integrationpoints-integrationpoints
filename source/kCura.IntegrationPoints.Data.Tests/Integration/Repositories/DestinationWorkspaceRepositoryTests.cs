@@ -4,13 +4,13 @@ using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId);
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteTeardown()
+		public void SuiteTeardown()
 		{
 			_scratchTableRepository.Dispose();
 		}
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//Arrange
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),

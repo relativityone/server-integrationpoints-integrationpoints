@@ -127,6 +127,11 @@
 				success: function (result) {
 					self.workspaces(result);
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
+					self.TargetWorkspaceArtifactId.subscribe(function (value) {
+						if (self.TargetWorkspaceArtifactId !== value) {
+							self.WorkspaceHasChanged = true;
+						}
+					});
 				},
 				error: function () {
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
@@ -193,13 +198,6 @@
 					return (typeof self.savedSearches()) !== "undefined";
 				},
 				params: { savedSearches: self.savedSearches }
-			}
-		});
-
-
-		this.TargetWorkspaceArtifactId.subscribe(function (value) {
-			if (self.TargetWorkspaceArtifactId !== value) {
-				self.WorkspaceHasChanged = true;
 			}
 		});
 

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),

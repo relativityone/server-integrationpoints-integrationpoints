@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			string query = $@"
 				SELECT TOP {take}
-					AuditRecord.ArtifactID, 
-					AuditRecord.Details, 
+					AuditRecord.ArtifactID,
+					AuditRecord.Details,
 					AuditObject.Textidentifier as [Name],
 					AuditObjectType.ArtifactType,
 					AuditUser.UserID,
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			DataTable result = _helper
 				.GetDBContext(workspaceArtifactId)
 				.ExecuteSqlStatementAsDataTable(
-					query, 
+					query,
 					new[] { artifactTypeNameParameter, artifactNameParameter });
 
 			IList<Audit> audits = new List<Audit>(result.Rows.Count);

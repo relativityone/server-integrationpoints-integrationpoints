@@ -1,6 +1,6 @@
-﻿using kCura.ScheduleQueue.Core;
-using System;
+﻿using System;
 using System.Data;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
