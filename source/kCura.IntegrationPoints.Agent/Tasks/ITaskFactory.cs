@@ -42,9 +42,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _helper = helper;
         }
 
-        private WindsorContainer _container;
+		public TaskFactory(IAgentHelper helper, IWindsorContainer container) : this(helper)
+		{
+			this.Container = container;
+		}
 
-        private WindsorContainer Container
+		private IWindsorContainer _container;
+
+        private IWindsorContainer Container
         {
             get { return _container ?? (_container = new WindsorContainer()); }
             set { _container = value; }

@@ -179,6 +179,8 @@
     </Compile>
     <Compile Include="Integration\AgentConstractorTests.cs" />
     <Compile Include="Integration\ExportServiceManagerTests.cs" />
+    <Compile Include="Integration\ITaskFactoryTests.cs" />
+    <Compile Include="Integration\SendEmailManagerTests.cs" />
     <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Unit\Tasks\SyncManagerTests.cs" />
   </ItemGroup>

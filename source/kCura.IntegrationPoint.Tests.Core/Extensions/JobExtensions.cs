@@ -4,6 +4,13 @@ using System.Data;
 
 namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
+	using System.Collections.Generic;
+	using System.Data.SqlClient;
+
+	using kCura.IntegrationPoints.Core.Contracts.Agent;
+	using kCura.ScheduleQueue.Core.Data;
+	using kCura.ScheduleQueue.Core.Properties;
+
 	public static class JobExtensions
 	{
 		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, int jobId)
@@ -39,17 +46,27 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
+		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, string jobDetails)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["RelatedObjectArtifactID"] = integrationPointArtifactId;
+			jobData["JobDetails"] = jobDetails;
+			jobData["WorkspaceID"] = workspaceArtifactId;
+
+			return new Job(jobData);
+		}
+
 		public static Job CreateJob()
 		{
 			DataRow jobData = CreateDefaultJobData();
 
 			return new Job(jobData);
 		}
-		
+
 		private static DataRow CreateDefaultJobData()
 		{
 			DataTable table = new DataTable();
-			
+
 			//TODO make DataSet nullable
 			table.Columns.Add(new DataColumn("JobID", typeof(long)));
 			table.Columns.Add(new DataColumn("RootJobId", typeof(long)));
@@ -76,7 +93,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["LockedByAgentID"] = default(int);
 			jobData["WorkspaceID"] = default(int);
 			jobData["RelatedObjectArtifactID"] = default(int);
-			jobData["TaskType"] = default(string);
+			jobData["TaskType"] = TaskType.SyncManager.ToString();
 			jobData["NextRunTime"] = default(DateTime);
 			jobData["LastRunTime"] = default(DateTime);
 			jobData["JobDetails"] = default(string);
@@ -87,6 +104,91 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["ScheduleRule"] = default(string);
 
 			return jobData;
+		}
+
+		static string insertJob = @"INSERT INTO [eddsdbo].[{0}] 
+		(
+			[RootJobID]
+			,[ParentJobID]
+			,[AgentTypeID]
+			,[LockedByAgentID]
+			,[WorkspaceID]
+			,[RelatedObjectArtifactID]
+			,[TaskType]
+			,[NextRunTime]
+			,[LastRunTime]
+			,[ScheduleRuleType]
+			,[ScheduleRule]
+			,[JobDetails]
+			,[JobFlags]
+			,[SubmittedDate]
+			,[SubmittedBy]
+		)
+		OUTPUT
+			Inserted.[JobID]
+		VALUES
+		(
+			@RootJobID
+			, @ParentJobID
+			, @AgentTypeID
+			, @LockedByAgentID
+			, @WorkspaceID
+			, @RelatedObjectArtifactID
+			, @TaskType
+			, @NextRunTime
+			, NULL
+			, @ScheduleRuleType
+			, @ScheduleRule
+			, @JobDetails
+			, @JobFlags
+			, GETUTCDATE()
+			,@SubmittedBy
+		)";
+
+		public static int Execute(IQueueDBContext qDBContext,
+												int workspaceID,
+												int relatedObjectArtifactID,
+												string taskType,
+												DateTime nextRunTime,
+												int AgentTypeID,
+												string scheduleRuleType,
+												string serializedScheduleRule,
+												string jobDetails,
+												int jobFlags,
+												int SubmittedBy,
+												int locked,
+												long? rootJobID,
+												long? parentJobID = null
+												)
+		{
+			string sql = string.Format(insertJob, qDBContext.TableName);
+
+			List<SqlParameter> sqlParams = new List<SqlParameter>();
+			sqlParams.Add(new SqlParameter("@WorkspaceID", workspaceID));
+			sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", relatedObjectArtifactID));
+			sqlParams.Add(new SqlParameter("@TaskType", taskType));
+			sqlParams.Add(new SqlParameter("@NextRunTime", nextRunTime));
+			sqlParams.Add(new SqlParameter("@AgentTypeID", AgentTypeID));
+			sqlParams.Add(new SqlParameter("@JobFlags", jobFlags));
+			sqlParams.Add(new SqlParameter("@SubmittedBy", SubmittedBy));
+			sqlParams.Add(new SqlParameter("@LockedByAgentID", locked));
+			sqlParams.Add(jobDetails == null
+											? new SqlParameter("@JobDetails", DBNull.Value)
+											: new SqlParameter("@JobDetails", jobDetails));
+			sqlParams.Add(string.IsNullOrEmpty(scheduleRuleType)
+											? new SqlParameter("@ScheduleRuleType", DBNull.Value)
+											: new SqlParameter("@ScheduleRuleType", scheduleRuleType));
+			sqlParams.Add(string.IsNullOrEmpty(serializedScheduleRule)
+											? new SqlParameter("@ScheduleRule", DBNull.Value)
+											: new SqlParameter("@ScheduleRule", serializedScheduleRule));
+			sqlParams.Add(!rootJobID.HasValue || rootJobID.Value == 0
+											? new SqlParameter("@RootJobID", DBNull.Value)
+											: new SqlParameter("@RootJobID", rootJobID.Value));
+			sqlParams.Add(!parentJobID.HasValue || parentJobID.Value == 0
+											? new SqlParameter("@ParentJobID", DBNull.Value)
+											: new SqlParameter("@ParentJobID", parentJobID.Value));
+			int jobId = qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams);
+			return jobId;
 		}
 	}
 }
