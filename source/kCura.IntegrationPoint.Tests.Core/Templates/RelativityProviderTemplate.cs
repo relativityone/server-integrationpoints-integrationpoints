@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void RelativityProviderSetup()
 		{
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		[TestFixtureTearDown]
-		public new void SuiteTeardown()
+		public void RelativityProviderTeardown()
 		{
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}

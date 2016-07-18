@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();

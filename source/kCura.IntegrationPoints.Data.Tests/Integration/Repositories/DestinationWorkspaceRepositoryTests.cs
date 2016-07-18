@@ -4,7 +4,6 @@ using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId);
@@ -44,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteTeardown()
+		public void SuiteTeardown()
 		{
 			_scratchTableRepository.Dispose();
 		}

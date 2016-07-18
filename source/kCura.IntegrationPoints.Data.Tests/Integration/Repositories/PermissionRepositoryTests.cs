@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}

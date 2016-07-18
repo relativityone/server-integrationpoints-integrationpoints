@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			ResolveServices();
 		}
