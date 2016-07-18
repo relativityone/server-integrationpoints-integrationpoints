@@ -43,6 +43,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		[TestFixtureSetUp]
 		public void Init()
 		{
+			// sets WebApi URL in export library configuration
+			kCura.WinEDDS.Config.ProgrammaticServiceURL = _configSettings.WebApiUrl;
+
 			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...			
 
 			_workspaceService = new WorkspaceService(_configSettings);
