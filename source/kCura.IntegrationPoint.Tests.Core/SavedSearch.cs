@@ -1,7 +1,5 @@
-﻿using System;
-using kCura.IntegrationPoints.Data.Extensions;
+﻿using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Search;
-using Relativity.Services.User;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -41,7 +39,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void Delete(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			if(savedSearchArtifactId == 0) {  return; }
+			if (savedSearchArtifactId == 0) { return; }
 			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
 				proxy.DeleteSingleAsync(workspaceArtifactId, savedSearchArtifactId).GetAwaiter().GetResult();
@@ -56,7 +54,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static int CreateSearchFolder(int workspaceArtifactId, SearchContainer searchContainer )
+		public static int CreateSearchFolder(int workspaceArtifactId, SearchContainer searchContainer)
 		{
 			using (ISearchContainerManager proxy = Kepler.CreateProxy<ISearchContainerManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{

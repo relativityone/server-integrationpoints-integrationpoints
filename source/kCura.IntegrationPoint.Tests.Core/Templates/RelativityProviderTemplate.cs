@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
 			Task.Run(async () => await SetupAsync()).Wait();
-			
+
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
 		}
@@ -63,19 +63,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return _destinationConfig;
 		}
 
-		protected string CreateDefaultDestinationConfig()
+		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
 		{
 			ImportSettings destinationConfig = new ImportSettings
 			{
 				ArtifactTypeId = 10,
 				CaseArtifactId = SourceWorkspaceArtifactId,
 				Provider = "Relativity",
-				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+				ImportOverwriteMode = overwriteMode,
 				ImportNativeFile = false,
 				ExtractedTextFieldContainsFilePath = false,
 				FieldOverlayBehavior = "Use Field Settings",
 				RelativityUsername = SharedVariables.RelativityUserName,
-				RelativityPassword = SharedVariables.RelativityPassword
+				RelativityPassword = SharedVariables.RelativityPassword,
+				DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6"
 			};
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
@@ -126,6 +127,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
 		}
 
-		#endregion
+		#endregion Helper Methods
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using kCura.IntegrationPoints.Contracts;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Data
 {

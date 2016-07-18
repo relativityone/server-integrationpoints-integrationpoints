@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_instance = repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
 			IntegrationModel integrationModel = new IntegrationModel
 			{
-				Destination = CreateDefaultDestinationConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),

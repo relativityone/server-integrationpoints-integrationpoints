@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				integrationPoint = integrationPointRepository.Read(integrationPointArtifactId);
 			}
 		}
-	
+
 		private static void VerifyTimeout(double timeWaitedInSeconds, int timeoutInSeconds)
 		{
 			if (timeWaitedInSeconds >= timeoutInSeconds)

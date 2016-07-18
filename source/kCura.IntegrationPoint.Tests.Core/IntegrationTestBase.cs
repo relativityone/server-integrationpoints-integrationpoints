@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Data.Contexts;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -12,13 +11,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 		protected IConfigurationStore ConfigurationStore;
 		public ITestHelper Helper => _help.Value;
 		private readonly Lazy<ITestHelper> _help;
-		
+		private int _ADMIN_USER_ID = 9;
+
 		protected IntegrationTestBase()
 		{
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
-				OnBehalfOfUserClaimsPrincipalFactory factory = new OnBehalfOfUserClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal(9);
+				ClaimsPrincipalFactory factory = new ClaimsPrincipalFactory();
+				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID);
 			};
 
 			Container = new WindsorContainer();

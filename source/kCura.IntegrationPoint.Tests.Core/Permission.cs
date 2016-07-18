@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.DirectoryServices;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -11,7 +9,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Permission
 	{
-
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
