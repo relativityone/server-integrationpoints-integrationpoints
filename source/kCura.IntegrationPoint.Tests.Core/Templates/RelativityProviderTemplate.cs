@@ -38,12 +38,28 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TestFixtureSetUp]
 		public void RelativityProviderSetup()
 		{
-			SourceWorkspaceArtifactId = WorkspaceArtifactId;
+			try
+			{
+				SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
-			Task.Run(async () => await SetupAsync()).Wait();
+				Task.Run(async () => await SetupAsync()).Wait();
 
-			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
-			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
+				RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
+				LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
+			}
+			catch (Exception setupException)
+			{
+				try
+				{
+					RelativityProviderTeardown();
+				}
+				catch (Exception teardownException)
+				{
+					Exception[] exceptions = new[] { setupException, teardownException };
+					throw new AggregateException(exceptions);
+				}
+				throw;
+			}
 		}
 
 		[TestFixtureTearDown]

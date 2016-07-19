@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 	[Category("Integration Tests")]
 	public class IntegrationPointManagerTests : RelativityProviderTemplate
 	{
-		private IIntegrationPointService _integrationPointService;
 		private IDBContext _dbContext;
 		private int _groupId;
 		private UserModel _userModel;
@@ -27,11 +26,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
-			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_dbContext = Helper.GetDBContext(-1);
 			CreateGroupAndUser();
 		}
@@ -93,12 +90,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			{
 				throw new Exception($"An error occurred while querying for Relativity Error Message: { expectedErrorMessage } for Workspace: { SourceWorkspaceArtifactId }. Exception: { ex.Message }.");
             }
-		}
-
-		private void AssertErrorMessage(string expectedErrorMessage, string expectedFullErrorContent, bool[] permissions)
-		{
-			string expectedFullErrorMessage = GetErrorMessage(expectedErrorMessage);
-			StringAssert.Contains(expectedFullErrorMessage, expectedFullErrorContent);
 		}
 
 		private void CreateGroupAndUser()

@@ -18,13 +18,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IJobHistoryErrorRepository _instance;
 		private JobHistory _jobHistory;
 
-		public JobHistoryErrorRepositoryTests()
-			: base("JobHistoryErrorRepositoryTests", null)
+		public JobHistoryErrorRepositoryTests() : base("JobHistoryErrorRepositoryTests", null)
 		{
 		}
 
-		[SetUp]
-		public void TestSetup()
+		public override void TestSetup()
 		{
 			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_instance = repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);

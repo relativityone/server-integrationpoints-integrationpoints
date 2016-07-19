@@ -32,8 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		{
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
@@ -57,8 +56,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			};
 		}
 
-		[TearDown]
-		public void DeleteTempTable()
+		public override void TestTeardown()
 		{
 			_scratchTableRepository.DeleteTable();
 		}

@@ -47,15 +47,31 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TestFixtureSetUp]
 		public void SourceProviderSetup()
 		{
-			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
-			WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
-			Install();
+			try
+			{
+				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+				WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
+				Install();
 
-			Task.Run(async () => await SetupAsync()).Wait();
+				Task.Run(async () => await SetupAsync()).Wait();
 
-			CaseContext = Container.Resolve<ICaseServiceContext>();
-			SourceProviders = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
-			DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+				CaseContext = Container.Resolve<ICaseServiceContext>();
+				SourceProviders = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
+				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+			}
+			catch (Exception setupException)
+			{
+				try
+				{
+					SourceProviderTeardown();
+				}
+				catch (Exception teardownException)
+				{
+					Exception[] exceptions = new[] { setupException, teardownException };
+					throw new AggregateException(exceptions);
+				}
+				throw;
+			}
 		}
 
 		[TestFixtureTearDown]

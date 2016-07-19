@@ -54,8 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					.LifestyleTransient());
 		}
 
-		[SetUp]
-		public void TestSetup()
+		public override void TestSetup()
 		{
 			_caseContext = Container.Resolve<ICaseServiceContext>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
