@@ -4,9 +4,12 @@ using System.Runtime.Serialization;
 namespace kCura.IntegrationPoints.Contracts.Provider
 {
 	/// <summary>
-	/// Represents exception used to identify error during read operation from IDataReader that is returned from IFieldProvider.
-	/// If this throw when IFieldProvider object trying to get data. We will treats such error as item-level error.
+	/// Represents an error thrown by an IDataReader when a read failure occurs.
 	/// </summary>
+	/// <remarks>
+	/// If an IFieldProvider object is attempting to retrieve data when the ProviderReadDataException is thrown, Relativity treats this error as a an item-level error. Relativity creates an item-level Job History Error for the current Job History and the import job continues running. If this exception isn’t thrown when an error occurs, then Relativity treats it as a job-level error. It creates a job-level Job History Error for the current Job History and the job stops. 
+	/// </remarks>
+
 	[Serializable]
 	public class ProviderReadDataException : Exception
 	{

@@ -6,15 +6,15 @@ using kCura.IntegrationPoints.Contracts.Provider;
 namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
-	/// The abstract class required to inherit from in order to create a Provider factory.
+	/// The abstract class from which all provider factory classes are derived.
 	/// </summary>
 	public abstract class ProviderFactoryBase : IProviderFactory
 	{
 		/// <summary>
-		/// Creates an instance of the given Provider.
+		/// Creates an instance of a provider.
 		/// </summary>
-		/// <remarks>If your Provider requires constructor parameters, create a class that implements this method and it will be called an instance of your Provider is needed.</remarks>
-		/// <param name="providerType">The type of the Provider to create.</param>
+		/// <remarks>If the constructor for your provider requires parameters, you must create a class that implements this method. The Integration Points framework will call this method when an instance of your provider is needed.</remarks>
+		/// <param name="providerType">The type of the provider to create.</param>
 		/// <returns>The concrete class implementing the <see cref="IDataSourceProvider"/> interface.</returns>
 		public abstract IDataSourceProvider CreateInstance(Type providerType);
 
