@@ -61,6 +61,15 @@ namespace kCura.IntegrationPoints.Email.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to retrieve email notification configuration. Please verify kCura.Notification&apos;s settings to enable emailing functionality..
+        /// </summary>
+        internal static string Invalid_SMTP_Settings {
+            get {
+                return ResourceManager.GetString("Invalid_SMTP_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Smtp Port cannot be negative..
         /// </summary>
         internal static string SMTP_Port_Negative {
