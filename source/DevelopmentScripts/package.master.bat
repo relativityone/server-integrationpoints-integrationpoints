@@ -19,5 +19,7 @@ echo f | xcopy "%basePath%\nugspec\*.nupkg" "%revisionDirectory%\%buildType% %ve
 echo f | xcopy "%basePath%\bin\sdk\*" "%revisionDirectory%\dlls\sdk\" /EY /EXCLUDE:packageCreationExcludeList.txt
 echo f | xcopy "%basePath%\bin\IntegrationPoints.SDK.zip" "%revisionDirectory%\sdk\" /Y /EXCLUDE:packageCreationExcludeList.txt
 
+echo f | xcopy "%basePath%\bin\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\TestData\*" "%revisionDirectory%\dlls\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\TestData\" /EY
+
 :END
 echo PACKAGEMASTER: END
