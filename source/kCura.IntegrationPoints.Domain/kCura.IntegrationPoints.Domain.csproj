@@ -213,6 +213,7 @@
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DefaultSynchronizerFactory.cs" />
     <Compile Include="DomainHelper.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="IAppDomainDataMarshaller.cs" />
     <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IPluginProvider.cs" />
