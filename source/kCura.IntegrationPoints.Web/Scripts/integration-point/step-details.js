@@ -113,7 +113,7 @@ var IP = IP || {};
 	};
 
 	root.messaging.subscribe('details-loaded', function () {
-		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
+		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'));
 	});
 
 	var Choice = function (name, value, artifactID, object) {
@@ -240,25 +240,24 @@ var IP = IP || {};
 		    });
 		});
 
-
-		
-	
 		this.artifactTypeID = ko.observable().extend({ required: true });
    
+		this.selectedDestinationType.subscribe(function () {
+			if (parentModel.hasBeenRun()) {
+				parentModel.source.isSourceProviderDisabled(true);
+			} else {
+				var fileshareChoice = self.destinationTypes().filter(function (obj) {
+					return obj.displayName === "Fileshare";
+				});
 
-		this.selectedDestinationType.subscribe(function (selectedValue) {
-		    var fileshareChoice = self.destinationTypes().filter(function (obj) {
-		        return obj.displayName === "Fileshare";
-		    });
-
-		    if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID && !parentModel.hasBeenRun()) {
-		        var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
-		        parentModel.source.selectedType(relativitySourceProviderGuid);
-		        parentModel.source.isSourceProviderDisabled(true);
-		    }
-		    else {
-		        parentModel.source.isSourceProviderDisabled(false);
-		    }
+				if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID) {
+					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+					parentModel.source.selectedType(relativitySourceProviderGuid);
+					parentModel.source.isSourceProviderDisabled(true);
+				} else {
+					parentModel.source.isSourceProviderDisabled(false);
+				}
+			}
 		});
 
 		this.UpdateSelectedItem = function () {
@@ -520,8 +519,7 @@ var IP = IP || {};
 		    }
 		});
 
-
-	this.scheduledTime = ko.observable(options.scheduledTime).extend({
+		this.scheduledTime = ko.observable(options.scheduledTime).extend({
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
@@ -597,8 +595,6 @@ var IP = IP || {};
 		this.loadModel = function (ip) {
 			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
-
-
 			this.model.sourceConfiguration = ip.sourceConfiguration;
 		};
 
@@ -642,7 +638,6 @@ var IP = IP || {};
 		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails'),
 		templateID: 'step1'
 	});
-
 
 	root.points.steps.push(step);
 
