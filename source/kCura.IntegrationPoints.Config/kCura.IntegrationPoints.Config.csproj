@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Defines dependency properties -->
   <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
@@ -61,15 +61,15 @@
       <HintPath>..\packages\$(BCrypt-Official)\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Config, $(kCuraCore)Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Apps.Common.Config, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Apps_Common_Config)\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Data, $(kCuraCore)Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Apps.Common.Data, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Utils, $(kCuraCore)Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
