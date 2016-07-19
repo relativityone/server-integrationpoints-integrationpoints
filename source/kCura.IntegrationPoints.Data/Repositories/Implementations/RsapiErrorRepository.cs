@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -12,11 +11,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
+		private const int _EDDS_WORKSPACE_ID = -1;
 
-		public RsapiErrorRepository(IHelper helper, int workspaceArtifactId)
+		public RsapiErrorRepository(IHelper helper)
 		{
 			_helper = helper;
-			_workspaceArtifactId = workspaceArtifactId;
+			_workspaceArtifactId = _EDDS_WORKSPACE_ID;
 		}
 
 		public void Create(IEnumerable<ErrorDTO> errors)

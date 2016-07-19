@@ -145,9 +145,8 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <summary>
 		/// Returns a class implementing the IErrorRepository interface.
 		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <returns>A class implementing the IErrorRepository interface.</returns>
-		IErrorRepository GetErrorRepository(int workspaceArtifactId);
+		IErrorRepository GetErrorRepository();
 
 		/// <summary>
 		/// Returns a class implementing the ISavedSearchRepository interface.
