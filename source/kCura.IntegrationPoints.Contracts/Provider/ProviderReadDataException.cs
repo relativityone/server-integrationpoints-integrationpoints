@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Contracts.Provider
 
 		/// <summary>
 		/// Gets or sets the item identifier.
-		/// <remarks>The identfier of the data that the Data Source Provider excepts on when reading.</remarks>
+		/// <remarks>This identifier will be the identifier of the data that the Data Source Provider excepts on when reading.</remarks>
 		/// </summary>
 		public String Identifier
 		{
