@@ -5,20 +5,20 @@ using Newtonsoft.Json;
 namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
-	/// This class contains configurations for a source provider.
+	/// Includes optional properties that control source provider behavior.
 	/// </summary>
 	[Serializable]
 	public class SourceProviderConfiguration
 	{
 		/// <summary>
-		/// Configuration to set import native files. 
+		/// Indicates whether the Integration Point framework is set to import native files.
 		/// </summary>
 		/// <remarks>
-		/// This configuration value only applies to the Document RDO.
+		/// This configuration property applies only to Document objects acting as destination RDOs. It works in conjunction with the Copy Native File setting that users can select when mapping fields for an integration point through the Relativity UI. 
 		/// <list type="bullet">
-		/// <item><description>If this config is set to true or false and the user sets 'copy native files' to true, a new file will be created by copying the orignal native.</description></item>
-		/// <item><description>If this config is set to true and the user sets 'copy native files' to false, files will link to the native.</description></item>
-		/// <item><description>If this config is set to false and the user sets 'copy native files' to false, files will not be imported.</description></item>
+		/// <item><description>IIf this configuration property is either true or false, and the user selects Copy Native File, then Relativity creates a new file by copying the original native file.</description></item>
+		/// <item><description>If this configuration property is true, and the user doesn’t select Copy Native File, then Relativity creates a link to the native file.</description></item>
+		/// <item><description>If this configuration property is false, and the user doesn’t select Copy Native File, then Relativity won’t import any native files.</description></item>
 		/// </list>
 		/// </remarks>
 		public bool AlwaysImportNativeFiles { get; set; }
@@ -33,15 +33,15 @@ namespace kCura.IntegrationPoints.Contracts
 		internal ImportSettingVisibility AvailableImportSettings { set; get; }
 
 		/// <summary>
-		/// List of guids of RDOs that the provider is compatible with.
+		/// Provides a list of GUIDs for RDOs that are compatible with the provider.
 		/// </summary>
 		public List<Guid> CompatibleRdoTypes { set; get; }
 
 		/// <summary>
-		/// Configuration to import the native's file name.
+		/// Indicates whether the Integration Point framework is set to import the names of native files.
 		/// </summary>
 		/// <remarks>
-		/// This configuration value only applies to the Document RDO.
+		/// This configuration property applies only to Document objects acting as destination RDOs. The Integration Points framework passes the name of a native file to the Import API only when this property is set to true.
 		/// <list type="bullet">
 		/// <item><description>If true, we will pass to the import API the native's file name.</description></item>
 		/// <item><description>If false, we will not pass to the import API the native's file name.</description></item>
@@ -50,8 +50,10 @@ namespace kCura.IntegrationPoints.Contracts
 		public bool AlwaysImportNativeFileNames { get; set; }
 
 		/// <summary>
-		/// Configuration to prevent user from mapping the identifier field to a non identifier field.
+		/// Prevents the user from mapping an identifier field to a non-identifier field.
 		/// </summary>
+		/// <remarks>This property applies only when a user attempts to map two RDOs, which contain a field designated as an identifier field, such as Control Number on the Document RDO.
+		///</remarks>
 		public bool OnlyMapIdentifierToIdentifier { get; set; }
 	}
 }

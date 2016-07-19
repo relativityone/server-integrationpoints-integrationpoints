@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		public string ViewDataUrl { get; set; }
 
 		/// <summary>
-		/// Get or sets configuration to associate with the source provider.
+		/// Gets or sets a SourceProviderConfiguration object, which contains properties that control source provider behavior.
 		/// </summary>
 		public SourceProviderConfiguration Configuration { set; get; }
 	}
