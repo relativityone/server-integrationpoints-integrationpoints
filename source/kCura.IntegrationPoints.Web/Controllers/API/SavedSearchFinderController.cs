@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			_context = context;
 			_htmlSanitizerManager = htmlSanitizerManager;
-			_errorRepository = repositoryFactory.GetErrorRepository(_context.APIOptions.WorkspaceID);
+			_errorRepository = repositoryFactory.GetErrorRepository();
 		}
 
 		[HttpGet]

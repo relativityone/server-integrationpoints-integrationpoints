@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public void Create(int workspaceArtifactId, IEnumerable<ErrorDTO> errors)
 		{
-			IErrorRepository repository = _repositoryFactory.GetErrorRepository(workspaceArtifactId);
+			IErrorRepository repository = _repositoryFactory.GetErrorRepository();
 
 			repository.Create(errors);
 		}
