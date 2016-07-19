@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[TestFixtureSetUp]
-		public new void SuiteSetup()
+		public void SuiteSetup()
 		{
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
