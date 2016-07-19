@@ -69,6 +69,12 @@ h1
 	padding: 0 5px;
 }
 
+#save i
+{
+    padding: 0px;
+}
+
+
 #progressButtons button
 {
 	padding: 0 10px;
