@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <remarks>
 		/// This configuration property applies only to Document objects acting as destination RDOs. It works in conjunction with the Copy Native File setting that users can select when mapping fields for an integration point through the Relativity UI. 
 		/// <list type="bullet">
-		/// <item><description>IIf this configuration property is either true or false, and the user selects Copy Native File, then Relativity creates a new file by copying the original native file.</description></item>
+		/// <item><description>If this configuration property is either true or false, and the user selects Copy Native File, then Relativity creates a new file by copying the original native file.</description></item>
 		/// <item><description>If this configuration property is true, and the user doesn’t select Copy Native File, then Relativity creates a link to the native file.</description></item>
 		/// <item><description>If this configuration property is false, and the user doesn’t select Copy Native File, then Relativity won’t import any native files.</description></item>
 		/// </list>
@@ -43,8 +43,8 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <remarks>
 		/// This configuration property applies only to Document objects acting as destination RDOs. The Integration Points framework passes the name of a native file to the Import API only when this property is set to true.
 		/// <list type="bullet">
-		/// <item><description>If true, we will pass to the import API the native's file name.</description></item>
-		/// <item><description>If false, we will not pass to the import API the native's file name.</description></item>
+		/// <item><description>If true, we will pass to the Import API the native's file name.</description></item>
+		/// <item><description>If false, we will not pass to the Import API the native's file name.</description></item>
 		/// </list>
 		/// </remarks>
 		public bool AlwaysImportNativeFileNames { get; set; }
