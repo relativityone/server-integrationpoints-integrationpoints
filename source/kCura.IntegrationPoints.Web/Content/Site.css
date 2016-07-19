@@ -232,7 +232,7 @@ ul li .day-select
 	padding: 4px 4px 0;
 }
 
-	.field-validation-error.icon-error::before
+	.icon-error::before
 	{
 		padding-right: 5px;
 	}
