@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Domain.Models;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
 using Relativity.CustomPages;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Web.SignalRHubs
 {
@@ -106,6 +100,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 						{
 							IntegrationModel model = new IntegrationModel()
 							{
+								HasErrors = integrationPointDTO.HasErrors,
 								LastRun = integrationPointDTO.LastRuntimeUTC,
 								NextRun = integrationPointDTO.NextScheduledRuntimeUTC
 							};

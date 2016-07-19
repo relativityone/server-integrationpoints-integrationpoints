@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Components.DictionaryAdapter.Xml;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
@@ -18,19 +19,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				List<AgentTypeRef> agentTypes = proxy.GetAgentTypesAsync().GetResultsWithoutContextSync();
-				AgentTypeRef agentTypeRef = agentTypes.FirstOrDefault(agentType => agentType.Name == _INTEGRATION_POINT_AGENT_TYPE_NAME);
+			List<AgentTypeRef> agentTypes =	proxy.GetAgentTypesAsync().GetResultsWithoutContextSync();
+				AgentTypeRef agentTypeRef = agentTypes.FirstOrDefault(agentType => agentType.Name == "Integration Points Agent");
 				if (agentTypeRef != null)
 				{
 					Query query = new Query();
-					AgentQueryResultSet resultSet = proxy.QueryAsync(query).GetResultsWithoutContextSync();
+					AgentQueryResultSet resultSet =	proxy.QueryAsync(query).GetResultsWithoutContextSync();
 					global::Relativity.Services.Agent.Agent[] agents = resultSet.Results.Where(agent => agent.Success && agent.Artifact.AgentType.ArtifactID == agentTypeRef.ArtifactID).Select(result => result.Artifact).ToArray();
-					if (agents.Length > _MAX_AGENT_TO_CREATE)
+					if (agents.Length > 3)
 					{
-						// returns 0, so we don't try to delete the agent at the end of the tests.
 						return 0;
 					}
 				}
+
 
 				List<ResourceServer> resourceServers = GetAgentServers();
 
