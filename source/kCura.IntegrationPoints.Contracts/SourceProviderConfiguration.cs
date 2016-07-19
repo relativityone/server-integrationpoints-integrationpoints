@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <remarks>
 		/// This configuration value only applies to the Document RDO.
 		/// <list type="bullet">
-		/// <item><description>If this config is set to true or false and the user sets 'copy native files' to true, a new file will be created by copying the orignal native.</description></item>
+		/// <item><description>If this configuration property is either true or false, and the user selects Copy Native File, then Relativity creates a new file by copying the original native file.</description></item>
 		/// <item><description>If this config is set to true and the user sets 'copy native files' to false, files will link to the native.</description></item>
 		/// <item><description>If this config is set to false and the user sets 'copy native files' to false, files will not be imported.</description></item>
 		/// </list>
@@ -43,8 +43,8 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <remarks>
 		/// This configuration value only applies to the Document RDO.
 		/// <list type="bullet">
-		/// <item><description>If true, we will pass to the import API the native's file name.</description></item>
-		/// <item><description>If false, we will not pass to the import API the native's file name.</description></item>
+		/// <item><description>If true, we will pass to the Import API the native's file name.</description></item>
+		/// <item><description>If false, we will not pass to the Import API the native's file name.</description></item>
 		/// </list>
 		/// </remarks>
 		public bool AlwaysImportNativeFileNames { get; set; }

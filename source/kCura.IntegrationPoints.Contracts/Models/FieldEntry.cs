@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		private string _actualName;
 
 		/// <summary>
-		/// Gets or set a user-friendly name for display in the Relativity UI.
+		/// Gets or sets a user-friendly name for display in the Relativity UI.
 		/// </summary>
 		public string DisplayName { get; set; }
 
