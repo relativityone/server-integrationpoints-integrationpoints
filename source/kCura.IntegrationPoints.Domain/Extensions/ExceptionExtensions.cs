@@ -9,10 +9,10 @@ namespace kCura.IntegrationPoints.Domain.Extensions
 	public static class ExceptionExtensions
 	{
 		/// <summary>
-		/// Returns a flatten string which represents the given exception instance.
+		/// Returns a flattened string which represents the given exception instance.
 		/// </summary>
 		/// <param name="exception">A main exception object to use this method</param>
-		public static string PrintErrorMessage(this Exception exception)
+		public static string FlattenErrorMessages(this Exception exception)
 		{
 			if (exception == null)
 			{
@@ -32,13 +32,13 @@ namespace kCura.IntegrationPoints.Domain.Extensions
 				{
 					int innerExceptionId = i + 1;
 					stringBuilder.AppendLine($"Inner Exception {innerExceptionId}:");
-					stringBuilder.AppendLine(aggregateException.InnerExceptions[i].PrintErrorMessage());
+					stringBuilder.AppendLine(aggregateException.InnerExceptions[i].FlattenErrorMessages());
 				}
 			}
 			else if (exception.InnerException != null)
 			{
 				stringBuilder.AppendLine("Inner Exception:");
-				stringBuilder.AppendLine(exception.InnerException.PrintErrorMessage());
+				stringBuilder.AppendLine(exception.InnerException.FlattenErrorMessages());
 			}
 			return stringBuilder.ToString();
 		}
