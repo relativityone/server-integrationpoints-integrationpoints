@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 	    public WorkspaceFinderController(WebClientFactory factory, IRepositoryFactory repositoryFactory, IHtmlSanitizerManager htmlSanitizerManager)
 	    {
-		    _errorRepository = repositoryFactory.GetErrorRepository(factory.WorkspaceId);
+		    _errorRepository = repositoryFactory.GetErrorRepository();
 			_context = factory.CreateEddsClient();
 		    _htmlSanitizerManager = htmlSanitizerManager;
         }

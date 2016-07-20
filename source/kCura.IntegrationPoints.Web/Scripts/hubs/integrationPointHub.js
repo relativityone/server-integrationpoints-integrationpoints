@@ -3,6 +3,12 @@
 		var data = $.connection.IntegrationPointData;
 		// Create a function that the hub can call back to update properties.
 		data.client.updateIntegrationPointData = function (integrationPoint, buttonStates, onClickEvents, sourceProviderIsRelativity) {
+			var hasErrors = integrationPoint.HasErrors;
+			if (hasErrors) {
+				$("input[fafriendlyname='Has Errors'][type='hidden']").siblings('.dynamicViewFieldValue').text("Yes");
+			} else {
+				$("input[fafriendlyname='Has Errors'][type='hidden']").siblings('.dynamicViewFieldValue').text("No");
+			}
 			var lastRun = integrationPoint.LastRun;
 			if (lastRun) {
 				$("input[fafriendlyname='Last Runtime (UTC)'][type='hidden']").siblings('.dynamicViewFieldValue').text(Date.parse(lastRun).toString('M/d/yyyy h:mm tt'));
@@ -33,6 +39,7 @@
 					$(consoleContainer.find(":contains('View Errors')")).removeClass("consoleLinkEnabled").addClass("consoleLinkDisabled").removeAttr('onClick');
 				}
 			}
+			$('.associative-list').load(document.URL + ' .associative-list');
 		};
 
 		$.connection.hub.start({ transport: 'longPolling' }).done(function () {

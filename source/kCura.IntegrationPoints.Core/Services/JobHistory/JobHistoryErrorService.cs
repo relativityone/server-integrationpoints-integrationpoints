@@ -6,6 +6,8 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Domain.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -66,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services
 							: string.Format("{0} Type: {1}    Identifier: {2}    Error: {3}", x.TimestampUTC, x.ErrorType.Name,
 								x.SourceUniqueID, x.Error))).ToList();
 					allErrors = String.Join(Environment.NewLine, errorList.ToArray());
-					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, GenerateErrorMessage(ex));
+					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessages());
 					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
@@ -92,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void AddError(Relativity.Client.Choice errorType, Exception ex)
 		{
-			AddError(errorType, string.Empty, ex.Message, GenerateErrorMessage(ex));
+			AddError(errorType, string.Empty, ex.Message, ex.FlattenErrorMessages());
 		}
 
 		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)
@@ -129,33 +131,6 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 
 			}
-		}
-
-		private string GenerateErrorMessage(Exception ex)
-		{
-			var aggregateException = ex as AggregateException;
-			var stringBuilder = new StringBuilder();
-			bool isAggregateExceptionWithInnerExceptions = aggregateException?.InnerExceptions != null;
-
-			stringBuilder.AppendLine(ex.Message);
-			stringBuilder.AppendLine(ex.StackTrace);
-
-			if (isAggregateExceptionWithInnerExceptions)
-			{
-				for (int i = 0; i < aggregateException.InnerExceptions.Count; i++)
-				{
-					int innerExceptionId = i + 1;
-					stringBuilder.AppendLine($"Inner Exception {innerExceptionId}:");
-					stringBuilder.AppendLine(GenerateErrorMessage(aggregateException.InnerExceptions[i]));
-				}
-			}
-			else if (ex.InnerException != null)
-			{
-				stringBuilder.AppendLine("Inner Exception:");
-				stringBuilder.AppendLine(GenerateErrorMessage(ex.InnerException));
-			}
-
-			return stringBuilder.ToString();
 		}
 
 		private void UpdateIntegrationPoint()

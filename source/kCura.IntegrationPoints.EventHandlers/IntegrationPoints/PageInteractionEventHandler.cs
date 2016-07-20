@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using kCura.EventHandler;
-
-//http://platform.kcura.com/9.0/index.htm#Customizing_workflows/Page_Interaction_event_handlers.htm?Highlight=javascript
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 
+//http://platform.kcura.com/9.0/index.htm#Customizing_workflows/Page_Interaction_event_handlers.htm?Highlight=javascript
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	[System.Runtime.InteropServices.Guid("d62ec71f-f8c1-4344-aabb-b23e376d93df")]
@@ -54,13 +53,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/utils.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/integration-point/time-utils.js");
 
-			    this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.signalR-2.2.0.js");
-			    this.RegisterLinkedClientScript(applicationPath + "/signalr/hubs");
-			    this.RegisterLinkedClientScript(applicationPath + "/Scripts/hubs/integrationPointHub.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.signalR-2.2.0.js");
+				this.RegisterLinkedClientScript(applicationPath + "/signalr/hubs");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/hubs/integrationPointHub.js");
 
-
-
-                this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
 				int nextScheduledRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.NextScheduledRuntimeUTC));
 				int destinationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationConfiguration));
 				int destinationProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));
@@ -88,8 +85,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.nameId= '" + nameId + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.emailNotificationId= '" + emailNotificationId + "';</script>" });
 
-				this.RegisterClientScriptBlock(new kCura.EventHandler.ScriptBlock() { Key = "refreshFunc", Script = "<script type=\"text/javascript\"> function refreshList(){ $('.associative-list').load(document.URL +  ' .associative-list'); setTimeout(refreshList, 5000);};</script>" });
-
 				StringBuilder script = new StringBuilder();
 				script.Append("<script>");
 				script.Append("var IP = IP || {};");
@@ -113,30 +108,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					if (ServiceContext.RsapiService.DestinationProviderLibrary.Read(Int32.Parse(destinationProvider.ToString())).Name == Core.Constants.IntegrationPoints.FILESHARE_PROVIDER_NAME)
 					{
 						this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/export-details-view.js");
-
-
 					}
 				}
 				else
 				{
 					this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
 				}
-				
-				
-
-				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
-				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/i18n/grid.locale-en.js");
-				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.jqGrid.min.js");
-				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/select2.min.js");
-				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid.js");
-				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid-pager.js");
-				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-utils.js");
-				
-				this.RegisterStartupScriptBlock(new kCura.EventHandler.ScriptBlock() { Key = "refreshKey", Script = "<script type=\"text/javascript\"> refreshList();</script>" });
 			}
 			return response;
 		}
-
 
 		public IEnumerable<KeyValuePair<string, object>> GetParams()
 		{

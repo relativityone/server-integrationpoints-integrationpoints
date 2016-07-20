@@ -1,16 +1,20 @@
-﻿using kCura.IntegrationPoints.Email;
+﻿using System;
+using kCura.IntegrationPoints.Email;
 
 namespace kCura.IntegrationPoints.Agent
 {
-	using System;
+using kCura.IntegrationPoints.Email;
 
+namespace kCura.IntegrationPoints.Agent
+{
 	public class RelativityConfigurationFactory
 	{
 		public EmailConfiguration GetConfiguration()
 		{
+			EmailConfiguration config = null;
 			try
 			{
-				return new EmailConfiguration
+				config = new EmailConfiguration
 				{
 					Domain = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPServer,
 					Password = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPassword,
@@ -20,8 +24,10 @@ namespace kCura.IntegrationPoints.Agent
 				};
 			}
 			catch (Exception)
-			{ }
-			return null;
-		}
+			{ 
+				// DO NOT THROW EXCEPTION HERE
+			}
+			return config;
+
 	}
 }

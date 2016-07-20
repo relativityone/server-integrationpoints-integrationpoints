@@ -1,7 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -17,17 +22,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class SavedSearchQueryTests
-		: SourceProviderTemplate
+	public class SavedSearchQueryTests : SourceProviderTemplate
 	{
 		private const string _CONTROLNUMBER = "Control Number";
 		private List<int> _savedSearchesArtifactIds;
 		private List<int> _userIds;
 		private List<int> _groupIds;
 		private IHtmlSanitizerManager _htmlSanitizerManage;
+		private IRepositoryFactory _repositoryFactory;
 
-		public SavedSearchQueryTests()
-			: base("SavedSearchQueryTests")
+		public SavedSearchQueryTests() : base("SavedSearchQueryTests")
 		{
 		}
 
@@ -35,6 +39,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		public void SuiteSetup()
 		{
 			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 		}
 
 		[SetUp]
@@ -187,6 +192,51 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 
 			//assert
 			Assert.AreEqual(0, results.Count);
+		}
+
+		[Test]
+		public void Query_SavedSearchesWithController_ExpectError()
+		{
+			//Arrange
+			HttpResponseMessage httpResponseMessage;
+		
+			//Act
+			using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
+			{
+				rsapiClient.APIOptions.WorkspaceID = -999;
+				SavedSearchFinderController savedSearchFinderController = new SavedSearchFinderController(rsapiClient, _repositoryFactory, _htmlSanitizerManage) {Request = new HttpRequestMessage()};
+				savedSearchFinderController.Request.SetConfiguration(new HttpConfiguration());
+				httpResponseMessage = savedSearchFinderController.Get();
+			}
+			string content = httpResponseMessage.Content.ReadAsStringAsync().Result;
+			const string expectedResponseValue = "[]";
+
+			//Assert
+			Assert.AreEqual(HttpStatusCode.InternalServerError, httpResponseMessage.StatusCode);
+			Assert.AreEqual(expectedResponseValue, content);
+		}
+
+		[Test]
+		public void Query_SavedSearchesWithController_Success()
+		{
+			//Arrange
+			const string savedSearchName = "Public Saved Search";
+			HttpResponseMessage httpResponseMessage;
+			int savedSearchArtifactId = SavedSearch.CreateSavedSearch(WorkspaceArtifactId, savedSearchName);
+
+			//Act
+			using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
+			{
+				rsapiClient.APIOptions.WorkspaceID = WorkspaceArtifactId;
+				SavedSearchFinderController savedSearchFinderController = new SavedSearchFinderController(rsapiClient, _repositoryFactory, _htmlSanitizerManage) { Request = new HttpRequestMessage() };
+				savedSearchFinderController.Request.SetConfiguration(new HttpConfiguration());
+				httpResponseMessage = savedSearchFinderController.Get();
+			}
+			string content = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+			//Assert
+			Assert.AreEqual(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+			StringAssert.Contains(savedSearchArtifactId.ToString(), content);
 		}
 	}
 }

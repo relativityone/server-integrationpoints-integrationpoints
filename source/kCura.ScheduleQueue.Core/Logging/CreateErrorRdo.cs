@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.Relativity.Client;
 
 namespace kCura.ScheduleQueue.Core.Logging
@@ -14,7 +15,7 @@ namespace kCura.ScheduleQueue.Core.Logging
 
 		public void Execute(Job job, Exception ex, string source)
 		{
-			Execute(job.WorkspaceID, source, ex.Message, ex.StackTrace);
+			Execute(job.WorkspaceID, source, ex.Message, ex.FlattenErrorMessages());
 		}
 
 		public void Execute(int workspaceId, string source, string errorMessage, string stackTrace)
