@@ -1,16 +1,14 @@
-﻿using System;
-using System.Data;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
-	using System.Collections.Generic;
-	using System.Data.SqlClient;
-
-	using kCura.IntegrationPoints.Core.Contracts.Agent;
-	using kCura.ScheduleQueue.Core.Data;
-	using kCura.ScheduleQueue.Core.Properties;
-
 	public static class JobExtensions
 	{
 		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, int jobId)
@@ -56,6 +54,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
+		public static Job CreateJobAgentTypeId(long workspaceArtifactId, long integrationPointArtifactId, int jobId, int agentTypeId, int rootJobId)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = jobId;
+			jobData["RelatedObjectArtifactID"] = integrationPointArtifactId;
+			jobData["WorkspaceID"] = workspaceArtifactId;
+			jobData["AgentTypeID"] = agentTypeId;
+			jobData["RootJobId"] = rootJobId;
+
+			return new Job(jobData);
+		}
+
 		public static Job CreateJob()
 		{
 			DataRow jobData = CreateDefaultJobData();
@@ -96,7 +106,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["TaskType"] = TaskType.SyncManager.ToString();
 			jobData["NextRunTime"] = default(DateTime);
 			jobData["LastRunTime"] = default(DateTime);
-			jobData["JobDetails"] = default(string);
+			jobData["JobDetails"] = new JSONSerializer().Serialize(new TaskParameters());
 			jobData["JobFlags"] = default(int);
 			jobData["SubmittedDate"] = default(DateTime);
 			jobData["SubmittedBy"] = default(int);
@@ -106,7 +116,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return jobData;
 		}
 
-		static string insertJob = @"INSERT INTO [eddsdbo].[{0}] 
+		private static string insertJob = @"INSERT INTO [eddsdbo].[{0}]
 		(
 			[RootJobID]
 			,[ParentJobID]
