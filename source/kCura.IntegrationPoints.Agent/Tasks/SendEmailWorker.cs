@@ -6,6 +6,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.ScheduleQueue.Core;
+using kCura.Apps.Common.Config.Sections;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					message.Body = details.MessageBody;
 					message.Subject = details.Subject;
 					message.To.Add(email);
-					message.From = new MailAddress(kCura.Apps.Common.Config.Sections.NotificationConfig.EmailFrom);
+					message.From = new MailAddress(NotificationConfig.EmailFrom);
 					_sendable.Send(message);
 				}
 				catch (Exception e)

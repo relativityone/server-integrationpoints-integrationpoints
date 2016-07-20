@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Email;
 using System;
+using kCura.Apps.Common.Config.Sections;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -14,11 +15,11 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					config = new EmailConfiguration
 					{
-						Domain = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPServer,
-						Password = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPassword,
-						Port = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPort,
-						UserName = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPUserName,
-						UseSSL = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPSSLisRequired
+						Domain = NotificationConfig.SMTPServer,
+						Password = NotificationConfig.SMTPPassword,
+						Port = NotificationConfig.SMTPPort,
+						UserName = NotificationConfig.SMTPUserName,
+						UseSSL = NotificationConfig.SMTPSSLisRequired
 					};
 				}
 				catch (Exception)

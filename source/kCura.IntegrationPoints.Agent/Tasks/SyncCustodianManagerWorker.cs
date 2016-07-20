@@ -20,6 +20,9 @@ using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
+using kCura.Method.Injection;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Custodian;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -30,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         public SyncCustodianManagerWorker(ICaseServiceContext caseServiceContext,
                         IDataProviderFactory dataProviderFactory,
                         IHelper helper,
-                        kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+                        ISerializer serializer,
                         ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
                                             IJobHistoryService jobHistoryService,
                         JobHistoryErrorService jobHistoryErrorService,
@@ -59,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                kCura.Method.Injection.InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
+                InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
                 //get all job parameters
                 CustodianManagerJobParameters jobParameters = GetParameters(job);
@@ -68,7 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 base.SetJobHistory();
 
-                kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
+               InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
                 //check if all tasks are done for this batch yet
                 bool IsPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new string[] { TaskType.SyncCustodianManagerWorker.ToString() });
@@ -273,7 +276,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private int GetCustodianManagerFieldArtifactID()
         {
-            Relativity.Client.DTOs.Field dto = new Relativity.Client.DTOs.Field(new Guid(kCura.IntegrationPoints.Core.Contracts.Custodian.CustodianFieldGuids.Manager));
+            Relativity.Client.DTOs.Field dto = new Relativity.Client.DTOs.Field(new Guid(CustodianFieldGuids.Manager));
 
             ResultSet<Relativity.Client.DTOs.Field> resultSet = _workspaceRsapiClient.Repositories.Field.Read(dto);
             if (!resultSet.Success)
