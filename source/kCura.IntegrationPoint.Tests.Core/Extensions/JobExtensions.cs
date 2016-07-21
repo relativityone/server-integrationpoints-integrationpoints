@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
-		public static Job CreateJobAgentTypeId(long workspaceArtifactId, long integrationPointArtifactId, int jobId, int agentTypeId, int rootJobId)
+		public static Job CreateJobAgentTypeId(long workspaceArtifactId, long integrationPointArtifactId, int jobId, int agentTypeId, int rootJobId, DateTime dateTime)
 		{
 			DataRow jobData = CreateDefaultJobData();
 			jobData["JobID"] = jobId;
@@ -62,6 +62,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["WorkspaceID"] = workspaceArtifactId;
 			jobData["AgentTypeID"] = agentTypeId;
 			jobData["RootJobId"] = rootJobId;
+			jobData["NextRunTime"] = dateTime;
 
 			return new Job(jobData);
 		}
