@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IArtifactGuidRepository _artifactGuidRepository;
-		private ClaimsPrincipal _claimsPrincipal;
+		private ClaimsPrincipal _claimsPrincipal = null;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private const int _jobHistoryErrorTypeId = 6873784;
 		private const int _errorStatusExpiredChoiceArtifactId = 798523;
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private const int _savedSearchArtifactId = 1668735;
 		private readonly Guid _jobHistoryErrorGuid = new Guid("17e7912d-4f57-4890-9a37-abc2b8a37bdb");
 		private const string _noResultsForObjectType = "Unable to retrieve Artifact Type Id for JobHistoryError object type.";
-		private readonly Job _job;
+		private readonly Job _job = null;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 
 		private const string _SCRATCHTABLE_ITEMSTART = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";

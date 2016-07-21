@@ -337,7 +337,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			int artifactId = 741;
 			int typeId = 9874;
-			int filterType = 666;
 			int documentFieldArtifactId = 6666;
 
 			// throw exception the first time. returns a type id after the object type is created.

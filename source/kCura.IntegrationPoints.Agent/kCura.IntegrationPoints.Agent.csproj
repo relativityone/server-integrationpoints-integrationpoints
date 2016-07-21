@@ -23,6 +23,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TIME_MACHINE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -60,7 +61,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils">
-      <HintPath>..\bin\UnitTests\kCura.IntegrationPoint.Tests.Core\kCura.Apps.Common.Utils.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Config.dll</HintPath>

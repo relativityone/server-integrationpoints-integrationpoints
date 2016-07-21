@@ -8,13 +8,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
     public class NullReporter : IBatchReporter
     {
-        public event BatchCompleted OnBatchComplete;
-        public event BatchSubmitted OnBatchSubmit;
-        public event BatchCreated OnBatchCreate;
-        public event StatusUpdate OnStatusUpdate;
-        public event JobError OnJobError;
-        public event RowError OnDocumentError;
-    }
+        public event BatchCompleted OnBatchComplete { add { } remove { } }
+		public event BatchSubmitted OnBatchSubmit { add { } remove { } }
+		public event BatchCreated OnBatchCreate { add { } remove { } }
+		public event StatusUpdate OnStatusUpdate { add { } remove { } }
+		public event JobError OnJobError { add { } remove { } }
+		public event RowError OnDocumentError { add { } remove { } }
+	}
 
     public class JobStatisticsService
     {

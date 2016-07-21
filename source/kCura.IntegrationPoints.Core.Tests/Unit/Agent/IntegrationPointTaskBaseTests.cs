@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			base.IntegrationPoint = ip;
 		}
 
-		public List<string> GetRecipientEmails()
+		public new List<string> GetRecipientEmails()
 		{
 			return base.GetRecipientEmails();
 		}

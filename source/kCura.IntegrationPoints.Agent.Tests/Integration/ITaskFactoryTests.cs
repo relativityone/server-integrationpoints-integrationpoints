@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			// arrange
 			Job tempJob = JobExtensions.CreateJob();
-			Exception excep = null;
 			IAgentHelper helper = Substitute.For<IAgentHelper>();
 			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = new kCura.IntegrationPoints.Data.IntegrationPoint();
 			TaskParameters paramerters = new TaskParameters();

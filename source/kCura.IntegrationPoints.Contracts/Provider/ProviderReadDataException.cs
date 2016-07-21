@@ -32,18 +32,34 @@ namespace kCura.IntegrationPoints.Contracts.Provider
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public ProviderReadDataException() : base()
 		{
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public ProviderReadDataException(string message) : base(message)
 		{
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="innerException"></param>
 		public ProviderReadDataException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
 		public ProviderReadDataException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}

@@ -34,7 +34,9 @@ namespace kCura.IntegrationPoints.Core.Domain
 		{
 			try
 			{
+#pragma warning disable 612
 				_synchronizer.SyncData(data, fieldMap, options);
+#pragma warning restore 612
 			}
 			catch (Exception e)
 			{

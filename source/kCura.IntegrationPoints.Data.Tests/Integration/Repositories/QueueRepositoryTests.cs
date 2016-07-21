@@ -565,7 +565,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void GetNumberOfJobsExecuting_ActiveScheduledJobInQueue()
 		{
 			Job schedualedJob = null;
-			Job job = null;
 			try
 			{
 				// arrange
@@ -595,7 +594,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			const int agentId = 789456;
 			Job schedualedJob = null;
-			Job job = null;
 			try
 			{
 				// arrange

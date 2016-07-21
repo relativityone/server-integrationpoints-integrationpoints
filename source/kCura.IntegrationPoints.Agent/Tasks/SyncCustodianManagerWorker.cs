@@ -138,7 +138,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 base.SetupJobHistoryErrorSubscriptions(dataSynchronizer, job);
 
+#pragma warning disable 612
                 dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
+#pragma warning restore 612
 
                 if (missingManagers.Any())
                 {

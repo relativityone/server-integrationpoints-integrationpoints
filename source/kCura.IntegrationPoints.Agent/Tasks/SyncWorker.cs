@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
     public class SyncWorker : IntegrationPointTaskBase, ITask
     {
-		internal IJobHistoryService _jobHistoryService;
+		internal new IJobHistoryService _jobHistoryService;
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
 
@@ -203,7 +203,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             SetupSubscriptions(dataSynchronizer, job);
 
 			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+#pragma warning disable 612
 			dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+#pragma warning restore 612
 		}
 
 		private void InjectErrors()

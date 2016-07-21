@@ -18,13 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	[Category("Integration Tests")]
 	public class ImportTest : SourceProviderTemplate
 	{
-		private IObjectTypeRepository _objectTypeRepository;
-		private IWebDriver _webDriver;
-
-		private int _userCreated;
-		private string _email;
-		private int _groupId;
-
 		public ImportTest(): base("Import Test")
 		{
 		}

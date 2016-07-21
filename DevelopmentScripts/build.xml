@@ -1,8 +1,254 @@
 ﻿<BuildTools>
   <BuildHelper>
     <Projects>
-      <Build />
-      <Ignore />
+      <Build>
+        <Project path="source\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Core.Contracts.Tests\kCura.IntegrationPoints.Core.Contracts.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Data.Tests\kCura.IntegrationPoints.Data.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Email\kCura.IntegrationPoints.Email.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FtpProvider.Tests\kCura.IntegrationPoints.FtpProvider.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FtpProvider.Connection\kCura.IntegrationPoints.FtpProvider.Connection.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FtpProvider.Parser\kCura.IntegrationPoints.FtpProvider.Parser.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.LDAPProvider.Tests\kCura.IntegrationPoints.LDAPProvider.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+          <Publish>default.pubxml</Publish>
+        </Project>
+        <Project path="source\kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="source\kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="example\JsonLoader\JsonLoader\JsonLoader.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="example\JsonLoader\JsonLoader.Tests\JsonLoader.Tests.csproj">
+          <Platforms>
+            <Platform>AnyCPU</Platform>
+          </Platforms>
+        </Project>
+        <Project path="example\JsonLoader\JsonWeb\JsonWeb.csproj">
+          <Platforms>
+            <Platform>AnyCPU</Platform>
+          </Platforms>
+          <Publish>pub.pubxml</Publish>
+        </Project>
+        <Project path="example\MyFirstProvider\Provider\Provider.csproj">
+          <Platforms>
+            <Platform>AnyCPU</Platform>
+          </Platforms>
+        </Project>
+        <Project path="example\MyFirstProvider\Web\Web.csproj">
+          <Platforms>
+            <Platform>AnyCPU</Platform>
+          </Platforms>
+          <Publish>pub.pubxml</Publish>
+        </Project>
+      </Build>
+      <Ignore>
+        <Project path="source\kCura.IntegrationPoints.Documentation\kCura.IntegrationPoints.Documentation.shfbproj" />
+        <Project path="source\packages\OpenCover.4.5.3522\SampleSln\Bom\Bom.csproj" />
+        <Project path="source\packages\OpenCover.4.5.3522\SampleSln\BomTest\BomTest.csproj" />
+        <Project path="source\prototypes\GeneratorHelper\GeneratorHelper.vbproj" />
+        <Project path="source\prototypes\kCura.LDAPSync.prototype.datasources\kCura.LDAPSync.prototype.datasources\kCura.LDAPSync.prototype.datasources.csproj" />
+        <Project path="source\Utilities\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber.csproj" />
+      </Ignore>
     </Projects>
     <References>
       <Maps />
@@ -79,6 +325,56 @@
     <DLLs />
   </TestRunner>
   <RAPBuilder>
-    <Applications />
+    <Applications>
+      <Application name="Relativity.IntegrationPoints">
+        <Destination>Applications\RelativityIntegrationPoints.Auto.rap</Destination>
+        <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
+        <Assemblies>
+          <Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.dll</Assembly>
+          <Assembly>bin\kCura.LDAPProvider.dll</Assembly>
+          <Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Services.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.4.241.2\lib\net45\kCura.Image.Viewer.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.4.241.2\lib\net45\kCura.Print.dll</Assembly>
+          <Assembly>packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</Assembly>
+          <Assembly>packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Security.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.Parser.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.Helpers.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.Connection.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
+          <Assembly>packages\SSH.NET.2013.4.7\lib\net40\Renci.SshNet.dll</Assembly>
+        </Assemblies>
+        <ResourceFiles />
+        <CustomPages>
+          <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">source\CustomPages</CustomPage>
+        </CustomPages>
+      </Application>
+      <Application name="MyFirstProvider">
+        <Destination>example\MyFirstProvider\application\MyFirstProvider.rap</Destination>
+        <ApplicationSchema>example\MyFirstProvider\application\application.xml</ApplicationSchema>
+        <Assemblies>
+          <Assembly>ADD ASSEMBLIES</Assembly>
+        </Assemblies>
+        <ResourceFiles />
+        <CustomPages>
+          <CustomPage guid="REPLACEME">Source\CustomPages</CustomPage>
+        </CustomPages>
+      </Application>
+      <Application name="JsonLoader">
+        <Destination>example\JsonLoader\application\JsonLoader.rap</Destination>
+        <ApplicationSchema>example\JsonLoader\application\application.xml</ApplicationSchema>
+        <Assemblies>
+          <Assembly>ADD ASSEMBLIES</Assembly>
+        </Assemblies>
+        <ResourceFiles />
+        <CustomPages>
+          <CustomPage guid="REPLACEME">Source\CustomPages</CustomPage>
+        </CustomPages>
+      </Application>
+    </Applications>
   </RAPBuilder>
 </BuildTools>

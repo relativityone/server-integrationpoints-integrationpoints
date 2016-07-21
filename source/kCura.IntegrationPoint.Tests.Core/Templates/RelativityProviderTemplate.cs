@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return map;
 		}
 
-		protected async Task SetupAsync()
+		protected new async Task SetupAsync()
 		{
 			TargetWorkspaceArtifactId = String.IsNullOrEmpty(_targetWorkspaceName)
 				? SourceWorkspaceArtifactId

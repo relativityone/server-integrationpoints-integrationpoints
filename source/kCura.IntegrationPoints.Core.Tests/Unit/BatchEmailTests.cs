@@ -20,15 +20,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private BatchEmail _testInstance;
 
 		private ICaseServiceContext _caseServiceContext;
-		private IHelper _helper;
-		private IDataProviderFactory _dataProviderFactory;
-		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-		private ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
-		private IJobHistoryService _jobHistoryService;
-		private JobHistoryErrorService _jobHistoryErrorService;
-		private IJobManager _jobManager;
-		private IJobStatusUpdater _jobStatusUpdater;
-		private KeywordConverter _converter;
+		private IHelper _helper = null;
+		private IDataProviderFactory _dataProviderFactory = null;
+		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer = null;
+		private ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory = null;
+		private IJobHistoryService _jobHistoryService = null;
+		private JobHistoryErrorService _jobHistoryErrorService = null;
+		private IJobManager _jobManager = null;
+		private IJobStatusUpdater _jobStatusUpdater = null;
+		private KeywordConverter _converter = null;
 
 		private IRSAPIService _rsapiService;
 		private IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
