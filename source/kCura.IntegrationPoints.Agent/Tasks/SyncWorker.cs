@@ -21,6 +21,8 @@ using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.Method.Injection;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -42,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
           ICaseServiceContext caseServiceContext,
           IHelper helper,
           IDataProviderFactory dataProviderFactory,
-          kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+          ISerializer serializer,
           ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
                 IJobHistoryService jobHistoryService,
           JobHistoryErrorService jobHistoryErrorService,
@@ -77,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                kCura.Method.Injection.InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
+                InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
                 SetIntegrationPoint(job);
 
@@ -85,7 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 SetJobHistory();
 
-                kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
+                InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
                 if (!this.IntegrationPoint.SourceProvider.HasValue)
                 {
@@ -208,7 +210,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
+                InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
             }
             catch (Exception ex)
             {
@@ -217,7 +219,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             try
             {
-                kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
+                InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
             }
             catch (Exception ex)
             {

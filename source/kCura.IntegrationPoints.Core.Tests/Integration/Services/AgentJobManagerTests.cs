@@ -76,22 +76,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void VerifyCheckBatchOnCompleteTrue()
 		{
 			//Arrange
-			IntegrationModel integrationModel = new IntegrationModel
-			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = "CheckBatchOnComplete" + DateTime.Now,
-				SelectedOverwrite = "Append Only",
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				},
-				Map = CreateDefaultFieldMap()
-			};
-
+			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "test", "Append Only");
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			int jobId = 1;
@@ -99,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId, rootJobId);
 
 			Guid batchInstance = Guid.NewGuid();
-			string scratchTableSuffix = $"{ SourceWorkspaceArtifactId }_{ rootJobId }_{ batchInstance }";
+			string scratchTableSuffix = $"{SourceWorkspaceArtifactId}_{rootJobId}_{batchInstance}";
 			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
 
 			_jobTracker.CreateTrackingEntry(job, batchInstance.ToString());
@@ -115,22 +100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void VerifyCheckBatchOnCompleteFalse()
 		{
 			//Arrange
-			IntegrationModel integrationModel = new IntegrationModel
-			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = "CheckBatchOnComplete" + DateTime.Now,
-				SelectedOverwrite = "Append Only",
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				},
-				Map = CreateDefaultFieldMap()
-			};
-
+			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "CheckBatchOnCompleteFalse", "Append Only");
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			int jobId = 10;
@@ -139,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId, rootJobId);
 			Job job2 = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId2, rootJobId);
 			Guid batchInstance = Guid.NewGuid();
-			string scratchTableSuffix = $"{ SourceWorkspaceArtifactId }_{ rootJobId }_{ batchInstance }";
+			string scratchTableSuffix = $"{SourceWorkspaceArtifactId}_{rootJobId}_{batchInstance}";
 			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
 			_jobTracker.CreateTrackingEntry(job, batchInstance.ToString());
 			_jobTracker.CreateTrackingEntry(job2, batchInstance.ToString());
@@ -155,22 +125,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void VerifyDeleteJob()
 		{
 			//Arrange
-			IntegrationModel integrationModel = new IntegrationModel
-			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = "DeleteJob" + DateTime.Now,
-				SelectedOverwrite = "Append Only",
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				},
-				Map = CreateDefaultFieldMap()
-			};
-
+			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "Delete", "Append Only");
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			int jobId = 1;

@@ -26,7 +26,9 @@ using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-    public interface ITaskFactory
+	using global::kCura.IntegrationPoints.Agent.kCura.IntegrationPoints.Agent;
+
+	public interface ITaskFactory
     {
         ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
 
@@ -42,9 +44,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _helper = helper;
         }
 
-        private WindsorContainer _container;
+		public TaskFactory(IAgentHelper helper, IWindsorContainer container) : this(helper)
+		{
+			this.Container = container;
+		}
 
-        private WindsorContainer Container
+		private IWindsorContainer _container;
+
+        private IWindsorContainer Container
         {
             get { return _container ?? (_container = new WindsorContainer()); }
             set { _container = value; }
@@ -86,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 TaskType taskType;
                 Enum.TryParse(job.TaskType, true, out taskType);
-                kCura.Method.Injection.InjectionManager.Instance.Evaluate("0b42a5bb-84e9-4fe8-8a75-1c6fbc0d4195");
+                //kCura.Method.Injection.InjectionManager.Instance.Evaluate("0b42a5bb-84e9-4fe8-8a75-1c6fbc0d4195");
                 switch (taskType)
                 {
                     case TaskType.SyncManager:

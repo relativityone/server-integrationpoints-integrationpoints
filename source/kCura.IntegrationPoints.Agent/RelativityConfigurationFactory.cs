@@ -1,30 +1,33 @@
-﻿using System;
-using kCura.IntegrationPoints.Email;
+﻿using kCura.IntegrationPoints.Email;
+using System;
+using kCura.Apps.Common.Config.Sections;
 
 namespace kCura.IntegrationPoints.Agent
 {
-	public class RelativityConfigurationFactory
+	namespace kCura.IntegrationPoints.Agent
 	{
-		public EmailConfiguration GetConfiguration()
+		public class RelativityConfigurationFactory
 		{
-			EmailConfiguration config = null;
-			try
+			public EmailConfiguration GetConfiguration()
 			{
-				config = new EmailConfiguration
+				EmailConfiguration config = null;
+				try
 				{
-					Domain = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPServer,
-					Password = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPassword,
-					Port = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPort,
-					UserName = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPUserName,
-					UseSSL = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPSSLisRequired
-				};
+					config = new EmailConfiguration
+					{
+						Domain = NotificationConfig.SMTPServer,
+						Password = NotificationConfig.SMTPPassword,
+						Port = NotificationConfig.SMTPPort,
+						UserName = NotificationConfig.SMTPUserName,
+						UseSSL = NotificationConfig.SMTPSSLisRequired
+					};
+				}
+				catch (Exception)
+				{
+					// DO NOT THROW EXCEPTION HERE
+				}
+				return config;
 			}
-			catch (Exception)
-			{ 
-				// DO NOT THROW EXCEPTION HERE
-			}
-			return config;
-
 		}
 	}
 }

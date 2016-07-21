@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services
 							: string.Format("{0} Type: {1}    Identifier: {2}    Error: {3}", x.TimestampUTC, x.ErrorType.Name,
 								x.SourceUniqueID, x.Error))).ToList();
 					allErrors = String.Join(Environment.NewLine, errorList.ToArray());
-					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.PrintErrorMessage());
+					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessages());
 					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void AddError(Relativity.Client.Choice errorType, Exception ex)
 		{
-			AddError(errorType, string.Empty, ex.Message, ex.PrintErrorMessage());
+			AddError(errorType, string.Empty, ex.Message, ex.FlattenErrorMessages());
 		}
 
 		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)

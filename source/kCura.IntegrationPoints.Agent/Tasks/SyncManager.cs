@@ -16,9 +16,14 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using kCura.Apps.Common.Utils.Serializers;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
+	using global::kCura.Method.Injection;
+
+	using Config = global::kCura.IntegrationPoints.Config.Config;
+
 	public class SyncManager : BatchManagerBase<string>, IDisposable
 	{
 		private ICaseServiceContext _caseServiceContext;
@@ -28,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IHelper _helper;
 		private IIntegrationPointService _integrationPointService;
 		private IScheduleRuleFactory _scheduleRuleFactory;
-		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private ISerializer _serializer;
 		private IGuidService _guidService;
 		private IJobHistoryService _jobHistoryService;
 		private JobHistoryErrorService _jobHistoryErrorService;
@@ -47,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobService jobService,
 			IHelper helper,
 			IIntegrationPointService integrationPointService,
-			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+			ISerializer serializer,
 			IGuidService guidService,
 			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
@@ -80,7 +85,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override int BatchSize
 		{
-			get { return kCura.IntegrationPoints.Config.Config.Instance.BatchSize; }
+			get { return Config.Instance.BatchSize; }
 		}
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
@@ -164,7 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
+				InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
 
 				this.BatchInstance = GetBatchInstance(job);
 				if (job.RelatedObjectArtifactID < 1)
@@ -180,7 +185,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
 				_jobHistoryErrorService.JobHistory = this.JobHistory;
 				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
+				InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
 
 				if (!this.JobHistory.StartTimeUTC.HasValue)
 				{
