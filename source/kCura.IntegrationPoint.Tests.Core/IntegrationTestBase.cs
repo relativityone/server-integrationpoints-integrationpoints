@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -24,6 +25,63 @@ namespace kCura.IntegrationPoint.Tests.Core
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
 			_help = new Lazy<ITestHelper>(() => new TestHelper());
+		}
+
+		public virtual void SuiteSetup() {}
+
+		[TestFixtureTearDown]
+		public virtual void SuiteTeardown() {}
+
+		public virtual void TestSetup() {}
+
+		[TearDown]
+		public virtual void TestTeardown() {}
+
+		[TestFixtureSetUp]
+		public void InitiateSuiteSetup()
+		{
+			try
+			{
+				SuiteSetup();
+			}
+			catch (Exception setupException)
+			{
+				try
+				{
+					SuiteTeardown();
+				}
+				catch (Exception teardownException)
+				{
+					Exception[] exceptions = new[] { setupException, teardownException };
+					throw new AggregateException(exceptions);
+				}
+
+				throw;
+			}
+		}
+
+
+		[SetUp]
+		public void InitiatTestSetup()
+		{
+			try
+			{
+				TestSetup();
+			}
+			catch (Exception setupException)
+			{
+				try
+				{
+					TestTeardown();
+				}
+				catch (Exception teardownException)
+				{
+					Exception[] exceptions = new[] { setupException, teardownException };
+					throw new AggregateException(exceptions);
+				}
+
+				throw;
+			}
 		}
 	}
 }

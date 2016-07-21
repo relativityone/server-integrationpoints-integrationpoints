@@ -25,20 +25,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private string _email;
 		private int _groupId;
 
-		public PermissionErrorMessageTest()
-			: base("Error Source", "Error Target Workspace")
+		public PermissionErrorMessageTest() : base("Error Source", "Error Target Workspace")
 		{
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
 		}
 
-		[SetUp]
-		public void TestSetUp()
+		public override void TestSetup()
 		{
 			_webDriver = new ChromeDriver();
 			string groupName = "Permission Group" + DateTime.Now;
@@ -253,8 +250,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
 
 
-		[TearDown]
-		public void TestTearDown()
+		public override void TestTeardown()
 		{
 			_webDriver.CloseSeleniumBrowser();
 			User.DeleteUser(_userCreated);

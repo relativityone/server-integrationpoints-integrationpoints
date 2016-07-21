@@ -30,15 +30,18 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 		}
 
-		[TestFixtureSetUp]
-		[Explicit]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 			_toggle = Substitute.For<IExtendedRelativityToggle>();
+		}
+
+		public override void TestTeardown()
+		{
+			_currentScratchTableRepository.Dispose();
 		}
 
 		[TestCase(true, 2001)]
@@ -291,12 +294,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				throw new Exception($"Error: {tableName} still exists and was not properly disposed.");
 			}
-		}
-
-		[TearDown]
-		public void TestTearDown()
-		{
-			_currentScratchTableRepository.Dispose();
 		}
 	}
 }

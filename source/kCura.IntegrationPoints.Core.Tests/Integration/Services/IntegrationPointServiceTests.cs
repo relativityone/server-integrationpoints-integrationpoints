@@ -1,5 +1,4 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
@@ -14,7 +13,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
@@ -33,13 +31,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
 
-		public IntegrationPointServiceTests()
-			: base("IntegrationPointService Source", null)
+		public IntegrationPointServiceTests() : base("IntegrationPointService Source", null)
 		{
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();

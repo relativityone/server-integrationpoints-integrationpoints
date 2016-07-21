@@ -37,8 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>(); ;
 			_jobService = Container.Resolve<IJobService>();
@@ -50,8 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_manager = new AgentJobManager(_eddsServiceContext, _jobService, _serializer, _jobTracker);
 		}
 
-		[TearDown]
-		public void DisposeScratchTable()
+		public override void TestTeardown()
 		{
 			if (this._scratchTableRepository != null)
 			{

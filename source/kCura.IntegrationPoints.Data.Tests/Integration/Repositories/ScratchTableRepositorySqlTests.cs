@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -22,13 +21,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private const string _PREFIX = "prefix";
 		private const string _SUFFIX = "_suffix";
 
-		public ScratchTableRepositorySqlTests()
-			: base("Scratch table", null)
+		public ScratchTableRepositorySqlTests() : base("Scratch table", null)
 		{
 		}
 
-		[SetUp]
-		public void Setup()
+		public override void TestSetup()
 		{
 			_dbContext = Substitute.For<IDBContext>();
 			_helper = Substitute.For<IHelper>();

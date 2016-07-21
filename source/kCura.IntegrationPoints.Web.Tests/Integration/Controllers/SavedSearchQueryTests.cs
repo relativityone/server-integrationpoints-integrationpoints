@@ -35,15 +35,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		{
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 		}
 
-		[SetUp]
-		public void TestSetup()
+		public override void TestSetup()
 		{
 			_groupIds = new List<int>();
 			_userIds = new List<int>();
@@ -52,8 +50,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 			_htmlSanitizerManage.Sanitize(Arg.Any<string>()).Returns(new SanitizeResult() { CleanHTML = "Bla", HasErrors = false });
 		}
 
-		[TearDown]
-		public void TestTearDown()
+		public override void TestTeardown()
 		{
 			Helper.RelativityUserName = SharedVariables.RelativityUserName;
 			foreach (var artifactId in _savedSearchesArtifactIds)

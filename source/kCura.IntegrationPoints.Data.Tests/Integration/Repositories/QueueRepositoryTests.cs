@@ -23,13 +23,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IQueueRepository _queueRepo;
 		private IJobService _jobService;
 
-		public QueueRepositoryTests()
-			: base("QueueRepositoryTests", null)
+		public QueueRepositoryTests() : base("QueueRepositoryTests", null)
 		{
 		}
 
-		[SetUp]
-		public void SetUp()
+		public override void TestSetup()
 		{
 			_jobService = Container.Resolve<IJobService>();
 			_helper = new TestHelper();

@@ -30,8 +30,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId);
@@ -42,8 +41,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_fieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteTeardown()
+		public override void SuiteTeardown()
 		{
 			_scratchTableRepository.Dispose();
 		}

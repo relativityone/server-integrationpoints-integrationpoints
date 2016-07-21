@@ -242,7 +242,7 @@ var IP = IP || {};
 
 		this.artifactTypeID = ko.observable().extend({ required: true });
    
-		this.selectedDestinationType.subscribe(function () {
+		this.selectedDestinationType.subscribe(function (selectedValue) {
 			if (parentModel.hasBeenRun()) {
 				parentModel.source.isSourceProviderDisabled(true);
 			} else {
