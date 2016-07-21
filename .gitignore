@@ -66,3 +66,4 @@ DevelopmentScripts/NUnit*
 BuildLogs
 PDBs
 Applications/*.nuspec
+source/.vs/
