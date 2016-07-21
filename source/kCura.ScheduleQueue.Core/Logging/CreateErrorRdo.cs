@@ -15,7 +15,7 @@ namespace kCura.ScheduleQueue.Core.Logging
 
 		public void Execute(Job job, Exception ex, string source)
 		{
-			Execute(job.WorkspaceID, source, ex.Message, ex.PrintErrorMessage());
+			Execute(job.WorkspaceID, source, ex.Message, ex.FlattenErrorMessages());
 		}
 
 		public void Execute(int workspaceId, string source, string errorMessage, string stackTrace)
