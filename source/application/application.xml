@@ -1493,7 +1493,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-07-21T18:42:31.1007015Z</ExtractionDate>
+  <ExtractionDate>2016-07-22T13:53:12.5494441Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -8914,7 +8914,7 @@
       <DefaultInterval>5</DefaultInterval>
       <DefaultLogging>1</DefaultLogging>
       <MinInstanceEnvironment>0</MinInstanceEnvironment>
-      <MaxInstanceEnvironment>0</MaxInstanceEnvironment>
+      <MaxInstanceEnvironment>4</MaxInstanceEnvironment>
       <MinInstanceServer>0</MinInstanceServer>
       <MaxInstanceServer>0</MaxInstanceServer>
       <MinInstanceResourcePool>0</MinInstanceResourcePool>
