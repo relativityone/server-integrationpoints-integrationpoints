@@ -30,18 +30,18 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 		}
 
-		public void CreateQueueTable()
+		public void InstallQueueTable()
 		{
 			new CreateScheduleQueueTable(QDBContext).Execute();
+			new AddStopStateColumnToQueueTable(QDBContext).Execute();
 		}
 
 		public void CreateQueueTableOnce()
 		{
 			if (!_creationOfQTableHasRun)
 			{
-				CreateQueueTable();
+				InstallQueueTable();
 			}
-
 			_creationOfQTableHasRun = true;
 		}
 

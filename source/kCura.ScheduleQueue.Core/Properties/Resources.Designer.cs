@@ -61,18 +61,49 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to /****** 
+        ///Script Date:		7/25/2016
+        ///Script Creator:		Sorawit Amornborvornwong
+        ///Script Description:	Adding cancel state column onto the schedule queue table.
+        ///******/
+        ///
+        ///USE [EDDS]
+        ///
+        ///SET ANSI_NULLS ON
+        ///SET QUOTED_IDENTIFIER ON
+        ///
+        ///IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N&apos;[eddsdbo].[{0}]&apos;) AND type in (N&apos;U&apos;))
+        ///BEGIN
+        ///	RAISERROR(&apos;{0} does not exist&apos;, 18, 1)
+        ///END
+        ///
+        ///IF EXISTS(
+        ///    SELECT *
+        ///    FROM sys.columns 
+        ///    WHERE Name      = N&apos;StopState&apos;
+        ///      AND Object_ID = Object_ID(N [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string AddStopStateColumnToQueueTable {
+            get {
+                return ResourceManager.GetString("AddStopStateColumnToQueueTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to --If an agent was deleted while a job was running and not completed, we remove the agent lock
         ///--from the job so that another agent can pick it up.
         ///
-        ///UPDATE [eddsdbo].[{0}] WITH(UPDLOCK, ROWLOCK, READPAST)
-        ///SET [LockedByAgentID] = NULL
-        ///WHERE JobID IN (
-        ///	SELECT SAQ.[JobID]
-        ///	FROM [eddsdbo].[{0}] as SAQ WITH(UPDLOCK, ROWLOCK, READPAST)
-        ///	LEFT JOIN [eddsdbo].[Agent] as A WITH(NOLOCK)
-        ///	ON SAQ.[AgentTypeID] = A.[AgentTypeArtifactID]
-        ///	WHERE SAQ.[LockedByAgentID] NOT IN (A.ArtifactID)
-        ///).
+        ///DECLARE @agentArtifactIds TABLE(ArtifactId int)
+        ///
+        ///INSERT INTO @agentArtifactIds
+        ///SELECT A.[ArtifactID]
+        ///FROM [eddsdbo].[Agent] as A WITH(NOLOCK)
+        ///INNER JOIN [eddsdbo].[AgentType] as AT WITH(NOLOCK)
+        ///ON A.[AgentTypeArtifactID] = AT.[ArtifactID]
+        ///WHERE AT.[Guid] = @agentGuid
+        ///
+        ///UPDATE [eddsdbo].[{0}] WITH(UPDLOCK, READPAST, ROWLOCK)
+        ///SET [LockedByAgentID] = NU [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CleanupJobQueueTable {
             get {

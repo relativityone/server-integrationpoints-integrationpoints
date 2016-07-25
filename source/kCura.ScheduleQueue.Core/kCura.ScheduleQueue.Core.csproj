@@ -162,6 +162,7 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentTypeInformation.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\AddStopStateColumnToQueueTable.cs" />
     <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
     <Compile Include="Data\Queries\CreateJobLogTable.cs" />
     <Compile Include="Data\Queries\InsertJobLogEntry.cs" />
@@ -211,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
+    <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />
@@ -226,8 +228,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
