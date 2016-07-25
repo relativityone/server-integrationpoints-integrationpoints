@@ -221,6 +221,7 @@
     <Content Include="Data\Resources\GetJobByRelatedObjectID.sql" />
     <Content Include="Data\Resources\GetJobByID.sql" />
     <Content Include="Data\Resources\CreateScheduledJob.sql" />
+    <Content Include="Data\Resources\UpdateStopState.sql" />
     <Content Include="Data\Resources\UpdateScheduledJob.sql" />
     <Content Include="Data\Resources\GetAgentTypeInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />

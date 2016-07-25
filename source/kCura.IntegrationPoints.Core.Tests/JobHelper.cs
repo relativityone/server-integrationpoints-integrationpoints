@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		{
 			return GetJob(jobId, rootJobId, parentJobId, agentTypeId, lockedByAgentId, workspaceId, relatedObjectArtifactId,
 				taskType, nextRunTime, lastRunTime, jobDetails, jobFlags, submittedDate, submittedBy, scheduleRuleType,
-				serializedScheduleRule, StopState.Default);
+				serializedScheduleRule, StopState.None);
 		}
 	}
 }

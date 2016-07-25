@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using kCura.Apps.Common.Utils;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
+using kCura.ScheduleQueue.Core.Properties;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Services
@@ -21,7 +22,6 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public IAgentService AgentService { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
-
 
 		public AgentTypeInformation AgentTypeInformation
 		{
@@ -66,7 +66,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
 		{
 			if (job == null)
-				return new FinalizeJobResult() { JobState = JobLogState.Finished};
+				return new FinalizeJobResult() { JobState = JobLogState.Finished };
 			FinalizeJobResult result = new FinalizeJobResult();
 
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
@@ -179,6 +179,15 @@ namespace kCura.ScheduleQueue.Core.Services
 			if (row != null) job = new Job(row);
 
 			return job;
+		}
+
+		public void UpdateStopState(long jobId, StopState state)
+		{
+			string query = String.Format(Resources.UpdateStopState, QDBContext.TableName);
+			List<SqlParameter> sqlParams = new List<SqlParameter>();
+			sqlParams.Add(new SqlParameter("@State", (int)state));
+			sqlParams.Add(new SqlParameter("@JobID", jobId));
+			QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
 		}
 
 		public void CleanupJobQueueTable()

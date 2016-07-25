@@ -77,11 +77,11 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///	RAISERROR(&apos;{0} does not exist&apos;, 18, 1)
         ///END
         ///
-        ///IF EXISTS(
+        ///IF NOT EXISTS(
         ///    SELECT *
         ///    FROM sys.columns 
         ///    WHERE Name      = N&apos;StopState&apos;
-        ///      AND Object_ID = Object_ID(N [rest of string was truncated]&quot;;.
+        ///      AND Object_ID = Object_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string AddStopStateColumnToQueueTable {
             get {
@@ -234,6 +234,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			,[JobFlags]
         ///			,[SubmittedDate]
         ///			,[SubmittedBy]
+        ///			,[StopState]
         ///FROM
         ///			[eddsdbo].[{0}] WITH(NOLOCK)
         ///WHERE
@@ -264,6 +265,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			,[JobFlags]
         ///			,[SubmittedDate]
         ///			,[SubmittedBy]
+        ///			,[StopState]
         ///FROM
         ///			[eddsdbo].[{0}] WITH(NOLOCK)
         ///WHERE
@@ -271,9 +273,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///	AND 
         ///			[RelatedObjectArtifactID] = @RelatedObjectArtifactID
         ///	AND 
-        ///			[TaskType] = @TaskType
-        ///	AND
-        ///			NOT [ [rest of string was truncated]&quot;;.
+        ///			[TaskType] = @TaskTyp [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetJobByRelatedObjectID {
             get {
@@ -373,6 +373,20 @@ namespace kCura.ScheduleQueue.Core.Properties {
         internal static string UpdateScheduledJob {
             get {
                 return ResourceManager.GetString("UpdateScheduledJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE	
+        ///					[eddsdbo].[{0}] 
+        ///SET 
+        ///					[StopState] = @State
+        ///WHERE 
+        ///					[JobID] = @JobID.
+        /// </summary>
+        internal static string UpdateStopState {
+            get {
+                return ResourceManager.GetString("UpdateStopState", resourceCulture);
             }
         }
     }
