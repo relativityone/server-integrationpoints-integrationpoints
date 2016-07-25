@@ -90,6 +90,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			}
 
 			ButtonStateDTO buttonStates = null;
+			OnClickEventDTO onClickEvents = null;
+
 			if (isRelativitySourceProvider)
 			{
 				bool hasJobsExecutingOrInQueue = false;
@@ -98,12 +100,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					RunNowButtonEnabled = hasRunPermissions,
 					RetryErrorsButtonEnabled = hasRunPermissions,
 					ViewErrorsLinkEnabled = hasViewErrorsPermissions
-				};
-				OnClickEventDTO onClickEvents = new OnClickEventDTO()
-				{
-					RunNowOnClickEvent = hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
 				};
 
 				_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(
@@ -115,11 +111,34 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 				_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
-				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue, integrationPointDto.HasErrors.Value, hasViewErrorsPermissions)
+				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue,
+					integrationPointDto.HasErrors.Value, hasViewErrorsPermissions)
 					.Returns(buttonStates);
+
+				onClickEvents = new OnClickEventDTO()
+				{
+					RunNowOnClickEvent = hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					ViewErrorsOnClickEvent =
+						integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
+					CancelOnClickEvent = "TEST"
+				};
 
 				_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
 					.Returns(onClickEvents);
+			}
+			else
+			{
+
+				onClickEvents = new OnClickEventDTO()
+				{
+					RunNowOnClickEvent = $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})",
+					RetryErrorsOnClickEvent = String.Empty,
+					ViewErrorsOnClickEvent = String.Empty,
+					CancelOnClickEvent = "TEST"
+				};
+				_onClickEventHelper.GetOnClickEventsForNonRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID)
+						.Returns(onClickEvents);
 			}
 
 			// ACT
@@ -133,12 +152,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			Assert.IsNotNull(console);
 			if (hasViewErrorsPermissions)
 			{
-				int buttonCount = isRelativitySourceProvider ? 3 : 1;
+				int buttonCount = isRelativitySourceProvider ? 4 : 2;
 				Assert.AreEqual(buttonCount, console.ButtonList.Count, $"There should be {buttonCount} buttons on the console");
 			}
 			else
 			{
-				int buttonCount = isRelativitySourceProvider ? 2 : 1;
+				int buttonCount = isRelativitySourceProvider ? 3 : 2;
 				Assert.AreEqual(buttonCount, console.ButtonList.Count, $"There should be {buttonCount} buttons on the console");
 			}
 
@@ -163,6 +182,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.AreEqual(hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					retryErrorsButton.OnClickEvent);
 
+				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Cancel", cancelButton.DisplayText);
+				Assert.AreEqual(true, cancelButton.Enabled);
+				Assert.AreEqual(onClickEvents.CancelOnClickEvent, cancelButton.OnClickEvent);
+
 				if (hasViewErrorsPermissions)
 				{
 					ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
@@ -176,6 +200,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			{
 				Assert.IsTrue(runNowButton.Enabled);
 				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
+
+				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Cancel", cancelButton.DisplayText);
+				Assert.AreEqual(true, cancelButton.Enabled);
+				Assert.AreEqual(onClickEvents.CancelOnClickEvent, cancelButton.OnClickEvent);
 			}
 		}
 	}
