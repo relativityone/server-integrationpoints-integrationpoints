@@ -57,5 +57,37 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
 			return lastJobHistoryArtifactId;
 		}
+
+		public int[] GetStoppableJobHistoryArtifactIds(int integrationPointArtifactId)
+		{
+			var integrationPointCondition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>() { integrationPointArtifactId });
+			var cancelableCondition = new SingleChoiceCondition(JobHistoryFieldGuids.JobStatus, SingleChoiceConditionEnum.AnyOfThese, new [] { JobStatusChoices.JobHistoryPending.ArtifactGuids.First(), JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First()});
+
+			var query = new Query<RDO>
+			{
+				ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistory),
+				Condition = new CompositeCondition(integrationPointCondition, CompositeConditionEnum.And, cancelableCondition),
+				Fields = new List<FieldValue>()
+				{
+					new FieldValue(new Guid(JobHistoryFieldGuids.IntegrationPoint))
+				}
+			};
+
+			QueryResultSet<RDO> results = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				results = rsapiClient.Repositories.RDO.Query(query);
+			}
+
+			if (!results.Success)
+			{
+				throw new Exception($"Unable to retrieve Job History: {results.Message}");
+			}
+
+			int[] cancelableJobHistoryArtifactIds = results.Results.Select(result => result.Artifact.ArtifactID).ToArray();
+
+			return cancelableJobHistoryArtifactIds;
+		}
 	}
 }

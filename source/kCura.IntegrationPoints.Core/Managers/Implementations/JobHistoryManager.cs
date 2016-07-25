@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -17,6 +16,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
 			return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
+		}
+
+		public int[] GetStoppableJobHistoryArtifactIds(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
+			return jobHistoryRepository.GetStoppableJobHistoryArtifactIds(integrationPointArtifactId);
 		}
 	}
 }

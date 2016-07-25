@@ -43,6 +43,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			Assert.AreEqual(expectedLastTwoJobHistoryIds, result);
 		}
 
+		[Test]
+		public void GetCancelableJobHistoryArtifactIds_GoldFlow()
+		{
+			// ARRANGE
+			int integrationPointArtifactId = 1322131;
+			int[] jobHistoryIds = {234323, 980934};
+			_jobHistoryRepository.GetStoppableJobHistoryArtifactIds(integrationPointArtifactId).Returns(jobHistoryIds);
+
+			// ACT
+			int[] result = _testInstance.GetStoppableJobHistoryArtifactIds(_WORKSPACE_ID, integrationPointArtifactId);
+
+			// ASSERT
+			Assert.AreEqual(jobHistoryIds, result);
+		}
+
 
 	}
 

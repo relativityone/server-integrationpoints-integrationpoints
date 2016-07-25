@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -30,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private readonly ICaseServiceContext _context;
 		private readonly IContextContainer _contextContainer;
-		private readonly IRepositoryFactory _repositoryFactory;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly IChoiceQuery _choiceQuery;
@@ -49,7 +47,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			IManagerFactory managerFactory)
 		{
 			_context = context;
-			_repositoryFactory = repositoryFactory;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
@@ -459,6 +456,24 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
 		}
 
+		public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+			int[] stoppableArtifactIds = jobHistoryManager.GetStoppableJobHistoryArtifactIds(workspaceArtifactId, integrationPointArtifactId);
+
+			foreach (int artifactId in stoppableArtifactIds)
+			{
+				var jobHistoryRdo = new Data.JobHistory()
+				{
+					ArtifactId = artifactId,
+					JobStatus = JobStatusChoices.JobHistoryStopping
+				};
+
+				// TODO: update the job table to mark for cancel
+				_jobHistoryService.UpdateRdo(jobHistoryRdo);				
+			}
+		}
+
 		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
@@ -549,20 +564,27 @@ namespace kCura.IntegrationPoints.Core.Services
 				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
 				// If the Relativity provider is selected, we need to create an export task
-				TaskType jobTaskType =
-					sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
-						? TaskType.ExportService
-						: TaskType.SyncManager;
-
-	            var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-	            if (importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
-	            {
-	                jobTaskType = TaskType.ExportManager;
-	            }
+				TaskType jobTaskType = GetJobTaskType(integrationPoint, sourceProvider);
 
 				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 			}
+		}
+
+		private TaskType GetJobTaskType(IntegrationPoint integrationPoint, SourceProvider sourceProvider)
+		{
+			TaskType jobTaskType =
+				sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
+					? TaskType.ExportService
+					: TaskType.SyncManager;
+
+			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+			if (
+				importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
+			{
+				jobTaskType = TaskType.ExportManager;
+			}
+			return jobTaskType;
 		}
 
 		private void CheckForProviderAdditionalPermissions(IntegrationPoint integrationPoint, Constants.SourceProvider providerType, int userId)
