@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Run(Payload payload)
 		{
-			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RunIntegrationPoint);
+			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
 		}
 
@@ -32,11 +32,39 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Retry(Payload payload)
 		{
-			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RetryIntegrationPoint);
+			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, _integrationPointService.RetryIntegrationPoint);
 			return httpResponseMessage;
 		}
 
-		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
+		// POST API/Job/Stop
+		[HttpPost]
+		public HttpResponseMessage Stop(Payload payload)
+		{
+			string errorMessage = String.Empty;
+			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
+			try
+			{
+				_integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
+			}
+			catch (AggregateException exception)
+			{
+				IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
+				errorMessage = $"{exception.Message} : {String.Join(",", innerExceptions)}";
+				httpStatusCode = HttpStatusCode.BadRequest;
+			}
+			catch (Exception exception)
+			{
+				errorMessage = exception.Message;
+				httpStatusCode = HttpStatusCode.BadRequest;
+			}
+
+			HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
+			response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+
+			return response;
+		}
+
+		private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
 		{
 			string errorMessage = String.Empty;
 			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
