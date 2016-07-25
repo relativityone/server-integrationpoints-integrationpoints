@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IJobService _jobService;
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly JobTracker _tracker;
+
 		public AgentJobManager(IEddsServiceContext context, IJobService jobService, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, JobTracker tracker)
 		{
 			_context = context;
@@ -46,7 +47,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			this.CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 		}
 
-	
 		public void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
 		{
 			Job job = this.CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, _context.UserID, GetRootJobId(parentJob), parentJob.JobId);
@@ -93,11 +93,12 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
 			}
 		}
-		
+
 		public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
 			return _jobService.GetScheduledJob(workspaceID, relatedObjectArtifactID, taskName);
 		}
+
 		public void DeleteJob(long jobID)
 		{
 			try
@@ -109,6 +110,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
 			}
 		}
+
 		public static long? GetRootJobId(Job parentJob)
 		{
 			long? rootJobId = parentJob.RootJobId;
@@ -117,5 +119,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			return rootJobId;
 		}
+
+		
 	}
 }

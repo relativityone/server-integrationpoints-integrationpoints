@@ -95,6 +95,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			table.Columns.Add(new DataColumn("SubmittedBy", typeof(int)));
 			table.Columns.Add(new DataColumn("ScheduleRuleType", typeof(string)));
 			table.Columns.Add(new DataColumn("ScheduleRule", typeof(string)));
+			table.Columns.Add(new DataColumn("StopState", typeof(int)));
 
 			DataRow jobData = table.NewRow();
 			jobData["JobID"] = default(long);
@@ -113,6 +114,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["SubmittedBy"] = default(int);
 			jobData["ScheduleRuleType"] = default(string);
 			jobData["ScheduleRule"] = default(string);
+			jobData["StopState"] = default(int);
 
 			return jobData;
 		}
