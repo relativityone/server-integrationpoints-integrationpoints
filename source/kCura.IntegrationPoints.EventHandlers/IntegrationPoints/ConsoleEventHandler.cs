@@ -67,9 +67,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
+				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.CancelOnClickEvent);
 
 				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
+				buttonList.Add(cancelButton);
 
 				if (canViewErrors)
 				{
@@ -79,8 +81,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 			else
 			{
-				ConsoleButton runNowButton = GetRunNowButton();
+				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForNonRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID);
+				ConsoleButton runNowButton = GetRunNowButton(onClickEvents.RunNowOnClickEvent);
+				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.CancelOnClickEvent);
+
 				buttonList.Add(runNowButton);
+				buttonList.Add(cancelButton);
 			}
 
 			console.ButtonList = buttonList;
@@ -88,14 +94,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return console;
 		}
 
-		private ConsoleButton GetRunNowButton()
+		private ConsoleButton GetCancelButton(bool isEnabled, string onClickEvent)
+		{
+			return new ConsoleButton()
+			{
+				DisplayText = "Cancel",
+				RaisesPostBack = false,
+				Enabled = isEnabled,
+				OnClickEvent = onClickEvent
+			};
+		}
+
+		private ConsoleButton GetRunNowButton(string onClickEvent)
 		{
 			return new ConsoleButton
 			{
 				DisplayText = "Run Now",
 				RaisesPostBack = false,
 				Enabled = true,
-				OnClickEvent = $"IP.importNow({ActiveArtifact.ArtifactID},{Application.ArtifactID})"
+				OnClickEvent = onClickEvent
 			};
 		}
 

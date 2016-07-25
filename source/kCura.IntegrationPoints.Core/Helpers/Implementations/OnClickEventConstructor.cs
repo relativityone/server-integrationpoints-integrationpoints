@@ -28,7 +28,19 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			{
 				RunNowOnClickEvent = runNowEvent,
 				RetryErrorsOnClickEvent = retryErrorsEvent,
-				ViewErrorsOnClickEvent = viewErrorsEvent
+				ViewErrorsOnClickEvent = viewErrorsEvent,
+				CancelOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
+			};
+		}
+
+		public OnClickEventDTO GetOnClickEventsForNonRelativityProvider(int workspaceId, int integrationPointId)
+		{
+			return new OnClickEventDTO()
+			{
+				RunNowOnClickEvent = $"IP.importNow({integrationPointId},{workspaceId})",
+                RetryErrorsOnClickEvent = String.Empty,
+				ViewErrorsOnClickEvent = String.Empty,
+				CancelOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
 			};
 		}
 
