@@ -7,6 +7,6 @@ namespace kCura.ScheduleQueue.Core.Core
 	{
 		None = 0,
 		Stopping = 1,
-		Stopped = 1 << 1
+		Unstoppable = 1 << 1
 	}
 }

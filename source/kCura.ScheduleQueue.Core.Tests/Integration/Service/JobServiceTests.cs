@@ -65,11 +65,22 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		[Test]
 		public void UpdateStopState_JobDoesNotExist()
 		{
-			Assert.Throws<SqlException>(() => _instance.UpdateStopState(987654321, StopState.Stopping));
+			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(987654321, StopState.Stopping));
+		}
+
+
+		[Test]
+		public void CreateJob_NoneStopingState()
+		{
+			// act
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+
+			// assert
+			Assert.AreEqual(job.StopState, StopState.None);
 		}
 
 		[Test]
-		public void UpdateStopState_TryToUpdateUnstoppableJob()
+		public void UpdateStopState_GoldFlow_Stopping()
 		{
 			// arrange
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
@@ -80,6 +91,32 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			// assert
 			Job updatedJob = _instance.GetJob(job.JobId);
 			Assert.AreEqual(updatedJob.StopState, StopState.Stopping);
+		}
+
+		[Test]
+		public void UpdateStopState_GoldFlow_Unstoppable()
+		{
+			// arrange
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+
+			// act
+			_instance.UpdateStopState(job.JobId, StopState.Unstoppable);
+
+			// assert
+			Job updatedJob = _instance.GetJob(job.JobId);
+			Assert.AreEqual(updatedJob.StopState, StopState.Unstoppable);
+		}
+
+
+		[Test]
+		public void UpdateStopState_DoNotAllowStopOnAnUnstoppableJob()
+		{
+			// arrange
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+			_instance.UpdateStopState(job.JobId, StopState.Unstoppable);
+
+			// act & assert
+			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(job.JobId, StopState.Stopping));
 		}
 	}
 }
