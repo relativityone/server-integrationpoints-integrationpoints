@@ -258,6 +258,8 @@ namespace kCura.IntegrationPoints.Data
 		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c"), @"Completed");
 		public static Choice JobHistoryCompletedWithErrors = new Choice(Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37"), @"Completed with errors");
 		public static Choice JobHistoryErrorJobFailed = new Choice(Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63"), @"Error - job failed");
+		public static Choice JobHistoryStopping = new Choice(Guid.Parse("97c1410d-864d-4811-857b-952464872baa"), @"Stopping");
+		public static Choice JobHistoryStopped = new Choice(Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3"), @"Stopped");
 	}
 
 	public partial class JobTypeChoices
