@@ -1,0 +1,51 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
+using NSubstitute;
+using NUnit.Framework;
+
+namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
+{
+	[TestFixture]
+	public class ErrorManagerTests
+	{
+		private IErrorManager _errorManager;
+		private IRepositoryFactory _repositoryFactory;
+		private IErrorRepository _errorRepository;
+
+		private const int _WORKSPACE_ID = 1234567;
+
+		[SetUp]
+		public void Setup()
+		{
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_errorRepository = Substitute.For<IErrorRepository>();
+			_errorManager = new ErrorManager(_repositoryFactory);
+
+			_repositoryFactory.GetErrorRepository().Returns(_errorRepository);
+		}
+
+		[Test]
+		public void Create_GoldFlow()
+		{
+			// ARRANGE
+			string message = " This is an error";
+			List<ErrorDTO> errors = new List<ErrorDTO>
+			{
+				new ErrorDTO {Message = message}
+			};
+
+			_errorRepository.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == message));
+
+			// ACT
+			_errorManager.Create(_WORKSPACE_ID, errors);
+
+			// ASSERT
+			_errorRepository.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == message));
+		}
+	}
+}

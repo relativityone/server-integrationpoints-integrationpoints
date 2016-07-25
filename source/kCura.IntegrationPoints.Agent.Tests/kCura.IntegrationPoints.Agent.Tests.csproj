@@ -104,9 +104,8 @@
       <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Config.dll</HintPath>
@@ -179,6 +178,8 @@
     </Compile>
     <Compile Include="Integration\AgentConstractorTests.cs" />
     <Compile Include="Integration\ExportServiceManagerTests.cs" />
+    <Compile Include="Integration\ITaskFactoryTests.cs" />
+    <Compile Include="Integration\SendEmailManagerTests.cs" />
     <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Unit\Tasks\SyncManagerTests.cs" />
   </ItemGroup>

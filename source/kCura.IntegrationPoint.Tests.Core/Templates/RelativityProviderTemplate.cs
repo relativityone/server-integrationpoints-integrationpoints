@@ -1,15 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -38,12 +39,28 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TestFixtureSetUp]
 		public void RelativityProviderSetup()
 		{
-			SourceWorkspaceArtifactId = WorkspaceArtifactId;
+			try
+			{
+				SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
-			Task.Run(async () => await SetupAsync()).Wait();
+				Task.Run(async () => await SetupAsync()).Wait();
 
-			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
-			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
+				RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
+				LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
+			}
+			catch (Exception setupException)
+			{
+				try
+				{
+					RelativityProviderTeardown();
+				}
+				catch (Exception teardownException)
+				{
+					Exception[] exceptions = new[] { setupException, teardownException };
+					throw new AggregateException(exceptions);
+				}
+				throw;
+			}
 		}
 
 		[TestFixtureTearDown]
@@ -93,8 +110,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IFieldRepository sourceFieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 			IFieldRepository destinationFieldRepository = repositoryFactory.GetFieldRepository(TargetWorkspaceArtifactId);
 
-			ArtifactDTO sourceDto = sourceFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
-			ArtifactDTO targetDto = destinationFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO sourceDto = sourceFieldRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
+			ArtifactDTO targetDto = destinationFieldRepository.RetrieveTheIdentifierField((int)global::kCura.Relativity.Client.ArtifactType.Document);
 
 			FieldMap[] map = new[]
 			{
@@ -125,6 +142,51 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate));
 
 			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
+		}
+
+		protected IntegrationModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		{
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = CreateDestinationConfig(overwriteMode),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = name + DateTime.Now,
+				SelectedOverwrite = overwrite,
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				Map = CreateDefaultFieldMap()
+			};
+
+			return integrationModel;
+		}
+
+		protected IntegrationModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
+		{
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = CreateDestinationConfig(overwriteMode),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = name + DateTime.Now,
+				SelectedOverwrite = overwrite,
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = true,
+					//Date format "MM/dd/yyyy". For testing purpose. No sanity check here
+					StartDate = startDate,
+					EndDate = endDate,
+					ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
+					Reoccur = 0,
+					SelectedFrequency = interval.ToString()
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			return integrationModel;
 		}
 
 		#endregion Helper Methods

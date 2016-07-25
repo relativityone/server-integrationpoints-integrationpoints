@@ -9,6 +9,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 {
+	using global::kCura.Apps.Common.Utils.Serializers;
+
 	[TestFixture]
 	public class SyncManagerTests
 	{
@@ -21,7 +23,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		public void GetBatchInstance_NoJobDetails_CorrectOutput()
 		{
 			//ARRANGE
-			var serializer = NSubstitute.Substitute.For<kCura.Apps.Common.Utils.Serializers.JSONSerializer>();
+			var serializer = NSubstitute.Substitute.For<JSONSerializer>();
 			var guidService = NSubstitute.Substitute.For<IGuidService>();
 			guidService.NewGuid().Returns(defaultGuidValue);
 			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, null);
@@ -39,7 +41,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		public void GetBatchInstance_GuidInJobDetails_CorrectOutput()
 		{
 			//ARRANGE
-			var serializer = NSubstitute.Substitute.For<kCura.Apps.Common.Utils.Serializers.JSONSerializer>();
+			var serializer = NSubstitute.Substitute.For<JSONSerializer>();
 			var guidService = NSubstitute.Substitute.For<IGuidService>();
 			guidService.NewGuid().Returns(defaultGuidValue);
 			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, null);
@@ -57,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		public void GetBatchInstance_BadGuidInJobDetails_CorrectOutput()
 		{
 			//ARRANGE
-			var serializer = NSubstitute.Substitute.For<kCura.Apps.Common.Utils.Serializers.JSONSerializer>();
+			var serializer = NSubstitute.Substitute.For<JSONSerializer>();
 			var guidService = NSubstitute.Substitute.For<IGuidService>();
 			guidService.NewGuid().Returns(defaultGuidValue);
 			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, null);

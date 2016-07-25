@@ -26,20 +26,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IObjectTypeRepository _typeRepo;
 		private Random _rand;
 
-		public PermissionRepositoryTests()
-			: base("PermissionRepositoryTests", null)
+		public PermissionRepositoryTests() : base("PermissionRepositoryTests", null)
 		{
 			_rand = new Random();
 		}
 
-		[TestFixtureSetUp]
-		public void SuiteSetup()
+		public override void SuiteSetup()
 		{
 			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 		}
 
-		[SetUp]
-		public void Setup()
+		public override void TestSetup()
 		{
 			_typeRepo = Container.Resolve<IObjectTypeRepository>();
 			_permissionRepo = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
@@ -53,8 +50,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_groupPermission = kCura.IntegrationPoint.Tests.Core.Permission.GetGroupPermissions(SourceWorkspaceArtifactId, _groupId);
 		}
 
-		[TearDown]
-		public void Teardown()
+		public override void TestTeardown()
 		{
 			User.DeleteUser(_user.ArtifactId);
 			Group.DeleteGroup(_groupId);
