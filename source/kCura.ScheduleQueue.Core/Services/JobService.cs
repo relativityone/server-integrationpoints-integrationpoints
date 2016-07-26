@@ -190,6 +190,40 @@ namespace kCura.ScheduleQueue.Core.Services
 			QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
 		}
 
+		public IList<Job> GetJobs(long integrationPointId)
+		{
+			List<Job> jobs = new List<Job>();
+			string query =$@"SELECT [JobID]
+	  ,[RootJobID]
+	  ,[ParentJobID]
+	  ,[AgentTypeID]
+	  ,[LockedByAgentID]
+	  ,[WorkspaceID]
+	  ,[RelatedObjectArtifactID]
+	  ,[TaskType]
+	  ,[NextRunTime]
+	  ,[LastRunTime]
+	  ,[ScheduleRuleType]
+	  ,[ScheduleRule]
+	  ,[JobDetails]
+	  ,[JobFlags]
+	  ,[SubmittedDate]
+	  ,[SubmittedBy]
+	  ,[StopState] FROM [eddsdbo].[{QDBContext.TableName}] WHERE RelatedObjectArtifactID = @RelatedObjectArtifactID";
+
+			List<SqlParameter> sqlParams = new List<SqlParameter>();
+			sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", integrationPointId));
+			using (DataTable data = QDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(query, sqlParams))
+			{
+				foreach (DataRow row in data.Rows)
+				{
+					var job = new Job(row);
+					jobs.Add(job);
+				}
+			}
+			return jobs;
+		}
+
 		public void CleanupJobQueueTable()
 		{
 			var cleanupJobQueueTable = new CleanupJobQueueTable(QDBContext);

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -146,10 +149,121 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
             Assert.AreEqual(101, rootJobID);
         }
 
-        private Job GetJob(long jobID, long? rootJobID)
+		[Test]
+	    public void GetScheduledAgentJobMapedByBatchInstance_NoJobs()
+		{
+			// arrange
+			_jobService.GetJobs(_integrationPointId).Returns(new List<Job>());
+
+			// act
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+
+			// assert
+			Assert.IsNotNull(batchInstanceToJob);
+			Assert.IsEmpty(batchInstanceToJob);
+		}
+
+		[Test]
+	    public void GetScheduledAgentJobMapedByBatchInstance_SingleJob()
+	    {
+			// arrange
+			JSONSerializer serializer = new JSONSerializer();
+			TaskParameters parameter = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			Job job = JobExtensions.CreateJob(1, 2, serializer.Serialize(parameter));
+			_jobService.GetJobs(_integrationPointId).Returns(new List<Job>() { job });
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameter);
+
+			// act
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+
+			// assert
+			Assert.IsNotNull(batchInstanceToJob);
+			Assert.IsTrue(batchInstanceToJob.ContainsKey(parameter.BatchInstance));
+			Assert.IsTrue(batchInstanceToJob[parameter.BatchInstance].Contains(job));
+		}
+
+
+		[Test]
+		public void GetScheduledAgentJobMapedByBatchInstance_MultiJobsOnOneBatchInstanceId()
+		{
+			// arrange
+			JSONSerializer serializer = new JSONSerializer();
+			TaskParameters parameter = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			string details = serializer.Serialize(parameter);
+			Job job = JobExtensions.CreateJob(1, 2, details);
+			Job job2 = JobExtensions.CreateJob(1, 2, details);
+			_jobService.GetJobs(_integrationPointId).Returns(new List<Job>() { job, job2 });
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameter);
+
+			// act
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+
+			// assert
+			Assert.IsNotNull(batchInstanceToJob);
+			Assert.IsTrue(batchInstanceToJob.ContainsKey(parameter.BatchInstance));
+			Assert.IsTrue(batchInstanceToJob[parameter.BatchInstance].SequenceEqual(new List<Job>() { job, job2 }));
+		}
+
+		[Test]
+		public void GetScheduledAgentJobMapedByBatchInstance_MultiJobsOnMultipleBatchInstanceIds()
+		{
+			// arrange
+			JSONSerializer serializer = new JSONSerializer();
+
+			TaskParameters jobOneParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			Job job = JobExtensions.CreateJob(1, 2, serializer.Serialize(jobOneParameters));
+
+			TaskParameters jobTwoParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			Job job2 = JobExtensions.CreateJob(1, 2, serializer.Serialize(jobTwoParameters));
+
+			_jobService.GetJobs(_integrationPointId).Returns(new List<Job>() { job, job2 });
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(jobOneParameters);
+			_serializer.Deserialize<TaskParameters>(job2.JobDetails).Returns(jobTwoParameters);
+
+
+			// act
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+
+			// assert
+			Assert.IsNotNull(batchInstanceToJob);
+			Assert.IsTrue(batchInstanceToJob.ContainsKey(jobOneParameters.BatchInstance));
+			Assert.IsTrue(batchInstanceToJob[jobOneParameters.BatchInstance].SequenceEqual(new List<Job>() { job }));
+			Assert.IsTrue(batchInstanceToJob.ContainsKey(jobTwoParameters.BatchInstance));
+			Assert.IsTrue(batchInstanceToJob[jobTwoParameters.BatchInstance].SequenceEqual(new List<Job>() { job2 }));
+		}
+
+		[Test]
+		public void GetScheduledAgentJobMapedByBatchInstance_SerialzationFailsOnOneOfTheJobs()
+		{
+			// arrange
+			JSONSerializer serializer = new JSONSerializer();
+
+			TaskParameters jobOneParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			Job job = JobExtensions.CreateJob(1, 2, serializer.Serialize(jobOneParameters));
+
+			TaskParameters jobTwoParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			Job job2 = JobExtensions.CreateJob(1, 2, serializer.Serialize(jobTwoParameters));
+
+			_jobService.GetJobs(_integrationPointId).Returns(new List<Job>() { job, job2 });
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(jobOneParameters);
+			_serializer.Deserialize<TaskParameters>(job2.JobDetails).Throws(new Exception("blah"));
+
+			// act
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+
+			// assert
+			Assert.IsNotNull(batchInstanceToJob);
+			Assert.IsTrue(batchInstanceToJob.ContainsKey(jobOneParameters.BatchInstance));
+			Assert.IsTrue(batchInstanceToJob[jobOneParameters.BatchInstance].SequenceEqual(new List<Job>() { job }));
+			Assert.IsFalse(batchInstanceToJob.ContainsKey(jobTwoParameters.BatchInstance));
+		}
+
+		private Job GetJob(long jobID, long? rootJobID)
         {
             return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, "",
                 0, new DateTime(), 1, null, null);
         }
+
+
     }
 }
