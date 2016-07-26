@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
-				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.CancelOnClickEvent);
+				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.StopOnClickEvent);
 
 				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForNonRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID);
 				ConsoleButton runNowButton = GetRunNowButton(onClickEvents.RunNowOnClickEvent);
-				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.CancelOnClickEvent);
+				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.StopOnClickEvent);
 
 				buttonList.Add(runNowButton);
 				buttonList.Add(cancelButton);

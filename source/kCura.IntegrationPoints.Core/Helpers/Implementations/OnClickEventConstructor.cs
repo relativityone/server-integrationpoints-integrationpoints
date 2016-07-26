@@ -23,24 +23,28 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			string runNowEvent = buttonStates.RunNowButtonEnabled ? $"IP.importNow({integrationPointId},{workspaceId})" : String.Empty;
 			string retryErrorsEvent = buttonStates.RetryErrorsButtonEnabled ? $"IP.retryJob({integrationPointId},{workspaceId})" : String.Empty;
 			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : String.Empty;
-			
+			string stopEvent = buttonStates.RunNowButtonEnabled ? $"IP.stopJob({integrationPointId},{workspaceId})" : String.Empty;
+
 			return new OnClickEventDTO()
 			{
 				RunNowOnClickEvent = runNowEvent,
 				RetryErrorsOnClickEvent = retryErrorsEvent,
 				ViewErrorsOnClickEvent = viewErrorsEvent,
-				CancelOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
+				StopOnClickEvent = stopEvent
 			};
 		}
 
 		public OnClickEventDTO GetOnClickEventsForNonRelativityProvider(int workspaceId, int integrationPointId)
 		{
+			string runNowEvent = $"IP.importNow({integrationPointId},{workspaceId})";
+			string stopEvent = $"IP.stopJob({integrationPointId},{workspaceId})";
+
 			return new OnClickEventDTO()
 			{
-				RunNowOnClickEvent = $"IP.importNow({integrationPointId},{workspaceId})",
+				RunNowOnClickEvent = runNowEvent,
                 RetryErrorsOnClickEvent = String.Empty,
 				ViewErrorsOnClickEvent = String.Empty,
-				CancelOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
+				StopOnClickEvent = stopEvent
 			};
 		}
 

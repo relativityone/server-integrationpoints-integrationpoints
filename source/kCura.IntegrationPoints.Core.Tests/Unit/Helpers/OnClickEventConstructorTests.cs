@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
-			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
+			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.StopOnClickEvent);
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
-			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
+			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.StopOnClickEvent);
 		}
 
 		[Test]
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);
 			Assert.AreEqual(String.Empty, onClickEvents.RetryErrorsOnClickEvent);
 			Assert.AreEqual(String.Empty, onClickEvents.ViewErrorsOnClickEvent);
-			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
+			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.StopOnClickEvent);
 		}
 
 		private string ViewErrorsLinkSetup()
