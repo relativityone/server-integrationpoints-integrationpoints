@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -63,6 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
+			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
 		}
 
 		[Test]
@@ -84,6 +84,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
+			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
+		}
+
+		[Test]
+		public void GetOnClickEventsForNonRelativityProvider_GoldFlow()
+		{
+			//Arrange
+			//Act
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEventsForNonRelativityProvider(_workspaceId, _integrationPointId);
+
+			//Assert
+			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);
+			Assert.AreEqual(String.Empty, onClickEvents.RetryErrorsOnClickEvent);
+			Assert.AreEqual(String.Empty, onClickEvents.ViewErrorsOnClickEvent);
+			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
 		}
 
 		private string ViewErrorsLinkSetup()

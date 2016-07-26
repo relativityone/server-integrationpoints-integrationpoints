@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private SourceProvider _sourceProvider;
 		private IIntegrationPointManager _integrationPointManager;
 		private IErrorManager _errorManager;
+		private IJobHistoryManager _jobHistoryManager;
 
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
@@ -74,6 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
 			_errorManager = Substitute.For<IErrorManager>();
+			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(_helper, _caseServiceManager,
@@ -89,6 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_repositoryFactory.GetPermissionRepository(_targetWorkspaceArtifactId).Returns(_targetPermissionRepository);
 			_managerFactory.CreateIntegrationPointManager(Arg.Is(_contextContainer)).Returns(_integrationPointManager);
 			_managerFactory.CreateErrorManager(Arg.Is(_contextContainer)).Returns(_errorManager);
+			_managerFactory.CreateJobHistoryManager(Arg.Is(_contextContainer)).Returns(_jobHistoryManager);
 
 			_integrationPoint = new Data.IntegrationPoint { ArtifactId = _integrationPointArtifactId, EnableScheduler = false };
 
@@ -159,6 +162,34 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 			_managerFactory.Received().CreateQueueManager(_contextContainer);
+		}
+
+		[Test]
+		public void MarkIntegrationPointToStopJobs_GoldFlow()
+		{
+			// arrange
+			int[] jobHistoryArtifactIds = new[] {342343, 590234};
+			_jobHistoryManager
+				.GetStoppableJobHistoryArtifactIds(
+					Arg.Is(_sourceWorkspaceArtifactId), 
+					Arg.Is(_integrationPointArtifactId))
+				.Returns(jobHistoryArtifactIds);
+
+			// act
+			_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
+
+			// assert
+			_jobHistoryManager.Received(1)
+				.GetStoppableJobHistoryArtifactIds(
+					Arg.Is(_sourceWorkspaceArtifactId), 
+					Arg.Is(_integrationPointArtifactId));
+
+			_jobHistoryService.Received(2)
+				.UpdateRdo(
+					Arg.Is<Data.JobHistory>(
+						x =>
+							jobHistoryArtifactIds.Contains(x.ArtifactId) &&
+							x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
 		}
 
 		[Test]

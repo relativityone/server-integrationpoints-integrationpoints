@@ -18,7 +18,8 @@ BEGIN
 				[JobDetails],
 				[JobFlags],
 				[SubmittedDate],
-				[SubmittedBy]
+				[SubmittedBy],
+				[StopState]
 	FROM
 				[eddsdbo].[{0}]
 	WHERE 
@@ -45,7 +46,8 @@ BEGIN
 			INSERTED.[JobDetails],
 			INSERTED.[JobFlags],
 			INSERTED.[SubmittedDate],
-			INSERTED.[SubmittedBy]
+			INSERTED.[SubmittedBy],
+			INSERTED.[StopState]
 	FROM 
 			[eddsdbo].[{0}] q WITH (UPDLOCK, READPAST, ROWLOCK, INDEX([IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime]))
 		INNER JOIN 

@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.ExportFullText = false;
             expFile.ExportFullTextAsFile = false;
             expFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
-            expFile.IdentifierColumnName = "Control Number";
             var imagePrecs = new List<Pair>();
             imagePrecs.Add(new Pair("-1", "Original"));
             expFile.ImagePrecedence = imagePrecs.ToArray();

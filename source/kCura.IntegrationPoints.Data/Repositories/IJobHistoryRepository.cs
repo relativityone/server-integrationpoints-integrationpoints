@@ -8,5 +8,12 @@
 		/// <param name="integrationPointArtifactId">Integration Point artifact id</param>
 		/// <returns>Artifact id of the most recent finished Job History objects</returns>
 		int GetLastJobHistoryArtifactId(int integrationPointArtifactId);
+
+		/// <summary>
+		/// Gets the cancelable Job History artifact ids for a given Integration Point.
+		/// </summary>
+		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
+		/// <returns>The artifact ids of the job histories that can be canceled.</returns>
+		int[] GetStoppableJobHistoryArtifactIds(int integrationPointArtifactId);
 	}
 }

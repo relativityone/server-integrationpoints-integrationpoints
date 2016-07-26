@@ -1493,7 +1493,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-07-21T18:42:31.1007015Z</ExtractionDate>
+  <ExtractionDate>2016-07-25T20:33:34.2372213Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -1622,57 +1622,6 @@
       <CopyInstancesOnCaseCreation>false</CopyInstancesOnCaseCreation>
       <CopyInstancesOnParentCopy>false</CopyInstancesOnParentCopy>
       <SystemFields>
-        <SystemField>
-          <AllowHTML>false</AllowHTML>
-          <ArtifactId>1033806</ArtifactId>
-          <ArtifactViewFieldId>1000184</ArtifactViewFieldId>
-          <AssociativeArtifactTypeId xsi:nil="true" />
-          <Codes />
-          <CodeTypeId xsi:nil="true" />
-          <ConnectorFieldArtifactId xsi:nil="true" />
-          <DisplayName>FileIcon</DisplayName>
-          <DisplayValueFalse />
-          <DisplayValueTrue />
-          <FieldArtifactTypeId>10</FieldArtifactTypeId>
-          <FieldCategoryId>10</FieldCategoryId>
-          <FieldTypeId>9</FieldTypeId>
-          <FilterType />
-          <FormatString />
-          <FriendlyName />
-          <Guids>861295b5-5b1d-4830-89e7-77e0a7ef1c30</Guids>
-          <Guid>861295b5-5b1d-4830-89e7-77e0a7ef1c30</Guid>
-          <ImportBehavior xsi:nil="true" />
-          <EnableDataGrid>false</EnableDataGrid>
-          <OverlayBehavior xsi:nil="true" />
-          <IsAdditionalFileField>false</IsAdditionalFileField>
-          <IsArtifactBaseField>false</IsArtifactBaseField>
-          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
-          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
-          <IsEditable>false</IsEditable>
-          <IsGroupByEnabled>false</IsGroupByEnabled>
-          <IsIndexEnabled>false</IsIndexEnabled>
-          <IsLinked>true</IsLinked>
-          <IsRemovable>false</IsRemovable>
-          <IsRequired>false</IsRequired>
-          <IsSortable>true</IsSortable>
-          <IsVisible>true</IsVisible>
-          <Keywords />
-          <LinkType>false</LinkType>
-          <MaxLength>200</MaxLength>
-          <Notes />
-          <RelationalIndexViewArtifactID xsi:nil="true" />
-          <SourceFieldArtifactId xsi:nil="true" />
-          <UseUnicodeEncoding>true</UseUnicodeEncoding>
-          <Width />
-          <Wrapping>true</Wrapping>
-          <AllowPivot>false</AllowPivot>
-          <AllowGroupBy>false</AllowGroupBy>
-          <AvailableInViewer>false</AvailableInViewer>
-          <PopupPickerView xsi:nil="true" />
-          <FieldTreeView xsi:nil="true" />
-          <SiblingFieldArtifactID xsi:nil="true" />
-          <AutoAddChoices>false</AutoAddChoices>
-        </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
           <ArtifactId>1003667</ArtifactId>
@@ -2173,6 +2122,57 @@
           <RelationalIndexViewArtifactID xsi:nil="true" />
           <SourceFieldArtifactId xsi:nil="true" />
           <UseUnicodeEncoding>false</UseUnicodeEncoding>
+          <Width />
+          <Wrapping>true</Wrapping>
+          <AllowPivot>false</AllowPivot>
+          <AllowGroupBy>false</AllowGroupBy>
+          <AvailableInViewer>false</AvailableInViewer>
+          <PopupPickerView xsi:nil="true" />
+          <FieldTreeView xsi:nil="true" />
+          <SiblingFieldArtifactID xsi:nil="true" />
+          <AutoAddChoices>false</AutoAddChoices>
+        </SystemField>
+        <SystemField>
+          <AllowHTML>false</AllowHTML>
+          <ArtifactId>1033806</ArtifactId>
+          <ArtifactViewFieldId>1000184</ArtifactViewFieldId>
+          <AssociativeArtifactTypeId xsi:nil="true" />
+          <Codes />
+          <CodeTypeId xsi:nil="true" />
+          <ConnectorFieldArtifactId xsi:nil="true" />
+          <DisplayName>FileIcon</DisplayName>
+          <DisplayValueFalse />
+          <DisplayValueTrue />
+          <FieldArtifactTypeId>10</FieldArtifactTypeId>
+          <FieldCategoryId>10</FieldCategoryId>
+          <FieldTypeId>9</FieldTypeId>
+          <FilterType />
+          <FormatString />
+          <FriendlyName />
+          <Guids>861295b5-5b1d-4830-89e7-77e0a7ef1c30</Guids>
+          <Guid>861295b5-5b1d-4830-89e7-77e0a7ef1c30</Guid>
+          <ImportBehavior xsi:nil="true" />
+          <EnableDataGrid>false</EnableDataGrid>
+          <OverlayBehavior xsi:nil="true" />
+          <IsAdditionalFileField>false</IsAdditionalFileField>
+          <IsArtifactBaseField>false</IsArtifactBaseField>
+          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
+          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
+          <IsEditable>false</IsEditable>
+          <IsGroupByEnabled>false</IsGroupByEnabled>
+          <IsIndexEnabled>false</IsIndexEnabled>
+          <IsLinked>true</IsLinked>
+          <IsRemovable>false</IsRemovable>
+          <IsRequired>false</IsRequired>
+          <IsSortable>true</IsSortable>
+          <IsVisible>true</IsVisible>
+          <Keywords />
+          <LinkType>false</LinkType>
+          <MaxLength>200</MaxLength>
+          <Notes />
+          <RelationalIndexViewArtifactID xsi:nil="true" />
+          <SourceFieldArtifactId xsi:nil="true" />
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
           <Width />
           <Wrapping>true</Wrapping>
           <AllowPivot>false</AllowPivot>
@@ -5702,11 +5702,11 @@
               <Name>Pending</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>0</Order>
+              <Order>100</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>0.0.0.1</ApplicationVersion>
+              <ApplicationVersion>2.0.95.18</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038249</ArtifactId>
@@ -5716,11 +5716,11 @@
               <Name>Processing</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>10</Order>
+              <Order>200</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>0.0.0.1</ApplicationVersion>
+              <ApplicationVersion>2.0.95.18</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038250</ArtifactId>
@@ -5730,11 +5730,11 @@
               <Name>Completed</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>20</Order>
+              <Order>300</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>0.0.0.1</ApplicationVersion>
+              <ApplicationVersion>2.0.95.18</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038251</ArtifactId>
@@ -5744,11 +5744,11 @@
               <Name>Completed with errors</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>30</Order>
+              <Order>400</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>0.0.0.1</ApplicationVersion>
+              <ApplicationVersion>2.0.95.18</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038252</ArtifactId>
@@ -5758,11 +5758,39 @@
               <Name>Error - job failed</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>40</Order>
+              <Order>500</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>0.0.0.1</ApplicationVersion>
+              <ApplicationVersion>2.0.95.18</ApplicationVersion>
+            </Code>
+            <Code>
+              <ArtifactId>1040465</ArtifactId>
+              <Guid>97c1410d-864d-4811-857b-952464872baa</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>Stopping</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>600</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.95.18</ApplicationVersion>
+            </Code>
+            <Code>
+              <ArtifactId>1040466</ArtifactId>
+              <Guid>a29c5bcb-d3a6-4f81-877a-2a6556c996c3</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>Stopped</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>700</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.95.18</ApplicationVersion>
             </Code>
           </Codes>
           <CodeTypeId>1000116</CodeTypeId>
@@ -5809,7 +5837,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>2.0.0.50</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6241,7 +6269,7 @@
               <Name>Run Now</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>0</Order>
+              <Order>100</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
@@ -6255,7 +6283,7 @@
               <Name>Scheduled Run</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>10</Order>
+              <Order>200</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>true</UpdateInSearchEngine>
@@ -6269,7 +6297,7 @@
               <Name>Retry Errors</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
-              <Order>20</Order>
+              <Order>300</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
@@ -6518,7 +6546,7 @@
           <Operator />
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>2.0.0.10</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Show Tally/Sum/Average only</Name>
@@ -6530,7 +6558,7 @@
           <Operator />
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>2.0.0.23</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Remove Add/Delete/Rename from Job Type</Name>
@@ -6554,7 +6582,7 @@
           <Operator />
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>2.0.0.41</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -6616,7 +6644,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6668,7 +6696,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6720,7 +6748,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6772,7 +6800,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6824,7 +6852,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6876,7 +6904,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -8554,7 +8582,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8606,7 +8634,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8658,7 +8686,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8710,7 +8738,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8762,7 +8790,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8814,7 +8842,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.17</ApplicationVersion>
+          <ApplicationVersion>2.0.95.18</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -8886,7 +8914,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.4.224.2</RelativityVersion>
-  <Version>2.0.95.17</Version>
+  <Version>2.0.95.18</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>822363b1-5445-471e-af4f-61384a89304f</OriginSignature>
   <MasterScripts />
@@ -8914,7 +8942,7 @@
       <DefaultInterval>5</DefaultInterval>
       <DefaultLogging>1</DefaultLogging>
       <MinInstanceEnvironment>0</MinInstanceEnvironment>
-      <MaxInstanceEnvironment>0</MaxInstanceEnvironment>
+      <MaxInstanceEnvironment>4</MaxInstanceEnvironment>
       <MinInstanceServer>0</MinInstanceServer>
       <MaxInstanceServer>0</MaxInstanceServer>
       <MinInstanceResourcePool>0</MinInstanceResourcePool>
@@ -8937,7 +8965,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.17</ApplicationVersion>
+      <ApplicationVersion>2.0.95.18</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -8949,7 +8977,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.17</ApplicationVersion>
+      <ApplicationVersion>2.0.95.18</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -8961,7 +8989,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.17</ApplicationVersion>
+      <ApplicationVersion>2.0.95.18</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -8973,7 +9001,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.17</ApplicationVersion>
+      <ApplicationVersion>2.0.95.18</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -8985,7 +9013,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.17</ApplicationVersion>
+      <ApplicationVersion>2.0.95.18</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -8997,7 +9025,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.17</ApplicationVersion>
+      <ApplicationVersion>2.0.95.18</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9009,7 +9037,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.17</ApplicationVersion>
+      <ApplicationVersion>2.0.95.18</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
@@ -9142,6 +9170,8 @@
     <Id>1038275</Id>
     <Id>1038276</Id>
     <Id>1038277</Id>
+    <Id>1040465</Id>
+    <Id>1040466</Id>
   </ChoiceIds>
   <ObjectTypeIds>
     <Id>1035231</Id>

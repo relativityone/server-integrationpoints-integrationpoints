@@ -15,6 +15,7 @@
 			,[JobFlags]
 			,[SubmittedDate]
 			,[SubmittedBy]
+			,[StopState]
 FROM
 			[eddsdbo].[{0}] WITH(NOLOCK)
 WHERE
