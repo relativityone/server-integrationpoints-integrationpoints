@@ -60,11 +60,13 @@
 	};
 
 	root.stopJob = function (artifactId, appId) {
-		var selectedMessage = "Stopping this transfer will not remove any documents that were transfered. When re-running this transfer, make sure that your overwrite settings will return expected results.";
+		var confirmationMessage = "Stopping this transfer will not remove any data that was transferred. When re-running this transfer, make sure that your overwrite settings will return expected results.";
+		var failureMessage = "The transfer cannot be stopped at this point in the process.";
 
 		window.Dragon.dialogs.showConfirm({
-			message: selectedMessage,
+			message: confirmationMessage,
 			title: "Stop Transfer",
+			okText: 'Stop Transfer',
 			showCancel: true,
 			width: 450,
 			success: function (calls) {
@@ -79,8 +81,13 @@
 					})
 				});
 				ajax.fail(function (value) {
-					//TODO: Anything to do here?
-					//IP.message.error.raise("Failed to stop the job. " + value.responseText, $(".cardContainer"));
+					window.Dragon.dialogs.showConfirm({
+						message: failureMessage,
+						title: "Unable to Stop the Transfer",
+						okText: 'Ok',
+						showCancel: false,
+						width: 450,
+					});
 				});
 			}
 		});
