@@ -66,12 +66,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
+				ConsoleButton stopButton = GetStopButton(true, onClickEvents.StopOnClickEvent);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
-				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.CancelOnClickEvent);
 
 				buttonList.Add(runNowButton);
+				buttonList.Add(stopButton);
 				buttonList.Add(retryErrorsButton);
-				buttonList.Add(cancelButton);
 
 				if (canViewErrors)
 				{
@@ -83,10 +83,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForNonRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID);
 				ConsoleButton runNowButton = GetRunNowButton(onClickEvents.RunNowOnClickEvent);
-				ConsoleButton cancelButton = GetCancelButton(true, onClickEvents.CancelOnClickEvent);
+				ConsoleButton stopButton = GetStopButton(true, onClickEvents.StopOnClickEvent);
 
 				buttonList.Add(runNowButton);
-				buttonList.Add(cancelButton);
+				buttonList.Add(stopButton);
 			}
 
 			console.ButtonList = buttonList;
@@ -94,11 +94,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return console;
 		}
 
-		private ConsoleButton GetCancelButton(bool isEnabled, string onClickEvent)
+		private ConsoleButton GetStopButton(bool isEnabled, string onClickEvent)
 		{
 			return new ConsoleButton()
 			{
-				DisplayText = "Cancel",
+				DisplayText = "Stop",
 				RaisesPostBack = false,
 				Enabled = isEnabled,
 				OnClickEvent = onClickEvent

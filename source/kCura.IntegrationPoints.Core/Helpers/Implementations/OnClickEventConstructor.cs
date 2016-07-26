@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				RunNowOnClickEvent = runNowEvent,
 				RetryErrorsOnClickEvent = retryErrorsEvent,
 				ViewErrorsOnClickEvent = viewErrorsEvent,
-				CancelOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
+				StopOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
 			};
 		}
 
@@ -38,9 +38,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return new OnClickEventDTO()
 			{
 				RunNowOnClickEvent = $"IP.importNow({integrationPointId},{workspaceId})",
-                RetryErrorsOnClickEvent = String.Empty,
+				RetryErrorsOnClickEvent = String.Empty,
 				ViewErrorsOnClickEvent = String.Empty,
-				CancelOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
+				StopOnClickEvent	= "alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')"
 			};
 		}
 
