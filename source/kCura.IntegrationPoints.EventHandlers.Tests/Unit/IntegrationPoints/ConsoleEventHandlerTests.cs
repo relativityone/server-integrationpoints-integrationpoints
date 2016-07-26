@@ -175,17 +175,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					runNowButton.OnClickEvent);
 
+				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Stop", cancelButton.DisplayText);
+				Assert.AreEqual(true, cancelButton.Enabled);
+				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
+
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
 				Assert.AreEqual(buttonStates.RetryErrorsButtonEnabled, retryErrorsButton.Enabled);
 				Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
 				Assert.AreEqual(hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					retryErrorsButton.OnClickEvent);
-
-				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Cancel", cancelButton.DisplayText);
-				Assert.AreEqual(true, cancelButton.Enabled);
-				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
 
 				if (hasViewErrorsPermissions)
 				{
@@ -202,7 +202,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 
 				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Cancel", cancelButton.DisplayText);
+				Assert.AreEqual("Stop", cancelButton.DisplayText);
 				Assert.AreEqual(true, cancelButton.Enabled);
 				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
 			}

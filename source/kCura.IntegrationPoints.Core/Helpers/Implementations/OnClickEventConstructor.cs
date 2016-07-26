@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			string retryErrorsEvent = buttonStates.RetryErrorsButtonEnabled ? $"IP.retryJob({integrationPointId},{workspaceId})" : String.Empty;
 			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : String.Empty;
 			string stopEvent = buttonStates.RunNowButtonEnabled ? $"IP.stopJob({integrationPointId},{workspaceId})" : String.Empty;
-
+			
 			return new OnClickEventDTO()
 			{
 				RunNowOnClickEvent = runNowEvent,
