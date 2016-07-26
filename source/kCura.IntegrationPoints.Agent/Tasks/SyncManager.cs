@@ -17,6 +17,8 @@ using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -254,6 +256,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public void Dispose()
 		{
 			Debug.WriteLine("");
+		}
+
+		public override void Execute(Job job)
+		{
+			using (Client.MetricsClient.LogDuration(
+					Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR,
+					Guid.Empty, MetricTargets.APMandSUM))
+			{
+				base.Execute(job);
+			}
 		}
 	}
 }

@@ -78,11 +78,11 @@ namespace kCura.IntegrationPoints.Core
 				public const string TELEMETRY_CATEGORY = "Integration Points";
 
 				public const string BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncWorker.Execute.Duration";
-				public const string BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Web.Controllers.API.Update.Duaration";
+				public const string BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncManager.Execute.Duration";
+				public const string BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Web.Controllers.API.Update.Duration";
 
 				#region Export
 
-				public const string BUCKET_EXPORT_WORKER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.ExportWorker.Execute.Duration";
 				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.Execute.Duration";
 
 				#endregion //Export

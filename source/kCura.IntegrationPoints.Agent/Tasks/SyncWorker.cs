@@ -32,8 +32,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
 
-		protected virtual string TelemetryMetricIdentifier => Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR;
-
         public IEnumerable<Core.IBatchStatus> BatchStatus
         {
             get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
@@ -65,7 +63,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			using (Client.MetricsClient.LogDuration(TelemetryMetricIdentifier, Guid.Empty, MetricTargets.SUM))
+			using (Client.MetricsClient.LogDuration(
+				Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR, Guid.Empty, MetricTargets.APMandSUM))
 			{
 				foreach (var batchComplete in BatchStatus)
 				{

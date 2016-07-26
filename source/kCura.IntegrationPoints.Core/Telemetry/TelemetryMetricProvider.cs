@@ -15,6 +15,10 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			new MetricIdentifier()
 				{   Name = Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR,
 					Description = "Length of time (in milliseconds) that Integration Points takes to run Sync Worker job"},
+
+			new MetricIdentifier()
+				{   Name = Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR,
+					Description = "Length of time (in milliseconds) that Integration Points takes to run Sync Manager job"},
 		};
 
 		protected override List<MetricIdentifier> GetMetricIdentifiers()

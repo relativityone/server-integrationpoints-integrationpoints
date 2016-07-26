@@ -29,12 +29,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		#endregion //Fields
 
-		#region Properties
-
-		protected override string TelemetryMetricIdentifier => Core.Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_WORKER_EXEC_DURATION_METRIC_COLLECTOR;
-
-		#endregion //Properties
-
 		#region Constructor
 
 		public ExportWorker(ICaseServiceContext caseServiceContext, IHelper helper,

@@ -16,10 +16,6 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			new MetricIdentifier()
 				{	Name = Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR,
 					Description = "Length of time (in milliseconds) that Integration Points takes to run Export Shared Library"},
-
-			new MetricIdentifier()
-				{   Name = Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_WORKER_EXEC_DURATION_METRIC_COLLECTOR,
-					Description = "Length of time (in milliseconds) that Integration Points takes to run Export Worker job"},
 		};
 
 		protected override List<MetricIdentifier> GetMetricIdentifiers()
