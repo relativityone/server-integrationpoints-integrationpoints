@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetCancelableJobHistoryArtifactIds_GoldFlow()
+		public void GetStoppableJobHistoryArtifactIds_GoldFlow()
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;

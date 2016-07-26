@@ -61,12 +61,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public int[] GetStoppableJobHistoryArtifactIds(int integrationPointArtifactId)
 		{
 			var integrationPointCondition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>() { integrationPointArtifactId });
-			var cancelableCondition = new SingleChoiceCondition(JobHistoryFieldGuids.JobStatus, SingleChoiceConditionEnum.AnyOfThese, new [] { JobStatusChoices.JobHistoryPending.ArtifactGuids.First(), JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First()});
+			var stoppableCondition = new SingleChoiceCondition(JobHistoryFieldGuids.JobStatus, SingleChoiceConditionEnum.AnyOfThese, new [] { JobStatusChoices.JobHistoryPending.ArtifactGuids.First(), JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First()});
 
 			var query = new Query<RDO>
 			{
 				ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistory),
-				Condition = new CompositeCondition(integrationPointCondition, CompositeConditionEnum.And, cancelableCondition),
+				Condition = new CompositeCondition(integrationPointCondition, CompositeConditionEnum.And, stoppableCondition),
 				Fields = new List<FieldValue>()
 				{
 					new FieldValue(new Guid(JobHistoryFieldGuids.IntegrationPoint))
@@ -85,9 +85,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Job History: {results.Message}");
 			}
 
-			int[] cancelableJobHistoryArtifactIds = results.Results.Select(result => result.Artifact.ArtifactID).ToArray();
+			int[] stoppableJobHistoryArtifactIds = results.Results.Select(result => result.Artifact.ArtifactID).ToArray();
 
-			return cancelableJobHistoryArtifactIds;
+			return stoppableJobHistoryArtifactIds;
 		}
 	}
 }

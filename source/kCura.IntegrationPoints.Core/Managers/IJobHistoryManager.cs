@@ -11,11 +11,11 @@
 		int GetLastJobHistoryArtifactId(int workspaceArtifactId, int integrationPointArtifactId);
 
 		/// <summary>
-		/// Gets the cancelable job history artifact ids for a given Integration Point.
+		/// Gets the stoppable job history artifact ids for a given Integration Point.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
-		/// <returns>The artifact ids of the cancelable job histories.</returns>
+		/// <returns>The artifact ids of the stoppable job histories.</returns>
 		int[] GetStoppableJobHistoryArtifactIds(int workspaceArtifactId, int integrationPointArtifactId);
 	}
 }
