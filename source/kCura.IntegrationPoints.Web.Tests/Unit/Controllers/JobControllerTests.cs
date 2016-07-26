@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Arrange
 			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
-			Exception exception = new Exception("Unable to determine the user id. Please contact your system administrator.");
+			Exception exception = new Exception(expectedErrorMessage);
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
@@ -150,6 +151,80 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().Result.Trim('"'));
+		}
+
+		[Test]
+		public void Stop_GoldFlow()
+		{
+			// Arrange
+			// Act
+			HttpResponseMessage response = _instance.Stop(_payload);
+
+			// Assert
+			_integrationPointService
+				.Received(1)
+				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
+
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "The HTTPStatusCode should be OK");
+			Assert.IsNull(response.Content, "The response's Content should be null");
+		}
+
+		[Test]
+		public void Stop_AggregateExceptionThrown_ResponseIsCorrect()
+		{
+			// Arrange
+			const string exceptionOne = "Exception One";
+			const string exceptionTwo = "Exception Two";
+			const string aggregateExceptionMessage = "Topmost Message";
+			var aggregateException = new AggregateException(aggregateExceptionMessage, new[] { new Exception(exceptionOne), new Exception(exceptionTwo) });
+			_integrationPointService
+				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
+				.Throw(aggregateException);
+
+			// Act
+			HttpResponseMessage response = _instance.Stop(_payload);
+
+			// Assert
+			_integrationPointService
+				.Received(1)
+				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
+
+			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
+
+			byte[] utf8Bytes = response.Content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
+			Assert.AreEqual("text/plain", response.Content.Headers.ContentType.MediaType, "The response's media type should be correct.");
+			Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
+			Assert.AreEqual(
+				$"{aggregateException.Message} : {String.Join(",", new [] {exceptionOne, exceptionTwo})}", 
+				stringContent,
+				"The response's Content should be correct.");
+		}
+
+		[Test]
+		public void Stop_ExceptionThrown_ResponseIsCorrect()
+		{
+			// Arrange
+			var exception = new Exception("exception message");
+			_integrationPointService
+				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
+				.Throw(exception);
+
+			// Act
+			HttpResponseMessage response = _instance.Stop(_payload);
+
+			// Assert
+			_integrationPointService
+				.Received(1)
+				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
+
+			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
+			Assert.AreEqual("text/plain", response.Content.Headers.ContentType.MediaType, "The response's media type should be correct.");
+			Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
+
+			byte[] utf8Bytes = response.Content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
+			Assert.AreEqual(exception.Message, stringContent, "The response's Content should be correct.");
 		}
 	}
 }

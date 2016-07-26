@@ -59,7 +59,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 
 			HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
-			response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+			if (!String.IsNullOrEmpty(errorMessage))
+			{
+				response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+			}
 
 			return response;
 		}

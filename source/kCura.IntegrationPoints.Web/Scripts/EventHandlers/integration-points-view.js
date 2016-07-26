@@ -27,6 +27,33 @@
         });
     };
 
+    root.stopJob = function (artifactId, appId) {
+    	var selectedMessage = "Stopping this transfer will not remove any documents that were transfered. When re-running this transfer, make sure that your overwrite settings will return expected results.";
+
+    	window.Dragon.dialogs.showConfirm({
+    		message: selectedMessage,
+    		title: "Stop Transfer",
+    		showCancel: true,
+    		width: 450,
+    		success: function (calls) {
+    			calls.close();
+    			var ajax = IP.data.ajax({
+    				type: "POST",
+    				url: root.utils.generateWebAPIURL('Job/Stop'),
+    				async: true,
+    				data: JSON.stringify({
+    					"appId": appId,
+    					"artifactId": artifactId
+    				})
+    			});
+    			ajax.fail(function (value) {
+    				//TODO: Anything to do here?
+    				//IP.message.error.raise("Failed to stop the job. " + value.responseText, $(".cardContainer"));
+    			});
+    		}
+    	});
+    };
+
     var _convertUTCToLocal = function () {
 
     };
@@ -148,7 +175,7 @@ $(function () {
         obj.push({ key: 'Scheduled Time (UTC)', value: IP.timeUtil.utcToAmPm(result.scheduledTime || '') });
         IP.utils.createFields($field, obj);
     }, function () {
-        $field.text('There was an error retreving the scheduling information.');
+        $field.text('There was an error retrieving the scheduling information.');
     });
 });
 
