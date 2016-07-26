@@ -15,192 +15,230 @@ using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-    public class ExportProcessBuilderTests
-    {
-        #region Fields
+	public class ExportProcessBuilderTests
+	{
+		#region Fields
 
-        private ICaseManagerFactory _caseManagerFactory;
-        private ICredentialProvider _credentialProvider;
-        private IExporterFactory _exporterFactory;
+		private ICaseManagerFactory _caseManagerFactory;
+		private ICredentialProvider _credentialProvider;
+		private IExporterFactory _exporterFactory;
 
-        private ExportFile _exportFile;
-        private IExportFileBuilder _exportFileBuilder;
+		private ExportFile _exportFile;
+		private IExportFileBuilder _exportFileBuilder;
 
-        private ExportProcessBuilder _exportProcessBuilder;
-        private ILoggingMediator _loggingMediator;
-        private ISearchManagerFactory _searchManagerFactory;
-        private IUserMessageNotification _userMessageNotification;
-        private IUserNotification _userNotification;
+		private ExportProcessBuilder _exportProcessBuilder;
+		private ILoggingMediator _loggingMediator;
+		private ISearchManagerFactory _searchManagerFactory;
+		private ISearchManager _searchManager;
+		private IUserMessageNotification _userMessageNotification;
+		private IUserNotification _userNotification;
 
-        #endregion
+		private List<int> AllExportableAvfIds => new List<int>() {1234, 5678};
+		private List<int> SelectedAvfIds => new List<int>() { 1234 };
 
-        #region SetUp
+		#endregion
 
-        [SetUp]
-        public void SetUp()
-        {
-            _caseManagerFactory = Substitute.For<ICaseManagerFactory>();
-            _credentialProvider = Substitute.For<ICredentialProvider>();
-            _exporterFactory = Substitute.For<IExporterFactory>();
-            _exportFileBuilder = Substitute.For<IExportFileBuilder>();
-            _loggingMediator = Substitute.For<ILoggingMediator>();
-            _searchManagerFactory = Substitute.For<ISearchManagerFactory>();
-            _userMessageNotification = Substitute.For<IUserMessageNotification>();
-            _userNotification = Substitute.For<IUserNotification>();
+		#region SetUp
 
-            MockExportFile();
+		[SetUp]
+		public void SetUp()
+		{
+			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
+			_credentialProvider = Substitute.For<ICredentialProvider>();
+			_exporterFactory = Substitute.For<IExporterFactory>();
+			_exportFileBuilder = Substitute.For<IExportFileBuilder>();
+			_loggingMediator = Substitute.For<ILoggingMediator>();
+			_searchManagerFactory = Substitute.For<ISearchManagerFactory>();
+			_searchManager = Substitute.For<ISearchManager>();
+			_userMessageNotification = Substitute.For<IUserMessageNotification>();
+			_userNotification = Substitute.For<IUserNotification>();
 
-            _exportProcessBuilder = new ExportProcessBuilder(_loggingMediator, _userMessageNotification, _userNotification, _credentialProvider, _caseManagerFactory,
-                _searchManagerFactory, _exporterFactory, _exportFileBuilder);
-        }
+			MockExportFile();
 
-        private void MockExportFile()
-        {
-            _exportFile = new ExportFile(1)
-            {
-                CaseInfo = new CaseInfo
-                {
-                    DocumentPath = "document_path",
-                    ArtifactID = 2
-                }
-            };
-            _exportFileBuilder.Create(new ExportSettings()).ReturnsForAnyArgs(_exportFile);
-        }
+			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds, true));
 
-        #endregion
+			_exportProcessBuilder = new ExportProcessBuilder(_loggingMediator, _userMessageNotification, _userNotification, _credentialProvider, _caseManagerFactory,
+				_searchManagerFactory, _exporterFactory, _exportFileBuilder);
+		}
 
-        #region Tests
+		private void MockExportFile()
+		{
+			_exportFile = new ExportFile(1)
+			{
+				CaseInfo = new CaseInfo
+				{
+					DocumentPath = "document_path",
+					ArtifactID = 2
+				}
+			};
+			_exportFileBuilder.Create(new ExportSettings()).ReturnsForAnyArgs(_exportFile);
+		}
 
-        [Test]
-        public void ItShouldPerformLogin()
-        {
-            var credential = new NetworkCredential();
-            _credentialProvider.Authenticate(new CookieContainer()).ReturnsForAnyArgs(credential);
+		#endregion
 
-            _exportProcessBuilder.Create(new ExportSettings());
+		#region Tests
 
-            Assert.IsNotNull(_exportFile.CookieContainer);
-            Assert.AreEqual(credential, _exportFile.Credential);
-        }
+		[Test]
+		public void ItShouldPerformLogin()
+		{
+			var credential = new NetworkCredential();
+			_credentialProvider.Authenticate(new CookieContainer()).ReturnsForAnyArgs(credential);
 
-        [Test]
-        public void ItShouldCreateAndDisposeSearchManager()
-        {
-            var searchManager = Substitute.For<ISearchManager>();
-            _searchManagerFactory.Create(null, null).ReturnsForAnyArgs(searchManager);
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			});
 
-            _exportProcessBuilder.Create(new ExportSettings());
+			Assert.IsNotNull(_exportFile.CookieContainer);
+			Assert.AreEqual(credential, _exportFile.Credential);
+		}
 
-            _searchManagerFactory.ReceivedWithAnyArgs().Create(null, null);
-            searchManager.Received().Dispose();
-        }
+		[Test]
+		public void ItShouldCreateAndDisposeSearchManager()
+		{
+			var searchManager = Substitute.For<ISearchManager>();
+			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(
+				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds, true));
 
-        [Test]
-        public void ItShouldCreateAndDisposeCaseManager()
-        {
-            var caseManager = Substitute.For<ICaseManager>();
-            _caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
+			_searchManagerFactory.Create(null, null).ReturnsForAnyArgs(searchManager);
 
-            _exportProcessBuilder.Create(new ExportSettings());
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			});
 
-            _caseManagerFactory.ReceivedWithAnyArgs().Create(null, null);
-            caseManager.Received().Dispose();
-        }
+			_searchManagerFactory.ReceivedWithAnyArgs().Create(null, null);
+			searchManager.Received().Dispose();
+		}
 
-        [Test]
-        public void ItShouldPopulateCaseInfoForEmptyDocumentPath()
-        {
-            _exportFile.CaseInfo.DocumentPath = string.Empty;
-            var expectedCaseInfoArtifactId = _exportFile.CaseInfo.ArtifactID;
+		[Test]
+		public void ItShouldCreateAndDisposeCaseManager()
+		{
+			var caseManager = Substitute.For<ICaseManager>();
+			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
 
-            var caseManager = Substitute.For<ICaseManager>();
-            caseManager.Read(1).ReturnsForAnyArgs(new CaseInfo());
-            _caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			});
 
-            _exportProcessBuilder.Create(new ExportSettings());
+			_caseManagerFactory.ReceivedWithAnyArgs().Create(null, null);
+			caseManager.Received().Dispose();
+		}
 
-            caseManager.Received().Read(expectedCaseInfoArtifactId);
-        }
+		[Test]
+		public void ItShouldPopulateCaseInfoForEmptyDocumentPath()
+		{
+			_exportFile.CaseInfo.DocumentPath = string.Empty;
+			var expectedCaseInfoArtifactId = _exportFile.CaseInfo.ArtifactID;
 
-        [Test]
-        public void ItShouldNotPopulateCaseInfoForNotEmptyDocumentPath()
-        {
-            _exportFile.CaseInfo.DocumentPath = "document_path";
+			var caseManager = Substitute.For<ICaseManager>();
+			caseManager.Read(1).ReturnsForAnyArgs(new CaseInfo()
+			{
+				ArtifactID = _exportFile.CaseInfo.ArtifactID
+			});
+			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
 
-            var caseManager = Substitute.For<ICaseManager>();
-            _caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			});
 
-            _exportProcessBuilder.Create(new ExportSettings());
+			caseManager.Received().Read(expectedCaseInfoArtifactId);
+		}
 
-            caseManager.DidNotReceiveWithAnyArgs().Read(1);
-        }
+		[Test]
+		public void ItShouldNotPopulateCaseInfoForNotEmptyDocumentPath()
+		{
+			_exportFile.CaseInfo.DocumentPath = "document_path";
 
-        [Test]
-        public void ItShouldAssignAllExportableFields()
-        {
-            var expectedExportableFields = new ViewFieldInfo[0];
+			var caseManager = Substitute.For<ICaseManager>();
+			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
 
-            MockSearchManagerReturnValue(expectedExportableFields);
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			});
 
-            _exportProcessBuilder.Create(new ExportSettings());
+			caseManager.DidNotReceiveWithAnyArgs().Read(1);
+		}
 
-            Assert.AreSame(expectedExportableFields, _exportFile.AllExportableFields);
-        }
+		[Test]
+		public void ItShouldAssignAllExportableFields()
+		{
+			var expectedExportableFields = AllExportableAvfIds;
 
-        [Test]
-        public void ItShouldFilterSelectedViewFields()
-        {
-            var expectedFilteredFields = new List<int>
-            {
-                1,
-                2,
-                3
-            };
-            var notExpectedFilteredFields = new List<int>
-            {
-                4,
-                5,
-                6
-            };
-            var settings = new ExportSettings
-            {
-                SelViewFieldIds = expectedFilteredFields
-            };
-            var expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(expectedFilteredFields.Concat(notExpectedFilteredFields).ToList());
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = AllExportableAvfIds
+			});
 
-            MockSearchManagerReturnValue(expected);
+			CollectionAssert.AreEquivalent(expectedExportableFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
 
-            _exportProcessBuilder.Create(settings);
+			Assert.That(expectedExportableFields.Count, Is.EqualTo(_exportFile.AllExportableFields.Length));
+			Assert.That(expectedExportableFields.Exists(item => _exportFile.AllExportableFields.Any(obj => obj.AvfId == item)));
+		}
 
-            CollectionAssert.AreEquivalent(expectedFilteredFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
-        }
+		[Test]
+		public void ItShouldFilterSelectedViewFields()
+		{
+			var expectedFilteredFields = new List<int>
+			{
+				1,
+				2,
+				3
+			};
+			var notExpectedFilteredFields = new List<int>
+			{
+				4,
+				5,
+				6
+			};
+			var settings = new ExportSettings
+			{
+				SelViewFieldIds = expectedFilteredFields
+			};
+			var expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(expectedFilteredFields.Concat(notExpectedFilteredFields).ToList(), true);
 
-        [Test]
-        public void ItShouldCreateExporterUsingFactory()
-        {
-            _exportProcessBuilder.Create(new ExportSettings());
+			MockSearchManagerReturnValue(expected);
 
-            _exporterFactory.Received().Create(_exportFile);
-        }
+			_exportProcessBuilder.Create(settings);
 
-        [Test]
-        public void ItShouldAttachEventHandlers()
-        {
-            var exporter = Substitute.For<IExporter>();
-            _exporterFactory.Create(_exportFile).Returns(exporter);
+			CollectionAssert.AreEquivalent(expectedFilteredFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
+		}
 
-            _exportProcessBuilder.Create(new ExportSettings());
+		[Test]
+		public void ItShouldCreateExporterUsingFactory()
+		{
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			});
 
-            _loggingMediator.Received().RegisterEventHandlers(_userMessageNotification, exporter);
-            exporter.Received().InteractionManager = _userNotification;
-        }
+			_exporterFactory.Received().Create(_exportFile);
+		}
+
+		[Test]
+		public void ItShouldAttachEventHandlers()
+		{
+			var exporter = Substitute.For<IExporter>();
+			_exporterFactory.Create(_exportFile).Returns(exporter);
+
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			});
+
+			_loggingMediator.Received().RegisterEventHandlers(_userMessageNotification, exporter);
+			exporter.Received().InteractionManager = _userNotification;
+		}
 
 		[Test]
 		public void ItShouldMaintainFieldsOrder()
 		{
 			// arrange
 			var exportableFieldIds = new List<int> { 1, 2, 3, 4, 5, 6 };
-			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(exportableFieldIds));
+			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(exportableFieldIds, true));
 
 			var expectedFieldIds = new List<int> { 2, 3, 1 };
 
@@ -216,13 +254,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			CollectionAssert.AreEqual(expectedFieldIds, _exportFile.SelectedViewFields.Select(x => x.AvfId));
 		}
 
-        private void MockSearchManagerReturnValue(ViewFieldInfo[] expectedExportableFields)
-        {
-            var searchManager = Substitute.For<ISearchManager>();
-            searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(expectedExportableFields);
-            _searchManagerFactory.Create(null, null).ReturnsForAnyArgs(searchManager);
-        }
+		private void MockSearchManagerReturnValue(ViewFieldInfo[] expectedExportableFields)
+		{
+			var searchManager = Substitute.For<ISearchManager>();
+			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(expectedExportableFields);
+			_searchManagerFactory.Create(null, null).ReturnsForAnyArgs(searchManager);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }
