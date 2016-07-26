@@ -68,7 +68,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void CreateJob_NoneStopingState()
+		public void CreateJob_NoneStoppingState()
 		{
 			// act
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);

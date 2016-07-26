@@ -1,4 +1,7 @@
-﻿using kCura.IntegrationPoints.Core.Managers;
+﻿using System;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
@@ -78,5 +81,15 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <returns>Error Manager</returns>
 		IErrorManager CreateErrorManager(IContextContainer contextContainer);
 
+		/// <summary>
+		/// Create a job stop manager to handle the stopping signal of the job.
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <param name="jobService">A service class provides functionalities to control the scheduled queue job.</param>
+		/// <param name="jobHistoryService">A service class provides functionalities to control the job history.</param>
+		/// <param name="jobIdentifier">Guid id of the job history</param>
+		/// <param name="jobId">Artifact id of the scheduled queue job</param>
+		/// <returns></returns>
+		IJobStopManager CreateJobStopManagerManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId);
 	}
 }
