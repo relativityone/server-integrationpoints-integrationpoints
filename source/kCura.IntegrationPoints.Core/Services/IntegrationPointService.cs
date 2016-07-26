@@ -459,9 +459,10 @@ namespace kCura.IntegrationPoints.Core.Services
 		public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
-			int[] stoppableArtifactIds = jobHistoryManager.GetStoppableJobHistoryArtifactIds(workspaceArtifactId, integrationPointArtifactId);
+			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
 
-			foreach (int artifactId in stoppableArtifactIds)
+			// Update the status of the Pending jobs
+			foreach (int artifactId in stoppableJobCollection.PendingJobArtifactIds)
 			{
 				var jobHistoryRdo = new Data.JobHistory()
 				{
@@ -469,8 +470,14 @@ namespace kCura.IntegrationPoints.Core.Services
 					JobStatus = JobStatusChoices.JobHistoryStopping
 				};
 
-				// TODO: update the job table to mark for cancel
 				_jobHistoryService.UpdateRdo(jobHistoryRdo);				
+			}
+
+			IEnumerable<int> allStoppableJobArtifactIds =
+				stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds);
+			foreach (int artifactId in allStoppableJobArtifactIds)
+			{
+				// TODO: update the StopStatus column
 			}
 		}
 

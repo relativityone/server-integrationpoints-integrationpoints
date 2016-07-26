@@ -15,7 +15,7 @@
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
-		/// <returns>The artifact ids of the stoppable job histories.</returns>
-		int[] GetStoppableJobHistoryArtifactIds(int workspaceArtifactId, int integrationPointArtifactId);
+		/// <returns>A StoppableJobCollection</returns>
+		Models.StoppableJobCollection GetStoppableJobCollection(int workspaceArtifactId, int integrationPointArtifactId);
 	}
 }

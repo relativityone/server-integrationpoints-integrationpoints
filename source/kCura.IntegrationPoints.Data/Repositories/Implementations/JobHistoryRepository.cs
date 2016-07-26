@@ -58,10 +58,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return lastJobHistoryArtifactId;
 		}
 
-		public int[] GetStoppableJobHistoryArtifactIds(int integrationPointArtifactId)
+		public IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId)
 		{
 			var integrationPointCondition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>() { integrationPointArtifactId });
-			var stoppableCondition = new SingleChoiceCondition(JobHistoryFieldGuids.JobStatus, SingleChoiceConditionEnum.AnyOfThese, new [] { JobStatusChoices.JobHistoryPending.ArtifactGuids.First(), JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First()});
+			Guid pendingGuid = JobStatusChoices.JobHistoryPending.ArtifactGuids.First();
+			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First();
+			var stoppableCondition = new SingleChoiceCondition(JobHistoryFieldGuids.JobStatus, SingleChoiceConditionEnum.AnyOfThese, new [] { pendingGuid, processingGuid });
 
 			var query = new Query<RDO>
 			{
@@ -69,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = new CompositeCondition(integrationPointCondition, CompositeConditionEnum.And, stoppableCondition),
 				Fields = new List<FieldValue>()
 				{
-					new FieldValue(new Guid(JobHistoryFieldGuids.IntegrationPoint))
+					new FieldValue(new Guid(JobHistoryFieldGuids.JobStatus))
 				}
 			};
 
@@ -85,7 +87,29 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Job History: {results.Message}");
 			}
 
-			int[] stoppableJobHistoryArtifactIds = results.Results.Select(result => result.Artifact.ArtifactID).ToArray();
+			var pendingJobArtifactIds = new List<int>();
+			var processingJobArtifactIds = new List<int>();
+			foreach (Result<RDO> result in results.Results)
+			{
+				Guid? status = result.Artifact.Fields.First().Value as Guid?;
+				if (status != null)
+				{
+					if (status == pendingGuid)
+					{
+						pendingJobArtifactIds.Add(result.Artifact.ArtifactID);
+					}
+					else if (status == processingGuid)
+					{
+						processingJobArtifactIds.Add(result.Artifact.ArtifactID);	
+					}
+				}
+			}
+
+			var stoppableJobHistoryArtifactIds = new Dictionary<Guid, int[]>
+			{
+				{pendingGuid, pendingJobArtifactIds.ToArray()},
+				{processingGuid, processingJobArtifactIds.ToArray()}
+			};
 
 			return stoppableJobHistoryArtifactIds;
 		}

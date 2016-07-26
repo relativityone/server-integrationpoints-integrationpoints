@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
@@ -44,21 +47,49 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetStoppableJobHistoryArtifactIds_GoldFlow()
+		public void GetStoppableJobCollection_GoldFlow()
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
-			int[] jobHistoryIds = {234323, 980934};
-			_jobHistoryRepository.GetStoppableJobHistoryArtifactIds(integrationPointArtifactId).Returns(jobHistoryIds);
+			int[] pendingJobHistoryIds = {234323, 980934};
+			int[] processingJobHistoryIds = {323, 9893};
+			IDictionary<Guid, int[]> artifactIdsByStatus = new Dictionary<Guid, int[]>()
+			{
+				{JobStatusChoices.JobHistoryPending.ArtifactGuids.First(), pendingJobHistoryIds},
+				{JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First(), processingJobHistoryIds},
+			};
+
+			_jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId).Returns(artifactIdsByStatus);
 
 			// ACT
-			int[] result = _testInstance.GetStoppableJobHistoryArtifactIds(_WORKSPACE_ID, integrationPointArtifactId);
+			StoppableJobCollection result = _testInstance.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
-			Assert.AreEqual(jobHistoryIds, result);
+			Assert.IsTrue(pendingJobHistoryIds.SequenceEqual(result.PendingJobArtifactIds),
+				"The PendingJobArtifactIds should be correct");
+			Assert.IsTrue(processingJobHistoryIds.SequenceEqual(result.ProcessingJobArtifactIds),
+				"The ProcessingJobArtifactIds should be correct");
 		}
 
+		[Test]
+		public void GetStoppableJobCollection_NoResults_ReturnsEmptyArrays()
+		{
+			// ARRANGE
+			int integrationPointArtifactId = 1322131;
+			IDictionary<Guid, int[]> artifactIdsByStatus = new Dictionary<Guid, int[]>()
+			{
+			};
 
+			_jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId).Returns(artifactIdsByStatus);
+
+			// ACT
+			StoppableJobCollection result = _testInstance.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
+
+			// ASSERT
+			Assert.IsNotNull(result.PendingJobArtifactIds, $"The {nameof(StoppableJobCollection.PendingJobArtifactIds)} should not be null.");
+			Assert.IsNotNull(result.ProcessingJobArtifactIds, $"The {nameof(StoppableJobCollection.ProcessingJobArtifactIds)} should not be null.");
+			Assert.IsTrue(result.PendingJobArtifactIds.Length == 0, "There should be no results.");
+			Assert.IsTrue(result.ProcessingJobArtifactIds.Length == 0, "There should be no results.");
+		}
 	}
-
 }
