@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -62,12 +64,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateStopState_JobDoesNotExist()
-		{
-			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(987654321, StopState.Stopping));
-		}
-
-		[Test]
 		public void CreateJob_NoneStoppingState()
 		{
 			// act
@@ -75,6 +71,12 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 
 			// assert
 			Assert.AreEqual(job.StopState, StopState.None);
+		}
+
+		[Test]
+		public void UpdateStopState_JobDoesNotExist()
+		{
+			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(987654321, StopState.Stopping));
 		}
 
 		[TestCase(StopState.None)]
@@ -113,6 +115,50 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 
 			// act & assert
 			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(job.JobId, StopState.Stopping));
+		}
+
+		[Test]
+		public void GetJobs_NoJobsEmptyTable()
+		{
+			// act
+			IList<Job> jobs = _instance.GetJobs(-1);
+
+			// assert
+			Assert.IsNotNull(jobs);
+			Assert.IsEmpty(jobs);
+		}
+
+		[Test]
+		public void GetJobs_NoJobs()
+		{
+			// arrange
+			int integrationPointArtifactIds = 789654123;
+			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+
+			// act
+			IList<Job> jobs = _instance.GetJobs(-1);
+
+			// assert
+			Assert.IsNotNull(jobs);
+			Assert.IsEmpty(jobs);
+		}
+
+		[Test]
+		public void GetJobs_FoundMatches()
+		{
+			// arrange
+			int integrationPointArtifactIds = 789654123;
+			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+
+			// act
+			IList<Job> jobs = _instance.GetJobs(integrationPointArtifactIds);
+
+			// assert
+			Assert.IsNotNull(jobs);
+			Assert.AreEqual(2, jobs.Count);
+			// TODO : add more verifications
 		}
 	}
 }
