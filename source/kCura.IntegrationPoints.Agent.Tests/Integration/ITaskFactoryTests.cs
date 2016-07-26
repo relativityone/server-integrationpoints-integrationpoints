@@ -22,17 +22,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[Category("Integration Tests")]
 	public class ITaskFactoryTests
 	{
-		[TestFixtureSetUp]
 		[Test]
 		public void UpdateJobHistory()
 		{
 			// arrange
 			Job tempJob = JobExtensions.CreateJob();
-			Exception excep = null;
 			IAgentHelper helper = Substitute.For<IAgentHelper>();
 			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = new kCura.IntegrationPoints.Data.IntegrationPoint();
 			TaskParameters paramerters = new TaskParameters();
-			JobHistory jobHistory = new JobHistory() { ArtifactId = 666 };
+			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234 };
 
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 			IWindsorContainer container = Substitute.For<IWindsorContainer>();

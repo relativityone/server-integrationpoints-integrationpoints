@@ -83,15 +83,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		[Test]
 		public void VerifyCreateBatchJob()
 		{
+			//arrange
 			List<string> list = new List<string> { };
 			list.Add("krua@kcura.com");
 			list.Add("krua1@kcura.com");
 			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "test", "Append Only");
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 			Job tempJob = JobExtensions.CreateJobAgentTypeId(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, 12313, -1, 11111, DateTime.Now.AddDays(30));
-			this._sendEmailManager.CreateBatchJob(tempJob, list);
 
-			list.Add("");
+			//act
+			_sendEmailManager.CreateBatchJob(tempJob, list);
+			Job createdJob = _jobManager.GetJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, "SendEmailWorker");
+
+			//assert
+			Assert.IsNotNull(createdJob);
 		}
 	}
 }
