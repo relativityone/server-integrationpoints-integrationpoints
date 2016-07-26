@@ -22,7 +22,7 @@ namespace kCura.ScheduleQueue.Core
 		public Int32 JobFlags { get; set; }
 		public DateTime SubmittedDate { get; set; }
 		public Int32 SubmittedBy { get; set; }
-		public StopState StopState { get; set; }
+		public StopState StopState { get; private set; }
 
 		public Job(DataRow row)
 		{
