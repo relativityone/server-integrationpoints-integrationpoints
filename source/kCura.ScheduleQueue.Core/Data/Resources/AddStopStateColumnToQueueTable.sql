@@ -1,7 +1,7 @@
 ﻿/****** 
 Script Date:		7/25/2016
 Script Creator:		Sorawit Amornborvornwong
-Script Description:	Adding cancel state column onto the schedule queue table.
+Script Description:	Adding stop state column onto the schedule queue table.
 ******/
 
 USE [EDDS]
