@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -15,6 +14,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 {
 	[TestFixture]
 	[Category("Integration Tests")]
+	[Explicit("TODO : these tests need to run when the rip agents are disabled.")]
 	public class JobServiceTests
 	{
 		private const string _AGENT_TYPEID = "AgentTypeID";
@@ -54,7 +54,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			_instance = new JobService(_agentService, _helper);
 		}
 
-
 		[TearDown]
 		public void TearDown()
 		{
@@ -68,7 +67,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(987654321, StopState.Stopping));
 		}
 
-
 		[Test]
 		public void CreateJob_NoneStopingState()
 		{
@@ -79,34 +77,32 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			Assert.AreEqual(job.StopState, StopState.None);
 		}
 
-		[Test]
-		public void UpdateStopState_GoldFlow_Stopping()
+		[TestCase(StopState.None)]
+		[TestCase(StopState.Stopping)]
+		[TestCase(StopState.Unstoppable)]
+		public void UpdateStopState_GoldFlow(StopState state)
 		{
 			// arrange
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
 
 			// act
+			_instance.UpdateStopState(job.JobId, state);
+
+			// assert
+			Job updatedJob = _instance.GetJob(job.JobId);
+			Assert.AreEqual(updatedJob.StopState, state);
+		}
+
+		[Test]
+		[Description("This case will occur when a user click on stop right before the agent set the unstoppable flag.")]
+		public void UpdateStopState_SetUnstoppableAfterStopping()
+		{
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
 			_instance.UpdateStopState(job.JobId, StopState.Stopping);
 
-			// assert
-			Job updatedJob = _instance.GetJob(job.JobId);
-			Assert.AreEqual(updatedJob.StopState, StopState.Stopping);
+			// act & assert
+			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(job.JobId, StopState.Unstoppable));
 		}
-
-		[Test]
-		public void UpdateStopState_GoldFlow_Unstoppable()
-		{
-			// arrange
-			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-
-			// act
-			_instance.UpdateStopState(job.JobId, StopState.Unstoppable);
-
-			// assert
-			Job updatedJob = _instance.GetJob(job.JobId);
-			Assert.AreEqual(updatedJob.StopState, StopState.Unstoppable);
-		}
-
 
 		[Test]
 		public void UpdateStopState_DoNotAllowStopOnAnUnstoppableJob()

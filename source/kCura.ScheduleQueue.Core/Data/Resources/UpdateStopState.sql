@@ -1,6 +1,4 @@
-﻿
-BEGIN TRANSACTION UpdateStopState
-
+﻿BEGIN TRANSACTION UpdateStopState
 
 IF NOT EXISTS (SELECT * FROM [eddsdbo].[{0}] WHERE [JobID] = @JobID)
 BEGIN
@@ -9,14 +7,19 @@ END
 
 IF EXISTS (SELECT * FROM [eddsdbo].[{0}] WHERE [JobID] = @JobID AND [StopState] = 2 AND @State = 1)
 BEGIN
-	RAISERROR('ERROR : Unable to stop an unstoppable job.', 18, 1)
+	RAISERROR('ERROR : Invalid operation. Attempted to stop an unstoppable job.', 18, 1)
+END
+
+IF EXISTS (SELECT * FROM [eddsdbo].[{0}] WHERE [JobID] = @JobID AND [StopState] = 1 AND @State = 2)
+BEGIN
+	RAISERROR('ERROR : Invalid operation. Attempted to mark the canceling job as an unstoppable job.', 18, 1)
 END
 
 UPDATE	
-					[eddsdbo].[{0}] 
+	[eddsdbo].[{0}] 
 SET 
-					[StopState] = @State
+	[StopState] = @State
 WHERE 
-					[JobID] = @JobID
+	[JobID] = @JobID
 
 COMMIT TRANSACTION UpdateStopState;  
