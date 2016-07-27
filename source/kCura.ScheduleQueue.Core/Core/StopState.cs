@@ -6,7 +6,7 @@ namespace kCura.ScheduleQueue.Core.Core
 	public enum StopState
 	{
 		None = 0,
-		Stopping = 1,
+		Stopping = 1 << 0,
 		Unstoppable = 1 << 1
 	}
 }
