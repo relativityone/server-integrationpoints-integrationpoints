@@ -197,7 +197,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				.Throw(aggregateException);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
 			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
-			errorManager.Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == expectedErrorMessage));
+			errorManager.Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), expectedErrorMessage)));
 
 			// Act
 			HttpResponseMessage response = _instance.Stop(_payload);
@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
 			Assert.AreEqual(expectedErrorMessage, stringContent, "The response's Content should be correct.");
 
-			errorManager.Received(1).Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == expectedErrorMessage));
+			errorManager.Received(1).Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), expectedErrorMessage)));
 		}
 
 		[Test]
@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				.Throw(exception);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
 			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
-			errorManager.Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == exception.Message));
+			errorManager.Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), exception.Message)));
 
 			// Act
 			HttpResponseMessage response = _instance.Stop(_payload);
@@ -249,7 +249,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
 			Assert.AreEqual(exception.Message, stringContent, "The response's Content should be correct.");
 
-			errorManager.Received(1).Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == exception.Message));
+			errorManager.Received(1).Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), exception.Message)));
+		}
+
+		private bool ValidateErrorDto(ErrorDTO error, string expectedMessage)
+		{
+			bool isCorrectMessage = error.Message == expectedMessage;
+			bool isCorrectSource = error.Source == Core.Constants.IntegrationPoints.APPLICATION_NAME;
+			return isCorrectMessage && isCorrectSource;
 		}
 	}
 }
