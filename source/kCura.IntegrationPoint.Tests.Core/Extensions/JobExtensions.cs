@@ -68,10 +68,17 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
-		public static Job UpdateStopState(this Job job, StopState state)
+		public static Job CopyJobWithStopState(this Job job, StopState state)
 		{
 			DataRow row = CovertToDataRow(job);
 			row["StopState"] = (int)state;
+			return new Job(row);
+		}
+
+		public static Job CopyJobWithJobId(this Job job, int id)
+		{
+			DataRow row = CovertToDataRow(job);
+			row["JobID"] = id;
 			return new Job(row);
 		}
 
