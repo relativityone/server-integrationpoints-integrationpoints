@@ -59,13 +59,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			};
 		}
 
-		[TestCase(true, true, false)]
-		[TestCase(true, true, true)]
-		[TestCase(false, true, true)]
-		[TestCase(true, false, false)]
-		[TestCase(true, false, true)]
-		[TestCase(false, false, true)]
-		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasRunPermissions, bool hasViewErrorsPermissions)
+		[TestCase(true, true, false, false)]
+		[TestCase(true, true, true, false)]
+		[TestCase(false, true, true, false)]
+		[TestCase(true, false, false, false)]
+		[TestCase(true, false, true, false)]
+		[TestCase(false, false, true, false)]
+		[TestCase(true, true, false, true)]
+		[TestCase(true, true, true, true)]
+		[TestCase(false, true, true, true)]
+		[TestCase(true, false, false, true)]
+		[TestCase(true, false, true, true)]
+		[TestCase(false, false, true, true)]
+		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasRunPermissions, bool hasViewErrorsPermissions, bool hasStoppableJobs)
 		{
 			// ARRANGE
 			var integrationPointDto = new IntegrationPointDTO()
@@ -88,7 +94,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
 
-			var stoppableJobCollection = new StoppableJobCollection() { PendingJobArtifactIds = new int[0], ProcessingJobArtifactIds = new int[0]};
+			var stoppableJobCollection = new StoppableJobCollection()
+			{
+				PendingJobArtifactIds = hasStoppableJobs ? new[] { 23049 } : new int[0],
+				ProcessingJobArtifactIds = hasStoppableJobs ? new[] { 84902 } : new int[0]
+			};
 			_jobHistoryManager.GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
 
 			if (!hasRunPermissions || !hasViewErrorsPermissions)
@@ -104,7 +114,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				RunNowButtonEnabled = hasRunPermissions,
 				RetryErrorsButtonEnabled = hasRunPermissions,
 				ViewErrorsLinkEnabled = hasViewErrorsPermissions,
-				StopButtonEnabled = false
+				StopButtonEnabled = hasStoppableJobs
 			};
 
 			if (isRelativitySourceProvider)
@@ -121,7 +131,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
 				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue,
-					integrationPointDto.HasErrors.Value, hasViewErrorsPermissions, false)
+					integrationPointDto.HasErrors.Value, hasViewErrorsPermissions, hasStoppableJobs)
 					.Returns(buttonStates);
 
 				onClickEvents = new OnClickEventDTO()
@@ -130,7 +140,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					ViewErrorsOnClickEvent =
 						integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
-					StopOnClickEvent = String.Empty
+					StopOnClickEvent = hasStoppableJobs ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty
 				};
 
 				_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
@@ -144,10 +154,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					RunNowOnClickEvent = $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})",
 					RetryErrorsOnClickEvent = String.Empty,
 					ViewErrorsOnClickEvent = String.Empty,
-					StopOnClickEvent = String.Empty
+					StopOnClickEvent = hasStoppableJobs ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty
 				};
 
-				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, false, false, false, false)
+				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, false, false, false, hasStoppableJobs)
 					.Returns(buttonStates);
 
 				_onClickEventHelper.GetOnClickEventsForNonRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
@@ -190,7 +200,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(false, cancelButton.Enabled);
+				Assert.AreEqual(hasStoppableJobs, cancelButton.Enabled);
 				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
@@ -216,7 +226,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(false, cancelButton.Enabled);
+				Assert.AreEqual(hasStoppableJobs, cancelButton.Enabled);
 				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
 			}
 		}
