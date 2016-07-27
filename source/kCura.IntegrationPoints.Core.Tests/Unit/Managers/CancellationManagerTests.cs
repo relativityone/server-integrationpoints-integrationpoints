@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// arrange
 			Job job = JobExtensions.CreateJob();
-			job = job.UpdateStopState(stopState);
+			job = job.CopyJobWithStopState(stopState);
 			_jobService.GetJob(_jobId).Returns(job);
 
 			// act
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// arrange
 			Job job = JobExtensions.CreateJob();
-			job = job.UpdateStopState(StopState.Stopping);
+			job = job.CopyJobWithStopState(StopState.Stopping);
 			_jobService.GetJob(_jobId).Returns(job);
 
 			// act
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// arrange
 			Job job = JobExtensions.CreateJob();
-			job = job.UpdateStopState(StopState.Stopping);
+			job = job.CopyJobWithStopState(StopState.Stopping);
 			_jobService.GetJob(_jobId).Returns(job);
 			_jobHistoryService.GetRdo(_guid).Throws(new Exception("something"));
 

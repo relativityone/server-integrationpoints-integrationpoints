@@ -461,7 +461,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
 			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
+
 			List<Exception> exceptions = new List<Exception>(); // Gotta Catch 'em All
+			HashSet<int> erroredPendingJobs = new HashSet<int>();
 
 			// Update the status of the Pending jobs
 			foreach (int artifactId in stoppableJobCollection.PendingJobArtifactIds)
@@ -474,16 +476,18 @@ namespace kCura.IntegrationPoints.Core.Services
 						JobStatus = JobStatusChoices.JobHistoryStopping
 					};
 					_jobHistoryService.UpdateRdo(jobHistoryRdo);
-					StopScheduledAgentJobs(jobs, artifactId);
 				}
 				catch (Exception exception)
 				{
+					erroredPendingJobs.Add(artifactId);
 					exceptions.Add(exception);
 				}
 			}
 
 			IEnumerable<int> allStoppableJobArtifactIds =
-				stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds);
+				stoppableJobCollection.PendingJobArtifactIds.Where( x => !erroredPendingJobs.Contains(x))
+				.Concat(stoppableJobCollection.ProcessingJobArtifactIds);
+
 			foreach (int artifactId in allStoppableJobArtifactIds)
 			{
 				try
@@ -520,8 +524,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			else
 			{
-				// I don't think this is currently possible. SAMO - 7/27/2016
-				// throw new Exception("Fail to retrieve job history information. Please retry the operation.");
+				 // I don't think this is currently possible. SAMO - 7/27/2016
+				 throw new Exception("Fail to retrieve job history information. Please retry the operation.");
 			}
 		}
 
