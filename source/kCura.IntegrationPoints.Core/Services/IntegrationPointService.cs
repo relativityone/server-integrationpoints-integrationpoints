@@ -529,7 +529,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			else
 			{
 				 // I don't think this is currently possible. SAMO - 7/27/2016
-				 throw new Exception("Fail to retrieve job history information. Please retry the operation.");
+				 throw new Exception("Failed to retrieve job history RDO. Please retry the operation.");
 			}
 		}
 

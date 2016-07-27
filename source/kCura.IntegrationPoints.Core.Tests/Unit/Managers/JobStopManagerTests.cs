@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 {
 	[TestFixture]
-	public class CancellationManagerTests
+	public class JobStopManagerTests
 	{
 		private JobStopManager _instance;
 		private IJobService _jobService;
@@ -34,10 +34,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// act
 			_instance.Callback.Invoke(null);
-			bool isCancled = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStoppingRequested();
 
 			// assert
-			Assert.IsFalse(isCancled);
+			Assert.IsFalse(isStoppingRequested);
 		}
 
 		[TestCase(StopState.None)]
@@ -51,10 +51,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isCancled = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStoppingRequested();
 
 			// assert
-			Assert.IsFalse(isCancled);
+			Assert.IsFalse(isStoppingRequested);
 		}
 
 		[Test]
@@ -67,10 +67,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isCancled = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStoppingRequested();
 
 			// assert
-			Assert.IsTrue(isCancled);
+			Assert.IsTrue(isStoppingRequested);
 		}
 
 		[Test]
@@ -81,10 +81,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isCancled = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStoppingRequested();
 
 			// assert
-			Assert.IsFalse(isCancled);
+			Assert.IsFalse(isStoppingRequested);
 		}
 
 		[Test]
@@ -92,16 +92,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// arrange
 			Job job = JobExtensions.CreateJob();
-			job = job.CopyJobWithStopState(StopState.Stopping);
+			job = job.CopyJobWithStopState (StopState.Stopping);
 			_jobService.GetJob(_jobId).Returns(job);
 			_jobHistoryService.GetRdo(_guid).Throws(new Exception("something"));
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isCancled = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStoppingRequested();
 
 			// assert
-			Assert.IsFalse(isCancled);
+			Assert.IsFalse(isStoppingRequested);
 		}
 
 		[Test]

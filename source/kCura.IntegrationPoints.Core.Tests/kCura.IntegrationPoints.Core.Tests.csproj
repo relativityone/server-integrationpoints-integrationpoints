@@ -254,7 +254,7 @@
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />
     <Compile Include="Unit\Managers\ErrorManagerTests.cs" />
-    <Compile Include="Unit\Managers\CancellationManagerTests.cs" />
+    <Compile Include="Unit\Managers\JobStopManagerTests.cs" />
     <Compile Include="Unit\Managers\FieldManagerTests.cs" />
     <Compile Include="Unit\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Unit\Keywords\KeywordConverterTests.cs" />
