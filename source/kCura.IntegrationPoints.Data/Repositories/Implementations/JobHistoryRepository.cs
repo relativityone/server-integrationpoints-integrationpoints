@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var integrationPointCondition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>() { integrationPointArtifactId });
 			Guid pendingGuid = JobStatusChoices.JobHistoryPending.ArtifactGuids.First();
 			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First();
-			var stoppableCondition = new SingleChoiceCondition(JobHistoryFieldGuids.JobStatus, SingleChoiceConditionEnum.AnyOfThese, new [] { pendingGuid, processingGuid });
+			var stoppableCondition = new SingleChoiceCondition(new Guid(JobHistoryFieldGuids.JobStatus), SingleChoiceConditionEnum.AnyOfThese, new [] { pendingGuid, processingGuid });
 
 			var query = new Query<RDO>
 			{
@@ -91,14 +91,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var processingJobArtifactIds = new List<int>();
 			foreach (Result<RDO> result in results.Results)
 			{
-				Guid? status = result.Artifact.Fields.First().Value as Guid?;
+
+				kCura.Relativity.Client.DTOs.Choice status = null;
+				try
+				{
+					status = result.Artifact.Fields.First().Value as kCura.Relativity.Client.DTOs.Choice;
+				}
+				catch
+				{
+					// surpress
+				}
+
 				if (status != null)
 				{
-					if (status == pendingGuid)
+					if (status.Name == JobStatusChoices.JobHistoryPending.Name)
 					{
 						pendingJobArtifactIds.Add(result.Artifact.ArtifactID);
 					}
-					else if (status == processingGuid)
+					else if (status.Name == JobStatusChoices.JobHistoryProcessing.Name)
 					{
 						processingJobArtifactIds.Add(result.Artifact.ArtifactID);	
 					}
