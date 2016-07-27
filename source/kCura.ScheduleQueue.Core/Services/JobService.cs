@@ -190,7 +190,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				int count =	QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
 				if (count == 0)
 				{
-					throw new InvalidOperationException("Invalid operation. The none of jobs not get updated.");
+					throw new InvalidOperationException("Invalid operation. Job state failed to update.");
 				}
 			}
 		}
