@@ -31,7 +31,7 @@ namespace kCura.ScheduleQueue.Core
 
 		Job GetScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskName);
 
-		void UpdateStopState(long jobId, StopState state);
+		void UpdateStopState(IList<long> jobIds, StopState state);
 
 		/// <summary>
 		/// Cleans up the scheduled job queue table.

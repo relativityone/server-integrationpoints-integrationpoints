@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -74,9 +73,27 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		}
 
 		[Test]
+		[Description("When we update the stop state, there is a possibility that the job is already removed from the queue. This scenario will occur when the job is finished before we get to update the job.")]
 		public void UpdateStopState_JobDoesNotExist()
 		{
-			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(987654321, StopState.Stopping));
+			Assert.Throws<InvalidOperationException>(() => _instance.UpdateStopState( new List<long>() {  987654321 }, StopState.Stopping));
+		}
+
+
+		[TestCase(StopState.None)]
+		[TestCase(StopState.Stopping)]
+		[TestCase(StopState.Unstoppable)]
+		[Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
+		public void UpdateStopState_SomeJobsDoesNotExist(StopState state)
+		{
+			// arrange
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+
+			// act
+			Assert.DoesNotThrow(() => _instance.UpdateStopState(new List<long>() { job.JobId, 987654321 }, state));
+
+			// assert
+			AssertJobStopState(job, state);
 		}
 
 		[TestCase(StopState.None)]
@@ -88,11 +105,44 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
 
 			// act
-			_instance.UpdateStopState(job.JobId, state);
+			_instance.UpdateStopState(new List<long>() {  job.JobId } , state);
 
 			// assert
-			Job updatedJob = _instance.GetJob(job.JobId);
-			Assert.AreEqual(updatedJob.StopState, state);
+			AssertJobStopState(job, state);
+		}
+
+		[TestCase(StopState.None)]
+		[TestCase(StopState.Stopping)]
+		[TestCase(StopState.Unstoppable)]
+		public void UpdateStopState_MultipleJobIds(StopState state)
+		{
+			// arrange
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+			Job job2 = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+			Job job3 = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+
+			// act
+			_instance.UpdateStopState(new List<long>() { job.JobId, job2.JobId, job3.JobId, job.JobId, 654987 }, state);
+
+			// assert
+			AssertJobStopState(job, state);
+			AssertJobStopState(job2, state);
+			AssertJobStopState(job3, state);
+		}
+
+		[TestCase(StopState.None)]
+		[TestCase(StopState.Stopping)]
+		[TestCase(StopState.Unstoppable)]
+		public void UpdateStopState_DuplicateJobIds(StopState state)
+		{
+			// arrange
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+
+			// act
+			_instance.UpdateStopState(new List<long>() { job.JobId, job.JobId }, state);
+
+			// assert
+			AssertJobStopState(job, state);
 		}
 
 		[Test]
@@ -100,10 +150,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		public void UpdateStopState_SetUnstoppableAfterStopping()
 		{
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-			_instance.UpdateStopState(job.JobId, StopState.Stopping);
+			List<long> ids = new List<long>() { job.JobId };
+			_instance.UpdateStopState(ids, StopState.Stopping);
 
 			// act & assert
-			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(job.JobId, StopState.Unstoppable));
+			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(ids, StopState.Unstoppable));
 		}
 
 		[Test]
@@ -111,10 +162,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		{
 			// arrange
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-			_instance.UpdateStopState(job.JobId, StopState.Unstoppable);
+			List<long> ids = new List<long>() { job.JobId };
+			_instance.UpdateStopState(ids, StopState.Unstoppable);
 
 			// act & assert
-			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(job.JobId, StopState.Stopping));
+			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(ids, StopState.Stopping));
 		}
 
 		[Test]
@@ -159,6 +211,13 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			Assert.IsNotNull(jobs);
 			Assert.AreEqual(2, jobs.Count);
 			// TODO : add more verifications
+		}
+
+
+		private void AssertJobStopState(Job job, StopState state)
+		{
+			Job updatedJob = _instance.GetJob(job.JobId);
+			Assert.AreEqual(updatedJob.StopState, state);
 		}
 	}
 }

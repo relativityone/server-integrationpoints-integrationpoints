@@ -148,9 +148,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			return results;
 		}
 
-		public void StopJob(long jobId)
+		public void StopJobs(IList<long> jobIds)
 		{
-			_jobService.UpdateStopState(jobId, StopState.Stopping);
+			_jobService.UpdateStopState(jobIds, StopState.Stopping);
 		}
 	}
 }

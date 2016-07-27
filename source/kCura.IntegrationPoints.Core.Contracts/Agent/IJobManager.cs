@@ -31,10 +31,10 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		bool CheckBatchOnJobComplete(Job job, string batchId);
 
 		/// <summary>
-		/// Stop the scheduled queue job
+		/// Stop the scheduled queue jobs
 		/// </summary>
-		/// <param name="jobId">A scheduled queue job id</param>
-		void StopJob(long jobId);
+		/// <param name="jobIds">A list of scheduled queue job ids</param>
+		void StopJobs(IList<long> jobIds);
 
 		/// <summary>
 		/// Get scheduled agent jobs as a dictionary where the key is the job history's batch instance id and the value is a list of scheduled agent job dtos.

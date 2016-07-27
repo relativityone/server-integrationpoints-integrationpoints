@@ -460,26 +460,71 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
+			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
+			List<Exception> exceptions = new List<Exception>(); // Gotta Catch 'em All
 
 			// Update the status of the Pending jobs
 			foreach (int artifactId in stoppableJobCollection.PendingJobArtifactIds)
 			{
-				var jobHistoryRdo = new Data.JobHistory()
+				try
 				{
-					ArtifactId = artifactId,
-					JobStatus = JobStatusChoices.JobHistoryStopping
-				};
-
-				_jobHistoryService.UpdateRdo(jobHistoryRdo);				
+					var jobHistoryRdo = new Data.JobHistory()
+					{
+						ArtifactId = artifactId,
+						JobStatus = JobStatusChoices.JobHistoryStopping
+					};
+					_jobHistoryService.UpdateRdo(jobHistoryRdo);
+					StopScheduledAgentJobs(jobs, artifactId);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Add(exception);
+				}
 			}
 
 			IEnumerable<int> allStoppableJobArtifactIds =
 				stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds);
 			foreach (int artifactId in allStoppableJobArtifactIds)
 			{
-				// TODO: update the StopStatus column
+				try
+				{
+					StopScheduledAgentJobs(jobs, artifactId);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Add(exception);
+				}
+			}
+
+			if (exceptions.Any())
+			{
+				throw new AggregateException(exceptions);
 			}
 		}
+
+		private void StopScheduledAgentJobs(IDictionary<Guid, List<Job>> agentJobsReference, int jobHistoryArtifactId)
+		{
+			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(new List<int>() { jobHistoryArtifactId }).FirstOrDefault();
+			if (jobHistory != null)
+			{
+				Guid batchInstance = new Guid(jobHistory.BatchInstance);
+				if (agentJobsReference.ContainsKey(batchInstance))
+				{
+					List<long> jobIds = agentJobsReference[batchInstance].Select(job => job.JobId).ToList();
+					_jobService.StopJobs(jobIds);
+				}
+				else
+				{
+					throw new InvalidOperationException("Unable to retrieve job(s) in the queue. Please contract your system administrator.");
+				}
+			}
+			else
+			{
+				// I don't think this is currently possible. SAMO - 7/27/2016
+				// throw new Exception("Fail to retrieve job history information. Please retry the operation.");
+			}
+		}
+
 
 		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{

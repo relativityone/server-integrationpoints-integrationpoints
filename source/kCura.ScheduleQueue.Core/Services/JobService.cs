@@ -181,13 +181,18 @@ namespace kCura.ScheduleQueue.Core.Services
 			return job;
 		}
 
-		public void UpdateStopState(long jobId, StopState state)
+		public void UpdateStopState(IList<long> jobIds, StopState state)
 		{
-			string query = String.Format(Resources.UpdateStopState, QDBContext.TableName);
-			List<SqlParameter> sqlParams = new List<SqlParameter>();
-			sqlParams.Add(new SqlParameter("@State", (int)state));
-			sqlParams.Add(new SqlParameter("@JobID", jobId));
-			QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
+			if (jobIds.Any())
+			{
+				string query = String.Format(Resources.UpdateStopState, QDBContext.TableName, String.Join(",", jobIds.Distinct()));
+				List<SqlParameter> sqlParams = new List<SqlParameter> { new SqlParameter("@State", (int) state) };
+				int count =	QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
+				if (count == 0)
+				{
+					throw new InvalidOperationException("Invalid operation. The none of jobs not get updated.");
+				}
+			}
 		}
 
 		public IList<Job> GetJobs(long integrationPointId)
