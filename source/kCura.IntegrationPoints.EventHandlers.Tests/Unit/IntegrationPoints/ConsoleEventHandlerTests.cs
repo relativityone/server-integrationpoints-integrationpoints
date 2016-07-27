@@ -175,10 +175,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					runNowButton.OnClickEvent);
 
-				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(true, cancelButton.Enabled);
-				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
+				ConsoleButton stopButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Stop", stopButton.DisplayText);
+				Assert.AreEqual(true, stopButton.Enabled);
+				Assert.AreEqual(onClickEvents.StopOnClickEvent, stopButton.OnClickEvent);
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
@@ -201,10 +201,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.IsTrue(runNowButton.Enabled);
 				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 
-				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(true, cancelButton.Enabled);
-				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
+				ConsoleButton stopButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Stop", stopButton.DisplayText);
+				Assert.AreEqual(true, stopButton.Enabled);
+				Assert.AreEqual(onClickEvents.StopOnClickEvent, stopButton.OnClickEvent);
 			}
 		}
 	}
