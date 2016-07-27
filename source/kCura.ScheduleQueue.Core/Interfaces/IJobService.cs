@@ -31,11 +31,18 @@ namespace kCura.ScheduleQueue.Core
 
 		Job GetScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskName);
 
-		void UpdateStopState(long jobId, StopState state);
+		void UpdateStopState(IList<long> jobIds, StopState state);
 
 		/// <summary>
 		/// Cleans up the scheduled job queue table.
 		/// </summary>
 		void CleanupJobQueueTable();
+
+		/// <summary>
+		/// Get a list of job RDOs that associate with the integration point object.
+		/// </summary>
+		/// <param name="integrationPointId">An artifact id of integration point object.</param>
+		/// <returns>A list of job DTOs</returns>
+		IList<Job> GetJobs(long integrationPointId);
 	}
 }

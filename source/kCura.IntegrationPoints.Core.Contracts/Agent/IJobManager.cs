@@ -1,4 +1,7 @@
-﻿using kCura.ScheduleQueue.Core;
+﻿using System;
+using System.Collections.Generic;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Agent
@@ -27,5 +30,17 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId);
 		bool CheckBatchOnJobComplete(Job job, string batchId);
 
+		/// <summary>
+		/// Stop the scheduled queue jobs
+		/// </summary>
+		/// <param name="jobIds">A list of scheduled queue job ids</param>
+		void StopJobs(IList<long> jobIds);
+
+		/// <summary>
+		/// Get scheduled agent jobs as a dictionary where the key is the job history's batch instance id and the value is a list of scheduled agent job dtos.
+		/// </summary>
+		/// <param name="integrationPointId">An artifact id of integration point object.</param>
+		/// <returns>A dictionary of batch instance id and its agent job DTOs.</returns>
+		IDictionary<Guid, List<Job>> GetScheduledAgentJobMapedByBatchInstance(long integrationPointId);
 	}
 }

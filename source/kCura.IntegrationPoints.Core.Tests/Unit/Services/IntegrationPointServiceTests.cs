@@ -168,19 +168,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		public void MarkIntegrationPointToStopJobs_GoldFlow()
 		{
 			// arrange
-			int[] jobHistoryArtifactIds = new[] {342343, 590234};
+			var stoppableJobCollection = new StoppableJobCollection()
+			{
+				PendingJobArtifactIds = new [] {123, 456},
+				ProcessingJobArtifactIds = new [] {5634, 9604}
+			};
 			_jobHistoryManager
-				.GetStoppableJobHistoryArtifactIds(
+				.GetStoppableJobCollection(
 					Arg.Is(_sourceWorkspaceArtifactId), 
 					Arg.Is(_integrationPointArtifactId))
-				.Returns(jobHistoryArtifactIds);
+				.Returns(stoppableJobCollection);
 
 			// act
 			_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 
 			// assert
 			_jobHistoryManager.Received(1)
-				.GetStoppableJobHistoryArtifactIds(
+				.GetStoppableJobCollection(
 					Arg.Is(_sourceWorkspaceArtifactId), 
 					Arg.Is(_integrationPointArtifactId));
 
@@ -188,8 +192,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							jobHistoryArtifactIds.Contains(x.ArtifactId) &&
+							stoppableJobCollection.PendingJobArtifactIds.Contains(x.ArtifactId) &&
 							x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
+
+			_jobHistoryService.DidNotReceive()
+				.UpdateRdo(
+					Arg.Is<Data.JobHistory>(
+						x =>
+							stoppableJobCollection.ProcessingJobArtifactIds.Contains(x.ArtifactId)));
 		}
 
 		[Test]

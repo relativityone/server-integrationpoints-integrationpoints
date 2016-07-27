@@ -51,7 +51,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			{
 				RunNowButtonEnabled = true,
 				RetryErrorsButtonEnabled = true,
-				ViewErrorsLinkEnabled = true
+				ViewErrorsLinkEnabled = true,
+				StopButtonEnabled = true
 			};
 
 			//Act
@@ -91,8 +92,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 		public void GetOnClickEventsForNonRelativityProvider_GoldFlow()
 		{
 			//Arrange
+			ButtonStateDTO buttonStates = new ButtonStateDTO()
+			{
+				RunNowButtonEnabled = false,
+				RetryErrorsButtonEnabled = false,
+				ViewErrorsLinkEnabled = false,
+				StopButtonEnabled = true
+			};
+
 			//Act
-			OnClickEventDTO onClickEvents = _instance.GetOnClickEventsForNonRelativityProvider(_workspaceId, _integrationPointId);
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEventsForNonRelativityProvider(_workspaceId, _integrationPointId, buttonStates);
 
 			//Assert
 			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);

@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId);
 
 		/// <summary>
-		/// Marks an Integration Point to be canceled.
+		/// Marks an Integration Point to be stopped.
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace artifact id of the integration point.</param>
 		/// <param name="integrationPointArtifactId">Integration point artifact id.</param>

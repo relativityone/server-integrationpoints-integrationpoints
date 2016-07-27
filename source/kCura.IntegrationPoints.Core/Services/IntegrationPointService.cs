@@ -459,20 +459,72 @@ namespace kCura.IntegrationPoints.Core.Services
 		public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
-			int[] stoppableArtifactIds = jobHistoryManager.GetStoppableJobHistoryArtifactIds(workspaceArtifactId, integrationPointArtifactId);
+			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
+			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
+			List<Exception> exceptions = new List<Exception>(); // Gotta Catch 'em All
 
-			foreach (int artifactId in stoppableArtifactIds)
+			// Update the status of the Pending jobs
+			foreach (int artifactId in stoppableJobCollection.PendingJobArtifactIds)
 			{
-				var jobHistoryRdo = new Data.JobHistory()
+				try
 				{
-					ArtifactId = artifactId,
-					JobStatus = JobStatusChoices.JobHistoryStopping
-				};
+					var jobHistoryRdo = new Data.JobHistory()
+					{
+						ArtifactId = artifactId,
+						JobStatus = JobStatusChoices.JobHistoryStopping
+					};
+					_jobHistoryService.UpdateRdo(jobHistoryRdo);
+					StopScheduledAgentJobs(jobs, artifactId);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Add(exception);
+				}
+			}
 
-				// TODO: update the job table to mark for cancel
-				_jobHistoryService.UpdateRdo(jobHistoryRdo);				
+			IEnumerable<int> allStoppableJobArtifactIds =
+				stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds);
+			foreach (int artifactId in allStoppableJobArtifactIds)
+			{
+				try
+				{
+					StopScheduledAgentJobs(jobs, artifactId);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Add(exception);
+				}
+			}
+
+			if (exceptions.Any())
+			{
+				throw new AggregateException(exceptions);
 			}
 		}
+
+		private void StopScheduledAgentJobs(IDictionary<Guid, List<Job>> agentJobsReference, int jobHistoryArtifactId)
+		{
+			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(new List<int>() { jobHistoryArtifactId }).FirstOrDefault();
+			if (jobHistory != null)
+			{
+				Guid batchInstance = new Guid(jobHistory.BatchInstance);
+				if (agentJobsReference.ContainsKey(batchInstance))
+				{
+					List<long> jobIds = agentJobsReference[batchInstance].Select(job => job.JobId).ToList();
+					_jobService.StopJobs(jobIds);
+				}
+				else
+				{
+					throw new InvalidOperationException("Unable to retrieve job(s) in the queue. Please contract your system administrator.");
+				}
+			}
+			else
+			{
+				// I don't think this is currently possible. SAMO - 7/27/2016
+				// throw new Exception("Fail to retrieve job history information. Please retry the operation.");
+			}
+		}
+
 
 		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
