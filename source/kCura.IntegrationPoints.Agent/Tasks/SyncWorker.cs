@@ -22,6 +22,7 @@ using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Method.Injection;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -198,6 +199,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
 
             IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+			if (dataSynchronizer is RdoSynchronizerBase)
+	        {
+				ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
+		        settings.OnBehalfOfUserId = job.SubmittedBy;
+				destinationConfiguration = _serializer.Serialize(settings);
+	        }
 
             SetupSubscriptions(dataSynchronizer, job);
 
