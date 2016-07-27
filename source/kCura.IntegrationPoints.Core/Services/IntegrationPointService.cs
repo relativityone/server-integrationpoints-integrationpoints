@@ -460,13 +460,34 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
+			IList<int> allStoppableJobArtifactIds = stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds).ToList();
 			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
 
 			List<Exception> exceptions = new List<Exception>(); // Gotta Catch 'em All
 			HashSet<int> erroredPendingJobs = new HashSet<int>();
 
+			// Mark jobs to be stopped in queue table
+			foreach (int artifactId in allStoppableJobArtifactIds)
+			{
+				try
+				{
+					StopScheduledAgentJobs(jobs, artifactId);
+				}
+				catch (Exception exception)
+				{
+					if (stoppableJobCollection.PendingJobArtifactIds.Contains(artifactId))
+					{
+						erroredPendingJobs.Add(artifactId);
+					}
+					exceptions.Add(exception);
+				}
+			}
+
+			IEnumerable<int> pendingJobIdsMarkedToStop = stoppableJobCollection.PendingJobArtifactIds
+													.Where(x => !erroredPendingJobs.Contains(x));
+
 			// Update the status of the Pending jobs
-			foreach (int artifactId in stoppableJobCollection.PendingJobArtifactIds)
+			foreach (int artifactId in pendingJobIdsMarkedToStop)
 			{
 				try
 				{
@@ -476,23 +497,6 @@ namespace kCura.IntegrationPoints.Core.Services
 						JobStatus = JobStatusChoices.JobHistoryStopping
 					};
 					_jobHistoryService.UpdateRdo(jobHistoryRdo);
-				}
-				catch (Exception exception)
-				{
-					erroredPendingJobs.Add(artifactId);
-					exceptions.Add(exception);
-				}
-			}
-
-			IEnumerable<int> allStoppableJobArtifactIds =
-				stoppableJobCollection.PendingJobArtifactIds.Where( x => !erroredPendingJobs.Contains(x))
-				.Concat(stoppableJobCollection.ProcessingJobArtifactIds);
-
-			foreach (int artifactId in allStoppableJobArtifactIds)
-			{
-				try
-				{
-					StopScheduledAgentJobs(jobs, artifactId);
 				}
 				catch (Exception exception)
 				{
