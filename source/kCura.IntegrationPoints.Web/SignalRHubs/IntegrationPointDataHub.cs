@@ -113,9 +113,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 							{
 								IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
 								bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
-								StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(input.WorkspaceId, input.ArtifactId);
-								bool hasStoppableJobs = stoppableJobCollection.PendingJobArtifactIds?.Length > 0
-								                        || stoppableJobCollection.ProcessingJobArtifactIds?.Length > 0;
+								bool hasStoppableJobs = _jobHistoryManager.GetIntegrationPointHasStoppableJobs(input.WorkspaceId, input.ArtifactId);
 
 								// NOTE: we are always passing true for now. Once we figure out why the ExecutionIdentity.CurrentUser isn't always the same -- biedrzycki: May 25th, 2016
 								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors, true, hasStoppableJobs);

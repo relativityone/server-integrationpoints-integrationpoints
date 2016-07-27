@@ -17,5 +17,13 @@
 		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
 		/// <returns>A StoppableJobCollection</returns>
 		Models.StoppableJobCollection GetStoppableJobCollection(int workspaceArtifactId, int integrationPointArtifactId);
+
+		/// <summary>
+		/// Gets whether or not the Integration Point has stoppable jobs.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
+		/// <returns><code>True</code> if the Integration Point has stoppable jobs, <code>False</code> otherwise.</returns>
+		bool GetIntegrationPointHasStoppableJobs(int workspaceArtifactId, int integrationPointArtifactId);
 	}
 }
