@@ -109,13 +109,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			ButtonStateDTO buttonStates = null;
 			OnClickEventDTO onClickEvents = null;
 
-			buttonStates = new ButtonStateDTO()
-			{
-				RunNowButtonEnabled = hasRunPermissions,
-				RetryErrorsButtonEnabled = hasRunPermissions,
+				buttonStates = new ButtonStateDTO()
+				{
+					RunNowButtonEnabled = hasRunPermissions,
+					RetryErrorsButtonEnabled = hasRunPermissions,
 				ViewErrorsLinkEnabled = hasViewErrorsPermissions,
 				StopButtonEnabled = hasStoppableJobs
-			};
+				};
 
 			if (isRelativitySourceProvider)
 			{
@@ -198,10 +198,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					runNowButton.OnClickEvent);
 
-				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(hasStoppableJobs, cancelButton.Enabled);
-				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
+				ConsoleButton stopButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Stop", stopButton.DisplayText);
+				Assert.AreEqual(hasStoppableJobs, stopButton.Enabled);
+				Assert.AreEqual(onClickEvents.StopOnClickEvent, stopButton.OnClickEvent);
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
@@ -224,10 +224,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.IsTrue(runNowButton.Enabled);
 				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 
-				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(hasStoppableJobs, cancelButton.Enabled);
-				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
+				ConsoleButton stopButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Stop", stopButton.DisplayText);
+				Assert.AreEqual(hasStoppableJobs, stopButton.Enabled);
+				Assert.AreEqual(onClickEvents.StopOnClickEvent, stopButton.OnClickEvent);
 			}
 		}
 	}

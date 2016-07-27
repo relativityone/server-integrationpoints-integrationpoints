@@ -41,7 +41,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var convertedError = new Error()
 			{
 				Message = errorToConvert.Message,
-				FullError = errorToConvert.FullText
+				FullError = errorToConvert.FullText,
+				Source = errorToConvert.Source
 			};
 
 			return convertedError;

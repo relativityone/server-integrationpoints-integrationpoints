@@ -10,6 +10,11 @@
 		/// <summary>
 		/// The full text for the error
 		/// </summary>
-		public string FullText { get;set; }
+		public string FullText { get; set; }
+
+		/// <summary>
+		/// The source of the error
+		/// </summary>
+		public string Source { get; set; }
 	}
 }
