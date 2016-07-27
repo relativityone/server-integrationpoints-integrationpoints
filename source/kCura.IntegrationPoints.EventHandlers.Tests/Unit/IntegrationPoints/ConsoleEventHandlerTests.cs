@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		private IQueueManager _queueManager;
 		private IOnClickEventConstructor _onClickEventHelper;
 		private IErrorManager _errorManager;
+		private IJobHistoryManager _jobHistoryManager;
 
 		private ConsoleEventHandler _instance;
 
@@ -44,6 +46,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_queueManager = Substitute.For<IQueueManager>();
 			_onClickEventHelper = Substitute.For<IOnClickEventConstructor>();
 			_errorManager = Substitute.For<IErrorManager>();
+			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
 			var application = new Application(_APPLICATION_ID, "", "");
@@ -77,12 +80,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 			_managerFactory.CreateStateManager().Returns(_stateManager);
 			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
+			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
 
 			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
 
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
+
+			var stoppableJobCollection = new StoppableJobCollection() { PendingJobArtifactIds = new int[0], ProcessingJobArtifactIds = new int[0]};
+			_jobHistoryManager.GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
 
 			if (!hasRunPermissions || !hasViewErrorsPermissions)
 			{
@@ -92,15 +99,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			ButtonStateDTO buttonStates = null;
 			OnClickEventDTO onClickEvents = null;
 
+			buttonStates = new ButtonStateDTO()
+			{
+				RunNowButtonEnabled = hasRunPermissions,
+				RetryErrorsButtonEnabled = hasRunPermissions,
+				ViewErrorsLinkEnabled = hasViewErrorsPermissions,
+				StopButtonEnabled = false
+			};
+
 			if (isRelativitySourceProvider)
 			{
 				bool hasJobsExecutingOrInQueue = false;
-				buttonStates = new ButtonStateDTO()
-				{
-					RunNowButtonEnabled = hasRunPermissions,
-					RetryErrorsButtonEnabled = hasRunPermissions,
-					ViewErrorsLinkEnabled = hasViewErrorsPermissions
-				};
 
 				_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(
 					new PermissionCheckDTO()
@@ -112,7 +121,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
 				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue,
-					integrationPointDto.HasErrors.Value, hasViewErrorsPermissions)
+					integrationPointDto.HasErrors.Value, hasViewErrorsPermissions, false)
 					.Returns(buttonStates);
 
 				onClickEvents = new OnClickEventDTO()
@@ -121,7 +130,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					ViewErrorsOnClickEvent =
 						integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
-					StopOnClickEvent = "TEST"
+					StopOnClickEvent = String.Empty
 				};
 
 				_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
@@ -135,9 +144,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					RunNowOnClickEvent = $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})",
 					RetryErrorsOnClickEvent = String.Empty,
 					ViewErrorsOnClickEvent = String.Empty,
-					StopOnClickEvent = "TEST"
+					StopOnClickEvent = String.Empty
 				};
-				_onClickEventHelper.GetOnClickEventsForNonRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID)
+
+				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, false, false, false, false)
+					.Returns(buttonStates);
+
+				_onClickEventHelper.GetOnClickEventsForNonRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
 						.Returns(onClickEvents);
 			}
 
@@ -177,7 +190,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(true, cancelButton.Enabled);
+				Assert.AreEqual(false, cancelButton.Enabled);
 				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
@@ -203,7 +216,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 				ConsoleButton cancelButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Stop", cancelButton.DisplayText);
-				Assert.AreEqual(true, cancelButton.Enabled);
+				Assert.AreEqual(false, cancelButton.Enabled);
 				Assert.AreEqual(onClickEvents.StopOnClickEvent, cancelButton.OnClickEvent);
 			}
 		}
