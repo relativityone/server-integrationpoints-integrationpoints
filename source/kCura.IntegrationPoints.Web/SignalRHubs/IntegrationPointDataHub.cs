@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private IHelperClassFactory _helperClassFactory;
 		private ISessionService _sessionService;
 		private IIntegrationPointManager _integrationPointManager;
+		private IJobHistoryManager _jobHistoryManager;
 		private IQueueManager _queueManager;
 		private IStateManager _stateManager;
 
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_managerFactory = managerFactory;
 			_helperClassFactory = helperClassFactory;
 			_integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
+			_jobHistoryManager = _managerFactory.CreateJobHistoryManager(_context);
 			_queueManager = _managerFactory.CreateQueueManager(_context);
 			_stateManager = _managerFactory.CreateStateManager();
 
@@ -111,9 +113,12 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 							{
 								IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
 								bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
+								StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(input.WorkspaceId, input.ArtifactId);
+								bool hasStoppableJobs = stoppableJobCollection.PendingJobArtifactIds?.Length > 0
+								                        || stoppableJobCollection.ProcessingJobArtifactIds?.Length > 0;
 
 								// NOTE: we are always passing true for now. Once we figure out why the ExecutionIdentity.CurrentUser isn't always the same -- biedrzycki: May 25th, 2016
-								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors, true);
+								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors, true, hasStoppableJobs);
 								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId, buttonStates);
 							}
 							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);

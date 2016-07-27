@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Managers;
+﻿using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using NUnit.Framework;
@@ -26,14 +25,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasErrors = false;
 			bool hasJobsExecutingOrInQueue = false;
 			bool hasViewPermissions = true;
+			bool hasStoppableJobs = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsFalse(buttonStates.StopButtonEnabled);
 		}
 
 		[Test]
@@ -43,14 +44,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasErrors = false;
 			bool hasJobsExecutingOrInQueue = true;
 			bool hasViewPermissions = false;
+			bool hasStoppableJobs = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsTrue(buttonStates.StopButtonEnabled);
 		}
 
 		[Test]
@@ -60,14 +63,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasErrors = true;
 			bool hasJobsExecutingOrInQueue = false;
 			bool hasViewPermissions = true;
+			bool hasStoppableJobs = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsFalse(buttonStates.StopButtonEnabled);
 		}
 
 		[Test]
@@ -77,14 +82,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasErrors = true;
 			bool hasJobsExecutingOrInQueue = true;
 			bool hasViewPermissions = false;
+			bool hasStoppableJobs = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsTrue(buttonStates.StopButtonEnabled);
 		}
 
 		[Test]
@@ -94,14 +101,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasErrors = true;
 			bool hasJobsExecutingOrInQueue = false;
 			bool hasViewPermissions = false;
+			bool hasStoppableJobs = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsFalse(buttonStates.StopButtonEnabled);
 		}
 	}	
 }

@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			string runNowEvent = buttonStates.RunNowButtonEnabled ? $"IP.importNow({integrationPointId},{workspaceId})" : String.Empty;
 			string retryErrorsEvent = buttonStates.RetryErrorsButtonEnabled ? $"IP.retryJob({integrationPointId},{workspaceId})" : String.Empty;
 			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : String.Empty;
-			string stopEvent = buttonStates.RunNowButtonEnabled ? $"IP.stopJob({integrationPointId},{workspaceId})" : String.Empty;
+			string stopEvent = buttonStates.StopButtonEnabled ? $"IP.stopJob({integrationPointId},{workspaceId})" : String.Empty;
 			
 			return new OnClickEventDTO()
 			{
@@ -34,10 +34,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			};
 		}
 
-		public OnClickEventDTO GetOnClickEventsForNonRelativityProvider(int workspaceId, int integrationPointId)
+		public OnClickEventDTO GetOnClickEventsForNonRelativityProvider(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates)
 		{
 			string runNowEvent = $"IP.importNow({integrationPointId},{workspaceId})";
-			string stopEvent = $"IP.stopJob({integrationPointId},{workspaceId})";
+			string stopEvent = buttonStates.StopButtonEnabled ? $"IP.stopJob({integrationPointId},{workspaceId})" : String.Empty;
 
 			return new OnClickEventDTO()
 			{
