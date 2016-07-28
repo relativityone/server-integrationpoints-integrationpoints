@@ -262,7 +262,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Integration\ComplexFieldsTests.cs" />
+    <Compile Include="Functional\ComplexFieldsTests.cs" />
     <Compile Include="Unit\BatchManagerTests.cs" />
     <Compile Include="Unit\RdoSynchronizerPushTests.cs" />
     <Compile Include="Unit\ImportServiceTests.cs" />
