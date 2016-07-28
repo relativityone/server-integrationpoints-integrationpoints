@@ -48,6 +48,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			_userCreated = user.ArtifactId;
 		}
 
+		public override void TestTeardown()
+		{
+			_webDriver.CloseSeleniumBrowser();
+			User.DeleteUser(_userCreated);
+			IntegrationPoint.Tests.Core.Group.DeleteGroup(_groupId);
+		}
+
 		private static IEnumerable<object[]> PermissionCase
 		{
 			get
@@ -246,15 +253,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
 			_webDriver.WaitUntilElementExists(ElementType.Xpath, "//div[contains(@class,'page-message page-error')]", 10);
 			Assert.IsTrue(_webDriver.PageShouldContain(errorMessage));
-		}
-
-
-
-		public override void TestTeardown()
-		{
-			_webDriver.CloseSeleniumBrowser();
-			User.DeleteUser(_userCreated);
-			IntegrationPoint.Tests.Core.Group.DeleteGroup(_groupId);
 		}
 	}
 }
