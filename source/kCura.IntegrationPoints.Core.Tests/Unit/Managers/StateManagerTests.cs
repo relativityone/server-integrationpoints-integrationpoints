@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetButtonState_GoldFlow_NoJobsRunning()
+		public void GetRelativityProviderButtonState_GoldFlow_NoJobsRunning()
 		{
 			//Arrange
 			bool hasErrors = false;
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasStoppableJobs = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
+			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetButtonState_ButtonsDisabled_JobsRunning()
+		public void GetRelativityProviderButtonState_ButtonsDisabled_JobsRunning()
 		{
 			//Arrange
 			bool hasErrors = false;
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasStoppableJobs = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
+			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetButtonState_GoldFlow_HasErrors()
+		public void GetRelativityProviderButtonState_GoldFlow_HasErrors()
 		{
 			//Arrange
 			bool hasErrors = true;
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasStoppableJobs = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
+			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetButtonState_HasErrors_JobsRunning()
+		public void GetRelativityProviderButtonState_HasErrors_JobsRunning()
 		{
 			//Arrange
 			bool hasErrors = true;
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasStoppableJobs = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
+			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetButtonState_HasErrorsAndNoViewPermissions_NoJobsRunning()
+		public void GetRelativityProviderButtonState_HasErrorsAndNoViewPermissions_NoJobsRunning()
 		{
 			//Arrange
 			bool hasErrors = true;
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool hasStoppableJobs = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
+			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
