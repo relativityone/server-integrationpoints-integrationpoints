@@ -123,7 +123,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 							}
 							else
 							{
-								// NOTE: we are always passing true for now. Once we figure out why the ExecutionIdentity.CurrentUser isn't always the same -- biedrzycki: May 25th, 2016
 								buttonStates = _stateManager.GetButtonState(hasStoppableJobs);
 								onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId, buttonStates);
 							}

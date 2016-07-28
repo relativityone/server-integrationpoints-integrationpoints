@@ -11,14 +11,14 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="hasErrors">If the Integration Point has errors or not.</param>
 		/// <param name="hasViewPermissions">If the user can view Job History and Job History Error objects</param>
 		/// <param name="hasStoppableJobs">If Integration Point has stoppable jobs</param>
-		/// <returns>A collection of booleans which explain the button state of the three console buttons.</returns>
+		/// <returns>A collection of booleans which explain the button state of the buttons on the console for the Relativity Provider.</returns>
 		RelativityButtonStateDTO GetRelativityProviderButtonState(bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasViewPermissions, bool hasStoppableJobs);
 
 		/// <summary>
 		/// Returns a set of booleans that convey the button state of the console buttons for a non-Relativity provider.
 		/// </summary>
 		/// <param name="hasStoppableJobs">If Integration Point has stoppable jobs</param>
-		/// <returns></returns>
+		/// <returns>A collection of booleans which explain the button state of the buttons on the console.</returns>
 		ButtonStateDTO GetButtonState(bool hasStoppableJobs);
 	}
 }
