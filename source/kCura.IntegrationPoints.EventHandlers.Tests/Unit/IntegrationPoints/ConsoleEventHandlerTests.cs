@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public void GetConsole_GoldFlow(bool hasStoppableJobs)
+		public void GetConsole_NonRelativityProvider_GoldFlow(bool hasStoppableJobs)
 		{
 			// ARRANGE
 			var integrationPointDto = new IntegrationPointDTO()

@@ -95,6 +95,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
+		public void GetRelativityProviderButtonState_HasErrors_NoJobsRunning()
+		{
+			//Arrange
+			bool hasErrors = true;
+			bool hasJobsExecutingOrInQueue = false;
+			bool hasViewPermissions = true;
+			bool hasStoppableJobs = false;
+
+			//Act
+			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue,
+				hasErrors, hasViewPermissions, hasStoppableJobs);
+
+			//Assert
+			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
+			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsFalse(buttonStates.StopButtonEnabled);
+		}
+
+		[Test]
 		public void GetRelativityProviderButtonState_HasErrorsAndNoViewPermissions_NoJobsRunning()
 		{
 			//Arrange
