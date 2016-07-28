@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Domain.Models;
+﻿using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Helpers
 {
@@ -12,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Helpers
 		/// <param name="integrationPointId">The current integration point's ID.</param>
 		/// <param name="buttonStates">A DTO of button states for the Relativity Provider.</param>
 		/// <returns>A DTO containing a set of strings for the On Click Events, for the Relativity Provider.</returns>
-		OnClickEventDTO GetOnClickEventsForRelativityProvider(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates);
+		RelativityOnClickEventDTO GetOnClickEventsForRelativityProvider(int workspaceId, int integrationPointId, RelativityButtonStateDTO buttonStates);
 
 		/// <summary>
 		/// Creates the set of On Click Events used for the console buttons for the Non-Relativity Providers.
@@ -21,6 +20,6 @@ namespace kCura.IntegrationPoints.Core.Helpers
 		/// <param name="integrationPointId">The current integration point's ID.</param>
 		/// <param name="buttonStates">A DTO of button states for the Non-Relativity Provider.</param>
 		/// <returns>A DTO containing a set of strings for the On Click Events, for the Non-Relativity Provider.</returns>
-		OnClickEventDTO GetOnClickEventsForNonRelativityProvider(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates);
+		OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates);
 	}
 }

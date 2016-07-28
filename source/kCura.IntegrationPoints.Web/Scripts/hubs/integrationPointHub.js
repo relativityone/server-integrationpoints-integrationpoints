@@ -18,8 +18,8 @@
 				$("input[fafriendlyname='Next Scheduled Runtime (UTC)'][type='hidden']").siblings('.dynamicViewFieldValue').text(Date.parse(nextRun).toString('M/d/yyyy h:mm tt'));
 			}
 
+			var consoleContainer = $(".ConsoleControl");
 			if (sourceProviderIsRelativity) {
-				var consoleContainer = $(".ConsoleControl");
 				if (buttonStates.RunNowButtonEnabled) {
 					var runNowOnClick = onClickEvents.RunNowOnClickEvent;
 					$(consoleContainer.find(":contains('Run Now')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", runNowOnClick).attr("title", "Run Now").removeAttr('disabled');
@@ -37,6 +37,13 @@
 					$(consoleContainer.find(":contains('View Errors')")).removeClass("consoleLinkDisabled").addClass("consoleLinkEnabled").attr("onClick", viewErrorsClick).removeAttr('disabled');
 				} else {
 					$(consoleContainer.find(":contains('View Errors')")).removeClass("consoleLinkEnabled").addClass("consoleLinkDisabled").removeAttr('onClick');
+				}
+			} else {
+				if (buttonStates.StopButtonEnabled) {
+					var stopOnClick = onClickEvents.StopOnClickEvent;
+					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", stopOnClick).attr("title", "Stop").removeAttr('disabled');
+				} else {
+					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
 				}
 			}
 			$('.associative-list').load(document.URL + ' .associative-list');
