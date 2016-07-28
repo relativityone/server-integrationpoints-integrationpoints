@@ -1,5 +1,7 @@
-﻿using kCura.IntegrationPoints.Core.Managers;
+﻿using System;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
@@ -54,10 +56,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new ErrorManager(CreateRepositoryFactory(contextContainer));
 		}
 
-		public ICancellationManager CreateCancellationManager(IContextContainer contextContainer, JobHistory jobHistory, Job job)
+		public IJobStopManager CreateJobStopManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId)
 		{
-			IRepositoryFactory repo = CreateRepositoryFactory(contextContainer);
-			return new CancellationManager(repo, jobHistory, job);
+			return new JobStopManager(jobService, jobHistoryService, jobIdentifier, jobId);
 		}
 
 		public IStateManager CreateStateManager()

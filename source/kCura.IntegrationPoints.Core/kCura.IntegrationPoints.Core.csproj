@@ -224,7 +224,7 @@
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Managers\DestinationWorkspaceFieldManagerBase.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
-    <Compile Include="Managers\ICancellationManager.cs" />
+    <Compile Include="Managers\IJobStopManager.cs" />
     <Compile Include="Managers\IErrorManager.cs" />
     <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\IIntegrationPointManager.cs" />
@@ -235,7 +235,7 @@
     <Compile Include="JobHistoryBatchUpdateStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
     <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
-    <Compile Include="Managers\Implementations\CancellationManager.cs" />
+    <Compile Include="Managers\Implementations\JobStopManager.cs" />
     <Compile Include="Managers\Implementations\ErrorManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
     <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
@@ -254,6 +254,7 @@
     <Compile Include="Managers\IObjectTypeManager.cs" />
     <Compile Include="Managers\IStateManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
+    <Compile Include="Models\StoppableJobCollection.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

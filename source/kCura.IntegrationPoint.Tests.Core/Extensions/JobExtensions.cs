@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
@@ -67,12 +68,51 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
+		public static Job CopyJobWithStopState(this Job job, StopState state)
+		{
+			DataRow row = CovertToDataRow(job);
+			row["StopState"] = (int)state;
+			return new Job(row);
+		}
+
+		public static Job CopyJobWithJobId(this Job job, int id)
+		{
+			DataRow row = CovertToDataRow(job);
+			row["JobID"] = id;
+			return new Job(row);
+		}
+
 		public static Job CreateJob()
 		{
 			DataRow jobData = CreateDefaultJobData();
 
 			return new Job(jobData);
 		}
+
+		private static DataRow CovertToDataRow(Job job)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = job.JobId;
+			jobData["RootJobId"] = job.RootJobId;
+			jobData["ParentJobId"] = job.ParentJobId;
+			jobData["AgentTypeID"] = job.AgentTypeID;
+			jobData["LockedByAgentID"] = job.LockedByAgentID;
+			jobData["WorkspaceID"] = job.WorkspaceID;
+			jobData["RelatedObjectArtifactID"] = job.RelatedObjectArtifactID;
+			jobData["TaskType"] = job.TaskType;
+			jobData["NextRunTime"] = job.NextRunTime;
+			jobData["LastRunTime"] = job.LastRunTime;
+			jobData["JobDetails"] = job.JobDetails;
+			jobData["JobFlags"] = job.JobFlags;
+			jobData["SubmittedDate"] = job.SubmittedDate;
+			jobData["SubmittedBy"] = job.SubmittedBy;
+			jobData["ScheduleRuleType"] = job.ScheduleRuleType;
+			jobData["ScheduleRule"] = job.SerializedScheduleRule;
+			jobData["StopState"] = (int) job.StopState;
+
+			return jobData;
+		}
+
 
 		private static DataRow CreateDefaultJobData()
 		{

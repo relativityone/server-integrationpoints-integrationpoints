@@ -1,4 +1,7 @@
-﻿namespace kCura.IntegrationPoints.Data.Repositories
+﻿using System;
+using System.Collections.Generic;
+
+namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IJobHistoryRepository
 	{
@@ -10,10 +13,11 @@
 		int GetLastJobHistoryArtifactId(int integrationPointArtifactId);
 
 		/// <summary>
-		/// Gets the cancelable Job History artifact ids for a given Integration Point.
+		/// Gets the stoppable Job History artifact ids for a given Integration Point.
 		/// </summary>
 		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
-		/// <returns>The artifact ids of the job histories that can be canceled.</returns>
-		int[] GetStoppableJobHistoryArtifactIds(int integrationPointArtifactId);
+		/// <returns>A dictionary where the JobHistoryStatus choice Guid is the key, and the value is an array of associated artifact ids.</returns>
+		/// <remarks>The only two statuses that should return are Pending and Processing.</remarks>
+		IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId);
 	}
 }

@@ -59,6 +59,40 @@
 		});
 	};
 
+	root.stopJob = function (artifactId, appId) {
+		var confirmationMessage = "Stopping this transfer will not remove any data that was transferred. When re-running this transfer, make sure that your overwrite settings will return expected results.";
+		var failureMessage = "The transfer cannot be stopped at this point in the process.";
+
+		window.Dragon.dialogs.showConfirm({
+			message: confirmationMessage,
+			title: "Stop Transfer",
+			okText: 'Stop Transfer',
+			showCancel: true,
+			width: 450,
+			success: function (calls) {
+				calls.close();
+				var ajax = IP.data.ajax({
+					type: "POST",
+					url: root.utils.generateWebAPIURL('Job/Stop'),
+					async: true,
+					data: JSON.stringify({
+						"appId": appId,
+						"artifactId": artifactId
+					})
+				});
+				ajax.fail(function (value) {
+					window.Dragon.dialogs.showConfirm({
+						message: failureMessage,
+						title: "Unable to Stop the Transfer",
+						okText: 'Ok',
+						showCancel: false,
+						width: 450,
+					});
+				});
+			}
+		});
+	};
+
 	root.retryJob = function (artifactId, appId) {
 		var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
 		var selectedMessage = "";

@@ -51,7 +51,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			{
 				RunNowButtonEnabled = true,
 				RetryErrorsButtonEnabled = true,
-				ViewErrorsLinkEnabled = true
+				ViewErrorsLinkEnabled = true,
+				StopButtonEnabled = true
 			};
 
 			//Act
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
-			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
+			Assert.IsTrue(onClickEvents.StopOnClickEvent == $"IP.stopJob({_integrationPointId},{_workspaceId})");
 		}
 
 		[Test]
@@ -84,21 +85,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
-			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
+			Assert.IsTrue(onClickEvents.StopOnClickEvent == String.Empty);
 		}
 
 		[Test]
 		public void GetOnClickEventsForNonRelativityProvider_GoldFlow()
 		{
 			//Arrange
+			ButtonStateDTO buttonStates = new ButtonStateDTO()
+			{
+				RunNowButtonEnabled = false,
+				RetryErrorsButtonEnabled = false,
+				ViewErrorsLinkEnabled = false,
+				StopButtonEnabled = true
+			};
+
 			//Act
-			OnClickEventDTO onClickEvents = _instance.GetOnClickEventsForNonRelativityProvider(_workspaceId, _integrationPointId);
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEventsForNonRelativityProvider(_workspaceId, _integrationPointId, buttonStates);
 
 			//Assert
 			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);
 			Assert.AreEqual(String.Empty, onClickEvents.RetryErrorsOnClickEvent);
 			Assert.AreEqual(String.Empty, onClickEvents.ViewErrorsOnClickEvent);
-			Assert.AreEqual("alert('OMG OMG CANCEL WAS CLICKED OMG OMG!!')", onClickEvents.CancelOnClickEvent);
+			Assert.AreEqual($"IP.stopJob({_integrationPointId},{_workspaceId})", onClickEvents.StopOnClickEvent);
 		}
 
 		private string ViewErrorsLinkSetup()

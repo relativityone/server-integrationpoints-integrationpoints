@@ -1,4 +1,8 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -18,10 +22,34 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
 		}
 
-		public int[] GetStoppableJobHistoryArtifactIds(int workspaceArtifactId, int integrationPointArtifactId)
+		public Models.StoppableJobCollection GetStoppableJobCollection(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
-			return jobHistoryRepository.GetStoppableJobHistoryArtifactIds(integrationPointArtifactId);
+			IDictionary<Guid, int[]> stoppableJobStatusDictionary = jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId);
+			Guid pendingGuid = JobStatusChoices.JobHistoryPending.ArtifactGuids.First();
+			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First();
+
+			int[] pendingJobArtifactIds;
+			int[] processingJobArtifactIds;
+			stoppableJobStatusDictionary.TryGetValue(pendingGuid, out pendingJobArtifactIds);
+			stoppableJobStatusDictionary.TryGetValue(processingGuid, out processingJobArtifactIds);
+
+			var stoppableJobCollection = new Models.StoppableJobCollection()
+			{
+				PendingJobArtifactIds = pendingJobArtifactIds ?? new int[0],
+				ProcessingJobArtifactIds = processingJobArtifactIds ?? new int[0]
+			};
+
+			return stoppableJobCollection;
+		}
+
+		public bool GetIntegrationPointHasStoppableJobs(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			Models.StoppableJobCollection stoppableJobCollection = this.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
+			bool hasStoppableJobs = stoppableJobCollection.PendingJobArtifactIds?.Length > 0
+												|| stoppableJobCollection.ProcessingJobArtifactIds?.Length > 0;
+
+			return hasStoppableJobs;
 		}
 	}
 }

@@ -5,13 +5,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class StateManager : IStateManager
 	{
-		public ButtonStateDTO GetButtonState(int workspaceId, int integrationPointId, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasViewPermissions)
+		public ButtonStateDTO GetButtonState(int workspaceId, int integrationPointId, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasViewPermissions, bool hasStoppableJobs)
 		{
 			return new ButtonStateDTO()
 			{
 				RunNowButtonEnabled = !hasJobsExecutingOrInQueue,
 				RetryErrorsButtonEnabled = !hasJobsExecutingOrInQueue && hasErrors,
-				ViewErrorsLinkEnabled = !hasJobsExecutingOrInQueue && hasErrors && hasViewPermissions
+				ViewErrorsLinkEnabled = !hasJobsExecutingOrInQueue && hasErrors && hasViewPermissions,
+				StopButtonEnabled = hasStoppableJobs
 			};
 		}
 	}
