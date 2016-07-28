@@ -231,7 +231,9 @@
     <Compile Include="Models\JobHistoryErrorDTO.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
     <Compile Include="Models\OnClickEventDTO.cs" />
+    <Compile Include="Models\RelativityOnClickEventDTO.cs" />
     <Compile Include="Models\PermissionCheckDTO.cs" />
+    <Compile Include="Models\RelativityButtonStateDTO.cs" />
     <Compile Include="Models\SavedSearchDTO.cs" />
     <Compile Include="Models\SourceJobDTO.cs" />
     <Compile Include="Models\SourceProviderDTO.cs" />

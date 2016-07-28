@@ -117,21 +117,19 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 								bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
 
 								// NOTE: we are always passing true for now. Once we figure out why the ExecutionIdentity.CurrentUser isn't always the same -- biedrzycki: May 25th, 2016
-								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue,
-									integrationPointHasErrors, true, hasStoppableJobs);
+								buttonStates = _stateManager.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, integrationPointHasErrors, true, hasStoppableJobs);
 								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId,
-									buttonStates);
+									(RelativityButtonStateDTO)buttonStates);
 							}
 							else
 							{
-								// NOTE: we are always passing true for now. Once we figure out why the ExecutionIdentity.CurrentUser isn't always the same -- biedrzycki: May 25th, 2016
-								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, false, integrationPointHasErrors, true, hasStoppableJobs);
-								onClickEvents = onClickEventHelper.GetOnClickEventsForNonRelativityProvider(input.WorkspaceId, input.ArtifactId,
-									buttonStates);
+								buttonStates = _stateManager.GetButtonState(hasStoppableJobs);
+								onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId, buttonStates);
 							}
 
 							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
 						}
+
 						//sleep between getting each stats to get SQL Server a break
 						Thread.Sleep(_intervalBetweentasks);
 					}
