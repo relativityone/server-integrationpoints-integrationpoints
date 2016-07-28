@@ -134,10 +134,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				Message = message,
 				FullText = fullText,
-				Source =  Core.Constants.IntegrationPoints.APPLICATION_NAME
+				Source =  Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = workspaceArtifactId
 			};
 
-			errorManager.Create(workspaceArtifactId, new[] { error });
+			errorManager.Create(new[] { error });
 		}
 
 		public class Payload

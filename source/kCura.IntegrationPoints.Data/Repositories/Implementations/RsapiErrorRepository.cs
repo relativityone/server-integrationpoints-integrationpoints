@@ -42,7 +42,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				Message = errorToConvert.Message,
 				FullError = errorToConvert.FullText,
-				Source = errorToConvert.Source
+				Source = errorToConvert.Source,
+				Workspace = new Workspace(errorToConvert.WorkspaceId)
 			};
 
 			return convertedError;

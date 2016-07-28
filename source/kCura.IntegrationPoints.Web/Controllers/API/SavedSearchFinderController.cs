@@ -39,6 +39,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					Message = "Unable to retrieve the saved searches. Please contact the system administrator.",
 					FullText = $"{exception.Message}{Environment.NewLine}{exception.StackTrace}",
+					Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+					WorkspaceId = _context.APIOptions.WorkspaceID
 				};
 				_errorRepository.Create(new[] { error });
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, new List<SavedSearchModel>());

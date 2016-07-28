@@ -36,16 +36,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			string message = " This is an error";
 			List<ErrorDTO> errors = new List<ErrorDTO>
 			{
-				new ErrorDTO {Message = message}
+				new ErrorDTO
+				{
+					Message = message,
+					Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+					WorkspaceId = _WORKSPACE_ID
+				}
 			};
 
-			_errorRepository.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == message));
+			_errorRepository.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.Equals(errors)));
 
 			// ACT
-			_errorManager.Create(_WORKSPACE_ID, errors);
+			_errorManager.Create(errors);
 
 			// ASSERT
-			_errorRepository.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Message == message));
+			_errorRepository.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.Equals(errors)));
 		}
 	}
 }
