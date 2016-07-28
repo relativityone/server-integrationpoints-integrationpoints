@@ -52,7 +52,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
-			bool integrationPointIsStoppable = jobHistoryManager.GetIntegrationPointHasStoppableJobs(Application.ArtifactID, ActiveArtifact.ArtifactID);
+			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(Application.ArtifactID, ActiveArtifact.ArtifactID);
+			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
 
 			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, contextContainer);
 
