@@ -302,7 +302,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
     <None Include="Integration\RdoSynchronizerTest.cs" />
   </ItemGroup>
   <ItemGroup>
