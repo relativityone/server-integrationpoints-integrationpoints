@@ -46,6 +46,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			};
 
+			//FieldMap mapIdentifier = FieldMaps.CreateIdentifierFieldMapForRelativityProvider(workspaceId, workspaceId);
+
+			FieldMap[] allFieldMaps = { mapIdentifier };
+
 			//FieldMap datefield2 = new FieldMap
 			//{
 			//	FieldMapType = FieldMapTypeEnum.None,
@@ -81,7 +85,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			//	}
 			//};
 
-			pusher.SyncData(importTable.CreateDataReader(), new FieldMap[] { mapIdentifier, /*datefield2*/ }, settings);
+			pusher.SyncData(importTable.CreateDataReader(), allFieldMaps, settings);
 		}
 
 		public static DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
