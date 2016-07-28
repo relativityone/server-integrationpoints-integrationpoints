@@ -355,10 +355,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			var expectedErrorMessage = new ErrorDTO()
 			{
 				Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-				FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, errorMessages)}"
+				FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, errorMessages)}",
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _sourceWorkspaceArtifactId
 			};
 
-			_errorManager.Received(1).Create(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new [] {expectedErrorMessage}, x)));
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new [] {expectedErrorMessage}, x)));
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -420,9 +422,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			var expectedErrorMessage = new ErrorDTO()
 			{
 				Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-				FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, errorMessages)}"
+				FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, errorMessages)}",
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _sourceWorkspaceArtifactId
 			};
-			_errorManager.Received(1).Create(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -546,6 +550,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Scheduler = new Scheduler() { EnableScheduler = false },
 				LastRun = null
 			};
+			IEnumerable<ErrorDTO> errors = new []
+			{
+				new ErrorDTO()
+				{
+					Message = Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
+					Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+					WorkspaceId = _sourceWorkspaceArtifactId
+				}
+			};
 
 			// Act
 			const string errorMessage = "KHAAAAAANN!!!";
@@ -556,13 +569,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			// Assert
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
 
-			_errorManager.Received(1).Create(
-				Arg.Is(_sourceWorkspaceArtifactId),
-				Arg.Is<IEnumerable<ErrorDTO>>(
-					x => x.Count() == 1 
-						&& x.First().Message == Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE
-						&& x.First().FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point")));
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(
+				x => Validate(x.First(), errors.First())));
+				//x => x.Equals(errors) && x.First().FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point")));
+		}
 
+		private bool Validate(ErrorDTO errors1, ErrorDTO errors2)
+		{
+			bool a = errors1.Equals(errors2);
+			bool b = errors1.FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point");
+			return a && b;
 		}
 
 		[TestCase(true)]
@@ -624,8 +640,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			var expectedError = new ErrorDTO()
 			{
-					Message = Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
-					FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, errorMessages.Concat(new [] { Constants.IntegrationPoints.NO_USERID }))}"
+				Message = Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
+				FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, errorMessages.Concat(new [] { Constants.IntegrationPoints.NO_USERID }))}",
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _sourceWorkspaceArtifactId
 			};
 
 			// Act
@@ -640,9 +658,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
-			_errorManager.Received(1).Create(
-				Arg.Is(_sourceWorkspaceArtifactId),
-				Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new ErrorDTO[] {expectedError}, x)));
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new ErrorDTO[] {expectedError}, x)));
 		}
 
 		[TestCase(true)]
