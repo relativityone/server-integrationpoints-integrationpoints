@@ -292,14 +292,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(4)))).Do(x => {throw new Exception(errorMessageFour);});
 
 			// act
-			bool correctExceptionWasThrown = false;
+			bool aggregateExceptionWasThrown = false;
 			try
 			{
 				_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 			}
 			catch (AggregateException aggregateException)
 			{
-				correctExceptionWasThrown = true;
+				aggregateExceptionWasThrown = true;
 
 				Assert.AreEqual(errorMessageOne, aggregateException.InnerExceptions[0].Message);
 				Assert.AreEqual(errorMessageTwo, aggregateException.InnerExceptions[1].Message);
@@ -323,7 +323,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(3)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(4)));
 
-			Assert.IsTrue(correctExceptionWasThrown, "The correct AggregateException was not thrown.");
+			Assert.IsTrue(aggregateExceptionWasThrown, "An AggregateException was not thrown.");
 		}
 
 		[Test]
@@ -379,14 +379,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(3)))).Do(x => { throw new Exception(errorMessageTwo); });
 
 			// act
-			bool correctExceptionWasThrown = false;
+			bool aggregateExceptionWasThrown = false;
 			try
 			{
 				_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 			}
 			catch (AggregateException aggregateException)
 			{
-				correctExceptionWasThrown = true;
+				aggregateExceptionWasThrown = true;
 
 				Assert.AreEqual(errorMessageOne, aggregateException.InnerExceptions[0].Message);
 				Assert.AreEqual(errorMessageTwo, aggregateException.InnerExceptions[1].Message);
@@ -419,7 +419,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(3)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(4)));
 
-			Assert.IsTrue(correctExceptionWasThrown, "The correct AggregateException was not thrown.");
+			Assert.IsTrue(aggregateExceptionWasThrown, "An AggregateException was not thrown.");
 		}
 
 		[Test]
