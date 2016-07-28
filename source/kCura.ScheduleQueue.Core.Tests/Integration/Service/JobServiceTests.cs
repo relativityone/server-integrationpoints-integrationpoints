@@ -84,7 +84,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		[TestCase(StopState.Stopping)]
 		[TestCase(StopState.Unstoppable)]
 		[Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
-		public void UpdateStopState_SomeJobsDoesNotExist(StopState state)
+		public void UpdateStopState_SomeJobsDoNotExist(StopState state)
 		{
 			// arrange
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);

@@ -82,14 +82,14 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IErrorManager CreateErrorManager(IContextContainer contextContainer);
 
 		/// <summary>
-		/// Create a job stop manager to handle the stopping signal of the job.
+		/// Creates a job stop manager to handle the stopping signal of the job.
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <param name="jobService">A service class provides functionalities to control the scheduled queue job.</param>
 		/// <param name="jobHistoryService">A service class provides functionalities to control the job history.</param>
-		/// <param name="jobIdentifier">Guid id of the job history</param>
+		/// <param name="jobIdentifier">Guid of the job history</param>
 		/// <param name="jobId">Artifact id of the scheduled queue job</param>
 		/// <returns></returns>
-		IJobStopManager CreateJobStopManagerManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId);
+		IJobStopManager CreateJobStopManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId);
 	}
 }

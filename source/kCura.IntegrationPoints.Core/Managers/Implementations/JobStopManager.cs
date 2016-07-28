@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 
@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		/// for testing only.
 		/// </summary>
 		internal TimerCallback Callback { get; }
+		private readonly object _callbackLock = new object();
 
 		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId)
 		{
@@ -30,31 +31,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_jobIdentifier = jobIdentifier;
 			Callback = new TimerCallback(state =>
 			{
-				try
+				lock (_callbackLock)
 				{
-					Job job = _jobService.GetJob(jobId);
-					if (job != null)
+					try
 					{
-						if (job.StopState.HasFlag(StopState.Stopping))
+						Job job = _jobService.GetJob(jobId);
+						if (job != null)
 						{
-							JobHistory jobHistory = _jobHistoryService.GetRdo(_jobIdentifier);
-							if (jobHistory != null && !jobHistory.JobStatus.ArtifactGuids.SequenceEqual(JobStatusChoices.JobHistoryStopping.ArtifactGuids))
+							if (job.StopState.HasFlag(StopState.Stopping))
 							{
-								jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
-								jobHistoryService.UpdateRdo(jobHistory);
+								JobHistory jobHistory = _jobHistoryService.GetRdo(_jobIdentifier);
+								if (jobHistory != null && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
+									|| jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
+								{
+									jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
+									jobHistoryService.UpdateRdo(jobHistory);
+								}
+								_cancellationTokenSource.Cancel();
+								_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 							}
-							_cancellationTokenSource.Cancel();
-							_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-						}
-						else if(job.StopState.HasFlag(StopState.Unstoppable))
-						{
-							_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+							else if(job.StopState.HasFlag(StopState.Unstoppable))
+							{
+								_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+							}
 						}
 					}
-				}
-				catch
-				{
-					// expect the caller to move on, timerThread will check the status again in the next iteration.
+					catch
+					{
+						// expect the caller to move on, timerThread will check the status again in the next iteration.
+					}
 				}
 			});
 			_cancellationTokenSource = new CancellationTokenSource();

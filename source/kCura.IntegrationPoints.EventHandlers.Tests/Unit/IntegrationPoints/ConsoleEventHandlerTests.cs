@@ -94,12 +94,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
 
-			var stoppableJobCollection = new StoppableJobCollection()
-			{
-				PendingJobArtifactIds = hasStoppableJobs ? new[] { 23049 } : new int[0],
-				ProcessingJobArtifactIds = hasStoppableJobs ? new[] { 84902 } : new int[0]
-			};
-			_jobHistoryManager.GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
+			_jobHistoryManager.GetIntegrationPointHasStoppableJobs(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasStoppableJobs);
 
 			if (!hasRunPermissions || !hasViewErrorsPermissions)
 			{
@@ -188,6 +183,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			ConsoleButton runNowButton = console.ButtonList[buttonIndex++];
 			Assert.AreEqual("Run Now", runNowButton.DisplayText);
 			Assert.AreEqual(false, runNowButton.RaisesPostBack);
+
+			_jobHistoryManager.Received(1).GetIntegrationPointHasStoppableJobs(_APPLICATION_ID, _ARTIFACT_ID);
 
 			if (isRelativitySourceProvider)
 			{
