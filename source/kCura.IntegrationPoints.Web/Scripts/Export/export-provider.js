@@ -99,7 +99,7 @@
 			required: true
 		});
 
-		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || "true");
+		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || true);
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
@@ -179,14 +179,14 @@
 			}
 		});
 
-		this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
+		this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || false);
 		this.CopyFileFromRepository.subscribe(function (value) {
-			if (value === 'false') {
+			if (!value) {
 				self.SelectedImageFileType(0);
 			}
 		});
 
-		this.OverwriteFiles = ko.observable(state.OverwriteFiles || "false");
+		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
 		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
 			required: true
@@ -276,22 +276,22 @@
 			self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
 		}
 
-		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({
+		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || false).extend({
 			required: true
 		});
 
 		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
 			required: {
 				onlyIf: function () {
-					return self.ExportImagesChecked() === "true";
+					return self.ExportImagesChecked();
 				}
 			}
 		});
 
-		this.SelectedImageFileType = ko.observable(self.CopyFileFromRepository() === 'false' ? 0 : state.SelectedImageFileType).extend({
+		this.SelectedImageFileType = ko.observable(!self.CopyFileFromRepository() ? 0 : state.SelectedImageFileType).extend({
 			required: {
 				onlyIf: function () {
-					return self.ExportImagesChecked() === "true";
+					return self.ExportImagesChecked();
 				}
 			}
 		});

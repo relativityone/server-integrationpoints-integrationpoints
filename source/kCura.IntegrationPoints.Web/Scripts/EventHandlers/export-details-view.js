@@ -48,7 +48,7 @@ var Model = function (dataContainer) {
     };
 
     this.subdirectoryInfo = function () {
-        return self.settings.SubdirectoryNativePrefix + "; " + self.settings.SubdirectoryImagePrefix + "; " + self.settings.SubdirectoryTextPrefix + "; " + self.settings.SubdirectoryStartNumber + "; " + self.settings.SubdirectoryDigitPadding + "; " + self.settings.SubdirectoryMaxFiles
+    	return self.settings.SubdirectoryImagePrefix + "; " + self.settings.SubdirectoryNativePrefix + "; " + self.settings.SubdirectoryTextPrefix + "; " + self.settings.SubdirectoryStartNumber + "; " + self.settings.SubdirectoryDigitPadding + "; " + self.settings.SubdirectoryMaxFiles;
     };
 
     this.exportType = function () {
@@ -80,19 +80,25 @@ var Model = function (dataContainer) {
     };
 
     this.imageFileType = function () {
-        for (var i = 0; i < ExportEnums.ImageFileTypes.length; i++) {
-            if (ExportEnums.ImageFileTypes[i].value == self.settings.SelectedImageFileType) {
-                return ExportEnums.ImageFileTypes[i].key;
-            }
-        }
+    	if (self.settings.ExportImagesChecked) {
+    		for (var i = 0; i < ExportEnums.ImageFileTypes.length; i++) {
+    			if (ExportEnums.ImageFileTypes[i].value == self.settings.SelectedImageFileType) {
+    				return ExportEnums.ImageFileTypes[i].key;
+    			}
+    		}
+	    }
+	    return "";
     };
 
     this.imageDataFileFormat = function () {
-        for (var i = 0; i < ExportEnums.ImageDataFileFormats.length; i++) {
-            if (ExportEnums.ImageDataFileFormats[i].value == self.settings.SelectedImageDataFileFormat) {
-                return ExportEnums.ImageDataFileFormats[i].key;
-            }
-        }
+	    if (self.settings.ExportImagesChecked) {
+		    for (var i = 0; i < ExportEnums.ImageDataFileFormats.length; i++) {
+			    if (ExportEnums.ImageDataFileFormats[i].value == self.settings.SelectedImageDataFileFormat) {
+				    return ExportEnums.ImageDataFileFormats[i].key;
+			    }
+		    }
+	    }
+	    return "";
     };
 };
 
