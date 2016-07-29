@@ -189,6 +189,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			const string aggregateExceptionMessage = "Topmost Message";
 			var aggregateException = new AggregateException(aggregateExceptionMessage, new[] { new Exception(exceptionOne), new Exception(exceptionTwo) });
 			string expectedErrorMessage = $"{aggregateException.Message} : {String.Join(",", new[] { exceptionOne, exceptionTwo })}";
+			ErrorDTO error = new ErrorDTO
+			{
+				Message = expectedErrorMessage,
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _WORKSPACE_ARTIFACT_ID
+			};
+
 			ContextContainer contextContainer = new ContextContainer(_helper);
 			IErrorManager errorManager = Substitute.For<IErrorManager>();
 
@@ -197,7 +204,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				.Throw(aggregateException);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
 			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
-			errorManager.Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), expectedErrorMessage)));
+			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
 			// Act
 			HttpResponseMessage response = _instance.Stop(_payload);
@@ -215,7 +222,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
 			Assert.AreEqual(expectedErrorMessage, stringContent, "The response's Content should be correct.");
 
-			errorManager.Received(1).Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), expectedErrorMessage)));
+			errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 		}
 
 		[Test]
@@ -223,6 +230,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		{
 			// Arrange
 			var exception = new Exception("exception message");
+			ErrorDTO error = new ErrorDTO
+			{
+				Message = exception.Message,
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _WORKSPACE_ARTIFACT_ID
+			};
+
 			ContextContainer contextContainer = new ContextContainer(_helper);
 			IErrorManager errorManager = Substitute.For<IErrorManager>();
 
@@ -231,7 +245,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				.Throw(exception);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
 			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
-			errorManager.Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), exception.Message)));
+			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
 			// Act
 			HttpResponseMessage response = _instance.Stop(_payload);
@@ -249,14 +263,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
 			Assert.AreEqual(exception.Message, stringContent, "The response's Content should be correct.");
 
-			errorManager.Received(1).Create(_WORKSPACE_ARTIFACT_ID, Arg.Is<IEnumerable<ErrorDTO>>(x => ValidateErrorDto(x.First(), exception.Message)));
-		}
-
-		private bool ValidateErrorDto(ErrorDTO error, string expectedMessage)
-		{
-			bool isCorrectMessage = error.Message == expectedMessage;
-			bool isCorrectSource = error.Source == Core.Constants.IntegrationPoints.APPLICATION_NAME;
-			return isCorrectMessage && isCorrectSource;
+			errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 		}
 	}
 }

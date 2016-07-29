@@ -4,17 +4,15 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.ScheduleQueue.Core;
+using Newtonsoft.Json;
+using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
+namespace kCura.IntegrationPoints.Agent.Tests.Unit
 {
-	using Newtonsoft.Json;
-	using NSubstitute;
-
 	[TestFixture]
-	[NUnit.Framework.Category("Integration Tests")]
 	public class SendEmailManagerUnitTests
 	{
 		private ISerializer _serializer;
@@ -47,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		[Test, TestCaseSource(nameof(emailLists))]
 		public void CreateBatchJob_GoldFlow(List<string> list)
 		{
-			// arrage
+			// arrange
 			EmailMessage emailMessage = new EmailMessage()
 			{
 				Subject = "email test",

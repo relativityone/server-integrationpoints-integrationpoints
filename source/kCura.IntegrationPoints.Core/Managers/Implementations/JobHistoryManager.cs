@@ -42,14 +42,5 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			return stoppableJobCollection;
 		}
-
-		public bool GetIntegrationPointHasStoppableJobs(int workspaceArtifactId, int integrationPointArtifactId)
-		{
-			Models.StoppableJobCollection stoppableJobCollection = this.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
-			bool hasStoppableJobs = stoppableJobCollection.PendingJobArtifactIds?.Length > 0
-												|| stoppableJobCollection.ProcessingJobArtifactIds?.Length > 0;
-
-			return hasStoppableJobs;
-		}
 	}
 }

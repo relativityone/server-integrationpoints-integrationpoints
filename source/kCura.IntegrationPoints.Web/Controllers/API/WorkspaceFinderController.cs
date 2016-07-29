@@ -18,12 +18,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	    private readonly IHtmlSanitizerManager _htmlSanitizerManager;
 	    private readonly IErrorRepository _errorRepository;
 
+	    private int _workspaceId;
+
 	    public WorkspaceFinderController(WebClientFactory factory, IRepositoryFactory repositoryFactory, IHtmlSanitizerManager htmlSanitizerManager)
 	    {
 		    _errorRepository = repositoryFactory.GetErrorRepository();
 			_context = factory.CreateEddsClient();
 		    _htmlSanitizerManager = htmlSanitizerManager;
-        }
+		    _workspaceId = factory.WorkspaceId;
+	    }
 
         [HttpGet]
         public HttpResponseMessage Get()
@@ -39,6 +42,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					Message = "Unable to retrieve the workspace information. Please contact the system administrator.",
 					FullText = $"{exception.Message}{Environment.NewLine}{exception.StackTrace}",
+					Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+					WorkspaceId = _workspaceId
 				};
 				_errorRepository.Create(new[] { error });
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, new List<WorkspaceModel>());

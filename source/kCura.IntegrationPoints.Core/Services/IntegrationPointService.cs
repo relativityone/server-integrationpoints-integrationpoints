@@ -680,10 +680,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			var error = new ErrorDTO()
 			{
 				Message = message,
-				FullText = fullText
+				FullText = fullText,
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _context.WorkspaceID
 			};
 
-			errorManager.Create(_context.WorkspaceID, new[] {error});
+			errorManager.Create(new[] {error});
 		}
 
 		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)

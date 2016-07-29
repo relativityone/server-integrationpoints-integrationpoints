@@ -16,10 +16,9 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
+namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 {
 	[TestFixture]
-	[Category("Integration Tests")]
 	public class ITaskFactoryTests
 	{
 		[Test]
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			// arrange
 			Job tempJob = JobExtensions.CreateJob();
 			IAgentHelper helper = Substitute.For<IAgentHelper>();
-			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = new kCura.IntegrationPoints.Data.IntegrationPoint();
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint();
 			TaskParameters paramerters = new TaskParameters();
 			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234 };
 
