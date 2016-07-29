@@ -19,6 +19,13 @@
 	
 	<target name="build_applications" depends="get_rapbuilder">	
 		<call target="build_LDAP"/>
+		<call target="build_jsonloader_rap"/>
+		
+		<copy todir="${source.code.directory}\bin\UnitTests" flatten="true" overwrite="true">
+			<fileset basedir="${example.directory}\JsonLoader\application">
+				<include name="**\JsonProvider.rap" />
+			</fileset>
+		</copy>
     </target>
 	
 	<target name="build_LDAP">
