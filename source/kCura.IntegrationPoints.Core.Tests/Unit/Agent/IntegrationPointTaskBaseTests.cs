@@ -48,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_jobService = Substitute.For<IJobService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_serializer = Substitute.For<kCura.Apps.Common.Utils.Serializers.ISerializer>();
+			_dataProviderFactory = Substitute.For<IDataProviderFactory>();
 
 			// Stubs
 			_contextContainerFactory.CreateContextContainer(Arg.Is(_helper)).Returns(_contextContainer);
@@ -232,17 +233,78 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 		[Test]
 		public void GetSourceProvider_ThrowsWhenStopIsRequested()
 		{
-			// ARRANGE	
+			// ARRANGE
+			const string jobDetailsText = "SERIALIZED";
+			const long jobIdValue = 12321;
 			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
-			var exception = new OperationCanceledException();
 
-			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(exception);
+			var taskParameters = new TaskParameters()
+			{
+				BatchInstance = Guid.NewGuid(),
+			};
 
+			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+
+			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
+
+			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
+				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				.Returns(jobStopManager);
+
+			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
 
 			// ACT
-//			Assert.Throws<OperationCanceledException>(() => { _testInstance.GetSourceProvider()})
+			Assert.Throws<OperationCanceledException>(() => _testInstance.GetSourceProvider(new SourceProvider(), job));
 
 			// ASSERT
+			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			jobStopManager.Received(1).ThrowIfStopRequested();
+		}
+
+		[Test]
+		public void GetSourceProvider_GoldFlow()
+		{
+			// ARRANGE
+			const string jobDetailsText = "SERIALIZED";
+			const long jobIdValue = 12321;
+			var sourceProvider = new SourceProvider()
+			{
+				ApplicationIdentifier = Guid.NewGuid().ToString(),
+				Identifier = Guid.NewGuid().ToString()
+			};
+
+			IDataSourceProvider expectedDataSourceProvider = Substitute.For<IDataSourceProvider>();
+			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
+
+			var taskParameters = new TaskParameters()
+			{
+				BatchInstance = Guid.NewGuid(),
+			};
+
+			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+
+			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
+
+			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
+				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				.Returns(jobStopManager);
+
+			_dataProviderFactory.GetDataProvider(Arg.Is(new Guid(sourceProvider.ApplicationIdentifier)),
+				Arg.Is(new Guid(sourceProvider.Identifier)), Arg.Is(_helper))
+				.Returns(expectedDataSourceProvider);
+
+			// ACT
+			IDataSourceProvider result = _testInstance.GetSourceProvider(sourceProvider, job);
+
+			// ASSERT
+			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			jobStopManager.Received(1).ThrowIfStopRequested();
+			_dataProviderFactory.Received(1).GetDataProvider(Arg.Is(new Guid(sourceProvider.ApplicationIdentifier)),
+				Arg.Is(new Guid(sourceProvider.Identifier)), Arg.Is(_helper));
 		}
 
 	}
