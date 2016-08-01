@@ -14,9 +14,47 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return PostRequestAsJsonInternal(serviceMethod, isHttps, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, parameter);
 		}
 
-		public static string PostRequestAsJson(string serviceMethod, bool isHttps, string username, string password, string parameter = null)
+		public static string GetRequest(string serviceMethod, bool isHttps, string username, string password)
 		{
-			return PostRequestAsJsonInternal(serviceMethod, isHttps, username, password, parameter);
+			Uri baseAddress = new Uri(SharedVariables.RestServer);
+			WebRequestHandler handler = new WebRequestHandler();
+
+			if (isHttps)
+			{
+				handler.ServerCertificateValidationCallback = ServicePointManager.ServerCertificateValidationCallback = (senderX, certificate, chain, sslPolicyErrors) => true;
+			}
+
+			using (HttpClient httpClient = new HttpClient(handler))
+			{
+				httpClient.BaseAddress = baseAddress;
+
+				//Set header information
+				string authorizationBase64 = GetBase64String($"{ username }:{ password }");
+				string authorizationHeader = $"Basic { authorizationBase64 }";
+				httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
+				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
+
+				//Send Get Request
+				string output;
+				try
+				{
+					using (HttpResponseMessage response = httpClient.GetAsync(serviceMethod).ConfigureAwait(false).GetAwaiter().GetResult())
+					{
+						if (!response.IsSuccessStatusCode)
+						{
+							string errorMessage = $"Failed submitting post request. Response Error: { response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult() }.";
+							throw new Exception(errorMessage);
+						}
+						output = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+					}
+				}
+				catch (Exception ex)
+				{
+					string errorMessage = $"An error occurred when attempting to submit post request. { ex.Message }.";
+					throw new Exception(errorMessage);
+				}
+				return output;
+			}
 		}
 
 		public static string PostRequestAsJsonInternal(string serviceMethod, bool isHttps, string username, string password, string parameter)
@@ -34,23 +72,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 				httpClient.BaseAddress = baseAddress;
 
 				//Set header information
-				string authorizationBase64 = GetBase64String(string.Format("{0}:{1}", username, password));
-				string authorizationHeader = string.Format("Basic {0}", authorizationBase64);
+				string authorizationBase64 = GetBase64String($"{username}:{password}");
+				string authorizationHeader = $"Basic {authorizationBase64}";
 				httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
 				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
 
-				//Assign parameter if needed
+				//Assign parameter if needed and send Post Request
 				using (HttpContent content = parameter != null ? new StringContent(parameter, Encoding.UTF8, _JSON_MIME) : null)
 				{
-					string output = null;
+					string output;
 					try
 					{
 						using (HttpResponseMessage response = httpClient.PostAsync(serviceMethod, content).Result)
 						{
 							if (!response.IsSuccessStatusCode)
 							{
-								string errorMessage = string.Format("Failed submitting post request. Response Error: {0}.",
-									response.Content.ReadAsStringAsync());
+								string errorMessage = $"Failed submitting post request. Response Error: {response.Content.ReadAsStringAsync()}.";
 								throw new Exception(errorMessage);
 							}
 							output = response.Content.ReadAsStringAsync().Result;
@@ -58,7 +95,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					}
 					catch (Exception ex)
 					{
-						string errorMessage = string.Format("An error occurred when attempting to submit post request. {0}.", ex.Message);
+						string errorMessage = $"An error occurred when attempting to submit post request. {ex.Message}.";
 						throw new Exception(errorMessage);
 					}
 					return output;
@@ -86,7 +123,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
 				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
 
-				string output = null;
+				string output;
 				try
 				{
 					HttpResponseMessage response = httpClient.DeleteAsync(serviceMethod).Result;
