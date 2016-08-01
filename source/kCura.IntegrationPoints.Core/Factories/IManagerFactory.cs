@@ -90,6 +90,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="jobIdentifier">Guid of the job history</param>
 		/// <param name="jobId">Artifact id of the scheduled queue job</param>
 		/// <returns></returns>
-		IJobStopManager CreateJobStopManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId);
+		IJobStopManager CreateJobStopManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId);
 	}
 }

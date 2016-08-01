@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly JobHistoryErrorQuery _service;
 		private readonly IRSAPIService _rsapiService;
+
 		public JobStatusUpdater(JobHistoryErrorQuery service, IRSAPIService rsapiService)
 		{
 			_service = service;
@@ -49,6 +50,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			else
 			{
+				if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))
+				{
+					return JobStatusChoices.JobHistoryStopped;
+				}
 				if (jobHistory.ItemsWithErrors.GetValueOrDefault(0) > 0)
 				{
 					return Data.JobStatusChoices.JobHistoryCompletedWithErrors;

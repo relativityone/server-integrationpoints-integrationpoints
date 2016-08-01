@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			IRSAPIService rsapiService = Container.Resolve<IRSAPIService>();
-			JobHistoryBatchUpdateStatus jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, serializer, rsapiService);
+			JobHistoryBatchUpdateStatus jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, _jobService, serializer, rsapiService);
 
 			_exportManager = new ExportServiceManager(Helper,
 				_caseContext, contextContainerFactory,
