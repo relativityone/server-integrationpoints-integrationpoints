@@ -68,16 +68,26 @@
             </table>
         </td>
     </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Overwrite files:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: settings.OverwriteFiles ? 'Yes' : 'No'"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Overwrite files:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: settings.OverwriteFiles ? 'Yes' : 'No'"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Start at record:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: settings.StartExportAtRecord"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
     <tr>
         <td class="editTableColumn">
             <table>
@@ -128,20 +138,30 @@
             </table>
         </td>
     </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Image file type:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: imageFileType()"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Image file type:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: imageFileType()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Multiple choice as nested:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: settings.ExportMultipleChoiceFieldsAsNested ? 'Yes' : 'No'"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>	
 </table>
 
 <script src="~/Scripts/core/data.js"></script>
 <script src="~/Scripts/core/utils.js"></script>
-<script src="~/Scripts/knockout-2.2.0.js"></script>
+<script src="~/Scripts/knockout-3.4.0.js"></script>
 <script src="~/Scripts/knockout.validation.js"></script>
 <script src="~/Scripts/export/export-enums.js"></script>

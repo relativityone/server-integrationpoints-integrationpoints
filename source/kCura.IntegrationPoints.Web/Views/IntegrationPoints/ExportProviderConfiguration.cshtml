@@ -52,13 +52,13 @@
 									<table class="RadioButtonListRelativePosition">
 										<tr>
 											<td>
-												<input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ExportImagesChecked, disable: HasBeenRun()" />
+												<input id="export-images-radio-0" type="radio" name="exportImages" data-bind="checked: ExportImagesChecked, checkedValue: true, disable: HasBeenRun()" />
 												<label>Yes</label>
 											</td>
 										</tr>
 										<tr>
 											<td>
-												<input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ExportImagesChecked, disable: HasBeenRun()" />
+												<input id="export-images-radio-1" type="radio" name="exportImages" data-bind="checked: ExportImagesChecked, checkedValue: false, disable: HasBeenRun()" />
 												<label>No</label>
 											</td>
 										</tr>
@@ -71,13 +71,13 @@
 									<table class="RadioButtonListRelativePosition">
 										<tr>
 											<td>
-												<input id="copy-file-radio-0" type="radio" name="copyFiles" value="true" data-bind="checked: CopyFileFromRepository, disable: HasBeenRun()" />
+												<input id="copy-file-radio-0" type="radio" name="copyFiles" data-bind="checked: CopyFileFromRepository, checkedValue: true, disable: HasBeenRun()" />
 												<label>Yes</label>
 											</td>
 										</tr>
 										<tr>
 											<td>
-												<input id="copy-file-radio-1" type="radio" name="copyFiles" value="false" data-bind="checked: CopyFileFromRepository, disable: HasBeenRun()" />
+												<input id="copy-file-radio-1" type="radio" name="copyFiles" data-bind="checked: CopyFileFromRepository, checkedValue: false, disable: HasBeenRun()" />
 												<label>No</label>
 											</td>
 										</tr>
@@ -102,13 +102,13 @@
 									<table class="RadioButtonListRelativePosition">
 										<tr>
 											<td>
-												<input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" value="true" data-bind="checked: OverwriteFiles, disable: HasBeenRun()" />
+												<input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" data-bind="checked: OverwriteFiles, checkedValue: true, disable: HasBeenRun()" />
 												<label>Yes</label>
 											</td>
 										</tr>
 										<tr>
 											<td>
-												<input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles, disable: HasBeenRun()" />
+												<input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" data-bind="checked: OverwriteFiles, checkedValue: false, disable: HasBeenRun()" />
 												<label>No</label>
 											</td>
 										</tr>
@@ -222,10 +222,10 @@
 										<tbody data-bind="foreach: ExportEnums.FilePathType">
 											<tr>
 												<td>
-													<input type="radio" name="filePath" data-bind="attr: {value: value}, checked: $root.FilePath" />
-													<label data-bind="text: key"></label>
+													<input type="radio" name="filePath" data-bind="checked: $root.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }" />
+													<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
 													<!-- ko if: value==2 -->
-													<input id="userprefix-input" type="text" data-bind="enable: $root.isUserPrefix(), value: $root.UserPrefix" />
+													<input type="text" data-bind="enable: $root.isUserPrefix(), value: $root.UserPrefix,attr: {id: 'filePathUserprefix_' + $index() }" />
 													<!-- /ko -->
 												</td>
 											</tr>
@@ -318,7 +318,7 @@
 						</table>
 					</td>
 					<td class="cardColumn">
-						<table class="fieldTable" data-bind="visible: ExportImagesChecked() === 'true'">
+						<table class="fieldTable" data-bind="visible: ExportImagesChecked">
 							<tr>
 								<td>
 									<div>
@@ -331,7 +331,7 @@
 								</td>
 							</tr>
 							<tr>
-								@*data-bind="visible: ExportImagesChecked() === 'true'"*@
+								@*data-bind="visible: ExportImagesChecked"*@
 								<td class="editFieldNameRequired">
 									Data File Format:
 								</td>
@@ -340,12 +340,12 @@
 								</td>
 							</tr>
 							<tr>
-								@*data-bind="visible: ExportImagesChecked() === 'true'"*@
+								@*data-bind="visible: ExportImagesChecked"*@
 								<td class="editFieldNameRequired">
 									File Type :
 								</td>
 								<td class="editFieldValue">
-									<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository() === 'true' && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
+									<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
 								</td>
 							</tr>
 							<tr>
@@ -358,7 +358,7 @@
 								</td>
 							</tr>
 						</table>
-						<table class="fieldTable" data-bind="visible: CopyFileFromRepository() === 'true'">
+						<table class="fieldTable" data-bind="visible: CopyFileFromRepository">
 							<tr>
 								<td>
 									<div>
@@ -378,13 +378,13 @@
 									<table class="RadioButtonListRelativePosition">
 										<tr>
 											<td>
-												<input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" value="true" data-bind="checked: IncludeNativeFilesPath, disable: HasBeenRun()" />
+												<input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" data-bind="checked: IncludeNativeFilesPath, checkedValue: true, disable: HasBeenRun()" />
 												<label>Yes</label>
 											</td>
 										</tr>
 										<tr>
 											<td>
-												<input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" value="false" data-bind="checked: IncludeNativeFilesPath, disable: HasBeenRun()" />
+												<input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" data-bind="checked: IncludeNativeFilesPath, checkedValue: false, disable: HasBeenRun()" />
 												<label>No</label>
 											</td>
 										</tr>
@@ -434,7 +434,7 @@
 {
 	<script src="~/Scripts/core/data.js"></script>
 	<script src="~/Scripts/core/utils.js"></script>
-	<script src="~/Scripts/knockout-2.2.0.js"></script>
+	<script src="~/Scripts/knockout-3.4.0.js"></script>
 	<script src="~/Scripts/knockout.validation.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>

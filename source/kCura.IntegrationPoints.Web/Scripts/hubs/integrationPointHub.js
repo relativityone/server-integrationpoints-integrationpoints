@@ -38,13 +38,13 @@
 				} else {
 					$(consoleContainer.find(":contains('View Errors')")).removeClass("consoleLinkEnabled").addClass("consoleLinkDisabled").removeAttr('onClick');
 				}
+			} 
+
+			if (buttonStates.StopButtonEnabled) {
+				var stopOnClick = onClickEvents.StopOnClickEvent;
+				$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", stopOnClick).attr("title", "Stop").removeAttr('disabled');
 			} else {
-				if (buttonStates.StopButtonEnabled) {
-					var stopOnClick = onClickEvents.StopOnClickEvent;
-					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", stopOnClick).attr("title", "Stop").removeAttr('disabled');
-				} else {
-					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
-				}
+				$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
 			}
 			$('.associative-list').load(document.URL + ' .associative-list');
 		};
