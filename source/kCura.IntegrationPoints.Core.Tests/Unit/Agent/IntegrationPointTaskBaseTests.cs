@@ -13,6 +13,8 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -49,6 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_serializer = Substitute.For<kCura.Apps.Common.Utils.Serializers.ISerializer>();
 			_dataProviderFactory = Substitute.For<IDataProviderFactory>();
+			_appDomainRdoSynchronizerFactoryFactory = Substitute.For<ISynchronizerFactory>();
 
 			// Stubs
 			_contextContainerFactory.CreateContextContainer(Arg.Is(_helper)).Returns(_contextContainer);
@@ -300,6 +303,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			IDataSourceProvider result = _testInstance.GetSourceProvider(sourceProvider, job);
 
 			// ASSERT
+			Assert.AreEqual(expectedDataSourceProvider, result);
 			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
 			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
 			jobStopManager.Received(1).ThrowIfStopRequested();
@@ -307,9 +311,88 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 				Arg.Is(new Guid(sourceProvider.Identifier)), Arg.Is(_helper));
 		}
 
+		[Test]
+		public void GetDestinationProvider_ThrowsWhenStopIsRequested()
+		{
+			// ARRANGE
+			const string jobDetailsText = "SERIALIZED";
+			const long jobIdValue = 12321;
+			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
+
+			var taskParameters = new TaskParameters()
+			{
+				BatchInstance = Guid.NewGuid(),
+			};
+
+			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+
+			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
+
+			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
+				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				.Returns(jobStopManager);
+
+			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
+
+			// ACT
+			Assert.Throws<OperationCanceledException>(() => _testInstance.GetDestinationProvider(new DestinationProvider(), String.Empty, job));
+
+			// ASSERT
+			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
+			_managerFactory.Received(1)
+				.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
+					Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			jobStopManager.Received(1).ThrowIfStopRequested();
+		}
+
+		[Test]
+		public void GetDestinationProvider_GoldFlow()
+		{
+			// ARRANGE
+			const string jobDetailsText = "SERIALIZED";
+			const long jobIdValue = 12321;
+			const string configuration = "config";
+			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
+			var destinationProvider = new DestinationProvider()
+			{
+				Identifier = Guid.NewGuid().ToString()
+			};
+
+			IDataSynchronizer expectedDataSynchronizer = Substitute.For<IDataSynchronizer>();
+
+			var taskParameters = new TaskParameters()
+			{
+				BatchInstance = Guid.NewGuid(),
+			};
+
+			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+
+			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
+
+			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
+				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				.Returns(jobStopManager);
+
+			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration))
+				.Returns(expectedDataSynchronizer);
+
+			// ACT
+			IDataSynchronizer result = _testInstance.GetDestinationProvider(destinationProvider, configuration, job);
+
+			// ASSERT
+			Assert.AreEqual(expectedDataSynchronizer, result);
+			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
+			_managerFactory.Received(1)
+				.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
+					Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			jobStopManager.Received(1).ThrowIfStopRequested();
+			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration));
+		}
 	}
 
-	public class TestClass : IntegrationPointTaskBase
+		public class TestClass : IntegrationPointTaskBase
 	{
 		public TestClass(ICaseServiceContext caseServiceContext,
 			IHelper helper,
@@ -345,6 +428,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 		public void ThrowIfStopRequested(Job job)
 		{
 			base.ThrowIfStopRequested(job);
+		}
+
+		public IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration,
+			Job job)
+		{
+			return base.GetDestinationProvider(destinationProviderRdo, configuration, job);
 		}
 	}
 }
