@@ -23,6 +23,7 @@ using Relativity.API;
 using kCura.Method.Injection;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
+using kCura.IntegrationPoints.Core.Factories;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -40,9 +41,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         IJobManager jobManager,
                         IRSAPIClient workspaceRsapiClient,
                         ManagerQueueService managerQueueService,
-          JobStatisticsService statisticsService)
+          JobStatisticsService statisticsService,
+		  IManagerFactory managerFactory)
           : base(caseServiceContext, helper, dataProviderFactory, serializer,
-          appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService)
+          appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService, managerFactory)
         {
             _workspaceRsapiClient = workspaceRsapiClient;
             _managerQueueService = managerQueueService;

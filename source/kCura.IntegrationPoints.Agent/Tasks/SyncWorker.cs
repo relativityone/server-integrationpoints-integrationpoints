@@ -22,6 +22,7 @@ using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Method.Injection;
 
@@ -49,14 +50,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
           JobHistoryErrorService jobHistoryErrorService,
           IJobManager jobManager,
           IEnumerable<IBatchStatus> statuses,
-          JobStatisticsService statisticsService) : base(caseServiceContext,
+          JobStatisticsService statisticsService,
+		  IManagerFactory managerFactory) : base(caseServiceContext,
            helper,
            dataProviderFactory,
            serializer,
            appDomainRdoSynchronizerFactoryFactory,
            jobHistoryService,
            jobHistoryErrorService,
-           jobManager)
+           jobManager,
+		   managerFactory)
         {
             BatchStatus = statuses;
             _statisticsService = statisticsService;

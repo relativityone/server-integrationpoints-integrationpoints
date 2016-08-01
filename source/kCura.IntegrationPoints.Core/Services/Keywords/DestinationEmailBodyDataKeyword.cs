@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -28,14 +28,16 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 		  IJobHistoryService jobHistoryService,
 		  JobHistoryErrorService jobHistoryErrorService,
-		  IJobManager jobManager) : base(caseServiceContext,
+		  IJobManager jobManager,
+		  IManagerFactory managerFactory) : base(caseServiceContext,
 		   helper,
 		   dataProviderFactory,
 		   serializer,
 		   appDomainRdoSynchronizerFactoryFactory,
 		   jobHistoryService,
 		   jobHistoryErrorService,
-		   jobManager)
+		   jobManager,
+		   managerFactory)
 		{
 			_job = job;
 		}

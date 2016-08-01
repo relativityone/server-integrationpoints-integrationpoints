@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 		protected JobHistoryErrorService _jobHistoryErrorService;
 		protected ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		protected IJobManager _jobManager;
+		protected IManagerFactory _managerFactory;
 
 		[SetUp]
 		public void SetUp()
@@ -36,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 				_appDomainRdoSynchronizerFactoryFactory,
 				_jobHistoryService,
 				_jobHistoryErrorService,
-				_jobManager);
+				_jobManager,
+				_managerFactory);
 		}
 
 		[TestCase("")]
@@ -149,9 +152,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
-			IJobManager jobManager)
+			IJobManager jobManager,
+			IManagerFactory managerFactory)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorService, jobManager)
+				jobHistoryService, jobHistoryErrorService, jobManager, managerFactory)
 		{
 		}
 

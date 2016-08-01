@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -32,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Agent
         protected JobHistoryErrorService _jobHistoryErrorService;
         protected ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
         protected IJobManager _jobManager;
+	    protected IManagerFactory _managerFactory;
 
 
         public IntegrationPointTaskBase(
@@ -42,7 +44,8 @@ namespace kCura.IntegrationPoints.Core.Agent
           ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
           IJobHistoryService jobHistoryService,
           JobHistoryErrorService jobHistoryErrorService,
-          IJobManager jobManager)
+          IJobManager jobManager,
+		  IManagerFactory managerFactory)
         {
             _caseServiceContext = caseServiceContext;
             _helper = helper;
@@ -52,6 +55,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             _jobHistoryService = jobHistoryService;
             _jobHistoryErrorService = jobHistoryErrorService;
             _jobManager = jobManager;
+	        _managerFactory = managerFactory;
         }
 
         protected Data.IntegrationPoint IntegrationPoint { get; set; }
