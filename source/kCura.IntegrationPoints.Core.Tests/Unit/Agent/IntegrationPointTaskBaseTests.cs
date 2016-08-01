@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Domain;
+using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -27,6 +28,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 		protected ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		protected IJobManager _jobManager;
 		protected IManagerFactory _managerFactory;
+		protected IContextContainerFactory _contextContainerFactory;
+		protected IJobService _jobService;
 
 		[SetUp]
 		public void SetUp()
@@ -39,7 +42,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 				_jobHistoryService,
 				_jobHistoryErrorService,
 				_jobManager,
-				_managerFactory);
+				_managerFactory,
+				_contextContainerFactory,
+				_jobService);
 		}
 
 		[TestCase("")]
@@ -153,9 +158,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
-			IManagerFactory managerFactory)
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainerFactory,
+			IJobService jobService)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorService, jobManager, managerFactory)
+				jobHistoryService, jobHistoryErrorService, jobManager, managerFactory, contextContainerFactory, jobService)
 		{
 		}
 

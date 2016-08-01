@@ -36,10 +36,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataProviderFactory dataProviderFactory, ISerializer serializer,
 			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory, IJobHistoryService jobHistoryService,
 			JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IJobManager jobManager, IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService, ExportProcessRunner exportProcessRunner, IManagerFactory managerFactory)
+			JobStatisticsService statisticsService, ExportProcessRunner exportProcessRunner, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory, IJobService jobService)
 			: base(
 				caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorServiceProvider.JobHistoryErrorService, jobManager, statuses, statisticsService, managerFactory)
+				jobHistoryService, jobHistoryErrorServiceProvider.JobHistoryErrorService, jobManager, statuses, statisticsService, managerFactory, contextContainerFactory, jobService)
 		{
 			_exportProcessRunner = exportProcessRunner;
 		}

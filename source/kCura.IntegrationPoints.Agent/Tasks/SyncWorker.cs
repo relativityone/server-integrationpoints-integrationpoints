@@ -51,7 +51,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
           IJobManager jobManager,
           IEnumerable<IBatchStatus> statuses,
           JobStatisticsService statisticsService,
-		  IManagerFactory managerFactory) : base(caseServiceContext,
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService) : base(caseServiceContext,
            helper,
            dataProviderFactory,
            serializer,
@@ -59,7 +61,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
            jobHistoryService,
            jobHistoryErrorService,
            jobManager,
-		   managerFactory)
+		   managerFactory,
+		   contextContainerFactory,
+		   jobService)
         {
             BatchStatus = statuses;
             _statisticsService = statisticsService;
@@ -213,6 +217,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             SetupSubscriptions(dataSynchronizer, job);
 
 			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+
+			this.ThrowIfStopRequested(job);
 			dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
 		}
 

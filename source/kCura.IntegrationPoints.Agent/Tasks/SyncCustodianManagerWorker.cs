@@ -42,9 +42,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         IRSAPIClient workspaceRsapiClient,
                         ManagerQueueService managerQueueService,
           JobStatisticsService statisticsService,
-		  IManagerFactory managerFactory)
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService)
           : base(caseServiceContext, helper, dataProviderFactory, serializer,
-          appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService, managerFactory)
+          appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService, managerFactory, contextContainerFactory, jobService)
         {
             _workspaceRsapiClient = workspaceRsapiClient;
             _managerQueueService = managerQueueService;

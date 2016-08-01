@@ -29,7 +29,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		  IJobHistoryService jobHistoryService,
 		  JobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
-		  IManagerFactory managerFactory) : base(caseServiceContext,
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService) : base(caseServiceContext,
 		   helper,
 		   dataProviderFactory,
 		   serializer,
@@ -37,7 +39,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		   jobHistoryService,
 		   jobHistoryErrorService,
 		   jobManager,
-		   managerFactory)
+		   managerFactory,
+		   contextContainerFactory,
+		   jobService)
 		{
 			_job = job;
 		}

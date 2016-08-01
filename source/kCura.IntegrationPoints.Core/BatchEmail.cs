@@ -30,7 +30,9 @@ namespace kCura.IntegrationPoints.Core
 		  IJobManager jobManager,
 		  IJobStatusUpdater jobStatusUpdater,
 		  KeywordConverter converter,
-		  IManagerFactory managerFactory) : base(caseServiceContext,
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService) : base(caseServiceContext,
 		   helper,
 		   dataProviderFactory,
 		   serializer,
@@ -38,7 +40,9 @@ namespace kCura.IntegrationPoints.Core
 		   jobHistoryService,
 		   jobHistoryErrorService,
 		   jobManager,
-		   managerFactory)
+		   managerFactory,
+		   contextContainerFactory,
+		   jobService)
 		{
 			_jobStatusUpdater = jobStatusUpdater;
 			_converter = converter;
