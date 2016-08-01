@@ -1,13 +1,15 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.Collections.ObjectModel;
+using kCura.IntegrationPoint.Tests.Core.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System;
-	using System.Collections.ObjectModel;
-
 	public static class Selenium
 	{
+		private static bool _fluidEnabled;
+
 		public static void GoToUrl(this IWebDriver driver, string url)
 		{
 			driver.Navigate().GoToUrl(url);
@@ -165,6 +167,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IWebElement dropDown = driver.FindElement(By.Id(dropdownId));
 			SelectElement selectValue = new SelectElement(dropDown);
 			selectValue.SelectByText(value);
+		}
+
+		public static void SetFluidStatus(int userArtifactId)
+		{
+			UserModel user = User.ReadUser(userArtifactId);
+			_fluidEnabled = user.BetaUser;
 		}
 	}
 
