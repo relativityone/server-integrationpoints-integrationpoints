@@ -258,7 +258,6 @@
 			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Thinktecture.IdentityModel.Client.4.0.1\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
-
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
 			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
@@ -267,7 +266,6 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\FreeImageNET.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\Ionic.Zip.dll"' />
@@ -284,17 +282,19 @@
 			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Method.Injection.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
-			<arg line='"${target.code.directory}\kCura.ScheduleQueue.Core.dll"' />
-			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
+			
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Config.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Synchronizers.RDO.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
+			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
+			<arg line='"${target.code.directory}\kCura.ScheduleQueue.Core.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 		</exec>
 	</target>
