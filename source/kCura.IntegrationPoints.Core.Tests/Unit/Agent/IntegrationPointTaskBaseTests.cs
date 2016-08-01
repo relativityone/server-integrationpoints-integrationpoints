@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -20,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 		private TestClass _testInstance;
 
 		protected ICaseServiceContext _caseServiceContext;
-		protected readonly IHelper _helper;
+		protected IHelper _helper;
 		protected IDataProviderFactory _dataProviderFactory;
 		protected kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		protected IJobHistoryService _jobHistoryService;
@@ -31,9 +37,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 		protected IContextContainerFactory _contextContainerFactory;
 		protected IJobService _jobService;
 
+		protected IContextContainer _contextContainer;
+
 		[SetUp]
 		public void SetUp()
 		{
+			_contextContainer = Substitute.For<IContextContainer>();
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			_helper = Substitute.For<IHelper>();
+			_jobService = Substitute.For<IJobService>();
+			_managerFactory = Substitute.For<IManagerFactory>();
+			_serializer = Substitute.For<kCura.Apps.Common.Utils.Serializers.ISerializer>();
+
+			// Stubs
+			_contextContainerFactory.CreateContextContainer(Arg.Is(_helper)).Returns(_contextContainer);
+
 			_testInstance = new TestClass(_caseServiceContext,
 				_helper,
 				_dataProviderFactory,
@@ -146,6 +164,87 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			Assert.AreEqual(email3, resultEmails[2]);
 		}
 
+		[Test]
+		public void ThrowIfStopRequested_ExceptsWhenStopped()
+		{
+			// ARRANGE
+			const string jobDetailsText = "SERIALIZED";
+			const long jobIdValue = 12321;
+			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
+
+			var taskParameters = new TaskParameters()
+			{
+				BatchInstance = Guid.NewGuid(),
+			};
+
+			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+
+			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
+
+			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				.Returns(jobStopManager);
+
+			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
+
+			// ACT
+			Assert.Throws<OperationCanceledException>(() => _testInstance.ThrowIfStopRequested(job));
+
+			// ASSERT
+			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			jobStopManager.Received(1).ThrowIfStopRequested();
+		}
+
+		[Test]
+		public void ThrowIfStopRequested_DoesNotExceptWhenNotStopped()
+		{
+			// ARRANGE
+			const string jobDetailsText = "SERIALIZED";
+			const long jobIdValue = 12321;
+			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
+
+			var taskParameters = new TaskParameters()
+			{
+				BatchInstance = Guid.NewGuid(),
+			};
+
+			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+
+			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
+
+			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
+				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				.Returns(jobStopManager);
+
+			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
+
+			// ACT
+			Assert.Throws<OperationCanceledException>(() => _testInstance.ThrowIfStopRequested(job));
+
+			// ASSERT
+			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			jobStopManager.Received(1).ThrowIfStopRequested();
+		}
+
+		[Test]
+		public void GetSourceProvider_ThrowsWhenStopIsRequested()
+		{
+			// ARRANGE	
+			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
+			var exception = new OperationCanceledException();
+
+			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(exception);
+
+
+			// ACT
+//			Assert.Throws<OperationCanceledException>(() => { _testInstance.GetSourceProvider()})
+
+			// ASSERT
+		}
+
 	}
 
 	public class TestClass : IntegrationPointTaskBase
@@ -174,6 +273,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 		public List<string> GetRecipientEmails()
 		{
 			return base.GetRecipientEmails();
+		}
+
+		public IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
+		{
+			return base.GetSourceProvider(sourceProviderRdo, job);
+		}
+
+		public void ThrowIfStopRequested(Job job)
+		{
+			base.ThrowIfStopRequested(job);
 		}
 	}
 }
