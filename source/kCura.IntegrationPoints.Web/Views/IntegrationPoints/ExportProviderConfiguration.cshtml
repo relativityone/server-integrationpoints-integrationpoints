@@ -222,10 +222,10 @@
 										<tbody data-bind="foreach: ExportEnums.FilePathType">
 											<tr>
 												<td>
-													<input type="radio" name="filePath" data-bind="checked: $root.FilePath, checkedValue: $data.value" />
-													<label data-bind="text: key"></label>
+													<input type="radio" name="filePath" data-bind="checked: $root.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }" />
+													<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
 													<!-- ko if: value==2 -->
-													<input id="userprefix-input" type="text" data-bind="enable: $root.isUserPrefix(), value: $root.UserPrefix" />
+													<input type="text" data-bind="enable: $root.isUserPrefix(), value: $root.UserPrefix,attr: {id: 'filePathUserprefix_' + $index() }" />
 													<!-- /ko -->
 												</td>
 											</tr>
