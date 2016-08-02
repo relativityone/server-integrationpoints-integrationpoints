@@ -29,26 +29,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void GoToWorkspace(this IWebDriver driver, int artifactId)
 		{
-			string workspaceXpath;
+			string workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}']";
+			driver.SwitchTo().DefaultContent();
+
 			if (!_fluidEnabled)
 			{
-				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
-
-				driver.SwitchTo().DefaultContent();
 				driver.SwitchTo().Frame("ListTemplateFrame");
-				driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
-				driver.FindElement(By.XPath(workspaceXpath)).Click();
 			}
-
 			else if (_fluidEnabled)
 			{
-				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}']";
-
-				driver.SwitchTo().DefaultContent();
 				driver.SwitchTo().Frame("_externalPage");
-				driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
-				driver.FindElement(By.XPath(workspaceXpath)).Click();
 			}
+
+			driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
+			driver.FindElement(By.XPath(workspaceXpath)).Click();
 		}
 
 		public static void GoToTab(this IWebDriver driver, string tabName)
@@ -56,8 +50,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			try
 			{
-				//If the workspace has too many tabs, some tabs get wrapped in the navigation bar and thus their tab text will not be found.
-				//If that is the case, then we will grab the URL directly
+				//If the workspace has too many tabs, some tabs get wrapped in the further navigation bar and thus their tab text is not visible.
+				//It first tries grabbing the text of the tab. If it's found then the driver will click it.
 				driver.WaitUntilElementExists(ElementType.Id, "horizontal-tabstrip", 10);
 				ReadOnlyCollection<IWebElement> webElementCollection = driver.FindElements(By.Id("horizontal-tabstrip"));
 				IWebElement navigationList = webElementCollection[0].FindElement(By.XPath("//ul[@class='nav navbar-nav']"));
@@ -76,6 +70,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					}
 				}
 
+				//If the text is not found, it then tries going through the vertical bar and grabs the URL of the tab.
 				ReadOnlyCollection<IWebElement> anchors = driver.FindElements(By.XPath("//div[@id='vertical-tabstrip']/accordion/div/ul/li/div/div[1]/h4/a/a[1]"));
 				foreach (IWebElement anchor in anchors)
 				{
