@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				if (_jobStopManager.IsStoppingRequested()) { return; }
 
 				// Push documents
-				using (IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(),
+				using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
 					IntegrationPointDto.SourceConfiguration,
 					_savedSearchArtifactId,
 					job.SubmittedBy))
@@ -151,7 +151,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					}
 				}
 
-				// tag documents
 				FinalizeExportServiceObservers(job);
 			}
 			catch (AgentDropJobException) //for concurrency, an Agent drops a job if one is already executing
@@ -189,6 +188,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
+			_jobStopManager.Dispose();
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
 			{
@@ -274,18 +274,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
 			}
 
-			_batchStatus.ForEach(batch => batch.OnJobStart(job));
-
 			_jobStopManager = _managerFactory.CreateJobStopManager(null, _jobService, _jobHistoryService, _identifier, job.JobId);
 			_jobHistoryErrorService.StopJobStopManager = _jobStopManager;
+
+			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
 		
 		private void FinalizeExportService(Job job)
 		{
 			try
 			{
-				_jobStopManager.Dispose();
-
 				_exportServiceJobObservers.OfType<IScratchTableRepository>().ForEach(observer => observer.Dispose());
 
 				//Now we can delete the temp saved search (only gets called on retry for item-level only errors)

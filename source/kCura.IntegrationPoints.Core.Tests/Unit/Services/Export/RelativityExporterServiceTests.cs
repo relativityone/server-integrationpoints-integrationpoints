@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
@@ -20,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
 		private FieldMap[] _mappedFields;
 		private HashSet<int> _longTextField;
+		private IJobStopManager _jobStopMaanger;
 
 		[TestFixtureSetUp]
 		public void Setup()
@@ -54,6 +56,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			_longTextField = new HashSet<int>(new int[] {456});
 		}
 
+		[SetUp]
+		public void TestSetup()
+		{
+			_jobStopMaanger = Substitute.For<IJobStopManager>();
+		}
+
 		[Test]
 		public void RetrieveData_GoldFlow()
 		{
@@ -81,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			});
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopMaanger, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 
@@ -106,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopMaanger, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 			// Assert
@@ -129,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			_exporter.RetrieveResults(_exportApiResult.RunId, avfIds, 1).Returns((object)null);
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopMaanger, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 			// Assert
