@@ -30,6 +30,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.DataReaderClient;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -62,6 +63,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private int _savedSearchArtifactId;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
+		private IJobStopManager _jobStopManager;
 
 		public ExportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,
@@ -113,21 +115,30 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				InitializeExportService(job);
 
+				if(_jobStopManager.IsStoppingRequested()) { return; }
+
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				string userImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
 
+				if (_jobStopManager.IsStoppingRequested()) { return; }
+
 				InitializeExportServiceObservers(job, userImportApiSettings);
 				SetupSubscriptions(synchronizer, job);
 
+				if (_jobStopManager.IsStoppingRequested()) { return; }
+
 				// Push documents
-				using (IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(),
+				using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
 					IntegrationPointDto.SourceConfiguration,
 					_savedSearchArtifactId,
 					job.SubmittedBy))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
-					JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
+					if (!_jobStopManager.IsStoppingRequested())
+					{
+						JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
+					}
 					UpdateJobStatus();
 
 					if (exporter.TotalRecordsFound > 0)
@@ -140,7 +151,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					}
 				}
 
-				// tag documents
 				FinalizeExportServiceObservers(job);
 			}
 			catch (AgentDropJobException) //for concurrency, an Agent drops a job if one is already executing
@@ -178,6 +188,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
+			_jobStopManager.Dispose();
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
 			{
@@ -224,6 +235,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this._identifier = taskParameters.BatchInstance;
 
 			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
+			_jobHistoryService.GetRdo(_identifier);
 
 			CheckForOtherJobsExecuting(job, this.JobHistoryDto.ArtifactId);
 
@@ -261,6 +273,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
 				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
 			}
+
+			_jobStopManager = _managerFactory.CreateJobStopManager(null, _jobService, _jobHistoryService, _identifier, job.JobId);
+			_jobHistoryErrorService.StopJobStopManager = _jobStopManager;
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
@@ -319,6 +334,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						_taskResult.Status = TaskStatusEnum.Success;
 					}
+					this._jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None );
 					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult); //use this for concurrency -MNG
 				}
 
