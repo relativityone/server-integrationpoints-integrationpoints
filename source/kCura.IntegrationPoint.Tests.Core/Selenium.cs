@@ -56,15 +56,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			try
 			{
+				//If the workspace has too many tabs, some tabs get wrapped in the navigation bar and thus their tab text will not be found.
+				//If that is the case, then we will grab the URL directly
 				driver.WaitUntilElementExists(ElementType.Id, "horizontal-tabstrip", 10);
 				ReadOnlyCollection<IWebElement> webElementCollection = driver.FindElements(By.Id("horizontal-tabstrip"));
 				IWebElement navigationList = webElementCollection[0].FindElement(By.XPath("//ul[@class='nav navbar-nav']"));
 				ReadOnlyCollection<IWebElement> listElements = navigationList.FindElements(By.TagName("li"));
 				foreach (IWebElement listElement in listElements)
 				{
-					ReadOnlyCollection<IWebElement> anchorCollectoin = listElement.FindElements(By.TagName("a"));
+					ReadOnlyCollection<IWebElement> anchorCollection = listElement.FindElements(By.TagName("a"));
 
-					foreach (IWebElement anchor in anchorCollectoin)
+					foreach (IWebElement anchor in anchorCollection)
 					{
 						if (anchor.Text.Equals(tabName))
 						{
