@@ -137,7 +137,7 @@
 		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.bin.directory}\kCura.DocumentTransferProvider.dll"' />
-			<arg line='/internalize:excludeDocsTransfer.txt' />
+			<arg line='/internalize:ilmergeExcludeDocumentTransferProvider.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.packages.directory}\kCura.EventHandler.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\kCura.Relativity.Client.${relativityDependencyVersion}\lib\net45"' />
