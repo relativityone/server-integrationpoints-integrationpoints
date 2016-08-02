@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 	public static class Selenium
 	{
+		static bool IsBetaUser = true;
 		public static void GoToUrl(this IWebDriver driver, string url)
 		{
 			driver.Navigate().GoToUrl(url);
@@ -27,17 +28,31 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void GoToWorkspace(this IWebDriver driver, int artifactId)
 		{
-			string workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
+			string workspaceXpath;
+			if (!IsBetaUser)
+			{
+				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
 
-			driver.SwitchTo().DefaultContent();
-			driver.SwitchTo().Frame("ListTemplateFrame");
+				driver.SwitchTo().DefaultContent();
+				driver.SwitchTo().Frame("ListTemplateFrame");
+				driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
+				driver.FindElement(By.XPath(workspaceXpath)).Click();
+			}
 
-			driver.FindElement(By.XPath(workspaceXpath)).Click();
+			else if (IsBetaUser)
+			{
+				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}']";
+
+				driver.SwitchTo().DefaultContent();
+				driver.SwitchTo().Frame("_externalPage");
+				driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
+				driver.FindElement(By.XPath(workspaceXpath)).Click();
+			}
 		}
 
 		public static void GoToTab(this IWebDriver driver, string tabName)
 		{
-			Exception ex = null;
+
 			try
 			{
 				driver.WaitUntilElementExists(ElementType.Id, "horizontal-tabstrip", 10);
@@ -57,12 +72,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 						}
 					}
 				}
+
+				ReadOnlyCollection<IWebElement> anchors = driver.FindElements(By.XPath("//div[@id='vertical-tabstrip']/accordion/div/ul/li/div/div[1]/h4/a/a[1]"));
+				foreach (IWebElement anchor in anchors)
+				{
+					IWebElement anchorSpan = anchor.FindElement(By.XPath(".//span"));
+					string spanText = anchorSpan.GetAttribute("innerText");
+					if(spanText == tabName)
+					{
+						string anchorHref = anchor.GetAttribute("href");
+						driver.GoToUrl(anchorHref);
+						return;
+					}
+				}
 			}
 			catch (Exception exception)
 			{
-				ex = exception;
+				throw exception;
 			}
-			throw new Exception($"Unable to find tab {tabName}", ex);
 		}
 
 		public static void GoToObjectInstance(this IWebDriver driver, int workspaceArtifactId, int integrationPointArtifactId, int artifactTypeId)
