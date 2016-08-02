@@ -25,6 +25,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Method.Injection;
+using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -222,6 +223,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		        this.ThrowIfStopRequested(job);
 		        dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+				_jobService.UpdateStopState(new List<long>() {job.JobId}, StopState.Unstoppable);
 	        }
 	        catch (OperationCanceledException ex)
 	        {
