@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		[Test]
 		public void TestingImportSadFace()
 		{
-			Import.ImportNewDocuments(WorkspaceArtifactId, Import.GetImportTable("ImportDoc", 30));
+			//Import.ImportNewDocuments(WorkspaceArtifactId, Import.GetImportTable("ImportDoc", 30));
 		}
 	}
 }
