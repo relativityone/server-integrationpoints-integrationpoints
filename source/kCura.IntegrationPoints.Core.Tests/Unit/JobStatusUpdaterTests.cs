@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using NSubstitute;
@@ -9,6 +10,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 	[TestFixture]
 	public class JobStatusUpdaterTests
 	{
+		private IJobHistoryService _jobHistoryService;
+
+		public void SetUp()
+		{
+			_jobHistoryService = Substitute.For<IJobHistoryService>();
+		}
+
 		[Test]
 		public void GenerateStatus_NoJobHistoryErrors_ReturnsSuccess()
 		{
@@ -18,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(null, new JobHistoryError[] { });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service, null);
+			var serviceInTest = new JobStatusUpdater(service, _jobHistoryService);
 			var choice = serviceInTest.GenerateStatus(new JobHistory { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 0 });
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompleted.Name));
@@ -33,8 +41,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorItem });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service, null);
-			var choice = serviceInTest.GenerateStatus(new JobHistory());
+			var serviceInTest = new JobStatusUpdater(service, _jobHistoryService);
+			var choice = serviceInTest.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing });
 
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompletedWithErrors.Name));
@@ -49,8 +57,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorJob });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service, null);
-			var choice = serviceInTest.GenerateStatus(new JobHistory());
+			var serviceInTest = new JobStatusUpdater(service, _jobHistoryService);
+			var choice = serviceInTest.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing});
 
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryErrorJobFailed.Name));
