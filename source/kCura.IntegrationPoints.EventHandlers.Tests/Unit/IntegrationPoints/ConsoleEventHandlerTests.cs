@@ -94,7 +94,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
 
-			_jobHistoryManager.GetIntegrationPointHasStoppableJobs(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasStoppableJobs);
+			StoppableJobCollection stoppableJobCollection = null;
+
+			if (hasStoppableJobs)
+			{
+				stoppableJobCollection = new StoppableJobCollection()
+				{
+					PendingJobArtifactIds = new[] {1232},
+					ProcessingJobArtifactIds = new[] {9403},
+				};
+			}
+			else
+			{
+				stoppableJobCollection = new StoppableJobCollection();
+			}
+
+			_jobHistoryManager.GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
 
 			if (!hasRunPermissions || !hasViewErrorsPermissions)
 			{
@@ -167,7 +182,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			Assert.AreEqual("Run Now", runNowButton.DisplayText);
 			Assert.AreEqual(false, runNowButton.RaisesPostBack);
 
-			_jobHistoryManager.Received(1).GetIntegrationPointHasStoppableJobs(_APPLICATION_ID, _ARTIFACT_ID);
+			_jobHistoryManager.Received(1).GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID);
 
 				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					runNowButton.OnClickEvent);
@@ -222,7 +237,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
 
-			_jobHistoryManager.GetIntegrationPointHasStoppableJobs(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasStoppableJobs);
+			StoppableJobCollection stoppableJobCollection = null;
+
+			if (hasStoppableJobs)
+			{
+				stoppableJobCollection = new StoppableJobCollection()
+				{
+					PendingJobArtifactIds = new[] { 1232 },
+					ProcessingJobArtifactIds = new[] { 9403 },
+				};
+			}
+			else
+			{
+				stoppableJobCollection = new StoppableJobCollection();
+			}
+
+			_jobHistoryManager.GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
 
 			ButtonStateDTO buttonStates = null;
 			OnClickEventDTO onClickEvents = null;
@@ -260,7 +290,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			Assert.AreEqual("Run Now", runNowButton.DisplayText);
 			Assert.AreEqual(false, runNowButton.RaisesPostBack);
 
-			_jobHistoryManager.Received(1).GetIntegrationPointHasStoppableJobs(_APPLICATION_ID, _ARTIFACT_ID);
+			_jobHistoryManager.Received(1).GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID);
 
 			Assert.IsTrue(runNowButton.Enabled);
 			Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);

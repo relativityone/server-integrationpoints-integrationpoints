@@ -1,14 +1,15 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.Collections.ObjectModel;
+using kCura.IntegrationPoint.Tests.Core.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System;
-	using System.Collections.ObjectModel;
-
 	public static class Selenium
 	{
-		static bool IsBetaUser = true;
+		private static bool _fluidEnabled;
+
 		public static void GoToUrl(this IWebDriver driver, string url)
 		{
 			driver.Navigate().GoToUrl(url);
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static void GoToWorkspace(this IWebDriver driver, int artifactId)
 		{
 			string workspaceXpath;
-			if (!IsBetaUser)
+			if (!_fluidEnabled)
 			{
 				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
 
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				driver.FindElement(By.XPath(workspaceXpath)).Click();
 			}
 
-			else if (IsBetaUser)
+			else if (_fluidEnabled)
 			{
 				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}']";
 
@@ -192,6 +193,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IWebElement dropDown = driver.FindElement(By.Id(dropdownId));
 			SelectElement selectValue = new SelectElement(dropDown);
 			selectValue.SelectByText(value);
+		}
+
+		public static void SetFluidStatus(int userArtifactId)
+		{
+			UserModel user = User.ReadUser(userArtifactId);
+			_fluidEnabled = user.BetaUser;
 		}
 	}
 

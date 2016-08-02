@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit
 		[Test, TestCaseSource(nameof(emailLists))]
 		public void CreateBatchJob_GoldFlow(List<string> list)
 		{
-			// arrage
+			// arrange
 			EmailMessage emailMessage = new EmailMessage()
 			{
 				Subject = "email test",

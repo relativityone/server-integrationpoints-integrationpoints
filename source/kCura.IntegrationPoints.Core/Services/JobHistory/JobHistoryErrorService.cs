@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
@@ -29,6 +28,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
 
+		public IJobStopManager StopJobStopManager { get; set; }
+
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
 			if (batchReporter is IBatchReporter)
@@ -44,6 +45,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				try
 				{
+					if (StopJobStopManager?.IsStoppingRequested() == true)
+					{
+						_jobHistoryErrorList.Clear();
+					}
+
 					if (_jobHistoryErrorList.Any())
 					{
 						kCura.Method.Injection.InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
@@ -101,6 +107,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			lock (_jobHistoryErrorList)
 			{
+				if (StopJobStopManager?.IsStoppingRequested() == true)
+				{
+					return;
+				}
+
 				if (this.JobHistory != null && this.JobHistory.ArtifactId > 0)
 				{
 					DateTime now = DateTime.UtcNow;
@@ -125,11 +136,10 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				else
 				{
-					//we can't create JobHistoryError without JobHistory, 
+					//we can't create JobHistoryError without JobHistory,
 					//in such case log error into Error Tab by throwing Exception.
 					throw new System.Exception(string.Format("Type:{0}  Id:{1}  Error:{2}", errorType.Name, documentIdentifier, errorMessage));
 				}
-
 			}
 		}
 

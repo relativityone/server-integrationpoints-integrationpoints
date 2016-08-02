@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			//ACT
 			var serviceInTest = new JobStatusUpdater(service, null);
-			var choice = serviceInTest.GenerateStatus(new JobHistory { ItemsWithErrors = 0 });
+			var choice = serviceInTest.GenerateStatus(new JobHistory { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 0 });
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompleted.Name));
 		}

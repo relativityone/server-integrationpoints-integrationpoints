@@ -110,7 +110,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 							var buttonStates = new ButtonStateDTO();
 							var onClickEvents = new OnClickEventDTO();
 							IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
-							bool hasStoppableJobs = _jobHistoryManager.GetIntegrationPointHasStoppableJobs(input.WorkspaceId, input.ArtifactId);
+							StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(input.WorkspaceId, input.ArtifactId);
+							bool hasStoppableJobs = stoppableJobCollection.HasStoppableJobs;
 
 							if (sourceProviderIsRelativity)
 							{
