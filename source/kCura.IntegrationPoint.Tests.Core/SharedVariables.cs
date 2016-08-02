@@ -1,18 +1,33 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
+using System.Linq;
+using Castle.Components.DictionaryAdapter;
+using Castle.DynamicProxy.Generators.Emitters;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class SharedVariables
 	{
-		public static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
+		#region User Settings
+
+		public static string RelativityUserName { get; set; } = ConfigurationManager.AppSettings["relativityUserName"];
+
+		public static string RelativityPassword { get; set; } = ConfigurationManager.AppSettings["relativityPassword"];
+
+		public static string RelativityUserFirstName { get; set; } = ConfigurationManager.AppSettings["relativityUserFirstName"];
+
+		public static string RelativityUserLastName { get; set; } = ConfigurationManager.AppSettings["relativityUserLastName"];
+
+		public static string UserFullName => $"{RelativityUserLastName}, {RelativityUserFirstName}";
+
+		#endregion User Settings
+
+		#region Relativity Settings
 
 		public static string RsapiClientUri => $"http://{TargetHost}/Relativity.Services";
+
 		public static Uri RsapiClientServiceUri => new Uri($"{RsapiClientUri}/");
-
-		public static string RelativityUserName { get; set; } = ConfigurationManager.AppSettings["userName"];
-
-		public static string RelativityPassword { get; set; } = ConfigurationManager.AppSettings["password"];
 
 		public static string RestServer => $"http://{TargetHost}/Relativity.Rest/";
 
@@ -21,6 +36,30 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string RestApi => $"http://{TargetHost}/Relativity.Rest";
 
 		public static string RelativityWebApiUrl => $"http://{TargetHost}/RelativityWebAPI/";
+
+		#endregion Relativity Settings
+
+		#region ConnectionString Settings
+
+		public static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
+
+		public static string DatabaseUserId { get; set; } = ConfigurationManager.AppSettings["databaseUserId"];
+
+		public static string DatabasePassword { get; set; } = ConfigurationManager.AppSettings["databasePassword"];
+
+		public static string EddsConnectionString => String.Format(ConfigurationManager.AppSettings["connectionStringEDDS"], TargetHost, DatabaseUserId, DatabasePassword);
+
+		public static string WorkspaceConnectionStringFormat => String.Format(ConfigurationManager.AppSettings["connectionStringWorkspace"], "{0}", TargetHost, DatabaseUserId, DatabasePassword);
+
+		#endregion ConnectionString Settings
+
+		#region RAP File Settings
+
+		public static string BuildPackagesBranchPath => Path.Combine(ConfigurationManager.AppSettings["buildPackages"], ConfigurationManager.AppSettings["branch"]);
+
+		public static string LatestRapLocationFromBuildPackages => Path.Combine(BuildPackagesBranchPath, LatestRapVersionFromBuildPackages);
+
+		public static string LatestRapVersionFromBuildPackages => GetLatestVersion();
 
 		public static string RapFileLocation
 		{
@@ -39,10 +78,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static string EddsConnectionString => ConfigurationManager.AppSettings["connectionStringEDDS"];
+		#endregion RAP File Settings
 
-		public static string WorkspaceConnectionStringFormat => ConfigurationManager.AppSettings["connectionStringWorkspace"];
+		private static string GetLatestVersion()
+		{
+			DirectoryInfo buildPackagesBranchDirectory = new DirectoryInfo(BuildPackagesBranchPath);
+			DirectoryInfo latestVersionFolder = buildPackagesBranchDirectory.GetDirectories().OrderByDescending(f => f.LastWriteTime).First();
 
-		public static string UserFullName => $"{ConfigurationManager.AppSettings["userLastName"]}, {ConfigurationManager.AppSettings["userFirstName"]}";
+			return latestVersionFolder?.Name;
+		}
 	}
 }
