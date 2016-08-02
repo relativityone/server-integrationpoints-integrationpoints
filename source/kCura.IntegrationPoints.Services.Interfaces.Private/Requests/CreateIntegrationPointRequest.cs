@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
