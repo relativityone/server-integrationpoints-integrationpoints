@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -15,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IJobService _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly Guid _jobIdentifier;
+		private readonly long _jobId;
 		private readonly CancellationToken _token;
 		private bool _disposed;
 
@@ -22,20 +25,23 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		/// for testing only.
 		/// </summary>
 		internal TimerCallback Callback { get; }
-		private readonly object _callbackLock = new object();
 
-		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId)
+		public object SyncRoot { get; }
+
+		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobHistoryInstanceId, long jobId)
 		{
+			SyncRoot = new object();
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
-			_jobIdentifier = jobIdentifier;
+			_jobIdentifier = jobHistoryInstanceId;
+			_jobId = jobId;
 			Callback = new TimerCallback(state =>
 			{
-				lock (_callbackLock)
+				lock (SyncRoot)
 				{
 					try
 					{
-						Job job = _jobService.GetJob(jobId);
+						Job job = _jobService.GetJob(_jobId);
 						if (job != null)
 						{
 							if (job.StopState.HasFlag(StopState.Stopping))
@@ -47,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 									jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
 									jobHistoryService.UpdateRdo(jobHistory);
 								}
+
 								_cancellationTokenSource.Cancel();
 								_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 							}
@@ -72,6 +79,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return _token.IsCancellationRequested;
 		}
 
+		public void ThrowIfStopRequested()
+		{
+			// Will throw OperationCancelledException if task is canceled.
+			_token.ThrowIfCancellationRequested();	
+		}
+
 		public void Dispose()
 		{
 			Dispose(true);
@@ -82,6 +95,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			if (disposing && !_disposed)
 			{
+				try
+				{
+					_jobService.UpdateStopState(new List<long> { _jobId }, StopState.Unstoppable);
+				}
+				catch
+				{
+					// Do not throw exception, we will need to dispose the rest of the objects.
+				}
 				_cancellationTokenSource.Dispose();
 				_timerThread.Dispose();
 				_disposed = true;
