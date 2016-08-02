@@ -74,6 +74,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core", "kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj", "{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests", "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.csproj", "{CACFB723-C66D-47AD-882F-28F35A5C890C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32} = {AD3E5540-FA39-4983-8A23-FCC756D51A32}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D0393643-06E2-4470-96B7-E1153FE4FF69}"
 	ProjectSection(SolutionItems) = preProject
