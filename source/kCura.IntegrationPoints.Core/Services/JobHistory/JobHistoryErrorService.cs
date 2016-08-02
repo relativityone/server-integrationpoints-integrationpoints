@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private bool _errorOccurredDuringJob;
 		public bool JobLevelErrorOccurred;
+		private const int _ERROR_BATCH_SIZE = 500;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
@@ -132,6 +133,11 @@ namespace kCura.IntegrationPoints.Core.Services
 					if (errorType == ErrorTypeChoices.JobHistoryErrorJob)
 					{
 						JobLevelErrorOccurred = true;
+					}
+
+					if (_jobHistoryErrorList.Count == _ERROR_BATCH_SIZE)
+					{
+						CommitErrors();
 					}
 				}
 				else

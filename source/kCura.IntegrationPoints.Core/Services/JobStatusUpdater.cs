@@ -30,6 +30,10 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new ArgumentNullException("job History");
 			}
 			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
+			if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))
+			{
+				return JobStatusChoices.JobHistoryStopped;
+			}
 			if (recent != null)
 			{
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorItem))
@@ -43,10 +47,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			else
 			{
-				if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))
-				{
-					return JobStatusChoices.JobHistoryStopped;
-				}
 				if (jobHistory.ItemsWithErrors.GetValueOrDefault(0) > 0)
 				{
 					return Data.JobStatusChoices.JobHistoryCompletedWithErrors;
