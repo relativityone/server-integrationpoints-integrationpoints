@@ -135,11 +135,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					job.SubmittedBy))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
-					if (!_jobStopManager.IsStoppingRequested())
+					lock (_jobStopManager.SyncRoot)
 					{
-						JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
+						if (!_jobStopManager.IsStoppingRequested())
+						{
+							JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
+						}
+						UpdateJobStatus();
 					}
-					UpdateJobStatus();
 
 					if (exporter.TotalRecordsFound > 0)
 					{
