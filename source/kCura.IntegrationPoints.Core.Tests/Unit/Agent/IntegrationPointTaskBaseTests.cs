@@ -186,7 +186,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
-			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), jobIdValue)
 				.Returns(jobStopManager);
 
 			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 
 			// ASSERT
 			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
-			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), jobIdValue);
 			jobStopManager.Received(1).ThrowIfStopRequested();
 		}
 
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				Arg.Is(taskParameters.BatchInstance), jobIdValue)
 				.Returns(jobStopManager);
 
 			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 
 			// ASSERT
 			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
-			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), jobIdValue);
 			jobStopManager.Received(1).ThrowIfStopRequested();
 		}
 
@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				Arg.Is(taskParameters.BatchInstance), jobIdValue)
 				.Returns(jobStopManager);
 
 			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
@@ -262,7 +262,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 
 			// ASSERT
 			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
-			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), jobIdValue);
 			jobStopManager.Received(1).ThrowIfStopRequested();
 		}
 
@@ -292,7 +292,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				Arg.Is(taskParameters.BatchInstance), jobIdValue)
 				.Returns(jobStopManager);
 
 			_dataProviderFactory.GetDataProvider(Arg.Is(new Guid(sourceProvider.ApplicationIdentifier)),
@@ -305,7 +305,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			// ASSERT
 			Assert.AreEqual(expectedDataSourceProvider, result);
 			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
-			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+			_managerFactory.Received(1).CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService), Arg.Is(taskParameters.BatchInstance), jobIdValue);
 			jobStopManager.Received(1).ThrowIfStopRequested();
 			_dataProviderFactory.Received(1).GetDataProvider(Arg.Is(new Guid(sourceProvider.ApplicationIdentifier)),
 				Arg.Is(new Guid(sourceProvider.Identifier)), Arg.Is(_helper));
@@ -330,7 +330,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				Arg.Is(taskParameters.BatchInstance), jobIdValue)
 				.Returns(jobStopManager);
 
 			jobStopManager.When(x => x.ThrowIfStopRequested()).Throw(new OperationCanceledException());
@@ -342,7 +342,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
 			_managerFactory.Received(1)
 				.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-					Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+					Arg.Is(taskParameters.BatchInstance), jobIdValue);
 			jobStopManager.Received(1).ThrowIfStopRequested();
 		}
 
@@ -372,7 +372,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-				Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)))
+				Arg.Is(taskParameters.BatchInstance), jobIdValue)
 				.Returns(jobStopManager);
 
 			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration))
@@ -386,7 +386,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			_serializer.Received(1).Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText)));
 			_managerFactory.Received(1)
 				.CreateJobStopManager(Arg.Is(_contextContainer), Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-					Arg.Is(taskParameters.BatchInstance), Arg.Is(Convert.ToInt32(jobIdValue)));
+					Arg.Is(taskParameters.BatchInstance), jobIdValue);
 			jobStopManager.Received(1).ThrowIfStopRequested();
 			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration));
 		}
