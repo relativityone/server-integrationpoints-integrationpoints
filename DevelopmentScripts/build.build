@@ -27,13 +27,6 @@
 	<echo message="Bin config directory ${target.code.directory}" />
 	
 	<target name="merge_all" description="Perform all required ILMerges for this repository" depends="merge_main, merge_ldap, merge_documentsTransfer, merge_source_provider_installer">
-		<if test="${file::exists(logfile)}">
-			<delete file="${logfile}" failonerror="true"/>
-		</if>
-		<if test="${string::contains(action, 'build')}">
-			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
-		</if>
-		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
 	
