@@ -38,6 +38,8 @@ namespace kCura.IntegrationPoints.Core.Agent
 	    protected IContextContainerFactory _contextContainerFactory;
 	    protected IJobService _jobService;
 
+	    private Tuple<IJobStopManager, long, Guid> _jobStopManagerDetailsTuple;
+
 
         public IntegrationPointTaskBase(
           ICaseServiceContext caseServiceContext,
@@ -104,7 +106,37 @@ namespace kCura.IntegrationPoints.Core.Agent
             }
         }
 
-        protected void SetIntegrationPoint(Job job)
+		protected IJobStopManager GetJobStopManager(Job job)
+		{
+			if (_jobStopManagerDetailsTuple == null)
+			{
+				IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				int jobId = Convert.ToInt32(job.JobId);
+				IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(contextContainer, _jobService,
+					_jobHistoryService,
+					taskParameters.BatchInstance, jobId);
+
+				_jobStopManagerDetailsTuple = new Tuple<IJobStopManager, long, Guid>(jobStopManager, job.JobId, taskParameters.BatchInstance);
+			}
+			else
+			{
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				if (_jobStopManagerDetailsTuple.Item2 != job.JobId || _jobStopManagerDetailsTuple.Item3 != taskParameters.BatchInstance)
+				{
+					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+					IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(contextContainer, _jobService,
+	_jobHistoryService,
+	taskParameters.BatchInstance, Convert.ToInt32(job.JobId));
+
+					_jobStopManagerDetailsTuple = new Tuple<IJobStopManager, long, Guid>(jobStopManager, job.JobId, taskParameters.BatchInstance);
+				}
+			}
+
+			return _jobStopManagerDetailsTuple.Item1;
+		}
+
+		protected void SetIntegrationPoint(Job job)
         {
             if (this.IntegrationPoint != null)
             {
@@ -172,10 +204,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 	    protected void ThrowIfStopRequested(Job job)
 	    {
-	        IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-		    TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-		    IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(contextContainer, _jobService, _jobHistoryService,
-			    taskParameters.BatchInstance, Convert.ToInt32(job.JobId));
+		    IJobStopManager jobStopManager = GetJobStopManager(job);
 
 			jobStopManager.ThrowIfStopRequested();
 	    }
