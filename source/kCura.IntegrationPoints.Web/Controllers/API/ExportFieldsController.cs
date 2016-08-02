@@ -22,22 +22,36 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage GetExportableFields(SourceOptions data)
 		{
-			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
+			try
+			{
+				var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-			var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
-
-			return Request.CreateResponse(HttpStatusCode.OK, fields);
+				var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
+				
+				return Request.CreateResponse(HttpStatusCode.OK, fields);
+			}
+			catch (Exception ex)
+			{
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+			}
 		}
 
 		[HttpPost]
 		public HttpResponseMessage GetAvailableFields(SourceOptions data)
 		{
-			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
+			try
+			{
+				var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-			// TODO: isProduction flag should be set accordingly to configuration i.e. settings.ExportType == ExportType.Production, for now it is always Saved Search
-			var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, (int)ArtifactType.Search, false);
+				// TODO: isProduction flag should be set accordingly to configuration i.e. settings.ExportType == ExportType.Production, for now it is always Saved Search
+				var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, (int)ArtifactType.Search, false);
 
-			return Request.CreateResponse(HttpStatusCode.OK, fields);
+				return Request.CreateResponse(HttpStatusCode.OK, fields);
+			}
+			catch (Exception ex)
+			{
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+			}
 		}
 	}
 }
