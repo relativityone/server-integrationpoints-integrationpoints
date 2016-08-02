@@ -199,27 +199,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 
-            IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
-
-            List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
-
-            IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
-
-            IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-
-			if (dataSynchronizer is RdoSynchronizerBase)
+	        try
 	        {
-				ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
-		        settings.OnBehalfOfUserId = job.SubmittedBy;
-				destinationConfiguration = _serializer.Serialize(settings);
+		        IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
+
+		        List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
+
+		        IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
+
+		        IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+		        if (dataSynchronizer is RdoSynchronizerBase)
+		        {
+			        ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
+			        settings.OnBehalfOfUserId = job.SubmittedBy;
+			        destinationConfiguration = _serializer.Serialize(settings);
+		        }
+
+		        SetupSubscriptions(dataSynchronizer, job);
+
+		        IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+
+		        this.ThrowIfStopRequested(job);
+		        dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
 	        }
-
-            SetupSubscriptions(dataSynchronizer, job);
-
-			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-
-			this.ThrowIfStopRequested(job);
-			dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+	        catch (OperationCanceledException ex)
+	        {
+		       // TODO: handle exception 
+	        }
 		}
 
 		private void InjectErrors()
