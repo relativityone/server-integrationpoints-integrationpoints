@@ -8,32 +8,32 @@ namespace kCura.IntegrationPoints.Core.Domain
 {
 	public class AppDomainFactory : IDataProviderFactory, IDisposable
 	{
-		private readonly DomainHelper _helper;
+		private readonly DomainHelper _domainHelper;
 		private readonly ISourcePluginProvider _provider;
 		private AppDomain _newDomain;
 		private RelativityFeaturePathService _relativityFeaturePathService;
 
 		public AppDomainFactory(
-			DomainHelper helper, 
+			DomainHelper domainHelper, 
 			ISourcePluginProvider provider, 
 			RelativityFeaturePathService relativityFeaturePathService)
 		{
-			_helper = helper;
+			_domainHelper = domainHelper;
 			_provider = provider;
 			_relativityFeaturePathService = relativityFeaturePathService;
 		}
 
 		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid, IHelper helper)
 		{
-			_newDomain = _helper.CreateNewDomain(_relativityFeaturePathService);
-			DomainManager domainManager = _helper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
+			_newDomain = _domainHelper.CreateNewDomain(_relativityFeaturePathService);
+			DomainManager domainManager = _domainHelper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
 
 			return domainManager.GetProvider(providerGuid, helper);
 		}
 
 		public void Dispose()
 		{
-			_helper.ReleaseDomain(_newDomain);
+			_domainHelper.ReleaseDomain(_newDomain);
 		}
 	}
 }

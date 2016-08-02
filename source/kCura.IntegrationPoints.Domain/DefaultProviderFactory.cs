@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Domain
 
 				provider = _windsorContainer.Resolve<IDataSourceProvider>(assemblyQualifiedName);
 			} 
-			catch (Exception ex)
+			catch
 			{
 			    throw new Exception(string.Format(Contracts.Properties.Resources.CouldNotCreateProvider, providerType));
 			}

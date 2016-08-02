@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private IContextContainer _context;
 		private IManagerFactory _managerFactory;
 		private IHelperClassFactory _helperClassFactory;
-		private ISessionService _sessionService;
 		private IIntegrationPointManager _integrationPointManager;
 		private IQueueManager _queueManager;
 		private IStateManager _stateManager;

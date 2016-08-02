@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					model.DestinationProvider = _provider.GetRdoSynchronizerId(); //hard coded for your ease of use
 				}
-				catch (Exception e)
+				catch
 				{
 					model.DestinationProvider = 0;
 				}

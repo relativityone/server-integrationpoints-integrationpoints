@@ -41,6 +41,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// <returns>The data source providers for registration.</returns>
 		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
 
+		/// <summary>
+		/// Default constructor
+		/// </summary>
 		protected IntegrationPointSourceProviderInstaller()
 		{
 		}

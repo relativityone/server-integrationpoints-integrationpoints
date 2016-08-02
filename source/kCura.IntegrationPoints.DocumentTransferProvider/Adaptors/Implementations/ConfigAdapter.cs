@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Configuration;
 using kCura.Config;
-using ConfigurationException = System.Configuration.ConfigurationException;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations
 {
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementati
 				{
 					return config[Domain.Constants.WEB_API_PATH] as string;
 				}
-				throw new ConfigurationException(String.Format("Unable to find [{0}:{1}] in Relativity's instance settings.",
+				throw new ConfigurationErrorsException(String.Format("Unable to find [{0}:{1}] in Relativity's instance settings.",
 					Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION, Domain.Constants.WEB_API_PATH));
 			}
 		}

@@ -7,7 +7,6 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Security;
@@ -27,6 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             _securityManager = securityManager;
             _settingsManager = settingsManager;
             _providerFactory = providerFactory;
+	        _helper = helper;
         }
 
         [HttpPost]
