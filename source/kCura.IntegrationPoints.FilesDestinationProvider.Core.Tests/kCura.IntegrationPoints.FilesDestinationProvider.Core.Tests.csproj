@@ -21,11 +21,13 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BCrypt.Net, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
@@ -110,6 +112,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Logging\CompositeLoggingMediatorTests.cs" />
     <Compile Include="Logging\ExportLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobErrorLoggingMediatorTests.cs" />
@@ -122,7 +127,6 @@
     <Compile Include="Process\ExportProcessBuilderTests.cs" />
     <Compile Include="Process\ExportProcessRunnerTests.cs" />
     <Compile Include="Process\VolumeInfoBuilderTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

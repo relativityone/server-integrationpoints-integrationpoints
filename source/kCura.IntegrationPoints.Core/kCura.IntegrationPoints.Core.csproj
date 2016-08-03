@@ -24,6 +24,7 @@
     <OutputPath>bin\x64\</OutputPath>
     <DefineConstants>DEVENV</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -34,6 +35,7 @@
     <DefineConstants>
     </DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BCrypt.Net, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
@@ -302,7 +304,7 @@
     <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="Services\ServiceContext\ICaseServiceContext.cs" />
     <Compile Include="Models\ErrorModel.cs" />
-    <Compile Include="..\Version\AssemblyInfo.cs">
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Models\IntegrationModel.cs" />
