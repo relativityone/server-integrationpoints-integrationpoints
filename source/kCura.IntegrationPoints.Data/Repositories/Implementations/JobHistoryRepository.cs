@@ -24,10 +24,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			_helper = helper;
 			_repositoryFactory = repositoryFactory;
-			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
+			_workspaceArtifactId = workspaceArtifactId;
+			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_workspaceArtifactId);
 			_objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(_workspaceArtifactId);
 			_artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(_workspaceArtifactId);
-			_workspaceArtifactId = workspaceArtifactId;
 		}
 
 		public int GetLastJobHistoryArtifactId(int integrationPointArtifactId)
