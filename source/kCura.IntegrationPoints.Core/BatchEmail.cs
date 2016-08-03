@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -28,14 +29,20 @@ namespace kCura.IntegrationPoints.Core
 		  JobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
 		  IJobStatusUpdater jobStatusUpdater,
-		  KeywordConverter converter) : base(caseServiceContext,
+		  KeywordConverter converter,
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService) : base(caseServiceContext,
 		   helper,
 		   dataProviderFactory,
 		   serializer,
 		   appDomainRdoSynchronizerFactoryFactory,
 		   jobHistoryService,
 		   jobHistoryErrorService,
-		   jobManager)
+		   jobManager,
+		   managerFactory,
+		   contextContainerFactory,
+		   jobService)
 		{
 			_jobStatusUpdater = jobStatusUpdater;
 			_converter = converter;

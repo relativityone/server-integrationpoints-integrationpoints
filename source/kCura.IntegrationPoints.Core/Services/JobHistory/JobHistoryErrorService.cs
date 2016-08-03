@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private bool _errorOccurredDuringJob;
 		public bool JobLevelErrorOccurred;
+		private const int _ERROR_BATCH_SIZE = 500;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
@@ -45,11 +46,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				try
 				{
-					if (StopJobStopManager?.IsStoppingRequested() == true)
-					{
-						_jobHistoryErrorList.Clear();
-					}
-
 					if (_jobHistoryErrorList.Any())
 					{
 						kCura.Method.Injection.InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
@@ -89,6 +85,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
+				if (StopJobStopManager?.IsStoppingRequested() == true)
+				{
+					return;
+				}
+
 				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
 			}
 		}
@@ -107,11 +108,6 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			lock (_jobHistoryErrorList)
 			{
-				if (StopJobStopManager?.IsStoppingRequested() == true)
-				{
-					return;
-				}
-
 				if (this.JobHistory != null && this.JobHistory.ArtifactId > 0)
 				{
 					DateTime now = DateTime.UtcNow;
@@ -132,6 +128,11 @@ namespace kCura.IntegrationPoints.Core.Services
 					if (errorType == ErrorTypeChoices.JobHistoryErrorJob)
 					{
 						JobLevelErrorOccurred = true;
+					}
+
+					if (_jobHistoryErrorList.Count == _ERROR_BATCH_SIZE)
+					{
+						CommitErrors();
 					}
 				}
 				else

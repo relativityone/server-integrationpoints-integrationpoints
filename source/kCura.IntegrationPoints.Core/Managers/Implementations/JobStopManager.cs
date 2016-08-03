@@ -25,17 +25,19 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		/// for testing only.
 		/// </summary>
 		internal TimerCallback Callback { get; }
-		private readonly object _callbackLock = new object();
+
+		public object SyncRoot { get; }
 
 		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobHistoryInstanceId, long jobId)
 		{
+			SyncRoot = new object();
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_jobIdentifier = jobHistoryInstanceId;
 			_jobId = jobId;
 			Callback = new TimerCallback(state =>
 			{
-				lock (_callbackLock)
+				lock (SyncRoot)
 				{
 					try
 					{
@@ -75,6 +77,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public bool IsStoppingRequested()
 		{
 			return _token.IsCancellationRequested;
+		}
+
+		public void ThrowIfStopRequested()
+		{
+			// Will throw OperationCancelledException if task is canceled.
+			_token.ThrowIfCancellationRequested();	
 		}
 
 		public void Dispose()

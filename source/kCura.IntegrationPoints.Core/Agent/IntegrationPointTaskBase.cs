@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -32,6 +34,11 @@ namespace kCura.IntegrationPoints.Core.Agent
         protected JobHistoryErrorService _jobHistoryErrorService;
         protected ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
         protected IJobManager _jobManager;
+	    protected IManagerFactory _managerFactory;
+	    protected IContextContainerFactory _contextContainerFactory;
+	    protected IJobService _jobService;
+
+	    private Tuple<IJobStopManager, long, Guid> _jobStopManagerDetailsTuple;
 
 
         public IntegrationPointTaskBase(
@@ -42,7 +49,10 @@ namespace kCura.IntegrationPoints.Core.Agent
           ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
           IJobHistoryService jobHistoryService,
           JobHistoryErrorService jobHistoryErrorService,
-          IJobManager jobManager)
+          IJobManager jobManager,
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService)
         {
             _caseServiceContext = caseServiceContext;
             _helper = helper;
@@ -52,6 +62,10 @@ namespace kCura.IntegrationPoints.Core.Agent
             _jobHistoryService = jobHistoryService;
             _jobHistoryErrorService = jobHistoryErrorService;
             _jobManager = jobManager;
+	        _managerFactory = managerFactory;
+	        _jobService = jobService;
+	        _contextContainerFactory = contextContainerFactory;
+
         }
 
         protected Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -92,7 +106,37 @@ namespace kCura.IntegrationPoints.Core.Agent
             }
         }
 
-        protected void SetIntegrationPoint(Job job)
+		protected IJobStopManager GetJobStopManager(Job job)
+		{
+			if (_jobStopManagerDetailsTuple == null)
+			{
+				IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				int jobId = Convert.ToInt32(job.JobId);
+				IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(contextContainer, _jobService,
+					_jobHistoryService,
+					taskParameters.BatchInstance, jobId);
+
+				_jobStopManagerDetailsTuple = new Tuple<IJobStopManager, long, Guid>(jobStopManager, job.JobId, taskParameters.BatchInstance);
+			}
+			else
+			{
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				if (_jobStopManagerDetailsTuple.Item2 != job.JobId || _jobStopManagerDetailsTuple.Item3 != taskParameters.BatchInstance)
+				{
+					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+					IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(contextContainer, _jobService,
+	_jobHistoryService,
+	taskParameters.BatchInstance, Convert.ToInt32(job.JobId));
+
+					_jobStopManagerDetailsTuple = new Tuple<IJobStopManager, long, Guid>(jobStopManager, job.JobId, taskParameters.BatchInstance);
+				}
+			}
+
+			return _jobStopManagerDetailsTuple.Item1;
+		}
+
+		protected void SetIntegrationPoint(Job job)
         {
             if (this.IntegrationPoint != null)
             {
@@ -150,14 +194,24 @@ namespace kCura.IntegrationPoints.Core.Agent
 
         protected virtual IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
         {
+			this.ThrowIfStopRequested(job);
+
             Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
             Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
             IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid, _helper);
             return sourceProvider;
         }
 
-        protected virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+	    protected void ThrowIfStopRequested(Job job)
+	    {
+		    IJobStopManager jobStopManager = GetJobStopManager(job);
+
+			jobStopManager.ThrowIfStopRequested();
+	    }
+
+	    protected virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
         {
+			this.ThrowIfStopRequested(job);
 
             Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
             var factory = _appDomainRdoSynchronizerFactoryFactory as GeneralWithCustodianRdoSynchronizerFactory;
