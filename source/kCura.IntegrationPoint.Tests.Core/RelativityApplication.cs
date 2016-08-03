@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using kCura.Relativity.Client;
 using Relativity.Core;
@@ -57,14 +58,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void ImportOrUpgradeRelativityApplication(int workspaceArtifactId, Guid applicationGuid, ClaimsPrincipal claimsPrincipal)
+		public static void ImportOrUpgradeRelativityApplication(int workspaceArtifactId, Guid applicationGuid, ClaimsPrincipal claimsPrincipal, string applicationRapFileName = null)
 		{
 			string libraryApplicationVersion = ReadRelativityLibraryApplicationVersion(claimsPrincipal, applicationGuid);
 			string latestRapVersion = SharedVariables.LatestRapVersionFromBuildPackages;
 
-			if (String.CompareOrdinal(latestRapVersion, libraryApplicationVersion) > 0)
+			int intLibraryApplicationVersion = Convert.ToInt32(String.Join("", libraryApplicationVersion.Split('.')));
+			int intLatestRapVersion = Convert.ToInt32(String.Join("", latestRapVersion.Split('.')));
+
+			if (intLatestRapVersion > intLibraryApplicationVersion)
 			{
-				ImportApplicationToWorkspace(workspaceArtifactId, SharedVariables.LatestRapLocationFromBuildPackages, true);
+				string applicationFilePath = applicationRapFileName == null
+					? Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath,
+						SharedVariables.ApplicationRapFileName)
+					: Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath,
+						applicationRapFileName);
+				ImportApplicationToWorkspace(workspaceArtifactId, applicationFilePath, true);
 			}
 			else
 			{
