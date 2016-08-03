@@ -55,6 +55,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region RAP File Settings
 
+		public static string ApplicationPath { get; set; } = ConfigurationManager.AppSettings["applicationPath"];
+
+		public static string ApplicationRapFileName { get; set; } = ConfigurationManager.AppSettings["applicationRapFileName"];
+
 		public static string BuildPackagesBranchPath => Path.Combine(ConfigurationManager.AppSettings["buildPackages"], ConfigurationManager.AppSettings["branch"]);
 
 		public static string LatestRapLocationFromBuildPackages => Path.Combine(BuildPackagesBranchPath, LatestRapVersionFromBuildPackages);
