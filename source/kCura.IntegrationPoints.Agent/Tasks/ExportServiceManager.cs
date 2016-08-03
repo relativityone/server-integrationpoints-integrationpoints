@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -168,6 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
+				_jobStopManager.Dispose();
 				if (!agentDroppedJob)
 				{
 					_jobHistoryErrorService.CommitErrors();
@@ -191,7 +193,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
-			_jobStopManager.Dispose();
+			try
+			{
+				_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Unstoppable);
+			}
+			catch
+			{
+				// Do not throw exception, we will need to dispose the rest of the objects.
+			}
+
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
 			{
@@ -326,6 +336,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					_jobHistoryErrorService.CommitErrors();
 				}
+			}
+
+
+			if (_jobStopManager.IsStoppingRequested())
+			{
+				try
+				{
+					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
+					jobHistoryRepo.SetErrorStatusesToExpired(JobHistoryDto.ArtifactId);
+				}
+				catch { }
 			}
 
 			try

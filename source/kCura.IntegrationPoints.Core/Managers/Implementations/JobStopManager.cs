@@ -95,14 +95,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			if (disposing && !_disposed)
 			{
-				try
-				{
-					_jobService.UpdateStopState(new List<long> { _jobId }, StopState.Unstoppable);
-				}
-				catch
-				{
-					// Do not throw exception, we will need to dispose the rest of the objects.
-				}
 				_cancellationTokenSource.Dispose();
 				_timerThread.Dispose();
 				_disposed = true;
