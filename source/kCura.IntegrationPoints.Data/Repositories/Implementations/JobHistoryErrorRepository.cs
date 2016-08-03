@@ -130,7 +130,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				throw new Exception(MassEditErrors.JOB_HISTORY_ERROR_MASS_EDIT_FAILURE, e);
 			}
-
 		}
 
 		public int CreateItemLevelErrorsSavedSearch(int integrationPointArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
