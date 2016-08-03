@@ -20,6 +20,7 @@ echo f | xcopy "%basePath%\bin\sdk\*" "%revisionDirectory%\dlls\sdk\" /EY /EXCLU
 echo f | xcopy "%basePath%\bin\IntegrationPoints.SDK.zip" "%revisionDirectory%\sdk\" /Y /EXCLUDE:packageCreationExcludeList.txt
 
 echo f | xcopy "%basePath%\bin\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\TestData\*" "%revisionDirectory%\dlls\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\TestData\" /EY
+echo f | xcopy "%basePath%\bin\UnitTests\*.rap" "%revisionDirectory%\Application\" /EY /EXCLUDE:packageCreationExcludeList.txt
 
 :END
 echo PACKAGEMASTER: END

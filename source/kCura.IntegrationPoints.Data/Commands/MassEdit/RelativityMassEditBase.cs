@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			return objectsToUpdate;
 		}
 
-		protected void UpdateSingleChoiceField(BaseServiceContext context, global::Relativity.Core.DTO.Field fieldToUpdate, int numberOfErrors, global::Relativity.Query.ArtifactType objectType, int choiceArtifactId, string tempTableName)
+		protected void UpdateSingleChoiceField(BaseServiceContext context, Field fieldToUpdate, int numberOfErrors, global::Relativity.Query.ArtifactType objectType, int choiceArtifactId, string tempTableName)
 		{
 			//Providing some extra properties for the field to update
 			ICodeManagerImplementation codeManagerImplementation = new CodeManagerImplementation();
