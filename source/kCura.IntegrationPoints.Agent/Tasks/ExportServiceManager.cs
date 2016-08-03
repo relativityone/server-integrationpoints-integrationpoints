@@ -195,6 +195,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
+				_jobStopManager.Dispose();
 				_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Unstoppable);
 			}
 			catch
