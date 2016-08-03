@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] // NSubsitute requires this to mock internal interfaces
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints")]  //ILMerged dll
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data")]
@@ -27,15 +28,16 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider.Tests")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] // NSubsitute requires this to mock internal interfaces
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.SourceProviderInstaller")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]
