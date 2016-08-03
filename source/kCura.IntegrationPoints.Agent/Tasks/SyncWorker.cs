@@ -136,13 +136,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
                 var batchInstance = taskParameters.BatchInstance;
 				bool isJobComplete = _jobManager.CheckBatchOnJobComplete(job, batchInstance.ToString());
+
+				IJobStopManager jobStopManaer = this.GetJobStopManager(job);
+				jobStopManaer.Dispose();
+
                 if (isJobComplete)
                 {
 	                try
 	                {
-		                IJobStopManager jobStopManaer = this.GetJobStopManager(job);
-						jobStopManaer.Dispose();
-
 		                _jobService.UpdateStopState(new List<long>() {job.JobId}, StopState.Unstoppable);
 	                }
 	                catch (Exception e)
@@ -163,8 +164,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         }
                     }
                 }
-            }
-            catch (Exception e)
+			}
+			catch (Exception e)
             {
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
             }
