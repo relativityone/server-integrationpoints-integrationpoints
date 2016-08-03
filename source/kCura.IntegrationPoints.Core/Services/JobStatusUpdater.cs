@@ -29,12 +29,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				throw new ArgumentNullException("job History");
 			}
-			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
-
 			if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))
 			{
 				return JobStatusChoices.JobHistoryStopped;
 			}
+
+			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
 			if (recent != null)
 			{
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorItem))
