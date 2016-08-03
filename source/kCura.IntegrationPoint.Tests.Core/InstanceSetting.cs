@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				try
 				{
 					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).GetResultsWithoutContextSync();
-					global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = instanceSettingQueryResultSet.Results.FirstOrDefault().Artifact;
+					global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = instanceSettingQueryResultSet.Results.FirstOrDefault()?.Artifact;
 					return instanceSetting;
 				}
 				catch (Exception ex)
@@ -56,9 +56,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static string UpdateAndReturnOldValue(string section, string name, string value)
+		public static string UpsertAndReturnOldValueIfExists(string section, string name, string value)
 		{
 			global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = Query(section, name);
+
+			if (instanceSetting == null)
+			{
+				Create(section, name, value, ValueType.TrueFalse);
+				return value;
+			}
 
 			if (String.Equals(instanceSetting.Value, value, StringComparison.OrdinalIgnoreCase))
 			{
