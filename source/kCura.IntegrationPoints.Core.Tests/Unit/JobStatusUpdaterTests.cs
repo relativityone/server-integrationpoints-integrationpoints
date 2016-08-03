@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		[Test]
 		public void GenerateStatus_NullJobHistory()
 		{
-			Assert.Throws< ArgumentNullException>(() => _instance.GenerateStatus(null));
+			Assert.Throws<ArgumentNullException>(() => _instance.GenerateStatus(null));
 		}
 
 		[Test]
@@ -112,11 +112,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		}
 
 		[Test]
-		public void GenerateStatusWitHBatchInstance()
+		public void GenerateStatusWithBatchInstanceId()
 		{
 			// ARRANGE
-			_jobHistoryService.GetRdo(Guid.NewGuid()).Returns(new JobHistory());
+			Guid guid = Guid.NewGuid();
+			JobHistory jobHistory = new JobHistory() {JobStatus = JobStatusChoices.JobHistoryStopping};
+			_jobHistoryService.GetRdo(guid).Returns(jobHistory);
 
+			// ACT
+			var choice = _instance.GenerateStatus(guid);
+
+			//ASSERT
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryStopped));
 		}
 	}
 }
