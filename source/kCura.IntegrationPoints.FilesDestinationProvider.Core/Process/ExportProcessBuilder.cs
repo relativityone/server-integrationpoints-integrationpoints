@@ -49,6 +49,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void PerformLogin(ExportFile exportFile)
 		{
+			WinEDDS.Config.ProgrammaticServiceURL = Config.Config.Instance.WebApiPath;
+
 			var cookieContainer = new CookieContainer();
 
 			exportFile.CookieContainer = cookieContainer;
