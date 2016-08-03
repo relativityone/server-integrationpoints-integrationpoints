@@ -523,7 +523,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				else
 				{
-					throw new InvalidOperationException("Unable to retrieve job(s) in the queue. Please contract your system administrator.");
+					throw new InvalidOperationException("Unable to retrieve job(s) in the queue. Please contact your system administrator.");
 				}
 			}
 			else
