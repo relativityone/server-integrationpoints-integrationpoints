@@ -193,7 +193,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
-			_jobStopManager.Dispose();
+			try
+			{
+				_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Unstoppable);
+			}
+			catch
+			{
+				// Do not throw exception, we will need to dispose the rest of the objects.
+			}
+
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
 			{
