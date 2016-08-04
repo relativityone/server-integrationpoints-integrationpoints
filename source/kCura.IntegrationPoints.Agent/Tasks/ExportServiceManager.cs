@@ -294,7 +294,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			_jobStopManager = _managerFactory.CreateJobStopManager(null, _jobService, _jobHistoryService, _identifier, job.JobId);
-			_jobHistoryErrorService.StopJobStopManager = _jobStopManager;
+			_jobHistoryErrorService.JobStopManager = _jobStopManager;
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}

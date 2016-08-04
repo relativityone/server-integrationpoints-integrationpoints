@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private bool _errorOccurredDuringJob;
 		public bool JobLevelErrorOccurred;
-		private const int _ERROR_BATCH_SIZE = 500;
+		public const int ERROR_BATCH_SIZE = 500;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
@@ -28,8 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
-
-		public IJobStopManager StopJobStopManager { get; set; }
+		public IJobStopManager JobStopManager { get; set; }
 
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
@@ -55,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 
-					if (!_errorOccurredDuringJob || StopJobStopManager?.IsStoppingRequested() == true)
+					if (!_errorOccurredDuringJob || JobStopManager?.IsStoppingRequested() == true)
 					{
 						IntegrationPoint.HasErrors = false;
 					}
@@ -85,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
-				if (StopJobStopManager?.IsStoppingRequested() == true)
+				if (JobStopManager?.IsStoppingRequested() == true)
 				{
 					return;
 				}
@@ -129,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						JobLevelErrorOccurred = true;
 					}
 
-					if (_jobHistoryErrorList.Count == _ERROR_BATCH_SIZE)
+					if (_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)
 					{
 						CommitErrors();
 					}
@@ -158,6 +157,11 @@ namespace kCura.IntegrationPoints.Core.Services
 				//Ignore error, if we can't update the Integration Point's Has Errors Field, just continue on.
 				//The field may be out of state with the true job status, or subsequent Update calls may succeed.
 			}
+		}
+
+		internal int PendingErrorCount
+		{
+			get { return _jobHistoryErrorList.Count; }
 		}
 	}
 }
