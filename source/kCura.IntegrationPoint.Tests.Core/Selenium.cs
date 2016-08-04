@@ -32,13 +32,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 			string workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}']";
 			driver.SwitchTo().DefaultContent();
 
-			if (!_fluidEnabled)
-			{
-				driver.SwitchTo().Frame("ListTemplateFrame");
-			}
-			else if (_fluidEnabled)
+			if (_fluidEnabled)
 			{
 				driver.SwitchTo().Frame("_externalPage");
+			}
+			else
+			{
+				driver.SwitchTo().Frame("ListTemplateFrame");
 			}
 
 			driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
@@ -86,8 +86,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception exception)
 			{
-				throw exception;
-			}
+				throw new Exception($"Unable to find tab {tabName}", exception);
+            }
 		}
 
 		public static void GoToObjectInstance(this IWebDriver driver, int workspaceArtifactId, int integrationPointArtifactId, int artifactTypeId)
@@ -192,10 +192,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 			selectValue.SelectByText(value);
 		}
 
-		public static void SetFluidStatus(int userArtifactId)
+		public static void SetFluidStatus(this IWebDriver driver, int userArtifactId)
 		{
 			UserModel user = User.ReadUser(userArtifactId);
 			_fluidEnabled = user.BetaUser;
+		}
+
+		public static void ClickNewIntegrationPoint(this IWebDriver driver)
+		{
+			string templateFrame = "ListTemplateFrame";
+			string externalPage = "_externalPage";
+			string newIntegraionPoint = "//a[@title='New Integration Point']";
+			if (_fluidEnabled)
+			{
+				driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
+				driver.SwitchTo().Frame(templateFrame);
+			}
+			else
+			{
+				driver.WaitUntilElementExists(ElementType.Id, templateFrame, 5);
+				driver.SwitchTo().Frame(templateFrame);
+			}
+
+			driver.WaitUntilElementIsClickable(ElementType.Xpath, newIntegraionPoint, 5);
+			driver.FindElement(By.XPath(newIntegraionPoint)).Click();
+			driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
+			driver.SwitchTo().Frame(externalPage);
 		}
 	}
 
