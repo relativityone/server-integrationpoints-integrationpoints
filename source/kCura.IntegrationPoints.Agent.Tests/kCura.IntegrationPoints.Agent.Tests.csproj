@@ -158,6 +158,10 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.4.241.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.4.241.2\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Services.Interfaces">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>

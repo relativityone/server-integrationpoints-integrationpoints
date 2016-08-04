@@ -72,6 +72,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 				throw;
 			}
+
+			InitiateSuiteSetup();
 		}
 
 		[TestFixtureTearDown]
@@ -182,7 +184,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			global::Relativity.Services.Agent.Agent agent = Agent.ReadIntegrationPointAgent(AgentArtifactId);
 			agent.Enabled = enable;
-			Agent.UpdateIntegrationPointAgent(agent);
+			Agent.UpdateAgent(agent);
 		}
 
 		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)

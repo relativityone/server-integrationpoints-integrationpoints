@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration
+namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Category("Integration Tests")]

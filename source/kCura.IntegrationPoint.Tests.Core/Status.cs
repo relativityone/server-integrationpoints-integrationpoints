@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			ProcessInformation processInfo = rsapiClient.GetProcessState(rsapiClient.APIOptions, processId);
 			while (processInfo.State != ProcessStateValue.Completed)
 			{
-				if (processInfo.State == ProcessStateValue.CompletedWithError)
+				if (processInfo.State == ProcessStateValue.CompletedWithError || processInfo.State == ProcessStateValue.UnhandledException)
 				{
 					throw new Exception($"An error occurred while waiting on the Process {processId} to complete. Error: {processInfo.Message}.");
 				}

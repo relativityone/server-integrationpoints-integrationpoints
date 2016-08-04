@@ -24,6 +24,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -36,10 +37,27 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IJobService _jobServiceManager;
 		private IJobService _jobService;
 		private ICaseServiceContext _caseContext;
-		private Relativity.Client.DTOs.Workspace SourceWorkspaceDto;
+		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
+		private int _agentTypeId;
+		private Query _integrationPointAgentsQuery;
 
 		public ExportServiceManagerTests() : base("ExportServiceManagerTests", null)
 		{ }
+
+		public override void SuiteSetup()
+		{
+			_agentTypeId = IntegrationPoint.Tests.Core.Agent.GetAgentTypeByName("Integration Points Agent").ArtifactID;
+			_integrationPointAgentsQuery = new Query()
+			{
+				Condition = $"'AgentTypeArtifactID' == {_agentTypeId}"
+			};
+			IntegrationPoint.Tests.Core.Agent.DisableAgents(_integrationPointAgentsQuery);
+		}
+
+		public override void SuiteTeardown()
+		{
+			IntegrationPoint.Tests.Core.Agent.EnableAgents(_integrationPointAgentsQuery);
+		}
 
 		protected override void Install()
 		{
@@ -95,7 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobServiceManager = Container.Resolve<IJobService>();
-			SourceWorkspaceDto = IntegrationPoint.Tests.Core.Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
+			_sourceWorkspaceDto = IntegrationPoint.Tests.Core.Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 		}
 
 		[Test]
@@ -123,7 +141,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			Job job = null;
 			try
 			{
-				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value}, model.ArtifactID); // pick up job
+				job = GetNextInQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value}, model.ArtifactID); // pick up job
 
 				TaskParameters parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
@@ -190,7 +208,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					null, null);
 
 				AssignJobToAgent(fakeAgentId, scheduledJob.JobId); // agent pick up scheduled job
-				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
+				job = GetNextInQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
 
 				TaskParameters runNowParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
@@ -261,7 +279,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointId, 9);
 
 				// run now picked up by an agent
-				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID);
+				job = GetNextInQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID);
 
 				AssignJobToAgent(fakeAgentId, fakeScheduledJob.JobId); // agent pick up the scheduled job
 				TaskParameters scheduledJobParameters = serializer.Deserialize<TaskParameters>(fakeScheduledJob.JobDetails);
