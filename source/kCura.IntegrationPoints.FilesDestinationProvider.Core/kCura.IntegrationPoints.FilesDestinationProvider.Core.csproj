@@ -151,9 +151,11 @@
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />
     <Compile Include="SharedLibrary\CaseManagerWrapperFactory.cs" />
+    <Compile Include="SharedLibrary\ConfigFactory.cs" />
     <Compile Include="SharedLibrary\ExporterWrapper.cs" />
     <Compile Include="SharedLibrary\ExporterWrapperFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
+    <Compile Include="SharedLibrary\IConfigFactory.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
     <Compile Include="SharedLibrary\ISearchManagerFactory.cs" />

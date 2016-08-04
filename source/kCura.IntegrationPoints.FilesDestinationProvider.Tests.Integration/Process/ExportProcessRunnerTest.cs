@@ -74,8 +74,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
 
+			var configFactoryMock = Substitute.For<IConfigFactory>();
+			configFactoryMock.Create().Returns(configMock);
+
 			var exportProcessBuilder = new ExportProcessBuilder(
-				configMock,
+				configFactoryMock,
 				loggingMediator,
 				exportUserNotification,
 				userNotification,
