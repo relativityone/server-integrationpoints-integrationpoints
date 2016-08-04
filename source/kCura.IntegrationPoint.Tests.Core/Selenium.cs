@@ -3,6 +3,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.ObjectModel;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using OpenQA.Selenium.Chrome;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -197,10 +198,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 			selectValue.SelectByText(value);
 		}
 
-		public static void SetFluidStatus(int userArtifactId)
+		public static void SetFluidStatus(this IWebDriver driver, int userArtifactId)
 		{
 			UserModel user = User.ReadUser(userArtifactId);
 			_fluidEnabled = user.BetaUser;
+		}
+
+		public static IWebDriver GetWebDriver(TestBrowser browser)
+		{
+			switch (browser)
+			{
+				case TestBrowser.Chrome:
+					return new ChromeDriver();
+				case TestBrowser.InternetExplorer:
+					return null;
+				case TestBrowser.Firefox:
+					return null;
+			}
+			return null;
 		}
 	}
 
@@ -212,5 +227,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 		Name,
 		TagName,
 		LinkText
+	}
+
+	public enum TestBrowser
+	{
+		Chrome,
+		InternetExplorer,
+		Firefox,
+		Safari
 	}
 }
