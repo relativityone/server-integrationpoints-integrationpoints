@@ -23,6 +23,7 @@ using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Method.Injection;
 using kCura.ScheduleQueue.Core.Core;
@@ -135,9 +136,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
                 var batchInstance = taskParameters.BatchInstance;
 				bool isJobComplete = _jobManager.CheckBatchOnJobComplete(job, batchInstance.ToString());
+
+				IJobStopManager jobStopManaer = this.GetJobStopManager(job);
+				jobStopManaer.Dispose();
+
                 if (isJobComplete)
                 {
-                    foreach (var completedItem in BatchStatus)
+	                try
+	                {
+		                _jobService.UpdateStopState(new List<long>() {job.JobId}, StopState.Unstoppable);
+	                }
+	                catch (Exception e)
+	                {
+						// Surpress update exceptions, we need to continue if the update fails.
+		                _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+	                }
+
+					foreach (var completedItem in BatchStatus)
                     {
                         try
                         {
@@ -149,8 +164,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         }
                     }
                 }
-            }
-            catch (Exception e)
+			}
+			catch (Exception e)
             {
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
             }
@@ -223,7 +238,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		        this.ThrowIfStopRequested(job);
 		        dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
-				_jobService.UpdateStopState(new List<long>() {job.JobId}, StopState.Unstoppable);
 	        }
 	        catch (OperationCanceledException ex)
 	        {

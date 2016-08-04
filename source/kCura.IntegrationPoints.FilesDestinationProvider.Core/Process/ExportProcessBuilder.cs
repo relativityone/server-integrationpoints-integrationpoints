@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportProcessBuilder : IExportProcessBuilder
 	{
-		private readonly IConfig _config;
+		private readonly IConfigFactory _configFactory;
 		private readonly ICaseManagerFactory _caseManagerFactory;
 		private readonly ICredentialProvider _credentialProvider;
 		private readonly IExporterFactory _exporterFactory;
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IUserNotification _userNotification;
 
 		public ExportProcessBuilder(
-			IConfig config,
+			IConfigFactory configFactory,
 			ILoggingMediator loggingMediator,
 			IUserMessageNotification userMessageNotification,
 			IUserNotification userNotification,
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IExportFileBuilder exportFileBuilder
 		)
 		{
-			_config = config;
+			_configFactory = configFactory;
 			_loggingMediator = loggingMediator;
 			_userMessageNotification = userMessageNotification;
 			_userNotification = userNotification;
@@ -60,7 +60,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void PerformLogin(ExportFile exportFile)
 		{
-			WinEDDS.Config.ProgrammaticServiceURL = _config.WebApiPath;
+			IConfig config = _configFactory.Create();
+			WinEDDS.Config.ProgrammaticServiceURL = config.WebApiPath;
 
 			var cookieContainer = new CookieContainer();
 

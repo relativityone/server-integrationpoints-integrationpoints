@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 using Relativity.Services.ApplicationInstallManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			//Create workspace DTO
 			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
 			int workspaceId = 0;
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				try
 				{
@@ -100,7 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(Query<Relativity.Client.DTOs.Workspace> query, int results)
 		{
 			QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = new QueryResultSet<Relativity.Client.DTOs.Workspace>();
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				try
 				{

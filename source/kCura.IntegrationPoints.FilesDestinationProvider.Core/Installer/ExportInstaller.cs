@@ -1,7 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterWrapperFactory>());
 			container.Register(Component.For<ISearchManagerFactory>().ImplementedBy<SearchManagerFactory>());
 
-			container.Register(Component.For<IConfig>().Instance(Config.Config.Instance));
+			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>());
 		}
 	}
 }
