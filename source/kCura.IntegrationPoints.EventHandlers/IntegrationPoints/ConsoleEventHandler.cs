@@ -70,12 +70,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				RelativityButtonStateDTO buttonState = stateManager.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors, integrationPointIsStoppable);
 				RelativityOnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
-				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
-				ConsoleButton stopButton = GetStopButton(integrationPointIsStoppable, onClickEvents.StopOnClickEvent);
+				ConsoleButton runNowButton = GetMainActionButton(buttonState, onClickEvents);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
 
 				buttonList.Add(runNowButton);
-				buttonList.Add(stopButton);
 				buttonList.Add(retryErrorsButton);
 
 				if (canViewErrors)
@@ -89,26 +87,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				ButtonStateDTO buttonState = stateManager.GetButtonState(integrationPointIsStoppable);
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 				ConsoleButton runNowButton = GetRunNowButton(onClickEvents.RunNowOnClickEvent);
-				ConsoleButton stopButton = GetStopButton(buttonState.StopButtonEnabled, onClickEvents.StopOnClickEvent);
 
 				buttonList.Add(runNowButton);
-				buttonList.Add(stopButton);
 			}
 
 			console.ButtonList = buttonList;
 
 			return console;
-		}
-
-		private ConsoleButton GetStopButton(bool isEnabled, string onClickEvent)
-		{
-			return new ConsoleButton()
-			{
-				DisplayText = "Stop",
-				RaisesPostBack = false,
-				Enabled = isEnabled,
-				OnClickEvent = onClickEvent
-			};
 		}
 
 		private ConsoleButton GetRunNowButton(string onClickEvent)
@@ -122,13 +107,38 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			};
 		}
 
-		private ConsoleButton GetRunNowButtonRelativityProvider(bool isEnabled, string onClickEvent)
+		private ConsoleButton GetMainActionButton(ButtonStateDTO actionButtonState, OnClickEventDTO actionButtonOnClickEvents)
 		{
+			bool runNowButtonEnabled = actionButtonState.RunNowButtonEnabled;
+			bool stopButtonEnabled = actionButtonState.StopButtonEnabled;
+			string displayText;
+			string cssClass;
+			string onClickEvent;
+			if (runNowButtonEnabled)
+			{
+				displayText = "Run Now";
+				cssClass = "consoleButtonEnabled";
+				onClickEvent = actionButtonOnClickEvents.RunNowOnClickEvent;
+			}
+			else if (stopButtonEnabled)
+			{
+				displayText = "Stop";
+				cssClass = "consoleButtonDestructive";
+				onClickEvent = actionButtonOnClickEvents.StopOnClickEvent;
+			}
+			else
+			{
+				displayText = "Stop";
+				cssClass = "consoleButtonDisabled";
+				onClickEvent = string.Empty;
+			}
+
 			return new ConsoleButton
 			{
-				DisplayText = "Run Now",
+				DisplayText = displayText,
+				CssClass = cssClass,
 				RaisesPostBack = false,
-				Enabled = isEnabled,
+				Enabled = (runNowButtonEnabled || stopButtonEnabled),
 				OnClickEvent = onClickEvent
 			};
 		}

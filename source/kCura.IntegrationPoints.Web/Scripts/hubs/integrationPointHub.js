@@ -22,10 +22,14 @@
 			if (sourceProviderIsRelativity) {
 				if (buttonStates.RunNowButtonEnabled) {
 					var runNowOnClick = onClickEvents.RunNowOnClickEvent;
-					$(consoleContainer.find(":contains('Run Now')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", runNowOnClick).attr("title", "Run Now").removeAttr('disabled');
+					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonDestructive").removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", runNowOnClick).attr("title", "Run Now").html('Run Now').removeAttr('disabled');
+				} else if (buttonStates.StopButtonEnabled) {
+					var stopClick = onClickEvents.StopOnClickEvent;
+					$(consoleContainer.find(":contains('Run Now')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDestructive").attr("onClick", stopClick).attr("title", "Stop").html('Stop');
 				} else {
-					$(consoleContainer.find(":contains('Run Now')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
+					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonDestructive").addClass("consoleButtonDisabled").removeAttr('onClick');
 				}
+				
 				if (buttonStates.RetryErrorsButtonEnabled) {
 					var retryErrorsClick = onClickEvents.RetryErrorsOnClickEvent;
 					$(consoleContainer.find(":contains('Retry Errors')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", retryErrorsClick).attr("title", "Retry Errors").removeAttr('disabled');
@@ -38,14 +42,19 @@
 				} else {
 					$(consoleContainer.find(":contains('View Errors')")).removeClass("consoleLinkEnabled").addClass("consoleLinkDisabled").removeAttr('onClick');
 				}
-			} 
-
-			if (buttonStates.StopButtonEnabled) {
-				var stopOnClick = onClickEvents.StopOnClickEvent;
-				$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", stopOnClick).attr("title", "Stop").removeAttr('disabled');
-			} else {
-				$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
 			}
+			else
+			{
+				//this section will be deleted when we extend the 'Action button' logic to other providers
+				if (buttonStates.StopButtonEnabled) {
+					var stopOnClick = onClickEvents.StopOnClickEvent;
+					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", stopOnClick).attr("title", "Stop").removeAttr('disabled');
+				} else {
+					$(consoleContainer.find(":contains('Stop')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
+				}
+			}
+			
+
 			$('.associative-list').load(document.URL + ' .associative-list');
 		};
 

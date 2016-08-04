@@ -145,13 +145,26 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					hasStoppableJobs)
 				.Returns(buttonStates);
 
+			string actionButtonOnClickEvent;
+			if (hasRunPermissions)
+			{
+				actionButtonOnClickEvent = $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})";
+			}
+			else if (hasStoppableJobs)
+			{
+				actionButtonOnClickEvent = $"IP.stopJob({_ARTIFACT_ID},{_APPLICATION_ID})";
+			}
+			else
+			{
+				actionButtonOnClickEvent = string.Empty;
+			}
 			onClickEvents = new RelativityOnClickEventDTO()
 			{
-				RunNowOnClickEvent = hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+				RunNowOnClickEvent = actionButtonOnClickEvent,
 				RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 				ViewErrorsOnClickEvent =
 					integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
-				StopOnClickEvent = hasStoppableJobs ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty
+				StopOnClickEvent = actionButtonOnClickEvent
 			};
 
 			_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
@@ -168,33 +181,43 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			Assert.IsNotNull(console);
 			if (hasViewErrorsPermissions)
 			{
-				int buttonCount = 4;
+				int buttonCount = 3;
 				Assert.AreEqual(buttonCount, console.ButtonList.Count, $"There should be {buttonCount} buttons on the console");
 			}
 			else
 			{
-				int buttonCount = 3;
+				int buttonCount = 2;
 				Assert.AreEqual(buttonCount, console.ButtonList.Count, $"There should be {buttonCount} buttons on the console");
 			}
 
 			int buttonIndex = 0;
 			ConsoleButton runNowButton = console.ButtonList[buttonIndex++];
-			Assert.AreEqual("Run Now", runNowButton.DisplayText);
-			Assert.AreEqual(false, runNowButton.RaisesPostBack);
+			
 
 			_jobHistoryManager.Received(1).GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID);
 
-				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					runNowButton.OnClickEvent);
+			if (hasRunPermissions)
+			{
+				Assert.AreEqual("Run Now", runNowButton.DisplayText);
+				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 				Assert.AreEqual(buttonStates.RunNowButtonEnabled, runNowButton.Enabled);
 				Assert.AreEqual(false, runNowButton.RaisesPostBack);
-				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					runNowButton.OnClickEvent);
-
-				ConsoleButton stopButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Stop", stopButton.DisplayText);
-				Assert.AreEqual(hasStoppableJobs, stopButton.Enabled);
-				Assert.AreEqual(onClickEvents.StopOnClickEvent, stopButton.OnClickEvent);
+			}
+			else if (hasStoppableJobs)
+			{
+				Assert.AreEqual("Stop", runNowButton.DisplayText);
+				Assert.AreEqual($"IP.stopJob({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
+				Assert.AreEqual(buttonStates.StopButtonEnabled, runNowButton.Enabled);
+				Assert.AreEqual(false, runNowButton.RaisesPostBack);
+			}
+			else
+			{
+				Assert.AreEqual("Stop", runNowButton.DisplayText);
+				Assert.AreEqual(string.Empty, runNowButton.OnClickEvent);
+				Assert.AreEqual(buttonStates.RunNowButtonEnabled, runNowButton.Enabled);
+				Assert.AreEqual(false, runNowButton.RaisesPostBack);
+			}
+		
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
@@ -282,7 +305,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);
-			int buttonCount = 2;
+			int buttonCount = 1;
 			Assert.AreEqual(buttonCount, console.ButtonList.Count, $"There should be {buttonCount} buttons on the console");
 
 			int buttonIndex = 0;
@@ -295,10 +318,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			Assert.IsTrue(runNowButton.Enabled);
 			Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 
-			ConsoleButton stopButton = console.ButtonList[buttonIndex++];
+			/*ConsoleButton stopButton = console.ButtonList[buttonIndex++];
 			Assert.AreEqual("Stop", stopButton.DisplayText);
 			Assert.AreEqual(hasStoppableJobs, stopButton.Enabled);
-			Assert.AreEqual(onClickEvents.StopOnClickEvent, stopButton.OnClickEvent);
+			Assert.AreEqual(onClickEvents.StopOnClickEvent, stopButton.OnClickEvent);*/
 		}
 	}
 }
