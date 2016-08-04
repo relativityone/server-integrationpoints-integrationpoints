@@ -15,11 +15,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			};
 		}
 
-		public ButtonStateDTO GetButtonState(bool hasStoppableJobs)
+		public ButtonStateDTO GetButtonState(bool hasJobsExecutingOrInQueue, bool hasStoppableJobs)
 		{
 			return new ButtonStateDTO()
 			{
-				RunNowButtonEnabled = true, //should not always be true? Will see if we want to disable Run Now button -MNG
+				RunNowButtonEnabled = !hasJobsExecutingOrInQueue,
 				StopButtonEnabled = hasStoppableJobs
 			};
 		}
