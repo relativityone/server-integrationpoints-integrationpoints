@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{
 					Section = section,
 					Name = name,
-					Value = name,
+					Value = value,
 					ValueType = valueType
 				};
 
