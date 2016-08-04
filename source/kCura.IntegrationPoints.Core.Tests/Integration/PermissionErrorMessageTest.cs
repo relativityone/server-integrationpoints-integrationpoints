@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
@@ -11,6 +8,9 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private string _email;
 		private int _groupId;
 
-		public PermissionErrorMessageTest() : base("Error Source", "Error Target Workspace")
+		public PermissionErrorMessageTest() : base("Error Source", null)
 		{
 		}
 
@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		[Test, TestCaseSource(nameof(PermissionCase))]
 		public void VerifyPermissionErrorMessage(bool useRelativityProvider, List<string> obj, List<string> admin, List<string> browser, List<string> tab)
 		{
+			_webDriver.SetFluidStatus(_userCreated);
 			string errorMessage = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS;
 			string jobError = "//div[contains(.,'Failed to submit integration job. You do not have sufficient permissions. Please contact your system administrator.')]";
 			string runNowId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				//todo: fix this!
 				//SourceProvider = useRelativityProvider ? RelativityProvider.ArtifactId : LdapProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				Name = ( useRelativityProvider ? "RIP test"  : "LDAP test" ) + DateTime.Now,
+				Name = (useRelativityProvider ? "RIP test" : "LDAP test") + DateTime.Now,
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),

@@ -70,12 +70,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
 			var exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			var loggingMediator = _windsorContainer.Resolve<ILoggingMediator>();
+			var config = _windsorContainer.Resolve<IConfig>();
 
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
 
+			var configFactoryMock = Substitute.For<IConfigFactory>();
+			configFactoryMock.Create().Returns(configMock);
+
 			var exportProcessBuilder = new ExportProcessBuilder(
-				configMock,
+				configFactoryMock,
 				loggingMediator,
 				exportUserNotification,
 				userNotification,
@@ -238,6 +242,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_windsorContainer.Register(Component.For<ConfigSettings>().Instance(_configSettings).LifestyleTransient());
 			_windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
 			_windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
+
+			var configMock = Substitute.For<IConfig>();
+			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
+			_windsorContainer.Register(Component.For<IConfig>().Instance(configMock).LifestyleSingleton());
 		}
 
 		#endregion Methods

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -33,9 +32,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private ISearchManager _searchManager;
 		private IUserMessageNotification _userMessageNotification;
 		private IUserNotification _userNotification;
-		private IConfig _config;
+		private IConfigFactory _configFactory;
 
-		private List<int> AllExportableAvfIds => new List<int>() {1234, 5678};
+		private List<int> AllExportableAvfIds => new List<int>() { 1234, 5678 };
 		private List<int> SelectedAvfIds => new List<int>() { 1234 };
 
 		#endregion
@@ -54,21 +53,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_searchManager = Substitute.For<ISearchManager>();
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_userNotification = Substitute.For<IUserNotification>();
-			_config = Substitute.For<IConfig>();
+			_configFactory = Substitute.For<IConfigFactory>();
 
 			MockExportFile();
 
 			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds, true));
 
 			_exportProcessBuilder = new ExportProcessBuilder(
-				_config,
-				_loggingMediator, 
-				_userMessageNotification, 
-				_userNotification, 
-				_credentialProvider, 
+				_configFactory,
+				_loggingMediator,
+				_userMessageNotification,
+				_userNotification,
+				_credentialProvider,
 				_caseManagerFactory,
-				_searchManagerFactory, 
-				_exporterFactory, 
+				_searchManagerFactory,
+				_exporterFactory,
 				_exportFileBuilder
 			);
 		}
