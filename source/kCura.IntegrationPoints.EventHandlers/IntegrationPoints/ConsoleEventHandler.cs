@@ -15,6 +15,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelperClassFactory _helperClassFactory;
+		private const string _TRANSFER_OPTIONS = "Transfer Options";
+		private const string _RUN = "Run";
+		private const string _RETRY_ERRORS = "Retry Errors";
+		private const string _VIEW_ERRORS = "View Errors";
+		private const string _STOP = "Stop";
 
 		public ConsoleEventHandler()
 		{
@@ -40,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			var console = new EventHandler.Console
 			{
-				Title = "RUN",
+				Title = _TRANSFER_OPTIONS,
 			};
 
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
@@ -104,19 +109,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			string onClickEvent;
 			if (runNowButtonEnabled)
 			{
-				displayText = "Run Now";
+				displayText = _RUN;
 				cssClass = "consoleButtonEnabled";
 				onClickEvent = actionButtonOnClickEvents.RunNowOnClickEvent;
 			}
 			else if (stopButtonEnabled)
 			{
-				displayText = "Stop";
+				displayText = _STOP;
 				cssClass = "consoleButtonDestructive";
 				onClickEvent = actionButtonOnClickEvents.StopOnClickEvent;
 			}
 			else
 			{
-				displayText = "Stop";
+				displayText = _STOP;
 				cssClass = "consoleButtonDisabled";
 				onClickEvent = string.Empty;
 			}
@@ -135,7 +140,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			return new ConsoleButton
 			{
-				DisplayText = "Retry Errors",
+				DisplayText = _RETRY_ERRORS,
 				RaisesPostBack = false,
 				Enabled = isEnabled,
 				OnClickEvent = onClickEvent
@@ -146,7 +151,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			return new ConsoleLinkButton
 			{
-				DisplayText = "View Errors",
+				DisplayText = _VIEW_ERRORS,
 				Enabled = isEnabled,
 				RaisesPostBack = false,
 				OnClickEvent = onClickEvent

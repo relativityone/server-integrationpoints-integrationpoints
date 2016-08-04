@@ -17,6 +17,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 	{
 		private const int _ARTIFACT_ID = 100300;
 		private const int _APPLICATION_ID = 100101;
+		private const string _RUN = "Run";
+		private const string _STOP = "Stop";
+		private const string _RETRY_ERRORS = "Retry Errors";
+		private const string _VIEW_ERRORS = "View Errors";
+		private const string _RUN_ENDPOINT = "IP.importNow";
+		private const string _RETRY_ENDPOINT = "IP.retryJob";
+		private const string _STOP_ENDPOINT = "IP.stopJob";
 
 		private IManagerFactory _managerFactory;
 		private IIntegrationPointManager _integrationPointManager;
@@ -146,11 +153,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			string actionButtonOnClickEvent;
 			if (!hasJobsExecutingOrInQueue)
 			{
-				actionButtonOnClickEvent = $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})";
+				actionButtonOnClickEvent = $"{_RUN_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})";
 			}
 			else if (hasStoppableJobs)
 			{
-				actionButtonOnClickEvent = $"IP.stopJob({_ARTIFACT_ID},{_APPLICATION_ID})";
+				actionButtonOnClickEvent = $"{_STOP_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})";
 			}
 			else
 			{
@@ -159,7 +166,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			onClickEvents = new RelativityOnClickEventDTO()
 			{
 				RunNowOnClickEvent = actionButtonOnClickEvent,
-				RetryErrorsOnClickEvent = integrationPointDto.HasErrors.Value && !hasJobsExecutingOrInQueue ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+				RetryErrorsOnClickEvent = integrationPointDto.HasErrors.Value && !hasJobsExecutingOrInQueue ? $"{_RETRY_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 				ViewErrorsOnClickEvent =
 					integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : String.Empty,
 				StopOnClickEvent = actionButtonOnClickEvent
@@ -196,21 +203,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			if (!hasJobsExecutingOrInQueue)
 			{
-				Assert.AreEqual("Run Now", runNowButton.DisplayText);
-				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
+				Assert.AreEqual(_RUN, runNowButton.DisplayText);
+				Assert.AreEqual($"{_RUN_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 				Assert.AreEqual(buttonStates.RunNowButtonEnabled, runNowButton.Enabled);
 				Assert.AreEqual(false, runNowButton.RaisesPostBack);
 			}
 			else if (hasStoppableJobs)
 			{
-				Assert.AreEqual("Stop", runNowButton.DisplayText);
-				Assert.AreEqual($"IP.stopJob({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
+				Assert.AreEqual(_STOP, runNowButton.DisplayText);
+				Assert.AreEqual($"{_STOP_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 				Assert.AreEqual(buttonStates.StopButtonEnabled, runNowButton.Enabled);
 				Assert.AreEqual(false, runNowButton.RaisesPostBack);
 			}
 			else
 			{
-				Assert.AreEqual("Stop", runNowButton.DisplayText);
+				Assert.AreEqual(_STOP, runNowButton.DisplayText);
 				Assert.AreEqual(string.Empty, runNowButton.OnClickEvent);
 				Assert.AreEqual(buttonStates.RunNowButtonEnabled, runNowButton.Enabled);
 				Assert.AreEqual(false, runNowButton.RaisesPostBack);
@@ -218,16 +225,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
+				Assert.AreEqual(_RETRY_ERRORS, retryErrorsButton.DisplayText);
 				Assert.AreEqual(buttonStates.RetryErrorsButtonEnabled, retryErrorsButton.Enabled);
 				Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
-				Assert.AreEqual(!hasJobsExecutingOrInQueue && integrationPointDto.HasErrors.Value ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+				Assert.AreEqual(!hasJobsExecutingOrInQueue && integrationPointDto.HasErrors.Value ? $"{_RETRY_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
 					retryErrorsButton.OnClickEvent);
 
 				if (hasViewErrorsPermissions)
 				{
 					ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
-					Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
+					Assert.AreEqual(_VIEW_ERRORS, viewErrorsButtonLink.DisplayText);
 					Assert.AreEqual(buttonStates.ViewErrorsLinkEnabled, viewErrorsButtonLink.Enabled);
 					Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
 					Assert.AreEqual("Really long string", viewErrorsButtonLink.OnClickEvent);
@@ -291,11 +298,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			string actionButtonOnClickEvent;
 			if (!hasJobsExecutingOrInQueue)
 			{
-				actionButtonOnClickEvent = $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})";
+				actionButtonOnClickEvent = $"{_RUN_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})";
 			}
 			else if (hasStoppableJobs)
 			{
-				actionButtonOnClickEvent = $"IP.stopJob({_ARTIFACT_ID},{_APPLICATION_ID})";
+				actionButtonOnClickEvent = $"{_STOP_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})";
 			}
 			else
 			{
@@ -327,21 +334,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			if (!hasJobsExecutingOrInQueue)
 			{
-				Assert.AreEqual("Run Now", actionButton.DisplayText);
+				Assert.AreEqual(_RUN, actionButton.DisplayText);
 				Assert.AreEqual(false, actionButton.RaisesPostBack);
 				Assert.IsTrue(actionButton.Enabled);
-				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", actionButton.OnClickEvent);
+				Assert.AreEqual($"{_RUN_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})", actionButton.OnClickEvent);
 			}
 			else if (hasStoppableJobs)
 			{
-				Assert.AreEqual("Stop", actionButton.DisplayText);
+				Assert.AreEqual(_STOP, actionButton.DisplayText);
 				Assert.AreEqual(false, actionButton.RaisesPostBack);
 				Assert.IsTrue(actionButton.Enabled);
-				Assert.AreEqual($"IP.stopJob({_ARTIFACT_ID},{_APPLICATION_ID})", actionButton.OnClickEvent);
+				Assert.AreEqual($"{_STOP_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})", actionButton.OnClickEvent);
 			}
 			else
 			{
-				Assert.AreEqual("Stop", actionButton.DisplayText);
+				Assert.AreEqual(_STOP, actionButton.DisplayText);
 				Assert.AreEqual(false, actionButton.RaisesPostBack);
 				Assert.IsFalse(actionButton.Enabled);
 				Assert.AreEqual(String.Empty, actionButton.OnClickEvent);
