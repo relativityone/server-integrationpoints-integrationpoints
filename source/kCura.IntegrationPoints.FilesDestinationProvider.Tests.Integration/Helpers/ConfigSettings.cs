@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 
@@ -14,8 +13,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const string _DESTINATION_PATH_KEY = "DestinationPath";
 		private const string _WEBAPI_URL_KEY = "WebApiUrl";
 
-		private const string _USERNAME_KEY = "userName";
-		private const string _PASSWORD_KEY = "password";
+		private const string _USERNAME_KEY = "relativityUserName";
+		private const string _PASSWORD_KEY = "relativityPassword";
 
 		#endregion //Fields
 
@@ -48,5 +47,4 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		#endregion //Properties
 	}
-
 }

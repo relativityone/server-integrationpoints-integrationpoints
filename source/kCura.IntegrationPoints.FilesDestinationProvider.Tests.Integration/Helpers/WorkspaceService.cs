@@ -6,6 +6,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using Relativity.API;
 using Status = kCura.Relativity.DataReaderClient.Status;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		internal void DeleteWorkspace(int artifactId)
 		{
-			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
 			}
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		internal int GetSavedSearchIdBy(string name, int workspaceId)
 		{
-			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				var query = new Query
 				{
