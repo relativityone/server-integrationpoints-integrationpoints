@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -135,11 +136,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					job.SubmittedBy))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
-					if (!_jobStopManager.IsStoppingRequested())
+					lock (_jobStopManager.SyncRoot)
 					{
-						JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
+						if (!_jobStopManager.IsStoppingRequested())
+						{
+							JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
+						}
+						UpdateJobStatus();
 					}
-					UpdateJobStatus();
 
 					if (exporter.TotalRecordsFound > 0)
 					{
@@ -165,6 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
+				SetTheJobAsAnUnstoppable(job);
 				if (!agentDroppedJob)
 				{
 					_jobHistoryErrorService.CommitErrors();
@@ -188,7 +193,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
-			_jobStopManager.Dispose();
+			SetTheJobAsAnUnstoppable(job);
+
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
 			{
@@ -202,6 +208,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			});
 			ThrowNewExceptionIfAny(exceptions);
+		}
+
+		private void SetTheJobAsAnUnstoppable(Job job)
+		{
+			try
+			{
+				_jobStopManager.Dispose();
+				_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Unstoppable);
+			}
+			catch
+			{
+				// Do not throw exception, we will need to dispose the rest of the objects.
+			}
 		}
 
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
@@ -275,7 +294,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			_jobStopManager = _managerFactory.CreateJobStopManager(null, _jobService, _jobHistoryService, _identifier, job.JobId);
-			_jobHistoryErrorService.StopJobStopManager = _jobStopManager;
+			_jobHistoryErrorService.JobStopManager = _jobStopManager;
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
@@ -323,6 +342,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					_jobHistoryErrorService.CommitErrors();
 				}
+			}
+
+
+			if (_jobStopManager.IsStoppingRequested())
+			{
+				try
+				{
+					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
+					jobHistoryRepo.SetErrorStatusesToExpired(JobHistoryDto.ArtifactId);
+				}
+				catch { }
 			}
 
 			try

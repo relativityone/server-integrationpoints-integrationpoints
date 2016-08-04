@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core
 		public void OnJobStart(Job job)
 		{
 			var updatedJob = _jobService.GetJob(job.JobId);
-			if (updatedJob.StopState == StopState.None)
+			if (updatedJob.StopState != StopState.Stopping)
 			{
 				var result = GetHistory(job);
 				result.JobStatus = JobStatusChoices.JobHistoryProcessing;

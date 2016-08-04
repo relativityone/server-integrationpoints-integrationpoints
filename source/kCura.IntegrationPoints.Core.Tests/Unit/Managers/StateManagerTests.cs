@@ -132,5 +132,50 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
 		}
+
+		[Test]
+		public void GetNonRelativityProviderButtonState__NoJobsRunning_CantStop()
+		{
+			//Arrange
+			bool hasJobsExecutingOrInQueue = false;
+			bool hasStoppableJobs = false;
+
+			//Act
+			ButtonStateDTO buttonStates = _instance.GetButtonState(hasJobsExecutingOrInQueue, hasStoppableJobs);
+
+			//Assert
+			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsFalse(buttonStates.StopButtonEnabled);
+		}
+
+		[Test]
+		public void GetNonRelativityProviderButtonState__JobsRunning_CanStop()
+		{
+			//Arrange
+			bool hasJobsExecutingOrInQueue = true;
+			bool hasStoppableJobs = true;
+
+			//Act
+			ButtonStateDTO buttonStates = _instance.GetButtonState(hasJobsExecutingOrInQueue, hasStoppableJobs);
+
+			//Assert
+			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.StopButtonEnabled);
+		}
+
+		[Test]
+		public void GetNonRelativityProviderButtonState__StoppingStage_CantStop()
+		{
+			//Arrange
+			bool hasJobsExecutingOrInQueue = true;
+			bool hasStoppableJobs = false;
+
+			//Act
+			ButtonStateDTO buttonStates = _instance.GetButtonState(hasJobsExecutingOrInQueue, hasStoppableJobs);
+
+			//Assert
+			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
+			Assert.IsFalse(buttonStates.StopButtonEnabled);
+		}
 	}	
 }

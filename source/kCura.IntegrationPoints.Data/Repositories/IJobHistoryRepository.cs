@@ -19,5 +19,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns>A dictionary where the JobHistoryStatus choice Guid is the key, and the value is an array of associated artifact ids.</returns>
 		/// <remarks>The only two statuses that should return are Pending and Processing.</remarks>
 		IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId);
+
+		/// <summary>
+		/// Set all associate job history errors to be expired
+		/// </summary>
+		/// <param name="jobHistoryArtifactId">An artifact id of the job history</param>
+		void SetErrorStatusesToExpired(int jobHistoryArtifactId);
 	}
 }

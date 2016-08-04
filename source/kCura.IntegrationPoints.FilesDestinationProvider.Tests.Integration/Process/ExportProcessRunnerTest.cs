@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
@@ -43,10 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			// sets WebApi URL in export library configuration
-			kCura.WinEDDS.Config.ProgrammaticServiceURL = _configSettings.WebApiUrl;
-
-			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...			
+			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
 
 			_workspaceService = new WorkspaceService(_configSettings);
 
@@ -72,8 +70,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
 			var exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			var loggingMediator = _windsorContainer.Resolve<ILoggingMediator>();
+			var config = _windsorContainer.Resolve<IConfig>();
+
+			var configMock = Substitute.For<IConfig>();
+			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
+
+			var configFactoryMock = Substitute.For<IConfigFactory>();
+			configFactoryMock.Create().Returns(configMock);
 
 			var exportProcessBuilder = new ExportProcessBuilder(
+				configFactoryMock,
 				loggingMediator,
 				exportUserNotification,
 				userNotification,
@@ -81,7 +87,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
 				new ExporterWrapperFactory(),
-				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())
+				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())						
 			);
 
 			var exportSettingsBuilder = new ExportSettingsBuilder();
@@ -236,8 +242,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_windsorContainer.Register(Component.For<ConfigSettings>().Instance(_configSettings).LifestyleTransient());
 			_windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
 			_windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
+
+			var configMock = Substitute.For<IConfig>();
+			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
+			_windsorContainer.Register(Component.For<IConfig>().Instance(configMock).LifestyleSingleton());
 		}
 
 		#endregion Methods
 	}
 }
+ 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -14,6 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportProcessBuilder : IExportProcessBuilder
 	{
+		private readonly IConfigFactory _configFactory;
 		private readonly ICaseManagerFactory _caseManagerFactory;
 		private readonly ICredentialProvider _credentialProvider;
 		private readonly IExporterFactory _exporterFactory;
@@ -23,10 +25,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IUserMessageNotification _userMessageNotification;
 		private readonly IUserNotification _userNotification;
 
-		public ExportProcessBuilder(ILoggingMediator loggingMediator, IUserMessageNotification userMessageNotification, IUserNotification userNotification,
-			ICredentialProvider credentialProvider, ICaseManagerFactory caseManagerFactory, ISearchManagerFactory searchManagerFactory, IExporterFactory exporterFactory,
-			IExportFileBuilder exportFileBuilder)
+		public ExportProcessBuilder(
+			IConfigFactory configFactory,
+			ILoggingMediator loggingMediator,
+			IUserMessageNotification userMessageNotification,
+			IUserNotification userNotification,
+			ICredentialProvider credentialProvider,
+			ICaseManagerFactory caseManagerFactory,
+			ISearchManagerFactory searchManagerFactory,
+			IExporterFactory exporterFactory,
+			IExportFileBuilder exportFileBuilder
+		)
 		{
+			_configFactory = configFactory;
 			_loggingMediator = loggingMediator;
 			_userMessageNotification = userMessageNotification;
 			_userNotification = userNotification;
@@ -49,6 +60,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void PerformLogin(ExportFile exportFile)
 		{
+			IConfig config = _configFactory.Create();
+			WinEDDS.Config.ProgrammaticServiceURL = config.WebApiPath;
+
 			var cookieContainer = new CookieContainer();
 
 			exportFile.CookieContainer = cookieContainer;
@@ -66,7 +80,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				}
 			}
 		}
-
 
 		private static void PopulateCaseInfo(ExportFile exportFile, ICaseManager caseManager)
 		{
@@ -88,16 +101,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					return (index < 0) ? int.MaxValue : index;
 				}).ToArray();
 
-
-			var fieldIdentifier =
-				exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier);
+			var fieldIdentifier = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier);
 			if (fieldIdentifier == null)
 			{
 				throw new Exception($"Cannot find field identifier in the selected field list:" +
-				                    $" {string.Join("","", exportFile.SelectedViewFields.Select(field => field.DisplayName))} of {exportFile.FilePrefix}");
+									$" {string.Join("", "", exportFile.SelectedViewFields.Select(field => field.DisplayName))} of {exportFile.FilePrefix}");
 			}
-			exportFile.IdentifierColumnName = fieldIdentifier.DisplayName;
 
+			exportFile.IdentifierColumnName = fieldIdentifier.DisplayName;
 		}
 
 		private void AttachHandlers(IExporter exporter)

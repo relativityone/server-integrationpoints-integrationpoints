@@ -22,8 +22,11 @@ using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Method.Injection;
+using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -49,14 +52,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
           JobHistoryErrorService jobHistoryErrorService,
           IJobManager jobManager,
           IEnumerable<IBatchStatus> statuses,
-          JobStatisticsService statisticsService) : base(caseServiceContext,
+          JobStatisticsService statisticsService,
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService) : base(caseServiceContext,
            helper,
            dataProviderFactory,
            serializer,
            appDomainRdoSynchronizerFactoryFactory,
            jobHistoryService,
            jobHistoryErrorService,
-           jobManager)
+           jobManager,
+		   managerFactory,
+		   contextContainerFactory,
+		   jobService)
         {
             BatchStatus = statuses;
             _statisticsService = statisticsService;
@@ -127,9 +136,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
                 var batchInstance = taskParameters.BatchInstance;
 				bool isJobComplete = _jobManager.CheckBatchOnJobComplete(job, batchInstance.ToString());
+
+				IJobStopManager jobStopManaer = this.GetJobStopManager(job);
+				jobStopManaer.Dispose();
+
                 if (isJobComplete)
                 {
-                    foreach (var completedItem in BatchStatus)
+	                try
+	                {
+		                _jobService.UpdateStopState(new List<long>() {job.JobId}, StopState.Unstoppable);
+	                }
+	                catch (Exception e)
+	                {
+						// Surpress update exceptions, we need to continue if the update fails.
+		                _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+	                }
+
+					foreach (var completedItem in BatchStatus)
                     {
                         try
                         {
@@ -141,8 +164,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         }
                     }
                 }
-            }
-            catch (Exception e)
+			}
+			catch (Exception e)
             {
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
             }
@@ -192,25 +215,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 
-            IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
-
-            List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
-
-            IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
-
-            IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-
-			if (dataSynchronizer is RdoSynchronizerBase)
+	        try
 	        {
-				ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
-		        settings.OnBehalfOfUserId = job.SubmittedBy;
-				destinationConfiguration = _serializer.Serialize(settings);
+		        IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
+
+		        List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
+
+		        IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
+
+		        IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+		        if (dataSynchronizer is RdoSynchronizerBase)
+		        {
+			        ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
+			        settings.OnBehalfOfUserId = job.SubmittedBy;
+			        destinationConfiguration = _serializer.Serialize(settings);
+		        }
+
+		        SetupSubscriptions(dataSynchronizer, job);
+
+		        IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+
+		        this.ThrowIfStopRequested(job);
+		        dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
 	        }
-
-            SetupSubscriptions(dataSynchronizer, job);
-
-			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-			dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+	        catch (OperationCanceledException ex)
+	        {
+		       // TODO: handle exception 
+	        }
 		}
 
 		private void InjectErrors()

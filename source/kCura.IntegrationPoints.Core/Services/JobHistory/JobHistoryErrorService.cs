@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private bool _errorOccurredDuringJob;
 		public bool JobLevelErrorOccurred;
+		public const int ERROR_BATCH_SIZE = 500;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
@@ -27,8 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
-
-		public IJobStopManager StopJobStopManager { get; set; }
+		public IJobStopManager JobStopManager { get; set; }
 
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
@@ -45,11 +45,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				try
 				{
-					if (StopJobStopManager?.IsStoppingRequested() == true)
-					{
-						_jobHistoryErrorList.Clear();
-					}
-
 					if (_jobHistoryErrorList.Any())
 					{
 						kCura.Method.Injection.InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
@@ -59,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 
-					if (!_errorOccurredDuringJob)
+					if (!_errorOccurredDuringJob || JobStopManager?.IsStoppingRequested() == true)
 					{
 						IntegrationPoint.HasErrors = false;
 					}
@@ -89,6 +84,10 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
+				if (JobStopManager?.IsStoppingRequested() == true)
+				{
+					return;
+				}
 				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
 			}
 		}
@@ -107,11 +106,6 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			lock (_jobHistoryErrorList)
 			{
-				if (StopJobStopManager?.IsStoppingRequested() == true)
-				{
-					return;
-				}
-
 				if (this.JobHistory != null && this.JobHistory.ArtifactId > 0)
 				{
 					DateTime now = DateTime.UtcNow;
@@ -132,6 +126,11 @@ namespace kCura.IntegrationPoints.Core.Services
 					if (errorType == ErrorTypeChoices.JobHistoryErrorJob)
 					{
 						JobLevelErrorOccurred = true;
+					}
+
+					if (_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)
+					{
+						CommitErrors();
 					}
 				}
 				else
@@ -158,6 +157,11 @@ namespace kCura.IntegrationPoints.Core.Services
 				//Ignore error, if we can't update the Integration Point's Has Errors Field, just continue on.
 				//The field may be out of state with the true job status, or subsequent Update calls may succeed.
 			}
+		}
+
+		internal int PendingErrorCount
+		{
+			get { return _jobHistoryErrorList.Count; }
 		}
 	}
 }

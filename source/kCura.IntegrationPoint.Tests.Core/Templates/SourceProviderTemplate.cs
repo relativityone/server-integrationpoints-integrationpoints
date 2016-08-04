@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
@@ -222,7 +223,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected async Task SetupAsync()
 		{
-			await Task.Run(() => Workspace.ImportLibraryApplicationToWorkspace(WorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING)));
+			await Task.Run(() => RelativityApplication.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId, 
+				new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), ClaimsPrincipal.Current));
 			AgentArtifactId = await Task.Run(() => Agent.CreateIntegrationPointAgent());
 		} 
 

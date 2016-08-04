@@ -29,6 +29,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterWrapperFactory>());
 			container.Register(Component.For<ISearchManagerFactory>().ImplementedBy<SearchManagerFactory>());
+
+			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>());
 		}
 	}
 }
