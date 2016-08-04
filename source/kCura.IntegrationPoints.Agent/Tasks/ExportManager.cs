@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -15,8 +16,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 	public class ExportManager : SyncManager
     {
-        public ExportManager(ICaseServiceContext caseServiceContext, IDataProviderFactory providerFactory, IJobManager jobManager, IJobService jobService, IHelper helper, IIntegrationPointService integrationPointService, ISerializer serializer, IGuidService guidService, IJobHistoryService jobHistoryService, JobHistoryErrorService jobHistoryErrorService, IScheduleRuleFactory scheduleRuleFactory, IEnumerable<IBatchStatus> batchStatuses) 
-			: base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, batchStatuses)
+        public ExportManager(ICaseServiceContext caseServiceContext, 
+			IDataProviderFactory providerFactory, 
+			IJobManager jobManager, 
+			IJobService jobService, 
+			IHelper helper, 
+			IIntegrationPointService integrationPointService,
+			ISerializer serializer, IGuidService guidService, 
+			IJobHistoryService jobHistoryService, 
+			JobHistoryErrorService jobHistoryErrorService,
+			IScheduleRuleFactory scheduleRuleFactory,
+			IManagerFactory managerFactory,
+			IEnumerable<IBatchStatus> batchStatuses) 
+			: base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, batchStatuses)
         {
         }
 
