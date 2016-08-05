@@ -305,18 +305,33 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 							}
 						}
 					}
-					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 
-					if (BatchJobCount == 0 && JobHistory != null && JobStopManager.IsStoppingRequested())
+					try
 					{
-						IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
-						jobHistoryRepo.SetErrorStatusesToExpired(this.JobHistory.ArtifactId);
+						_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
+					}
+					catch (Exception exception)
+					{
+						exceptions.Add(exception);
 					}
 
-					if (exceptions.Any())
+					try
 					{
-						throw new AggregateException(exceptions);
+						if (BatchJobCount == 0 && JobHistory != null && JobStopManager.IsStoppingRequested())
+						{
+							IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
+							jobHistoryRepo.SetErrorStatusesToExpired(this.JobHistory.ArtifactId);
+						}
 					}
+					catch (Exception exception)
+					{
+						exceptions.Add(exception);
+					}
+				}
+
+				if (exceptions.Any())
+				{
+					throw new AggregateException(exceptions);
 				}
 			}
 			catch (Exception ex)
