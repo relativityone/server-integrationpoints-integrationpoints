@@ -67,3 +67,4 @@ BuildLogs
 PDBs
 Applications/*.nuspec
 source/.vs/
+lib/
