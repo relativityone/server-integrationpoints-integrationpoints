@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
@@ -15,6 +16,8 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.Core;
@@ -39,6 +42,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		private readonly IManagerFactory _managerFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISerializer _serializer;
 		private readonly IGuidService _guidService;
 		private readonly IJobHistoryService _jobHistoryService;
@@ -63,6 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
+			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> batchStatuses)
 		{
 			_caseServiceContext = caseServiceContext;
@@ -77,6 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			_managerFactory = managerFactory;
+			_repositoryFactory = repositoryFactory;
 			base.RaiseJobPreExecute += new JobPreExecuteEvent(JobPreExecute);
 			base.RaiseJobPostExecute += new JobPostExecuteEvent(JobPostExecute);
 			BatchJobCount = 0;
@@ -253,30 +259,64 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				this.IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
-				if (job.SerializedScheduleRule != null)
+				List<Exception> exceptions = new List<Exception>();
+				try
 				{
-					this.IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
-						taskResult);
+					this.IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
+					if (job.SerializedScheduleRule != null)
+					{
+						this.IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
+							taskResult);
+					}
+					_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPoint);
 				}
-				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPoint);
-
+				catch (Exception exception)
+				{
+					exceptions.Add(exception);
+				}
+ 
 				if (this.JobHistory != null)
 				{
 					this.JobHistory.TotalItems = items;
+
 					if (BatchJobCount == 0)
 					{
 						if (job.SerializedScheduleRule != null)
 						{
-							_jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None);
+							try
+							{
+								_jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None);
+							}
+							catch (Exception exception)
+							{
+								exceptions.Add(exception);
+							}
 						}
 
 						foreach (var batchStatus in BatchStatus)
 						{
-							batchStatus.OnJobComplete(job);
+							try
+							{
+								batchStatus.OnJobComplete(job);
+							}
+							catch (Exception exception)
+							{
+								exceptions.Add(exception);
+							}
 						}
 					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
+
+					if (BatchJobCount == 0 && JobHistory != null && JobStopManager.IsStoppingRequested())
+					{
+						IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
+						jobHistoryRepo.SetErrorStatusesToExpired(this.JobHistory.ArtifactId);
+					}
+
+					if (exceptions.Any())
+					{
+						throw new AggregateException(exceptions);
+					}
 				}
 			}
 			catch (Exception ex)
