@@ -246,8 +246,75 @@
       </Ignore>
     </Projects>
     <References>
-      <Maps />
-      <Adds />
+      <Maps>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Agent.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Config.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Core.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Core.Contracts.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Data.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Email.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.EventHandlers.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.SourceProviderInstaller.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Synchronizers.RDO.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.ScheduleQueue.AgentBase.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.IntegrationPoints.dll">
+          <MapTos>
+            <MapTo>kCura.ScheduleQueue.Core.dll</MapTo>
+          </MapTos>
+        </Map>
+      </Maps>
+      <Adds>
+        <Add path="C:/SourceCode/integrationpoints\source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+          <References>
+            <Reference>kCura.IntegrationPoints.dll</Reference>
+          </References>
+        </Add>
+      </Adds>
     </References>
     <Rules>
       <Rule name="CommonAssemblyInfo">
