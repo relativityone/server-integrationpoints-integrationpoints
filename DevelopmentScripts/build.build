@@ -3,10 +3,9 @@
 
 	<!-- Build properties -->
 	<property name="source.code.directory" value="${root}\source" />
-	<property name="source.dependency.directory" value="${root}\source\Dependencies" />
+	<property name="source.dependency.directory" value="${source.code.directory}\Dependencies" />
 	<property name="source.packages.directory" value="${source.code.directory}\packages" />
-	<property name="target.bin.directory" value="${source.code.directory}\bin" />
-	<property name="target.code.directory" value="${target.bin.directory}\${buildconfig}" />
+	<property name="lib.directory" value="${root}\lib" />
 	<property name="source.dependency.MVCContrib.directory" value="${source.dependency.directory}\MVCContrib" />
 	<property name="source.dependency.Injection.directory" value="${source.dependency.directory}\Injection"/>
 	<property name="source.dependency.CastleCore.directory" value="${source.packages.directory}\Castle.Core.3.3.0\lib\net45" />
@@ -23,8 +22,8 @@
 	<echo message="Source code directory: ${source.code.directory}" />
 	<echo message="Source dependency directory ${source.dependency.directory}" />
 	<echo message="Source packages directory ${source.packages.directory}" />
-	<echo message="Bin direcotry ${target.bin.directory}" />
-	<echo message="Bin config directory ${target.code.directory}" />
+	<echo message="Bin directory ${lib.directory}" />
+	<echo message="Bin config directory ${lib.directory}" />
 	
 	<target name="merge_all" description="Perform all required ILMerges for this repository" depends="merge_main, merge_ldap, merge_documentsTransfer, merge_source_provider_installer">
 	</target>
@@ -33,11 +32,11 @@
 	<target name="merge_main" description="Merge all required main binaries into a single library">
 		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.bin.directory}\kCura.IntegrationPoints.dll"' />
+			<arg line='/out:"${lib.directory}\kCura.IntegrationPoints.dll"' />
 			<arg line='/internalize:ilmergeExcludeMain.txt' />
 			<arg line='/log' />
 			<arg line='/AllowDup' />
-			<arg line='/lib:"${target.code.directory}"' />
+			<arg line='/lib:"${lib.directory}"' />
 			
 			<!-- kCura Dependencies -->
 			<arg line='/lib:"${source.packages.directory}\kCura.Agent.${relativityDependencyVersion}\lib\net45"' />
@@ -94,25 +93,25 @@
 			<arg line='"${source.dependency.Injection.directory}\kCura.Method.Injection.dll"' />
 			<arg line='"${source.dependency.Injection.directory}\kCura.Injection.dll"' />
 			
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Config.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Synchronizers.RDO.dll"' />
-			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
-			<arg line='"${target.code.directory}\kCura.ScheduleQueue.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Data.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Email.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Synchronizers.RDO.dll"' />
+			<arg line='"${lib.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
+			<arg line='"${lib.directory}\kCura.ScheduleQueue.Core.dll"' />
 		</exec>
 	</target>
 	
 	<target name="merge_ldap" description="Merge all ldap provider binaries into a single library">
 		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.bin.directory}\kCura.LDAPProvider.dll"' />
+			<arg line='/out:"${lib.directory}\kCura.LDAPProvider.dll"' />
 			<arg line='/internalize:ilmergeExcludeLDAP.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
@@ -121,7 +120,7 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.LDAPProvider.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.LDAPProvider.dll"' />
 			<arg line='/closed' />
 		</exec>
 	</target>
@@ -129,7 +128,7 @@
 	<target name="merge_documentsTransfer" description="Merge all relativity related binaries into a single library">
 		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.bin.directory}\kCura.DocumentTransferProvider.dll"' />
+			<arg line='/out:"${lib.directory}\kCura.DocumentTransferProvider.dll"' />
 			<arg line='/internalize:ilmergeExcludeDocumentTransferProvider.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.packages.directory}\kCura.EventHandler.${relativityDependencyVersion}\lib\net45"' />
@@ -144,7 +143,7 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.DocumentTransferProvider.dll"' />
 			<arg line='/closed' />
 		</exec>
 	</target>
@@ -152,7 +151,7 @@
 	<target name="merge_source_provider_installer" description="Merge all source installer binaries into a single library">
 		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.bin.directory}\kCura.SourceProviderInstaller.dll"' />
+			<arg line='/out:"${lib.directory}\kCura.SourceProviderInstaller.dll"' />
 			<arg line='/internalize:ilmergeExcludeSourceProviderInstaller.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.packages.directory}\kCura.EventHandler.${relativityDependencyVersion}\lib\net45"' />
@@ -175,10 +174,10 @@
 			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Data.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
 			<arg line='/closed' />
 		</exec>
 	</target>
@@ -186,12 +185,12 @@
 	<target name="merge_export_provider" description="Merge all export provider binaries into a single library">
 		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.bin.directory}\kCura.IntegrationPoints.FilesDestinationProvider.dll"' />
+			<arg line='/out:"${lib.directory}\kCura.IntegrationPoints.FilesDestinationProvider.dll"' />
 			<arg line='/internalize:ilmergeExcludeExportProvider.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
 			<arg line='/closed' />
 		</exec>
 	</target>
