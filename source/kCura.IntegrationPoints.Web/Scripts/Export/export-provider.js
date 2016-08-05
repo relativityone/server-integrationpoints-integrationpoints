@@ -186,6 +186,8 @@
 			}
 		});
 
+		this.ExportTextFieldsAsFilesChecked = ko.observable(false);
+
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
 		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
