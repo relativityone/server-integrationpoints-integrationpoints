@@ -20,17 +20,22 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 		public virtual void Execute(Job job)
 		{
 			TaskResult taskResult = new TaskResult();
-			int items = 0; 
+			int items = 0;
 			try
 			{
 				OnRaiseJobPreExecute(job);
 				items = BatchTask(job, GetUnbatchedIDs(job));
 				taskResult.Status = TaskStatusEnum.Success;
 			}
+			catch (OperationCanceledException)
+			{
+				taskResult.Status = TaskStatusEnum.Success;
+				// DO NOTHING. Someone attempted to stop the job.
+			}
 			catch (Exception e)
 			{
 				taskResult.Status = TaskStatusEnum.Fail;
-				taskResult.Exceptions = new List<Exception>() { e };
+				taskResult.Exceptions = new List<Exception>() {e};
 				throw;
 			}
 			finally
