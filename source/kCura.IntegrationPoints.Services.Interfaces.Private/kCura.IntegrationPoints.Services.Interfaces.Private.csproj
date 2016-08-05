@@ -42,9 +42,8 @@
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\kCura.IntegrationPoints.dll</HintPath>
+    <Reference Include="kCura.IntegrationPoints">
+      <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
