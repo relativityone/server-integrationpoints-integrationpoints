@@ -158,7 +158,7 @@
     <Content Include="Views\Provider\Settings.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\PublishProfiles\pub.pubxml" />
+    <None Include="Properties\PublishProfiles\default.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

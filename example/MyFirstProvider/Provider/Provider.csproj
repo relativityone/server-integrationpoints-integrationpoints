@@ -40,12 +40,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ProviderIncludes\kCura.IntegrationPoints.Contracts.dll</HintPath>
+      <HintPath>..\..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="kCura.SourceProviderInstaller">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ProviderIncludes\kCura.SourceProviderInstaller.dll</HintPath>
+      <HintPath>..\..\..\lib\kCura.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
