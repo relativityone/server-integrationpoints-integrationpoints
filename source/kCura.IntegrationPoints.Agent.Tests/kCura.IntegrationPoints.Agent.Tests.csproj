@@ -186,6 +186,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)\bin\UnitTests\kCura.IntegrationPoint.Tests.Core\*" "$(TargetDir)"  /EY</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(ProjectDir)..\bin\UnitTests\kCura.IntegrationPoint.Tests.Core\*" "$(TargetDir)"  /EY</PostBuildEvent>
   </PropertyGroup>
 </Project>

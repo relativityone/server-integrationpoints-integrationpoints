@@ -213,7 +213,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"
-$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(ProjectDir)..\..\lib\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
 </Project>

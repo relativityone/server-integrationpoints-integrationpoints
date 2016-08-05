@@ -160,10 +160,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(SolutionDir)\DevelopmentScripts\copyifnewer.bat" "$(ProjectDir)app.config.$(UserName)" "$(ProjectDir)app.config"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\DevelopmentScripts\copyifnewer.bat" "$(ProjectDir)app.config.$(UserName)" "$(ProjectDir)app.config"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>mkdir  "$(SolutionDir)bin\UnitTests\$(ProjectName)"
-$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\UnitTests\$(ProjectName)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\UnitTests\$(ProjectName)\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(ProjectDir)..\..\lib\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
 </Project>
