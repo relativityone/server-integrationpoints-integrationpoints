@@ -4,7 +4,7 @@
 
         window.Dragon.dialogs.showConfirm({
             message: 'Are you sure you want to run this job now?',
-            title: 'Run Now',
+            title: 'Run',
             showCancel: true,
             width: 450,
             success: function (calls) {

@@ -37,7 +37,7 @@
 		}
 		window.Dragon.dialogs.showConfirm({
 			message: selectedMessage,
-			title: 'Run Now',
+			title: 'Run',
 			showCancel: true,
 			width: 450,
 			success: function (calls) {
