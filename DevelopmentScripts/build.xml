@@ -203,12 +203,7 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <!-- <Project path="example\JsonLoader\JsonLoader\JsonLoader.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
-        <Project path="example\JsonLoader\JsonLoader.Tests\JsonLoader.Tests.csproj">
+        <Project path="example\JsonLoader\JsonLoader\JsonLoader.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -217,7 +212,7 @@
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
-          <Publish>pub.pubxml</Publish>
+          <Publish>default.pubxml</Publish>
         </Project>
         <Project path="example\MyFirstProvider\Provider\Provider.csproj">
           <Platforms>
@@ -228,8 +223,8 @@
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
-          <Publish>pub.pubxml</Publish>
-        </Project> -->
+          <Publish>default.pubxml</Publish>
+        </Project>
       </Build>
       <Ignore>
         <Project path="source\kCura.IntegrationPoints.Documentation\kCura.IntegrationPoints.Documentation.shfbproj" />
@@ -238,11 +233,6 @@
         <Project path="source\prototypes\GeneratorHelper\GeneratorHelper.vbproj" />
         <Project path="source\prototypes\kCura.LDAPSync.prototype.datasources\kCura.LDAPSync.prototype.datasources\kCura.LDAPSync.prototype.datasources.csproj" />
         <Project path="source\Utilities\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber.csproj" />
-        <Project path="example\JsonLoader\JsonLoader\JsonLoader.csproj" />
-        <Project path="example\JsonLoader\JsonLoader.Tests\JsonLoader.Tests.csproj" />
-        <Project path="example\JsonLoader\JsonWeb\JsonWeb.csproj" />
-        <Project path="example\MyFirstProvider\Provider\Provider.csproj" />
-        <Project path="example\MyFirstProvider\Web\Web.csproj" />
       </Ignore>
     </Projects>
     <References>
@@ -415,7 +405,7 @@
           <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">source\CustomPages\IntegrationPoints</CustomPage>
         </CustomPages>
       </Application>
-      <!-- <Application name="MyFirstProvider">
+      <Application name="MyFirstProvider">
         <Destination>example\MyFirstProvider\application\MyFirstProvider.rap</Destination>
         <ApplicationSchema>example\MyFirstProvider\application\application.xml</ApplicationSchema>
         <Assemblies>
@@ -436,7 +426,7 @@
         <CustomPages>
           <CustomPage guid="REPLACEME">Source\CustomPages</CustomPage>
         </CustomPages>
-      </Application> -->
+      </Application>
     </Applications>
   </RAPBuilder>
 </BuildTools>
