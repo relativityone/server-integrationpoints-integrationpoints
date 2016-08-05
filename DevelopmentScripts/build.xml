@@ -203,7 +203,7 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="example\JsonLoader\JsonLoader\JsonLoader.csproj">
+        <Project path="source\example\JsonLoader\JsonLoader\JsonLoader.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -211,7 +211,7 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="example\JsonLoader\JsonWeb\JsonWeb.csproj">
+        <Project path="source\example\JsonLoader\JsonWeb\JsonWeb.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -220,7 +220,7 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="example\MyFirstProvider\Provider\Provider.csproj">
+        <Project path="source\example\MyFirstProvider\Provider\Provider.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -228,7 +228,7 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="example\MyFirstProvider\Web\Web.csproj">
+        <Project path="source\example\MyFirstProvider\Web\Web.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -458,32 +458,32 @@
         </CustomPages>
       </Application>
       <Application name="MyFirstProvider">
-        <Destination>example\MyFirstProvider\application\MyFirstProvider.rap</Destination>
-        <ApplicationSchema>example\MyFirstProvider\application\application.xml</ApplicationSchema>
+        <Destination>Applications\MyFirstProvider.rap</Destination>
+        <ApplicationSchema>ApplicationsXML\myFirstProviderApplication.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\example\MyFirstProvider\Provider\bin\Provider.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\source\example\MyFirstProvider\Provider\bin\Provider.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
-          <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">example\MyFirstProvider\CustomPages\MyFirstProvider</CustomPage>
+          <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">source\CustomPages\MyFirstProvider</CustomPage>
         </CustomPages>
       </Application>
       <Application name="JsonLoader">
-        <Destination>example\JsonLoader\application\JsonLoader.rap</Destination>
-        <ApplicationSchema>example\JsonLoader\application\application.xml</ApplicationSchema>
+        <Destination>Applications\JsonLoader.rap</Destination>
+        <ApplicationSchema>ApplicationsXML\jsonLoaderApplication.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\example\JsonLoader\JsonLoader\bin\JsonLoader.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\example\JsonLoader\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\source\example\JsonLoader\JsonLoader\bin\JsonLoader.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\source\example\JsonLoader\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
-          <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">example\JsonLoader\CustomPages\JsonLoader</CustomPage>
+          <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">source\CustomPages\JsonLoader</CustomPage>
         </CustomPages>
       </Application>
     </Applications>
