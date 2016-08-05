@@ -102,16 +102,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private ConsoleButton GetActionButton(ButtonStateDTO actionButtonState, OnClickEventDTO actionButtonOnClickEvents)
 		{
-			bool runNowButtonEnabled = actionButtonState.RunNowButtonEnabled;
+			bool runButtonEnabled = actionButtonState.RunButtonEnabled;
 			bool stopButtonEnabled = actionButtonState.StopButtonEnabled;
 			string displayText;
 			string cssClass;
 			string onClickEvent;
-			if (runNowButtonEnabled)
+			if (runButtonEnabled)
 			{
 				displayText = _RUN;
 				cssClass = "consoleButtonEnabled";
-				onClickEvent = actionButtonOnClickEvents.RunNowOnClickEvent;
+				onClickEvent = actionButtonOnClickEvents.RunOnClickEvent;
 			}
 			else if (stopButtonEnabled)
 			{
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				DisplayText = displayText,
 				CssClass = cssClass,
 				RaisesPostBack = false,
-				Enabled = (runNowButtonEnabled || stopButtonEnabled),
+				Enabled = (runButtonEnabled || stopButtonEnabled),
 				OnClickEvent = onClickEvent
 			};
 		}

@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             }
 
             // TODO: it is possible here that the Job Type is not Run Now - verify expected usage
-            this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.UtcNow);
+            this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, JobTypeChoices.JobHistoryRun, DateTime.UtcNow);
             _jobHistoryErrorService.JobHistory = this.JobHistory;
             _jobHistoryErrorService.IntegrationPoint = this.IntegrationPoint;
         }

@@ -192,7 +192,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
-			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 			jobHistory.EndTimeUTC = DateTime.Now;
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
 			jobHistoryService.UpdateRdo(jobHistory);

@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 			else
 			{
-				updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+				updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			}
 
 			if (hasJobLevelErrors && hasItemLevelErrors)

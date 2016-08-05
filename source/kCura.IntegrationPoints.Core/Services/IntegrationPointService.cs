@@ -420,7 +420,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, userId);
-			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRunNow, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
 		}
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)

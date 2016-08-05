@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			return new RelativityButtonStateDTO()
 			{
-				RunNowButtonEnabled = !hasJobsExecutingOrInQueue,
+				RunButtonEnabled = !hasJobsExecutingOrInQueue,
 				RetryErrorsButtonEnabled = !hasJobsExecutingOrInQueue && hasErrors,
 				ViewErrorsLinkEnabled = !hasJobsExecutingOrInQueue && hasErrors && hasViewPermissions,
 				StopButtonEnabled = hasStoppableJobs
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			return new ButtonStateDTO()
 			{
-				RunNowButtonEnabled = !hasJobsExecutingOrInQueue,
+				RunButtonEnabled = !hasJobsExecutingOrInQueue,
 				StopButtonEnabled = hasStoppableJobs
 			};
 		}

@@ -24,9 +24,9 @@
 
 			var consoleContainer = $(".ConsoleControl");
 
-			if (buttonStates.RunNowButtonEnabled) {
-				var runNowOnClick = onClickEvents.RunNowOnClickEvent;
-				$(consoleContainer.find(":contains('" + STOP + "')")).removeClass("consoleButtonDestructive").removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", runNowOnClick).attr("title", RUN).html(RUN).removeAttr('disabled');
+			if (buttonStates.RunButtonEnabled) {
+				var runOnClick = onClickEvents.RunOnClickEvent;
+				$(consoleContainer.find(":contains('" + STOP + "')")).removeClass("consoleButtonDestructive").removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", runOnClick).attr("title", RUN).html(RUN).removeAttr('disabled');
 			} else if (buttonStates.StopButtonEnabled) {
 				var stopClick = onClickEvents.StopOnClickEvent;
 				$(consoleContainer.find(":contains('" + RUN + "')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDestructive").attr("onClick", stopClick).attr("title", STOP).html(STOP);

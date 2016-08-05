@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 			public enum JobTypeChoices
 			{
 				RetryErrors,
-				RunNow
+				Run
 			}
 
 			public enum ErrorTypesChoices
