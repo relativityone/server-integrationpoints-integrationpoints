@@ -99,7 +99,7 @@
 			required: true
 		});
 
-		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || true);
+		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
@@ -170,14 +170,18 @@
 			}
 		});
 
-		this.SelectedDataFileFormat.subscribe(function (value) {
+		self.UpdateIsCustomDataFileFormatChanged = function (value) {
 			self.isCustom(value === ExportEnums.DataFileFormatEnum.Custom);
 			if (value === ExportEnums.DataFileFormatEnum.Custom) {
 				self.isCustomDisabled(undefined);
 			} else {
 				self.isCustomDisabled(true);
 			}
-		});
+		};
+		self.UpdateIsCustomDataFileFormatChanged(state.SelectedDataFileFormat)
+
+		this.SelectedDataFileFormat.subscribe(self.UpdateIsCustomDataFileFormatChanged);
+
 
 		this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || false);
 		this.CopyFileFromRepository.subscribe(function (value) {

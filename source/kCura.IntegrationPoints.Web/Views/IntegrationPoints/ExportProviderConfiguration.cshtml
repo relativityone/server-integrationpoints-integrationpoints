@@ -54,6 +54,12 @@
 									<table>
 										<tr>
 											<td class="editFieldValue">
+												<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true" />
+												<label disabled="true">Load File</label>
+											</td>
+										</tr>
+										<tr>
+											<td class="editFieldValue">
 												<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImagesChecked" />
 												<label>Images</label>
 											</td>
@@ -86,7 +92,7 @@
 					<td class="cardColumn">
 						<table class="fieldTable">
 							<tr>
-								<td class="editFieldNameRequired">Overwrite files:</td>
+								<td class="editFieldName">Overwrite files:</td>
 								<td class="editFieldValue">
 									<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" />
 								</td>
@@ -192,7 +198,7 @@
 					<td class="cardColumn cardFieldLeft">
 						<table class="fieldTable">
 							<tr>
-								<td class="editFieldNameRequired">File Path:</td>
+								<td class="editFieldName">File Path:</td>
 								<td class="editFieldValue">
 									<table class="RadioButtonListRelativePosition">
 										<tbody data-bind="foreach: ExportEnums.FilePathType">
@@ -217,25 +223,24 @@
 									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun()"></select>
 								</td>
 							</tr>
-
 							<tr>
-								<td class="editFieldNameRequired">
+								<td class="editFieldName" data-bind="visible: isCustom">
 									Column:
 								</td>
-								<td class="editFieldValue">
+								<td class="editFieldValue" data-bind="visible: isCustom">
 									<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
 								</td>
 							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom">
+								<td class="editFieldName">
 									Quote:
 								</td>
 								<td class="editFieldValue">
 									<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
 								</td>
 							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom()">
+								<td class="editFieldName">
 									Newline:
 								</td>
 								<td class="editFieldValue">
@@ -243,23 +248,22 @@
 								</td>
 							</tr>
 
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom()">
+								<td class="editFieldName">
 									Multi-Value:
 								</td>
 								<td class="editFieldValue">
 									<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
 								</td>
 							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom()">
+								<td class="editFieldName">
 									Nested Value:
 								</td>
 								<td class="editFieldValue">
 									<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
 								</td>
 							</tr>
-
 							<tr>
 								<td class="editFieldNameRequired">
 									Data File Encoding:
@@ -273,7 +277,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td class="editFieldNameRequired">
+								<td class="editFieldName">
 									Export Multiple Choice Fields As Nested:
 								</td>
 								<td class="editFieldValue">
@@ -348,7 +352,7 @@
 							</tr>
 							<tr>
 
-								<td class="editFieldNameRequired">
+								<td class="editFieldName">
 									Include Native Files Path:
 								</td>
 								<td class="editFieldValue">
