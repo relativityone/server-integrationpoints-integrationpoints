@@ -207,23 +207,35 @@
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
+          <IgnoreRules>
+            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
+          </IgnoreRules>
         </Project>
         <Project path="example\JsonLoader\JsonWeb\JsonWeb.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
           <Publish>default.pubxml</Publish>
+          <IgnoreRules>
+            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
+          </IgnoreRules>
         </Project>
         <Project path="example\MyFirstProvider\Provider\Provider.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
+          <IgnoreRules>
+            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
+          </IgnoreRules>
         </Project>
         <Project path="example\MyFirstProvider\Web\Web.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
           <Publish>default.pubxml</Publish>
+          <IgnoreRules>
+            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
+          </IgnoreRules>
         </Project>
       </Build>
       <Ignore>
@@ -297,11 +309,51 @@
             <MapTo>kCura.ScheduleQueue.Core.dll</MapTo>
           </MapTos>
         </Map>
+        <Map from="kCura.SourceProviderInstaller.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Core.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.SourceProviderInstaller.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Core.Contracts.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.SourceProviderInstaller.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.Data.dll</MapTo>
+          </MapTos>
+        </Map>
+        <Map from="kCura.SourceProviderInstaller.dll">
+          <MapTos>
+            <MapTo>kCura.IntegrationPoints.SourceProviderInstaller.dll</MapTo>
+          </MapTos>
+        </Map>
       </Maps>
       <Adds>
         <Add path="C:/SourceCode/integrationpoints\source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
           <References>
             <Reference>kCura.IntegrationPoints.dll</Reference>
+          </References>
+        </Add>
+        <Add path="C:\SourceCode\integrationpoints\example\MyFirstProvider\Provider\Provider.csproj">
+          <References>
+            <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+          </References>
+        </Add>
+        <Add path="C:\SourceCode\integrationpoints\example\MyFirstProvider\Provider\Provider.csproj">
+          <References>
+            <Reference>kCura.SourceProviderInstaller.dll</Reference>
+          </References>
+        </Add>
+        <Add path="C:\SourceCode\integrationpoints\example\JsonLoader\JsonLoader\JsonLoader.csproj">
+          <References>
+            <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+          </References>
+        </Add>
+        <Add path="C:\SourceCode\integrationpoints\example\JsonLoader\JsonLoader\JsonLoader.csproj">
+          <References>
+            <Reference>kCura.SourceProviderInstaller.dll</Reference>
           </References>
         </Add>
       </Adds>
@@ -409,22 +461,29 @@
         <Destination>example\MyFirstProvider\application\MyFirstProvider.rap</Destination>
         <ApplicationSchema>example\MyFirstProvider\application\application.xml</ApplicationSchema>
         <Assemblies>
-          <Assembly>ADD ASSEMBLIES</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\example\MyFirstProvider\Provider\bin\Provider.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
-          <CustomPage guid="REPLACEME">Source\CustomPages</CustomPage>
+          <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">example\MyFirstProvider\CustomPages\MyFirstProvider</CustomPage>
         </CustomPages>
       </Application>
       <Application name="JsonLoader">
         <Destination>example\JsonLoader\application\JsonLoader.rap</Destination>
         <ApplicationSchema>example\JsonLoader\application\application.xml</ApplicationSchema>
         <Assemblies>
-          <Assembly>ADD ASSEMBLIES</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\example\JsonLoader\JsonLoader\bin\JsonLoader.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\example\JsonLoader\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
-          <CustomPage guid="REPLACEME">Source\CustomPages</CustomPage>
+          <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">example\JsonLoader\CustomPages\JsonLoader</CustomPage>
         </CustomPages>
       </Application>
     </Applications>
