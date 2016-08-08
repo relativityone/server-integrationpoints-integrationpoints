@@ -262,13 +262,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<Exception> exceptions = new List<Exception>();
 				try
 				{
-					this.IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
-					if (job.SerializedScheduleRule != null)
-					{
-						this.IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
-							taskResult);
-					}
-					_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPoint);
+					UpdateLastRuntimeAndCalculateNextRuntime(job, taskResult);
 				}
 				catch (Exception exception)
 				{
@@ -277,51 +271,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
  
 				if (this.JobHistory != null)
 				{
-					this.JobHistory.TotalItems = items;
-
 					if (BatchJobCount == 0)
 					{
-						if (job.SerializedScheduleRule != null)
+						try
 						{
-							try
-							{
-								_jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None);
-							}
-							catch (Exception exception)
-							{
-								exceptions.Add(exception);
-							}
+							FinalizeJob(job);
 						}
-
-						foreach (var batchStatus in BatchStatus)
+						catch (Exception exception)
 						{
-							try
-							{
-								batchStatus.OnJobComplete(job);
-							}
-							catch (Exception exception)
-							{
-								exceptions.Add(exception);
-							}
+							exceptions.Add(exception);
 						}
 					}
 
 					try
 					{
+						this.JobHistory.TotalItems = items;
 						_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
-					}
-					catch (Exception exception)
-					{
-						exceptions.Add(exception);
-					}
-
-					try
-					{
-						if (BatchJobCount == 0 && JobHistory != null && JobStopManager.IsStoppingRequested())
-						{
-							IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
-							jobHistoryRepo.SetErrorStatusesToExpired(this.JobHistory.ArtifactId);
-						}
 					}
 					catch (Exception exception)
 					{
@@ -344,6 +309,68 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		private void UpdateStopState(Job job)
+		{
+			if (job.SerializedScheduleRule != null)
+			{
+				_jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None);
+			}
+		}
+
+		private void FinalizeJob(Job job)
+		{
+			List<Exception> exceptions = new List<Exception>();
+
+			try
+			{
+				UpdateStopState(job);
+			}
+			catch (Exception exception)
+			{
+				exceptions.Add(exception);
+			}
+
+			foreach (var batchStatus in BatchStatus)
+			{
+				try
+				{
+					batchStatus.OnJobComplete(job);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Add(exception);
+				}
+			}
+
+			try
+			{
+				if (JobHistory != null && JobStopManager.IsStoppingRequested())
+				{
+					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
+					jobHistoryRepo.SetErrorStatusesToExpired(this.JobHistory.ArtifactId);
+				}
+			}
+			catch (Exception exception)
+			{
+				exceptions.Add(exception);
+			}
+
+			if (exceptions.Any())
+			{
+				throw new AggregateException("Failed to finalize the job.", exceptions);
+			}
+		}
+
+		private void UpdateLastRuntimeAndCalculateNextRuntime(Job job, TaskResult taskResult)
+		{
+			this.IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
+			if (job.SerializedScheduleRule != null)
+			{
+				this.IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
+			}
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPoint);
+		}
+
 		public Guid GetBatchInstance(Job job)
 		{
 			return new TaskParameterHelper(_serializer, _guidService).GetBatchInstance(job);
@@ -351,7 +378,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Dispose()
 		{
-			Debug.WriteLine("");
+			Debug.WriteLine(String.Empty);
 		}
 
 		public override void Execute(Job job)

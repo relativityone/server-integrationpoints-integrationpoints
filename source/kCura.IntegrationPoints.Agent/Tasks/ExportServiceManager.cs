@@ -352,7 +352,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
 					jobHistoryRepo.SetErrorStatusesToExpired(JobHistoryDto.ArtifactId);
 				}
-				catch { }
+				catch
+				{
+					// ignored
+				}
 			}
 
 			try
