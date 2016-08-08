@@ -285,17 +285,15 @@
 									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" />
 								</td>
 							</tr>
-							@*
-								<tr data-bind="visible: false">
-									<td class="editFieldNameRequired">
-										Text Precedence:
-									</td>
-									<td class="editFieldValue">
-										<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-										<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-									</td>
-								</tr>
-							*@ @*TODO: review and fix picker's implementation*@
+							<tr data-bind="visible: false">
+								<td class="editFieldNameRequired">
+									Text Precedence:
+								</td>
+								<td class="editFieldValue">
+									<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+									<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+								</td>
+							</tr>
 						</table>
 					</td>
 					<td class="cardColumn">
@@ -410,9 +408,7 @@
 	<script src="~/Scripts/frame-messaging.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/export/export-provider.js"></script>
-	@*
-		<script src="~/Scripts/export/picker.js"></script>
-		<script src="~/Scripts/export/saved-search-picker.js"></script>
-		<script src="~/Scripts/export/text-precedence-picker.js"></script>
-	*@ @*TODO: review and fix picker's implementation*@
+	<script src="~/Scripts/export/picker.js"></script>
+	<script src="~/Scripts/export/saved-search-picker.js"></script>
+	<script src="~/Scripts/export/text-precedence-picker.js"></script>
 }
