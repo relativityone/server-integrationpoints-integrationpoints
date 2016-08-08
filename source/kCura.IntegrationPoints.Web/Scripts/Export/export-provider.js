@@ -353,9 +353,7 @@
 
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
-		//this.TextPrecedenceSelection = ko.observable();
-
-		// TODO: review and fix picker's implementation
+		this.TextPrecedenceSelection = ko.observable();
 
 		// var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (artifactId) {
 		//     self.SavedSearchArtifactId(parseInt(artifactId));
@@ -368,14 +366,14 @@
 		//     savedSearchPickerViewModel.open(self.SavedSearch());
 		// };
 
-		// var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
-		// });
+		 var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
+		 });
 
-		// Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
+		 Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
 
-		// this.openTextPrecedencePicker = function () {
-		//     textPrecedencePickerViewModel.open();
-		// };
+		 this.openTextPrecedencePicker = function () {
+		     textPrecedencePickerViewModel.open();
+		 };
 
 		this.errors = ko.validation.group(this, { deep: true });
 
