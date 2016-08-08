@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 				else
 				{
 					TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-					manager = ManagerFactory.CreateJobStopManager(null, JobService,
+					manager = ManagerFactory.CreateJobStopManager(JobService,
 					   JobHistoryService,
 					   taskParameters.BatchInstance, job.JobId);
 					_stopJobManagerCache[job.JobId] = manager;
