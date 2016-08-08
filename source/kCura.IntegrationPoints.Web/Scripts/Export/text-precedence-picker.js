@@ -10,4 +10,28 @@
     this.open = function (currentSelection) {
         self.view.dialog('open');
     }
+
+    this.availableFields = ko.observable();
+
+    this.mappedFields = ko.observable();
+
+    this.selectedAvailableFields = ko.observable();
+
+    this.selectedMappedFields = ko.observable();
+
+    self.addField = function () { };
+
+    self.addAllFields = function () { };
+
+    self.removeField = function () { };
+
+    self.removeAllFields = function () { };
+
+    self.moveFieldTop = function () { };
+
+    self.moveFieldUp = function () { };
+
+    self.moveFieldDown = function () { };
+
+    self.moveFieldBottom = function () { };
 }

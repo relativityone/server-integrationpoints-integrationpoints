@@ -1,73 +1,73 @@
 ﻿﻿
 @{
-    ViewBag.Title = "Settings";
+	ViewBag.Title = "Settings";
 }
 
 <table id="exportSummaryPage" class="innerTabTable">
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Name:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: name"></td>
-                </tr>
-            </table>
-        </td>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Log Errors:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Export Type:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: exportType()"></td>
-                </tr>
-            </table>
-        </td>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Has Errors:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Source details:</td>
-                    <td class="dynamicViewFieldValue">Saved search: <!--ko text: settings.SavedSearch--><!--/ko--></td>
-                </tr>
-            </table>
-        </td>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Email Notification Recipients:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Destination details:</td>
-                    <td class="dynamicViewFieldValue">FileShare: <!--ko text: settings.Fileshare--><!--/ko--></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Name:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: name"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Log Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Export Type:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: exportType()"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Has Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked">
+				<tr>
+					<td class="dynamicViewFieldName">Source details:</td>
+					<td class="dynamicViewFieldValue">Saved search: <!--ko text: settings.SavedSearch--><!--/ko--></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Email Notification Recipients:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Destination details:</td>
+					<td class="dynamicViewFieldValue">FileShare: <!--ko text: settings.Fileshare--><!--/ko--></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
 	<tr>
 		<td class="editTableColumn">
 			<table>
@@ -88,58 +88,58 @@
 			</table>
 		</td>
 	</tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Volume:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: volumeInfo()"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Subdirectory:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: subdirectoryInfo()"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Load file format:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: loadFileInfo()"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">File path:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: filePath()"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Image file format:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: imageDataFileFormat()"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+	<tr>
+		<td class="editTableColumn" data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Volume:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: volumeInfo()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn" data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Subdirectory:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: subdirectoryInfo()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
 	<tr>
 		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Load file format:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: loadFileInfo()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">File path:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: filePath()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn" data-bind="visible: settings.ExportImagesChecked">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Image file format:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: imageDataFileFormat()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn" data-bind="visible: settings.ExportImagesChecked">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Image file type:</td>
@@ -157,7 +157,7 @@
 				</tr>
 			</table>
 		</td>
-	</tr>	
+	</tr>
 </table>
 
 <script src="~/Scripts/core/data.js"></script>

@@ -1,10 +1,18 @@
 using System;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
     public interface IJobHistoryErrorService
     {
-        void CommitErrors();
+		Data.JobHistory JobHistory { get; set; }
+		IntegrationPoint IntegrationPoint { get; set; }
+		IJobStopManager JobStopManager { get; set; }
+		bool JobLevelErrorOccurred { get; }
+
+		void SubscribeToBatchReporterEvents(object batchReporter);
+		void CommitErrors();
         void AddError(Relativity.Client.Choice errorType, Exception ex);
         void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace);
     }

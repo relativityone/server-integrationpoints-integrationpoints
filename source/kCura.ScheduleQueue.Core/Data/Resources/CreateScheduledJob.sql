@@ -134,7 +134,7 @@ BEGIN
 			,@JobFlags
 			,GETUTCDATE()
 			,@SubmittedBy
-			,0
+			,(CASE WHEN @ParentJobID > 0 AND @ParentJobID IS NOT NULL THEN (SELECT TOP 1 COALESCE([StopState], 0) From [eddsdbo].[{0}] Where JobID = @ParentJobID ) ELSE 0 END )
 		)
 	END
 END

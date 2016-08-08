@@ -420,7 +420,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, userId);
-			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRunNow, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
 		}
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
@@ -620,11 +620,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			lock (_lock)
 			{
-				CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId);
-				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
-
 				// If the Relativity provider is selected, we need to create an export task
 				TaskType jobTaskType = GetJobTaskType(integrationPoint, sourceProvider);
+
+				CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
+				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
 				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
@@ -688,9 +688,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			errorManager.Create(new[] {error});
 		}
 
-		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)
+		private void CheckForOtherJobsExecutingOrInQueue(TaskType taskType, int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			if (sourceProvider.Identifier == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
+			if (taskType == TaskType.ExportService || taskType == TaskType.SyncManager)
 			{
 				IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);

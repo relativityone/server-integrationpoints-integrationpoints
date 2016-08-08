@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
-			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.RunButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
-			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
+			Assert.IsFalse(buttonStates.RunButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsTrue(buttonStates.StopButtonEnabled);
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
-			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.RunButtonEnabled);
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
-			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
+			Assert.IsFalse(buttonStates.RunButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsTrue(buttonStates.StopButtonEnabled);
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
-			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.RunButtonEnabled);
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			RelativityButtonStateDTO buttonStates = _instance.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs);
 
 			//Assert
-			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.RunButtonEnabled);
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			ButtonStateDTO buttonStates = _instance.GetButtonState(hasJobsExecutingOrInQueue, hasStoppableJobs);
 
 			//Assert
-			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.RunButtonEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
 		}
 
@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			ButtonStateDTO buttonStates = _instance.GetButtonState(hasJobsExecutingOrInQueue, hasStoppableJobs);
 
 			//Assert
-			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
+			Assert.IsFalse(buttonStates.RunButtonEnabled);
 			Assert.IsTrue(buttonStates.StopButtonEnabled);
 		}
 
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			ButtonStateDTO buttonStates = _instance.GetButtonState(hasJobsExecutingOrInQueue, hasStoppableJobs);
 
 			//Assert
-			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
+			Assert.IsFalse(buttonStates.RunButtonEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
 		}
 	}	

@@ -99,7 +99,7 @@
 			required: true
 		});
 
-		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || true);
+		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
@@ -170,14 +170,18 @@
 			}
 		});
 
-		this.SelectedDataFileFormat.subscribe(function (value) {
+		self.UpdateIsCustomDataFileFormatChanged = function (value) {
 			self.isCustom(value === ExportEnums.DataFileFormatEnum.Custom);
 			if (value === ExportEnums.DataFileFormatEnum.Custom) {
 				self.isCustomDisabled(undefined);
 			} else {
 				self.isCustomDisabled(true);
 			}
-		});
+		};
+		self.UpdateIsCustomDataFileFormatChanged(state.SelectedDataFileFormat)
+
+		this.SelectedDataFileFormat.subscribe(self.UpdateIsCustomDataFileFormatChanged);
+
 
 		this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || false);
 		this.CopyFileFromRepository.subscribe(function (value) {
@@ -185,6 +189,8 @@
 				self.SelectedImageFileType(0);
 			}
 		});
+
+		this.ExportTextFieldsAsFilesChecked = ko.observable(false);
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
@@ -347,9 +353,7 @@
 
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
-		//this.TextPrecedenceSelection = ko.observable();
-
-		// TODO: review and fix picker's implementation
+		this.TextPrecedenceSelection = ko.observable();
 
 		// var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (artifactId) {
 		//     self.SavedSearchArtifactId(parseInt(artifactId));
@@ -362,14 +366,14 @@
 		//     savedSearchPickerViewModel.open(self.SavedSearch());
 		// };
 
-		// var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
-		// });
+		 var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
+		 });
 
-		// Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
+		 Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
 
-		// this.openTextPrecedencePicker = function () {
-		//     textPrecedencePickerViewModel.open();
-		// };
+		 this.openTextPrecedencePicker = function () {
+		     textPrecedencePickerViewModel.open();
+		 };
 
 		this.errors = ko.validation.group(this, { deep: true });
 

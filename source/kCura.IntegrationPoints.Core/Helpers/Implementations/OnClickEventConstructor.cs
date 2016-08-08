@@ -19,14 +19,14 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public RelativityOnClickEventDTO GetOnClickEventsForRelativityProvider(int workspaceId, int integrationPointId, RelativityButtonStateDTO buttonStates)
 		{
-			string runNowEvent = buttonStates.RunNowButtonEnabled ? GetActionButtonRunNowEvent(integrationPointId, workspaceId) : String.Empty;
+			string runEvent = buttonStates.RunButtonEnabled ? GetActionButtonRunEvent(integrationPointId, workspaceId) : String.Empty;
 			string retryErrorsEvent = buttonStates.RetryErrorsButtonEnabled ? $"IP.retryJob({integrationPointId},{workspaceId})" : String.Empty;
 			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : String.Empty;
 			string stopEvent = buttonStates.StopButtonEnabled ? GetActionButtonStopEvent(integrationPointId, workspaceId) : String.Empty;
 			
 			return new RelativityOnClickEventDTO()
 			{
-				RunNowOnClickEvent = runNowEvent,
+				RunOnClickEvent = runEvent,
 				RetryErrorsOnClickEvent = retryErrorsEvent,
 				ViewErrorsOnClickEvent = viewErrorsEvent,
 				StopOnClickEvent = stopEvent
@@ -35,16 +35,16 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates)
 		{
-			string runNowEvent = buttonStates.RunNowButtonEnabled ? GetActionButtonRunNowEvent(integrationPointId, workspaceId) : String.Empty;
+			string runEvent = buttonStates.RunButtonEnabled ? GetActionButtonRunEvent(integrationPointId, workspaceId) : String.Empty;
 			string stopEvent = buttonStates.StopButtonEnabled ? GetActionButtonStopEvent(integrationPointId, workspaceId) : String.Empty;
 			return new OnClickEventDTO()
 			{
-				RunNowOnClickEvent = runNowEvent,
+				RunOnClickEvent = runEvent,
 				StopOnClickEvent = stopEvent
 			};
 		}
 
-		private string GetActionButtonRunNowEvent(int integrationPointId, int workspaceId)
+		private string GetActionButtonRunEvent(int integrationPointId, int workspaceId)
 		{
 			return $"IP.importNow({integrationPointId},{workspaceId})";
 		}

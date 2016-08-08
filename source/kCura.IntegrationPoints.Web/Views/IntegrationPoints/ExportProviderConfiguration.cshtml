@@ -47,38 +47,33 @@
 					<td class="cardColumn cardFieldLeft">
 						<table class="fieldTable">
 							<tr>
-								<td class="editFieldNameRequired">Export Images:</td>
-								<td class="editFieldValue">
-									<table class="RadioButtonListRelativePosition">
-										<tr>
-											<td>
-												<input id="export-images-radio-0" type="radio" name="exportImages" data-bind="checked: ExportImagesChecked, checkedValue: true, disable: HasBeenRun()" />
-												<label>Yes</label>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<input id="export-images-radio-1" type="radio" name="exportImages" data-bind="checked: ExportImagesChecked, checkedValue: false, disable: HasBeenRun()" />
-												<label>No</label>
-											</td>
-										</tr>
-									</table>
+								<td class="editFieldNameRequired">
+									Export Type:
 								</td>
-							</tr>
-							<tr>
-								<td class="editFieldNameRequired">Export Natives:</td>
-								<td class="editFieldValue">
-									<table class="RadioButtonListRelativePosition">
+								<td>
+									<table>
 										<tr>
-											<td>
-												<input id="copy-file-radio-0" type="radio" name="copyFiles" data-bind="checked: CopyFileFromRepository, checkedValue: true, disable: HasBeenRun()" />
-												<label>Yes</label>
+											<td class="editFieldValue">
+												<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true" />
+												<label disabled="true">Load File</label>
 											</td>
 										</tr>
 										<tr>
-											<td>
-												<input id="copy-file-radio-1" type="radio" name="copyFiles" data-bind="checked: CopyFileFromRepository, checkedValue: false, disable: HasBeenRun()" />
-												<label>No</label>
+											<td class="editFieldValue">
+												<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImagesChecked" />
+												<label>Images</label>
+											</td>
+										</tr>
+										<tr>
+											<td class="editFieldValue">
+												<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: CopyFileFromRepository" />
+												<label>Natives</label>
+											</td>
+										</tr>
+										<tr>
+											<td class="editFieldValue">
+												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked" />
+												<label>Text Fields As Files</label>
 											</td>
 										</tr>
 									</table>
@@ -97,22 +92,9 @@
 					<td class="cardColumn">
 						<table class="fieldTable">
 							<tr>
-								<td class="editFieldNameRequired">Overwrite files:</td>
+								<td class="editFieldName">Overwrite files:</td>
 								<td class="editFieldValue">
-									<table class="RadioButtonListRelativePosition">
-										<tr>
-											<td>
-												<input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" data-bind="checked: OverwriteFiles, checkedValue: true, disable: HasBeenRun()" />
-												<label>Yes</label>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" data-bind="checked: OverwriteFiles, checkedValue: false, disable: HasBeenRun()" />
-												<label>No</label>
-											</td>
-										</tr>
-									</table>
+									<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" />
 								</td>
 							</tr>
 						</table>
@@ -120,7 +102,7 @@
 				</tr>
 			</table>
 		</div>
-		<div class="cardSection">
+		<div class="cardSection" data-bind="visible: CopyFileFromRepository() || ExportImagesChecked() || ExportTextFieldsAsFilesChecked()">
 			<h2>Volume & Subdirectory Detail</h2>
 			<table>
 				<tr>
@@ -216,7 +198,7 @@
 					<td class="cardColumn cardFieldLeft">
 						<table class="fieldTable">
 							<tr>
-								<td class="editFieldNameRequired">File Path:</td>
+								<td class="editFieldName">File Path:</td>
 								<td class="editFieldValue">
 									<table class="RadioButtonListRelativePosition">
 										<tbody data-bind="foreach: ExportEnums.FilePathType">
@@ -241,25 +223,24 @@
 									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun()"></select>
 								</td>
 							</tr>
-
 							<tr>
-								<td class="editFieldNameRequired">
+								<td class="editFieldName" data-bind="visible: isCustom">
 									Column:
 								</td>
-								<td class="editFieldValue">
+								<td class="editFieldValue" data-bind="visible: isCustom">
 									<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
 								</td>
 							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom">
+								<td class="editFieldName">
 									Quote:
 								</td>
 								<td class="editFieldValue">
 									<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
 								</td>
 							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom()">
+								<td class="editFieldName">
 									Newline:
 								</td>
 								<td class="editFieldValue">
@@ -267,23 +248,22 @@
 								</td>
 							</tr>
 
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom()">
+								<td class="editFieldName">
 									Multi-Value:
 								</td>
 								<td class="editFieldValue">
 									<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
 								</td>
 							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
+							<tr data-bind="visible: isCustom()">
+								<td class="editFieldName">
 									Nested Value:
 								</td>
 								<td class="editFieldValue">
 									<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
 								</td>
 							</tr>
-
 							<tr>
 								<td class="editFieldNameRequired">
 									Data File Encoding:
@@ -297,24 +277,22 @@
 								</td>
 							</tr>
 							<tr>
-								<td class="editFieldNameRequired">
+								<td class="editFieldName">
 									Export Multiple Choice Fields As Nested:
 								</td>
 								<td class="editFieldValue">
 									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" />
 								</td>
 							</tr>
-							@*
-								<tr data-bind="visible: false">
-									<td class="editFieldNameRequired">
-										Text Precedence:
-									</td>
-									<td class="editFieldValue">
-										<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-										<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-									</td>
-								</tr>
-							*@ @*TODO: review and fix picker's implementation*@
+							<tr data-bind="visible: false">
+								<td class="editFieldNameRequired">
+									Text Precedence:
+								</td>
+								<td class="editFieldValue">
+									<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+									<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+								</td>
+							</tr>
 						</table>
 					</td>
 					<td class="cardColumn">
@@ -353,7 +331,7 @@
 									Subdirectory Prefix For Image:
 								</td>
 								<td class="editFieldValue">
-									<input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix, disable: HasBeenRun()"/>
+									<input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix, disable: HasBeenRun()" />
 									<span style="padding: 2px">001</span>
 								</td>
 							</tr>
@@ -371,24 +349,12 @@
 								</td>
 							</tr>
 							<tr>
-								<td class="editFieldNameRequired">
+
+								<td class="editFieldName">
 									Include Native Files Path:
 								</td>
 								<td class="editFieldValue">
-									<table class="RadioButtonListRelativePosition">
-										<tr>
-											<td>
-												<input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" data-bind="checked: IncludeNativeFilesPath, checkedValue: true, disable: HasBeenRun()" />
-												<label>Yes</label>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" data-bind="checked: IncludeNativeFilesPath, checkedValue: false, disable: HasBeenRun()" />
-												<label>No</label>
-											</td>
-										</tr>
-									</table>
+									<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeNativeFilesPath" />
 								</td>
 							</tr>
 							<tr>
@@ -396,12 +362,12 @@
 									Subdirectory prefix for Native:
 								</td>
 								<td class="editFieldValue">
-									<input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix, disable: HasBeenRun()"/>
+									<input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix, disable: HasBeenRun()" />
 									<span style="padding: 2px">001</span>
 								</td>
 							</tr>
 						</table>
-						<table class="fieldTable">
+						<table class="fieldTable" data-bind="visible: ExportTextFieldsAsFilesChecked">
 							<tr>
 								<td>
 									<div>
@@ -418,7 +384,7 @@
 									Subdirectory prefix for Text:
 								</td>
 								<td class="editFieldValue">
-									<input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix, disable: HasBeenRun()"/>
+									<input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix, disable: HasBeenRun()" />
 									<span style="padding: 2px">001</span>
 								</td>
 							</tr>
@@ -441,9 +407,7 @@
 	<script src="~/Scripts/frame-messaging.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/export/export-provider.js"></script>
-	@*
-		<script src="~/Scripts/export/picker.js"></script>
-		<script src="~/Scripts/export/saved-search-picker.js"></script>
-		<script src="~/Scripts/export/text-precedence-picker.js"></script>
-	*@ @*TODO: review and fix picker's implementation*@
+	<script src="~/Scripts/export/picker.js"></script>
+	<script src="~/Scripts/export/saved-search-picker.js"></script>
+	<script src="~/Scripts/export/text-precedence-picker.js"></script>
 }
