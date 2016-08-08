@@ -121,6 +121,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (OperationCanceledException)
 			{
+				IJobStopManager jobStopManaer = this.GetJobStopManager(job);
+				jobStopManaer.Dispose();
 				// IGNORE ERROR. The user attempted to stop the job.
 			}
 			catch (AuthenticationException e)

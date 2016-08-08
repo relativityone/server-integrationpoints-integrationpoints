@@ -138,6 +138,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (OperationCanceledException)
 			{
+				JobStopManager.Dispose();
 				throw;
 				// DO NOTHING. Someone attempted to stop the job.
 			}
@@ -244,6 +245,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					//TODO: jobHistory.Status = "";
 					_jobHistoryService.UpdateRdo(this.JobHistory);
 				}
+			}
+			catch (OperationCanceledException)
+			{
+				JobStopManager.Dispose();
+				throw;
+				// DO NOTHING. Someone attempted to stop the job.
 			}
 			catch (Exception ex)
 			{

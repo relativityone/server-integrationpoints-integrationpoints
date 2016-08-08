@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Agent.Exceptions;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -24,7 +22,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -105,7 +102,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public Data.IntegrationPoint IntegrationPointDto { get; private set; }
 		public JobHistory JobHistoryDto { get; private set; }
-		public JobHistoryError JobHistoryErrorDto { get; private set; }
 		public List<FieldMap> MappedFields { get; private set; }
 		public SourceProvider SourceProvider { get; private set; }
 
@@ -116,18 +112,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				InitializeExportService(job);
 
-				if(_jobStopManager.IsStoppingRequested()) { return; }
+				if (_jobStopManager.IsStoppingRequested())
+				{
+					return;
+				}
 
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				string userImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
 
-				if (_jobStopManager.IsStoppingRequested()) { return; }
+				if (_jobStopManager.IsStoppingRequested())
+				{
+					return;
+				}
 
 				InitializeExportServiceObservers(job, userImportApiSettings);
 				SetupSubscriptions(synchronizer, job);
 
-				if (_jobStopManager.IsStoppingRequested()) { return; }
+				if (_jobStopManager.IsStoppingRequested())
+				{
+					return;
+				}
 
 				// Push documents
 				using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
@@ -138,10 +143,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 					lock (_jobStopManager.SyncRoot)
 					{
-						if (!_jobStopManager.IsStoppingRequested())
-						{
-							JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
-						}
 						UpdateJobStatus();
 					}
 
@@ -156,6 +157,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 
 				FinalizeExportServiceObservers(job);
+			}
+			catch (OperationCanceledException)
+			{
+				SetTheJobAsAnUnstoppable(job);
+				// IGNORE ERROR. The user attempted to stop the job.
 			}
 			catch (AgentDropJobException) //for concurrency, an Agent drops a job if one is already executing
 			{
@@ -287,7 +293,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			//Load saved search for just item-level error retries
 			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-			    _updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+				_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 			{
 				_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
 				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
@@ -298,7 +304,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
-		
+
 		private void FinalizeExportService(Job job)
 		{
 			try
@@ -321,7 +327,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					sourceJobHistoryErrorUpdater.OnJobComplete(job);
 				}
 			}
-
 			catch (Exception)
 			{
 				// trying to delete temp tables early, don't have worry about failing
@@ -343,7 +348,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_jobHistoryErrorService.CommitErrors();
 				}
 			}
-
 
 			if (_jobStopManager.IsStoppingRequested())
 			{
@@ -367,7 +371,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						_taskResult.Status = TaskStatusEnum.Success;
 					}
-					this._jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None );
+					this._jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None);
 					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult); //use this for concurrency -MNG
 				}
 
@@ -426,7 +430,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			//Switch to Append/Overlay for error retries where original setting was Append Only
 			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-			    importSettings.OverwriteMode == OverwriteModeEnum.Append)
+				importSettings.OverwriteMode == OverwriteModeEnum.Append)
 			{
 				importSettings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			}
@@ -439,7 +443,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			int integrationPointId = job.RelatedObjectArtifactID;
 			IntegrationPoint integrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
-
 			if (integrationPoint == null)
 			{
 				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
@@ -452,8 +455,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
 			string uniqueJobId = GetUniqueJobId(job);
 
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, 
-				_sourceJobManager, documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, 
+			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager,
+				_sourceJobManager, documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration,
 				userImportApiSettings, JobHistoryDto.ArtifactId, uniqueJobId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
