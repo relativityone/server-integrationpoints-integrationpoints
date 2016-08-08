@@ -190,7 +190,7 @@
 			}
 		});
 
-		this.ExportTextFieldsAsFilesChecked = ko.observable(false);
+		this.ExportTextFieldsAsFilesChecked = ko.observable(state.ExportFullTextAsFile || false);
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
@@ -412,7 +412,8 @@
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"FilePath": self.FilePath(),
 				"UserPrefix": self.UserPrefix(),
-				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested()
+				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
+				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked()
 			}
 		}
 	}
