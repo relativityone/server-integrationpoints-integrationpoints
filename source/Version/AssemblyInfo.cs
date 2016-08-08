@@ -20,6 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints")]  //ILMerged dll
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Domain")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core")]

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -111,6 +114,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			string url = $"Relativity/User/{ userArtifactId }";
 			string response = Rest.GetRequest(url, false, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			JObject userJObject = JObject.Parse(response);
+			UserModel userModel = userJObject.ToObject<UserModel>();
+			return userModel;
+		}
+
+		public static UserModel ReadUser(string email)
+		{
+			string url = $"Relativity/User/QueryResult";
+			string QueryInputJSON = string.Format(@"{{""condition"":"" 'Email Address' == '{0}'"", ""fields"":[""*""]}}", email);
+			string response = Rest.PostRequestAsJson(url, false, QueryInputJSON);
 			JObject userJObject = JObject.Parse(response);
 			UserModel userModel = userJObject.ToObject<UserModel>();
 			return userModel;
