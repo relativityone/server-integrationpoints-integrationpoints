@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private DestinationProvider _destinationProviderRdo;
 		private string _destinationConfiguration;
 
-		internal override void ExecuteTask(Job job)
+		protected override void ExecuteTask(Job job)
 		{
 			try
 			{
@@ -234,7 +234,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return _convertDataService.GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
 		}
 
-		internal override List<string> GetEntryIDs(Job job)
+		protected override List<string> GetEntryIDs(Job job)
 		{
 			return _custodianManagerMap.Select(x => ConvertObjectGuid(x.OldManagerID)).Distinct().ToList();
 		}

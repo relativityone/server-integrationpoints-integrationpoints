@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return sourceProvider;
 		}
 
-		internal override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration,
+		protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration,
 			string destinationConfiguration, List<string> entryIDs,
 			SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
