@@ -15,12 +15,166 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Agent.Exceptions;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 {
 	[TestFixture]
 	public class ITaskFactoryTests
 	{
+		private IAgentHelper _helper;
+		private ISerializer _serializer;
+		private IContextContainerFactory _contextContainerFactory;
+		private ICaseServiceContext _caseServiceContext;
+		private IRSAPIClient _rsapiClient;
+		private IWorkspaceDBContext _workspaceDbContext;
+		private IEddsServiceContext _eddsServiceContext;
+		private IRepositoryFactory _repositoryFactory;
+		private IJobHistoryService _jobHistoryService;
+		private IAgentService _agentService;
+		private IJobService _jobService;
+		private IManagerFactory _managerFactory;
+		private TaskFactory _instance;
+		private int _workspaceId = 12345;
+		private int _integrationPointId = 54321;
+
+		[SetUp]
+		public void Setup()
+		{
+			_helper = Substitute.For<IAgentHelper>();
+			_serializer = Substitute.For<ISerializer>();
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>(); 
+			_caseServiceContext = Substitute.For<ICaseServiceContext>(); 
+			_rsapiClient = Substitute.For<IRSAPIClient>(); 
+			_workspaceDbContext = Substitute.For<IWorkspaceDBContext>(); 
+			_eddsServiceContext = Substitute.For<IEddsServiceContext>(); 
+			_repositoryFactory = Substitute.For<IRepositoryFactory>(); 
+			_jobHistoryService = Substitute.For<IJobHistoryService>(); 
+			_agentService = Substitute.For<IAgentService>(); 
+			_jobService = Substitute.For<IJobService>();
+			_managerFactory = Substitute.For<IManagerFactory>(); 
+
+			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _rsapiClient, _workspaceDbContext, _eddsServiceContext, _repositoryFactory, _jobHistoryService, _agentService, _jobService, _managerFactory);
+		}
+
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void HasOtherJobsExecuting_GoldFlow(bool expectedHasJobsExecuting)
+		{
+			//Arrange
+			IContextContainer contextContainer = Substitute.For<IContextContainer>();
+			IQueueManager queueManager = Substitute.For<IQueueManager>();
+
+			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
+			_managerFactory.CreateQueueManager(contextContainer).Returns(queueManager);
+			
+			Job job = JobExtensions.CreateJob();
+			DateTime now = DateTime.UtcNow;
+			job.NextRunTime = now;
+
+			queueManager.HasJobsExecuting(job.WorkspaceID, job.RelatedObjectArtifactID, job.JobId, job.NextRunTime).Returns(expectedHasJobsExecuting);
+
+			//Act
+			bool hasJobsExecuting = _instance.HasOtherJobsExecuting(job);
+
+			//Assert
+			Assert.AreEqual(expectedHasJobsExecuting, hasJobsExecuting);
+			_contextContainerFactory.Received(1).CreateContextContainer(_helper);
+			_managerFactory.Received(1).CreateQueueManager(contextContainer);
+			queueManager.Received(1).HasJobsExecuting(job.WorkspaceID, job.RelatedObjectArtifactID, job.JobId, job.NextRunTime);
+		}
+
+		[Test]
+		public void DropJobAndThrowException_ScheduledJob_AgentExceptionThrown()
+		{
+			//Arrange
+			ScheduleQueueAgentBase agent = new Agent();
+			Job job = JobExtensions.CreateJob();
+			job.ScheduleRuleType = "not null";
+
+			Data.IntegrationPoint integrationPointDto = new Data.IntegrationPoint();
+			DateTime nextRunTime = DateTime.UtcNow;
+
+			_jobService.GetJobNextUtcRunDateTime(job, Arg.Any<IScheduleRuleFactory>(), Arg.Any<TaskResult>())
+				.Returns(nextRunTime);
+			String exceptionMessage =
+				$"Unable to execute Integration Point job: There is already a job currently running. Job is re-scheduled for {nextRunTime}.";
+
+			//Act
+			Assert.Throws<AgentDropJobException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent), exceptionMessage);
+
+			//Assert
+			_jobService.Received(1).GetJobNextUtcRunDateTime(job, Arg.Any<IScheduleRuleFactory>(), Arg.Any<TaskResult>());
+		}
+
+		[Test]
+		public void DropJobAndThrowException_NonScheduledJob_AgentExceptionThrown()
+		{
+			//Arrange
+			String exceptionMessage = $"Unable to execute Integration Point job: There is already a job currently running.";
+			TaskParameters taskParameters = new TaskParameters();
+			string batchInstance = "A6E6BD34-3814-4C9D-AD98-8FC47F5E25D1";
+			taskParameters.BatchInstance = new Guid(batchInstance);
+
+			ScheduleQueueAgentBase agent = new Agent();
+			Job job = JobExtensions.CreateJob();
+
+			JobHistory jobHistory = new JobHistory();
+			jobHistory.ArtifactId = 2;
+
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(taskParameters);
+			_jobHistoryService.GetRdo(taskParameters.BatchInstance).Returns(jobHistory);
+			
+			Data.IntegrationPoint integrationPointDto = new Data.IntegrationPoint();
+			integrationPointDto.JobHistory = new[] {1, 2, 3};
+
+			//Act
+			Assert.Throws<AgentDropJobException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent), exceptionMessage);
+
+			//Assert
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(integrationPointDto);
+			_jobHistoryService.Received(1).DeleteRdo(jobHistory.ArtifactId);
+			_serializer.Received(1).Deserialize<TaskParameters>(job.JobDetails);
+			_jobHistoryService.Received(1).GetRdo(taskParameters.BatchInstance);
+
+			int[] expectedJobHistoryArray = new[] {1, 3};
+			Assert.AreEqual(expectedJobHistoryArray, integrationPointDto.JobHistory);
+		}
+
+		[Test]
+		public void DropJobAndThrowException_NullJobHistory_ExceptionThrown()
+		{
+			//Arrange
+			TaskParameters taskParameters = new TaskParameters();
+			string batchInstance = "A6E6BD34-3814-4C9D-AD98-8FC47F5E25D1";
+			taskParameters.BatchInstance = new Guid(batchInstance);
+
+			String exceptionMessage =
+				$"Unable to retrieve job history information for the following job batch: {taskParameters.BatchInstance}";
+			
+			ScheduleQueueAgentBase agent = new Agent();
+			Job job = JobExtensions.CreateJob();
+			JobHistory jobHistory = null;
+
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(taskParameters);
+			_jobHistoryService.GetRdo(taskParameters.BatchInstance).Returns(jobHistory);
+
+			Data.IntegrationPoint integrationPointDto = new Data.IntegrationPoint();
+			
+			//Act
+			Assert.Throws<NullReferenceException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent), exceptionMessage);
+
+			//Assert
+			_serializer.Received(1).Deserialize<TaskParameters>(job.JobDetails);
+			_jobHistoryService.Received(1).GetRdo(taskParameters.BatchInstance);
+		}
+
 		[Test]
 		public void UpdateJobHistory()
 		{

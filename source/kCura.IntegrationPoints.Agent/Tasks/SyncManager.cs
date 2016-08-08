@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
@@ -32,6 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 	using Config = global::kCura.IntegrationPoints.Config.Config;
 
+	[SynchronizedTask]
 	public class SyncManager : BatchManagerBase<string>, IDisposable
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
