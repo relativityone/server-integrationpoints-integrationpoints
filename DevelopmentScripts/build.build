@@ -196,6 +196,7 @@
 	</target>
 	
 	<target name="package_sdk" description="Creates sdk package for integration points">
+		<delete dir="${sdk.directory}" />
 		<copy todir="${sdk.directory}">
 			<fileset basedir="${lib.directory}">
 				<include name="kCura.IntegrationPoints.Contracts.dll" />

@@ -7,12 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonLoader", "JsonLoader\Js
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonWeb", "JsonWeb\JsonWeb.csproj", "{284B3D17-44FE-4AFD-8083-51CE18F9FD4B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0BD353B8-8E9C-423A-B3B4-0D6829DA1063}"
-	ProjectSection(SolutionItems) = preProject
-		WE-Markdown.css = WE-Markdown.css
-		WE-settings.xml = WE-settings.xml
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
