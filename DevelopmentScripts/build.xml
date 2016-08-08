@@ -203,7 +203,7 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="source\example\JsonLoader\JsonLoader\JsonLoader.csproj">
+        <Project path="source\JsonLoader\JsonLoader.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -211,7 +211,7 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="source\example\JsonLoader\JsonWeb\JsonWeb.csproj">
+        <Project path="source\JsonWeb\JsonWeb.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -220,7 +220,7 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="source\example\MyFirstProvider\Provider\Provider.csproj">
+        <Project path="source\Provider\Provider.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -228,7 +228,7 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="source\example\MyFirstProvider\Web\Web.csproj">
+        <Project path="source\Web\Web.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -284,13 +284,13 @@
             <Reference>kCura.IntegrationPoints.dll</Reference>
           </References>
         </Add>
-        <Add path="C:\SourceCode\integrationpoints\source\example\MyFirstProvider\Provider\Provider.csproj">
+        <Add path="C:\SourceCode\integrationpoints\source\Provider\Provider.csproj">
           <References>
             <Reference>kCura.SourceProviderInstaller.dll</Reference>
             <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
           </References>
         </Add>
-        <Add path="C:\SourceCode\integrationpoints\source\example\JsonLoader\JsonLoader\JsonLoader.csproj">
+        <Add path="C:\SourceCode\integrationpoints\source\JsonLoader\JsonLoader.csproj">
           <References>
             <Reference>kCura.SourceProviderInstaller.dll</Reference>
             <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
@@ -404,7 +404,7 @@
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\source\example\MyFirstProvider\Provider\bin\Provider.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\source\Provider\bin\Provider.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
@@ -418,8 +418,8 @@
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\source\example\JsonLoader\JsonLoader\bin\JsonLoader.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\source\example\JsonLoader\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\source\JsonLoader\bin\JsonLoader.dll</Assembly>
+          <Assembly>C:\SourceCode\integrationpoints\source\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
