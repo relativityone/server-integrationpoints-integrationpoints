@@ -50,7 +50,7 @@ task create_build_script -depends get_buildhelper {
 
 task restore_nuget {
 
-    foreach($o in Get-ChildItem $source_directory -recurse){
+    foreach($o in Get-ChildItem $source_directory){
        
        if($o.Extension -ne '.sln') {continue}
 
