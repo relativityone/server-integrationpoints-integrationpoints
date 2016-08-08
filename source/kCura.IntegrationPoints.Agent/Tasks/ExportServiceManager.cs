@@ -249,7 +249,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this._identifier = taskParameters.BatchInstance;
 
 			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
-			_jobHistoryService.GetRdo(_identifier);
 
 			CheckForOtherJobsExecuting(job, this.JobHistoryDto.ArtifactId);
 
@@ -280,8 +279,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_savedSearchArtifactId = _sourceConfiguration.SavedSearchArtifactId;
 
 			//Load saved search for just item-level error retries
-			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+			if (_updateStatusType.IsItemLevelErrorRetry())
 			{
 				_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _sourceConfiguration.SavedSearchArtifactId);
 				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
@@ -295,7 +293,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportService(Job job)
 		{
-			_exportServiceJobObservers.OfType<IScratchTableRepository>().ForEach(observer =>
+			_exportServiceJobObservers?.OfType<IScratchTableRepository>().ForEach(observer =>
 			{
 				try
 				{
@@ -327,7 +325,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 
-			if (_jobStopManager.IsStoppingRequested())
+			if (_jobStopManager?.IsStoppingRequested() == true)
 			{
 				try
 				{
@@ -370,8 +368,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				//we can delete the temp saved search (only gets called on retry for item-level only errors)
-				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				    _updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+				if (_updateStatusType.IsItemLevelErrorRetry())
 				{
 					IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
 					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId);
