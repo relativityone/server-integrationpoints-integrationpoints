@@ -70,3 +70,4 @@ source/.vs/
 source/example/JsonLoader/.vs/
 source/example/MyFirstProvider/.vs/
 lib/
+sdk/

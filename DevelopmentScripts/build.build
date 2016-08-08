@@ -5,7 +5,9 @@
 	<property name="source.code.directory" value="${root}\source" />
 	<property name="source.dependency.directory" value="${source.code.directory}\Dependencies" />
 	<property name="source.packages.directory" value="${source.code.directory}\packages" />
+	<property name="source.provider.includes.directory" value="${source.code.directory}\example\ProviderIncludes\Web" />
 	<property name="lib.directory" value="${root}\lib" />
+	<property name="sdk.directory" value="${root}\sdk" />
 	<property name="source.dependency.MVCContrib.directory" value="${source.dependency.directory}\MVCContrib" />
 	<property name="source.dependency.Injection.directory" value="${source.dependency.directory}\Injection"/>
 	<property name="source.dependency.CastleCore.directory" value="${source.packages.directory}\Castle.Core.3.3.0\lib\net45" />
@@ -14,7 +16,7 @@
 	<property name="source.dependency.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.192.5\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
-	
+	<property name="relativityDependencyVersion" value="9.4.241.2" unless="${property::exists('relativityDependencyVersion')}" />
 	<!-- Log properties -->
 	<echo message="Root: ${root}" />
 	<echo message="Build configuration: ${buildconfig}" />
@@ -22,12 +24,10 @@
 	<echo message="Source code directory: ${source.code.directory}" />
 	<echo message="Source dependency directory ${source.dependency.directory}" />
 	<echo message="Source packages directory ${source.packages.directory}" />
-	<echo message="Bin directory ${lib.directory}" />
-	<echo message="Bin config directory ${lib.directory}" />
+	<echo message="Lib directory ${lib.directory}" />
 	
 	<target name="merge_all" description="Perform all required ILMerges for this repository" depends="merge_main, merge_ldap, merge_documentsTransfer, merge_source_provider_installer">
 	</target>
-	
 	
 	<target name="merge_main" description="Merge all required main binaries into a single library">
 		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
@@ -193,5 +193,27 @@
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
 			<arg line='/closed' />
 		</exec>
+	</target>
+	
+	<target name="package_sdk" description="Creates sdk package for integration points">
+		<copy todir="${sdk.directory}">
+			<fileset basedir="${lib.directory}">
+				<include name="kCura.IntegrationPoints.Contracts.dll" />
+				<include name="kCura.SourceProviderInstaller.dll" />
+				<include name="kCura.IntegrationPoints.Domain.dll" />
+			</fileset>
+		</copy>
+		<copy todir="${sdk.directory}">
+			<fileset basedir="${source.provider.includes.directory}">
+				<include name="frame-messaging.js" />
+				<include name="jquery-1.8.2.js" />
+				<include name="jquery-postMessage.js" />
+			</fileset>
+		</copy>
+		<zip zipfile="${sdk.directory}\IntegrationPoints.SDK.zip">
+			<fileset basedir="${sdk.directory}">
+				<include name="*"/>
+			</fileset>
+		</zip>
 	</target>
 </project>
