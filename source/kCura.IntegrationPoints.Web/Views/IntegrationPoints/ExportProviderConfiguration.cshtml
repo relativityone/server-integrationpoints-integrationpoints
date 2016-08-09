@@ -284,13 +284,14 @@
 									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" />
 								</td>
 							</tr>
-							<tr data-bind="visible: false">
+							<tr>
 								<td class="editFieldNameRequired">
 									Text Precedence:
 								</td>
 								<td class="editFieldValue">
-									<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-									<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                                    <label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+                                    <button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+								    <input data-bind="value: TextPrecedenceFields, visible: false"/>
 								</td>
 							</tr>
 						</table>
@@ -403,6 +404,7 @@
 	<script src="~/Scripts/knockout-3.4.0.js"></script>
 	<script src="~/Scripts/knockout.validation.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
+    <script src="~/Scripts/integration-point/step-mapFields-control.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script src="~/Scripts/frame-messaging.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
