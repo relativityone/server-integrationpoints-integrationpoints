@@ -17,11 +17,13 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
+using NSubstitute.Core;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -107,6 +109,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 			// ASSERT
 			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)) , Arg.Is< ArgumentException>(ex => ex.Message == "Failed to retrieved corresponding Integration Point."));
+			_jobHistoryErrorService.Received().CommitErrors();
 		}
 
 		[Test]
@@ -134,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_jobHistoryService.CreateRdo(integrationPoint, taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(jobHistory);
 			_caseContext.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value).Returns(sourceProvider);
 			_serializer.Deserialize<List<FieldMap>>(integrationPoint.FieldMappings).Returns(mappings);
-			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, configuration.SourceWorkspaceArtifactId, job.JobId + "_" + taskParameters.BatchInstance).Returns(_jobHistoryErrorManager);
+			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(statusType);
 			_repositoryFactory.GetSavedSearchRepository(configuration.SourceWorkspaceArtifactId, configuration.SavedSearchArtifactId).Returns(_savedSearchRepository);
 			_savedSearchRepository.RetrieveSavedSearch().Returns(new SavedSearchDTO());
@@ -148,6 +151,56 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_jobStopManager.Received().Dispose();
 			_jobService.Received().UpdateStopState(Arg.Is<List<long>>(lst => lst.Contains(job.JobId)), StopState.Unstoppable);
 			_jobHistoryErrorService.Received().CommitErrors();
+		}
+
+		[Test]
+		public void Execute_StopAfterAcquiringTheSynchronizer()
+		{
+			// ARRANGE
+			Job job = JobExtensions.CreateJob();
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint()
+			{
+				SourceConfiguration = "source config",
+				SourceProvider = 741,
+				FieldMappings = "mapping",
+				DestinationConfiguration = "destination config"
+			};
+			SourceConfiguration configuration = new SourceConfiguration();
+			TaskParameters taskParameters = new TaskParameters();
+			JobHistory jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun };
+			SourceProvider sourceProvider = new SourceProvider();
+			List<FieldMap> mappings = new List<FieldMap>();
+			JobHistoryErrorDTO.UpdateStatusType statusType = new JobHistoryErrorDTO.UpdateStatusType();
+
+			_jobStopManager.When(obj => obj.ThrowIfStopRequested()).Do(Callback.First(x => { }).Then(info => { throw new OperationCanceledException(); }));
+
+			_caseContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID).Returns(integrationPoint);
+			_serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).Returns(configuration);
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(taskParameters);
+			_jobHistoryService.CreateRdo(integrationPoint, taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(jobHistory);
+			_caseContext.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value).Returns(sourceProvider);
+			_serializer.Deserialize<List<FieldMap>>(integrationPoint.FieldMappings).Returns(mappings);
+			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
+			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(statusType);
+			_repositoryFactory.GetSavedSearchRepository(configuration.SourceWorkspaceArtifactId, configuration.SavedSearchArtifactId).Returns(_savedSearchRepository);
+			_savedSearchRepository.RetrieveSavedSearch().Returns(new SavedSearchDTO());
+			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, configuration.SavedSearchArtifactId).Returns(_retrySavedSearchId);
+			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, taskParameters.BatchInstance, job.JobId).Returns(_jobStopManager);
+			_serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration).Returns(new ImportSettings());
+
+			// ACT
+			_instance.Execute(job);
+
+			// ASSERT
+			_jobStopManager.Received().Dispose();
+			_jobService.Received().UpdateStopState(Arg.Is<List<long>>(lst => lst.Contains(job.JobId)), StopState.Unstoppable);
+			_jobHistoryErrorService.Received().CommitErrors();
+		}
+
+
+		private string GetUniqueJobId(Job job, Guid identifier)
+		{
+			return job.JobId + "_" + identifier;
 		}
 	}
 }
