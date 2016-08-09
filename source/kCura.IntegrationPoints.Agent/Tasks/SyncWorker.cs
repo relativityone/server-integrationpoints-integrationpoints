@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					try
 					{
-						if (!GetJobStopManager(job).IsStoppingRequested())
+						if (!GetJobStopManager(job).IsStopRequested())
 						{
 							IList<Job> jobs = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, taskParameters.BatchInstance);
 							if (jobs.Any())

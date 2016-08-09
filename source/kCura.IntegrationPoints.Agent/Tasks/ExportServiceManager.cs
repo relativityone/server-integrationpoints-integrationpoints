@@ -149,8 +149,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (OperationCanceledException)
 			{
-				SetTheJobAsAnUnstoppable(job);
-				// IGNORE ERROR. The user attempted to stop the job.
+				// ignore error.
 			}
 			catch (Exception ex)
 			{
@@ -159,7 +158,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				SetTheJobAsAnUnstoppable(job);
+				SetJobStateAsUnstoppable(job);
 				_jobHistoryErrorService.CommitErrors();
 				FinalizeExportService(job);
 			}
@@ -180,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
-			SetTheJobAsAnUnstoppable(job);
+			SetJobStateAsUnstoppable(job);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
@@ -197,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ThrowNewExceptionIfAny(exceptions);
 		}
 
-		private void SetTheJobAsAnUnstoppable(Job job)
+		private void SetJobStateAsUnstoppable(Job job)
 		{
 			try
 			{
@@ -315,7 +314,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 
-			if (_jobStopManager?.IsStoppingRequested() == true)
+			if (_jobStopManager?.IsStopRequested() == true)
 			{
 				try
 				{
@@ -324,10 +323,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				catch
 				{
-					// ignored
+					// ignore error. the status of errors will not affect the 'retry' nor the 'run' scenarios.
 				}
 			}
-
 			UpdateIntegrationPointRuntimes(job);
 		}
 

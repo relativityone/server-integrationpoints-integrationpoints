@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// act
 			_instance.Callback.Invoke(null);
-			bool isStoppingRequested = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStopRequested();
 
 			// assert
 			Assert.IsFalse(isStoppingRequested);
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isStoppingRequested = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStopRequested();
 
 			// assert
 			Assert.IsFalse(isStoppingRequested);
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isStoppingRequested = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStopRequested();
 
 			// assert
 			Assert.IsTrue(isStoppingRequested);
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isStoppingRequested = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStopRequested();
 
 			// assert
 			Assert.IsFalse(isStoppingRequested);
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act
 			_instance.Callback.Invoke(null);
-			bool isStoppingRequested = _instance.IsStoppingRequested();
+			bool isStoppingRequested = _instance.IsStopRequested();
 
 			// assert
 			Assert.IsFalse(isStoppingRequested);

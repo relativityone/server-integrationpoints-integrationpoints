@@ -26,10 +26,10 @@ namespace kCura.IntegrationPoints.Core
 
 		public void OnJobStart(Job job)
 		{
-			var updatedJob = _jobService.GetJob(job.JobId);
+			Job updatedJob = _jobService.GetJob(job.JobId);
 			if (updatedJob.StopState != StopState.Stopping)
 			{
-				var result = GetHistory(job);
+				JobHistory result = GetHistory(job);
 				result.JobStatus = JobStatusChoices.JobHistoryProcessing;
 				_jobHistoryService.UpdateRdo(result);
 			}
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core
 
 		public void OnJobComplete(Job job)
 		{
-			var result = GetHistory(job);
+			JobHistory result = GetHistory(job);
 			result.JobStatus = _updater.GenerateStatus(result);
 			result.EndTimeUTC = DateTime.UtcNow;
 			_jobHistoryService.UpdateRdo(result);
