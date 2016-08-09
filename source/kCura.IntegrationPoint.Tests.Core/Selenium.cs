@@ -199,6 +199,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_fluidEnabled = user.BetaUser;
 		}
 
+		public static void SetFluidStatus(this IWebDriver driver, string email)
+		{
+			UserModel user = User.ReadUser(email);
+			_fluidEnabled = user.BetaUser;
+		}
+
 		public static void ClickNewIntegrationPoint(this IWebDriver driver)
 		{
 			string templateFrame = "ListTemplateFrame";

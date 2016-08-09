@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new ErrorManager(CreateRepositoryFactory(contextContainer));
 		}
 
-		public IJobStopManager CreateJobStopManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId)
+		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId)
 		{
 			return new JobStopManager(jobService, jobHistoryService, jobIdentifier, jobId);
 		}

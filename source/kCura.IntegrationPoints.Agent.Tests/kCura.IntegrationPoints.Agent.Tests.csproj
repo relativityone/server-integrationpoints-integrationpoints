@@ -184,6 +184,7 @@
     <Compile Include="Integration\ExportServiceManagerTests.cs" />
     <Compile Include="Integration\SendEmailManagerTests.cs" />
     <Compile Include="Unit\SendEmailManagerUnitTests.cs" />
+    <Compile Include="Unit\Tasks\ExportServiceManagerTests.cs" />
     <Compile Include="Unit\Tasks\ITaskFactoryTests.cs" />
     <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Unit\Tasks\SyncManagerTests.cs" />

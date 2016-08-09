@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly ICaseServiceContext _context;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private bool _errorOccurredDuringJob;
-		public bool JobLevelErrorOccurred;
+		public bool JobLevelErrorOccurred { get; private set; }
 		public const int ERROR_BATCH_SIZE = 500;
 
 		public JobHistoryErrorService(ICaseServiceContext context)

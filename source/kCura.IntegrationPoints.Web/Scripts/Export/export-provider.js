@@ -190,7 +190,7 @@
 			}
 		});
 
-		this.ExportTextFieldsAsFilesChecked = ko.observable(false);
+		this.ExportTextFieldsAsFilesChecked = ko.observable(state.ExportFullTextAsFile || false);
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
@@ -391,11 +391,11 @@
 		    self.TextPrecedenceFields(fields);
 		});
 
-		Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
+		 Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
 
-		this.openTextPrecedencePicker = function () {
-		    textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
-		};
+		 this.openTextPrecedencePicker = function () {
+		     textPrecedencePickerViewModel.open();
+		 };
 
 		this.errors = ko.validation.group(this, { deep: true });
 
@@ -433,6 +433,7 @@
 				"FilePath": self.FilePath(),
 				"UserPrefix": self.UserPrefix(),
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
+				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
 				"TextPrecedenceFields": self.TextPrecedenceFields()
 			}
 		}
