@@ -67,5 +67,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					IsRequired = false
 				}).ToArray();
 		}
+
+		public FieldEntry[] GetAllExportableLongTextFields(int workspaceArtifactID, int artifactTypeID)
+		{
+			ISearchManager searchManager = CreateSearchManager();
+
+			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, artifactTypeID)
+				.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText)
+				.Select(x => new FieldEntry
+				{
+					DisplayName = x.DisplayName,
+					FieldIdentifier = x.AvfId.ToString(),
+					FieldType = FieldType.String,
+					IsIdentifier = x.Category == FieldCategory.Identifier,
+					IsRequired = false
+				}).ToArray();
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 {
@@ -67,5 +68,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public FilePathType FilePath { get; set; }
 		public string UserPrefix { get; set; }
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
+		public bool ExportFullTextAsFile { get; set; }
+		public List<int> TextPrecedenceFieldsIds { get; set; }
 	}
 }

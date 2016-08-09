@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		{
 			try
 			{
-				if (GetJobStopManager(job).IsStoppingRequested())
+				if (GetJobStopManager(job).IsStopRequested())
 				{
 					IJobHistoryRepository jobHistoryRepo = repositoryFactory.GetJobHistoryRepository(CaseServiceContext.WorkspaceID);
 					jobHistoryRepo.SetErrorStatusesToExpired(JobHistory.ArtifactId);

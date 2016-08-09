@@ -53,5 +53,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
 			}
 		}
+
+		[HttpGet]
+		public HttpResponseMessage GetExportableLongTextFields(int sourceWorkspaceArtifactId)
+		{
+			try
+			{
+				var fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, (int)ArtifactType.Document);
+
+				return Request.CreateResponse(HttpStatusCode.OK, fields);
+			}
+			catch (Exception ex)
+			{
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+			}
+		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -56,7 +57,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				VolumePrefix = sourceSettings.VolumePrefix,
 				FilePath = filePath,
 				UserPrefix  = sourceSettings.UserPrefix,
-				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested
+				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested,
+				ExportFullTextAsFile = sourceSettings.ExportFullTextAsFile,
+				TextPrecedenceFieldsIds = sourceSettings.TextPrecedenceFields.Select(x => int.Parse(x.FieldIdentifier)).ToList()
 			};
 
 			return exportSettings;

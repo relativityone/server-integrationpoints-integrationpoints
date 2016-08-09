@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			get
 			{
-				return TotalRecordsFound > _retrievedDataCount && !_jobStopManager.IsStoppingRequested();
+				return TotalRecordsFound > _retrievedDataCount && !_jobStopManager.IsStopRequested();
 			}
 		}
 

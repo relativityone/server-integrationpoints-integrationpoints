@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(synchronizer, job);
 
 				_jobStopManager.ThrowIfStopRequested();
-
+				;
 				// Push documents
 				using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
 					IntegrationPointDto.SourceConfiguration,
@@ -149,8 +149,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (OperationCanceledException)
 			{
-				SetTheJobAsAnUnstoppable(job);
-				// IGNORE ERROR. The user attempted to stop the job.
+				// ignore error.
 			}
 			catch (Exception ex)
 			{
@@ -159,7 +158,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				SetTheJobAsAnUnstoppable(job);
+				SetJobStateAsUnstoppable(job);
 				_jobHistoryErrorService.CommitErrors();
 				FinalizeExportService(job);
 			}
@@ -180,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
-			SetTheJobAsAnUnstoppable(job);
+			SetJobStateAsUnstoppable(job);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
@@ -197,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ThrowNewExceptionIfAny(exceptions);
 		}
 
-		private void SetTheJobAsAnUnstoppable(Job job)
+		private void SetJobStateAsUnstoppable(Job job)
 		{
 			try
 			{
@@ -241,7 +240,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this._identifier = taskParameters.BatchInstance;
 
 			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
-			_jobHistoryService.GetRdo(_identifier);
 
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
@@ -270,8 +268,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_savedSearchArtifactId = _sourceConfiguration.SavedSearchArtifactId;
 
 			//Load saved search for just item-level error retries
-			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+			if (_updateStatusType.IsItemLevelErrorRetry())
 			{
 				_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _sourceConfiguration.SavedSearchArtifactId);
 				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
@@ -285,7 +282,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void FinalizeExportService(Job job)
 		{
-			_exportServiceJobObservers.OfType<IScratchTableRepository>().ForEach(observer =>
+			_exportServiceJobObservers?.OfType<IScratchTableRepository>().ForEach(observer =>
 			{
 				try
 				{
@@ -317,7 +314,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 
-			if (_jobStopManager.IsStoppingRequested())
+			if (_jobStopManager?.IsStopRequested() == true)
 			{
 				try
 				{
@@ -326,10 +323,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				catch
 				{
-					// ignored
+					// ignore error. the status of errors will not affect the 'retry' nor the 'run' scenarios.
 				}
 			}
-
 			UpdateIntegrationPointRuntimes(job);
 		}
 
@@ -360,8 +356,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				//we can delete the temp saved search (only gets called on retry for item-level only errors)
-				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				    _updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+				if (_updateStatusType.IsItemLevelErrorRetry())
 				{
 					IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
 					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId);

@@ -117,12 +117,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
-		public void OnRowError_DontAddErrorWhenStopped()
+		public void OnRowError_DoNotAddErrorWhenStopped()
 		{
 			// ARRANGE
 			const string identifier = "identifier";
 			Reporter reporter = new Reporter();
-			_stopJobManager.IsStoppingRequested().Returns(true);
+			_stopJobManager.IsStopRequested().Returns(true);
 
 			// ACT
 			_instance.SubscribeToBatchReporterEvents(reporter);
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			// ARRANGE
 			const string identifier = "identifier";
 			Reporter reporter = new Reporter();
-			_stopJobManager.IsStoppingRequested().Returns(false);
+			_stopJobManager.IsStopRequested().Returns(false);
 
 			// ACT
 			_instance.SubscribeToBatchReporterEvents(reporter);
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			// ARRANGE
 			Exception exception = new Exception();
 			Reporter reporter = new Reporter();
-			_stopJobManager.IsStoppingRequested().Returns(true);
+			_stopJobManager.IsStopRequested().Returns(true);
 
 			// ACT
 			_instance.SubscribeToBatchReporterEvents(reporter);
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			// ARRANGE
 			Reporter reporter = new Reporter();
 			Exception exception = new Exception();
-			_stopJobManager.IsStoppingRequested().Returns(isStopped);
+			_stopJobManager.IsStopRequested().Returns(isStopped);
 
 			// ACT
 			_instance.SubscribeToBatchReporterEvents(reporter);
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
-		public void CommitErrors_SurpressErrorOnUpdateHasErrorField()
+		public void CommitErrors_SuppressErrorOnUpdateHasErrorField()
 		{
 			// ARRANGE
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(Arg.Any<Data.IntegrationPoint>()).Throws(new Exception());
