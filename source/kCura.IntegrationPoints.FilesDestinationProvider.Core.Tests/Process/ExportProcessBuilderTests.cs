@@ -219,6 +219,39 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		public void ItShouldAssignTextPrecedenceViewFields()
+		{
+			_exportFile.ExportFullTextAsFile = true;
+
+			var textPrecedenceFieldsIdsExpected = new List<int>
+			{
+				1,
+				2,
+				3
+			};
+			var textPrecedenceFieldsIdsNotExpected = new List<int>
+			{
+				4,
+				5,
+				6
+			};
+			var settings = new ExportSettings
+			{
+				SelViewFieldIds = SelectedAvfIds,
+				TextPrecedenceFieldsIds = textPrecedenceFieldsIdsExpected
+			};
+			settings.SelViewFieldIds.Add(textPrecedenceFieldsIdsExpected[0]);
+			var expected = 
+				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(textPrecedenceFieldsIdsExpected.Concat(textPrecedenceFieldsIdsNotExpected).ToList(), true);
+
+			MockSearchManagerReturnValue(expected);
+
+			_exportProcessBuilder.Create(settings);
+
+			CollectionAssert.AreEquivalent(textPrecedenceFieldsIdsExpected, _exportFile.SelectedTextFields.Select(x => x.AvfId));
+		}
+
+		[Test]
 		public void ItShouldCreateExporterUsingFactory()
 		{
 			_exportProcessBuilder.Create(new ExportSettings()

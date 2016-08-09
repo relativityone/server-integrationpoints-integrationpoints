@@ -72,8 +72,7 @@
 										</tr>
 										<tr>
 											<td class="editFieldValue">
-												<!-- temporary disabled until we get the selected text items from UI-->
-												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: true, checked: ExportTextFieldsAsFilesChecked"/>
+												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked"/>
 												<label>Text Fields As Files</label>
 											</td>
 										</tr>
@@ -285,16 +284,6 @@
 									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" />
 								</td>
 							</tr>
-							<tr>
-								<td class="editFieldNameRequired">
-									Text Precedence:
-								</td>
-								<td class="editFieldValue">
-                                    <label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-                                    <button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-								    <input data-bind="value: TextPrecedenceFields, visible: false"/>
-								</td>
-							</tr>
 						</table>
 					</td>
 					<td class="cardColumn">
@@ -370,17 +359,27 @@
 							</tr>
 						</table>
 						<table class="fieldTable" data-bind="visible: ExportTextFieldsAsFilesChecked">
-							<tr>
-								<td>
-									<div>
-										<p>
-											<h3 style="margin-left: 30px">
-												TEXT
-											</h3>
-										</p>
-									</div>
-								</td>
-							</tr>
+						    <tr>
+						        <td>
+						            <div>
+						                <p>
+						                    <h3 style="margin-left: 30px">
+						                        TEXT
+						                    </h3>
+						                </p>
+						            </div>
+						        </td>
+						    </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Text Precedence:
+                                </td>
+                                <td class="editFieldValue">
+                                    <label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+                                    <button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                                    <input data-bind="value: TextPrecedenceFields, visible: false" />
+                                </td>
+                            </tr>
 							<tr>
 								<td class="editFieldNameRequired">
 									Subdirectory prefix for Text:
