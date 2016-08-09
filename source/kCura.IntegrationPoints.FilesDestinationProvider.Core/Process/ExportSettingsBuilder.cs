@@ -56,7 +56,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				VolumePrefix = sourceSettings.VolumePrefix,
 				FilePath = filePath,
 				UserPrefix  = sourceSettings.UserPrefix,
-				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested
+				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested,
+				ExportFullTextAsFile = sourceSettings.ExportFullTextAsFile
 			};
 
 			return exportSettings;

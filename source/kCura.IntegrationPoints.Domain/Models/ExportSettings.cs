@@ -40,5 +40,6 @@
 		public string FilePath { get; set; }
 		public string UserPrefix { get; set; }
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
+		public bool ExportFullTextAsFile { get; set; }
 	}
 }
