@@ -110,10 +110,12 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleTransient());
             container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
 
-			container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 
-            container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifeStyle.Transient);
+	        container.Register(Component.For<IJobHistoryErrorService>()
+		        .UsingFactoryMethod((k) => k.Resolve<JobHistoryErrorService>()).LifestyleTransient());
+
+			container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifeStyle.Transient);
 
             container.Register(Component.For<JobTracker>().ImplementedBy<JobTracker>().LifeStyle.Transient);
             container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());
