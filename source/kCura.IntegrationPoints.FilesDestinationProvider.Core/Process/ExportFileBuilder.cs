@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.FilePrefix = exportSettings.UserPrefix;
 
 			exportFile.MulticodesAsNested = exportSettings.ExportMultipleChoiceFieldsAsNested;
+			exportFile.ExportFullTextAsFile = exportSettings.ExportFullTextAsFile;
 
 			_delimitersBuilder.SetDelimiters(exportFile, exportSettings);
 

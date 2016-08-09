@@ -190,7 +190,7 @@
 			}
 		});
 
-		this.ExportTextFieldsAsFilesChecked = ko.observable(false);
+		this.ExportTextFieldsAsFilesChecked = ko.observable(state.ExportFullTextAsFile || false);
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
@@ -333,6 +333,14 @@
 			required: true
 		});
 
+		function pad(str, max) {
+			return str.length < max ? pad("0" + str, max) : str;
+		};
+
+		this.SubdirectoryDigitText = ko.computed(function () {
+			return pad(self.SubdirectoryStartNumber().toString(), parseInt(self.SubdirectoryDigitPadding()));
+		}, this);
+
 		this.FilePath = ko.observable(state.FilePath || ExportEnums.FilePathTypeEnum.Relative).extend({
 			required: true
 		});
@@ -353,8 +361,6 @@
 
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
-		this.TextPrecedenceSelection = ko.observable();
-
 		// var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (artifactId) {
 		//     self.SavedSearchArtifactId(parseInt(artifactId));
 		//     self.updateSelectedSavedSearch();
@@ -366,8 +372,32 @@
 		//     savedSearchPickerViewModel.open(self.SavedSearch());
 		// };
 
-		 var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
-		 });
+		this.getFieldsTextRepresentation = function () {
+		    var fieldsTextRepresentation = self.TextPrecedenceFields()
+		        .map(function(x) {
+		            return x.displayName;
+		        })
+		        .join(', ');
+		    return fieldsTextRepresentation;
+		}
+
+		this.TextPrecedenceFields = ko.observable(state.TextPrecedenceFields || []).extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.ExportTextFieldsAsFilesChecked();
+		        }
+		    }
+		});
+
+		this.TextPrecedenceSelection = ko.observable(self.getFieldsTextRepresentation() || '');
+
+		this.TextPrecedenceFields.subscribe(function (value) {
+		    self.TextPrecedenceSelection(self.getFieldsTextRepresentation());
+		});
+
+		var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
+		    self.TextPrecedenceFields(fields);
+		});
 
 		 Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
 
@@ -410,7 +440,9 @@
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"FilePath": self.FilePath(),
 				"UserPrefix": self.UserPrefix(),
-				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested()
+				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
+				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
+				"TextPrecedenceFields": self.TextPrecedenceFields()
 			}
 		}
 	}

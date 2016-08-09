@@ -51,13 +51,15 @@ var Model = function (dataContainer) {
 
 		return (self.settings.ExportImagesChecked ? self.settings.SubdirectoryImagePrefix + "; " : "")
 			+ (self.settings.CopyFileFromRepository ? self.settings.SubdirectoryNativePrefix + "; " : "")
-			+ self.settings.SubdirectoryTextPrefix + "; " + self.settings.SubdirectoryStartNumber + "; " + self.settings.SubdirectoryDigitPadding + "; " + self.settings.SubdirectoryMaxFiles;
+			+ (self.settings.ExportFullTextAsFile ? self.settings.SubdirectoryTextPrefix + "; " : "")
+			+ self.settings.SubdirectoryStartNumber + "; " + self.settings.SubdirectoryDigitPadding + "; " + self.settings.SubdirectoryMaxFiles;
 	};
 
 	this.exportType = function () {
 		return "Load file"
 		+ (self.settings.ExportImagesChecked ? "; Images" : "")
-		+ (self.settings.CopyFileFromRepository ? "; Natives" : "");
+		+ (self.settings.CopyFileFromRepository ? "; Natives" : "")
+		+ (self.settings.ExportFullTextAsFile ? "; Text As Files" : "");
 	};
 
 	this.filePath = function () {

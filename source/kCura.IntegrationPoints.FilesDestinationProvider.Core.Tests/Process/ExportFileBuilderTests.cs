@@ -213,6 +213,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(startExportAtRecord - 1, exportFile.StartAtDocumentNumber);
 		}
 
+		[Test]
+		public void ItShouldSetExportFullTextAsFile()
+		{
+			const bool exportFullTextAsFile = true;
+
+			_exportSettings.ExportFullTextAsFile = exportFullTextAsFile;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.AreEqual(exportFile.ExportFullTextAsFile, exportFullTextAsFile);
+		}
+
 		public void ItShouldRewriteOtherSettings()
 		{
 			const int artifactTypeId = 10;

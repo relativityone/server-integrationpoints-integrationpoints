@@ -42,7 +42,7 @@
 	</tr>
 	<tr>
 		<td class="editTableColumn">
-			<table data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked">
+			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Source details:</td>
 					<td class="dynamicViewFieldValue">Saved search: <!--ko text: settings.SavedSearch--><!--/ko--></td>
@@ -89,7 +89,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked">
+		<td class="editTableColumn" data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked || settings.ExportFullTextAsFile">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Volume:</td>
@@ -99,7 +99,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked">
+		<td class="editTableColumn" data-bind="visible: settings.CopyFileFromRepository || settings.ExportImagesChecked || settings.ExportFullTextAsFile">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Subdirectory:</td>
