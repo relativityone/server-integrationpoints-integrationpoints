@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core
 
 			if (emails!= null && emails.Any())
 			{
-				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 				kCura.Relativity.Client.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
 				EmailMessage message = GenerateEmail(choice);
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core
 			message.Emails = emails;
 			message.Subject = _converter.Convert(message.Subject);
 			message.MessageBody = _converter.Convert(message.MessageBody);
-			_jobManager.CreateJob(parentJob, message, TaskType.SendEmailManager);
+			JobManager.CreateJob(parentJob, message, TaskType.SendEmailManager);
 		}
 	}
 }

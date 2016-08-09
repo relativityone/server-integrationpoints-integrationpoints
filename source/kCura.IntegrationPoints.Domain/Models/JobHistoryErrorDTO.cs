@@ -191,6 +191,12 @@ namespace kCura.IntegrationPoints.Domain.Models
 				ItemOnly,
 				None
 			}
+
+			public bool IsItemLevelErrorRetry()
+			{
+				return JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
+				       ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
+			}
 		}
 	}
 }
