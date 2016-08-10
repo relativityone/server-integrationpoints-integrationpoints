@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
 
-			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, _job.JobId).Returns(_jobStopManager);
+			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, _job.JobId, true).Returns(_jobStopManager);
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(new ImportSettings());
 			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(_documentRepository);
 

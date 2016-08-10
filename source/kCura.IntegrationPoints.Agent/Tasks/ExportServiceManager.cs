@@ -278,7 +278,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
 			}
 
-			_jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _identifier, job.JobId);
+			_jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _identifier, job.JobId, true);
 			_jobHistoryErrorService.JobStopManager = _jobStopManager;
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
