@@ -21,6 +21,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\</OutputPath>
     <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -29,6 +30,7 @@
     <OutputPath>bin\x64\</OutputPath>
     <Optimize>true</Optimize>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
