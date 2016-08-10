@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 			_integrationPointService.GetAllIntegrationPoints().Returns(expectedIntegrationPoints);
 
 			// Act
-			IList<Data.IntegrationPoint> actualIntegrationPoints = _instance.GetIntegrationPoints();
+			List<Data.IntegrationPoint> actualIntegrationPoints = _instance.GetIntegrationPoints().ToList();
 
 			// Assert
 			Assert.IsNotEmpty(actualIntegrationPoints);

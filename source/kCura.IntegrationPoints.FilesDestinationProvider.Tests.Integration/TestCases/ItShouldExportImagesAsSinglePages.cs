@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 				.Select(r => new FileInfo(r.Field<string>("FileLocation")))
 				.ToList();
 
-			Assert.That(actualFiles.Count, Is.Positive);
+			Assert.That(actualFiles.Count, Is.GreaterThan(0));
 			Assert.That(actualFiles.Count, Is.EqualTo(expectedFiles.Count));
 			Assert.That(actualFiles.Any(af => expectedFiles.Exists(ef => ef.Name.Equals(af.Name))));
 		}

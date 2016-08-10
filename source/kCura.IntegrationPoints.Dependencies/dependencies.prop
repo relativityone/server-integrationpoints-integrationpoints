@@ -25,7 +25,7 @@
     <NEST>NEST.1.4.3</NEST>
     <Newtonsoft_Json>Newtonsoft.Json.6.0.8</Newtonsoft_Json>
     <NSubstitute>NSubstitute.1.9.2.0</NSubstitute>
-    <NUnit>NUnit.2.6.4</NUnit>
+    <NUnit>NUnit.3.4.1</NUnit>
     <Owin>Owin.1.0</Owin>
     <Relativity_Kepler>Relativity.Kepler.1.0.1.149</Relativity_Kepler>
     <Relativity_Kepler_Client>Relativity.Kepler.Client.1.0.1.149</Relativity_Kepler_Client>

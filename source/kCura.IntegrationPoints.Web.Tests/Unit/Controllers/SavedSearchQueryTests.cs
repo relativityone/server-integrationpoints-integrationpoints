@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.Relativity.Client;
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			rsapiClient.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(result);
 
 			// act
-			IList<SavedSearchModel> searches = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManager);
+			List<SavedSearchModel> searches = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManager).ToList();
 
 			// assert
 			Assert.NotNull(searches);
@@ -100,7 +101,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			rsapiClient.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(result);
 
 			// act
-			IList<SavedSearchModel> searches = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManager);
+			List<SavedSearchModel> searches = SavedSearchModel.GetAllPublicSavedSearches(rsapiClient, _htmlSanitizerManager).ToList();
 
 			// assert
 			Assert.NotNull(searches);

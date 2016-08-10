@@ -56,11 +56,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Group.DeleteGroup(_groupId);
 		}
 
-		[TestCase(true, true, ExpectedResult = true)]
-		[TestCase(true, false, ExpectedResult = false)]
-		[TestCase(false, false, ExpectedResult = false)]
-		[TestCase(false, true, ExpectedResult = true)]
-		public bool UserCanExport(bool isEditable, bool isSelected)
+		[TestCase(true, true, true)]
+		[TestCase(true, false, false)]
+		[TestCase(false, false, false)]
+		[TestCase(false, true, true)]
+		public void UserCanExport(bool isEditable, bool isSelected, bool expectedResult)
 		{
 			// arrange
 			GenericPermission permission = _groupPermission.AdminPermissions.FindPermission("Allow Export");
@@ -68,34 +68,36 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.Selected = isSelected;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			return _permissionRepo.UserCanExport();
+			bool result = _permissionRepo.UserCanExport();
+			Assert.AreEqual(expectedResult, result);
 		}
 
-		[TestCase(true, true, ExpectedResult = true)]
-		[TestCase(true, false, ExpectedResult = false)]
-		[TestCase(false, false, ExpectedResult = false)]
-		[TestCase(false, true, ExpectedResult = true)]
-		public bool UserCanImport(bool isEditable, bool isSelected)
+		[TestCase(true, true, true)]
+		[TestCase(true, false, false)]
+		[TestCase(false, false, false)]
+		[TestCase(false, true, true)]
+		public void UserCanImport(bool isEditable, bool isSelected, bool expectedResult)
 		{
 			GenericPermission permission = _groupPermission.AdminPermissions.FindPermission("Allow Import");
 			permission.Editable = isEditable;
 			permission.Selected = isSelected;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			return _permissionRepo.UserCanImport();
+			bool result = _permissionRepo.UserCanImport();
+			Assert.AreEqual(expectedResult, result);
 		}
 
 		// NOTE : ObjectPermissions Document must have View permissions when adding Add permissions.
 		// NOTE : ObjectPermissions Document must have Edit permissions when adding Delete permissions.
 		// NOTE : Document must have Edit permissions when adding Delete permissions.
 
-		[TestCase(true, false, false, true, ExpectedResult = false)]
-		[TestCase(false, false, true, true, ExpectedResult = true)]
-		[TestCase(false, false, false, true, ExpectedResult = false)]
-		[TestCase(true, false, true, true, ExpectedResult = true)]
-		[TestCase(false, true, true, true, ExpectedResult = true)]
-		[TestCase(true, true, true, true, ExpectedResult = true)]
-		public bool UserCanEditDocuments(bool addSelected, bool deleteSelected, bool editSelected, bool viewSelected)
+		[TestCase(true, false, false, true, false)]
+		[TestCase(false, false, true, true, true)]
+		[TestCase(false, false, false, true, false)]
+		[TestCase(true, false, true, true, true)]
+		[TestCase(false, true, true, true, true)]
+		[TestCase(true, true, true, true, true)]
+		public void UserCanEditDocuments(bool addSelected, bool deleteSelected, bool editSelected, bool viewSelected, bool expectedResult)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Document");
 			permission.AddSelected = addSelected;
@@ -104,7 +106,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			permission.ViewSelected = viewSelected;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 
-			return _permissionRepo.UserCanEditDocuments();
+			bool result = _permissionRepo.UserCanEditDocuments();
+			Assert.AreEqual(expectedResult, result);
 		}
 
 		[Test]
@@ -131,30 +134,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.IsFalse(_permissionRepo.UserHasPermissionToAccessWorkspace());
 		}
 
-		[TestCase(true, ExpectedResult = true)]
-		[TestCase(false, ExpectedResult = false)]
-		public bool UserHasArtifactTypePermission_Add(bool addSelected)
+		[TestCase(true, true)]
+		[TestCase(false, false)]
+		public void UserHasArtifactTypePermission_Add(bool addSelected, bool expectedResult)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Integration Point");
 			permission.AddSelected = addSelected;
 			permission.ViewSelected = true;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			return _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.Create);
+
+			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.Create);
+			Assert.AreEqual(expectedResult, result);
 		}
 
-		[TestCase(true, ExpectedResult = true)]
-		[TestCase(false, ExpectedResult = false)]
-		public bool UserHasArtifactTypePermission_Edit(bool editSelected)
+		[TestCase(true, true)]
+		[TestCase(false, false)]
+		public void UserHasArtifactTypePermission_Edit(bool editSelected, bool expectedResult)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.EditSelected = editSelected;
 			permission.ViewSelected = true;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			return _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
+
+			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
+			Assert.AreEqual(expectedResult, result);
 		}
 
-		[TestCase(true, ExpectedResult = true)]
-		[TestCase(false, ExpectedResult = false)]
+		[TestCase(true, true)]
+		[TestCase(false, false)]
 		public bool UserHasArtifactTypePermission_View(bool viewSelected)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
@@ -163,22 +170,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			return _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
 		}
 
-		[TestCase(true, ExpectedResult = true)]
-		[TestCase(false, ExpectedResult = false)]
-		public bool UserHasArtifactTypePermissions_ArtifactId_OnePermission(bool viewSelected)
+		[TestCase(true, true)]
+		[TestCase(false, false)]
+		public void UserHasArtifactTypePermissions_ArtifactId_OnePermission(bool viewSelected, bool expectedResult)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.ViewSelected = viewSelected;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			return _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.View });
+			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.View });
+			Assert.AreEqual(expectedResult, result);
 		}
 
-		[TestCase(true, false, ExpectedResult = false)]
-		[TestCase(true, true, ExpectedResult = true)]
-		[TestCase(false, false, ExpectedResult = false)]
-		public bool UserHasArtifactTypePermissions_ArtifactId_MultiplePermission(bool viewSelected, bool editSelected)
+		[TestCase(true, false, false)]
+		[TestCase(true, true, true)]
+		[TestCase(false, false, false)]
+		public void UserHasArtifactTypePermissions_ArtifactId_MultiplePermission(bool viewSelected, bool editSelected, bool expectedResult)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.ViewSelected = viewSelected;
@@ -187,14 +195,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			return _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.View, ArtifactPermission.Edit });
+			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.View, ArtifactPermission.Edit });
+			Assert.AreEqual(expectedResult, result);
 		}
 
-		[TestCase(true, false, ExpectedResult = false)]
-		[TestCase(false, true, ExpectedResult = false)]
-		[TestCase(true, true, ExpectedResult = true)]
-		[TestCase(false, false, ExpectedResult = false)]
-		public bool UserHasArtifactTypePermissions_ArtifactId_CheckSubSetOfThePermissions(bool addSelected, bool editSelected)
+		[TestCase(true, false, false)]
+		[TestCase(false, true, false)]
+		[TestCase(true, true, true)]
+		[TestCase(false, false, false)]
+		public void UserHasArtifactTypePermissions_ArtifactId_CheckSubSetOfThePermissions(bool addSelected, bool editSelected, bool expectedResult)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.AddSelected = addSelected;
@@ -204,7 +213,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			return _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.Edit, ArtifactPermission.Create });
+			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.Edit, ArtifactPermission.Create });
+			Assert.AreEqual(expectedResult, result);
 		}
 
 		[TestCase(true)]
