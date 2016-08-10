@@ -343,6 +343,14 @@
 			required: true
 		});
 
+		function pad(str, max) {
+			return str.length < max ? pad("0" + str, max) : str;
+		};
+
+		this.SubdirectoryDigitText = ko.computed(function () {
+			return pad(self.SubdirectoryStartNumber().toString(), parseInt(self.SubdirectoryDigitPadding()));
+		}, this);
+
 		this.FilePath = ko.observable(state.FilePath || ExportEnums.FilePathTypeEnum.Relative).extend({
 			required: true
 		});

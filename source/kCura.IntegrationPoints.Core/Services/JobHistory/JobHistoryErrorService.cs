@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 
-					if (!_errorOccurredDuringJob || JobStopManager?.IsStoppingRequested() == true)
+					if (!_errorOccurredDuringJob || JobStopManager?.IsStopRequested() == true)
 					{
 						IntegrationPoint.HasErrors = false;
 					}
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
-				if (JobStopManager?.IsStoppingRequested() == true)
+				if (JobStopManager?.IsStopRequested() == true)
 				{
 					return;
 				}

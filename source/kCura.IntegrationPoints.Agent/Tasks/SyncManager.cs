@@ -353,7 +353,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			try
 			{
-				if (JobHistory != null && JobStopManager.IsStoppingRequested())
+				if (JobHistory != null && JobStopManager.IsStopRequested())
 				{
 					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
 					jobHistoryRepo.SetErrorStatusesToExpired(this.JobHistory.ArtifactId);

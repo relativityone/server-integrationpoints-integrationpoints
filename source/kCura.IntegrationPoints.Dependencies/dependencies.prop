@@ -24,7 +24,7 @@
     <Microsoft_WindowsAzure_ConfigurationManager>Microsoft.WindowsAzure.ConfigurationManager.2.0.0.0</Microsoft_WindowsAzure_ConfigurationManager>
     <NEST>NEST.1.4.3</NEST>
     <Newtonsoft_Json>Newtonsoft.Json.6.0.8</Newtonsoft_Json>
-    <NSubstitute>NSubstitute.1.9.2.0</NSubstitute>
+    <NSubstitute>NSubstitute.1.10.0.0</NSubstitute>
     <NUnit>NUnit.2.6.4</NUnit>
     <Owin>Owin.1.0</Owin>
     <Relativity_Kepler>Relativity.Kepler.1.0.1.149</Relativity_Kepler>

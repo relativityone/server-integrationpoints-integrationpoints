@@ -1,0 +1,45 @@
+@startuml
+skinparam activity {
+ BackgroundColor<< Error >> #ff6666
+}
+
+(*) --> "Agent initializes ExportServiceManager"
+partition JobPreExecute {
+ --> "Create/Retrieve JobHistory"
+ --> "Create StopJobManager"
+ --> "Bind StopJobManager with the job history and the scheduled agent job"
+ --> "Pass StopJobManager to IJobHistoryErrorService"
+ if "Check if the job is in stopping state." then
+	--> [true] FinalizeExportService
+ else
+   --> [false] InitializeExporter
+ endif
+}
+partition InitializeExporter{
+  --> "Initialize the Exporter"
+  if "StopJobManager receive the stopping signal" then
+      --> FinalizeExportService
+  else
+	 --> [false] "Hand off the stopping token to the data reader."
+     --> "Read data"
+	 if "there are data to push to the IAPI" then
+     	if "the StopJobManager receive the stopping signal" then
+      		--> FinalizeExportService 
+     	else
+     	    --> "Read data"
+		endif
+	else 
+       --> FinalizeExportService 
+	endif
+  endif
+}
+ 
+partition FinalizeExportService {
+	--> "Tag documents"
+    --> "Clean up scratch tables if any"
+    --> "Update Job History error to expired"
+    --> "Update job's stop state back to 'None', if the current job is a scheduled job."
+    --> (*)
+}
+
+@enduml
