@@ -275,7 +275,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void SetupJobHistoryErrorSubscriptions(IDataSynchronizer synchronizer)
+		protected void SetupJobHistoryErrorSubscriptions(IDataSynchronizer synchronizer)
 		{
 			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
