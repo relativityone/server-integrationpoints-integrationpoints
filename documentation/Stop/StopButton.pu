@@ -1,0 +1,22 @@
+@startuml
+skinparam activity {
+ BackgroundColor<< Error >> #ff6666
+}
+ 
+(*) --> "A user clicks stop button"
+if "The user has a proper permission to stop the job" then
+	--> "Get all the stoppable job histories"
+	if "If there is at least one job to stop" then
+		--> "Set All pending job's 'stop state' to stopping."
+		--> "Mark all scheduled agent jobs as stopping."
+		--> "Update UI to display the confirmation of stopping request."
+		--> (*)
+	else
+		--> [false] "Throw an error to indicate that the job is unstoppable." << Error >>
+ 		--> (*)
+	end if
+else
+	--> [false] "Throw an error to indicate that he/she does not have the permission to stop." << Error >>
+endif
+--> (*)
+@enduml

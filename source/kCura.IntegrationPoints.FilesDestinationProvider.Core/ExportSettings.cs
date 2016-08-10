@@ -70,5 +70,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
 		public bool ExportFullTextAsFile { get; set; }
 		public List<int> TextPrecedenceFieldsIds { get; set; }
+		public Encoding TextFileEncodingType { get; set; }
 	}
 }

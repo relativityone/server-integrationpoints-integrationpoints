@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.Web
 					"~/Scripts/integration-point/step-mapFields-control.js",
 					"~/Scripts/integration-point/step-mapFields.js",
                     "~/Scripts/Export/export-provider-fields-step.js",
+                    "~/Scripts/Export/field-mapping-view-model.js",
                     "~/Scripts/route.js"
 				));
 

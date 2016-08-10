@@ -105,6 +105,21 @@ var Model = function (dataContainer) {
 		}
 		return "";
 	};
+
+	this.textPrecenceList = function () {
+		var text = "";
+		if (self.settings.ExportFullTextAsFile && self.settings.TextPrecedenceFields.length > 0) {
+			for (var i = 0; i < self.settings.TextPrecedenceFields.length; i++) {
+				text += self.settings.TextPrecedenceFields[i].displayName + "; ";
+			}
+			text = text.substring(0, text.length - 2);
+		}
+		return text;
+	};
+
+	this.textFileEncoding = function () {
+	    return self.settings.TextFileEncodingType.toUpperCase();
+	};
 };
 
 $(function () {
