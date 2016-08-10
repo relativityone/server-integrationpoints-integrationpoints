@@ -238,48 +238,58 @@
 		}
 
 		this.DataFileEncodingType = ko.observable().extend({
-			required: true
+		    required: true
 		});
 
-		this.updateSelectedDataFileEncodingType = function (value) {
-			if (self.DataFileEncodingTypeList().length === 3) {
-				var ungroupedFileEncodingList = self.DataFileEncodingTypeList()[0].children()
-																					.concat(self.DataFileEncodingTypeList()[1].children())
-																					.concat(self.DataFileEncodingTypeList()[2].children())
-				var selectedDataFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
-					return item.name === value;
-				});
+		this.TextFileEncodingType = ko.observable().extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.ExportTextFieldsAsFilesChecked();
+		        }
+		    }
+		});
 
-				self.DataFileEncodingType(selectedDataFileEncodingType.name);
-			}
+		this.getFileEncodingTypeName = function (value) {
+		    if (self.FileEncodingTypeList().length === 3) {
+		        var ungroupedFileEncodingList = self.FileEncodingTypeList()[0].children()
+		            .concat(self.FileEncodingTypeList()[1].children())
+		            .concat(self.FileEncodingTypeList()[2].children());
+		        var selectedFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
+		            return item.name === value;
+		        });
+
+		        return selectedFileEncodingType.name;
+		    }
 		}
 
-		this.DataFileEncodingTypeList = ko.observableArray([]);
-		if (self.DataFileEncodingTypeList.length === 0) {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
-				function Group(label, children) {
-					this.label = ko.observable(label);
-					this.children = ko.observableArray(children);
-				}
-				var defaultOption = { displayName: "Select..", name: "" };
-				var favorite = [];
-				var others = [];
-				for (var i = 0; i < result.length; i++) {
-					if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
-						favorite.push(result[i]);
-					}
-					else {
-						others.push(result[i]);
-					}
-				}
-				// By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-				self.DataFileEncodingTypeList([new Group("", [defaultOption]), new Group("Favorite", favorite), new Group("Others", others)]
-                );
-				self.updateSelectedDataFileEncodingType(state.DataFileEncodingType || "");
-			});
+		this.FileEncodingTypeList = ko.observableArray([]);
+		if (self.FileEncodingTypeList.length === 0) {
+		    IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+		        function Group(label, children) {
+		            this.label = ko.observable(label);
+		            this.children = ko.observableArray(children);
+		        }
+		        var defaultOption = { displayName: "Select..", name: "" };
+		        var favorite = [];
+		        var others = [];
+		        for (var i = 0; i < result.length; i++) {
+		            if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
+		                favorite.push(result[i]);
+		            }
+		            else {
+		                others.push(result[i]);
+		            }
+		        }
+		        // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
+		        self.FileEncodingTypeList([new Group("", [defaultOption]), new Group("Favorite", favorite), new Group("Others", others)]);
+
+		        self.DataFileEncodingType(self.getFileEncodingTypeName(state.DataFileEncodingType || ""));
+		        self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType || ""));
+		    });
 		}
 		else {
-			self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+		    self.DataFileEncodingType(self.getFileEncodingTypeName(state.DataFileEncodingType));
+		    self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType));
 		}
 
 		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || false).extend({
@@ -394,7 +404,7 @@
 		 Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
 
 		 this.openTextPrecedencePicker = function () {
-		     textPrecedencePickerViewModel.open();
+		     textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
 		 };
 
 		this.errors = ko.validation.group(this, { deep: true });
@@ -434,7 +444,8 @@
 				"UserPrefix": self.UserPrefix(),
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
-				"TextPrecedenceFields": self.TextPrecedenceFields()
+				"TextPrecedenceFields": self.TextPrecedenceFields(),
+				"TextFileEncodingType": self.TextFileEncodingType()
 			}
 		}
 	}
