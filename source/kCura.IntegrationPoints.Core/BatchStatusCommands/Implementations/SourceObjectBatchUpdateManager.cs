@@ -1,6 +1,5 @@
 using System;
 using System.Security.Claims;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
@@ -21,17 +20,18 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		public SourceObjectBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, 
+		public SourceObjectBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
 			SourceConfiguration sourceConfig, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
-			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId,Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS, uniqueJobId);
+			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS, uniqueJobId);
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 		}
+
 		public IScratchTableRepository ScratchTableRepository { get; }
 
 		public void OnJobStart(Job job)
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				{
 					destinationWorkspace = _destinationWorkspaceRepository.Create(_destinationWorkspaceId, destinationWorkspaceName);
 				}
-				else if(destinationWorkspaceName != destinationWorkspace.WorkspaceName)
+				else if (destinationWorkspaceName != destinationWorkspace.WorkspaceName)
 				{
 					destinationWorkspace.WorkspaceName = destinationWorkspaceName;
 					_destinationWorkspaceRepository.Update(destinationWorkspace);

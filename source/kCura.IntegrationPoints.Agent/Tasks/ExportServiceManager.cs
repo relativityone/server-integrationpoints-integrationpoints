@@ -122,7 +122,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(synchronizer, job);
 
 				_jobStopManager.ThrowIfStopRequested();
-				;
 				// Push documents
 				using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
 					IntegrationPointDto.SourceConfiguration,
@@ -172,7 +171,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
 
-			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
+			_statisticsService?.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 			_exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
@@ -200,7 +199,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				_jobStopManager.Dispose();
+				_jobStopManager?.Dispose();
 				_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Unstoppable);
 			}
 			catch
@@ -211,7 +210,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
-			_exportServiceJobObservers = InitializeExportServiceJobObservers(job, userImportApiSettings);
+			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers( job, _sourceWorkspaceManager,
+				_sourceJobManager, _synchronizerFactory, 
+				_serializer, _jobHistoryErrorManager, 
+				MappedFields.ToArray(), _sourceConfiguration,
+				_updateStatusType, IntegrationPointDto, JobHistoryDto,
+				GetUniqueJobId(job), userImportApiSettings);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
@@ -444,28 +448,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
 			}
 			return integrationPoint;
-		}
-
-		private List<IBatchStatus> InitializeExportServiceJobObservers(Job job, string userImportApiSettings)
-		{
-			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
-			string uniqueJobId = GetUniqueJobId(job);
-
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager,
-				_sourceJobManager, documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration,
-				userImportApiSettings, JobHistoryDto.ArtifactId, uniqueJobId);
-
-			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, JobHistoryDto.ArtifactId, job.SubmittedBy, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
-
-			var batchStatusCommands = new List<IBatchStatus>()
-			{
-				destinationFieldsTagger,
-				sourceFieldsTagger,
-				sourceJobHistoryErrorUpdater
-			};
-			return batchStatusCommands;
 		}
 
 		private string GetUniqueJobId(Job job)
