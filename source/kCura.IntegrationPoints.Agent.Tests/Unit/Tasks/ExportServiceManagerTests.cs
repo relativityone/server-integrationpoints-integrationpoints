@@ -1,6 +1,7 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
@@ -26,7 +27,6 @@ using NUnit.Framework;
 using Relativity.API;
 using System.Collections.Generic;
 using System;
-using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 {
@@ -73,6 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private object _lock;
 		private IBatchStatus _exportServiceObserver;
+		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 
 		[SetUp]
 		public void SetUp()
@@ -105,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_exporterService = Substitute.For<IExporterService>();
 			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
-
+			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
 			_exportServiceObserver = Substitute.For<IBatchStatus>();
 
 			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _sourceWorkspaceManager, _sourceJobManager,
@@ -140,7 +141,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_jobHistoryErrorManager.StageForUpdatingErrors(_job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
 			_repositoryFactory.GetSavedSearchRepository(_configuration.SourceWorkspaceArtifactId, _configuration.SavedSearchArtifactId).Returns(_savedSearchRepository);
 			_savedSearchRepository.RetrieveSavedSearch().Returns(new SavedSearchDTO());
+			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
+
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, _job.JobId).Returns(_jobStopManager);
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(new ImportSettings());
 			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(_documentRepository);
@@ -150,6 +153,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
 			_jobStopManager.SyncRoot.Returns(_lock);
+
+
 			_instance = new ExportServiceManager(_helper,
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory, _exporterFactory,
@@ -276,9 +281,68 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		[Test]
 		public void Execute_ExportServiceJobObserverFailToInitialize()
 		{
-			//_exportServiceObserver.When( observer => observer.OnJobStart(_job)).Do(info => throw new Exception(););	
+			// ARRANGE
+			const string exceptionMessage = "exception !";
+			_exportServiceObserver.When( observer => observer.OnJobStart(_job)).Do(info => { throw new Exception(exceptionMessage); });
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), Arg.Is<AggregateException>(ex => ex.InnerExceptions[0].Message == exceptionMessage));
+			_jobService.Received().UpdateStopState(Arg.Is<List<long>>(lst => lst.Contains(_job.JobId)), StopState.Unstoppable);
+			_jobHistoryErrorService.Received().CommitErrors();
+
 		}
 
+		[Test]
+		public void Execute_ExportServiceJobObserverFailToFinalized()
+		{
+			// ARRANGE
+			const string exceptionMessage = "exception !";
+			_exportServiceObserver.When(observer => observer.OnJobComplete(_job)).Do(info => { throw new Exception(exceptionMessage); });
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			AssertFinalizedJob(_job);
+			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), Arg.Is<AggregateException>(ex => ex.InnerExceptions[0].Message == exceptionMessage));
+		}
+
+		[Test]
+		public void Execute_NewSavedSearchIsCreatedOnItemLevelErrorRetry()
+		{
+			// ARRANGE
+			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			AssertRetrySavedSearch(true);
+		}
+
+		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run)]
+		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run)]
+		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run)]
+		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run)]
+		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)]
+		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)]
+		[TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)]
+		public void Execute_NoRetrySavedSearchCreated(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices errorType, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices jobType)
+		{
+			// ARRANGE
+			_updateStatusType.ErrorTypes = errorType;
+			_updateStatusType.JobType = jobType;
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			AssertRetrySavedSearch(false);
+		}
 		private void AssertFinalizedJob(Job job)
 		{
 			// dispose jobStopManager
@@ -296,6 +360,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(rdo => rdo.TotalItems == _EXPORT_DOC_COUNT));
 		}
 
+		private void AssertRetrySavedSearch(bool expectToCreate)
+		{
+			if (expectToCreate)
+			{
+				_jobHistoryErrorManager.Received(1).CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
+				_jobHistoryErrorRepository.Received(1).DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
+			}
+			else
+			{
+				_jobHistoryErrorManager.DidNotReceive().CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
+				_jobHistoryErrorRepository.DidNotReceive().DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
+			}
+		}
 		private void ExporterServiceObjectIsFinalized()
 		{
 			_exportServiceObserver.OnJobComplete(_job);
