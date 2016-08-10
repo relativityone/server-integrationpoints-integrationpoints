@@ -279,18 +279,18 @@
         </Map>
       </Maps>
       <Adds>
-        <Add path="C:/SourceCode/integrationpoints\source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+        <Add path="source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
           <References>
             <Reference>kCura.IntegrationPoints.dll</Reference>
           </References>
         </Add>
-        <Add path="C:\SourceCode\integrationpoints\source\Provider\Provider.csproj">
+        <Add path="source\Provider\Provider.csproj">
           <References>
             <Reference>kCura.SourceProviderInstaller.dll</Reference>
             <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
           </References>
         </Add>
-        <Add path="C:\SourceCode\integrationpoints\source\JsonLoader\JsonLoader.csproj">
+        <Add path="source\JsonLoader\JsonLoader.csproj">
           <References>
             <Reference>kCura.SourceProviderInstaller.dll</Reference>
             <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
