@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SyncWorker : IntegrationPointTaskBase, ITask
 	{
 		private readonly JobStatisticsService _statisticsService;
-		private readonly IRepositoryFactory _repositoryFactory;
 		private IEnumerable<IBatchStatus> _batchStatus;
 
 		public IEnumerable<IBatchStatus> BatchStatus
@@ -55,7 +54,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		  IEnumerable<IBatchStatus> statuses,
 		  JobStatisticsService statisticsService,
 		  IManagerFactory managerFactory,
-		  IRepositoryFactory repositoryFactory,
 		  IContextContainerFactory contextContainerFactory,
 		  IJobService jobService) :
 			base(caseServiceContext,
@@ -72,7 +70,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			BatchStatus = statuses;
 			_statisticsService = statisticsService;
-			_repositoryFactory = repositoryFactory;
 		}
 
 		public void Execute(Job job)
@@ -170,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						// IGNORE ERROR. It is possible that the user stop the job in between disposing job history manager and the updating the stop state.
 					}
 
-					SetErrorStatusesToExpiredIfStopped(job, _repositoryFactory);
+					SetErrorStatusesToExpiredIfStopped(job);
 
 					foreach (var completedItem in BatchStatus)
 					{

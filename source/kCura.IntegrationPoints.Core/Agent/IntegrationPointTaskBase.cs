@@ -208,14 +208,15 @@ namespace kCura.IntegrationPoints.Core.Agent
 			return sourceProvider;
 		}
 
-		protected void SetErrorStatusesToExpiredIfStopped(Job job, IRepositoryFactory repositoryFactory)
+		protected void SetErrorStatusesToExpiredIfStopped(Job job)
 		{
 			try
 			{
 				if (GetJobStopManager(job).IsStopRequested())
 				{
-					IJobHistoryRepository jobHistoryRepo = repositoryFactory.GetJobHistoryRepository(CaseServiceContext.WorkspaceID);
-					jobHistoryRepo.SetErrorStatusesToExpired(JobHistory.ArtifactId);
+					IContextContainer contextContainer = ContextContainerFactory.CreateContextContainer(Helper);
+					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
+					jobHistoryManager.SetErrorStatusesToExpired(CaseServiceContext.WorkspaceID, JobHistory.ArtifactId);
 				}
 			}
 			catch (Exception)

@@ -322,8 +322,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				try
 				{
-					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
-					jobHistoryRepo.SetErrorStatusesToExpired(JobHistoryDto.ArtifactId);
+					IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+					jobHistoryManager.SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, JobHistoryDto.ArtifactId);
 				}
 				catch
 				{
