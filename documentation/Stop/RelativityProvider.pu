@@ -15,15 +15,16 @@ partition JobPreExecute {
    --> [false] InitializeExporter
  endif
 }
-partition InitializeExporter{
+
+partition InitializeExporter {
   --> "Initialize the Exporter"
-  if "StopJobManager receive the stopping signal" then
+  if "StopJobManager received the stop signal" then
       --> FinalizeExportService
   else
-	 --> [false] "Hand off the stopping token to the data reader."
+	 --> [false] "Hand off the stop token to the data reader."
      --> "Read data"
-	 if "there are data to push to the IAPI" then
-     	if "the StopJobManager receive the stopping signal" then
+	 if "there is data to push to the IAPI" then
+     	if "StopJobManager received the stop signal" then
       		--> FinalizeExportService 
      	else
      	    --> "Read data"

@@ -11,29 +11,29 @@ partition Initialization {
  --> "Pass the StopJobManager to IJobHistoryErrorService"
 }
 partition Pushing data{
-  if "StopJobManager receive the stopping signal" then
-      --> Finalize the job
+  if "StopJobManager received the stop signal" then
+      --> [true] Finalize the job
   else
-	 --> [false] "Hand off the stopping token to the data synchronizer."
+	 --> [false] "Hand off the stop token to the data synchronizer."
      --> "Read data"
-	 if "there are data to push to the IAPI" then
-     	if "the StopJobManager receive the stopping signal" then
-      		--> Finalize the job
+	 if "there is data to push to the IAPI" then
+     	[true] if "StopJobManager received the stop signal" then
+      		--> [true] Finalize the job
      	else
-			--> "Push the data into the import service."
+			--> [false] "Push the data into the import service."
      	    --> "Read data"
 		endif
 	else 
-       --> Finalize the job
+       --> [false] FinalizeJob
 	endif
   endif
 }
  
-partition FinalizeJob{
+partition FinalizeJob {
    if "the job has been canceled and this is the last batch" then 
-	 --> "Update the job history status to be 'Canceled' "
+	 --> [true] "Update the job history status to be 'Canceled' "
    else
-     --> "Update the job history status to be an appropriate status. "
+     --> [false] "Update the job history status to be an appropriate status. "
    endif
    --> (*)
 }

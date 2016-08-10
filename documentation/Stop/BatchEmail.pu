@@ -1,10 +1,10 @@
 
 (*) --> "Retrieve JobHistory"
 if "The job history's status is 'stopped' then
-	--> [true] "Update email's messages to inform regrading to the stopping."
+	--> [true] "Update email's message to inform job being stopped."
     --> "Send email."
 else
-	--> [false] "Choose non-stoppinh related email's messages."
+	--> [false] "Choose non-stopping related email's message."
 endif
 --> "Send email."
 --> (*)

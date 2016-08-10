@@ -9,7 +9,7 @@ partition JobPreExecute {
  --> "Create StopJobManager"
  --> "Bind StopJobManager with the job history and the scheduled agent job"
  --> "Pass StopJobManager to IJobHistoryErrorService"
- if "Check if the job is in stopping state." then
+ if "Check if the job is in stopping state" then
 	--> [true] JobPostExecute 
  else
    --> [false] BatchTask 
@@ -18,13 +18,13 @@ partition JobPreExecute {
 
 partition BatchTask {
 if "There is an id to be batched out"  then
-	--> [true] "Check StopJobManager if the stopping is requested."
-	if "The stopping is signaled" then
+	--> [true] "Check StopJobManager if stop is requested"
+	if "The stop is signaled" then
 		--> [true] JobPostExecute
 	else
 		--> [false] "Read ids from the source provider"
 		--> "Add batch id into the batch collection"
-        --> "Check StopJobManager if the stopping is requested."
+        --> "Check StopJobManager if stop is requested"
 	end if
 else 
   --> JobPostExecute
@@ -32,9 +32,9 @@ endif
 }
 
 partition JobPostExecute {
---> "Update job's stop state back to 'None', if the current job is a scheduled job."
+--> "Update job's stop state back to 'None', if the current job is a scheduled job"
 if "There is no child job created" then
-	--> [true] "Update the job history's status to stopped."
+	--> [true] "Update the job history's status to stopped"
 	--> (*)
 else 
 	--> [false] (*)
