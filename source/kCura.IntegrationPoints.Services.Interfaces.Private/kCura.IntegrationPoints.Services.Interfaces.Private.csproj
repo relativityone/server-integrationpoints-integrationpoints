@@ -119,7 +119,7 @@
 $(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)..\..\DevelopmentScripts\mergeDependencies.bat" $(ConfigurationName) 9.4.241.2</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\DevelopmentScripts\mergeDependencies.bat" $(ConfigurationName)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

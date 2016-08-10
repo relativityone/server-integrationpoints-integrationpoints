@@ -10,4 +10,4 @@ ECHO %VERSION%
 ECHO %ROOT%
 ECHO %BUILDPROJECT%
 
-nant merge_all -buildfile:"%BUILDPROJECT%" "-D:root=%Root%" "-D:buildconfig=%BUILDCONFIG%" "-D:relativityDependencyVersion=%DEPENDENCYVERSION%" -nologo
+nant merge_all -buildfile:"%BUILDPROJECT%" "-D:root=%Root%" "-D:buildconfig=%BUILDCONFIG%" -nologo
