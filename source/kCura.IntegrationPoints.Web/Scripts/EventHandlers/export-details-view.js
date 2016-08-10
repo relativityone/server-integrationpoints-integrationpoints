@@ -118,7 +118,7 @@ var Model = function (dataContainer) {
 	};
 
 	this.textFileEncoding = function () {
-		return "";
+	    return self.settings.TextFileEncodingType.toUpperCase();
 	};
 };
 
