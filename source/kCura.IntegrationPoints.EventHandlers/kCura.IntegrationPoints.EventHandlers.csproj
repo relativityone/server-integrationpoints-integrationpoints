@@ -23,6 +23,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
