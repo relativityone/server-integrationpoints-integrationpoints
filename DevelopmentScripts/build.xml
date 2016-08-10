@@ -404,7 +404,7 @@
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\source\Provider\bin\Provider.dll</Assembly>
+          <Assembly>source\Provider\bin\Provider.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
@@ -418,8 +418,8 @@
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
           <Assembly>lib\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\source\JsonLoader\bin\JsonLoader.dll</Assembly>
-          <Assembly>C:\SourceCode\integrationpoints\source\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
+          <Assembly>source\JsonLoader\bin\JsonLoader.dll</Assembly>
+          <Assembly>source\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
