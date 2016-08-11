@@ -150,11 +150,6 @@ namespace kCura.IntegrationPoints.Core.Agent
 			return emailRecipientList;
 		}
 
-		protected virtual string GetSourceConfiguration(string originalSourceConfiguration)
-		{
-			return originalSourceConfiguration;
-		}
-
 		protected virtual IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
 		{
 			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);

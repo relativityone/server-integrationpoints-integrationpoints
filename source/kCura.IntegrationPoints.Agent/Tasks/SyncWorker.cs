@@ -175,9 +175,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					throw new ArgumentException("Cannot import destination provider with unknown id.");
 				}
 				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
-				string sourceConfiguration = GetSourceConfiguration(this.IntegrationPoint.SourceConfiguration);
 
-				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
+				ExecuteImport(fieldMap, IntegrationPoint.SourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
 
 				InjectErrors();
 			}
