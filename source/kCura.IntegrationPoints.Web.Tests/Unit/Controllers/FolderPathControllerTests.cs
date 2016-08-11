@@ -84,20 +84,25 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		}
 
 		[Test]
-		[ExpectedException(typeof(Exception), ExpectedMessage = "This is an example failure")]
-		public void GetFields_Exception()
+		public void GetFields_Exception(string exceptionMessage)
 		{
 			//ARRANGE
+			string message = "This is an example failure";
 			QueryResult result = new QueryResult
 			{
 				Success = false,
-				Message = "This is an example failure"
+				Message = message
 			};
 
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>())
 				.Returns(result);
-
-			_instance.GetFields();
+			
+			// ACT/ASSERT
+			Assert.That(() => _instance.GetFields(),
+				Throws.Exception
+					.TypeOf<Exception>()
+					.With.Property("Message")
+					.EqualTo(message));
 		}
 
 		[Test]

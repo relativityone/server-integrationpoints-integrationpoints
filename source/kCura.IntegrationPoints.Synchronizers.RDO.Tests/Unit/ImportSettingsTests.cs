@@ -66,17 +66,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			_generator.DidNotReceive().Create(Arg.Any<BaseServiceContext>(), Arg.Any<int>());
 		}
 
-		[TestCase(null, Result = ImportOverlayBehaviorEnum.UseRelativityDefaults)]
-		[TestCase("", Result = ImportOverlayBehaviorEnum.UseRelativityDefaults)]
-		[TestCase("Use Field Settings", Result = ImportOverlayBehaviorEnum.UseRelativityDefaults)]
-		[TestCase("Merge Values", Result = ImportOverlayBehaviorEnum.MergeAll)]
-		[TestCase("Replace Values", Result = ImportOverlayBehaviorEnum.ReplaceAll)]
-		[TestCase("exception please", ExpectedException = typeof(Exception))]
-		public ImportOverlayBehaviorEnum ImportSettings_ImportOverlayBehavior(string input)
+		[TestCase(null, ImportOverlayBehaviorEnum.UseRelativityDefaults)]
+		[TestCase("", ImportOverlayBehaviorEnum.UseRelativityDefaults)]
+		[TestCase("Use Field Settings", ImportOverlayBehaviorEnum.UseRelativityDefaults)]
+		[TestCase("Merge Values", ImportOverlayBehaviorEnum.MergeAll)]
+		[TestCase("Replace Values", ImportOverlayBehaviorEnum.ReplaceAll)]
+		public void ImportSettings_ImportOverlayBehavior(string input, string expectedResult)
 		{
 			ImportSettings setting = new ImportSettings(_generator, _context);
 			setting.FieldOverlayBehavior = input;
-			return setting.ImportOverlayBehavior;
+			ImportOverlayBehaviorEnum result = setting.ImportOverlayBehavior;
+			Assert.AreEqual(expectedResult, result);
+		}
+
+		[Test]
+		public void ImportSettings_ImportOverlayBehavior_Exception(string input, string expectedResult)
+		{
+			ImportSettings setting = new ImportSettings(_generator, _context);
+			setting.FieldOverlayBehavior = "exception please";
+			Assert.That(() => setting.ImportOverlayBehavior, Throws.TypeOf<Exception>());
 		}
 
 		private object GetPropertyValue(object o, string propertyName)

@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[Category("Integration Tests")]
 	public class ITaskFactoryTests
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		[Test]
 		public void UpdateJobHistory()
 		{

@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void OtherProvidersSetup()
 		{
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");

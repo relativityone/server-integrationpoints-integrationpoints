@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.DataStructures
 		[TestCase(25)]
 		[TestCase(50)]
 		[TestCase(100)]
-		[Ignore]
+		[Explicit]
 		public void FolderTree_StressTest(int maxFolderDepth)
 		{
 			// ARRANGE

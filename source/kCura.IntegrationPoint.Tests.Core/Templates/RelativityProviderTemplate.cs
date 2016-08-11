@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_targetWorkspaceTemplate = targetWorkspaceTemplate;
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void RelativityProviderSetup()
 		{
 			try
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void RelativityProviderTeardown()
 		{
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);

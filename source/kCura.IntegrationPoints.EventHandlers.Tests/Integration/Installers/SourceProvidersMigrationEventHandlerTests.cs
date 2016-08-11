@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 	[TestFixture]
 	internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Setup()
 		{
 			Importer = new MockImportService();

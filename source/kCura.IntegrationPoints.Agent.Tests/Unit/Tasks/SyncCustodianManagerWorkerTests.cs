@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			"{\"artifactTypeID\":1000051,\"ImportOverwriteMode\":\"AppendOverlay\",\"CaseArtifactId\":1019127,\"CustodianManagerFieldContainsLink\":\"true\"}";
 		private ISerializer serializer;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Setup()
 		{
 			serializer = new JSONSerializer();

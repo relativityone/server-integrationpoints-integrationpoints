@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			return mock;
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Setup()
 		{
 			_settings = JsonConvert.SerializeObject(new ImportSettings());

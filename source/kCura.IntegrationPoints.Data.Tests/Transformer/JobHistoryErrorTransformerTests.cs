@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
 		private static readonly Guid _errorTypeJobChoiceGuid = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
 		private static readonly Guid _errorTypeItemChoiceGuid = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SetUp()
         {
             _repositoryFactory = Substitute.For<IRepositoryFactory>();

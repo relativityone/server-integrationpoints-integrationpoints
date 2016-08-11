@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 		private FieldMap[] _mappedFields;
 		private HashSet<int> _longTextField;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Setup()
 		{
 			_exporter = Substitute.For<IExporter>();

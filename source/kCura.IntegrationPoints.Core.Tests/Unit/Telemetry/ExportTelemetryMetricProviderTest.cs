@@ -61,18 +61,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 		}
 
 		[Test]
-		[ExpectedException(typeof (Exception))]
 		public void ItShouldThrowExceptionOnInstallExportMetricIdentifiers()
 		{
 			// Arrange
-
 			_mockInternalMetricsCollectionManager
 				.CreateMetricIdentifierAsync(Arg.Any<MetricIdentifier>(), Arg.Any<bool>())
 				.Throws<AggregateException>();
 
-			// Act
-
-			_instanceToTest.Run(_category, _mockHelper);
+			// Act/Assert
+			Assert.That(() => _instanceToTest.Run(_category, _mockHelper), Throws.TypeOf<Exception>());
 		}
 
 		#endregion //Tests

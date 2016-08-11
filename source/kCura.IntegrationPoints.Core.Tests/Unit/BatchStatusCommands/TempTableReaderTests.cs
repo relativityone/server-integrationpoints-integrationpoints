@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private int _identifierFieldId;
 		private DataColumn[] _columns;
 		
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SetUp()
 		{
 			_documentRepo = Substitute.For<IDocumentRepository>();

@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			ArtifactId = 987
 		};
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Setup()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();

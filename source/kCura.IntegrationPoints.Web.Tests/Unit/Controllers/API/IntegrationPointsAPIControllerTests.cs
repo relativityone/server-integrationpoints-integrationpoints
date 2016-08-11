@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		private const int _WORKSPACE_ID = 23432;
 
 		[SetUp]
-		public new void TestFixtureSetUp()
+		public new void OneTimeSetUp()
 		{
 			_relativityUrlHelper = this.GetMock<IRelativityUrlHelper>();
 			_integrationPointService = this.GetMock<IIntegrationPointService>();

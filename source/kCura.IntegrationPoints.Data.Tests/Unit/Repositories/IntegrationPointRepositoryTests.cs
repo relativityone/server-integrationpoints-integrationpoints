@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
         private const int INTEGRATION_POINT_ARTIFACT_ID_1 = 101400;
         private const int INTEGRATION_POINT_ARTIFACT_ID_2 = 101401;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _integrationPointLibrary = Substitute.For<IGenericLibrary<IntegrationPoint>>();

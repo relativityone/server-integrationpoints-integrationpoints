@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_workspaceTemplate = workspaceTemplate;
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SourceProviderSetup()
 		{
 			try
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void SourceProviderTeardown()
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);

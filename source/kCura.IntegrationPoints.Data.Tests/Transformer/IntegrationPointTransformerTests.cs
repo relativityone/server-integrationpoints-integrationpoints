@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
         private readonly Guid OverwriteFieldsAppendOnlyChoice = new Guid("998C2B04-D42E-435B-9FBA-11FEC836AAD8");
 	    private readonly Guid OverwriteFieldsAppendOverlayChoice = new Guid("5450EBC3-AC57-4E6A-9D28-D607BBDCF6FD");
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
 		public void SetUp()
         {
             _repositoryFactory = Substitute.For<IRepositoryFactory>();

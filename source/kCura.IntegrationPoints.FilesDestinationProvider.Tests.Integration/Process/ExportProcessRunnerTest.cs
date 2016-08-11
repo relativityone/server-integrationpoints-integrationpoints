@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		#endregion //Fields
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init()
 		{
 			// sets WebApi URL in export library configuration
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder, exportSettingsBuilder);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void CleanUp()
 		{
 			Utility.Directory.Instance.DeleteDirectoryIfExists(_configSettings.DestinationPath, true, false);

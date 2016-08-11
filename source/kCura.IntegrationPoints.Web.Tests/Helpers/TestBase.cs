@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Helpers
 		private IWindsorContainer _windsorContainer;
 
 		[SetUp]
-		public void TestFixtureSetUp()
+		public void OneTimeSetUp()
 		{
 			_windsorContainer = new WindsorContainer();	
 		}
