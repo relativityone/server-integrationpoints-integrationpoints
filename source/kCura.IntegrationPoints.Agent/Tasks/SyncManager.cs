@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		private readonly IManagerFactory _managerFactory;
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly ISerializer _serializer;
 		private readonly IGuidService _guidService;
 		private readonly IJobHistoryService _jobHistoryService;
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
-			IRepositoryFactory repositoryFactory,
+			IContextContainerFactory contextContainerFactory,
 			IEnumerable<IBatchStatus> batchStatuses)
 		{
 			_caseServiceContext = caseServiceContext;
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			_managerFactory = managerFactory;
-			_repositoryFactory = repositoryFactory;
+			_contextContainerFactory = contextContainerFactory;
 			base.RaiseJobPreExecute += new JobPreExecuteEvent(JobPreExecute);
 			base.RaiseJobPostExecute += new JobPostExecuteEvent(JobPostExecute);
 			BatchJobCount = 0;
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 				InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
 
-				JobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId);
+				JobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, true);
 				JobStopManager.ThrowIfStopRequested();
 
 				if (!this.JobHistory.StartTimeUTC.HasValue)
@@ -355,8 +355,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				if (JobHistory != null && JobStopManager.IsStopRequested())
 				{
-					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
-					jobHistoryRepo.SetErrorStatusesToExpired(this.JobHistory.ArtifactId);
+					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+					IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(contextContainer);
+					jobHistoryManager.SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, JobHistory.ArtifactId);
 				}
 			}
 			catch (Exception exception)

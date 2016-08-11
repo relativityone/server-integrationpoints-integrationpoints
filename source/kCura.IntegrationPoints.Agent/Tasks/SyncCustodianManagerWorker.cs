@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -45,13 +44,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ManagerQueueService managerQueueService,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
-			IRepositoryFactory repositoryFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService)
 				: base(caseServiceContext, helper, dataProviderFactory, serializer,
-						appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, 
+						appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
 						jobManager, null, statisticsService, managerFactory,
-						repositoryFactory, contextContainerFactory, jobService)
+						contextContainerFactory, jobService, false)
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;
 			_managerQueueService = managerQueueService;
@@ -145,7 +143,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				   x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
 				IDataSynchronizer dataSynchronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
 
-				base.SetupJobHistoryErrorSubscriptions(dataSynchronizer, job);
+				base.SetupJobHistoryErrorSubscriptions(dataSynchronizer);
 
 				dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
 
