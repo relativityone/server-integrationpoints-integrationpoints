@@ -23,14 +23,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		private const string TemplateWorkspaceName = "kCura Starter Template";
 		private const int _ControlNumber_Field_ArtifactId = 1003667;
-	    private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
-	    private const string _SAVED_SEARCH_NAME = "Testing Saved Search";
+		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
+		private const string _SAVED_SEARCH_NAME = "Testing Saved Search";
 
-        #endregion //Fields
+		#endregion //Fields
 
-        #region Constructors
+		#region Constructors
 
-        public WorkspaceService(ConfigSettings configSettings)
+		public WorkspaceService(ConfigSettings configSettings)
 		{
 			_configSettings = configSettings;
 		}
@@ -69,27 +69,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			}
 		}
 
-	    internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
-	    {
-	        var query =
-	            defaultFields.Select(x => new FieldRef(x.DisplayName))
-	                .Concat(additionalFields.Select(x => new FieldRef(x.DisplayName)));
+		internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
+		{
+			var query =
+				defaultFields.Select(x => new FieldRef(x.DisplayName))
+					.Concat(additionalFields.Select(x => new FieldRef(x.DisplayName)));
 
-            SearchContainer folder = new SearchContainer()
-            {
-                Name = _SAVED_SEARCH_FOLDER,
-            };
-            int folderArtifactId = SavedSearch.CreateSearchFolder(workspaceId, folder);
+			SearchContainer folder = new SearchContainer()
+			{
+				Name = _SAVED_SEARCH_FOLDER,
+			};
+			int folderArtifactId = SavedSearch.CreateSearchFolder(workspaceId, folder);
 
-            KeywordSearch search = new KeywordSearch()
-            {
-                Name = _SAVED_SEARCH_NAME,
-                ArtifactTypeID = (int)ArtifactType.Document,
-                SearchContainer = new SearchContainerRef(folderArtifactId),
-                Fields = new List<FieldRef>(query.ToArray())
-            };
-            return SavedSearch.Create(workspaceId, search);
-        }
+			KeywordSearch search = new KeywordSearch()
+			{
+				Name = _SAVED_SEARCH_NAME,
+				ArtifactTypeID = (int)ArtifactType.Document,
+				SearchContainer = new SearchContainerRef(folderArtifactId),
+				Fields = new List<FieldRef>(query.ToArray())
+			};
+			return SavedSearch.Create(workspaceId, search);
+		}
 
 		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable, DataTable imageSourceDataTable)
 		{

@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -51,7 +50,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 
-            var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
+			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
 			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int)ArtifactType.Document);
 
 			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
@@ -60,9 +59,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray() :
 				fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
-            _configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields, _configSettings.WorkspaceId);
+			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields, _configSettings.WorkspaceId);
 
-            _documents = GetDocumentDataTable();
+			_documents = GetDocumentDataTable();
 			_images = GetImageDataTable();
 
 			_workspaceService.ImportData(_configSettings.WorkspaceId, _documents, _images);
@@ -89,7 +88,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
 				new ExporterWrapperFactory(),
-				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())						
+				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())
 			);
 
 			var exportSettingsBuilder = new ExportSettingsBuilder();
@@ -253,4 +252,3 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		#endregion Methods
 	}
 }
- 
