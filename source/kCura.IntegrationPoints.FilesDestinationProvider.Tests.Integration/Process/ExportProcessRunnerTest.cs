@@ -55,6 +55,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
 
+			_configSettings.LongTextField = fields.FirstOrDefault(x => x.DisplayName == _configSettings.LongTextFieldName);
+
 			_configSettings.AdditionalFields = (_configSettings.AdditionalFieldNames.Length > 0) ?
 				fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray() :
 				fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
@@ -148,6 +150,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			fieldIds.AddRange(_configSettings.AdditionalFields.Select(x => int.Parse(x.FieldIdentifier)));
 
+			// Add Long Text Field
+			fieldIds.Add(int.Parse(_configSettings.LongTextField.FieldIdentifier));
+
 			var settings = new ExportSettings
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
@@ -156,6 +161,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				ExportedObjArtifactId = _configSettings.ExportedObjArtifactId,
 				ExportedObjName = _configSettings.SavedSearchArtifactName,
 				SelViewFieldIds = fieldIds,
+				TextPrecedenceFieldsIds = new List<int> { int.Parse(_configSettings.LongTextField.FieldIdentifier) },
 				DataFileEncoding = Encoding.Unicode,
 				VolumeMaxSize = 650
 			};

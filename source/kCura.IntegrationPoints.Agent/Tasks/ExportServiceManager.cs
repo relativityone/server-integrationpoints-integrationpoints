@@ -122,7 +122,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(synchronizer, job);
 
 				_jobStopManager.ThrowIfStopRequested();
-
 				// Push documents
 				using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
 					IntegrationPointDto.SourceConfiguration,
@@ -149,8 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (OperationCanceledException)
 			{
-				SetTheJobAsAnUnstoppable(job);
-				// IGNORE ERROR. The user attempted to stop the job.
+				// ignore error.
 			}
 			catch (Exception ex)
 			{
@@ -159,7 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				SetTheJobAsAnUnstoppable(job);
+				SetJobStateAsUnstoppable(job);
 				_jobHistoryErrorService.CommitErrors();
 				FinalizeExportService(job);
 			}
@@ -173,14 +171,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
 
-			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
+			_statisticsService?.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 			_exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
 		private void FinalizeExportServiceObservers(Job job)
 		{
-			SetTheJobAsAnUnstoppable(job);
+			SetJobStateAsUnstoppable(job);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
@@ -197,11 +195,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ThrowNewExceptionIfAny(exceptions);
 		}
 
-		private void SetTheJobAsAnUnstoppable(Job job)
+		private void SetJobStateAsUnstoppable(Job job)
 		{
 			try
 			{
-				_jobStopManager.Dispose();
+				_jobStopManager?.Dispose();
 				_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Unstoppable);
 			}
 			catch
@@ -212,7 +210,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
-			_exportServiceJobObservers = InitializeExportServiceJobObservers(job, userImportApiSettings);
+			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers( job, _sourceWorkspaceManager,
+				_sourceJobManager, _synchronizerFactory, 
+				_serializer, _jobHistoryErrorManager, 
+				MappedFields.ToArray(), _sourceConfiguration,
+				_updateStatusType, IntegrationPointDto, JobHistoryDto,
+				GetUniqueJobId(job), userImportApiSettings);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
@@ -275,7 +278,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
 			}
 
-			_jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _identifier, job.JobId);
+			_jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _identifier, job.JobId, true);
 			_jobHistoryErrorService.JobStopManager = _jobStopManager;
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
@@ -315,19 +318,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 
-			if (_jobStopManager?.IsStoppingRequested() == true)
+			if (_jobStopManager?.IsStopRequested() == true)
 			{
 				try
 				{
-					IJobHistoryRepository jobHistoryRepo = _repositoryFactory.GetJobHistoryRepository(_caseServiceContext.WorkspaceID);
-					jobHistoryRepo.SetErrorStatusesToExpired(JobHistoryDto.ArtifactId);
+					IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+					jobHistoryManager.SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, JobHistoryDto.ArtifactId);
 				}
 				catch
 				{
-					// ignored
+					// ignore error. the status of errors will not affect the 'retry' nor the 'run' scenarios.
 				}
 			}
-
 			UpdateIntegrationPointRuntimes(job);
 		}
 
@@ -446,28 +448,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
 			}
 			return integrationPoint;
-		}
-
-		private List<IBatchStatus> InitializeExportServiceJobObservers(Job job, string userImportApiSettings)
-		{
-			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
-			string uniqueJobId = GetUniqueJobId(job);
-
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager,
-				_sourceJobManager, documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration,
-				userImportApiSettings, JobHistoryDto.ArtifactId, uniqueJobId);
-
-			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, JobHistoryDto.ArtifactId, job.SubmittedBy, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
-
-			var batchStatusCommands = new List<IBatchStatus>()
-			{
-				destinationFieldsTagger,
-				sourceFieldsTagger,
-				sourceJobHistoryErrorUpdater
-			};
-			return batchStatusCommands;
 		}
 
 		private string GetUniqueJobId(Job job)

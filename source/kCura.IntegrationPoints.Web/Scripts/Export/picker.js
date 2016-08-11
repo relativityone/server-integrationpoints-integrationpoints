@@ -34,8 +34,8 @@
         return {
             autoOpen: false,
             modal: true,
-            width: 500,
-            height: 500,
+            width: 'auto',
+            height: 'auto',
             resizable: false,
             draggable: false,
             closeOnEscape: true,

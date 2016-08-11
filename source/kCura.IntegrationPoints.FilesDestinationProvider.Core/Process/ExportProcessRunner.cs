@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using kCura.IntegrationPoints.Contracts.Models;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {

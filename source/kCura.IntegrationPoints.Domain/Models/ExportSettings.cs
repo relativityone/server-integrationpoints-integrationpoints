@@ -1,4 +1,7 @@
-﻿namespace kCura.IntegrationPoints.Domain.Models
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
+
+namespace kCura.IntegrationPoints.Domain.Models
 {
 	public class ExportSettings
 	{
@@ -41,5 +44,7 @@
 		public string UserPrefix { get; set; }
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
 		public bool ExportFullTextAsFile { get; set; }
+		public IEnumerable<FieldEntry> TextPrecedenceFields { get; set; }
+		public string TextFileEncodingType { get; set; }
 	}
 }

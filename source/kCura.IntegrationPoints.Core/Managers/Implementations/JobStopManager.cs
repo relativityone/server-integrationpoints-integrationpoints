@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly Timer _timerThread;
 		private readonly IJobService _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
-		private readonly Guid _jobIdentifier;
+		private readonly Guid _jobBatchIdentifier;
 		private readonly long _jobId;
 		private readonly CancellationToken _token;
 		private bool _disposed;
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			SyncRoot = new object();
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
-			_jobIdentifier = jobHistoryInstanceId;
+			_jobBatchIdentifier = jobHistoryInstanceId;
 			_jobId = jobId;
 			Callback = new TimerCallback(state =>
 			{
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 						{
 							if (job.StopState.HasFlag(StopState.Stopping))
 							{
-								JobHistory jobHistory = _jobHistoryService.GetRdo(_jobIdentifier);
+								JobHistory jobHistory = _jobHistoryService.GetRdo(_jobBatchIdentifier);
 								if (jobHistory != null && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
 									|| jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
 								{
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_timerThread = new Timer(Callback, null, 0, 500);
 		}
 
-		public bool IsStoppingRequested()
+		public bool IsStopRequested()
 		{
 			return _token.IsCancellationRequested;
 		}

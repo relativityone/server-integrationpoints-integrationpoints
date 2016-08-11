@@ -17,5 +17,12 @@
 		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
 		/// <returns>A StoppableJobCollection</returns>
 		Models.StoppableJobCollection GetStoppableJobCollection(int workspaceArtifactId, int integrationPointArtifactId);
+
+		/// <summary>
+		/// Set all associate job history errors to be expired
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <param name="jobHistoryArtifactId">An artifact id of the job history</param>
+		void SetErrorStatusesToExpired(int workspaceArtifactId, int jobHistoryArtifactId);
 	}
 }

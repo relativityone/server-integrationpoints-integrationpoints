@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-		public void ItShouldSelectFieldIdentifiers()
+		public void ItShouldSelectFieldIdentifiersForExportableFields()
 		{
 			var fields = new List<FieldMap>()
 			{
@@ -84,6 +84,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var exportSettings = _exportSettingsBuilder.Create(CreateSourceSettings(), fields, 1);
 
 			CollectionAssert.AreEqual(exportSettings.SelViewFieldIds, new List<int> {1, 2});
+		}
+
+		[Test]
+		public void ItShouldSelectFieldIdentifiersForTextPrecedenceFields()
+		{
+			var fields = new List<FieldEntry>()
+			{
+				 new FieldEntry() {FieldIdentifier = "1"},
+				 new FieldEntry() {FieldIdentifier = "2"}
+			};
+
+			var sourceSettings = CreateSourceSettings();
+			sourceSettings.TextPrecedenceFields = fields;
+
+			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1);
+
+			CollectionAssert.AreEqual(exportSettings.TextPrecedenceFieldsIds, new List<int> { 1, 2 });
 		}
 
 		[Test]
@@ -105,7 +122,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelectedImageDataFileFormat = ((int)default(ExportSettings.ImageDataFileFormat)).ToString(),
 				FilePath = ((int)default(ExportSettings.FilePathType)).ToString(),
 				DataFileEncodingType = "Unicode",
-				ExportFullTextAsFile = _EXPORT_FULL_TEXT_AS_FILE
+				TextFileEncodingType = "Unicode",
+				ExportFullTextAsFile = _EXPORT_FULL_TEXT_AS_FILE,
+				TextPrecedenceFields =  new List<FieldEntry>()
 			};
 		}
 

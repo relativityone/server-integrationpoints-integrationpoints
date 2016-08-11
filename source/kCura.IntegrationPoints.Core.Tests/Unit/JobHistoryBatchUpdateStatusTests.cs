@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			// ARRANGE
 			Job job = JobExtensions.CreateJob();
 			TaskParameters parameters = new TaskParameters() {BatchInstance = Guid.NewGuid()};
-			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.None));
+			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(state));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
 			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(new JobHistory());
 

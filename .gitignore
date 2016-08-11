@@ -121,6 +121,8 @@ source/.vs/config/applicationhost.config
 example/MyFirstProvider/.vs/config/applicationhost.config
 example/JsonLoader/.vs/config/applicationhost.config
 documentation/images/*
+documentation/Stop/images/*
+documentation/*.png
 
 example/MyFirstProvider/packages/
 example/MyFirstProvider/publish/

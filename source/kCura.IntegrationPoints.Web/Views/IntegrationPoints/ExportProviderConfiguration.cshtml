@@ -72,8 +72,7 @@
 										</tr>
 										<tr>
 											<td class="editFieldValue">
-												<!-- temporary disabled until we get the selected text items from UI-->
-												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: true, checked: ExportTextFieldsAsFilesChecked"/>
+												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked"/>
 												<label>Text Fields As Files</label>
 											</td>
 										</tr>
@@ -270,7 +269,7 @@
 									Data File Encoding:
 								</td>
 								<td class="editFieldValue">
-									<select id="dataFileEncodingSelector" data-bind="foreach: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
+									<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
 										<optgroup data-bind="attr: {label: label}, foreach: children">
 											<option data-bind="text: displayName, value: name"></option>
 										</optgroup>
@@ -283,15 +282,6 @@
 								</td>
 								<td class="editFieldValue">
 									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" />
-								</td>
-							</tr>
-							<tr data-bind="visible: false">
-								<td class="editFieldNameRequired">
-									Text Precedence:
-								</td>
-								<td class="editFieldValue">
-									<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-									<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
 								</td>
 							</tr>
 						</table>
@@ -333,7 +323,7 @@
 								</td>
 								<td class="editFieldValue">
 									<input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix, disable: HasBeenRun()" />
-									<span style="padding: 2px">001</span>
+									<span id="subdirectory-image-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
 								</td>
 							</tr>
 						</table>
@@ -364,29 +354,51 @@
 								</td>
 								<td class="editFieldValue">
 									<input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix, disable: HasBeenRun()" />
-									<span style="padding: 2px">001</span>
+									<span id="subdirectory-native-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
 								</td>
 							</tr>
 						</table>
 						<table class="fieldTable" data-bind="visible: ExportTextFieldsAsFilesChecked">
-							<tr>
-								<td>
-									<div>
-										<p>
-											<h3 style="margin-left: 30px">
-												TEXT
-											</h3>
-										</p>
-									</div>
-								</td>
-							</tr>
+						    <tr>
+						        <td>
+						            <div>
+						                <p>
+						                    <h3 style="margin-left: 30px">
+						                        TEXT
+						                    </h3>
+						                </p>
+						            </div>
+						        </td>
+						    </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Text File Encoding:
+                                </td>
+                                <td class="editFieldValue">
+                                    <select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
+                                        <optgroup data-bind="attr: {label: label}, foreach: children">
+                                            <option data-bind="text: displayName, value: name"></option>
+                                        </optgroup>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Text Precedence:
+                                </td>
+                                <td class="editFieldValue">
+                                    <label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+                                    <button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                                    <input data-bind="value: TextPrecedenceFields, visible: false" />
+                                </td>
+                            </tr>
 							<tr>
 								<td class="editFieldNameRequired">
 									Subdirectory prefix for Text:
 								</td>
 								<td class="editFieldValue">
 									<input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix, disable: HasBeenRun()" />
-									<span style="padding: 2px">001</span>
+									<span id="subdirectory-text-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
 								</td>
 							</tr>
 						</table>
@@ -404,6 +416,8 @@
 	<script src="~/Scripts/knockout-3.4.0.js"></script>
 	<script src="~/Scripts/knockout.validation.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
+    <script src="~/Scripts/integration-point/step-mapFields-control.js"></script>
+    <script src="~/Scripts/export/field-mapping-view-model.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script src="~/Scripts/frame-messaging.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
