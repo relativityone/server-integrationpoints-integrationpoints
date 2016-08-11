@@ -195,6 +195,7 @@
     <Compile Include="TestCases\ItShouldExportDataFileWithNotNestedMultipleChoice.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithWindowsANSIEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithBigEndianEncoding.cs" />
+    <Compile Include="TestCases\ItShouldExportExtractedText.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilesStartingFromGivenRecord.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
