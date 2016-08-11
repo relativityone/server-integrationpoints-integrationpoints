@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(_helper, _caseServiceManager,
-				_contextContainerFactory, _repositoryFactory, _serializer, _choiceQuery, _jobManager,
+				_contextContainerFactory, _serializer, _choiceQuery, _jobManager,
 				_jobHistoryService, _managerFactory);
 
 			_caseServiceManager.RsapiService = Substitute.For<IRSAPIService>();

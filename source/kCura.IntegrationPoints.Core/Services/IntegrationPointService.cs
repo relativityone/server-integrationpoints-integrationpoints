@@ -40,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Services
 		public IntegrationPointService(IHelper helper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			IRepositoryFactory repositoryFactory,
 			ISerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,

@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
             IManagerFactory managerFactory = new ManagerFactory();
 
             _caseServiceContext = caseServiceContext;
-            _integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, repositoryFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+            _integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
             _jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
         }
 

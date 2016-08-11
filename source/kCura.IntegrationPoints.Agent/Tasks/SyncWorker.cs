@@ -176,6 +176,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
 
+				JobStopManager.ThrowIfStopRequested();
+
 				ExecuteImport(fieldMap, IntegrationPoint.SourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
 
 				InjectErrors();
