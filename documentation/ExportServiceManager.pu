@@ -15,7 +15,8 @@ partition "Initialize Export Job" {
     	:Create item level errors saved search;
         :Create error list temp tables;
     endif
-    :Start checking for stop signal;
+    #hotpink:Start checking for stop signal
+    and except if stop was requested;
 	partition "Notify BatchStatus subscribers that the job is started" {
       fork
           partition "BatchEmail" {
