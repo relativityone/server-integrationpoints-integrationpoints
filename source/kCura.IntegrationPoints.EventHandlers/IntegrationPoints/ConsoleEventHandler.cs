@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -44,31 +45,37 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(contextContainer);
+			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(contextContainer);
 			IStateManager stateManager = _managerFactory.CreateStateManager();
-			IQueueManager queueManager = _managerFactory.CreateQueueManager(contextContainer);
 
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
+			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(Application.ArtifactID, ActiveArtifact.ArtifactID);
+			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
 
 			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
 			if (sourceProvider == Core.Constants.SourceProvider.Relativity)
 			{
+				IQueueManager queueManager = _managerFactory.CreateQueueManager(contextContainer);
+
 				bool hasJobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
 					ActiveArtifact.ArtifactID);
 				PermissionCheckDTO jobHistoryErrorViewPermissionCheck = integrationPointManager.UserHasPermissionToViewErrors(Application.ArtifactID);
 				bool canViewErrors = jobHistoryErrorViewPermissionCheck.Success;
 
-				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors);
-				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
+				RelativityButtonStateDTO buttonState = stateManager.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors, integrationPointIsStoppable);
+				RelativityOnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
+				ConsoleButton stopButton = GetStopButton(integrationPointIsStoppable, onClickEvents.StopOnClickEvent);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
 
 				buttonList.Add(runNowButton);
+				buttonList.Add(stopButton);
 				buttonList.Add(retryErrorsButton);
 
 				if (canViewErrors)
@@ -79,8 +86,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 			else
 			{
-				ConsoleButton runNowButton = GetRunNowButton();
+				ButtonStateDTO buttonState = stateManager.GetButtonState(integrationPointIsStoppable);
+				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
+				ConsoleButton runNowButton = GetRunNowButton(onClickEvents.RunNowOnClickEvent);
+				ConsoleButton stopButton = GetStopButton(buttonState.StopButtonEnabled, onClickEvents.StopOnClickEvent);
+
 				buttonList.Add(runNowButton);
+				buttonList.Add(stopButton);
 			}
 
 			console.ButtonList = buttonList;
@@ -88,14 +100,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return console;
 		}
 
-		private ConsoleButton GetRunNowButton()
+		private ConsoleButton GetStopButton(bool isEnabled, string onClickEvent)
+		{
+			return new ConsoleButton()
+			{
+				DisplayText = "Stop",
+				RaisesPostBack = false,
+				Enabled = isEnabled,
+				OnClickEvent = onClickEvent
+			};
+		}
+
+		private ConsoleButton GetRunNowButton(string onClickEvent)
 		{
 			return new ConsoleButton
 			{
 				DisplayText = "Run Now",
 				RaisesPostBack = false,
 				Enabled = true,
-				OnClickEvent = $"IP.importNow({ActiveArtifact.ArtifactID},{Application.ArtifactID})"
+				OnClickEvent = onClickEvent
 			};
 		}
 

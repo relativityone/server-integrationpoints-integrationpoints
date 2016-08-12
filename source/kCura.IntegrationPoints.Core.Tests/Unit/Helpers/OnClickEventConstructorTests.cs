@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -13,7 +12,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 	public class OnClickEventConstructorTests
 	{
 		private IManagerFactory _managerFactory;
-		private IContextContainerFactory _contextContainerFactory;
 		private IContextContainer _contextContainer;
 		private IFieldManager _fieldManager;
 		private IJobHistoryManager _jobHistoryManager;
@@ -28,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 		public void Setup()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_fieldManager = Substitute.For<IFieldManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
@@ -48,43 +45,84 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 		{
 			//Arrange
 			string expectedViewErrorsOnClickEvent = ViewErrorsLinkSetup();
-			ButtonStateDTO buttonStates = new ButtonStateDTO()
+			var buttonStates = new RelativityButtonStateDTO()
 			{
 				RunNowButtonEnabled = true,
 				RetryErrorsButtonEnabled = true,
-				ViewErrorsLinkEnabled = true
+				ViewErrorsLinkEnabled = true,
+				StopButtonEnabled = true
 			};
 
 			//Act
-			OnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
+			RelativityOnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
 				buttonStates);
 			
 			//Assert
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
+			Assert.IsTrue(onClickEvents.StopOnClickEvent == $"IP.stopJob({_integrationPointId},{_workspaceId})");
 		}
 
 		[Test]
 		public void GetOnClickEventsForRelativityProvider_GoldFlow_AllButtonsDisabled()
 		{
 			//Arrange
-			ButtonStateDTO buttonStates = new ButtonStateDTO()
+			var buttonStates = new RelativityButtonStateDTO()
 			{
 				RunNowButtonEnabled = false,
 				RetryErrorsButtonEnabled = false,
-				ViewErrorsLinkEnabled = false
+				ViewErrorsLinkEnabled = false,
+				StopButtonEnabled = false
 			};
 
 			//Act
-			OnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
+			RelativityOnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
 				buttonStates);
 
 			//Assert
 			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
+			Assert.IsTrue(onClickEvents.StopOnClickEvent == String.Empty);
 		}
+
+		[Test]
+		public void GetOnClickEventsForNonRelativityProvider_GoldFlow()
+		{
+			//Arrange
+			var buttonStates = new ButtonStateDTO()
+			{
+				RunNowButtonEnabled = true,
+				StopButtonEnabled = false
+			};
+
+			//Act
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
+
+			//Assert
+			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);
+			Assert.AreEqual(String.Empty, onClickEvents.StopOnClickEvent);
+		}
+
+		[Test]
+		public void GetOnClickEventsForNonRelativityProvider_StopButtonEnabled()
+		{
+			//Arrange
+			var buttonStates = new ButtonStateDTO()
+			{
+				RunNowButtonEnabled = true,
+				StopButtonEnabled = true
+			};
+
+			//Act
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
+
+			//Assert
+			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);
+			Assert.AreEqual($"IP.stopJob({_integrationPointId},{_workspaceId})", onClickEvents.StopOnClickEvent);
+		}
+
 
 		private string ViewErrorsLinkSetup()
 		{

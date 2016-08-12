@@ -111,7 +111,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void CheckQueueTable()
 		{
-			AgentService.CreateQueueTable();
+			AgentService.InstallQueueTable();
 		}
 
 		public void ProcessQueueJobs()

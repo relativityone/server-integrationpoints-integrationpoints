@@ -7,7 +7,7 @@ namespace kCura.ScheduleQueue.Core
 		Guid AgentGuid { get; }
 		string QueueTable { get; }
 		AgentTypeInformation AgentTypeInformation { get; }
-		void CreateQueueTable();
+		void InstallQueueTable();
 		void CreateQueueTableOnce();
 	}
 }

@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
+using System.Data;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
+namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
@@ -24,9 +23,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private SendEmailManager _sendEmailManager;
 		private IQueueDBContext _queueContext;
 
+		private long _jobId;
+
 		public SendEmailManagerTests()
 			: base("IntegrationPointSource", null)
 		{
+		}
+
+		public override void TestTeardown()
+		{
+			_jobManager.DeleteJob(_jobId);
 		}
 
 		[SetUp]
@@ -39,33 +45,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
 		[Test]
-		public void VerifyGetUnbatchedID()
+		public void VerifyGetUnbatchedId()
 		{
 			string jobDetails =
 				"{\"Subject\":\"testing stuff\",\"MessageBody\":\"Hello, this is GeeeRizzle \",\"Emails\":[\"testing1234@kcura.com\",\"kwu@kcura.com\"]}";
 			string scheduleRule = "Rule";
 
-			int jobId = JobExtensions.Execute(
-				this._queueContext,
+			DataRow row = new CreateScheduledJob(this._queueContext).Execute(
 				SourceWorkspaceArtifactId,
 				1,
-				"SendEmailManager",
-				DateTime.Now,
+				"SendEmaiManager",
+				DateTime.Now.AddDays(30),
 				1,
 				null,
-				scheduleRule,
+				null,
 				jobDetails,
-				1,
+				0,
 				777,
-				10101,
 				1,
 				1);
-
-			Job tempJob = this._jobManager.GetJob(SourceWorkspaceArtifactId, 1, "SendEmailManager");
+			Job tempJob = new Job(row);
+			_jobId = tempJob.JobId;
 
 			//Act
 			IEnumerable<string> list = _sendEmailManager.GetUnbatchedIDs(tempJob);
@@ -74,20 +75,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(2, list.Count());
 			Assert.IsTrue(list.Contains("testing1234@kcura.com"));
 			Assert.IsTrue(list.Contains("kwu@kcura.com"));
-		}
-
-		[Test]
-		public void VerifyCreateBatchJob()
-		{
-			List<string> list = new List<string> { };
-			list.Add("krua@kcura.com");
-			list.Add("krua1@kcura.com");
-			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "test", "Append Only");
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
-			Job tempJob = JobExtensions.CreateJobAgentTypeId(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, 12313, -1, 11111);
-			this._sendEmailManager.CreateBatchJob(tempJob, list);
-
-			list.Add("");
 		}
 	}
 }

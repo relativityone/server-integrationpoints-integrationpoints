@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using kCura.Apps.Common.Utils;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
+using kCura.ScheduleQueue.Core.Properties;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Services
@@ -21,7 +22,6 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public IAgentService AgentService { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
-
 
 		public AgentTypeInformation AgentTypeInformation
 		{
@@ -66,7 +66,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
 		{
 			if (job == null)
-				return new FinalizeJobResult() { JobState = JobLogState.Finished};
+				return new FinalizeJobResult() { JobState = JobLogState.Finished };
 			FinalizeJobResult result = new FinalizeJobResult();
 
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
@@ -179,6 +179,54 @@ namespace kCura.ScheduleQueue.Core.Services
 			if (row != null) job = new Job(row);
 
 			return job;
+		}
+
+		public void UpdateStopState(IList<long> jobIds, StopState state)
+		{
+			if (jobIds.Any())
+			{
+				string query = String.Format(Resources.UpdateStopState, QDBContext.TableName, String.Join(",", jobIds.Distinct()));
+				List<SqlParameter> sqlParams = new List<SqlParameter> { new SqlParameter("@State", (int) state) };
+				int count =	QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
+				if (count == 0)
+				{
+					throw new InvalidOperationException("Invalid operation. Job state failed to update.");
+				}
+			}
+		}
+
+		public IList<Job> GetJobs(long integrationPointId)
+		{
+			List<Job> jobs = new List<Job>();
+			string query =$@"SELECT [JobID]
+	  ,[RootJobID]
+	  ,[ParentJobID]
+	  ,[AgentTypeID]
+	  ,[LockedByAgentID]
+	  ,[WorkspaceID]
+	  ,[RelatedObjectArtifactID]
+	  ,[TaskType]
+	  ,[NextRunTime]
+	  ,[LastRunTime]
+	  ,[ScheduleRuleType]
+	  ,[ScheduleRule]
+	  ,[JobDetails]
+	  ,[JobFlags]
+	  ,[SubmittedDate]
+	  ,[SubmittedBy]
+	  ,[StopState] FROM [eddsdbo].[{QDBContext.TableName}] WHERE RelatedObjectArtifactID = @RelatedObjectArtifactID";
+
+			List<SqlParameter> sqlParams = new List<SqlParameter>();
+			sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", integrationPointId));
+			using (DataTable data = QDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(query, sqlParams))
+			{
+				foreach (DataRow row in data.Rows)
+				{
+					var job = new Job(row);
+					jobs.Add(job);
+				}
+			}
+			return jobs;
 		}
 
 		public void CleanupJobQueueTable()

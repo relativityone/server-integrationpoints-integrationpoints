@@ -1,7 +1,11 @@
-﻿using kCura.IntegrationPoints.Core.Managers;
+﻿using System;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -50,6 +54,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IErrorManager CreateErrorManager(IContextContainer contextContainer)
 		{
 			return new ErrorManager(CreateRepositoryFactory(contextContainer));
+		}
+
+		public IJobStopManager CreateJobStopManager(IContextContainer contextContainer, IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId)
+		{
+			return new JobStopManager(jobService, jobHistoryService, jobIdentifier, jobId);
 		}
 
 		public IStateManager CreateStateManager()

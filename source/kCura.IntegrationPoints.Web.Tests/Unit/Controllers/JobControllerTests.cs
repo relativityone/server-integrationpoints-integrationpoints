@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Hosting;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 {
@@ -22,6 +28,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 
 		private JobController.Payload _payload;
 		private IIntegrationPointService _integrationPointService;
+		private ICPHelper _helper;
+		private IContextContainerFactory _contextContainerFactory;
+		private IManagerFactory _managerFactory;
 
 		private JobController _instance;
 
@@ -31,8 +40,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_payload = new JobController.Payload { AppId = _WORKSPACE_ARTIFACT_ID, ArtifactId = _INTEGRATION_POINT_ARTIFACT_ID };
 			
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
+			_helper = Substitute.For<ICPHelper>();
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			_managerFactory = Substitute.For<IManagerFactory>();
 
-			_instance = new JobController(_integrationPointService)
+			_instance = new JobController(_integrationPointService, _helper, _contextContainerFactory, _managerFactory)
 			{
 				Request = new HttpRequestMessage()
 			};
@@ -45,7 +57,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Arrange
 			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
-			Exception exception = new Exception("Unable to determine the user id. Please contact your system administrator.");
+			Exception exception = new Exception(expectedErrorMessage);
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
@@ -150,6 +162,108 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().Result.Trim('"'));
+		}
+
+		[Test]
+		public void Stop_GoldFlow()
+		{
+			// Arrange
+			// Act
+			HttpResponseMessage response = _instance.Stop(_payload);
+
+			// Assert
+			_integrationPointService
+				.Received(1)
+				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
+
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "The HTTPStatusCode should be OK");
+			Assert.IsNull(response.Content, "The response's Content should be null");
+		}
+
+		[Test]
+		public void Stop_AggregateExceptionThrown_ResponseIsCorrect()
+		{
+			// Arrange
+			const string exceptionOne = "Exception One";
+			const string exceptionTwo = "Exception Two";
+			const string aggregateExceptionMessage = "Topmost Message";
+			var aggregateException = new AggregateException(aggregateExceptionMessage, new[] { new Exception(exceptionOne), new Exception(exceptionTwo) });
+			string expectedErrorMessage = $"{aggregateException.Message} : {String.Join(",", new[] { exceptionOne, exceptionTwo })}";
+			ErrorDTO error = new ErrorDTO
+			{
+				Message = expectedErrorMessage,
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _WORKSPACE_ARTIFACT_ID
+			};
+
+			ContextContainer contextContainer = new ContextContainer(_helper);
+			IErrorManager errorManager = Substitute.For<IErrorManager>();
+
+			_integrationPointService
+				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
+				.Throw(aggregateException);
+			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
+			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
+			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
+
+			// Act
+			HttpResponseMessage response = _instance.Stop(_payload);
+
+			// Assert
+			_integrationPointService
+				.Received(1)
+				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
+
+			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
+
+			byte[] utf8Bytes = response.Content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
+			Assert.AreEqual("text/plain", response.Content.Headers.ContentType.MediaType, "The response's media type should be correct.");
+			Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
+			Assert.AreEqual(expectedErrorMessage, stringContent, "The response's Content should be correct.");
+
+			errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
+		}
+
+		[Test]
+		public void Stop_ExceptionThrown_ResponseIsCorrect()
+		{
+			// Arrange
+			var exception = new Exception("exception message");
+			ErrorDTO error = new ErrorDTO
+			{
+				Message = exception.Message,
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _WORKSPACE_ARTIFACT_ID
+			};
+
+			ContextContainer contextContainer = new ContextContainer(_helper);
+			IErrorManager errorManager = Substitute.For<IErrorManager>();
+
+			_integrationPointService
+				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
+				.Throw(exception);
+			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
+			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
+			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
+
+			// Act
+			HttpResponseMessage response = _instance.Stop(_payload);
+
+			// Assert
+			_integrationPointService
+				.Received(1)
+				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
+
+			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
+			Assert.AreEqual("text/plain", response.Content.Headers.ContentType.MediaType, "The response's media type should be correct.");
+			Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
+
+			byte[] utf8Bytes = response.Content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
+			Assert.AreEqual(exception.Message, stringContent, "The response's Content should be correct.");
+
+			errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 		}
 	}
 }

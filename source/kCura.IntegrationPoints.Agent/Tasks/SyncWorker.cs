@@ -22,6 +22,7 @@ using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Method.Injection;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -31,8 +32,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		internal new IJobHistoryService _jobHistoryService;
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
-
-		protected virtual string TelemetryMetricIdentifier => Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR;
 
         public IEnumerable<Core.IBatchStatus> BatchStatus
         {
@@ -65,7 +64,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			using (Client.MetricsClient.LogDuration(TelemetryMetricIdentifier, Guid.Empty, MetricTargets.SUM))
+			using (Client.MetricsClient.LogDuration(
+				Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR, Guid.Empty, MetricTargets.APMandSUM))
 			{
 				foreach (var batchComplete in BatchStatus)
 				{
@@ -199,6 +199,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
 
             IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+			if (dataSynchronizer is RdoSynchronizerBase)
+	        {
+				ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
+		        settings.OnBehalfOfUserId = job.SubmittedBy;
+				destinationConfiguration = _serializer.Serialize(settings);
+	        }
 
             SetupSubscriptions(dataSynchronizer, job);
 

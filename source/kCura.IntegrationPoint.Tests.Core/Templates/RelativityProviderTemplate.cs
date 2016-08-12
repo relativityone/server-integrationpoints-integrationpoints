@@ -61,6 +61,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 				throw;
 			}
+
+			InitiateSuiteSetup();
 		}
 
 		[OneTimeTearDown]

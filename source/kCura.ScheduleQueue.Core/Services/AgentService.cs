@@ -9,6 +9,7 @@ namespace kCura.ScheduleQueue.Core.Services
 	public class AgentService : IAgentService
 	{
 		private bool _creationOfQTableHasRun;
+
 		public AgentService(IHelper dbHelper, Guid agentGuid)
 		{
 			this.AgentGuid = agentGuid;
@@ -22,6 +23,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		public IHelper DBHelper { get; private set; }
 		public IQueueDBContext QDBContext { get; }
 		private AgentTypeInformation _agentTypeInformation;
+
 		public AgentTypeInformation AgentTypeInformation
 		{
 			get
@@ -30,18 +32,18 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 		}
 
-		public void CreateQueueTable()
+		public void InstallQueueTable()
 		{
 			new CreateScheduleQueueTable(QDBContext).Execute();
+			new AddStopStateColumnToQueueTable(QDBContext).Execute();
 		}
 
 		public void CreateQueueTableOnce()
 		{
 			if (!_creationOfQTableHasRun)
 			{
-				CreateQueueTable();
+				InstallQueueTable();
 			}
-
 			_creationOfQTableHasRun = true;
 		}
 

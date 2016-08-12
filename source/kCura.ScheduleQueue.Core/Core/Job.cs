@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.ScheduleQueue.Core
 {
@@ -21,6 +22,7 @@ namespace kCura.ScheduleQueue.Core
 		public Int32 JobFlags { get; set; }
 		public DateTime SubmittedDate { get; set; }
 		public Int32 SubmittedBy { get; set; }
+		public StopState StopState { get; private set; }
 
 		public Job(DataRow row)
 		{
@@ -40,6 +42,7 @@ namespace kCura.ScheduleQueue.Core
 			SubmittedBy = row.Field<int>("SubmittedBy");
 			ScheduleRuleType = row.Field<string>("ScheduleRuleType");
 			SerializedScheduleRule = row.Field<string>("ScheduleRule");
+			StopState = (StopState)row.Field<int>("StopState");
 		}
 	}
 }

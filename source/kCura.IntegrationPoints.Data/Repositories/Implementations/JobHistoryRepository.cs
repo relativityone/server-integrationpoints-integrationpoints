@@ -57,5 +57,71 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
 			return lastJobHistoryArtifactId;
 		}
+
+		public IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId)
+		{
+			var integrationPointCondition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>() { integrationPointArtifactId });
+			Guid pendingGuid = JobStatusChoices.JobHistoryPending.ArtifactGuids.First();
+			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First();
+			var stoppableCondition = new SingleChoiceCondition(new Guid(JobHistoryFieldGuids.JobStatus), SingleChoiceConditionEnum.AnyOfThese, new [] { pendingGuid, processingGuid });
+
+			var query = new Query<RDO>
+			{
+				ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistory),
+				Condition = new CompositeCondition(integrationPointCondition, CompositeConditionEnum.And, stoppableCondition),
+				Fields = new List<FieldValue>()
+				{
+					new FieldValue(new Guid(JobHistoryFieldGuids.JobStatus))
+				}
+			};
+
+			QueryResultSet<RDO> results = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				results = rsapiClient.Repositories.RDO.Query(query);
+			}
+
+			if (!results.Success)
+			{
+				throw new Exception($"Unable to retrieve Job History: {results.Message}");
+			}
+
+			var pendingJobArtifactIds = new List<int>();
+			var processingJobArtifactIds = new List<int>();
+			foreach (Result<RDO> result in results.Results)
+			{
+
+				kCura.Relativity.Client.DTOs.Choice status = null;
+				try
+				{
+					status = result.Artifact.Fields.First().Value as kCura.Relativity.Client.DTOs.Choice;
+				}
+				catch
+				{
+					// surpress
+				}
+
+				if (status != null)
+				{
+					if (status.Name == JobStatusChoices.JobHistoryPending.Name)
+					{
+						pendingJobArtifactIds.Add(result.Artifact.ArtifactID);
+					}
+					else if (status.Name == JobStatusChoices.JobHistoryProcessing.Name)
+					{
+						processingJobArtifactIds.Add(result.Artifact.ArtifactID);	
+					}
+				}
+			}
+
+			var stoppableJobHistoryArtifactIds = new Dictionary<Guid, int[]>
+			{
+				{pendingGuid, pendingJobArtifactIds.ToArray()},
+				{processingGuid, processingJobArtifactIds.ToArray()}
+			};
+
+			return stoppableJobHistoryArtifactIds;
+		}
 	}
 }

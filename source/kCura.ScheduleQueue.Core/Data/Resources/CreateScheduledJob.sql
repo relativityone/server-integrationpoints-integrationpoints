@@ -15,7 +15,8 @@
 		[JobDetails] [nvarchar](max) NULL,
 		[JobFlags] [int] NOT NULL,
 		[SubmittedDate] [datetime] NOT NULL,
-		[SubmittedBy] [int] NOT NULL
+		[SubmittedBy] [int] NOT NULL,
+		[StopState] [int] NOT NULL
 )
 	
 UPDATE 
@@ -41,6 +42,7 @@ OUTPUT
 		,Inserted.[JobFlags]
 		,Inserted.[SubmittedDate]
 		,Inserted.[SubmittedBy]
+		,Inserted.[StopState]
 INTO
 		@job
 WHERE 
@@ -93,6 +95,7 @@ BEGIN
 			,[JobFlags]
 			,[SubmittedDate]
 			,[SubmittedBy]
+			,[StopState]
 		)
 		OUTPUT 
 			Inserted.[JobID]
@@ -111,6 +114,7 @@ BEGIN
 			,Inserted.[JobFlags]
 			,Inserted.[SubmittedDate]
 			,Inserted.[SubmittedBy]
+			,Inserted.[StopState]
 		INTO
 			@job
 		VALUES
@@ -130,6 +134,7 @@ BEGIN
 			,@JobFlags
 			,GETUTCDATE()
 			,@SubmittedBy
+			,0
 		)
 	END
 END
@@ -150,5 +155,6 @@ SELECT
 		,[JobFlags]
 		,[SubmittedDate]
 		,[SubmittedBy]
+		,[StopState]
 FROM
 		@job

@@ -73,6 +73,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "JobStop",
+				routeTemplate: "{workspaceID}/api/Job/Stop",
+				defaults: new { controller = "Job", action = "Stop" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "JobRetry",
 				routeTemplate: "{workspaceID}/api/Job/Retry",
 				defaults: new { controller = "Job", action = "Retry" }

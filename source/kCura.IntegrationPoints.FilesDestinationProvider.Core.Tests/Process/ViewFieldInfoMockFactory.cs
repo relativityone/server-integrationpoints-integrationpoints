@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using kCura.WinEDDS;
+using Relativity;
+using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
     internal class ViewFieldInfoMockFactory
     {
-        public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<int> expected)
+        public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<int> expected, bool createIdentifiers = false)
         {
             var viewFieldInfo = new List<ViewFieldInfo>();
-            var dataTable = CreateMock();
+            var dataTable = CreateMock(true);
             foreach (var i in expected)
             {
                 var row = dataTable.NewRow();
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             return viewFieldInfo.ToArray();
         }
 
-        private static DataTable CreateMock()
+        private static DataTable CreateMock(bool createIdentifiers = false)
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("FieldArtifactID", typeof (int));
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             dataTable.Columns["AvfID"].DefaultValue = 1;
 
             dataTable.Columns.Add("FieldCategoryID", typeof (int));
-            dataTable.Columns["FieldCategoryID"].DefaultValue = 1;
+            dataTable.Columns["FieldCategoryID"].DefaultValue = createIdentifiers ? FieldCategory.Identifier : 0;
 
             dataTable.Columns.Add("ColumnSource", typeof (string));
             dataTable.Columns["ColumnSource"].DefaultValue = "Computed";

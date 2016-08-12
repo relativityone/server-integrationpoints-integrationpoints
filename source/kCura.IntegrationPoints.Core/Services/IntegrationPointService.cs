@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -30,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private readonly ICaseServiceContext _context;
 		private readonly IContextContainer _contextContainer;
-		private readonly IRepositoryFactory _repositoryFactory;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly IChoiceQuery _choiceQuery;
@@ -49,7 +47,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			IManagerFactory managerFactory)
 		{
 			_context = context;
-			_repositoryFactory = repositoryFactory;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
@@ -459,6 +456,84 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
 		}
 
+		public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
+			IList<int> allStoppableJobArtifactIds = stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds).ToList();
+			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
+
+			List<Exception> exceptions = new List<Exception>(); // Gotta Catch 'em All
+			HashSet<int> erroredPendingJobs = new HashSet<int>();
+
+			// Mark jobs to be stopped in queue table
+			foreach (int artifactId in allStoppableJobArtifactIds)
+			{
+				try
+				{
+					StopScheduledAgentJobs(jobs, artifactId);
+				}
+				catch (Exception exception)
+				{
+					if (stoppableJobCollection.PendingJobArtifactIds.Contains(artifactId))
+					{
+						erroredPendingJobs.Add(artifactId);
+					}
+					exceptions.Add(exception);
+				}
+			}
+
+			IEnumerable<int> pendingJobIdsMarkedToStop = stoppableJobCollection.PendingJobArtifactIds
+													.Where(x => !erroredPendingJobs.Contains(x));
+
+			// Update the status of the Pending jobs
+			foreach (int artifactId in pendingJobIdsMarkedToStop)
+			{
+				try
+				{
+					var jobHistoryRdo = new Data.JobHistory()
+					{
+						ArtifactId = artifactId,
+						JobStatus = JobStatusChoices.JobHistoryStopping
+					};
+					_jobHistoryService.UpdateRdo(jobHistoryRdo);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Add(exception);
+				}
+			}
+
+			if (exceptions.Any())
+			{
+				throw new AggregateException(exceptions);
+			}
+		}
+
+		private void StopScheduledAgentJobs(IDictionary<Guid, List<Job>> agentJobsReference, int jobHistoryArtifactId)
+		{
+			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(new List<int>() { jobHistoryArtifactId }).FirstOrDefault();
+			if (jobHistory != null)
+			{
+				Guid batchInstance = new Guid(jobHistory.BatchInstance);
+				if (agentJobsReference.ContainsKey(batchInstance))
+				{
+					List<long> jobIds = agentJobsReference[batchInstance].Select(job => job.JobId).ToList();
+					_jobService.StopJobs(jobIds);
+				}
+				else
+				{
+					throw new InvalidOperationException("Unable to retrieve job(s) in the queue. Please contract your system administrator.");
+				}
+			}
+			else
+			{
+				 // I don't think this is currently possible. SAMO - 7/27/2016
+				 throw new Exception("Failed to retrieve job history RDO. Please retry the operation.");
+			}
+		}
+
+
 		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
@@ -549,20 +624,27 @@ namespace kCura.IntegrationPoints.Core.Services
 				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
 				// If the Relativity provider is selected, we need to create an export task
-				TaskType jobTaskType =
-					sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
-						? TaskType.ExportService
-						: TaskType.SyncManager;
-
-	            var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-	            if (importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
-	            {
-	                jobTaskType = TaskType.ExportManager;
-	            }
+				TaskType jobTaskType = GetJobTaskType(integrationPoint, sourceProvider);
 
 				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 			}
+		}
+
+		private TaskType GetJobTaskType(IntegrationPoint integrationPoint, SourceProvider sourceProvider)
+		{
+			TaskType jobTaskType =
+				sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
+					? TaskType.ExportService
+					: TaskType.SyncManager;
+
+			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+			if (
+				importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
+			{
+				jobTaskType = TaskType.ExportManager;
+			}
+			return jobTaskType;
 		}
 
 		private void CheckForProviderAdditionalPermissions(IntegrationPoint integrationPoint, Constants.SourceProvider providerType, int userId)
@@ -598,10 +680,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			var error = new ErrorDTO()
 			{
 				Message = message,
-				FullText = fullText
+				FullText = fullText,
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _context.WorkspaceID
 			};
 
-			errorManager.Create(_context.WorkspaceID, new[] {error});
+			errorManager.Create(new[] {error});
 		}
 
 		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)
