@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		public string Convert()
 		{
 			SetIntegrationPoint(_job);
-			string sourceConfiguration = GetSourceConfiguration(this.IntegrationPoint.SourceConfiguration);
+			string sourceConfiguration = IntegrationPoint.SourceConfiguration;
 			IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
 			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);

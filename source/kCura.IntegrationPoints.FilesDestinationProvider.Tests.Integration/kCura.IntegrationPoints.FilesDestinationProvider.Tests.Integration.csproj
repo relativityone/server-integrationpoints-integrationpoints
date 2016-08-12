@@ -195,6 +195,7 @@
     <Compile Include="TestCases\ItShouldExportDataFileWithNotNestedMultipleChoice.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithWindowsANSIEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithBigEndianEncoding.cs" />
+    <Compile Include="TestCases\ItShouldExportExtractedText.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilesStartingFromGivenRecord.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
@@ -205,6 +206,7 @@
     <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
+    <Compile Include="TestCases\ItShouldNotExportExtractedText.cs" />
     <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />

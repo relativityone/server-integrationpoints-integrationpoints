@@ -241,6 +241,7 @@
     <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
     <Compile Include="Managers\Implementations\JobHistoryManager.cs" />
     <Compile Include="Managers\Implementations\JobHistoryErrorManager.cs" />
+    <Compile Include="Managers\Implementations\NullableStopJobManager.cs" />
     <Compile Include="Managers\Implementations\ObjectTypeManager.cs" />
     <Compile Include="Managers\Implementations\QueueManager.cs" />
     <Compile Include="Managers\Implementations\SourceProviderManager.cs" />

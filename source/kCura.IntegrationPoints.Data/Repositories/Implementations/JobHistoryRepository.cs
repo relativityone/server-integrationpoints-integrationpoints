@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch
 				{
-					// surpress
+					// suppress
 				}
 
 				if (status != null)
@@ -132,32 +132,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			return stoppableJobHistoryArtifactIds;
-		}
-
-		public void SetErrorStatusesToExpired(int jobHistoryArtifactId)
-		{
-			int objectTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
-			int errorStatusChoiceArtifactId = _artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids)[ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids[0]];
-
-			SetErrorStatuses(jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
-			SetErrorStatuses(jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job);
-		}
-
-		private void SetErrorStatuses(int jobHistoryArtifactId, int objectTypeId, int errorStatusChoiceArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
-		{
-			try
-			{
-				using (IScratchTableRepository scratchTable = _repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, "StoppingRIPJob_", Guid.NewGuid().ToString()))
-				{
-					ICollection<int> itemLevelErrorArtifactIds = _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(jobHistoryArtifactId, errorType);
-					scratchTable.AddArtifactIdsIntoTempTable(itemLevelErrorArtifactIds);
-					_jobHistoryErrorRepository.UpdateErrorStatuses(ClaimsPrincipal.Current, jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, scratchTable.GetTempTableName());
-				}
-			}
-			catch
-			{
-				// ignore failure
-			}
 		}
 	}
 }

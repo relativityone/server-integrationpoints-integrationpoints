@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -33,15 +32,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncWorker : IntegrationPointTaskBase, ITask
 	{
+		private readonly bool _isStoppable;
 		private readonly JobStatisticsService _statisticsService;
-		private readonly IRepositoryFactory _repositoryFactory;
 		private IEnumerable<IBatchStatus> _batchStatus;
-
-		public IEnumerable<IBatchStatus> BatchStatus
-		{
-			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
-			set { _batchStatus = value; }
-		}
 
 		public SyncWorker(
 		  ICaseServiceContext caseServiceContext,
@@ -55,9 +48,37 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		  IEnumerable<IBatchStatus> statuses,
 		  JobStatisticsService statisticsService,
 		  IManagerFactory managerFactory,
-		  IRepositoryFactory repositoryFactory,
 		  IContextContainerFactory contextContainerFactory,
 		  IJobService jobService) :
+			this(caseServiceContext,
+				helper,
+				dataProviderFactory,
+				serializer,
+				appDomainRdoSynchronizerFactoryFactory,
+				jobHistoryService,
+				jobHistoryErrorService,
+				jobManager,
+				statuses,
+				statisticsService,
+				managerFactory,
+				contextContainerFactory,
+				jobService, true)
+		{ }
+
+		protected SyncWorker(
+		  ICaseServiceContext caseServiceContext,
+		  IHelper helper,
+		  IDataProviderFactory dataProviderFactory,
+		  ISerializer serializer,
+		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+		  IJobHistoryService jobHistoryService,
+		  JobHistoryErrorService jobHistoryErrorService,
+		  IJobManager jobManager,
+		  IEnumerable<IBatchStatus> statuses,
+		  JobStatisticsService statisticsService,
+		  IManagerFactory managerFactory,
+		  IContextContainerFactory contextContainerFactory,
+		  IJobService jobService, bool isStoppable) :
 			base(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -72,19 +93,61 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			BatchStatus = statuses;
 			_statisticsService = statisticsService;
-			_repositoryFactory = repositoryFactory;
+			_isStoppable = isStoppable;
 		}
+
+		public IEnumerable<IBatchStatus> BatchStatus
+		{
+			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
+			set { _batchStatus = value; }
+		}
+
+		protected IJobStopManager JobStopManager { get; private set; }
 
 		public void Execute(Job job)
 		{
 			using (Client.MetricsClient.LogDuration(
 				Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR, Guid.Empty, MetricTargets.APMandSUM))
 			{
-				foreach (var batchComplete in BatchStatus)
+				foreach (IBatchStatus batchComplete in BatchStatus)
 				{
 					batchComplete.OnJobStart(job);
 				}
 				ExecuteTask(job);
+			}
+		}
+
+		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
+		  string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
+		  SourceProvider sourceProviderRdo, Data.DestinationProvider destinationProvider, Job job)
+		{
+			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+
+			JobStopManager?.ThrowIfStopRequested();
+
+			IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
+
+			JobStopManager?.ThrowIfStopRequested();
+
+			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
+
+			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
+			{
+				IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+				if (dataSynchronizer is RdoSynchronizerBase)
+				{
+					ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
+					settings.OnBehalfOfUserId = job.SubmittedBy;
+					destinationConfiguration = Serializer.Serialize(settings);
+				}
+
+				SetupSubscriptions(dataSynchronizer, job);
+
+				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+
+				JobStopManager?.ThrowIfStopRequested();
+
+				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
 			}
 		}
 
@@ -95,35 +158,33 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
 				SetIntegrationPoint(job);
-
 				List<string> entryIDs = GetEntryIDs(job);
-
 				SetJobHistory();
 
-				JobHistoryErrorService.JobStopManager = GetJobStopManager(job);
+				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, _isStoppable);
+				JobHistoryErrorService.JobStopManager = JobStopManager;
 
 				InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
-				if (!this.IntegrationPoint.SourceProvider.HasValue)
+				if (!IntegrationPoint.SourceProvider.HasValue)
 				{
 					throw new ArgumentException("Cannot import source provider with unknown id.");
 				}
-				if (!this.IntegrationPoint.DestinationProvider.HasValue)
+				if (!IntegrationPoint.DestinationProvider.HasValue)
 				{
 					throw new ArgumentException("Cannot import destination provider with unknown id.");
 				}
 				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
-				string sourceConfiguration = GetSourceConfiguration(this.IntegrationPoint.SourceConfiguration);
 
-				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
+				JobStopManager.ThrowIfStopRequested();
+
+				ExecuteImport(fieldMap, IntegrationPoint.SourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
 
 				InjectErrors();
 			}
 			catch (OperationCanceledException)
 			{
-				IJobStopManager jobStopManaer = this.GetJobStopManager(job);
-				jobStopManaer.Dispose();
-				// IGNORE ERROR. The user attempted to stop the job.
+				// the job has been stopped.
 			}
 			catch (AuthenticationException e)
 			{
@@ -135,69 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				//rdo last run and next scheduled time will be updated in Manager job
-				JobHistoryErrorService.CommitErrors();
 				PostExecute(job);
-			}
-		}
-
-		protected void PostExecute(Job job)
-		{
-			try
-			{
-				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-				var batchInstance = taskParameters.BatchInstance;
-				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, batchInstance.ToString());
-
-				IJobStopManager jobStopManaer = this.GetJobStopManager(job);
-				jobStopManaer.Dispose();
-
-				if (isJobComplete)
-				{
-					try
-					{
-						if (!GetJobStopManager(job).IsStopRequested())
-						{
-							IList<Job> jobs = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, taskParameters.BatchInstance);
-							if (jobs.Any())
-							{
-								JobService.UpdateStopState(jobs.Select(agentJob => agentJob.JobId).ToList(), StopState.Unstoppable);
-							}
-						}
-					}
-					catch
-					{
-						// IGNORE ERROR. It is possible that the user stop the job in between disposing job history manager and the updating the stop state.
-					}
-
-					SetErrorStatusesToExpiredIfStopped(job, _repositoryFactory);
-
-					foreach (var completedItem in BatchStatus)
-					{
-						try
-						{
-							completedItem.OnJobComplete(job);
-						}
-						catch (Exception e)
-						{
-							JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-						}
-					}
-
-					IList<Job> jobsToUpdate = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, taskParameters.BatchInstance);
-					if (jobsToUpdate.Any())
-					{
-						JobService.UpdateStopState(jobsToUpdate.Select(agentJob => agentJob.JobId).ToList(), StopState.None);
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-			}
-			finally
-			{
-				JobHistoryErrorService.CommitErrors();
 			}
 		}
 
@@ -219,51 +218,95 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return new List<string>();
 		}
 
-		protected void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+		protected void PostExecute(Job job)
 		{
-			SetupStatisticsSubscriptions(synchronizer, job);
-			SetupJobHistoryErrorSubscriptions(synchronizer, job);
+			try
+			{
+				JobStopManager?.Dispose();
+				JobHistoryErrorService.CommitErrors();
+
+				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString());
+
+				if (isJobComplete)
+				{
+					try
+					{
+						if (JobStopManager?.IsStopRequested() == true)
+						{
+							IList<Job> jobs = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
+							if (jobs.Any())
+							{
+								JobService.UpdateStopState(jobs.Select(agentJob => agentJob.JobId).ToList(), StopState.Unstoppable);
+							}
+						}
+					}
+					catch
+					{
+						// IGNORE ERROR. It is possible that the user stop the job in between disposing job history manager and the updating the stop state.
+					}
+
+					SetErrorStatusesToExpiredIfStopped();
+
+					foreach (IBatchStatus completedItem in BatchStatus)
+					{
+						try
+						{
+							completedItem.OnJobComplete(job);
+						}
+						catch (Exception e)
+						{
+							JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+						}
+					}
+
+					IList<Job> jobsToUpdate = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
+					if (jobsToUpdate.Any())
+					{
+						JobService.UpdateStopState(jobsToUpdate.Select(agentJob => agentJob.JobId).ToList(), StopState.None);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+			}
+			finally
+			{
+				JobHistoryErrorService.CommitErrors();
+			}
 		}
 
-		protected void SetupStatisticsSubscriptions(IDataSynchronizer synchronizer, Job job)
-		{
-			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
-		}
-
-		protected void SetupJobHistoryErrorSubscriptions(IDataSynchronizer synchronizer, Job job)
+		protected void SetupJobHistoryErrorSubscriptions(IDataSynchronizer synchronizer)
 		{
 			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
-		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
-		  string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
-		  SourceProvider sourceProviderRdo, Data.DestinationProvider destinationProvider, Job job)
+		private void SetupStatisticsSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
+		}
 
-			IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
+		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+		{
+			SetupStatisticsSubscriptions(synchronizer, job);
+			SetupJobHistoryErrorSubscriptions(synchronizer);
+		}
 
-			this.ThrowIfStopRequested(job);
-
-			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
-
-			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
-			IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-
-			if (dataSynchronizer is RdoSynchronizerBase)
+		private void SetErrorStatusesToExpiredIfStopped()
+		{
+			try
 			{
-				ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
-				settings.OnBehalfOfUserId = job.SubmittedBy;
-				destinationConfiguration = Serializer.Serialize(settings);
+				if (JobStopManager?.IsStopRequested() == true)
+				{
+					IContextContainer contextContainer = ContextContainerFactory.CreateContextContainer(Helper);
+					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
+					jobHistoryManager.SetErrorStatusesToExpired(CaseServiceContext.WorkspaceID, JobHistory.ArtifactId);
+				}
 			}
-
-			SetupSubscriptions(dataSynchronizer, job);
-
-			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-
-			this.ThrowIfStopRequested(job);
-
-			dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+			catch (Exception)
+			{
+				// Ignore error. Job history error status only set for the consistency. This will not affect re-running the job.
+			}
 		}
 
 		private void InjectErrors()

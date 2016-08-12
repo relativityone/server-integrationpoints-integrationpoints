@@ -88,7 +88,8 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="jobHistoryService">A service class provides functionalities to control the job history.</param>
 		/// <param name="jobIdentifier">Guid of the job history</param>
 		/// <param name="jobId">Artifact id of the scheduled queue job</param>
+		/// <param name="isStoppableJob">A boolean flag to indicate whether the job stop manager is on an unstoppable job.</param>
 		/// <returns></returns>
-		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId);
+		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob);
 	}
 }
