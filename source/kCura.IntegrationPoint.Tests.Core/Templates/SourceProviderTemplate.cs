@@ -45,9 +45,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_workspaceTemplate = workspaceTemplate;
 		}
 
-		[TestFixtureSetUp]
-		public void SourceProviderSetup()
+		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			try
 			{
 				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				try
 				{
-					SourceProviderTeardown();
+					SuiteTeardown();
 				}
 				catch (Exception teardownException)
 				{
@@ -73,12 +73,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 				throw;
 			}
-
-			InitiateSuiteSetup();
 		}
 
-		[TestFixtureTearDown]
-		public void SourceProviderTeardown()
+		public override void SuiteTeardown()
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			Agent.DeleteAgent(AgentArtifactId);
