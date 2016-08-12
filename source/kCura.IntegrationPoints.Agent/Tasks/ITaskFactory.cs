@@ -235,7 +235,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _serializer, jobTracker);
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, _caseServiceContext, _contextContainerFactory, _repositoryFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory);
+			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, _caseServiceContext, _contextContainerFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory);
 
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
