@@ -49,7 +49,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_workspaceService = new WorkspaceService(_configSettings);
 
 			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
-			_configSettings.ExportedObjArtifactId = _workspaceService.GetSavedSearchIdBy(_configSettings.SavedSearchArtifactName, _configSettings.WorkspaceId);
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
 			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int)ArtifactType.Document);
@@ -62,6 +61,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray() :
 				fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
+			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields, _configSettings.WorkspaceId);
+
 			_documents = GetDocumentDataTable();
 			_images = GetImageDataTable();
 
@@ -72,7 +73,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
 			var exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			var loggingMediator = _windsorContainer.Resolve<ILoggingMediator>();
-			var config = _windsorContainer.Resolve<IConfig>();
 
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);

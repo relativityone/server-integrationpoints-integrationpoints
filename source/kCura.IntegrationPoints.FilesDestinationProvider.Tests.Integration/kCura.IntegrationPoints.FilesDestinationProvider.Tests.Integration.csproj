@@ -206,6 +206,7 @@
     <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
+    <Compile Include="TestCases\ItShouldNotExportExtractedText.cs" />
     <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />
