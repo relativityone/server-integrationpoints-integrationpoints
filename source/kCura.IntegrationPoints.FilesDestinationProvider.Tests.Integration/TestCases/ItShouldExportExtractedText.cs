@@ -43,7 +43,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			foreach (var item in DataFileFormatHelper.GetMetadataFileColumnValues<string>(_configSettings.LongTextFieldName, fileInfo))
 			{
 				Assert.That(File.Exists(item));
-				Assert.That(new FileInfo(item).Length, Is.GreaterThan(0));
+				var datFileInfo = new FileInfo(item);
+				Assert.That(datFileInfo.Length, Is.GreaterThan(0));
+				Assert.That(FileEncodingDetectionHelper.GetFileEncoding(datFileInfo.FullName), Is.EqualTo(Encoding.UTF8));
 			}
 		}
 		
