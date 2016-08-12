@@ -22,6 +22,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			ExportSettings.FilePathType filePath;
 			EnumHelper.Parse(sourceSettings.FilePath, out filePath);
 
+			ExportSettings.ProductionPrecedenceType productionPrecedence;
+			EnumHelper.Parse(sourceSettings.ProductionPrecedence, out productionPrecedence);
+
 			var textFileEncoding = sourceSettings.TextFileEncodingType.IsNullOrEmpty() ? null : Encoding.GetEncoding(sourceSettings.TextFileEncodingType);
 
 			var exportSettings = new ExportSettings
@@ -61,7 +64,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested,
 				ExportFullTextAsFile = sourceSettings.ExportFullTextAsFile,
 				TextPrecedenceFieldsIds = sourceSettings.TextPrecedenceFields.Select(x => int.Parse(x.FieldIdentifier)).ToList(),
-				TextFileEncodingType = textFileEncoding
+				TextFileEncodingType = textFileEncoding,
+				ProductionPrecedence = productionPrecedence,
+				IncludeOriginalImages = sourceSettings.IncludeOriginalImages
 			};
 
 			return exportSettings;
