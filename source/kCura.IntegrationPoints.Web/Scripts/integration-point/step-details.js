@@ -454,8 +454,7 @@ var IP = IP || {};
 		}
 		this.selectedFrequency(options.selectedFrequency);
 
-		this.selectedFrequency.subscribe(function () {
-			var value = this.target();
+		this.selectedFrequency.subscribe(function (value) {
 			var oldState = stateManager[value];
 			if (value === 'Daily') {
 				self.sendOn({});
