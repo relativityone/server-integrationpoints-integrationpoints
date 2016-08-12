@@ -13,7 +13,7 @@ else if (LDAP Provider) then (true)
 	repeat while (More batches exist?)
 	:SendEmailManager;
 	:SendEmailWorker;
-else if (Job type is ExportManager) then (true)
+else if (Fileshare Provider) then (true)
 	:ExportManager;
      repeat 
      	:ExportWorker;
