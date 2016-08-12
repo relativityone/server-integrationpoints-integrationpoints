@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -10,7 +9,7 @@ using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Data.Tests.Transformer
+namespace kCura.IntegrationPoints.Data.Tests.Unit.Transformer
 {
 	[TestFixture]
 	public class JobHistoryErrorTransformerTests

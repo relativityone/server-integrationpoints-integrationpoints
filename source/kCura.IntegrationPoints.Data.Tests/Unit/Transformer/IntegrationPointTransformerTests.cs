@@ -8,7 +8,7 @@ using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Data.Tests.Transformer
+namespace kCura.IntegrationPoints.Data.Tests.Unit.Transformer
 {
 	[TestFixture]
 	public class IntegrationPointTransformerTests
