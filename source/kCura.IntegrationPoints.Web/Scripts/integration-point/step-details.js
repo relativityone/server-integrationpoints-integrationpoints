@@ -449,6 +449,9 @@ var IP = IP || {};
 			stateManager[previousValue] = ko.toJS(self.sendOn());
 		}, this, "beforeChange");
 
+		if (options.selectedFrequency === null) {
+			options.selectedFrequency = undefined;
+		}
 		this.selectedFrequency(options.selectedFrequency);
 
 		this.selectedFrequency.subscribe(function () {
