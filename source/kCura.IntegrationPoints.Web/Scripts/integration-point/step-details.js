@@ -338,9 +338,8 @@ var IP = IP || {};
 
 			this.selectedType = ko.observable(currentState.selectedType);
 
-			this.selectedType.subscribe(function () {
+			this.selectedType.subscribe(function (value) {
 				var selected = self.selectedDayOfTheMonth();
-				var value = this.target();
 				if (value === 1 || value == 5) {
 					self.selectedDayOfTheMonth(selected);
 				} else {
