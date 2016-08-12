@@ -9,8 +9,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 	public class StateManagerTests
 	{
 		private IStateManager _instance;
-		private int _workspaceId = 12345;
-		private int _integrationPointId = 54321;
 
 		[SetUp]
 		public void Setup()

@@ -50,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 			string jobDetails =
 				"{\"Subject\":\"testing stuff\",\"MessageBody\":\"Hello, this is GeeeRizzle \",\"Emails\":[\"testing1234@kcura.com\",\"kwu@kcura.com\"]}";
-			string scheduleRule = "Rule";
 
 			DataRow row = new CreateScheduledJob(this._queueContext).Execute(
 				SourceWorkspaceArtifactId,
