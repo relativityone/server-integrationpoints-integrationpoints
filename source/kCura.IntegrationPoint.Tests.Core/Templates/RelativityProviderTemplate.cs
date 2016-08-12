@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_targetWorkspaceTemplate = targetWorkspaceTemplate;
 		}
 
-		[TestFixtureSetUp]
-		public void RelativityProviderSetup()
+		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			try
 			{
 				SourceWorkspaceArtifactId = WorkspaceArtifactId;
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				try
 				{
-					RelativityProviderTeardown();
+					SuiteTeardown();
 				}
 				catch (Exception teardownException)
 				{
@@ -61,14 +61,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 				throw;
 			}
-
-			InitiateSuiteSetup();
 		}
 
-		[TestFixtureTearDown]
-		public void RelativityProviderTeardown()
+		public override void SuiteTeardown()
 		{
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			base.SuiteTeardown();
 		}
 
 		#region Helper Methods
