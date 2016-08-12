@@ -26,7 +26,7 @@
 			default:
 				break;
 		}
-	}
+	};
 
 	//An event raised when the user has clicked the Next or Save button.
 	message.subscribe('submit', function () {
@@ -64,7 +64,7 @@
 		var _bind = function (m) {
 			viewModel = new Model(m);
 			ko.applyBindings(viewModel, document.getElementById('exportProviderConfiguration'));
-		}
+		};
 
 		// expect model to be serialized to string
 		if (typeof m === "string") {
@@ -178,8 +178,7 @@
 				self.isCustomDisabled(true);
 			}
 		};
-		self.UpdateIsCustomDataFileFormatChanged(state.SelectedDataFileFormat)
-
+		self.UpdateIsCustomDataFileFormatChanged(state.SelectedDataFileFormat);
 		this.SelectedDataFileFormat.subscribe(self.UpdateIsCustomDataFileFormatChanged);
 
 
@@ -218,8 +217,7 @@
 			});
 
 			self.SavedSearch(selectedSavedSearch);
-		}
-
+		};
 		if (self.savedSearches().length === 0) {
 			// load saved searches
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
@@ -260,8 +258,7 @@
 
 		        return selectedFileEncodingType.name;
 		    }
-		}
-
+		};
 		this.FileEncodingTypeList = ko.observableArray([]);
 		if (self.FileEncodingTypeList.length === 0) {
 		    IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
@@ -371,50 +368,60 @@
 
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
-		// var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (artifactId) {
-		//     self.SavedSearchArtifactId(parseInt(artifactId));
-		//     self.updateSelectedSavedSearch();
-		// });
+		var getTextRepresentation = function(value) {
+			if (!value) {
+				return "";
+			}
+			return value.map(function(x) {
+					return x.displayName;
+				})
+				.join(", ");
+		};
+		this.TextPrecedenceFields = ko.observable(state.TextPrecedenceFields || [])
+			.extend({
+				required: {
+					onlyIf: function() {
+						return self.ExportTextFieldsAsFilesChecked();
+					}
+				}
+			});
 
-		// Picker.create("SavedSearchPicker", savedSearchPickerViewModel);
-
-		// this.openSavedSearchPicker = function () {
-		//     savedSearchPickerViewModel.open(self.SavedSearch());
-		// };
-
-		this.getFieldsTextRepresentation = function () {
-		    var fieldsTextRepresentation = self.TextPrecedenceFields()
-		        .map(function(x) {
-		            return x.displayName;
-		        })
-		        .join(', ');
-		    return fieldsTextRepresentation;
-		}
-
-		this.TextPrecedenceFields = ko.observable(state.TextPrecedenceFields || []).extend({
-		    required: {
-		        onlyIf: function () {
-		            return self.ExportTextFieldsAsFilesChecked();
-		        }
-		    }
+		this.TextPrecedenceSelection = ko.pureComputed(function() {
+			return getTextRepresentation(self.TextPrecedenceFields());
 		});
 
-		this.TextPrecedenceSelection = ko.observable(self.getFieldsTextRepresentation() || '');
-
-		this.TextPrecedenceFields.subscribe(function (value) {
-		    self.TextPrecedenceSelection(self.getFieldsTextRepresentation());
+		var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function(fields) {
+			self.TextPrecedenceFields(fields);
 		});
 
-		var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
-		    self.TextPrecedenceFields(fields);
+		Picker.create("ListPicker", textPrecedencePickerViewModel);
+
+		this.openTextPrecedencePicker = function() {
+			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
+		};
+
+		this.ImageProductions = ko.observable(state.ImageProductions || [])
+			.extend({
+				required: {
+					onlyIf: function() {
+						return self.ExportImagesChecked();
+					}
+				}
+			});
+
+		this.ImageProductionSelection = ko.pureComputed(function() {
+			return getTextRepresentation(self.ImageProductions());
 		});
 
-		 Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
+		var imageProductionPickerViewModel = new ImageProductionPickerViewModel(function(productions) {
+			self.ImageProductions(productions);
+		});
 
-		 this.openTextPrecedencePicker = function () {
-		     textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
-		 };
+		Picker.create("ListPicker", imageProductionPickerViewModel);
 
+		this.openImageProductionPicker = function() {
+			imageProductionPickerViewModel.open(self.ImageProductions());
+		};
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.getSelectedOption = function () {
@@ -453,8 +460,9 @@
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
 				"TextPrecedenceFields": self.TextPrecedenceFields(),
-				"TextFileEncodingType": self.TextFileEncodingType()
-			}
-		}
-	}
+				"TextFileEncodingType": self.TextFileEncodingType(),
+				"ImageProductions": self.ImageProductions()
+			};
+		};
+	};
 });
