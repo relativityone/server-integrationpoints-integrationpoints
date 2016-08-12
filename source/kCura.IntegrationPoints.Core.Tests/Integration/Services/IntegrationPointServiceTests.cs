@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
