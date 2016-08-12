@@ -1,14 +1,14 @@
-﻿
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.Queries;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
+using NSubstitute;
+using NUnit.Framework;
+
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 {
-	using System.Collections.Generic;
-	using Data.Queries;
-	using kCura.Relativity.Client;
-	using kCura.Relativity.Client.DTOs;
-	using NSubstitute;
-	using NUnit.Framework;
-
 	[TestFixture]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class GetWorkspacesQueryTests
 	{
 

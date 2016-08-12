@@ -15,7 +15,7 @@ using OpenQA.Selenium.Chrome;
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class PermissionErrorMessageTest : RelativityProviderTemplate
 	{
 		private IObjectTypeRepository _objectTypeRepository;

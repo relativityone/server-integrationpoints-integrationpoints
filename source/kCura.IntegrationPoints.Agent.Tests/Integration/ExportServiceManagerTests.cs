@@ -24,11 +24,12 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
+using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(Constants.INTEGRATION_CATEGORY)]
 	public class ExportServiceManagerTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;

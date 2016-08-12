@@ -1,23 +1,23 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
+using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using System;
-using System.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
-	using Core.Models;
-	using Core.Services;
-	using Core.Services.JobHistory;
-	using Core.Services.ServiceContext;
-	using Data;
-	using Data.Factories;
-	using Data.Repositories;
-
 	[Explicit]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ViewErrors : RelativityProviderTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 
 			//IntegrationPointModel integrationPoint = JsonConvert.DeserializeObject<IntegrationPointModel>(response);
 			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			IntegrationPoint integrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointCreated.ArtifactID);
+			kCura.IntegrationPoints.Data.IntegrationPoint integrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointCreated.ArtifactID);
 			_jobHistoryService.CreateRdo(integrationPointDto, Guid.NewGuid(), DateTime.Now);
 			//Act
 

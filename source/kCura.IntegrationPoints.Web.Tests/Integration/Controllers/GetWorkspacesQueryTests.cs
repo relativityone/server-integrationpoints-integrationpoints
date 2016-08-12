@@ -17,7 +17,7 @@ using Relativity.Core.Service;
 namespace kCura.IntegrationPoints.Web.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	[Ignore("These tests are inconsistent - GetWorkspaceModels sometime returns 0 workspaces")]
 	public class GetWorkspacesQueryTests : SourceProviderTemplate
 	{

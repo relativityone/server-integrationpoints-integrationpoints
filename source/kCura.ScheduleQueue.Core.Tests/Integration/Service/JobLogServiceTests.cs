@@ -8,6 +8,7 @@ using Relativity.API;
 namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 {
 	[TestFixture]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class JobLogServiceTests
 	{
 		[Test]

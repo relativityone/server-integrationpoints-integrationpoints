@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Contracts.Models;
 using NUnit.Framework;
@@ -7,7 +6,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class DocumentTransferProviderTests : RelativityProviderTemplate
 	{
 		private readonly DocumentTransferProvider _documentTransferProvider;

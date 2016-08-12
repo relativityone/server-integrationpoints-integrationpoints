@@ -1,4 +1,7 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
@@ -11,14 +14,11 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class IntegrationPointServiceTests : RelativityProviderTemplate
 	{
 		private const string _SOURCECONFIG = "Source Config";

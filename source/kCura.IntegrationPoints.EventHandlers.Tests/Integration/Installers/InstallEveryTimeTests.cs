@@ -8,6 +8,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
 	[TestFixture]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class InstallEveryTimeTests
 	{
 		private class TestHelper : IServiceContextHelper

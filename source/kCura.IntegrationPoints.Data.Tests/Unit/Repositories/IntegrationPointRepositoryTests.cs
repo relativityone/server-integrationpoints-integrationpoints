@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.Tests.Transformer;
+using kCura.IntegrationPoints.Data.Tests.Unit.Transformer;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;

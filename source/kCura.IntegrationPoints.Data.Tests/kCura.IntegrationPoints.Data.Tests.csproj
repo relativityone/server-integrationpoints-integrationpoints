@@ -237,8 +237,8 @@
     <Compile Include="Integration\Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
     <Compile Include="Integration\JobHistoryErrorsBatchingTests.cs" />
-    <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
-    <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
+    <Compile Include="Unit\Transformer\JobHistoryErrorTransformerTests.cs" />
+    <Compile Include="Unit\Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="Unit\BaseRdoTests.cs" />
     <Compile Include="MockDBContext.cs" />
     <Compile Include="Unit\PermissionServiceTest.cs" />

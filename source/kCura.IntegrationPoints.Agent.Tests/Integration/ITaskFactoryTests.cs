@@ -19,7 +19,7 @@ using System.Collections.Generic;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ITaskFactoryTests
 	{
 		[OneTimeSetUp]

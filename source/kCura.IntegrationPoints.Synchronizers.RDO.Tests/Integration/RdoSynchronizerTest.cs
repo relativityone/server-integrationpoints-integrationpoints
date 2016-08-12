@@ -13,6 +13,7 @@ using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 {
 	[TestFixture]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class RdoSynchronizerTest
 	{
 		[Test]

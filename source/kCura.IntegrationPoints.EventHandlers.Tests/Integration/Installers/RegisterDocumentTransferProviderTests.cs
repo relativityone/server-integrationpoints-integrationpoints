@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.SourceProviderInstaller;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
-	using NUnit.Framework;
-
 	[TestFixture]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	internal class RegisterDocumentTransferProviderTests
 	{
 		[Test]

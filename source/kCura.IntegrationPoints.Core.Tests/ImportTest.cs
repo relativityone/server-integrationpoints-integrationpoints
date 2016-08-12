@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text.RegularExpressions;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ImportTest : SourceProviderTemplate
 	{
 		public ImportTest(): base("Import Test")

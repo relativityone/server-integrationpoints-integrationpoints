@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using kCura.Apps.Common.Config;
+using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.Data.RowDataGateway;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using NSubstitute;
 using NUnit.Framework;
 using IDBContext = Relativity.API.IDBContext;
-using kCura.Apps.Common.Config;
 
 namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 {
-	using kCura.Apps.Common.Data;
-
 	[TestFixture]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class JobServiceTests
 	{
 		[Test]

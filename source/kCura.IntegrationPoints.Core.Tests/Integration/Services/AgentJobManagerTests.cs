@@ -1,4 +1,5 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
@@ -6,18 +7,16 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using NUnit.Framework;
-using System;
+using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.ScheduleQueue.Core;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
-	using kCura.IntegrationPoints.Data.Queries;
-	using kCura.IntegrationPoints.Data.Repositories;
-	using kCura.ScheduleQueue.Core;
-
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class AgentJobManagerTests : RelativityProviderTemplate
 	{
 		private const int _ADMIN_USER_ID = 9;

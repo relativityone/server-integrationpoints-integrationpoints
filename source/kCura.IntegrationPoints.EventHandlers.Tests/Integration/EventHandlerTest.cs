@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class EventHandlerTest : RelativityProviderTemplate
 	{
 		private IJobHistoryService _jobHistoryService;

@@ -6,7 +6,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.API;
@@ -14,7 +13,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class IntegrationPointManagerTests : RelativityProviderTemplate
 	{
 		private IDBContext _dbContext;

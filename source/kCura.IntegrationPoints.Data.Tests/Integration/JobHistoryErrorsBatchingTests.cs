@@ -1,4 +1,8 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core;
@@ -12,21 +16,17 @@ using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class JobHistoryErrorsBatchingTests : RelativityProviderTemplate
 	{
 		private IIntegrationPointService _integrationPointService;

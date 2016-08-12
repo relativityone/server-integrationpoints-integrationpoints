@@ -1,12 +1,12 @@
-﻿using kCura.Relativity.Client;
-using NUnit.Framework;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.Relativity.Client;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ComplexFieldsTests : RelativityProviderTemplate
 	{
 		public ComplexFieldsTests() : base("ComplexFields - Source", "ComplexFields - Destination")

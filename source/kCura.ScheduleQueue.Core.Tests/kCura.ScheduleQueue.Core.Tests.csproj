@@ -131,6 +131,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj">
       <Project>{9F8F3789-4523-4C2F-BE74-ED7DF7A51D81}</Project>
       <Name>kCura.IntegrationPoints.Agent.Tests</Name>
