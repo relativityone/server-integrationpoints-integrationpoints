@@ -73,7 +73,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
 			var exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			var loggingMediator = _windsorContainer.Resolve<ILoggingMediator>();
-			var config = _windsorContainer.Resolve<IConfig>();
 
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
