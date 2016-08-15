@@ -90,22 +90,34 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			task.Wait();
 
 			int artifactId = 987;
-			_reader.Read().Returns(true, false); // 
+			_reader.Read().Returns(true, false);
 			_reader.GetInt32(0).Returns(artifactId);
 			_documentRepo.RetrieveDocumentsAsync(Arg.Any<List<int>>(), Arg.Any<HashSet<int>>()).
 				Returns(task);
 
-			// act
-			bool read = _instance.Read();
+			// act & assert
+			Assert.IsTrue(_instance.Read());
 			string idValue = _instance.GetString(0);
 			string dataColumnValue = _instance.GetString(1);
-			bool read2 = _instance.Read();
+			Assert.IsFalse(_instance.Read());
 
-			// assert
-			Assert.IsTrue(read);
 			Assert.AreEqual(id, idValue);
 			Assert.AreEqual(ConstValue, dataColumnValue);
-			Assert.IsFalse(read2);
 		}
+
+		[Test]
+		public void FetchArtifactDTOs_NoDataToRead()
+		{
+			// arrange
+			_reader.Read().Returns(false); // 
+
+			// act
+			Assert.IsFalse(_instance.Read());
+
+			// assert
+			_documentRepo.DidNotReceive().RetrieveDocumentsAsync(Arg.Any<List<int>>(), Arg.Any<HashSet<int>>());
+
+		}
+
 	}
 }
