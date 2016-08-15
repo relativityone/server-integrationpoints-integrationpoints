@@ -267,6 +267,7 @@
     <Compile Include="Unit\Keywords\KeywordConverterTests.cs" />
     <Compile Include="Unit\Managers\JobHistoryErrorManagerTests.cs" />
     <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
+    <Compile Include="Unit\Managers\NullableStopJobManagerTests.cs" />
     <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
     <Compile Include="Unit\Managers\SourceJobManagerTests.cs" />
