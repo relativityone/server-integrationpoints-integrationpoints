@@ -269,7 +269,7 @@
 									Data File Encoding:
 								</td>
 								<td class="editFieldValue">
-									<select id="dataFileEncodingSelector" data-bind="foreach: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
+									<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
 										<optgroup data-bind="attr: {label: label}, foreach: children">
 											<option data-bind="text: displayName, value: name"></option>
 										</optgroup>
@@ -372,6 +372,18 @@
 						    </tr>
                             <tr>
                                 <td class="editFieldNameRequired">
+                                    Text File Encoding:
+                                </td>
+                                <td class="editFieldValue">
+                                    <select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
+                                        <optgroup data-bind="attr: {label: label}, foreach: children">
+                                            <option data-bind="text: displayName, value: name"></option>
+                                        </optgroup>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
                                     Text Precedence:
                                 </td>
                                 <td class="editFieldValue">
@@ -405,6 +417,7 @@
 	<script src="~/Scripts/knockout.validation.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
     <script src="~/Scripts/integration-point/step-mapFields-control.js"></script>
+    <script src="~/Scripts/export/field-mapping-view-model.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script src="~/Scripts/frame-messaging.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>

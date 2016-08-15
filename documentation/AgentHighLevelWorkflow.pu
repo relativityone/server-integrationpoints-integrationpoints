@@ -4,16 +4,34 @@ title Agent High Level Workflow
 
 start
 
-:SyncManager;
-note right: Use DataProvider to get batchable identifiers
-repeat 
-    :SyncWorker;
-    note left: Use DataProvider to pull / push
-repeat while (More batches exist?)
-:SendEmailManager;
-note right: Get emails to notify
-:SendEmailWorker;
-note right: Send all emails
+if (Relativity Provider) then (true)
+	:ExportServiceManager|
+else if (LDAP Provider) then (true)
+	:SyncManager;
+	repeat
+		:SyncCustodianManagerWorker;
+	repeat while (More batches exist?)
+	:SendEmailManager;
+	:SendEmailWorker;
+else if (Fileshare Provider) then (true)
+	:ExportManager;
+     repeat 
+     	:ExportWorker;
+     repeat while (More batches exist?)
+     :SendEmailManager;
+     :SendEmailWorker;
+else
+	:SyncManager;
+	note right: Use DataProvider to get batchable identifiers
+	repeat 
+		:SyncWorker;
+		note right: Use DataProvider to pull / push
+	repeat while (More batches exist?)
+	:SendEmailManager;
+	note right: Get emails to notify
+	:SendEmailWorker;
+	note right: Send all emails
+	endif
 
 stop
 

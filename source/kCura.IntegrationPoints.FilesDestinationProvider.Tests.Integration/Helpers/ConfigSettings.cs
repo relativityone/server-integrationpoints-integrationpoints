@@ -16,6 +16,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const string _USERNAME_KEY = "relativityUserName";
 		private const string _PASSWORD_KEY = "relativityPassword";
 
+		private const string _LONGT_TEXT_FIELD_KEY = "LongTextFieldName";
+
 		#endregion //Fields
 
 		#region Properties
@@ -28,6 +30,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		public FieldEntry[] AdditionalFields { get; set; }
 
+		public FieldEntry LongTextField { get; set; }
+
 		public string WorkspaceName { get; set; }
 
 		public string SavedSearchArtifactName { get; } = ConfigurationManager.AppSettings[_SAVEDSEARCH_ARTIFACT_NAME_KEY];
@@ -36,6 +40,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			.Split(',')
 			.Select(name => name.Trim())
 			.ToArray();
+
+		public string LongTextFieldName { get; } = ConfigurationManager.AppSettings[_LONGT_TEXT_FIELD_KEY];
 
 		public string DestinationPath { get; } = ConfigurationManager.AppSettings[_DESTINATION_PATH_KEY];
 

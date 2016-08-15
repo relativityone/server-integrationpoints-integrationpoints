@@ -1,23 +1,207 @@
 @startuml
 title RIP Agent Workflow - ExportServiceManager
 
-partition Initialize_Export_Job {
-	(*) --> "Load Integration Point RDOs"
-	-->"Set Job History Rdo to the JobHistoryErrorService"
-	-->"Sanitize MappedFields"
-	-->"Set StartTime to the Job History Rdo."
-	-->"Notify BatchStatus subscribers that the job is started."
+start
+
+partition "Initialize Export Job" {
+	:Load Integration Point RDOs;
+	:Get or create Job History RDO;
+    :Retrieve the Source Provider;
+    :Set Job History's StartTimeUTC to DateTime.UtcNow";
+	:Sanitize MappedFields;
+    :Load Job History Errors if there are any;
+    #hotpink:Except if saved search is not available;
+    if (Is item level retry job) then (true)
+    	:Create item level errors saved search;
+        :Create error list temp tables;
+    endif
+    :Start checking for stop signal;
+	partition "Notify BatchStatus subscribers that the job is started" {
+      fork
+          partition "BatchEmail" {
+          }
+      fork again
+          partition "JobHistoryBatchUpdateStatus" {
+             if (Job's Stop State is not "Stopping") then (true)
+             	:Set Job History's Job Status to "Processing";
+             endif
+          }
+      end fork
+    }
 }
 
-partition Perform_Export {
-	-->"Create Data Synchronizer"
-	-->"Build Exporter"
-	-->"Set Total Items to the Job History Rdo"
-	-->"Create Export Results Reader"
-	-->"Pass the Reader to Data Synchronizer"
+#hotpink:Throw if stop was requested;
+
+partition GetImportApiSettingsForUser {
+	:Set "OnBehalfOfUserId";
+    if (Is retry job and overwrite mode is Append) then (true)
+    	:Set overwrite mode to AppendOverlay;
+    endif
 }
---> "Commit Error if Any"
---> "Notify BatchStatus subscribers that the job is done."
---> (*)
+
+#hotpink:Throw if stop was requested;
+
+partition InitializeExportServiceObservers {
+  fork
+  	partition TargetDocumentsTaggingManager {
+		:Ensure all object types, fields, and instances
+        have been created;
+  	}
+  fork again
+  	partition SourceObjectBatchUpdateManager {
+		:Ensure that the destination workspace rdo exists
+        and that the name is correct;
+        :Link the job history to the destination workspace instance;
+  	}
+  fork again
+  	partition JobHistoryErrorBatchUpdateManager {
+		if (Job is a Retry Errors job) then (true)
+        	if (Error type is JobAndItem) then (true)
+            	:Copy "IntegrationPoint_Relativity_JobHistoryErrors_JobStart"
+                to "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
+                :Update job level errors to "In Progress";
+                :Update item level errors to "Expired";
+            elseif (Error type is JobOnly) then (true)
+            	:Copy "IntegrationPoint_Relativity_JobHistoryErrors_JobStart"
+                to "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
+                :Update job level errors to "In Progress";
+            elseif (Error type is ItemOnly) then (true)
+            	:Copy "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart"
+                to "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
+                :Update included item level errors as "In Progress";
+                :Update excluded item level errors as "Expired";
+			endif
+        else
+        	if (Error type is JobAndItem) then (true)
+            	:Update job level errors to "Expired";
+                :Update item level errors to "Expired";
+            elseif (Error type is JobOnly) then (true)
+            	:Update job level errors to "Expired";
+            elseif (Error type is ItemOnly) then (true)
+            	:Update item level errors to "Expired";
+			endif
+        endif
+  	}
+  end fork
+  
+  if (Any exceptions were thrown) then (true)
+    	#hotpink:Throw Aggregate Exception;
+  endif
+}
+
+partition SetUpSubscriptions {
+	:Set up statistics subscription;
+    :Set up Job History Error Service subscription;
+    :Set up Export Job error Service subscription;
+}
+
+#hotpink:Throw if stop was requested;
+
+partition "Perform Export" {
+	:Set Total Items to the Job History Rdo;
+	if (ExportAPI returns records) then (true)
+    	:SyncData;
+    endif
+}
+
+partition "Finalize" {
+	:Stop awaiting stop signal;
+	:Update stop state for job as "Unstoppable";
+    
+    partition "Notify BatchStatus subscribers of job completion" {
+    	fork
+        	partition TargetDocumentsTaggingManager {
+              if (No error occurred during job start) then (true)
+                  :Tag documents in target workspace
+                  with Source Workspace and Source Job;
+                  :Dispose of 
+                  "IntegrationPoint_Relativity_SourceWorkspace"
+                  scratch table;
+              endif
+            }
+        fork again
+        	partition SourceObjectBatchUpdateManager {
+              if (No error occurred during job start) then (true)
+                  :Tag documents in source workspace
+                  with Destination and JobHistory;
+                  :Dispose of
+                  "IntegrationPoint_Relativity_DestinationWorkspace_JobHistory"
+                  scratch table;
+              endif
+            }
+        fork again
+        	partition JobHistoryErrorBatchUpdateManager {
+              if (Job is a retry error job) then (true)
+                  if (Job is item level retry only) then (true)
+                      :Update errors from 
+                      "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete"
+                      scratch table as JobHistoryErrorRetried;
+                  elseif (Job is JobOnly or JobAndItem)
+                      :Update errors from 
+                      "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete" 
+                      scratch table as JobHistoryErrorRetried;
+                  endif
+              endif
+            }
+        end fork
+    }
+    
+    if (Any exceptions were thrown) then (true)
+    	#hotpink:Throw Aggregate Exception;
+    endif
+    
+    :Commit errors if any;
+    :Delete scratch tables;
+    :Delete temporary saved search;
+    
+    partition "FinalizeInProgressErrors" {
+    	if (A job level error occurred) then (true)
+    		 if (Job is a retry error job) then (true)
+                  if (Job is item level retry only) then (true)
+                      :Update errors from 
+                      "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete"
+                      scratch table as JobHistoryErrorRetried;
+                  elseif (Job is JobOnly or JobAndItem)
+                      :Update errors from 
+                      "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete" 
+                      scratch table as JobHistoryErrorRetried;
+                  endif
+              endif
+        	:Dispose of JobHistoryError* scratch table;
+    	endif
+    }
+    
+    fork
+    	partition "BatchEmail" {
+        	if (There are email recipients) then (true)
+            	:Generate and send emails;
+            endif
+        }
+    fork again
+    	partition "JobHistoryBatchUpdateStatus" {
+        	:Generate correct job status;
+            :Update job history with new status;
+            :Update job history End Time UTC to DateTime.UtcNow;
+        }
+    end fork
+    
+    :Commit errors if any;
+    
+    if (Stop was requested at any time) then (true)
+    	:Set job history errors' status to "Expired";
+    endif
+    
+    partition "Update Integration Point run times" {
+    	if (Job is a scheduled job) then (true)
+            :Update Stop State to "None";
+            :Set Next Scheduled Runtime UTC;
+        endif
+        
+        :Update Integration Point's Last Runtime UTC to DateTime.UtcNow;
+    }
+}
+
+stop
+
 
 @enduml

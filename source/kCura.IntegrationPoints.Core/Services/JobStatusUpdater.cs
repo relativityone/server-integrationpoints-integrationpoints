@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Relativity.Client.Choice GenerateStatus(Guid batchId)
 		{
-			var result = _jobHistoryService.GetRdo(batchId);
+			Data.JobHistory result = _jobHistoryService.GetRdo(batchId);
 			return GenerateStatus(result);
 		}
 
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (jobHistory == null)
 			{
-				throw new ArgumentNullException("job History");
+				throw new ArgumentNullException(nameof(jobHistory));
 			}
 			if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))
 			{

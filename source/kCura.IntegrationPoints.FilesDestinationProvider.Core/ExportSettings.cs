@@ -35,6 +35,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			UserPrefix = 2
 		}
 
+		public enum ProductionPrecedenceType
+		{
+			Original,
+			Produced
+		}
+
 		public int StartExportAtRecord { get; set; }
 		public int ExportedObjArtifactId { get; set; }
 		public string ExportedObjName { get; set; }
@@ -70,5 +76,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
 		public bool ExportFullTextAsFile { get; set; }
 		public List<int> TextPrecedenceFieldsIds { get; set; }
+		public Encoding TextFileEncodingType { get; set; }
+		public ProductionPrecedenceType ProductionPrecedence { get; set; }
+		public bool IncludeOriginalImages { get; set; }
 	}
 }

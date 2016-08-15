@@ -129,10 +129,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			jobHistory.ArtifactId = 2;
 
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(taskParameters);
-			_jobHistoryService.GetRdo(taskParameters.BatchInstance).Returns(jobHistory);
-			
+
 			Data.IntegrationPoint integrationPointDto = new Data.IntegrationPoint();
 			integrationPointDto.JobHistory = new[] {1, 2, 3};
+			_jobHistoryService.CreateRdo(integrationPointDto, taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(jobHistory);
 
 			//Act
 			Assert.Throws<AgentDropJobException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent), exceptionMessage);
@@ -141,39 +141,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(integrationPointDto);
 			_jobHistoryService.Received(1).DeleteRdo(jobHistory.ArtifactId);
 			_serializer.Received(1).Deserialize<TaskParameters>(job.JobDetails);
-			_jobHistoryService.Received(1).GetRdo(taskParameters.BatchInstance);
+			_jobHistoryService.Received(1).UpdateRdo(jobHistory);
+			_jobHistoryService.Received(1).CreateRdo(Arg.Any<Data.IntegrationPoint>(), taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>());
 
 			int[] expectedJobHistoryArray = new[] {1, 3};
 			Assert.AreEqual(expectedJobHistoryArray, integrationPointDto.JobHistory);
 		}
 
-		[Test]
-		public void DropJobAndThrowException_NullJobHistory_ExceptionThrown()
-		{
-			//Arrange
-			TaskParameters taskParameters = new TaskParameters();
-			string batchInstance = "A6E6BD34-3814-4C9D-AD98-8FC47F5E25D1";
-			taskParameters.BatchInstance = new Guid(batchInstance);
-
-			String exceptionMessage =
-				$"Unable to retrieve job history information for the following job batch: {taskParameters.BatchInstance}";
-			
-			ScheduleQueueAgentBase agent = new Agent();
-			Job job = JobExtensions.CreateJob();
-			JobHistory jobHistory = null;
-
-			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(taskParameters);
-			_jobHistoryService.GetRdo(taskParameters.BatchInstance).Returns(jobHistory);
-
-			Data.IntegrationPoint integrationPointDto = new Data.IntegrationPoint();
-			
-			//Act
-			Assert.Throws<NullReferenceException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent), exceptionMessage);
-
-			//Assert
-			_serializer.Received(1).Deserialize<TaskParameters>(job.JobDetails);
-			_jobHistoryService.Received(1).GetRdo(taskParameters.BatchInstance);
-		}
 
 		[Test]
 		public void UpdateJobHistory()
@@ -193,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 			caseServiceContext.RsapiService.IntegrationPointLibrary.Read(Arg.Any<int>()).Returns(integrationPoint);
 			serializer.Deserialize<TaskParameters>(Arg.Any<String>()).Returns(paramerters);
-			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
+			jobHistoryService.CreateRdo(integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(jobHistory);
 
 			container.Resolve<SyncManager>().Throws(new Exception("Error message."));
 			container.Resolve<ISerializer>().Returns(serializer);

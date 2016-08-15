@@ -149,6 +149,26 @@
 		</td>
 	</tr>
 	<tr>
+		<td class="editTableColumn" data-bind="visible: settings.ExportFullTextAsFile">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Text precedence:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: textPrecenceList()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn" data-bind="visible: settings.ExportFullTextAsFile">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Text file encoding:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: textFileEncoding()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
 		<td class="editTableColumn">
 			<table>
 				<tr>

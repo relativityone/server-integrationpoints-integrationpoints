@@ -45,5 +45,9 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
 		public bool ExportFullTextAsFile { get; set; }
 		public IEnumerable<FieldEntry> TextPrecedenceFields { get; set; }
+		public string TextFileEncodingType { get; set; }
+		// Just temporal init
+		public string ProductionPrecedence => "Original";
+		public bool IncludeOriginalImages { get; set; }
 	}
 }

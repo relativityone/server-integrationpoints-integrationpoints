@@ -122,6 +122,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelectedImageDataFileFormat = ((int)default(ExportSettings.ImageDataFileFormat)).ToString(),
 				FilePath = ((int)default(ExportSettings.FilePathType)).ToString(),
 				DataFileEncodingType = "Unicode",
+				TextFileEncodingType = "Unicode",
 				ExportFullTextAsFile = _EXPORT_FULL_TEXT_AS_FILE,
 				TextPrecedenceFields =  new List<FieldEntry>()
 			};

@@ -28,9 +28,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
-			IRepositoryFactory repositoryFactory,
+			IContextContainerFactory contextContainer,
 			IEnumerable<IBatchStatus> batchStatuses) 
-			: base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, repositoryFactory, batchStatuses)
+			: base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, contextContainer, batchStatuses)
         {
         }
 

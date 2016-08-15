@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
@@ -33,6 +36,26 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 				var line = reader.ReadLine();
 				return line != null && line.Contains(text);
+			}
+		}
+
+		public static IEnumerable<T> GetMetadataFileColumnValues<T>(string columnName, FileInfo file, char colSeparator = ',')
+		{
+			using (var reader = new StreamReader(file.FullName))
+			{
+				var line = reader.ReadLine();
+
+				if (line == null)
+				{
+					yield break;
+				}
+				var index = line.Split(colSeparator).ToList().FindIndex(item => item.Contains(columnName));
+				while ((line = reader.ReadLine()) != null)
+				{
+					var lineValues = line.Split(colSeparator).ToList();
+					var value = lineValues[index].Remove(lineValues[index].Length - 1).Remove(0, 1);
+					yield return (T)Convert.ChangeType(value, typeof(T));
+				}
 			}
 		}
 	}

@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoints.Contracts.Models;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
@@ -22,6 +21,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			ExportSettings.FilePathType filePath;
 			EnumHelper.Parse(sourceSettings.FilePath, out filePath);
+
+			ExportSettings.ProductionPrecedenceType productionPrecedence;
+			EnumHelper.Parse(sourceSettings.ProductionPrecedence, out productionPrecedence);
+
+			var textFileEncoding = sourceSettings.TextFileEncodingType.IsNullOrEmpty() ? null : Encoding.GetEncoding(sourceSettings.TextFileEncodingType);
 
 			var exportSettings = new ExportSettings
 			{
@@ -56,15 +60,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				VolumeStartNumber = sourceSettings.VolumeStartNumber,
 				VolumePrefix = sourceSettings.VolumePrefix,
 				FilePath = filePath,
-				UserPrefix  = sourceSettings.UserPrefix,
+				UserPrefix = sourceSettings.UserPrefix,
 				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested,
 				ExportFullTextAsFile = sourceSettings.ExportFullTextAsFile,
-				TextPrecedenceFieldsIds = sourceSettings.TextPrecedenceFields.Select(x => int.Parse(x.FieldIdentifier)).ToList()
+				TextPrecedenceFieldsIds = sourceSettings.TextPrecedenceFields.Select(x => int.Parse(x.FieldIdentifier)).ToList(),
+				TextFileEncodingType = textFileEncoding,
+				ProductionPrecedence = productionPrecedence,
+				IncludeOriginalImages = sourceSettings.IncludeOriginalImages
 			};
 
 			return exportSettings;
 		}
-
-
 	}
 }
