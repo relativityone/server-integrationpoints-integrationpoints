@@ -143,12 +143,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					};
 					context.ExecuteBulkCopy(artifactIdTable, bulkParameters);
 				}
-
-				//This is the workaround to the RSAPIClient creation issue. When we try to resolve and RSAPIClient, it is reusing this context
-				//which needs to be pointing to EDDS for the authentication part of the creation to complete successfully.
-				//connectionData.Database = "EDDS";
-				//context = new Context(connectionData);
-				}
+			}
         }
 
 	    public IScratchTableRepository CopyTempTable(string newTempTablePrefix)

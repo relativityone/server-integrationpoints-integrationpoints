@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					ICollection<int> itemLevelErrorArtifactIds = jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(jobHistoryArtifactId, errorType);
 					scratchTable.AddArtifactIdsIntoTempTable(itemLevelErrorArtifactIds);
-					jobHistoryErrorRepository.UpdateErrorStatuses(ClaimsPrincipal.Current, jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, scratchTable.GetTempTableName());
+					jobHistoryErrorRepository.UpdateErrorStatuses(ClaimsPrincipal.Current, itemLevelErrorArtifactIds.Count, objectTypeId, errorStatusChoiceArtifactId, scratchTable.GetTempTableName());
 				}
 			}
 			catch
