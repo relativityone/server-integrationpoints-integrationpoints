@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+﻿using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
+using System;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 {
@@ -22,8 +21,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private TempTableReader _instance;
 		private int _identifierFieldId;
 		private DataColumn[] _columns;
-		
-		[TestFixtureSetUp]
+
+		[SetUp]
 		public void SetUp()
 		{
 			_documentRepo = Substitute.For<IDocumentRepository>();
@@ -33,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			_scratchTable.GetDocumentIdsDataReaderFromTable().Returns(_reader);
 
-			_columns = new[] {new DataColumn("Identifier"), new DataColumnWithValue("someValue", ConstValue) };
+			_columns = new[] { new DataColumn("Identifier"), new DataColumnWithValue("someValue", ConstValue) };
 
 			_instance = new TempTableReader(_documentRepo, _scratchTable, _columns, _identifierFieldId);
 		}
@@ -53,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		{
 			// act
 			Type type = _instance.GetFieldType(0);
-			
+
 			// assert
 			Assert.AreEqual(typeof(string), type);
 		}
@@ -75,21 +74,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		[Ignore("Fails on run script, Passes on VS")]
 		public void FetchArtifactDTOs_ReturnArtifactDto()
 		{
 			// arrange
 			const string id = "123";
-			Task<ArtifactDTO[]> task =
-				new Task<ArtifactDTO[]>(() => new ArtifactDTO[]
+			Task<ArtifactDTO[]> task = new Task<ArtifactDTO[]>(() => new ArtifactDTO[]
+			{
+				new ArtifactDTO(0, 0, String.Empty, new List<ArtifactFieldDTO>()
 				{
-					new ArtifactDTO(0, 0, String.Empty, new List<ArtifactFieldDTO>()
-					{
-						new ArtifactFieldDTO() { Value = id }
-					})
-				});
+					new ArtifactFieldDTO() { Value = id },
+					new ArtifactFieldDTO() { Value = id },
+				})
+			});
 			task.Start();
-			Task.WaitAll(task);
+			task.Wait();
 
 			int artifactId = 987;
 			_reader.Read().Returns(true, false);
@@ -97,18 +95,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_documentRepo.RetrieveDocumentsAsync(Arg.Any<List<int>>(), Arg.Any<HashSet<int>>()).
 				Returns(task);
 
-			// act
-			bool read = _instance.Read();
+			// act & assert
+			Assert.IsTrue(_instance.Read());
 			string idValue = _instance.GetString(0);
 			string dataColumnValue = _instance.GetString(1);
+			Assert.IsFalse(_instance.Read());
 
-			bool read2 = _instance.Read();
-
-			// assert
-			Assert.IsTrue(read);
 			Assert.AreEqual(id, idValue);
 			Assert.AreEqual(ConstValue, dataColumnValue);
-			Assert.IsFalse(read2);
 		}
+
+		[Test]
+		public void FetchArtifactDTOs_NoDataToRead()
+		{
+			// arrange
+			_reader.Read().Returns(false); // 
+
+			// act
+			Assert.IsFalse(_instance.Read());
+
+			// assert
+			_documentRepo.DidNotReceive().RetrieveDocumentsAsync(Arg.Any<List<int>>(), Arg.Any<HashSet<int>>());
+
+		}
+
 	}
 }
