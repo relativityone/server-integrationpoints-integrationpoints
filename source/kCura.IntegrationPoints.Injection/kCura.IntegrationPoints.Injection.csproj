@@ -4,7 +4,6 @@
   <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration>Debug</Configuration>
     <Platform>AnyCPU</Platform>
     <ProjectGuid>{847816A0-E354-4176-83B1-7ADB93E5742F}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -26,6 +25,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <OutputPath>..\bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
@@ -81,9 +84,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
+      <Project>{8170466f-7eb5-48cb-bfb0-7e4fac1d6e42}</Project>
+      <Name>kCura.IntegrationPoints.Dependencies</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
