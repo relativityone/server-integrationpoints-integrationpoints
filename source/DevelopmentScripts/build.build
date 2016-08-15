@@ -284,6 +284,7 @@
 			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Method.Injection.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Injection.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.Core.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
