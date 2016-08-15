@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_serializer = Container.Resolve<ISerializer>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobService = Container.Resolve<IJobService>();
@@ -55,8 +56,9 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 		public void VerifyDailySchedulingIsCorrect(TestBrowser browser)
 		{
 			//Arrange
+			_webDriver = Selenium.GetWebDriver(browser);
 			string frequencyOptionDropdownId = "frequency";
-			GoToCreateAnIntegrationPointPage();
+			GoToCreateAnIntegrationPointPageAndEnableScheduler();
 
 			//act
 
@@ -70,8 +72,9 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 		public void VerifyWeeklySchedulingIsCorrect(TestBrowser browser)
 		{
 			//arrange
+			_webDriver = Selenium.GetWebDriver(browser);
 			string frequencyOptionDropdownId = "frequency";
-			GoToCreateAnIntegrationPointPage();
+			GoToCreateAnIntegrationPointPageAndEnableScheduler();
 
 			//act
 			_webDriver.SelectFromDropdownList(frequencyOptionDropdownId, "Weekly");
@@ -85,8 +88,9 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 		public void VerifyMonthlySchedulingIsCorrect(TestBrowser browser)
 		{
 			//arrange
+			_webDriver = Selenium.GetWebDriver(browser);
 			string frequencyOptionDropdownId = "frequency";
-			GoToCreateAnIntegrationPointPage();
+			GoToCreateAnIntegrationPointPageAndEnableScheduler();
 
 			//act
 			_webDriver.SelectFromDropdownList(frequencyOptionDropdownId, "Monthly");
@@ -100,8 +104,9 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 		public void VerifySchedulerUiIsConsistent(TestBrowser browser)
 		{
 			//Arrange
+			_webDriver = Selenium.GetWebDriver(browser);
 			string frequencyOptionDropdownId = "frequency";
-			GoToCreateAnIntegrationPointPage();
+			GoToCreateAnIntegrationPointPageAndEnableScheduler();
 			_webDriver.WaitUntilElementExists(ElementType.Id, "name", 10);
 			_webDriver.FindElement(By.Id("name")).SendKeys("RIP" + DateTime.Now);
 			_webDriver.SelectFromDropdownList("sourceProvider", "Relativity");
@@ -112,13 +117,18 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			_webDriver.FindElement(By.Id("scheduleRulesStartDate")).SendKeys("08/24/2016");
 			_webDriver.FindElement(By.Id("scheduledTime")).SendKeys("12:12");
 
+			//Go to the 2nd page
 			_webDriver.WaitUntilElementIsClickable(ElementType.Id, "next", 10);
 			_webDriver.FindElement(By.Id("next")).Click();
-			_webDriver.WaitUntilElementExists(ElementType.Id, "configurationFrame", 10);
-			_webDriver.SwitchTo().Frame("configurationFrame");
+
+			//Go back to the 1st page
+			_webDriver.SwitchTo().DefaultContent();
+			_webDriver.WaitUntilElementExists(ElementType.Id, "_externalPage", 10);
+			_webDriver.SwitchTo().Frame("_externalPage");
 
 			_webDriver.WaitUntilElementIsClickable(ElementType.Id, "back", 10);
 			_webDriver.FindElement(By.Id("back")).Click();
+			_webDriver.SwitchTo().DefaultContent();
 			_webDriver.WaitUntilElementExists(ElementType.Id, "_externalPage", 5);
 			_webDriver.SwitchTo().Frame("_externalPage");
 
@@ -131,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			VerifyMonthlyOptionsArePresented();
 		}
 
-		private void GoToCreateAnIntegrationPointPage()
+		private void GoToCreateAnIntegrationPointPageAndEnableScheduler()
 		{
 			_webDriver.SetFluidStatus(9);
 			_webDriver.LogIntoRelativity("relativity.admin@kcura.com", SharedVariables.RelativityPassword);
