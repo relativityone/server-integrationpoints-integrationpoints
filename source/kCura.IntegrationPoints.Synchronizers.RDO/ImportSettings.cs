@@ -12,6 +12,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportSettings
 	{
+		public const string FIELDOVERLAYBEHAVIOR_MERGE = "Merge Values";
+		public const string FIELDOVERLAYBEHAVIOR_REPLACE = "Replace Values";
+		public const string FIELDOVERLAYBEHAVIOR_DEFAULT = "Use Field Settings";
+
 		private readonly IAuditSpoofTokenGenerator _generator;
 		private BaseServiceContext _context;
 
@@ -87,21 +91,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			get
 			{
-				if (String.IsNullOrEmpty(FieldOverlayBehavior) || FieldOverlayBehavior == "Use Field Settings")
+				if (String.IsNullOrEmpty(FieldOverlayBehavior) || FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_DEFAULT)
 				{
 					return ImportOverlayBehaviorEnum.UseRelativityDefaults;
 				}
-				else if (FieldOverlayBehavior == "Merge Values")
+				else if (FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_MERGE)
 				{
 					return ImportOverlayBehaviorEnum.MergeAll;
 				}
-				else if (FieldOverlayBehavior == "Replace Values")
+				else if (FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_REPLACE)
 				{
 					return ImportOverlayBehaviorEnum.ReplaceAll;
 				}
 				else
 				{
-					throw new Exception(String.Format("Unable to determine Import Overlay Behavior : {0}", FieldOverlayBehavior));
+					throw new Exception($"Unable to determine Import Overlay Behavior : {FieldOverlayBehavior}");
 				}
 			}
 		}
