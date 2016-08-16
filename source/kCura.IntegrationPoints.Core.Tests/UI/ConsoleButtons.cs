@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_serializer = Container.Resolve<ISerializer>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobService = Container.Resolve<IJobService>();

@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
