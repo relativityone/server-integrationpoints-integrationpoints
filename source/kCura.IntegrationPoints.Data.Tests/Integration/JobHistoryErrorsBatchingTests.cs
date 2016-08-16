@@ -48,6 +48,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			ResolveServices();
 		}
 
