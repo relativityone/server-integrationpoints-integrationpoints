@@ -13,6 +13,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 	{
 		private ExportSettingsBuilder _exportSettingsBuilder;
 
+		private const bool _EXPORT_FULL_TEXT_AS_FILE = true;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -71,7 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-		public void ItShouldSelectFieldIdentifiers()
+		public void ItShouldSelectFieldIdentifiersForExportableFields()
 		{
 			var fields = new List<FieldMap>()
 			{
@@ -83,6 +85,34 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			CollectionAssert.AreEqual(exportSettings.SelViewFieldIds, new List<int> {1, 2});
 		}
+
+		[Test]
+		public void ItShouldSelectFieldIdentifiersForTextPrecedenceFields()
+		{
+			var fields = new List<FieldEntry>()
+			{
+				 new FieldEntry() {FieldIdentifier = "1"},
+				 new FieldEntry() {FieldIdentifier = "2"}
+			};
+
+			var sourceSettings = CreateSourceSettings();
+			sourceSettings.TextPrecedenceFields = fields;
+
+			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1);
+
+			CollectionAssert.AreEqual(exportSettings.TextPrecedenceFieldsIds, new List<int> { 1, 2 });
+		}
+
+		[Test]
+		public void ItShouldSetExportFullTextAsFile()
+		{
+			var sourceSettings = CreateSourceSettings();
+
+			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1);
+
+			Assert.That(exportSettings.ExportFullTextAsFile);
+		}
+
 		private ExportUsingSavedSearchSettings CreateSourceSettings()
 		{
 			return new ExportUsingSavedSearchSettings()
@@ -91,8 +121,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelectedDataFileFormat = ((int)default(ExportSettings.DataFileFormat)).ToString(),
 				SelectedImageDataFileFormat = ((int)default(ExportSettings.ImageDataFileFormat)).ToString(),
 				FilePath = ((int)default(ExportSettings.FilePathType)).ToString(),
-				DataFileEncodingType = "Unicode"
+				DataFileEncodingType = "Unicode",
+				TextFileEncodingType = "Unicode",
+				ExportFullTextAsFile = _EXPORT_FULL_TEXT_AS_FILE,
+				TextPrecedenceFields =  new List<FieldEntry>()
 			};
 		}
+
 	}
 }

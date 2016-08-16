@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Components.DictionaryAdapter.Xml;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
@@ -82,7 +81,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void UpdateIntegrationPointAgent(global::Relativity.Services.Agent.Agent agent)
+		public static void UpdateAgent(global::Relativity.Services.Agent.Agent agent)
 		{
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
@@ -145,7 +144,44 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private static AgentTypeRef GetAgentTypeByName(string agentTypeName)
+		public static AgentQueryResultSet QueryAgents(Query query)
+		{
+			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				AgentQueryResultSet agentQueryResultSet = proxy.QueryAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
+
+				if(agentQueryResultSet.Success == false)
+				{
+					throw new Exception($"Error: Failed querying for agents. Exception: {agentQueryResultSet.Message}");
+				}
+
+				return agentQueryResultSet;
+			}
+		}
+
+		public static void DisableAgents(Query query)
+		{
+			AgentQueryResultSet agentQueryResultSet = QueryAgents(query);
+			List<Result<global::Relativity.Services.Agent.Agent>> results = agentQueryResultSet.Results;
+			foreach (Result<global::Relativity.Services.Agent.Agent> result in results)
+			{
+				result.Artifact.Enabled = false;
+				UpdateAgent(result.Artifact);
+			}
+		}
+
+		public static void EnableAgents(Query query)
+		{
+			AgentQueryResultSet agentQueryResultSet = QueryAgents(query);
+			List<Result<global::Relativity.Services.Agent.Agent>> results = agentQueryResultSet.Results;
+			foreach (Result<global::Relativity.Services.Agent.Agent> result in results)
+			{
+				result.Artifact.Enabled = true;
+				UpdateAgent(result.Artifact);
+			}
+		}
+
+		public static AgentTypeRef GetAgentTypeByName(string agentTypeName)
 		{
 			List<AgentTypeRef> agentTypeRefs = GetAgentTypes();
 

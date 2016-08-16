@@ -264,7 +264,7 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobTypeChoices
 	{
-		public static Choice JobHistoryRunNow = new Choice(Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20"), @"Run Now");
+		public static Choice JobHistoryRun = new Choice(Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20"), @"Run");
 		public static Choice JobHistoryScheduledRun = new Choice(Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d"), @"Scheduled Run");
 		public static Choice JobHistoryRetryErrors = new Choice(Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f"), @"Retry Errors");
 	}

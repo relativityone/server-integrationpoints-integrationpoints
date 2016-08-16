@@ -182,6 +182,7 @@
     <Compile Include="TestCases\ItShouldExportDataFileWithNotNestedMultipleChoice.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithWindowsANSIEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithBigEndianEncoding.cs" />
+    <Compile Include="TestCases\ItShouldExportExtractedText.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilesStartingFromGivenRecord.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
@@ -192,6 +193,7 @@
     <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
+    <Compile Include="TestCases\ItShouldNotExportExtractedText.cs" />
     <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />
@@ -224,6 +226,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>

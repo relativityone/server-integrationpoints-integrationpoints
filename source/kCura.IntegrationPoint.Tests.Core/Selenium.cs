@@ -1,13 +1,16 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.Collections.ObjectModel;
+using kCura.IntegrationPoint.Tests.Core.Models;
+using OpenQA.Selenium.Chrome;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System;
-	using System.Collections.ObjectModel;
-
 	public static class Selenium
 	{
+		private static bool _fluidEnabled;
+
 		public static void GoToUrl(this IWebDriver driver, string url)
 		{
 			driver.Navigate().GoToUrl(url);
@@ -27,28 +30,39 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void GoToWorkspace(this IWebDriver driver, int artifactId)
 		{
-			string workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
-
+			string workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}']";
 			driver.SwitchTo().DefaultContent();
-			driver.SwitchTo().Frame("ListTemplateFrame");
 
+			if (_fluidEnabled)
+			{
+				driver.SwitchTo().Frame("_externalPage");
+			}
+			else
+			{
+				driver.SwitchTo().Frame("ListTemplateFrame");
+				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
+			}
+
+			driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
 			driver.FindElement(By.XPath(workspaceXpath)).Click();
 		}
 
 		public static void GoToTab(this IWebDriver driver, string tabName)
 		{
-			Exception ex = null;
+
 			try
 			{
+				//If the workspace has too many tabs, some tabs get wrapped in the further navigation bar and thus their tab text is not visible.
+				//It first tries grabbing the text of the tab. If it's found then the driver will click it.
 				driver.WaitUntilElementExists(ElementType.Id, "horizontal-tabstrip", 10);
 				ReadOnlyCollection<IWebElement> webElementCollection = driver.FindElements(By.Id("horizontal-tabstrip"));
 				IWebElement navigationList = webElementCollection[0].FindElement(By.XPath("//ul[@class='nav navbar-nav']"));
 				ReadOnlyCollection<IWebElement> listElements = navigationList.FindElements(By.TagName("li"));
 				foreach (IWebElement listElement in listElements)
 				{
-					ReadOnlyCollection<IWebElement> anchorCollectoin = listElement.FindElements(By.TagName("a"));
+					ReadOnlyCollection<IWebElement> anchorCollection = listElement.FindElements(By.TagName("a"));
 
-					foreach (IWebElement anchor in anchorCollectoin)
+					foreach (IWebElement anchor in anchorCollection)
 					{
 						if (anchor.Text.Equals(tabName))
 						{
@@ -57,12 +71,25 @@ namespace kCura.IntegrationPoint.Tests.Core
 						}
 					}
 				}
+
+				//If the text is not found, it then tries going through the vertical bar and grabs the URL of the tab.
+				ReadOnlyCollection<IWebElement> anchors = driver.FindElements(By.XPath("//div[@id='vertical-tabstrip']/accordion/div/ul/li/div/div[1]/h4/a/a[1]"));
+				foreach (IWebElement anchor in anchors)
+				{
+					IWebElement anchorSpan = anchor.FindElement(By.XPath(".//span"));
+					string spanText = anchorSpan.GetAttribute("innerText");
+					if(spanText == tabName)
+					{
+						string anchorHref = anchor.GetAttribute("href");
+						driver.GoToUrl(anchorHref);
+						return;
+					}
+				}
 			}
 			catch (Exception exception)
 			{
-				ex = exception;
-			}
-			throw new Exception($"Unable to find tab {tabName}", ex);
+				throw new Exception($"Unable to find tab {tabName}", exception);
+            }
 		}
 
 		public static void GoToObjectInstance(this IWebDriver driver, int workspaceArtifactId, int integrationPointArtifactId, int artifactTypeId)
@@ -166,6 +193,60 @@ namespace kCura.IntegrationPoint.Tests.Core
 			SelectElement selectValue = new SelectElement(dropDown);
 			selectValue.SelectByText(value);
 		}
+
+		public static void SetFluidStatus(this IWebDriver driver, int userArtifactId)
+		{
+			UserModel user = User.ReadUser(userArtifactId);
+			_fluidEnabled = user.BetaUser;
+		}
+
+		//TODO Make ReadUser(email) returns correct infor by userJObject.ToObject<UserModel>();
+		//Currently userJObject.ToObject<UserModel>() doesn't get anything even though userJObject = JObject.Parse(response) has correct info.
+		public static void SetFluidStatus(this IWebDriver driver, string email)
+		{
+			UserModel user = User.ReadUser(email);
+			_fluidEnabled = user.BetaUser;
+		}
+
+		public static void ClickNewIntegrationPoint(this IWebDriver driver)
+		{
+			string templateFrame = "ListTemplateFrame";
+			string externalPage = "_externalPage";
+			string newIntegraionPoint;
+			driver.SwitchTo().DefaultContent();
+
+			if (_fluidEnabled)
+			{
+				driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
+				driver.SwitchTo().Frame(externalPage);
+				newIntegraionPoint = "//button[@title='New Integration Point']";
+			}
+			else
+			{
+				driver.WaitUntilElementExists(ElementType.Id, templateFrame, 5);
+				driver.SwitchTo().Frame(templateFrame);
+				newIntegraionPoint = "//a[@title='New Integration Point']";
+			}
+
+			driver.WaitUntilElementIsVisible(ElementType.Xpath, newIntegraionPoint, 10);
+			driver.FindElement(By.XPath(newIntegraionPoint)).Click();
+			driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
+			driver.SwitchTo().Frame(externalPage);
+		}
+
+		public static IWebDriver GetWebDriver(TestBrowser browser)
+		{
+			switch (browser)
+			{
+				case TestBrowser.Chrome:
+					return new ChromeDriver();
+				case TestBrowser.InternetExplorer:
+					return null;
+				case TestBrowser.Firefox:
+					return null;
+			}
+			return null;
+		}
 	}
 
 	public enum ElementType
@@ -176,5 +257,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 		Name,
 		TagName,
 		LinkText
+	}
+
+	public enum TestBrowser
+	{
+		Chrome,
+		InternetExplorer,
+		Firefox,
+		Safari
 	}
 }

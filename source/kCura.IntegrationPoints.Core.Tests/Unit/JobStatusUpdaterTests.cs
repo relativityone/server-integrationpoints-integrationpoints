@@ -1,5 +1,8 @@
-﻿using kCura.IntegrationPoints.Core.Services;
+﻿using System;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
 using NSubstitute;
 using NUnit.Framework;
@@ -9,51 +12,118 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 	[TestFixture]
 	public class JobStatusUpdaterTests
 	{
+		private IJobHistoryService _jobHistoryService;
+		private IRSAPIService _rsapi;
+		private JobHistoryErrorQuery _service;
+		private JobStatusUpdater _instance;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_rsapi = Substitute.For<IRSAPIService>();
+			_service = Substitute.For<JobHistoryErrorQuery>(_rsapi);
+			_jobHistoryService = Substitute.For<IJobHistoryService>();
+
+			_instance = new JobStatusUpdater(_service, _jobHistoryService);
+		}
+
+		[Test]
+		public void GenerateStatus_NullJobHistory()
+		{
+			Assert.Throws<ArgumentNullException>(() => _instance.GenerateStatus(null));
+		}
+
+		[Test]
+		public void GenerateStatus_StoppingHistory()
+		{
+			// ARRANGE 
+			JobHistory jobHistory = new JobHistory() {JobStatus = JobStatusChoices.JobHistoryStopping};
+
+			// ACT
+			Relativity.Client.Choice status = _instance.GenerateStatus(jobHistory);
+
+			// ASSERT
+			Assert.IsTrue(status.EqualsToChoice(JobStatusChoices.JobHistoryStopped));
+		}
+
 		[Test]
 		public void GenerateStatus_NoJobHistoryErrors_ReturnsSuccess()
 		{
 			//ARRANGE
-			var rsapi = NSubstitute.Substitute.For<IRSAPIService>();
-			var service = NSubstitute.Substitute.For<JobHistoryErrorQuery>(rsapi);
-			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(null, new JobHistoryError[] { });
+			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(null, new JobHistoryError[] { });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service, null);
-			var choice = serviceInTest.GenerateStatus(new JobHistory { ItemsWithErrors = 0 });
+			var choice = _instance.GenerateStatus(new JobHistory { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 0 });
+			
 			//ASSERT
-			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompleted.Name));
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompleted));
 		}
 
 		[Test]
 		public void GenerateStatus_JobHistoryItemError_ReturnsCompletedWithErrors()
 		{
 			//ARRANGE
-			var rsapi = NSubstitute.Substitute.For<IRSAPIService>();
-			var service = NSubstitute.Substitute.For<JobHistoryErrorQuery>(rsapi);
-			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorItem });
+			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorItem });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service, null);
-			var choice = serviceInTest.GenerateStatus(new JobHistory());
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing });
 
 			//ASSERT
-			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompletedWithErrors.Name));
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors));
+		}
+
+		[Test]
+		public void GenerateStatus_JobHistoryItemError_NoRecentJobError()
+		{
+			//ARRANGE
+			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns((JobHistoryError)null);
+
+			//ACT
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 99 });
+
+			//ASSERT
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors));
+		}
+
+		[Test]
+		public void GenerateStatus_RecentJobErrorContainsInvalidErrorStatus()
+		{
+			//ARRANGE
+			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = null});
+
+			//ACT
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing });
+
+			//ASSERT
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompleted));
 		}
 
 		[Test]
 		public void GenerateStatus_JobHistoryJobError_ReturnsErrorJob()
 		{
 			//ARRANGE
-			var rsapi = NSubstitute.Substitute.For<IRSAPIService>();
-			var service = NSubstitute.Substitute.For<JobHistoryErrorQuery>(rsapi);
-			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorJob });
+			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorJob });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service, null);
-			var choice = serviceInTest.GenerateStatus(new JobHistory());
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing});
 
 			//ASSERT
-			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryErrorJobFailed.Name));
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed));
+		}
+
+		[Test]
+		public void GenerateStatusWithBatchInstanceId()
+		{
+			// ARRANGE
+			Guid guid = Guid.NewGuid();
+			JobHistory jobHistory = new JobHistory() {JobStatus = JobStatusChoices.JobHistoryStopping};
+			_jobHistoryService.GetRdo(guid).Returns(jobHistory);
+
+			// ACT
+			var choice = _instance.GenerateStatus(guid);
+
+			//ASSERT
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryStopped));
 		}
 	}
 }

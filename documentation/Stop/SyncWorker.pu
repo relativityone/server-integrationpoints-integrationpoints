@@ -1,0 +1,41 @@
+ @startuml
+skinparam activity {
+ BackgroundColor<< Error >> #ff6666
+}
+
+(*) --> "Agent initializes SyncWorker"
+partition Initialization {
+ --> "Create/Retrieve JobHistory"
+ --> "Create StopJobManager"
+ --> "Bind the StopJobManager with the job history and the scheduled agent job"
+ --> "Pass the StopJobManager to IJobHistoryErrorService"
+}
+partition Pushing data{
+  if "StopJobManager received the stop signal" then
+      --> [true] Finalize the job
+  else
+	 --> [false] "Hand off the stop token to the data synchronizer."
+     --> "Read data"
+	 if "there is data to push to the IAPI" then
+     	[true] if "StopJobManager received the stop signal" then
+      		--> [true] Finalize the job
+     	else
+			--> [false] "Push the data into the import service."
+     	    --> "Read data"
+		endif
+	else 
+       --> [false] FinalizeJob
+	endif
+  endif
+}
+ 
+partition FinalizeJob {
+   if "the job has been canceled and this is the last batch" then 
+	 --> [true] "Update the job history status to be 'Canceled' "
+   else
+     --> [false] "Update the job history status to be an appropriate status. "
+   endif
+   --> (*)
+}
+
+@enduml

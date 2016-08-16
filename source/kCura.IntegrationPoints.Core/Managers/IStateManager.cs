@@ -17,8 +17,9 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <summary>
 		/// Returns a set of booleans that convey the button state of the console buttons for a non-Relativity provider.
 		/// </summary>
+		/// <param name="hasJobsExecutingOrInQueue">If Integration Point has jobs executing or queued up.</param>
 		/// <param name="hasStoppableJobs">If Integration Point has stoppable jobs</param>
 		/// <returns>A collection of booleans which explain the button state of the buttons on the console.</returns>
-		ButtonStateDTO GetButtonState(bool hasStoppableJobs);
+		ButtonStateDTO GetButtonState(bool hasJobsExecutingOrInQueue, bool hasStoppableJobs);
 	}
 }

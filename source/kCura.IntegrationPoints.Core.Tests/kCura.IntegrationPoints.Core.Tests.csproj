@@ -196,6 +196,9 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -225,19 +228,24 @@
     <Compile Include="ImportTest.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
-    <Compile Include="Integration\PermissionErrorMessageTest.cs" />
+    <Compile Include="UI\ConsoleButtons.cs" />
+    <Compile Include="UI\PermissionErrorMessageTest.cs" />
     <Compile Include="Integration\Services\AgentJobManagerTests.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
+    <Compile Include="Integration\StopWarningMessageTests.cs" />
     <Compile Include="JobHelper.cs" />
+    <Compile Include="UI\SchedulerUiTests.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
     <Compile Include="Unit\Agent\IntegrationPointTaskBaseTests.cs" />
     <Compile Include="Unit\BatchEmailTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
+    <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerFactoryTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\Helpers\OnClickEventConstructorTests.cs" />
+    <Compile Include="Unit\JobHistoryBatchUpdateStatusTests.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />
     <Compile Include="Unit\Managers\ErrorManagerTests.cs" />
@@ -247,6 +255,7 @@
     <Compile Include="Unit\Keywords\KeywordConverterTests.cs" />
     <Compile Include="Unit\Managers\JobHistoryErrorManagerTests.cs" />
     <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
+    <Compile Include="Unit\Managers\NullableStopJobManagerTests.cs" />
     <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
     <Compile Include="Unit\Managers\SourceJobManagerTests.cs" />

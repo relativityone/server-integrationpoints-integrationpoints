@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using Relativity.API;
+using Relativity.Services.Field;
+using Relativity.Services.Search;
 using Status = kCura.Relativity.DataReaderClient.Status;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
@@ -16,8 +21,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		private readonly ConfigSettings _configSettings;
 
-		private const string TemplateWorkspaceName = "kCura Starter Template";
-		private const int _ControlNumber_Field_ArtifactId = 1003667;
+		private const string _TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
+		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
+		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
+		private const string _SAVED_SEARCH_NAME = "Testing Saved Search";
 
 		#endregion //Fields
 
@@ -34,40 +41,46 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		internal int CreateWorkspace(string name)
 		{
-			return Workspace.CreateWorkspace(name, TemplateWorkspaceName);
+			return Workspace.CreateWorkspace(name, _TEMPLATE_WORKSPACE_NAME);
 		}
 
 		internal void DeleteWorkspace(int artifactId)
 		{
-			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
 			}
 		}
 
-		internal int GetSavedSearchIdBy(string name, int workspaceId)
+		internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
 		{
-			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
+			var fields = defaultFields
+				.Select(x => new FieldRef(x.DisplayName))
+				.Concat(additionalFields.Select(x => new FieldRef(x.DisplayName)))
+				.ToList();
+
+			SearchContainer folder = new SearchContainer()
 			{
-				var query = new Query
-				{
-					ArtifactTypeID = (int)ArtifactType.Search,
-					Condition = new TextCondition("Name", TextConditionEnum.EqualTo, name),
-				};
+				Name = _SAVED_SEARCH_FOLDER,
+			};
+			int folderArtifactId = SavedSearch.CreateSearchFolder(workspaceId, folder);
 
-				rsApiClient.APIOptions.WorkspaceID = workspaceId;
-				QueryResult result = rsApiClient.Query(rsApiClient.APIOptions, query);
-
-				return result.QueryArtifacts[0].ArtifactID;
-			}
+			KeywordSearch search = new KeywordSearch()
+			{
+				Name = _SAVED_SEARCH_NAME,
+				ArtifactTypeID = (int)ArtifactType.Document,
+				SearchContainer = new SearchContainerRef(folderArtifactId),
+				Fields = fields
+			};
+			return SavedSearch.Create(workspaceId, search);
 		}
 
 		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable, DataTable imageSourceDataTable)
 		{
 			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
 
-			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi, _ControlNumber_Field_ArtifactId);
-			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, _ControlNumber_Field_ArtifactId);
+			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
+			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 		}
 
 		private static void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable, ImportAPI importApi, int identifyFieldArtifactId)

@@ -12,7 +12,7 @@ using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using System.Data;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration
+namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		}
 
 		[SetUp]
-		[OneTimeSetUp]
 		public void SuiteSetUp()
 		{
 			_serializer = Container.Resolve<ISerializer>();

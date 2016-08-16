@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(_helper, _caseServiceManager,
-				_contextContainerFactory, _repositoryFactory, _serializer, _choiceQuery, _jobManager,
+				_contextContainerFactory, _serializer, _choiceQuery, _jobManager,
 				_jobHistoryService, _managerFactory);
 
 			_caseServiceManager.RsapiService = Substitute.For<IRSAPIService>();
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity));
-			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
+			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 			_managerFactory.Received().CreateQueueManager(_contextContainer);
 		}
@@ -620,7 +620,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Other));
-			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
+			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
 
@@ -654,7 +654,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			};
 
 			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new [] {expectedErrorMessage}, x)));
-			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
+			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
 		
@@ -787,7 +787,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.DidNotReceiveWithAnyArgs().Read(Arg.Any<int>());
 			_targetPermissionRepository.DidNotReceive().UserCanImport();
 			_sourcePermissionRepository.DidNotReceive().UserCanEditDocuments();
-			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
+			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
 

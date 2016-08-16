@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 			public enum JobTypeChoices
 			{
 				RetryErrors,
-				RunNow
+				Run
 			}
 
 			public enum ErrorTypesChoices
@@ -190,6 +190,12 @@ namespace kCura.IntegrationPoints.Domain.Models
 				JobAndItem,
 				ItemOnly,
 				None
+			}
+
+			public bool IsItemLevelErrorRetry()
+			{
+				return JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
+				       ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
 			}
 		}
 	}

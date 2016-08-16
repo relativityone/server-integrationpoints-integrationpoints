@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
@@ -44,9 +45,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_workspaceTemplate = workspaceTemplate;
 		}
 
-		[OneTimeSetUp]
-		public void SourceProviderSetup()
+		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			try
 			{
 				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
@@ -63,7 +64,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				try
 				{
-					SourceProviderTeardown();
+					SuiteTeardown();
 				}
 				catch (Exception teardownException)
 				{
@@ -74,8 +75,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		[OneTimeTearDown]
-		public void SourceProviderTeardown()
+		public override void SuiteTeardown()
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			Agent.DeleteAgent(AgentArtifactId);
@@ -182,14 +182,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			global::Relativity.Services.Agent.Agent agent = Agent.ReadIntegrationPointAgent(AgentArtifactId);
 			agent.Enabled = enable;
-			Agent.UpdateIntegrationPointAgent(agent);
+			Agent.UpdateAgent(agent);
 		}
 
 		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
-			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 			jobHistory.EndTimeUTC = DateTime.Now;
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
 			jobHistoryService.UpdateRdo(jobHistory);
@@ -220,7 +220,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected async Task SetupAsync()
 		{
-			await Task.Run(() => Workspace.ImportLibraryApplicationToWorkspace(WorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING)));
+			await Task.Run(() => RelativityApplication.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId, 
+				new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), ClaimsPrincipal.Current));
 			AgentArtifactId = await Task.Run(() => Agent.CreateIntegrationPointAgent());
 		} 
 

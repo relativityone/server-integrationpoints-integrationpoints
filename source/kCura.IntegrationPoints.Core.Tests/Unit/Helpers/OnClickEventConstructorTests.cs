@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			string expectedViewErrorsOnClickEvent = ViewErrorsLinkSetup();
 			var buttonStates = new RelativityButtonStateDTO()
 			{
-				RunNowButtonEnabled = true,
+				RunButtonEnabled = true,
 				RetryErrorsButtonEnabled = true,
 				ViewErrorsLinkEnabled = true,
 				StopButtonEnabled = true
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 				buttonStates);
 			
 			//Assert
-			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
+			Assert.IsTrue(onClickEvents.RunOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == $"IP.stopJob({_integrationPointId},{_workspaceId})");
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			//Arrange
 			var buttonStates = new RelativityButtonStateDTO()
 			{
-				RunNowButtonEnabled = false,
+				RunButtonEnabled = false,
 				RetryErrorsButtonEnabled = false,
 				ViewErrorsLinkEnabled = false,
 				StopButtonEnabled = false
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 				buttonStates);
 
 			//Assert
-			Assert.IsTrue(onClickEvents.RunNowOnClickEvent == String.Empty);
+			Assert.IsTrue(onClickEvents.RunOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == String.Empty);
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			//Arrange
 			var buttonStates = new ButtonStateDTO()
 			{
-				RunNowButtonEnabled = true,
+				RunButtonEnabled = true,
 				StopButtonEnabled = false
 			};
 
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
 
 			//Assert
-			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);
+			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunOnClickEvent);
 			Assert.AreEqual(String.Empty, onClickEvents.StopOnClickEvent);
 		}
 
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			//Arrange
 			var buttonStates = new ButtonStateDTO()
 			{
-				RunNowButtonEnabled = true,
+				RunButtonEnabled = false,
 				StopButtonEnabled = true
 			};
 
@@ -119,8 +119,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
 
 			//Assert
-			Assert.AreEqual($"IP.importNow({_integrationPointId},{_workspaceId})", onClickEvents.RunNowOnClickEvent);
+			Assert.AreEqual(String.Empty, onClickEvents.RunOnClickEvent);
 			Assert.AreEqual($"IP.stopJob({_integrationPointId},{_workspaceId})", onClickEvents.StopOnClickEvent);
+		}
+
+		[Test]
+		public void GetOnClickEventsForNonRelativityProvider_NeitherButtonEnabled()
+		{
+			//Arrange
+			var buttonStates = new ButtonStateDTO()
+			{
+				RunButtonEnabled = false,
+				StopButtonEnabled = false
+			};
+
+			//Act
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
+
+			//Assert
+			Assert.AreEqual(String.Empty, onClickEvents.RunOnClickEvent);
+			Assert.AreEqual(String.Empty, onClickEvents.StopOnClickEvent);
 		}
 
 

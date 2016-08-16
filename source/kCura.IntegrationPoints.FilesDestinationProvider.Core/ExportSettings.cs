@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 {
@@ -32,6 +33,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			Relative = 0,
 			Absolute = 1,
 			UserPrefix = 2
+		}
+
+		public enum ProductionPrecedenceType
+		{
+			Original,
+			Produced
 		}
 
 		public int StartExportAtRecord { get; set; }
@@ -67,5 +74,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public FilePathType FilePath { get; set; }
 		public string UserPrefix { get; set; }
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
+		public bool ExportFullTextAsFile { get; set; }
+		public List<int> TextPrecedenceFieldsIds { get; set; }
+		public Encoding TextFileEncodingType { get; set; }
+		public ProductionPrecedenceType ProductionPrecedence { get; set; }
+		public bool IncludeOriginalImages { get; set; }
+		public IEnumerable<ProductionPrecedenceDTO> ImagePrecedence { get; set; }
 	}
 }

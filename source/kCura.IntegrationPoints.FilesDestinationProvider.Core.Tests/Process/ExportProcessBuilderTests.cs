@@ -32,8 +32,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private ISearchManager _searchManager;
 		private IUserMessageNotification _userMessageNotification;
 		private IUserNotification _userNotification;
+		private IConfigFactory _configFactory;
 
-		private List<int> AllExportableAvfIds => new List<int>() {1234, 5678};
+		private List<int> AllExportableAvfIds => new List<int>() { 1234, 5678 };
 		private List<int> SelectedAvfIds => new List<int>() { 1234 };
 
 		#endregion
@@ -52,13 +53,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_searchManager = Substitute.For<ISearchManager>();
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_userNotification = Substitute.For<IUserNotification>();
+			_configFactory = Substitute.For<IConfigFactory>();
 
 			MockExportFile();
 
 			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds, true));
 
-			_exportProcessBuilder = new ExportProcessBuilder(_loggingMediator, _userMessageNotification, _userNotification, _credentialProvider, _caseManagerFactory,
-				_searchManagerFactory, _exporterFactory, _exportFileBuilder);
+			_exportProcessBuilder = new ExportProcessBuilder(
+				_configFactory,
+				_loggingMediator,
+				_userMessageNotification,
+				_userNotification,
+				_credentialProvider,
+				_caseManagerFactory,
+				_searchManagerFactory,
+				_exporterFactory,
+				_exportFileBuilder
+			);
 		}
 
 		private void MockExportFile()
@@ -205,6 +216,39 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(settings);
 
 			CollectionAssert.AreEquivalent(expectedFilteredFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
+		}
+
+		[Test]
+		public void ItShouldAssignTextPrecedenceViewFields()
+		{
+			_exportFile.ExportFullTextAsFile = true;
+
+			var textPrecedenceFieldsIdsExpected = new List<int>
+			{
+				1,
+				2,
+				3
+			};
+			var textPrecedenceFieldsIdsNotExpected = new List<int>
+			{
+				4,
+				5,
+				6
+			};
+			var settings = new ExportSettings
+			{
+				SelViewFieldIds = SelectedAvfIds,
+				TextPrecedenceFieldsIds = textPrecedenceFieldsIdsExpected
+			};
+			settings.SelViewFieldIds.Add(textPrecedenceFieldsIdsExpected[0]);
+			var expected = 
+				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(textPrecedenceFieldsIdsExpected.Concat(textPrecedenceFieldsIdsNotExpected).ToList(), true);
+
+			MockSearchManagerReturnValue(expected);
+
+			_exportProcessBuilder.Create(settings);
+
+			CollectionAssert.AreEquivalent(textPrecedenceFieldsIdsExpected, _exportFile.SelectedTextFields.Select(x => x.AvfId));
 		}
 
 		[Test]

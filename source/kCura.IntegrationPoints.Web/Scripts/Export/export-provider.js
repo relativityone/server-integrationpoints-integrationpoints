@@ -26,7 +26,7 @@
 			default:
 				break;
 		}
-	}
+	};
 
 	//An event raised when the user has clicked the Next or Save button.
 	message.subscribe('submit', function () {
@@ -64,7 +64,7 @@
 		var _bind = function (m) {
 			viewModel = new Model(m);
 			ko.applyBindings(viewModel, document.getElementById('exportProviderConfiguration'));
-		}
+		};
 
 		// expect model to be serialized to string
 		if (typeof m === "string") {
@@ -99,7 +99,7 @@
 			required: true
 		});
 
-		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || true);
+		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
@@ -170,14 +170,17 @@
 			}
 		});
 
-		this.SelectedDataFileFormat.subscribe(function (value) {
+		self.UpdateIsCustomDataFileFormatChanged = function (value) {
 			self.isCustom(value === ExportEnums.DataFileFormatEnum.Custom);
 			if (value === ExportEnums.DataFileFormatEnum.Custom) {
 				self.isCustomDisabled(undefined);
 			} else {
 				self.isCustomDisabled(true);
 			}
-		});
+		};
+		self.UpdateIsCustomDataFileFormatChanged(state.SelectedDataFileFormat);
+		this.SelectedDataFileFormat.subscribe(self.UpdateIsCustomDataFileFormatChanged);
+
 
 		this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || false);
 		this.CopyFileFromRepository.subscribe(function (value) {
@@ -185,6 +188,8 @@
 				self.SelectedImageFileType(0);
 			}
 		});
+
+		this.ExportTextFieldsAsFilesChecked = ko.observable(state.ExportFullTextAsFile || false);
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
@@ -212,8 +217,7 @@
 			});
 
 			self.SavedSearch(selectedSavedSearch);
-		}
-
+		};
 		if (self.savedSearches().length === 0) {
 			// load saved searches
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
@@ -232,48 +236,57 @@
 		}
 
 		this.DataFileEncodingType = ko.observable().extend({
-			required: true
+		    required: true
 		});
 
-		this.updateSelectedDataFileEncodingType = function (value) {
-			if (self.DataFileEncodingTypeList().length === 3) {
-				var ungroupedFileEncodingList = self.DataFileEncodingTypeList()[0].children()
-																					.concat(self.DataFileEncodingTypeList()[1].children())
-																					.concat(self.DataFileEncodingTypeList()[2].children())
-				var selectedDataFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
-					return item.name === value;
-				});
+		this.TextFileEncodingType = ko.observable().extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.ExportTextFieldsAsFilesChecked();
+		        }
+		    }
+		});
 
-				self.DataFileEncodingType(selectedDataFileEncodingType.name);
-			}
-		}
+		this.getFileEncodingTypeName = function (value) {
+		    if (self.FileEncodingTypeList().length === 3) {
+		        var ungroupedFileEncodingList = self.FileEncodingTypeList()[0].children()
+		            .concat(self.FileEncodingTypeList()[1].children())
+		            .concat(self.FileEncodingTypeList()[2].children());
+		        var selectedFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
+		            return item.name === value;
+		        });
 
-		this.DataFileEncodingTypeList = ko.observableArray([]);
-		if (self.DataFileEncodingTypeList.length === 0) {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
-				function Group(label, children) {
-					this.label = ko.observable(label);
-					this.children = ko.observableArray(children);
-				}
-				var defaultOption = { displayName: "Select..", name: "" };
-				var favorite = [];
-				var others = [];
-				for (var i = 0; i < result.length; i++) {
-					if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
-						favorite.push(result[i]);
-					}
-					else {
-						others.push(result[i]);
-					}
-				}
-				// By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-				self.DataFileEncodingTypeList([new Group("", [defaultOption]), new Group("Favorite", favorite), new Group("Others", others)]
-                );
-				self.updateSelectedDataFileEncodingType(state.DataFileEncodingType || "");
-			});
+		        return selectedFileEncodingType.name;
+		    }
+		};
+		this.FileEncodingTypeList = ko.observableArray([]);
+		if (self.FileEncodingTypeList.length === 0) {
+		    IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+		        function Group(label, children) {
+		            this.label = ko.observable(label);
+		            this.children = ko.observableArray(children);
+		        }
+		        var defaultOption = { displayName: "Select..", name: "" };
+		        var favorite = [];
+		        var others = [];
+		        for (var i = 0; i < result.length; i++) {
+		            if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
+		                favorite.push(result[i]);
+		            }
+		            else {
+		                others.push(result[i]);
+		            }
+		        }
+		        // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
+		        self.FileEncodingTypeList([new Group("", [defaultOption]), new Group("Favorite", favorite), new Group("Others", others)]);
+
+		        self.DataFileEncodingType(self.getFileEncodingTypeName(state.DataFileEncodingType || ""));
+		        self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType || ""));
+		    });
 		}
 		else {
-			self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+		    self.DataFileEncodingType(self.getFileEncodingTypeName(state.DataFileEncodingType));
+		    self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType));
 		}
 
 		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || false).extend({
@@ -327,6 +340,14 @@
 			required: true
 		});
 
+		function pad(str, max) {
+			return str.length < max ? pad("0" + str, max) : str;
+		};
+
+		this.SubdirectoryDigitText = ko.computed(function () {
+			return pad(self.SubdirectoryStartNumber().toString(), parseInt(self.SubdirectoryDigitPadding()));
+		}, this);
+
 		this.FilePath = ko.observable(state.FilePath || ExportEnums.FilePathTypeEnum.Relative).extend({
 			required: true
 		});
@@ -347,30 +368,60 @@
 
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
-		//this.TextPrecedenceSelection = ko.observable();
+		var getTextRepresentation = function(value) {
+			if (!value) {
+				return "";
+			}
+			return value.map(function(x) {
+					return x.displayName;
+				})
+				.join(", ");
+		};
+		this.TextPrecedenceFields = ko.observable(state.TextPrecedenceFields || [])
+			.extend({
+				required: {
+					onlyIf: function() {
+						return self.ExportTextFieldsAsFilesChecked();
+					}
+				}
+			});
 
-		// TODO: review and fix picker's implementation
+		this.TextPrecedenceSelection = ko.pureComputed(function() {
+			return getTextRepresentation(self.TextPrecedenceFields());
+		});
 
-		// var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (artifactId) {
-		//     self.SavedSearchArtifactId(parseInt(artifactId));
-		//     self.updateSelectedSavedSearch();
-		// });
+		var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function(fields) {
+			self.TextPrecedenceFields(fields);
+		});
 
-		// Picker.create("SavedSearchPicker", savedSearchPickerViewModel);
+		Picker.create("ListPicker", textPrecedencePickerViewModel);
 
-		// this.openSavedSearchPicker = function () {
-		//     savedSearchPickerViewModel.open(self.SavedSearch());
-		// };
+		this.openTextPrecedencePicker = function() {
+			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
+		};
 
-		// var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
-		// });
+		this.ImageProductions = ko.observable(state.ImageProductions || [])
+			.extend({
+				required: {
+					onlyIf: function() {
+						return self.ExportImagesChecked();
+					}
+				}
+			});
 
-		// Picker.create("TextPrecedencePicker", textPrecedencePickerViewModel);
+		this.ImageProductionSelection = ko.pureComputed(function() {
+			return getTextRepresentation(self.ImageProductions());
+		});
 
-		// this.openTextPrecedencePicker = function () {
-		//     textPrecedencePickerViewModel.open();
-		// };
+		var imageProductionPickerViewModel = new ImageProductionPickerViewModel(function(productions) {
+			self.ImageProductions(productions);
+		});
 
+		Picker.create("ListPicker", imageProductionPickerViewModel);
+
+		this.openImageProductionPicker = function() {
+			imageProductionPickerViewModel.open(self.ImageProductions());
+		};
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.getSelectedOption = function () {
@@ -406,8 +457,12 @@
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"FilePath": self.FilePath(),
 				"UserPrefix": self.UserPrefix(),
-				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested()
-			}
-		}
-	}
+				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
+				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
+				"TextPrecedenceFields": self.TextPrecedenceFields(),
+				"TextFileEncodingType": self.TextFileEncodingType(),
+				"ImageProductions": self.ImageProductions()
+			};
+		};
+	};
 });

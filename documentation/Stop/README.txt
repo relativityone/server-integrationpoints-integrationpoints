@@ -1,0 +1,1 @@
+Also avaiable on einstein : https://einstein.kcura.com/display/DV/RIP+Stop+Job%3A+Workflow+Diagrams

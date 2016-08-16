@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
@@ -211,7 +212,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(3, jobHistory.ItemsImported);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
-			Assert.AreEqual(JobTypeChoices.JobHistoryRunNow.Name, jobHistory.JobType.Name);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRun.Name, jobHistory.JobType.Name);
 
 			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 3);
 			Assert.AreEqual(3, postRunAudits.Count, "There should be 4 audits");

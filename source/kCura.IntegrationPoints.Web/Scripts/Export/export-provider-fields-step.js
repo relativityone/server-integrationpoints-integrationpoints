@@ -11,82 +11,7 @@ ko.validation.init({
 }, true);
 
 (function (root, ko) {
-
-	var viewModel = function () {
-		var self = this;
-
-		self.availableFields = ko.observableArray([]);
-		self.selectedAvailableFields = ko.observableArray([]);
-
-		self.mappedFields = ko.observableArray([]).extend({
-			minLength: {
-				params: 1,
-				message: "Please select at least one field."
-			}
-		});
-		self.selectedMappedFields = ko.observableArray([]);
-
-		self.addField = function () {
-			IP.workspaceFieldsControls.add(
-				self.availableFields,
-				self.selectedAvailableFields,
-				self.mappedFields
-			);
-		};
-
-		self.addAllFields = function () {
-			IP.workspaceFieldsControls.add(
-				self.availableFields,
-				self.availableFields,
-				self.mappedFields
-			);
-		};
-
-		self.removeField = function () {
-			IP.workspaceFieldsControls.add(
-				self.mappedFields,
-				self.selectedMappedFields,
-				self.availableFields
-			);
-		};
-
-		self.removeAllFields = function () {
-			IP.workspaceFieldsControls.add(
-				self.mappedFields,
-				self.mappedFields,
-				self.availableFields
-			);
-		};
-
-		self.moveFieldTop = function () {
-			IP.workspaceFieldsControls.moveTop(
-				self.mappedFields,
-				self.selectedMappedFields()
-			);
-		};
-
-		self.moveFieldUp = function () {
-			IP.workspaceFieldsControls.up(
-				self.mappedFields,
-				self.selectedMappedFields
-			);
-		};
-
-		self.moveFieldDown = function () {
-			IP.workspaceFieldsControls.down(
-				self.mappedFields,
-				self.selectedMappedFields
-			);
-		};
-
-		self.moveFieldBottom = function () {
-			IP.workspaceFieldsControls.moveBottom(
-				self.mappedFields,
-				self.selectedMappedFields()
-			);
-		};
-	};
-
+    
 	var Step = function (settings) {
 		var self = this;
 		var _cache = {
@@ -118,7 +43,7 @@ ko.validation.init({
 			self.ipModel = ip;
 			self.ipModel.SelectedOverwrite = "Append/Overlay"; // hardcoded as this value doesn't relate to export
 
-			self.model = new viewModel();
+			self.model = new FieldMappingViewModel();
 			self.model.errors = ko.validation.group(self.model);
 
 			if (_cache.mappedFields.length > 0 || _cache.availableFields.length > 0) {

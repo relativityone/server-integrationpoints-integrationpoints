@@ -15,6 +15,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelperClassFactory _helperClassFactory;
+		private const string _TRANSFER_OPTIONS = "Transfer Options";
+		private const string _RUN = "Run";
+		private const string _RETRY_ERRORS = "Retry Errors";
+		private const string _VIEW_ERRORS = "View Errors";
+		private const string _STOP = "Stop";
 
 		public ConsoleEventHandler()
 		{
@@ -40,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			var console = new EventHandler.Console
 			{
-				Title = "RUN",
+				Title = _TRANSFER_OPTIONS,
 			};
 
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
@@ -58,24 +63,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
+			IQueueManager queueManager = _managerFactory.CreateQueueManager(contextContainer);
+			bool hasJobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID, ActiveArtifact.ArtifactID);
+
 			if (sourceProvider == Core.Constants.SourceProvider.Relativity)
 			{
-				IQueueManager queueManager = _managerFactory.CreateQueueManager(contextContainer);
-
-				bool hasJobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
-					ActiveArtifact.ArtifactID);
 				PermissionCheckDTO jobHistoryErrorViewPermissionCheck = integrationPointManager.UserHasPermissionToViewErrors(Application.ArtifactID);
 				bool canViewErrors = jobHistoryErrorViewPermissionCheck.Success;
 
 				RelativityButtonStateDTO buttonState = stateManager.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors, integrationPointIsStoppable);
 				RelativityOnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
-				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
-				ConsoleButton stopButton = GetStopButton(integrationPointIsStoppable, onClickEvents.StopOnClickEvent);
+				ConsoleButton actionButton = GetActionButton(buttonState, onClickEvents);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
 
-				buttonList.Add(runNowButton);
-				buttonList.Add(stopButton);
+				buttonList.Add(actionButton);
 				buttonList.Add(retryErrorsButton);
 
 				if (canViewErrors)
@@ -86,13 +88,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 			else
 			{
-				ButtonStateDTO buttonState = stateManager.GetButtonState(integrationPointIsStoppable);
+				ButtonStateDTO buttonState = stateManager.GetButtonState(hasJobsExecutingOrInQueue, integrationPointIsStoppable);
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
-				ConsoleButton runNowButton = GetRunNowButton(onClickEvents.RunNowOnClickEvent);
-				ConsoleButton stopButton = GetStopButton(buttonState.StopButtonEnabled, onClickEvents.StopOnClickEvent);
+				ConsoleButton actionButton = GetActionButton(buttonState, onClickEvents);
 
-				buttonList.Add(runNowButton);
-				buttonList.Add(stopButton);
+				buttonList.Add(actionButton);
 			}
 
 			console.ButtonList = buttonList;
@@ -100,35 +100,38 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return console;
 		}
 
-		private ConsoleButton GetStopButton(bool isEnabled, string onClickEvent)
+		private ConsoleButton GetActionButton(ButtonStateDTO actionButtonState, OnClickEventDTO actionButtonOnClickEvents)
 		{
-			return new ConsoleButton()
+			bool runButtonEnabled = actionButtonState.RunButtonEnabled;
+			bool stopButtonEnabled = actionButtonState.StopButtonEnabled;
+			string displayText;
+			string cssClass;
+			string onClickEvent;
+			if (runButtonEnabled)
 			{
-				DisplayText = "Stop",
-				RaisesPostBack = false,
-				Enabled = isEnabled,
-				OnClickEvent = onClickEvent
-			};
-		}
+				displayText = _RUN;
+				cssClass = "consoleButtonEnabled";
+				onClickEvent = actionButtonOnClickEvents.RunOnClickEvent;
+			}
+			else if (stopButtonEnabled)
+			{
+				displayText = _STOP;
+				cssClass = "consoleButtonDestructive";
+				onClickEvent = actionButtonOnClickEvents.StopOnClickEvent;
+			}
+			else
+			{
+				displayText = _STOP;
+				cssClass = "consoleButtonDisabled";
+				onClickEvent = string.Empty;
+			}
 
-		private ConsoleButton GetRunNowButton(string onClickEvent)
-		{
 			return new ConsoleButton
 			{
-				DisplayText = "Run Now",
+				DisplayText = displayText,
+				CssClass = cssClass,
 				RaisesPostBack = false,
-				Enabled = true,
-				OnClickEvent = onClickEvent
-			};
-		}
-
-		private ConsoleButton GetRunNowButtonRelativityProvider(bool isEnabled, string onClickEvent)
-		{
-			return new ConsoleButton
-			{
-				DisplayText = "Run Now",
-				RaisesPostBack = false,
-				Enabled = isEnabled,
+				Enabled = (runButtonEnabled || stopButtonEnabled),
 				OnClickEvent = onClickEvent
 			};
 		}
@@ -137,7 +140,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			return new ConsoleButton
 			{
-				DisplayText = "Retry Errors",
+				DisplayText = _RETRY_ERRORS,
 				RaisesPostBack = false,
 				Enabled = isEnabled,
 				OnClickEvent = onClickEvent
@@ -148,7 +151,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			return new ConsoleLinkButton
 			{
-				DisplayText = "View Errors",
+				DisplayText = _VIEW_ERRORS,
 				Enabled = isEnabled,
 				RaisesPostBack = false,
 				OnClickEvent = onClickEvent

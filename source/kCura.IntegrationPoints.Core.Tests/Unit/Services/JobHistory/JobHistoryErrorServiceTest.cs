@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -18,19 +21,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		private ICaseServiceContext _caseServiceContext;
 
 		private JobHistoryErrorService _instance;
+		private IJobStopManager _stopJobManager;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_integrationPoint = new Data.IntegrationPoint();
+			_integrationPoint = new Data.IntegrationPoint() {LogErrors = true};
 			_jobHistory = new Data.JobHistory { ArtifactId = 111 };
 
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
+			_stopJobManager = Substitute.For<IJobStopManager>();
 
 			_instance = new JobHistoryErrorService(_caseServiceContext)
 			{
 				IntegrationPoint = _integrationPoint,
-				JobHistory = _jobHistory
+				JobHistory = _jobHistory,
+				JobStopManager = _stopJobManager
 			};
 		}
 
@@ -108,6 +114,111 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
 			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.DidNotReceive().Create(Arg.Any<IEnumerable<JobHistoryError>>());
 			Assert.That(returnedException.Message, Is.EqualTo("Type:Job  Id:  Error:Fake job error."));
+		}
+
+		[Test]
+		public void OnRowError_DoNotAddErrorWhenStopped()
+		{
+			// ARRANGE
+			const string identifier = "identifier";
+			Reporter reporter = new Reporter();
+			_stopJobManager.IsStopRequested().Returns(true);
+
+			// ACT
+			_instance.SubscribeToBatchReporterEvents(reporter);
+			reporter.RaiseDocumentError(identifier, identifier);
+
+			// ASSERT
+			Assert.AreEqual(0, _instance.PendingErrorCount);
+		}
+
+		[Test]
+		public void OnRowError_AddErrorWhenRunning()
+		{
+			// ARRANGE
+			const string identifier = "identifier";
+			Reporter reporter = new Reporter();
+			_stopJobManager.IsStopRequested().Returns(false);
+
+			// ACT
+			_instance.SubscribeToBatchReporterEvents(reporter);
+			reporter.RaiseDocumentError(identifier, identifier);
+
+			// ASSERT
+			Assert.AreEqual(1, _instance.PendingErrorCount);
+		}
+
+		[Test]
+		public void AddError_CommitErrorsByBatch()
+		{
+			// ARRANGE
+			Exception exception = new Exception();
+			Reporter reporter = new Reporter();
+			_stopJobManager.IsStopRequested().Returns(true);
+
+			// ACT
+			_instance.SubscribeToBatchReporterEvents(reporter);
+			for (int i = 0; i < JobHistoryErrorService.ERROR_BATCH_SIZE; i ++)
+			{
+				_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, exception);
+			}
+
+			// ASSERT 
+			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Is<IEnumerable<JobHistoryError>>(errors => errors.Count() == JobHistoryErrorService.ERROR_BATCH_SIZE));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void OnJobError_AlwaysAddError(bool isStopped)
+		{
+			// ARRANGE
+			Reporter reporter = new Reporter();
+			Exception exception = new Exception();
+			_stopJobManager.IsStopRequested().Returns(isStopped);
+
+			// ACT
+			_instance.SubscribeToBatchReporterEvents(reporter);
+			reporter.RaiseOnJobError(exception);
+
+			// ASSERT 
+			Assert.AreEqual(1, _instance.PendingErrorCount);
+		}
+
+		[Test]
+		public void CommitErrors_SuppressErrorOnUpdateHasErrorField()
+		{
+			// ARRANGE
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(Arg.Any<Data.IntegrationPoint>()).Throws(new Exception());
+
+			// ACT & ASSERT
+			Assert.DoesNotThrow(() => _instance.CommitErrors());
+
+		}
+
+		private class Reporter : IBatchReporter
+		{
+			public event BatchCompleted OnBatchComplete;
+			public event BatchSubmitted OnBatchSubmit;
+			public event BatchCreated OnBatchCreate;
+			public event StatusUpdate OnStatusUpdate;
+			public event JobError OnJobError;
+			public event RowError OnDocumentError;
+
+			public void RaiseDocumentError(string identifier, string msg)
+			{
+				if (OnDocumentError != null)
+				{
+					OnDocumentError(identifier, msg);
+				}
+			}
+
+			public void RaiseOnJobError(Exception ex)
+			{
+				if (OnJobError != null)
+				{
+					OnJobError(ex);
+				}
+			}
 		}
 	}
 }

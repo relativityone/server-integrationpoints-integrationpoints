@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -31,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private IJobHistoryService _jobHistoryService;
 		private IFieldRepository _fieldRepository;
 		private FieldMap[] _fieldMaps;
+		private ISerializer _serializer;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _RELATIVITY_SOURCE_CASE = "Relativity Source Case";
 		private const string _RELATIVITY_SOURCE_JOB = "Relativity Source Job";
@@ -43,6 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		{
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			_serializer = Container.Resolve<ISerializer>();
 			_sourceWorkspaceManager = new SourceWorkspaceManager(_repositoryFactory);
 			_sourceJobManager = new SourceJobManager(_repositoryFactory);
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
@@ -82,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
-			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _documentRepository, _synchronizerFactory, _fieldMaps, integrationModelCreated.SourceConfiguration, integrationModelCreated.Destination, jobHistory.ArtifactId, jobHistory.BatchInstance);
+			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _documentRepository, _synchronizerFactory, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, integrationModelCreated.Destination, jobHistory.ArtifactId, jobHistory.BatchInstance);
 			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 

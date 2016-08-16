@@ -1,8 +1,10 @@
 ﻿using System;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Tests;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -18,6 +20,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		#region GetBatchInstance
 		private Guid defaultGuidValue = new Guid("4258D67D-63D4-4902-A48A-B1B19649ABFA");
 		private Guid jobGuidValue = new Guid("0D01AF2F-5AF5-4F4D-820C-90471AD75750");
+		private IManagerFactory _managerFactory;
+		private IContextContainerFactory _contextContainerFactory;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_managerFactory = Substitute.For<IManagerFactory>();
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+		}
 
 		[Test]
 		public void GetBatchInstance_NoJobDetails_CorrectOutput()
@@ -26,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			var serializer = NSubstitute.Substitute.For<JSONSerializer>();
 			var guidService = NSubstitute.Substitute.For<IGuidService>();
 			guidService.NewGuid().Returns(defaultGuidValue);
-			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, null);
+			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, _managerFactory, _contextContainerFactory,  null);
 			Job job = GetJob(null);
 
 			//ACT
@@ -44,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			var serializer = NSubstitute.Substitute.For<JSONSerializer>();
 			var guidService = NSubstitute.Substitute.For<IGuidService>();
 			guidService.NewGuid().Returns(defaultGuidValue);
-			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, null);
+			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, _managerFactory, _contextContainerFactory, null);
 			Job job = GetJob(serializer.Serialize(new TaskParameters() { BatchInstance = jobGuidValue }));
 
 			//ACT
@@ -62,7 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			var serializer = NSubstitute.Substitute.For<JSONSerializer>();
 			var guidService = NSubstitute.Substitute.For<IGuidService>();
 			guidService.NewGuid().Returns(defaultGuidValue);
-			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, null);
+			SyncManager manager = new SyncManager(null, null, null, null, null, null, serializer, guidService, null, null, null, _managerFactory, _contextContainerFactory, null);
 			Job job = GetJob("BAD_GUID");
 
 			//ACT

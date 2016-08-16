@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobStart_RunNow_NoErrors()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
 
 			//Act
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobStart_RunNow_JobError()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
 
 			//Act
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobStart_RunNow_JobAndItemErrors()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
 
 			//Act
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobStart_RunNow_ItemErrors()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
 
 			//Act
@@ -224,7 +224,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobComplete_RunNow_NoErrors()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
 
 			//Act
@@ -239,7 +239,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobComplete_RunNow_JobError()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
 
 			//Act
@@ -254,7 +254,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobComplete_RunNow_JobAndItemErrors()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
 
 			//Act
@@ -269,7 +269,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void OnJobComplete_RunNow_ItemErrors()
 		{
 			//Arrange
-			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			_updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
 			_updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
 
 			//Act

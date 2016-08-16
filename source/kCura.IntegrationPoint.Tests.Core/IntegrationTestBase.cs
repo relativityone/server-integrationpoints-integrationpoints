@@ -30,13 +30,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public virtual void SuiteSetup() {}
 
 		[OneTimeTearDown]
-		public virtual void SuiteTeardown() {}
-
 		public virtual void TestSetup() {}
 
 		[TearDown]
 		public virtual void TestTeardown() {}
 
+		[OneTimeSetUp]
 		public void InitiateSuiteSetup()
 		{
 			try
@@ -58,6 +57,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 				throw;
 			}
 		}
+
+		[TestFixtureTearDown]
+		public virtual void SuiteTeardown() { }
 
 		[SetUp]
 		public void InitiatTestSetup()

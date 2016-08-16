@@ -2,7 +2,7 @@
 {
 	public class ButtonStateDTO
 	{
-		public bool RunNowButtonEnabled { get; set; }
+		public bool RunButtonEnabled { get; set; }
 		public bool StopButtonEnabled { get; set; }
 	}
 }

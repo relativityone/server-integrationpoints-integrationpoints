@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -14,7 +16,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly Timer _timerThread;
 		private readonly IJobService _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
-		private readonly Guid _jobIdentifier;
+		private readonly Guid _jobBatchIdentifier;
+		private readonly long _jobId;
 		private readonly CancellationToken _token;
 		private bool _disposed;
 
@@ -22,31 +25,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		/// for testing only.
 		/// </summary>
 		internal TimerCallback Callback { get; }
-		private readonly object _callbackLock = new object();
 
-		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, int jobId)
+		public object SyncRoot { get; }
+
+		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobHistoryInstanceId, long jobId)
 		{
+			SyncRoot = new object();
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
-			_jobIdentifier = jobIdentifier;
+			_jobBatchIdentifier = jobHistoryInstanceId;
+			_jobId = jobId;
 			Callback = new TimerCallback(state =>
 			{
-				lock (_callbackLock)
+				lock (SyncRoot)
 				{
 					try
 					{
-						Job job = _jobService.GetJob(jobId);
+						Job job = _jobService.GetJob(_jobId);
 						if (job != null)
 						{
 							if (job.StopState.HasFlag(StopState.Stopping))
 							{
-								JobHistory jobHistory = _jobHistoryService.GetRdo(_jobIdentifier);
+								JobHistory jobHistory = _jobHistoryService.GetRdo(_jobBatchIdentifier);
 								if (jobHistory != null && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
 									|| jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
 								{
 									jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
 									jobHistoryService.UpdateRdo(jobHistory);
 								}
+
 								_cancellationTokenSource.Cancel();
 								_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 							}
@@ -67,9 +74,15 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_timerThread = new Timer(Callback, null, 0, 500);
 		}
 
-		public bool IsStoppingRequested()
+		public bool IsStopRequested()
 		{
 			return _token.IsCancellationRequested;
+		}
+
+		public void ThrowIfStopRequested()
+		{
+			// Will throw OperationCanceledException if task is canceled.
+			_token.ThrowIfCancellationRequested();	
 		}
 
 		public void Dispose()

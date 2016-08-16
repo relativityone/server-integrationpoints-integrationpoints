@@ -5,10 +5,12 @@ using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -35,10 +37,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataProviderFactory dataProviderFactory, ISerializer serializer,
 			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory, IJobHistoryService jobHistoryService,
 			JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IJobManager jobManager, IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService, ExportProcessRunner exportProcessRunner)
+			JobStatisticsService statisticsService, ExportProcessRunner exportProcessRunner, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory, IJobService jobService)
 			: base(
 				caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorServiceProvider.JobHistoryErrorService, jobManager, statuses, statisticsService)
+				jobHistoryService, jobHistoryErrorServiceProvider.JobHistoryErrorService, jobManager, statuses, statisticsService, managerFactory, contextContainerFactory, jobService)
 		{
 			_exportProcessRunner = exportProcessRunner;
 		}
@@ -52,11 +54,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			var providerGuid = new Guid(destinationProviderRdo.Identifier);
 
-			var sourceProvider = _appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
+			var sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
 
-		internal override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration,
+		protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration,
 			string destinationConfiguration, List<string> entryIDs,
 			SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 		public override void SuiteSetup()
 		{
-			InstanceSetting.UpdateAndReturnOldValue("Relativity.Authentication", "AdminsCanSetPasswords", "True");
+			InstanceSetting.UpsertAndReturnOldValueIfExists("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 			_dbContext = Helper.GetDBContext(-1);
 			CreateGroupAndUser();
 		}

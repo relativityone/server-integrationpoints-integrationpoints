@@ -102,6 +102,10 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.4.241.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.4.241.2\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Services.Interfaces">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
@@ -124,6 +128,7 @@
     <Compile Include="Integration\ExportServiceManagerTests.cs" />
     <Compile Include="Integration\SendEmailManagerTests.cs" />
     <Compile Include="Unit\SendEmailManagerUnitTests.cs" />
+    <Compile Include="Unit\Tasks\ExportServiceManagerTests.cs" />
     <Compile Include="Unit\Tasks\ITaskFactoryTests.cs" />
     <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Unit\Tasks\SyncManagerTests.cs" />

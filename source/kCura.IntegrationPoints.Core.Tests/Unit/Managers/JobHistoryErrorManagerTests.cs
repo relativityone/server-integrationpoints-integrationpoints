@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new Collection<int>());
 
 			//Act
-			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
+			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
 			//Assert
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new Collection<int>());
 
 			//Act
-			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
+			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
 			//Assert
 			_jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
-			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
+			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
 			//Assert
 			_jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
-			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
+			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
 			//Assert
 			_jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());

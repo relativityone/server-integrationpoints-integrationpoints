@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Relativity;
 using Relativity.Data;
 using System.Text.RegularExpressions;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
@@ -28,6 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly int[] _fieldArtifactIds;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 		private readonly FieldMap[] _mappedFields;
+		private readonly IJobStopManager _jobStopManager;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
 		private readonly int _retrievedDataCount;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
@@ -38,12 +40,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// Testing only
 		/// </summary>
 		internal RelativityExporterService(
-			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter,
+			IExporter exporter,
 			IILongTextStreamFactory longTextStreamFactory,
+			IJobStopManager jobStopManager,
 			FieldMap[] mappedFields,
 			HashSet<int> longTextField,
 			int[] avfIds)
-			: this(mappedFields)
+			: this(mappedFields, jobStopManager)
 		{
 			_exporter = exporter;
 			_longTextStreamFactory = longTextStreamFactory;
@@ -54,12 +57,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public RelativityExporterService(
 			IRepositoryFactory repositoryFactory,
+			IJobStopManager jobStopManager,
 			ClaimsPrincipal claimsPrincipal,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config,
 			int savedSearchArtifactId)
-			: this(mappedFields)
+			: this(mappedFields, jobStopManager)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_baseContext = claimsPrincipal.GetUnversionContext(settings.SourceWorkspaceArtifactId);
@@ -194,13 +198,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private RelativityExporterService(FieldMap[] mappedFields)
+		private RelativityExporterService(FieldMap[] mappedFields, IJobStopManager jobStopManager)
 		{
 			_singleChoiceFieldsArtifactIds = new HashSet<int>();
 			_multipleObjectFieldArtifactIds = new HashSet<int>();
 			_longTextFieldArtifactIds = new HashSet<int>();
 			_retrievedDataCount = 0;
 			_mappedFields = mappedFields;
+			_jobStopManager = jobStopManager;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 		}
 
@@ -208,7 +213,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			get
 			{
-				return TotalRecordsFound > _retrievedDataCount;
+				return TotalRecordsFound > _retrievedDataCount && !_jobStopManager.IsStopRequested();
 			}
 		}
 

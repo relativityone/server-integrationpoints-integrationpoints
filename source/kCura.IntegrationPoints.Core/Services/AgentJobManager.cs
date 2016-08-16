@@ -148,6 +148,17 @@ namespace kCura.IntegrationPoints.Core.Services
 			return results;
 		}
 
+		public IList<Job> GetJobsByBatchInstanceId(long integrationPointId, Guid batchId)
+		{
+			IDictionary<Guid, List<Job>> bacthedAgentJobs = GetScheduledAgentJobMapedByBatchInstance(integrationPointId);
+			if (!bacthedAgentJobs.ContainsKey(batchId))
+			{
+				throw new Exception("Unable to find the batch instance id in the scheduled agent queue.");
+			}
+			return bacthedAgentJobs[batchId];
+		}
+
+
 		public void StopJobs(IList<long> jobIds)
 		{
 			_jobService.UpdateStopState(jobIds, StopState.Stopping);

@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			Data.IntegrationPoint integrationPointRdo = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 
-			JobHistory jobHistoryRunNow = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistoryRunNow = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistoryRunNow.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 			CreateJobLevelJobHistoryError(jobHistoryRunNow.ArtifactId, ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorJob);
 
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			CreateJobLevelJobHistoryError(jobHistoryScheduled.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 			CreateJobLevelJobHistoryError(jobHistoryScheduled.ArtifactId, ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorJob);
 
-			JobHistory runNowJobhistoryError2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory runNowJobhistoryError2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(runNowJobhistoryError2.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
 			//Act
@@ -132,13 +132,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo3 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel3.ArtifactID);
 
-			JobHistory jobHistory1 = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory1 = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory1.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistory jobHistory2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory2.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistory jobHistory3 = _jobHistoryService.CreateRdo(integrationPointRdo3, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory3 = _jobHistoryService.CreateRdo(integrationPointRdo3, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory3.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
 			//Act
@@ -173,13 +173,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo3 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel3.ArtifactID);
 
-			JobHistory jobHistory1 = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory1 = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory1.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistory jobHistory2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory2.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistory jobHistory3 = _jobHistoryService.CreateRdo(integrationPointRdo3, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory3 = _jobHistoryService.CreateRdo(integrationPointRdo3, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory3.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
 			int[] integrationPointArtifactIds = new int[] { integrationPointModel.ArtifactID, integrationPointModel2.ArtifactID, integrationPointModel3.ArtifactID };
@@ -217,13 +217,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo3 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel3.ArtifactID);
 
-			JobHistory jobHistory1 = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory1 = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory1.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistory jobHistory2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory2.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistory jobHistory3 = _jobHistoryService.CreateRdo(integrationPointRdo3, Guid.NewGuid(), JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			JobHistory jobHistory3 = _jobHistoryService.CreateRdo(integrationPointRdo3, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 			CreateJobLevelJobHistoryError(jobHistory3.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 			CreateJobLevelJobHistoryError(jobHistory3.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorJob);
 

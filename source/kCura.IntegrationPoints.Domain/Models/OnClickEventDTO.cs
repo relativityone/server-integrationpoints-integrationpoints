@@ -3,7 +3,7 @@
 	public class OnClickEventDTO
 	{
 		 
-		public string RunNowOnClickEvent { get; set; }
+		public string RunOnClickEvent { get; set; }
 		public string StopOnClickEvent { get; set; }
 	}
 }

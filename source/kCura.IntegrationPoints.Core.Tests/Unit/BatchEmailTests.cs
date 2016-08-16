@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
@@ -29,6 +30,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private IJobManager _jobManager = null;
 		private IJobStatusUpdater _jobStatusUpdater = null;
 		private KeywordConverter _converter = null;
+		private IManagerFactory _managerFactory;
+		private IContextContainerFactory _contextContainerFactory;
+		private IJobService _jobService;
 
 		private IRSAPIService _rsapiService;
 		private IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
@@ -41,6 +45,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_rsapiService = Substitute.For<IRSAPIService>();
 			_integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
+			_managerFactory = Substitute.For<IManagerFactory>();
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			_jobService = Substitute.For<IJobService>();
 
 			_rsapiService.IntegrationPointLibrary.Returns(_integrationPointLibrary);
 			_caseServiceContext.RsapiService.Returns(_rsapiService);
@@ -55,7 +62,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 				_jobHistoryErrorService, 
 				_jobManager,
 				_jobStatusUpdater,
-				_converter);
+				_converter,
+				_managerFactory,
+				_contextContainerFactory,
+				_jobService);
 		}
 
 		[Test]

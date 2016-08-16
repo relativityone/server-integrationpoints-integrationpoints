@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
@@ -13,10 +14,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportFieldsService : IExportFieldsService
 	{
+		private readonly IConfig _config;
 		private readonly ICredentialProvider _credentialProvider;
 
 		private ISearchManager CreateSearchManager()
 		{
+			WinEDDS.Config.ProgrammaticServiceURL = _config.WebApiPath;
+
 			var cookieContainer = new CookieContainer();
 			var credentials = _credentialProvider.Authenticate(cookieContainer);
 
@@ -25,8 +29,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			return searchManager;
 		}
 
-		public ExportFieldsService(ICredentialProvider credentialProvider)
+		public ExportFieldsService(IConfig config, ICredentialProvider credentialProvider)
 		{
+			_config = config;
 			_credentialProvider = credentialProvider;
 		}
 
@@ -53,6 +58,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, (int)ArtifactType.Document)
 				.Where(x => viewFieldIds.Contains(x.AvfId))
+				.Select(x => new FieldEntry
+				{
+					DisplayName = x.DisplayName,
+					FieldIdentifier = x.AvfId.ToString(),
+					FieldType = FieldType.String,
+					IsIdentifier = x.Category == FieldCategory.Identifier,
+					IsRequired = false
+				}).ToArray();
+		}
+
+		public FieldEntry[] GetAllExportableLongTextFields(int workspaceArtifactID, int artifactTypeID)
+		{
+			ISearchManager searchManager = CreateSearchManager();
+
+			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, artifactTypeID)
+				.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText)
 				.Select(x => new FieldEntry
 				{
 					DisplayName = x.DisplayName,

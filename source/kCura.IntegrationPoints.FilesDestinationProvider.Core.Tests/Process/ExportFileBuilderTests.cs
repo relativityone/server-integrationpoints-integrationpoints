@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
 using NSubstitute;
@@ -213,6 +215,75 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(startExportAtRecord - 1, exportFile.StartAtDocumentNumber);
 		}
 
+		[Test]
+		public void ItShouldSetExportFullTextAsFile()
+		{
+			const bool exportFullTextAsFile = true;
+
+			_exportSettings.ExportFullTextAsFile = exportFullTextAsFile;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.AreEqual(exportFile.ExportFullTextAsFile, exportFullTextAsFile);
+		}
+
+		[Test]
+		[TestCase(ExportSettings.ProductionPrecedenceType.Original, false, true)]
+		[TestCase(ExportSettings.ProductionPrecedenceType.Produced, true, true)]
+		[TestCase(ExportSettings.ProductionPrecedenceType.Produced, false, false)]
+		public void ItShouldSetOriginalProductionAccordingly(ExportSettings.ProductionPrecedenceType productionPrecedenceType, bool includeOriginalImage, bool outputShouldIncludeOrigImage)
+		{
+			_exportSettings.ProductionPrecedence = productionPrecedenceType;
+			_exportSettings.IncludeOriginalImages = includeOriginalImage;
+			_exportSettings.ImagePrecedence = new List<ProductionPrecedenceDTO>();
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			var imagePrecedenceList = exportFile.ImagePrecedence
+				.Where(item => item.Display == ExportFileBuilder._ORIGINAL_PRODUCTION_PRECEDENCE_TEXT).ToList();
+
+			if (outputShouldIncludeOrigImage)
+			{
+				Assert.That(imagePrecedenceList.Any());
+				Assert.That(imagePrecedenceList.Count, Is.EqualTo(1));
+				Assert.That(imagePrecedenceList.First().Value,
+					Is.EqualTo(ExportFileBuilder._ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT));
+			}
+			else
+			{
+				Assert.That(!imagePrecedenceList.Any());
+			}
+		}
+
+		[Test]
+		public void ItShouldSetSelectedProductionPrecedence()
+		{
+			var productionPrecedenceList = new List<ProductionPrecedenceDTO>()
+			{
+				new ProductionPrecedenceDTO
+				{
+					ArtifactID = "19",
+					DisplayName = "Prod1"
+				},
+				new ProductionPrecedenceDTO
+				{
+					ArtifactID = "153",
+					DisplayName = "Prod2"
+				}
+			};
+
+			_exportSettings.ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced;
+			_exportSettings.IncludeOriginalImages = false;
+			_exportSettings.ImagePrecedence = productionPrecedenceList;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(productionPrecedenceList.Count, Is.EqualTo(exportFile.ImagePrecedence.Length));
+
+			Assert.True(productionPrecedenceList.All(x => exportFile.ImagePrecedence.Any(y => y.Display == x.DisplayName && y.Value == x.ArtifactID)));
+		}
+
+
 		public void ItShouldRewriteOtherSettings()
 		{
 			const int artifactTypeId = 10;
@@ -225,6 +296,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			const string exportedObjName = "files_prefix";
 			const bool exportImages = true;
 			const bool exportMultipleChoiceFieldsAsNested = true;
+			var textFileEncoding = Encoding.Unicode;
 
 			_exportSettings.ArtifactTypeId = artifactTypeId;
 			_exportSettings.ExportedObjArtifactId = exportedObjArtifactId;
@@ -236,6 +308,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportSettings.ExportedObjName = exportedObjName;
 			_exportSettings.ExportImages = exportImages;
 			_exportSettings.ExportMultipleChoiceFieldsAsNested = exportMultipleChoiceFieldsAsNested;
+			_exportSettings.TextFileEncodingType = textFileEncoding;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
@@ -249,6 +322,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(exportFile.LoadFilesPrefix, exportedObjName);
 			Assert.AreEqual(exportFile.ExportImages, exportImages);
 			Assert.AreEqual(exportFile.MulticodesAsNested, exportMultipleChoiceFieldsAsNested);
+			Assert.AreEqual(exportFile.TextFileEncoding, textFileEncoding);
 		}
 	}
 }

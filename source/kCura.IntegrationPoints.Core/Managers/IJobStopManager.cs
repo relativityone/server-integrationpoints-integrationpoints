@@ -9,6 +9,16 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// Gets whether stopping has been requested for this job.
 		/// </summary>
 		/// <returns>true if stopping has been requested for this job; otherwise, false.</returns>
-		bool IsStoppingRequested();
+		bool IsStopRequested();
+
+		/// <summary>
+		/// Gets an object that can be used to synchronize status check
+		/// </summary>
+		Object SyncRoot { get; }
+
+		/// <summary>
+		/// Throws an <see cref="OperationCanceledException"/> if the task has been stopped.
+		/// </summary>
+		void ThrowIfStopRequested();
 	}
 }

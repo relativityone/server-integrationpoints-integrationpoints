@@ -1,0 +1,11 @@
+
+(*) --> "Retrieve JobHistory"
+if "The job history's status is 'stopped' then
+	--> [true] "Update email's message to inform job being stopped."
+    --> "Send email."
+else
+	--> [false] "Choose non-stopping related email's message."
+endif
+--> "Send email."
+--> (*)
+@enduml

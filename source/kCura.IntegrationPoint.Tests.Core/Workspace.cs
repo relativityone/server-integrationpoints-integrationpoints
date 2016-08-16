@@ -2,59 +2,13 @@
 using System.Collections.Generic;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 using Relativity.Services.ApplicationInstallManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Workspace
 	{
-		public static void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock,
-			List<int> appsToOverride = null)
-		{
-			//List of application ArtifactIDs to override, if already installed
-			// TODO: Add this functionality - Gerron Thurman 5/11/2016
-			List<int> applicationsToOverride = appsToOverride ?? new List<int>();
-
-			AppInstallRequest appInstallRequest = new AppInstallRequest()
-			{
-				FullFilePath = applicationFilePath,
-				ForceFlag = true
-			};
-
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
-			{
-				try
-				{
-					proxy.APIOptions.WorkspaceID = workspaceId;
-					ProcessOperationResult result = proxy.InstallApplication(proxy.APIOptions, appInstallRequest);
-					if (!result.Success)
-					{
-						throw new Exception($"Failed to install application file: {applicationFilePath} to workspace: {workspaceId}.");
-					}
-
-					Status.WaitForProcessToComplete(proxy, result.ProcessID, (int)TimeSpan.FromMinutes(2).TotalSeconds, 500);
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"An error occurred attempting to import the application file {applicationFilePath}. Error: {ex.Message}.");
-				}
-			}
-		}
-
-		public static void ImportLibraryApplicationToWorkspace(int workspaceArtifactId, Guid applicationGuid)
-		{
-			int applicationInstallId = 0;
-			using (IApplicationInstallManager proxy = Kepler.CreateProxy<IApplicationInstallManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
-			{
-				applicationInstallId = proxy.InstallLibraryApplicationByGuid(workspaceArtifactId, applicationGuid).ConfigureAwait(false).GetAwaiter().GetResult();
-			}
-
-			if (applicationInstallId == 0)
-			{
-				throw new Exception($"Failed to install Library Application. SourceWorkspace: {workspaceArtifactId}. ApplicationGuid {applicationGuid}");
-			}
-		}
-
 		public static int CreateWorkspace(string workspaceName, string templateName)
 		{
 			if (String.IsNullOrEmpty(workspaceName)) return 0;
@@ -62,7 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			//Create workspace DTO
 			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
 			int workspaceId = 0;
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				try
 				{
@@ -147,7 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(Query<Relativity.Client.DTOs.Workspace> query, int results)
 		{
 			QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = new QueryResultSet<Relativity.Client.DTOs.Workspace>();
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				try
 				{

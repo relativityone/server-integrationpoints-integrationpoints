@@ -1,0 +1,114 @@
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Data.Queries;
+using NUnit.Framework;
+using OpenQA.Selenium;
+using System;
+using System.Data;
+
+namespace kCura.IntegrationPoints.Core.Tests.UI
+{
+	[TestFixture]
+	[Category("Integration Tests")]
+	public class ConsoleButtons : RelativityProviderTemplate
+	{
+		private ISerializer _serializer;
+		private IJobHistoryService _jobHistoryService;
+		private IJobService _jobService;
+		private IWebDriver _webDriver;
+		private IObjectTypeRepository _objectTypeRepository;
+		private IQueueDBContext _queueContext;
+		private IJobManager _jobManager;
+		private int _integrationPointArtifactTypeId;
+		private long _jobId;
+
+		public ConsoleButtons() : base("IntegrationPointService Source", null)
+		{
+		}
+
+		public override void SuiteSetup()
+		{
+			_serializer = Container.Resolve<ISerializer>();
+			_jobHistoryService = Container.Resolve<IJobHistoryService>();
+			_jobService = Container.Resolve<IJobService>();
+			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
+			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
+			_jobManager = Container.Resolve<IJobManager>();
+			_integrationPointArtifactTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
+		}
+
+		public override void TestTeardown()
+		{
+			_webDriver.CloseSeleniumBrowser();
+			_jobManager.DeleteJob(_jobId);
+		}
+
+		[TestCase(TestBrowser.Chrome)]
+		public void StopButton_SetsStopStateOnClick_Success(TestBrowser browser)
+		{
+			//Arrange
+			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
+			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			Guid batchInstance = Guid.NewGuid();
+			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
+			JobHistory jobHistory = CreateJobHistoryInPending(integrationPoint.ArtifactID, batchInstance);
+			DataRow row = new CreateScheduledJob(_queueContext).Execute(
+				SourceWorkspaceArtifactId,
+				integrationPoint.ArtifactID,
+				"ExportService",
+				DateTime.MaxValue,
+				1,
+				null,
+				null,
+				jobDetails,
+				0,
+				777,
+				1,
+				1);
+			Job tempJob = new Job(row);
+			_jobId = tempJob.JobId;
+
+			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
+			string runAndStopButtonOnClickStopXpath = string.Format(@"//a[@onclick='IP.stopJob({0},{1})']", integrationPoint.ArtifactID, SourceWorkspaceArtifactId);
+			string warningDialogId = "ui-dialog-title-msgDiv";
+			string stopTransferButtonXpath = "//button[contains(.,'Stop Transfer')]";
+			string jobHistoryStatusStopping = "//td[contains(.,'Stopping')]";
+			_webDriver = Selenium.GetWebDriver(browser);
+
+			//Act
+			_webDriver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			_webDriver.SetFluidStatus(9);
+			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
+			_webDriver.GoToObjectInstance(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _integrationPointArtifactTypeId);
+			_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 10);
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, runAndStopButtonOnClickStopXpath, 5);
+			_webDriver.FindElement(By.Id(runAndStopId)).Click();
+			_webDriver.WaitUntilElementExists(ElementType.Id, warningDialogId, 10);
+			_webDriver.FindElement(By.XPath(stopTransferButtonXpath)).Click();
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, jobHistoryStatusStopping, 10);
+
+			Job updatedJob = _jobService.GetJob(_jobId);
+
+			//Assert
+			Assert.IsTrue(((int)(updatedJob.StopState) == 1));
+		}
+
+		private JobHistory CreateJobHistoryInPending(int integrationPointArtifactId, Guid batchInstance)
+		{
+			Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
+			_jobHistoryService.UpdateRdo(jobHistory);
+			return jobHistory;
+		}
+	}
+}

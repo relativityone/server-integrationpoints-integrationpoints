@@ -1,40 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Choice = kCura.Relativity.Client.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobStatusUpdater : IJobStatusUpdater
 	{
 		private readonly JobHistoryErrorQuery _service;
-		private readonly IRSAPIService _rsapiService;
-		public JobStatusUpdater(JobHistoryErrorQuery service, IRSAPIService rsapiService)
+		private readonly IJobHistoryService _jobHistoryService;
+
+		public JobStatusUpdater(JobHistoryErrorQuery service, IJobHistoryService jobHistoryService)
 		{
 			_service = service;
-			_rsapiService = rsapiService;
+			_jobHistoryService = jobHistoryService;
 		}
 
-		public Choice GenerateStatus(Guid batchId)
+		public Relativity.Client.Choice GenerateStatus(Guid batchId)
 		{
-			var query = new Query<Relativity.Client.DTOs.RDO>();
-			query.Fields = new List<FieldValue> { new FieldValue(Guid.Parse(JobHistoryFieldGuids.ItemsWithErrors)) };
-			query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, batchId.ToString());
-			var result = _rsapiService.JobHistoryLibrary.Query(query).First();
+			Data.JobHistory result = _jobHistoryService.GetRdo(batchId);
 			return GenerateStatus(result);
 		}
 
-		public Choice GenerateStatus(Data.JobHistory jobHistory)
+		public Relativity.Client.Choice GenerateStatus(Data.JobHistory jobHistory)
 		{
 			if (jobHistory == null)
 			{
-				throw new ArgumentNullException("job History");
+				throw new ArgumentNullException(nameof(jobHistory));
 			}
+			if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))
+			{
+				return JobStatusChoices.JobHistoryStopped;
+			}
+
 			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
 			if (recent != null)
 			{
