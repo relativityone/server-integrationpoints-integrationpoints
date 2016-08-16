@@ -142,6 +142,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="source\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="source\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -262,6 +267,7 @@
             <MapTo>kCura.IntegrationPoints.Email.dll</MapTo>
             <MapTo>kCura.IntegrationPoints.EventHandlers.dll</MapTo>
             <MapTo>kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</MapTo>
+            <MapTo>kCura.IntegrationPoints.Injection.dll</MapTo>
             <MapTo>kCura.IntegrationPoints.SourceProviderInstaller.dll</MapTo>
             <MapTo>kCura.IntegrationPoints.Synchronizers.RDO.dll</MapTo>
             <MapTo>kCura.ScheduleQueue.AgentBase.dll</MapTo>
