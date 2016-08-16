@@ -124,7 +124,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				DataFileEncodingType = "Unicode",
 				TextFileEncodingType = "Unicode",
 				ExportFullTextAsFile = _EXPORT_FULL_TEXT_AS_FILE,
-				TextPrecedenceFields =  new List<FieldEntry>()
+				TextPrecedenceFields =  new List<FieldEntry>(),
+				ProductionPrecedence = ((int)default(ExportSettings.ProductionPrecedenceType)).ToString()
 			};
 		}
 

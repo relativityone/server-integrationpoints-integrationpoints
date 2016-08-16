@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 		/// </summary>
 		/// <param name="artifactId">The artifact id of the object.</param>
 		/// <param name="artifactTypeId">The artifact type id of the object.</param>
-		/// <param name="textIdentifier">The text identifider for the object.</param>
+		/// <param name="textIdentifier">The text identifier for the object.</param>
 		/// <param name="fields">The fields of the artifact.</param>
 		public ArtifactDTO(
 			int artifactId, 

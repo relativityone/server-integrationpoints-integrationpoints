@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 
 		public enum ProductionPrecedenceType
 		{
-			Original,
+			Original = 0,
 			Produced
 		}
 
@@ -79,5 +79,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public Encoding TextFileEncodingType { get; set; }
 		public ProductionPrecedenceType ProductionPrecedence { get; set; }
 		public bool IncludeOriginalImages { get; set; }
+		public IEnumerable<ProductionPrecedenceDTO> ImagePrecedence { get; set; }
 	}
 }

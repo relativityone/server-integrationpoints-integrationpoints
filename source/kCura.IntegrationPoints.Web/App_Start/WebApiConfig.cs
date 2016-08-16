@@ -85,6 +85,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ProductionPrecedence",
+				routeTemplate: "{workspaceID}/api/ProductionPrecedence/ProductionPrecedence",
+				defaults: new { controller = "ProductionPrecedence", action = "GetProductionPrecedence" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "LongTextFields",
 				routeTemplate: "{workspaceID}/api/ExportFields/LongTextFields",
 				defaults: new { controller = "ExportFields", action = "GetExportableLongTextFields" }

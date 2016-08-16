@@ -311,6 +311,7 @@
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
     <Compile Include="Controllers\API\FolderPathController.cs" />
     <Compile Include="Controllers\API\FtpProviderAPIController.cs" />
+    <Compile Include="Controllers\API\ProductionPrecedenceController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
     <Compile Include="Controllers\API\JobController.cs" />
@@ -455,6 +456,8 @@
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
     <Content Include="Scripts\Export\export-provider.js" />
     <Content Include="Scripts\Export\field-mapping-view-model.js" />
+    <Content Include="Scripts\Export\image-production-picker.js" />
+    <Content Include="Scripts\Export\list-picker-view-model.js" />
     <Content Include="Scripts\Export\picker.js" />
     <Content Include="Scripts\Export\saved-search-picker.js" />
     <Content Include="Scripts\Export\text-precedence-picker.js" />
@@ -666,7 +669,7 @@
     <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
     <Content Include="Views\Fileshare\ExportDetails.cshtml" />
     <Content Include="Views\Fileshare\SavedSearchPicker.cshtml" />
-    <Content Include="Views\Fileshare\TextPrecedencePicker.cshtml" />
+    <Content Include="Views\Fileshare\ListPicker.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

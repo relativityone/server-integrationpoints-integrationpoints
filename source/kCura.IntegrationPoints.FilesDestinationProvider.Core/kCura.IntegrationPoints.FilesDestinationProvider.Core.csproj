@@ -145,6 +145,8 @@
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Process\IExportSettingsBuilder.cs" />
+    <Compile Include="Process\IProductionPrecedenceService.cs" />
+    <Compile Include="Process\ProductionPrecedenceService.cs" />
     <Compile Include="Process\IVolumeInfoBuilder.cs" />
     <Compile Include="Process\VolumeInfoBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -158,7 +160,9 @@
     <Compile Include="SharedLibrary\IConfigFactory.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
+    <Compile Include="SharedLibrary\IProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\ISearchManagerFactory.cs" />
+    <Compile Include="SharedLibrary\ProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
