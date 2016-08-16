@@ -188,6 +188,7 @@
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="Models\AuditElement.cs" />
     <Compile Include="Models\MassEditObject.cs" />
     <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
@@ -206,6 +207,7 @@
     <Compile Include="Repositories\Implementations\KeplerObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
+    <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Repositories\Implementations\SourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepository.cs" />
     <Compile Include="Repositories\IPermissionRepository.cs" />
+    <Compile Include="Repositories\IRelativityAuditRepository.cs" />
     <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
