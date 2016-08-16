@@ -66,7 +66,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				TextPrecedenceFieldsIds = sourceSettings.TextPrecedenceFields.Select(x => int.Parse(x.FieldIdentifier)).ToList(),
 				TextFileEncodingType = textFileEncoding,
 				ProductionPrecedence = productionPrecedence,
-				IncludeOriginalImages = sourceSettings.IncludeOriginalImages
+				IncludeOriginalImages = sourceSettings.IncludeOriginalImages,
+				ImagePrecedence = sourceSettings.ImagePrecedence
 			};
 
 			return exportSettings;

@@ -49,5 +49,6 @@ namespace kCura.IntegrationPoints.Domain.Models
 		// Just temporal init
 		public string ProductionPrecedence => "Original";
 		public bool IncludeOriginalImages { get; set; }
+		public IEnumerable<ProductionPrecedenceDTO> ImagePrecedence { get; set; }
 	}
 }
