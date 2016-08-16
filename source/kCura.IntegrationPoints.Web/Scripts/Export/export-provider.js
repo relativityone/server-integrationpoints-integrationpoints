@@ -293,6 +293,14 @@
 			required: true
 		});
 
+		this.ProductionPrecedence = ko.observable(state.ProductionPrecedence).extend({
+			required: {
+				onlyIf: function () {
+					return self.ExportImagesChecked();
+				}
+			}
+		});
+
 		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
 			required: {
 				onlyIf: function () {
@@ -300,6 +308,8 @@
 				}
 			}
 		});
+
+		this.IncludeOriginalImages = ko.observable(state.IncludeOriginalImages || false);
 
 		this.SelectedImageFileType = ko.observable(!self.CopyFileFromRepository() ? 0 : state.SelectedImageFileType).extend({
 			required: {
@@ -461,7 +471,9 @@
 				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
 				"TextPrecedenceFields": self.TextPrecedenceFields(),
 				"TextFileEncodingType": self.TextFileEncodingType(),
-				"ImageProductions": self.ImageProductions()
+				"ImageProductions": self.ImageProductions(),
+				"ProductionPrecedence": self.ProductionPrecedence(),
+				"IncludeOriginalImages": self.IncludeOriginalImages()
 			};
 		};
 	};

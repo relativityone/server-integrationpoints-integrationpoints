@@ -72,7 +72,7 @@
 										</tr>
 										<tr>
 											<td class="editFieldValue">
-												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked"/>
+												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked" />
 												<label>Text Fields As Files</label>
 											</td>
 										</tr>
@@ -308,25 +308,39 @@
 									<select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun()"></select>
 								</td>
 							</tr>
-						    <tr>
-						        @*data-bind="visible: ExportImagesChecked"*@
-						        <td class="editFieldNameRequired">
-						            File Type :
-						        </td>
-						        <td class="editFieldValue">
-						            <select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
-						        </td>
-						    </tr>
-                            <tr>
-                                <td class="editFieldNameRequired">
-                                    Image Productions:
-                                </td>
-                                <td class="editFieldValue">
-                                    <label id="image-production-selection" data-bind="text: ImageProductionSelection"></label>
-                                    <button data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-                                    <input data-bind="value: ImageProductions, visible: false" />
-                                </td>
-                            </tr>
+							<tr>
+								@*data-bind="visible: ExportImagesChecked"*@
+								<td class="editFieldNameRequired">
+									File Type:
+								</td>
+								<td class="editFieldValue">
+									<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType"></select>
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldNameRequired">
+									Production Precedence:
+								</td>
+								<td class="editFieldValue">
+									<select id="image-production-precedence" data-bind="disable: HasBeenRun(), options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, disable: HasBeenRun()"></select>
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldNameRequired">
+									Image Productions:
+								</td>
+								<td class="editFieldValue">
+									<label id="image-production-selection" data-bind="text: ImageProductionSelection"></label>
+									<button data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+									<input data-bind="value: ImageProductions, visible: false" />
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldName">Include original images if not produced:</td>
+								<td class="editFieldValue">
+									<input id="image-include-original-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeOriginalImages" />
+								</td>
+							</tr>
 							<tr>
 								<td class="editFieldNameRequired">
 									Subdirectory Prefix For Image:
@@ -369,39 +383,39 @@
 							</tr>
 						</table>
 						<table class="fieldTable" data-bind="visible: ExportTextFieldsAsFilesChecked">
-						    <tr>
-						        <td>
-						            <div>
-						                <p>
-						                    <h3 style="margin-left: 30px">
-						                        TEXT
-						                    </h3>
-						                </p>
-						            </div>
-						        </td>
-						    </tr>
-                            <tr>
-                                <td class="editFieldNameRequired">
-                                    Text File Encoding:
-                                </td>
-                                <td class="editFieldValue">
-                                    <select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
-                                        <optgroup data-bind="attr: {label: label}, foreach: children">
-                                            <option data-bind="text: displayName, value: name"></option>
-                                        </optgroup>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="editFieldNameRequired">
-                                    Text Precedence:
-                                </td>
-                                <td class="editFieldValue">
-                                    <label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-                                    <button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-                                    <input data-bind="value: TextPrecedenceFields, visible: false" />
-                                </td>
-                            </tr>
+							<tr>
+								<td>
+									<div>
+										<p>
+											<h3 style="margin-left: 30px">
+												TEXT
+											</h3>
+										</p>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldNameRequired">
+									Text File Encoding:
+								</td>
+								<td class="editFieldValue">
+									<select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
+										<optgroup data-bind="attr: {label: label}, foreach: children">
+											<option data-bind="text: displayName, value: name"></option>
+										</optgroup>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldNameRequired">
+									Text Precedence:
+								</td>
+								<td class="editFieldValue">
+									<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
+									<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+									<input data-bind="value: TextPrecedenceFields, visible: false" />
+								</td>
+							</tr>
 							<tr>
 								<td class="editFieldNameRequired">
 									Subdirectory prefix for Text:
@@ -426,12 +440,12 @@
 	<script src="~/Scripts/knockout-3.4.0.js"></script>
 	<script src="~/Scripts/knockout.validation.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
-    <script src="~/Scripts/integration-point/step-mapFields-control.js"></script>
+	<script src="~/Scripts/integration-point/step-mapFields-control.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script src="~/Scripts/frame-messaging.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/export/export-provider.js"></script>
-    <script src="~/Scripts/export/list-picker-view-model.js"></script>
+	<script src="~/Scripts/export/list-picker-view-model.js"></script>
 	<script src="~/Scripts/export/picker.js"></script>
 	<script src="~/Scripts/export/text-precedence-picker.js"></script>
 	<script src="~/Scripts/export/image-production-picker.js"></script>
