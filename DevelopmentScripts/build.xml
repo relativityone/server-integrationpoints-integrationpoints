@@ -390,6 +390,7 @@
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Unit.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
       <allow>kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent.TaskJobSubmitterTests.TestJobSubmitter</allow>
+      <allow>kCura.IntegrationPoints.Core.Tests.Unit.Agent.IntegrationPointTaskBaseTests.GetDestinationProvider_GoldFlow</allow>
       <allow>kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
       <allow>kCura.ScheduleQueue.Core.Tests.PeriodicScheduleRuleTest.GetNextUTCRunDateTime_DailyRuleMigration_CorrectValue</allow>
     </WhiteList>
