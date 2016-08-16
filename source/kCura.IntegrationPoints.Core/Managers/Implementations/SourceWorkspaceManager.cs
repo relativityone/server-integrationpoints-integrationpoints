@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -13,8 +11,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class SourceWorkspaceManager : DestinationWorkspaceFieldManagerBase, ISourceWorkspaceManager
 	{
 		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
-			: base(repositoryFactory, 
-				  IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, 
+			: base(repositoryFactory,
+				  IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				  SourceWorkspaceDTO.ObjectTypeGuid,
 				  Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE)
 		{

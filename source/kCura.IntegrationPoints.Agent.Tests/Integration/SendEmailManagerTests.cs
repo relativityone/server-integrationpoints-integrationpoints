@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[SetUp]
-		[TestFixtureSetUp]
 		public void SuiteSetUp()
 		{
 			_serializer = Container.Resolve<ISerializer>();

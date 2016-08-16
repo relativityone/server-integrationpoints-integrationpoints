@@ -281,7 +281,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _identifier, job.JobId, true);
 			_jobHistoryErrorService.JobStopManager = _jobStopManager;
 
-			_batchStatus.ForEach(batch => batch.OnJobStart(job));
+
+			List<Exception> exceptions = new List<Exception>();
+			_batchStatus.ForEach(batch =>
+			{
+				try
+				{
+					batch.OnJobStart(job);
+				}
+				catch (Exception exception)
+				{
+					_taskResult.Status = TaskStatusEnum.Fail;
+					_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
+					exceptions.Add(exception);
+				}
+			});
+
+			ThrowNewExceptionIfAny(exceptions);
 		}
 
 		private void FinalizeExportService(Job job)
@@ -403,23 +419,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ThrowNewExceptionIfAny(IEnumerable<Exception> exceptions)
 		{
-			if (exceptions == null)
+			if (exceptions != null)
 			{
-				return;
-			}
+				Exception ex = null;
+				Exception[] enumerable = exceptions as Exception[] ?? exceptions.ToArray();
+				if (!enumerable.IsNullOrEmpty())
+				{
+					int counter = 0;
+					string message = String.Join(Environment.NewLine,
+						enumerable.Select(exception => $"{++counter}. {exception.Message}"));
+					ex = new AggregateException(message, enumerable);
+				}
 
-			Exception ex = null;
-			Exception[] enumerable = exceptions as Exception[] ?? exceptions.ToArray();
-			if (!enumerable.IsNullOrEmpty())
-			{
-				int counter = 0;
-				string message = String.Join(Environment.NewLine, enumerable.Select(exception => $"{++counter}. {exception.Message}"));
-				ex = new AggregateException(message, enumerable);
-			}
-
-			if (ex != null)
-			{
-				throw ex;
+				if (ex != null)
+				{
+					throw ex;
+				}
 			}
 		}
 

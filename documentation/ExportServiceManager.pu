@@ -43,18 +43,18 @@ partition GetImportApiSettingsForUser {
 
 partition InitializeExportServiceObservers {
   fork
-  	partition destinationFieldsTagger {
+  	partition TargetDocumentsTaggingManager {
 		:Ensure all object types, fields, and instances
         have been created;
   	}
   fork again
-  	partition sourceFieldsTagger {
+  	partition SourceObjectBatchUpdateManager {
 		:Ensure that the destination workspace rdo exists
         and that the name is correct;
         :Link the job history to the destination workspace instance;
   	}
   fork again
-  	partition sourceJobHistoryErrorUpdater {
+  	partition JobHistoryErrorBatchUpdateManager {
 		if (Job is a Retry Errors job) then (true)
         	if (Error type is JobAndItem) then (true)
             	:Copy "IntegrationPoint_Relativity_JobHistoryErrors_JobStart"
@@ -106,11 +106,11 @@ partition "Perform Export" {
 
 partition "Finalize" {
 	:Stop awaiting stop signal;
-	:Update stop state for jub as "Unstoppable";
+	:Update stop state for job as "Unstoppable";
     
     partition "Notify BatchStatus subscribers of job completion" {
     	fork
-        	partition destinationFieldsTagger {
+        	partition TargetDocumentsTaggingManager {
               if (No error occurred during job start) then (true)
                   :Tag documents in target workspace
                   with Source Workspace and Source Job;
@@ -120,7 +120,7 @@ partition "Finalize" {
               endif
             }
         fork again
-        	partition sourceFieldsTagger {
+        	partition SourceObjectBatchUpdateManager {
               if (No error occurred during job start) then (true)
                   :Tag documents in source workspace
                   with Destination and JobHistory;
@@ -130,7 +130,7 @@ partition "Finalize" {
               endif
             }
         fork again
-        	partition sourceJobHistoryErrorUpdater {
+        	partition JobHistoryErrorBatchUpdateManager {
               if (Job is a retry error job) then (true)
                   if (Job is item level retry only) then (true)
                       :Update errors from 

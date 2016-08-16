@@ -338,9 +338,8 @@ var IP = IP || {};
 
 			this.selectedType = ko.observable(currentState.selectedType);
 
-			this.selectedType.subscribe(function () {
+			this.selectedType.subscribe(function (value) {
 				var selected = self.selectedDayOfTheMonth();
-				var value = this.target();
 				if (value === 1 || value == 5) {
 					self.selectedDayOfTheMonth(selected);
 				} else {
@@ -449,10 +448,12 @@ var IP = IP || {};
 			stateManager[previousValue] = ko.toJS(self.sendOn());
 		}, this, "beforeChange");
 
+		if (options.selectedFrequency === null) {
+			options.selectedFrequency = undefined;
+		}
 		this.selectedFrequency(options.selectedFrequency);
 
-		this.selectedFrequency.subscribe(function () {
-			var value = this.target();
+		this.selectedFrequency.subscribe(function (value) {
 			var oldState = stateManager[value];
 			if (value === 'Daily') {
 				self.sendOn({});
