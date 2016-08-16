@@ -5,78 +5,78 @@ title Relativity Provider SyncNow Events
 start
 
 if (Is Read event) then (true)
-if (Reader is open) then (true)
-    if (Enumerator is null) then (true)
-        partition FetchDataToRead() {
-            partition FetchArtifactDTOs() {
-                :RelativityExporterService.RetrieveData();
-                :Add artifact ids into all provided scratch tables;
+    if (Reader is open) then (true)
+        if (Enumerator is null) then (true)
+            partition FetchDataToRead() {
+                partition FetchArtifactDTOs() {
+                    :RelativityExporterService.RetrieveData();
+                    :Add artifact ids into all provided scratch tables;
+                }
+
+                if (Artifacts were returned) then (true)
+                    :Save ids in memory for reader
+                    (set enumerator);
+                else
+                    :Close reader;
+                endif
             }
+        endif
 
-            if (Artifacts were returned) then (true)
-                :Save ids in memory for reader
-                (set enumerator);
-            else
-                :Close reader;
-            endif
-        }
+        if (Reader has more ids in memory) then (true)
+            :Set next artifact;
+            :Increment count of read entries;
+        else if (All artifacts have been retrieved and stop has NOT been requested) then (true)
+            :FetchDataToRead()|
+            :Recursively call Read()|
+        else
+            :Close reader;
+        endif
     endif
 
-    if (Reader has more ids in memory) then (true)
-        :Set next artifact;
-        :Increment count of read entries;
-    else if (All artifacts have been retrieved and stop has NOT been requested) then (true)
-        :FetchDataToRead()|
-        :Recursively call Read()|
-    else
-        :Close reader;
-    endif
-endif
-
-:Return true if reader is open;
+    :Return true if reader is open;
 elseif (Is OnComplete || Is OnFatalException) then (true)
-repeat
-  partition OnDocumentError {
-      fork
-          partition JobStatisticsService {
-              :Increment item error count;
-            }
-      fork again
-          partition JobHistoryErrorService {
-              if (LogErrors == true) then (true)
-                  if (Stop has NOT been requested) then (true)
-                      :AddError|
-                        note right
-                          Creates JobHistoryErrors
-                        end note
+    repeat
+      partition OnDocumentError {
+          fork
+              partition JobStatisticsService {
+                  :Increment item error count;
+                }
+          fork again
+              partition JobHistoryErrorService {
+                  if (LogErrors == true) then (true)
+                      if (Stop has NOT been requested) then (true)
+                          :AddError|
+                            note right
+                              Creates JobHistoryErrors
+                            end note
+                        endif
                     endif
-                endif
+                }
+          fork again
+              partition ExportJobErrorService {
+                  :Add document identifier to list of errored items;
+                    if (Errored item count == FlushErrorBatchSize instance setting) then (true)
+                      :Remove errored items from scratch tables;
+                      :Clear errored item list;
+                    endif
+                }
+            end fork
+      }
+    repeat while(For each item-level error)
+
+    partition CompleteBatch {
+        fork
+            partition JobStatisticsService {
+                :Update and retrieve stats from scratch table;
+                :Update job histories items imported and items with errors;
             }
-      fork again
-          partition ExportJobErrorService {
-              :Add document identifier to list of errored items;
-                if (Errored item count == FlushErrorBatchSize instance setting) then (true)
-                  :Remove errored items from scratch tables;
-                  :Clear errored item list;
-                endif
+        fork again
+            partition ExportJobErrorService {
+                :Remove errored items from scratch tables;
+                :Clear errored item list;
             }
         end fork
-  }
-repeat while(For each item-level error)
-
-partition CompleteBatch {
-    fork
-        partition JobStatisticsService {
-            :Update and retrieve stats from scratch table;
-            :Update job histories items imported and items with errors;
-        }
-    fork again
-        partition ExportJobErrorService {
-            :Remove errored items from scratch tables;
-            :Clear errored item list;
-        }
-    end fork
-}
+    }
 
 elseif (Is OnError || OnProgress event) then (true)
     if (Timeout has expired since last error/progress update) then (true)
