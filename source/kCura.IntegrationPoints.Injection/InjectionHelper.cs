@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Injection
 
 		#region Add/Remove Injections In Environment
 
-		public static void AddInjectionToEnvironment(string injectionPointId, InjectionBehavior.Type behavior, string behaviorData = null, string injectionData = null, bool isEnabled = true)
+		public static void AddInjectionToEnvironment(string injectionPointId, InjectionBehavior.BehaviorType behavior, string behaviorData = null, string injectionData = null, bool isEnabled = true)
 		{
 			const string insertInjectionQuery = @"INSERT INTO [Injection]
 												([InjectionPointID], [Behavior], [BehaviorData], [InjectionData], [Enabled])
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Injection
 			{
 				InsertInjectionPoint(injection.InjectionPoint);
 
-				InjectionBehavior.Type typeBasedOnBehavior = InjectionBehavior.GetTypeBasedOnBehavior(injection.Behavior);
+				InjectionBehavior.BehaviorType typeBasedOnBehavior = InjectionBehavior.GetTypeBasedOnBehavior(injection.Behavior);
 				AddInjectionToEnvironment(injection.InjectionPoint.ID, typeBasedOnBehavior, injection.BehaviorData, injection.InjectionData);
 			}
 		}
