@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Injection
 {
 	public class InjectionBehavior
 	{
-		public enum Type
+		public enum BehaviorType
 		{
 			Log = 1,
 			Error = 2,
@@ -16,36 +16,36 @@ namespace kCura.IntegrationPoints.Injection
 			// the rest of the injection behaviors are only supported in Relativity Core
 		}
 
-		public static Type GetTypeBasedOnBehavior(IBehavior injectionBehavior)
+		public static BehaviorType GetTypeBasedOnBehavior(IBehavior injectionBehavior)
 		{
 			if (injectionBehavior is Log)
 			{
-				return Type.Log;
+				return BehaviorType.Log;
 			}
 
 			if (injectionBehavior is Error)
 			{
-				return Type.Error;
+				return BehaviorType.Error;
 			}
 
 			if (injectionBehavior is InfiniteLoop)
 			{
-				return Type.InfiniteLoop;
+				return BehaviorType.InfiniteLoop;
 			}
 
 			if (injectionBehavior is Sleep)
 			{
-				return Type.Sleep;
+				return BehaviorType.Sleep;
 			}
 
 			if (injectionBehavior is PerformanceLog)
 			{
-				return Type.PerformanceLog;
+				return BehaviorType.PerformanceLog;
 			}
 
 			if (injectionBehavior is WaitUntil)
 			{
-				return Type.WaitUntil;
+				return BehaviorType.WaitUntil;
 			}
 
 			throw new Exception("Given injection IBehavior type is not defined as an enum.");

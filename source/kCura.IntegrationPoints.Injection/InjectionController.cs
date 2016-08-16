@@ -27,21 +27,22 @@ namespace kCura.IntegrationPoints.Injection
 				throw new Exception($"Injection Point with Guid '{injectionPointId}' is not found in the database.");
 			}
 
-			DataTable injectionDataTable = GetInjectionFromDatabase(injectionPointId);
-
-			if (injectionDataTable == null)
+			using (DataTable injectionDataTable = GetInjectionFromDatabase(injectionPointId))
 			{
-				return null; // when the behavior is set to InfiniteLoop, this will end up logging an "Infinite Loop End..." message
+				if (injectionDataTable == null)
+				{
+					return null; // when the behavior is set to InfiniteLoop, this will end up logging an "Infinite Loop End..." message
+				}
+
+				int injectionBehaviorInt = (int)injectionDataTable.Rows[0][0];
+				string behaviorData = injectionDataTable.Rows[0][1].ToString();
+				string injectionData = injectionDataTable.Rows[0][2].ToString();
+
+				IBehavior injectionBehavior = DetermineInjectionBehavior(injectionBehaviorInt);
+
+				var injection = new kCura.Injection.Injection(injectionPoint, injectionBehavior, behaviorData, injectionData);
+				return injection;
 			}
-
-			int injectionBehaviorInt = (int)injectionDataTable.Rows[0][0];
-			string behaviorData = injectionDataTable.Rows[0][1].ToString();
-			string injectionData = injectionDataTable.Rows[0][2].ToString();
-
-			IBehavior injectionBehavior = DetermineInjectionBehavior(injectionBehaviorInt);
-
-			var injection = new kCura.Injection.Injection(injectionPoint, injectionBehavior, behaviorData, injectionData);
-			return injection;
 		}
 
 		#region Helper methods
@@ -59,18 +60,19 @@ namespace kCura.IntegrationPoints.Injection
 
 			try
 			{
-				DataTable dataTable = Context.ExecuteSqlStatementAsDataTable(getInjectionPointQuery, parameters);
-
-				InjectionPoint injectionPoint = null;
-
-				if (dataTable.Rows.Count > 0)
+				using (DataTable dataTable = Context.ExecuteSqlStatementAsDataTable(getInjectionPointQuery, parameters))
 				{
-					injectionPoint = new InjectionPoint(dataTable.Rows[0][0].ToString(),
-						dataTable.Rows[0][1].ToString(),
-						dataTable.Rows[0][2].ToString());
-				}
+					InjectionPoint injectionPoint = null;
 
-				return injectionPoint;
+					if (dataTable.Rows.Count > 0)
+					{
+						injectionPoint = new InjectionPoint(dataTable.Rows[0][0].ToString(),
+							dataTable.Rows[0][1].ToString(),
+							dataTable.Rows[0][2].ToString());
+					}
+
+					return injectionPoint;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -91,14 +93,15 @@ namespace kCura.IntegrationPoints.Injection
 
 			try
 			{
-				DataTable dataTable = Context.ExecuteSqlStatementAsDataTable(getInjectionQuery, parameters);
-
-				if (dataTable != null && dataTable.Rows.Count > 0)
+				using (DataTable dataTable = Context.ExecuteSqlStatementAsDataTable(getInjectionQuery, parameters))
 				{
-					return dataTable;
-				}
+					if (dataTable != null && dataTable.Rows.Count > 0)
+					{
+						return dataTable;
+					}
 
-				return null;
+					return null;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -110,24 +113,24 @@ namespace kCura.IntegrationPoints.Injection
 		{
 			IBehavior injectionBehavior;
 
-			switch ((InjectionBehavior.Type)injectionBehaviorInt)
+			switch ((InjectionBehavior.BehaviorType)injectionBehaviorInt)
 			{
-				case InjectionBehavior.Type.Log:
+				case InjectionBehavior.BehaviorType.Log:
 					injectionBehavior = new Log();
 					break;
-				case InjectionBehavior.Type.Error:
+				case InjectionBehavior.BehaviorType.Error:
 					injectionBehavior = new Error();
 					break;
-				case InjectionBehavior.Type.InfiniteLoop:
+				case InjectionBehavior.BehaviorType.InfiniteLoop:
 					injectionBehavior = new InfiniteLoop();
 					break;
-				case InjectionBehavior.Type.Sleep:
+				case InjectionBehavior.BehaviorType.Sleep:
 					injectionBehavior = new Sleep();
 					break;
-				case InjectionBehavior.Type.PerformanceLog:
+				case InjectionBehavior.BehaviorType.PerformanceLog:
 					injectionBehavior = new PerformanceLog();
 					break;
-				case InjectionBehavior.Type.WaitUntil:
+				case InjectionBehavior.BehaviorType.WaitUntil:
 					injectionBehavior = new WaitUntil();
 					break;
 				default:
