@@ -31,6 +31,9 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 		private int _integrationPointArtifactTypeId;
 		private long _jobId;
 
+		private const string STOP_TRANSFER_BUTTON_XPATH = "//button[contains(.,'Stop Transfer')]";
+		private const string JOBHISTORY_STATUS_STOPPING_XPATH = "//td[contains(.,'Stopping')]";
+
 		public ConsoleButtons() : base("IntegrationPointService Source", null)
 		{
 		}
@@ -80,8 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
 			string runAndStopButtonOnClickStopXpath = string.Format(@"//a[@onclick='IP.stopJob({0},{1})']", integrationPoint.ArtifactID, SourceWorkspaceArtifactId);
 			string warningDialogId = "ui-dialog-title-msgDiv";
-			string stopTransferButtonXpath = "//button[contains(.,'Stop Transfer')]";
-			string jobHistoryStatusStopping = "//td[contains(.,'Stopping')]";
+			
 			_webDriver = Selenium.GetWebDriver(browser);
 
 			//Act
@@ -93,8 +95,8 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, runAndStopButtonOnClickStopXpath, 5);
 			_webDriver.FindElement(By.Id(runAndStopId)).Click();
 			_webDriver.WaitUntilElementExists(ElementType.Id, warningDialogId, 10);
-			_webDriver.FindElement(By.XPath(stopTransferButtonXpath)).Click();
-			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, jobHistoryStatusStopping, 10);
+			_webDriver.FindElement(By.XPath(STOP_TRANSFER_BUTTON_XPATH)).Click();
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, JOBHISTORY_STATUS_STOPPING_XPATH, 10);
 
 			Job updatedJob = _jobService.GetJob(_jobId);
 
