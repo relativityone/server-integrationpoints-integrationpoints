@@ -381,6 +381,12 @@
       <DLL type="x64">source\bin\UnitTests\kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.dll</DLL>
       <DLL type="x64">source\bin\UnitTests\kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.dll</DLL>
     </DLLs>
+    <WhiteList>
+      <allow>kCura.IntegrationPoints.Agent.Tests.Unit.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
+      <allow>kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent.TaskJobSubmitterTests.TestJobSubmitter</allow>
+      <allow>kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
+      <allow>kCura.ScheduleQueue.Core.Tests.PeriodicScheduleRuleTest.GetNextUTCRunDateTime_DailyRuleMigration_CorrectValue</allow>
+    </WhiteList>
   </TestRunner>
   <RAPBuilder>
     <Applications>
