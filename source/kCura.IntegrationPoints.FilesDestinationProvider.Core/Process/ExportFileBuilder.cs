@@ -56,20 +56,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void SetImagePrecedence(ExportSettings exportSettings, ExportFile exportFile)
 		{
-			List<Pair> imagePrecs = new List<Pair>();
-			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Original)
-			{
-				imagePrecs.Add(new Pair("-1", _ORIGINAL_PRODUCTION_PRECEDENCE_TEXT));
-			}
-			else
-			{
-				// Here it'll go Production Precedence List
+			var imagePrecs = new List<Pair>();
 
-				if (exportSettings.IncludeOriginalImages)
+			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Produced)
+			{
+				foreach (var productionPrecedence in exportSettings.ImagePrecedence)
 				{
-					imagePrecs.Add(new Pair(_ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT, _ORIGINAL_PRODUCTION_PRECEDENCE_TEXT));
+					imagePrecs.Add(new Pair(productionPrecedence.ArtifactID, productionPrecedence.DisplayName));
 				}
 			}
+			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Original || exportSettings.IncludeOriginalImages)
+			{
+				imagePrecs.Add(new Pair(_ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT, _ORIGINAL_PRODUCTION_PRECEDENCE_TEXT));
+			}
+
 			exportFile.ImagePrecedence = imagePrecs.ToArray();
 		}
 

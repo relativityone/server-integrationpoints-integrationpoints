@@ -48,5 +48,6 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public string TextFileEncodingType { get; set; }
 		public string ProductionPrecedence { get; set; }
 		public bool IncludeOriginalImages { get; set; }
+		public IEnumerable<ProductionPrecedenceDTO> ImagePrecedence { get; set; }
 	}
 }

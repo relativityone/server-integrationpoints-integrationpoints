@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
 using NSubstitute;
@@ -229,20 +231,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[TestCase(ExportSettings.ProductionPrecedenceType.Original, false, true)]
 		[TestCase(ExportSettings.ProductionPrecedenceType.Produced, true, true)]
 		[TestCase(ExportSettings.ProductionPrecedenceType.Produced, false, false)]
-		public void ItShouldSetProductionPrecedence(ExportSettings.ProductionPrecedenceType productionPrecedenceType, bool includeOriginalImage, bool outputShouldIncludeOrigImage)
+		public void ItShouldSetOriginalProductionAccordingly(ExportSettings.ProductionPrecedenceType productionPrecedenceType, bool includeOriginalImage, bool outputShouldIncludeOrigImage)
 		{
 			_exportSettings.ProductionPrecedence = productionPrecedenceType;
 			_exportSettings.IncludeOriginalImages = includeOriginalImage;
+			_exportSettings.ImagePrecedence = new List<ProductionPrecedenceDTO>();
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
 			var imagePrecedenceList = exportFile.ImagePrecedence
-				.Where(item => item.Display == ExportFileBuilder._ORIGINAL_PRODUCTION_PRECEDENCE_TEXT);
+				.Where(item => item.Display == ExportFileBuilder._ORIGINAL_PRODUCTION_PRECEDENCE_TEXT).ToList();
 
 			if (outputShouldIncludeOrigImage)
 			{
 				Assert.That(imagePrecedenceList.Any());
-				Assert.That(imagePrecedenceList.Count(), Is.EqualTo(1));
+				Assert.That(imagePrecedenceList.Count, Is.EqualTo(1));
 				Assert.That(imagePrecedenceList.First().Value,
 					Is.EqualTo(ExportFileBuilder._ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT));
 			}
@@ -250,6 +253,34 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			{
 				Assert.That(!imagePrecedenceList.Any());
 			}
+		}
+
+		[Test]
+		public void ItShouldSetSelectedProductionPrecedence()
+		{
+			var productionPrecedenceList = new List<ProductionPrecedenceDTO>()
+			{
+				new ProductionPrecedenceDTO
+				{
+					ArtifactID = "19",
+					DisplayName = "Prod1"
+				},
+				new ProductionPrecedenceDTO
+				{
+					ArtifactID = "153",
+					DisplayName = "Prod2"
+				}
+			};
+
+			_exportSettings.ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced;
+			_exportSettings.IncludeOriginalImages = false;
+			_exportSettings.ImagePrecedence = productionPrecedenceList;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(productionPrecedenceList.Count, Is.EqualTo(exportFile.ImagePrecedence.Length));
+
+			Assert.True(productionPrecedenceList.All(x => exportFile.ImagePrecedence.Any(y => y.Display == x.DisplayName && y.Value == x.ArtifactID)));
 		}
 
 
