@@ -35,8 +35,16 @@ if (Is Read event) then (true)
     endif
 
     :Return true if reader is open;
+elseif (Is OnComplete || Is OnFatalException) then (true)
+	repeat
+    	:OnDocumentError|
+    repeat while(For each item-level error)
     
-    end
+    if (Is FatalException) then (true)
+    else
+    endif
+    
 elseif (Is OnError event) then (true)
 elseif (Is OnProgress event) then (true)
+endif
 end
