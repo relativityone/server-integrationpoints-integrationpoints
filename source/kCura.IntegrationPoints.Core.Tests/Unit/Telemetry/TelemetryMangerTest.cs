@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 				.Returns(Task.FromResult(new List<CategoryTarget>()));
 
 			// Act/Assert
-			Assert.That(() => _instanceUnderTest.InstallMetrics(), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => _instanceUnderTest.InstallMetrics(), Throws.TypeOf<Exception>());
 		}
 
 		#endregion //Tests

@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		}
 
 		[Test]
-		public void GetFields_Exception(string exceptionMessage)
+		public void GetFields_Exception()
 		{
 			//ARRANGE
 			string message = "This is an example failure";

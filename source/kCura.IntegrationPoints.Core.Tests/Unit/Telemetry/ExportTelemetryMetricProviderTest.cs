@@ -49,15 +49,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 		public void ItShouldInstallExportMetricIdentifiers()
 		{
 			// Act
-
 			_instanceToTest.Run(_category, _mockHelper);
 
 			// Assert
-
 			_mockInternalMetricsCollectionManager
 				.Received(ExportTelemetryMetricProvider.ExportMetricIdentifiers.Count)
 				.CreateMetricIdentifierAsync(Arg.Is<MetricIdentifier>(item => item.Categories.Contains(_category)), false);
-
 		}
 
 		[Test]

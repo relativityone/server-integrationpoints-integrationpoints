@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		[TestCase("Use Field Settings", ImportOverlayBehaviorEnum.UseRelativityDefaults)]
 		[TestCase("Merge Values", ImportOverlayBehaviorEnum.MergeAll)]
 		[TestCase("Replace Values", ImportOverlayBehaviorEnum.ReplaceAll)]
-		public void ImportSettings_ImportOverlayBehavior(string input, string expectedResult)
+		public void ImportSettings_ImportOverlayBehavior(string input, ImportOverlayBehaviorEnum expectedResult)
 		{
 			ImportSettings setting = new ImportSettings(_generator, _context);
 			setting.FieldOverlayBehavior = input;
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		}
 
 		[Test]
-		public void ImportSettings_ImportOverlayBehavior_Exception(string input, string expectedResult)
+		public void ImportSettings_ImportOverlayBehavior_Exception()
 		{
 			ImportSettings setting = new ImportSettings(_generator, _context);
 			setting.FieldOverlayBehavior = "exception please";
