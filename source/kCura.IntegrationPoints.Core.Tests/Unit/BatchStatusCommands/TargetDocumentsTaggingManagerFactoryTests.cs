@@ -1,4 +1,5 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using Castle.Core.Internal;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
@@ -74,7 +75,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			Assert.IsNull(_settings.FileNameColumn);
 			Assert.IsNull(_settings.NativeFilePathSourceFieldName);
 			Assert.IsNull(_settings.FolderPathSourceFieldName);
-			Assert.IsNullOrEmpty(_settings.Provider);
+			Assert.That(_settings.Provider, Is.Not.Null);
+			Assert.That(_settings.Provider, Is.Not.Empty);
 			Assert.IsFalse(_settings.ImportNativeFile);
 		}
 

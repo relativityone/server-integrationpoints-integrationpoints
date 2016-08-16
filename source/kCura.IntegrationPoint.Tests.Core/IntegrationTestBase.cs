@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public virtual void SuiteTeardown() { }
 
 		[SetUp]

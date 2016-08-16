@@ -19,7 +19,7 @@ using System.Data;
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class StopWarningMessageTests : RelativityProviderTemplate
 	{
 		private IObjectTypeRepository _objectTypeRepository;
@@ -85,10 +85,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			Job tempJob = new Job(row);
 			_jobId = tempJob.JobId;
 
-			string newWorkspaceXpath = "//button[@title='New Workspace']";
 			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
 			string runAndStopButtonOnClickStopXpath = string.Format(@"//a[@onclick='IP.stopJob({0},{1})']", integrationPoint.ArtifactID, SourceWorkspaceArtifactId);
-			string okPath = "//button[contains(.,'OK')]";
 			string warningMessage = "Stopping this transfer will not remove any data that was transferred. When re-running this transfer, make sure that your overwrite settings will return expected results.";
 			string warningDialogId = "ui-dialog-title-msgDiv";
 			string stopTransferButtonXpath = "//button[contains(.,'Stop Transfer')]";

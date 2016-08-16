@@ -279,12 +279,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Agent
 			return base.GetRecipientEmails();
 		}
 
-		public IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
+		public new IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
 		{
 			return base.GetSourceProvider(sourceProviderRdo, job);
 		}
 
-		public IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration,
+		public new IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration,
 			Job job)
 		{
 			return base.GetDestinationProvider(destinationProviderRdo, configuration, job);

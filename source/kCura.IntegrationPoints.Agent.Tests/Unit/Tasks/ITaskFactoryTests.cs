@@ -40,8 +40,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		private IJobService _jobService;
 		private IManagerFactory _managerFactory;
 		private TaskFactory _instance;
-		private int _workspaceId = 12345;
-		private int _integrationPointId = 54321;
 
 		[SetUp]
 		public void Setup()

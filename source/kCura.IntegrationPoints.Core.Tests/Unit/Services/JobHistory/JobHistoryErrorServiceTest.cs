@@ -197,10 +197,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 
 		private class Reporter : IBatchReporter
 		{
-			public event BatchCompleted OnBatchComplete;
-			public event BatchSubmitted OnBatchSubmit;
-			public event BatchCreated OnBatchCreate;
-			public event StatusUpdate OnStatusUpdate;
+			public event BatchCompleted OnBatchComplete { add { } remove { } }
+			public event BatchSubmitted OnBatchSubmit { add { } remove { } }
+			public event BatchCreated OnBatchCreate { add { } remove { } }
+			public event StatusUpdate OnStatusUpdate { add { } remove { } }
 			public event JobError OnJobError;
 			public event RowError OnDocumentError;
 

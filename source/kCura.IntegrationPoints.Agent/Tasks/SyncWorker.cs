@@ -147,7 +147,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
+#pragma warning disable CS0612 // Type or member is obsolete
 				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+#pragma warning restore CS0612 // Type or member is obsolete
 			}
 		}
 

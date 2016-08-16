@@ -18,7 +18,7 @@ using System.Data;
 namespace kCura.IntegrationPoints.Core.Tests.UI
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ConsoleButtons : RelativityProviderTemplate
 	{
 		private ISerializer _serializer;

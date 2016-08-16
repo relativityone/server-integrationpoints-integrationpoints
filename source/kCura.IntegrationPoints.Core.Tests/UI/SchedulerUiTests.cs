@@ -14,7 +14,7 @@ using System;
 namespace kCura.IntegrationPoints.Core.Tests.UI
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class SchedulerUiTests : RelativityProviderTemplate
 	{
 		private ISerializer _serializer;
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 		private IJobManager _jobManager;
 
 		private int _integrationPointArtifactTypeId;
-		private long _jobId;
+		private long _jobId = 0;
 		private string nextButtonId = "next";
 		private string enableSchedulerXpath = "//input[@data-bind='checked: enableScheduler']";
 
