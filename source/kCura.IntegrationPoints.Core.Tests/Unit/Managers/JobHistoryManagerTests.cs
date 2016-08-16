@@ -40,6 +40,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_testInstance = new JobHistoryManager(_repositoryFactory);
 			_itemLevelScratchTable = Substitute.For<IScratchTableRepository>();
 			_jobLevelScratchTable = Substitute.For<IScratchTableRepository>();
+			_jobLevelScratchTable.GetTempTableName().Returns("Job Level errors");
+			_itemLevelScratchTable.GetTempTableName().Returns("Item Level errors");
 
 			_repositoryFactory.GetJobHistoryRepository(_WORKSPACE_ID).Returns(_jobHistoryRepository);
 			_repositoryFactory.GetJobHistoryErrorRepository(_WORKSPACE_ID).Returns(_jobHistoryErrorRepo);
@@ -107,13 +109,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			Assert.IsTrue(result.ProcessingJobArtifactIds.Length == 0, "There should be no results.");
 		}
 
-		//[Test]
+		[Test]
 		public void SetErrorStatusesToExpired_GoldFlow()
 		{
 			// ARRANGE
 			const int jobHistoryTypeId = 78;
 			const int errorChoiceArtifactId = 98756;
-			int[] jobLevelErrors = new[] {2, 3, 4};
+			int[] itemLevelErrors = new[] {2, 3, 4};
 			Dictionary<Guid, int> guids = new Dictionary<Guid, int>()
 			{
 				{ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids[0], errorChoiceArtifactId}
@@ -124,13 +126,46 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(Arg.Is<Guid>(guid => guid.Equals(new Guid(ObjectTypeGuids.JobHistoryError)))).Returns(jobHistoryTypeId);
 			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids).Returns(guids);
 
-			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(jobLevelErrors);
+			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrors);
 			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new int[] { });
-
+			
 			// ACT
+			_testInstance.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId);
 
 			// ASSERT
-			//_jobHistoryErrorRepo.Received(1).UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), jobHistoryTypeId,);
+			_itemLevelScratchTable.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<ICollection<int>>(collection => collection.SequenceEqual(itemLevelErrors)));
+			_jobLevelScratchTable.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<ICollection<int>>(collection => collection.Count == 0));
+			_jobHistoryErrorRepo.Received(1).UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), itemLevelErrors.Length, jobHistoryTypeId, errorChoiceArtifactId, _itemLevelScratchTable.GetTempTableName());
+			_jobHistoryErrorRepo.Received(1).UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), 0, jobHistoryTypeId, errorChoiceArtifactId, _jobLevelScratchTable.GetTempTableName());
+		}
+
+		[Test]
+		public void SetErrorStatusesToExpired_UpdatesFail()
+		{
+			// ARRANGE
+			const int jobHistoryTypeId = 78;
+			const int errorChoiceArtifactId = 98756;
+			int[] itemLevelErrors = new[] { 2, 3, 4 };
+			Dictionary<Guid, int> guids = new Dictionary<Guid, int>()
+			{
+				{ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids[0], errorChoiceArtifactId}
+			};
+			_repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepo);
+			_repositoryFactory.GetArtifactGuidRepository(_WORKSPACE_ID).Returns(_artifactGuidRepo);
+
+			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(Arg.Is<Guid>(guid => guid.Equals(new Guid(ObjectTypeGuids.JobHistoryError)))).Returns(jobHistoryTypeId);
+			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids).Returns(guids);
+
+			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrors);
+			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new int[] { });
+
+			_jobHistoryErrorRepo
+				.When(repo => repo.UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>()))
+				.Do(info => { throw new Exception("error"); });
+
+
+			// ACT
+			Assert.DoesNotThrow(() => _testInstance.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId));
 		}
 	}
 }
