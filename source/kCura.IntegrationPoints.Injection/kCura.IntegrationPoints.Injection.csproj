@@ -92,17 +92,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="InjectionBehavior.cs" />
     <Compile Include="InjectionController.cs" />
     <Compile Include="InjectionHelper.cs" />
     <Compile Include="InjectionManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
       <Project>{8170466f-7eb5-48cb-bfb0-7e4fac1d6e42}</Project>
       <Name>kCura.IntegrationPoints.Dependencies</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
