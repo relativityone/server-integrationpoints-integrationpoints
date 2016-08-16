@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             return PartialView();
         }
 
-        public ActionResult TextPrecedencePicker()
+        public ActionResult ListPicker()
         {
             return PartialView();
         }

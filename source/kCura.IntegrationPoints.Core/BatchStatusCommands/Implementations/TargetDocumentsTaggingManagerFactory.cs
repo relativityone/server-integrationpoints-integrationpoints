@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			// specify settings to tag
 			ImportSettings importSettings = serializer.Deserialize<ImportSettings>(destinationConfig);
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-			importSettings.FieldOverlayBehavior = "Merge Values";
+			importSettings.FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE;
 			importSettings.CopyFilesToDocumentRepository = false;
 			importSettings.FileNameColumn = null;
 			importSettings.NativeFilePathSourceFieldName = null;
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
 		{
 			var settings = _serializer.Deserialize<ExportSettings>(_sourceConfig);
-			var synchronizer = GetSynchronizerForDocumentTagging(_destinationConfig);
+			var synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
 
 			IConsumeScratchTableBatchStatus tagger = new TargetDocumentsTaggingManager(
 				_repositoryFactory,
@@ -81,12 +81,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_uniqueJobId);
 
 			return tagger;
-		}
-
-		internal IDataSynchronizer GetSynchronizerForDocumentTagging(string configuration)
-		{
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
-			return synchronizer;
 		}
 	}
 }

@@ -1,6 +1,6 @@
-﻿var TextPrecedencePickerViewModel = function(okCallback, data) {
+﻿var ImageProductionPickerViewModel = function(okCallback, data) {
 	var self = this;
-	self.PickerName = ko.observable("Long Text Fields");
+	self.PickerName = ko.observable("Production Precedences");
 
 	self.data = data;
 
@@ -9,30 +9,30 @@
 	this.construct = function(view) {
 		self.view = view;
 	};
-	this.open = function(selectedFields) {
-		self.loadAvailableFields(selectedFields);
+	this.open = function(selectedProductions) {
+		self.loadAvailableProductions(selectedProductions);
 		self.view.dialog("open");
 	};
-	this.loadAvailableFields = function(selectedFields) {
+	this.loadAvailableProductions = function(selectedProductions) {
 		IP.data.ajax({
 				type: "get",
-				url: IP.utils.generateWebAPIURL("ExportFields/LongTextFields"),
+				url: IP.utils.generateWebAPIURL("ProductionPrecedence/ProductionPrecedence"),
 				data: {
 					sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
 				}
 			})
 			.then(function(result) {
-				self.loadFields(result, selectedFields);
+				self.loadProductions(result, selectedProductions);
 			})
 			.fail(function(error) {
 				IP.message.error.raise("No attributes were returned from the source provider.");
 			});
 	};
-	this.loadFields = function(fields, selectedFields) {
-		self.model.availableValues(fields);
-		self.model.selectValues(selectedFields,
+	this.loadProductions = function(productions, selectedProductions) {
+		self.model.availableValues(productions);
+		self.model.selectValues(selectedProductions,
 			function(item1, item2) {
-				return item1.fieldIdentifier == item2.fieldIdentifier;
+				return item1.artifactID == item2.artifactID;
 			});
 	};
 	this.ok = function() {

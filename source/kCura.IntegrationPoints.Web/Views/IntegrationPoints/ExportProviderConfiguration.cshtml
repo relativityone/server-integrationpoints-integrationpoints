@@ -308,15 +308,25 @@
 									<select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun()"></select>
 								</td>
 							</tr>
-							<tr>
-								@*data-bind="visible: ExportImagesChecked"*@
-								<td class="editFieldNameRequired">
-									File Type :
-								</td>
-								<td class="editFieldValue">
-									<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
-								</td>
-							</tr>
+						    <tr>
+						        @*data-bind="visible: ExportImagesChecked"*@
+						        <td class="editFieldNameRequired">
+						            File Type :
+						        </td>
+						        <td class="editFieldValue">
+						            <select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
+						        </td>
+						    </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Image Productions:
+                                </td>
+                                <td class="editFieldValue">
+                                    <label id="image-production-selection" data-bind="text: ImageProductionSelection"></label>
+                                    <button data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                                    <input data-bind="value: ImageProductions, visible: false" />
+                                </td>
+                            </tr>
 							<tr>
 								<td class="editFieldNameRequired">
 									Subdirectory Prefix For Image:
@@ -417,12 +427,12 @@
 	<script src="~/Scripts/knockout.validation.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
     <script src="~/Scripts/integration-point/step-mapFields-control.js"></script>
-    <script src="~/Scripts/export/field-mapping-view-model.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script src="~/Scripts/frame-messaging.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/export/export-provider.js"></script>
+    <script src="~/Scripts/export/list-picker-view-model.js"></script>
 	<script src="~/Scripts/export/picker.js"></script>
-	<script src="~/Scripts/export/saved-search-picker.js"></script>
 	<script src="~/Scripts/export/text-precedence-picker.js"></script>
+	<script src="~/Scripts/export/image-production-picker.js"></script>
 }

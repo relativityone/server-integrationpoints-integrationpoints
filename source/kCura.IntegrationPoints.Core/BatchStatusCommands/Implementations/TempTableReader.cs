@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Extensions;
+﻿using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using System.Collections.Generic;
+using System.Data;
+using System;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -64,12 +63,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				int artifactId = _scratchTableReader.GetInt32(0);
 				documents.Add(artifactId);
 			}
-
 			ArtifactDTO[] artifacts = null;
 			if (documents.Count > 0)
 			{
 				artifacts = _documentRepository.RetrieveDocumentsAsync(documents,
-					new HashSet<int>(new[] {_identifierFieldId})).GetResultsWithoutContextSync();
+					new HashSet<int>(new[] { _identifierFieldId })).GetResultsWithoutContextSync();
 			}
 			else
 			{

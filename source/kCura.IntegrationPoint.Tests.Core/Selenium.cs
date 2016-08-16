@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			else
 			{
 				driver.SwitchTo().Frame("ListTemplateFrame");
+				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
 			}
 
 			driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
@@ -199,6 +200,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_fluidEnabled = user.BetaUser;
 		}
 
+		//TODO Make ReadUser(email) returns correct infor by userJObject.ToObject<UserModel>();
+		//Currently userJObject.ToObject<UserModel>() doesn't get anything even though userJObject = JObject.Parse(response) has correct info.
 		public static void SetFluidStatus(this IWebDriver driver, string email)
 		{
 			UserModel user = User.ReadUser(email);
@@ -209,19 +212,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			string templateFrame = "ListTemplateFrame";
 			string externalPage = "_externalPage";
-			string newIntegraionPoint = "//a[@title='New Integration Point']";
+			string newIntegraionPoint;
+			driver.SwitchTo().DefaultContent();
+
 			if (_fluidEnabled)
 			{
 				driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
-				driver.SwitchTo().Frame(templateFrame);
+				driver.SwitchTo().Frame(externalPage);
+				newIntegraionPoint = "//button[@title='New Integration Point']";
 			}
 			else
 			{
 				driver.WaitUntilElementExists(ElementType.Id, templateFrame, 5);
 				driver.SwitchTo().Frame(templateFrame);
+				newIntegraionPoint = "//a[@title='New Integration Point']";
 			}
 
-			driver.WaitUntilElementIsClickable(ElementType.Xpath, newIntegraionPoint, 5);
+			driver.WaitUntilElementIsVisible(ElementType.Xpath, newIntegraionPoint, 10);
 			driver.FindElement(By.XPath(newIntegraionPoint)).Click();
 			driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
 			driver.SwitchTo().Frame(externalPage);
