@@ -106,6 +106,24 @@ var Model = function (dataContainer) {
 		return "";
 	};
 
+	this.imagePrecedenceList = function () {
+		var text = "";
+		if (self.settings.ExportImagesChecked) {
+			if (self.settings.ProductionPrecedence === ExportEnums.ProductionPrecedenceTypeEnum.Original) {
+				text = "Original";
+			}
+			else {
+				text = "Produced: ";
+				if (self.settings.ImagePrecedence.length > 0) {
+					for (var i = 0; i < self.settings.ImagePrecedence.length; i++) {
+						text += self.settings.ImagePrecedence[i].displayName + "; ";
+					}
+				}
+			}
+		}
+		return text;
+	};
+
 	this.textPrecenceList = function () {
 		var text = "";
 		if (self.settings.ExportFullTextAsFile && self.settings.TextPrecedenceFields.length > 0) {
@@ -118,7 +136,7 @@ var Model = function (dataContainer) {
 	};
 
 	this.textFileEncoding = function () {
-	    return self.settings.TextFileEncodingType.toUpperCase();
+		return self.settings.TextFileEncodingType.toUpperCase();
 	};
 };
 

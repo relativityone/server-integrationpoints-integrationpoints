@@ -149,6 +149,16 @@
 		</td>
 	</tr>
 	<tr>
+		<td class="editTableColumn" data-bind="visible: settings.ExportImagesChecked">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Image precedence:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: imagePrecedenceList()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
 		<td class="editTableColumn" data-bind="visible: settings.ExportFullTextAsFile">
 			<table>
 				<tr>
