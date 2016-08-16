@@ -301,6 +301,10 @@
 			}
 		});
 
+		this.IsProductionPrecedenceSelected =  function() {
+			return self.ProductionPrecedence() === ExportEnums.ProductionPrecedenceTypeEnum.Produced;
+		}
+
 		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
 			required: {
 				onlyIf: function () {
@@ -414,7 +418,7 @@
 			.extend({
 				required: {
 					onlyIf: function() {
-						return self.ExportImagesChecked();
+						return self.ExportImagesChecked() && self.IsProductionPrecedenceSelected();
 					}
 				}
 			});
