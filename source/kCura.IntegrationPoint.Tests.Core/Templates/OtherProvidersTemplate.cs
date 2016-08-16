@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
 		}
 	}

@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		[SetUp]
 		public void SuiteSetUp()
 		{
+			base.SuiteSetup();
 			_serializer = Container.Resolve<ISerializer>();
 			_jobManager = this.Container.Resolve<IJobManager>();
 			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager);

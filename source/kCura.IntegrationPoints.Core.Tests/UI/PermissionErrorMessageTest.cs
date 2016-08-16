@@ -31,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			InstanceSetting.UpsertAndReturnOldValueIfExists("Relativity.Authentication", "AdminsCanSetPasswords", "True");
 			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
 		}

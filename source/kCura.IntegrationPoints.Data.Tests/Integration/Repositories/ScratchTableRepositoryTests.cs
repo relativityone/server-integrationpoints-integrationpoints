@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);

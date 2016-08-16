@@ -46,6 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_agentTypeId = IntegrationPoint.Tests.Core.Agent.GetAgentTypeByName("Integration Points Agent").ArtifactID;
 			_integrationPointAgentsQuery = new Query()
 			{
@@ -57,6 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void SuiteTeardown()
 		{
 			IntegrationPoint.Tests.Core.Agent.EnableAgents(_integrationPointAgentsQuery);
+			base.SuiteTeardown();
 		}
 
 		protected override void Install()

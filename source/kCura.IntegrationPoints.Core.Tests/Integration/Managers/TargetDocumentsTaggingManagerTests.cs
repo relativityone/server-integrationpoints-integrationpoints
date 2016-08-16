@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();

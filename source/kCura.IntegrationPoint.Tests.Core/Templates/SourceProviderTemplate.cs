@@ -79,6 +79,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			Agent.DeleteAgent(AgentArtifactId);
+			base.SuiteTeardown();
 		}
 
 		public static class WorkspaceTemplates
