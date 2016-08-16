@@ -75,8 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			Assert.IsNull(_settings.FileNameColumn);
 			Assert.IsNull(_settings.NativeFilePathSourceFieldName);
 			Assert.IsNull(_settings.FolderPathSourceFieldName);
-			Assert.That(_settings.Provider, Is.Not.Null);
-			Assert.That(_settings.Provider, Is.Not.Empty);
+			Assert.That(_settings.Provider, Is.Null.Or.Empty);
 			Assert.IsFalse(_settings.ImportNativeFile);
 		}
 
