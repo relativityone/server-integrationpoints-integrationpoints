@@ -35,8 +35,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_jobManager.DeleteJob(_jobId);
 		}
 
-		[SetUp]
-		public void SuiteSetUp()
+		[TestFixtureSetUp]
+		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
 			_serializer = Container.Resolve<ISerializer>();
