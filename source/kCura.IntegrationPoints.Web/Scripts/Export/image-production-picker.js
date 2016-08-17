@@ -1,6 +1,7 @@
 ﻿var ImageProductionPickerViewModel = function(okCallback, data) {
 	var self = this;
-	self.PickerName = ko.observable("Production Precedences");
+	self.PopupTitle = ko.observable("Select Production Precedence");
+	self.PickerName = ko.observable("Productions");
 
 	self.data = data;
 
