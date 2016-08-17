@@ -28,8 +28,16 @@ for ($i = 0; $i -lt $args.count; $i++){
         "^[/-]sk"     {$BUILD   = $false; $APPS = $false}
         "^[/-]t"      {$TEST    = $true}
         "^[/-]nu"     {$NUGET   = $true}
-        "^[/-]p"      {$PACKAGE = $true}   
-        "^[/-]al"     {$ALERT   = $true}     
+        "^[/-]p"      {$PACKAGE = $true}
+        "^[/-]de"     {
+                       $CASE      = $args[$i + 1];
+                       $IP        = $args[$i + 2];
+                       $DEPLOY    += $CASE;
+                       $DEPLOY    += " ";
+                       $DEPLOY    += $IP;
+                       $i++;
+        } 
+        "^[/-]al"     {$ALERT   = $true}
                 
         "^debug$"   {$BUILDCONFIG = "Debug"}
         "^release$" {$BUILDCONFIG = "Release"}
@@ -56,6 +64,7 @@ write-host "apps    step is set to" $APPS
 write-host "test    step is set to" $TEST
 write-host "nuget   step is set to" $NUGET
 write-host "package step is set to" $PACKAGE
+write-host "deploy  step is set to" ($DEPLOY -eq "")
 
 
 if($ALERT) {
@@ -73,21 +82,22 @@ Write-Host ""
 write-host "Use this script to peform a full build of all projects."
 write-host "This build is the same as the build that happens on the build server. "
 write-host ""
-write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERSION] [-apps] [-noapps] [-test] [-nuget] [-package] [help|?]"
+write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERSION] [-apps] [-noapps] [-test] [-nuget] [-package] [-deploy <workspaceId> <ip_address/localhost>] [help|?]"
 write-host ""
 write-host "options:"
 write-host ""
-write-host "    -e[ditor]          opens Build Helper Project Editor to edit the build.xml file" 
+write-host "    -e[ditor]                       opens Build Helper Project Editor to edit the build.xml file" 
 write-host "" 
-write-host "    -v[ersion] VERSION sets the version # for the build, default is 1.0.0.0 (example: 1.3.3.7)"  
-write-host "    -ap[ps]            skips the build step, continues to only build apps"
-write-host "    -no[apps]          skips build apps step"
-write-host "    -sk[ip]            skips build and build apps step"
-write-host "    -t[est]            runs nunit test step"
-write-host "    -nu[get]           runs the nuget pack step"
-write-host "    -p[ackage]         runs the package step"
+write-host "    -v[ersion] VERSION              sets the version # for the build, default is 1.0.0.0 (example: 1.3.3.7)"  
+write-host "    -ap[ps]                         skips the build step, continues to only build apps"
+write-host "    -no[apps]                       skips build apps step"
+write-host "    -sk[ip]                         skips build and build apps step"
+write-host "    -t[est]                         runs nunit test step"
+write-host "    -nu[get]                        runs the nuget pack step"
+write-host "    -p[ackage]                      runs the package step"
+write-host "    -de[ploy] WORKSPACEID IPADDRESS uploads Integration Point binaries to a given Relativity Instance"
 write-host ""
-write-host "    -al[ert]           show alert popup when build completes"
+write-host "    -al[ert]                        Sshow alert popup when build completes"
 write-host ""
 
 exit
@@ -147,6 +157,11 @@ if($PACKAGE -and $STATUS){
                                                                           'build_config'=$BUILDCONFIG;
                                                                           'build_type'=$BUILDTYPE;}
     if ($psake.build_success -eq $false) { $STATUS = $false }
+}
+
+if($DEPLOY -ne "" -and $STATUS){
+    Invoke-Expression ([System.IO.Path]::Combine($root, 'DevelopmentScripts', 'deploy.bat') + " " + $DEPLOY)
+    if(-not $?) {$STATUS = $false}
 }
 
 if($VERSION -ne "1.0.0.0") {
