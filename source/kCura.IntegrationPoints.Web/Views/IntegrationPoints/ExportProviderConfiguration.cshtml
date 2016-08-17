@@ -329,11 +329,11 @@
 								<td class="editFieldNameRequired">
 									Image Productions:
 								</td>
-								<td class="editFieldValue">
-									<label id="image-production-selection" data-bind="text: ImageProductionSelection"></label>
-									<button data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-									<input data-bind="value: ImageProductions, visible: false" />
-								</td>
+                                <td class="editFieldValue">
+                                    <label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
+                                    <button data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                                    <input data-bind="value: ImagePrecedence, visible: false" />
+                                </td>
 							</tr>
 							<tr data-bind="visible: IsProductionPrecedenceSelected()">
 								<td class="editFieldName">Include original images if not produced:</td>
