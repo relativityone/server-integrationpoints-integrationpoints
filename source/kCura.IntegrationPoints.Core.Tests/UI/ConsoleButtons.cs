@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
-			JobHistory jobHistory = CreateJobHistoryInPending(integrationPoint.ArtifactID, batchInstance);
+			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance);
 			DataRow row = new CreateScheduledJob(_queueContext).Execute(
 				SourceWorkspaceArtifactId,
 				integrationPoint.ArtifactID,
@@ -84,7 +84,9 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
 			string runAndStopButtonOnClickStopXpath = string.Format(@"//a[@onclick='IP.stopJob({0},{1})']", integrationPoint.ArtifactID, SourceWorkspaceArtifactId);
 			string warningDialogId = "ui-dialog-title-msgDiv";
-			
+			string consoleControlXpath = "//div[contains(@class,'ConsoleControlTitle')]";
+
+
 			_webDriver = Selenium.GetWebDriver(browser);
 
 			//Act
@@ -92,7 +94,8 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			_webDriver.SetFluidStatus(9);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
 			_webDriver.GoToObjectInstance(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _integrationPointArtifactTypeId);
-			_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 10);
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, consoleControlXpath, 10);
+			_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 5);
 			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, runAndStopButtonOnClickStopXpath, 5);
 			_webDriver.FindElement(By.Id(runAndStopId)).Click();
 			_webDriver.WaitUntilElementExists(ElementType.Id, warningDialogId, 10);
@@ -103,15 +106,6 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 
 			//Assert
 			Assert.IsTrue(((int)(updatedJob.StopState) == 1));
-		}
-
-		private JobHistory CreateJobHistoryInPending(int integrationPointArtifactId, Guid batchInstance)
-		{
-			Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
-			jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
-			_jobHistoryService.UpdateRdo(jobHistory);
-			return jobHistory;
 		}
 	}
 }
