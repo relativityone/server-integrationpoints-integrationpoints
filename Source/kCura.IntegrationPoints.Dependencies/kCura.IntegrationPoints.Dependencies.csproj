@@ -636,6 +636,15 @@
   </PropertyGroup>
   <Import Project="..\packages\RelativityCore.9.4.241.2\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.4.241.2\build\RelativityCore.targets')" />
   <Import Project="..\packages\Relativity.ImportExport.9.4.241.2\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.241.2\build\Relativity.ImportExport.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)kCura.Image.Viewer.dll" "$(ProjectDir)..\..\lib\kCura.Image.Viewer.dll"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)kCura.Print.dll" "$(ProjectDir)..\..\lib\kCura.Print.dll"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)Castle.Windsor.dll" "$(ProjectDir)..\..\lib\Castle.Windsor.dll"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)Newtonsoft.Json.dll" "$(ProjectDir)..\..\lib\Newtonsoft.Json.dll"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)Renci.SshNet.dll" "$(ProjectDir)..\..\lib\Renci.SshNet.dll"
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
