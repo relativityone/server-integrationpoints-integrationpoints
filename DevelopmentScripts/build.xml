@@ -393,6 +393,10 @@
       <allow>kCura.IntegrationPoints.Core.Tests.Unit.Agent.IntegrationPointTaskBaseTests.GetDestinationProvider_GoldFlow</allow>
       <allow>kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
       <allow>kCura.ScheduleQueue.Core.Tests.PeriodicScheduleRuleTest.GetNextUTCRunDateTime_DailyRuleMigration_CorrectValue</allow>
+      <allow>kCura.IntegrationPoints.Data.Tests.Unit.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
+      <allow>kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers.SetHasErrorsFieldTests.ExecuteInstanced_ThrowsQueryError_Test</allow>
+      <allow>kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging.CompositeLoggingMediatorTests.ItShouldHandleEmptyChildrenList</allow>
+      <allow>kCura.IntegrationPoints.FtpProvider.Tests.FtpProviderTests.ValidateColumns_AllMatch</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
