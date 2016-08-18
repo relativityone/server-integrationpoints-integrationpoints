@@ -119,6 +119,10 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
       <Private>True</Private>

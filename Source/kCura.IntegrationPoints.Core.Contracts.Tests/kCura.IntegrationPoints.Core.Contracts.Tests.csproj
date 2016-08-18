@@ -44,6 +44,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(NUnit)\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
