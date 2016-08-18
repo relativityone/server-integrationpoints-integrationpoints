@@ -1,1 +1,66 @@
-!function(t,n){var e=function(){var t={};return{get:function(){return t},set:function(n){t=n}}}(),i=function(){var t=this;n.receiveMessage(function(n){var e=t.destination.get()||{},i={};try{i=JSON.parse(n.data)}catch(n){}if("undefined"!=typeof i)for(var a=e[i.name]||[],r=0;r<a.length;r++){var o=a[r];o.call(t,i.data)}})};t.frameMessaging=function(){var t=function(t){this.dFrame=t.destination,this.destination=e,i.call(this)};return t.prototype.subscribe=function(t,n){var e=this.destination.get()||{};"undefined"==typeof e[t]&&(e[t]=[]),e[t].push(n),this.destination.set(e)},t.prototype.publish=function(t,e){var i=JSON.stringify({name:t,data:e});n.postMessage(i,this.dFrame.location.href,this.dFrame)},function(e){var i=n.extend({},{destination:window.parent.contentWindow||(window.parent.frameElement||{}).contentWindow},e);return new t(i)}}()}(IP,jQuery);
+﻿var IP = IP || {};
+(function (root, $) {
+	
+	var helper = (function (frame) {
+		var tracker = {};
+		return {
+			get: function () {
+				return tracker;
+			},
+			set: function (data) {
+				tracker = data;
+			}
+		}
+	})();
+	var _setupMessaging = function () {
+		var self = this;
+		$.receiveMessage(function (e) {
+			var _events = self.destination.get() || {};
+			var data = {}
+			try {
+				data = JSON.parse(e.data);
+			} catch (e) {
+				///
+			}
+			if (typeof (data) === "undefined") {
+				return;
+			}
+			var subs = _events[data.name] || [];
+			for (var i = 0; i < subs.length; i++) {
+				var f = subs[i];
+				f.call(self, data.data);
+			}
+		});
+	};
+
+	root.frameMessaging = (function () {
+		var model = function (options) {
+			this.dFrame = options.destination;
+			this.destination = helper;
+			_setupMessaging.call(this);
+		};
+
+		model.prototype.subscribe = function (name, func) {
+			var currentEvents = this.destination.get() || {};
+			if (typeof (currentEvents[name]) === "undefined") {
+				currentEvents[name] = [];
+			}
+			currentEvents[name].push(func);
+			this.destination.set(currentEvents);
+		};
+
+		model.prototype.publish = function (name, data) {
+			var message = JSON.stringify({ 'name': name, 'data': data });
+			$.postMessage(message, this.dFrame.location.href, this.dFrame);
+		}
+
+		return function (obj) {
+			var settings = $.extend({}, {
+				destination: window.parent.contentWindow || (window.parent.frameElement || {}).contentWindow
+			}, obj);
+			return new model(settings);
+		};
+
+	})();
+
+})(IP, jQuery);
