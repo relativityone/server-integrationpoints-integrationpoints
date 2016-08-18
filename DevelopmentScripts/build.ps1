@@ -11,6 +11,7 @@ $APPS = $true
 $TEST = $false
 $NUGET = $false
 $PACKAGE = $false
+$DEPLOY = ""
 
 $ALERT = [environment]::GetEnvironmentVariable("alertOnBuildCompletion","User")
 
