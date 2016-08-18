@@ -8,10 +8,12 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Provides the libraries that are needed for the web component of Integration points.</description>
     <releaseNotes>Release</releaseNotes>
-    <copyright>Copyright 2015</copyright>
-    <tags>kCura IntegrationPoints Web</tags>
-	<dependencies>
-	 <dependency id="jQuery" version="1.8.2"/>
-	</dependencies>  
+    <copyright>Copyright 2016</copyright>
+    <tags>kCura IntegrationPoints Web</tags>  
   </metadata>
+  <files>
+    <file src="..\..\Source\Dependencies\ProviderIncludes\frame-messaging.js" target="content\scripts\" />
+	<file src="..\..\Source\Dependencies\ProviderIncludes\jquery-1.8.2.js" target="content\scripts\" />
+	<file src="..\..\Source\Dependencies\ProviderIncludes\jquery-postMessage.js" target="content\scripts\" />
+  </files>
 </package>
