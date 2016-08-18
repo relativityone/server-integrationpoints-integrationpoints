@@ -245,14 +245,9 @@
       </Build>
       <Ignore>
         <Project path="source\kCura.IntegrationPoints.Documentation\kCura.IntegrationPoints.Documentation.shfbproj" />
-        <Project path="source\packages\OpenCover.4.5.3522\SampleSln\Bom\Bom.csproj" />
-        <Project path="source\packages\OpenCover.4.5.3522\SampleSln\BomTest\BomTest.csproj" />
         <Project path="source\prototypes\GeneratorHelper\GeneratorHelper.vbproj" />
         <Project path="source\prototypes\kCura.LDAPSync.prototype.datasources\kCura.LDAPSync.prototype.datasources\kCura.LDAPSync.prototype.datasources.csproj" />
         <Project path="source\Utilities\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber.csproj" />
-        <Project path="source\packages\OpenCover.4.5.3522\SampleSln\packages\OpenCover.4.5.3522\SampleSln\Bom\Bom.csproj" />
-        <Project path="source\packages\OpenCover.4.5.3522\SampleSln\packages\OpenCover.4.5.3522\SampleSln\BomTest\BomTest.csproj" />
-        <Project path="source\packages\OpenCover.4.5.3522\SampleSln\packages\OpenCover.4.5.3522\SampleSln\packages\OpenCover.4.5.3522\SampleSln\Bom\Bom.csproj" />
       </Ignore>
     </Projects>
     <References>
