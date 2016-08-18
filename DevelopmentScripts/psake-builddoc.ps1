@@ -2,13 +2,13 @@
 
 
 task default -depends build_doc
-                                                                                
+
 task build_doc  -precondition { $build_type -ne 'DEV' }{  
-    exec {   		
+    exec {
         &  $msbuild_exe @(($targetsfile),   
                          ('/property:SourceRoot=' + $root),
-                         ('/property:Configuration=' + $build_config),	
-                         ('/property:BuildProjectReferences=false'),					 
+                         ('/property:Configuration=' + $build_config),
+                         ('/property:BuildProjectReferences=false'),
                          ('/target:BuildDoc'),
                          ('/verbosity:' + $verbosity),
                          ('/nologo'),
