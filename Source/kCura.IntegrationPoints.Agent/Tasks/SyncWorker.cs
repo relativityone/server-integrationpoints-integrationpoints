@@ -309,8 +309,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				// Ignore error. Job history error status only set for the consistency. This will not affect re-running the job.
 			}
-#pragma warning disable 612
-#pragma warning restore 612
 		}
 
 		private void InjectErrors()
