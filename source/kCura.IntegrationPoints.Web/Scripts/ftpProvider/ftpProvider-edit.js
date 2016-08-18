@@ -72,7 +72,7 @@ var ftpHelper = (function (data) {
     var _setModel = function (model) {
         $('#host').val(model.host);
         $('#port').val(model.port);
-        $('#protocol').val(model.protocol);
+        $("#protocol").select2("val", model.protocol);
         $('#username').val(model.username);
         $('#password').val(model.password);
         $('#filename_prefix').val(model.filename_prefix);
