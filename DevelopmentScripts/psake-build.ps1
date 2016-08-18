@@ -62,17 +62,17 @@ task restore_nuget {
                                                                                 
 task build_projects -depends create_build_script, restore_nuget {  
     exec {     
-		if ($build_type -eq 'DEV') {
-			$Injections = 'EnableInjections'
-		}
-		
-		Write-Host 'Based on' $build_type 'Injection is set to' $Injections
-		
+        if ($build_type -eq 'DEV') {
+            $Injections = 'EnableInjections'
+        }
+        
+        Write-Host 'Based on' $build_type 'Injection is set to' $Injections
+        
         &  $msbuild_exe @(($targetsfile),   
                          ('/property:SourceRoot=' + $root),
-                         ('/property:Configuration=' + $build_config),	
-                         ('/property:BuildProjectReferences=false'),	
-                         ('/property:Injections=' + $Injections),						 
+                         ('/property:Configuration=' + $build_config),    
+                         ('/property:BuildProjectReferences=false'),    
+                         ('/property:Injections=' + $Injections),                         
                          ('/target:BuildTiers'),
                          ('/verbosity:' + $verbosity),
                          ('/nologo'),
