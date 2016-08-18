@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>(); ;
 			_jobService = Container.Resolve<IJobService>();
 			_serializer = Container.Resolve<ISerializer>();

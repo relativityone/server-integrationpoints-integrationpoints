@@ -30,6 +30,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private IJobManager _jobManager;
 
 		private long _jobId;
+		private const string STOP_TRANSFER_BUTTON_XPATH = "//button[contains(.,'Stop Transfer')]";
+		private const string STOP_CANCEL_BUTTON_XPATH = "//button[contains(.,'Cancel')]";
 
 		public StopWarningMessageTests() : base("MSG Source Workspace", null)
 		{
@@ -57,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		}
 
 		[Test]
-		public void VerifyNoExportPermissionErrorMessageOnRelativityProvider()
+		public void VerifyStopWarningMessageShowsUp()
 		{
 			//arrange
 			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
@@ -89,8 +91,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			string runAndStopButtonOnClickStopXpath = string.Format(@"//a[@onclick='IP.stopJob({0},{1})']", integrationPoint.ArtifactID, SourceWorkspaceArtifactId);
 			string warningMessage = "Stopping this transfer will not remove any data that was transferred. When re-running this transfer, make sure that your overwrite settings will return expected results.";
 			string warningDialogId = "ui-dialog-title-msgDiv";
-			string stopTransferButtonXpath = "//button[contains(.,'Stop Transfer')]";
-			string stopCancelButtonXpath = "//button[contains(.,'Cancel')]";
 
 			_webDriver.SetFluidStatus(9);
 			_webDriver.LogIntoRelativity("relativity.admin@kcura.com", SharedVariables.RelativityPassword);
@@ -106,11 +106,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			_webDriver.WaitUntilElementExists(ElementType.Id, warningDialogId, 10);
 			Assert.IsTrue(_webDriver.PageShouldContain(warningMessage));
 
-			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, stopTransferButtonXpath, 2);
-			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, stopCancelButtonXpath, 2);
+			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, STOP_TRANSFER_BUTTON_XPATH, 2);
+			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, STOP_CANCEL_BUTTON_XPATH, 2);
 
 			string unstoppableJobMessage = "The transfer cannot be stopped at this point in the process";
-			_webDriver.FindElement(By.XPath(stopTransferButtonXpath)).Click();
+			_webDriver.FindElement(By.XPath(STOP_TRANSFER_BUTTON_XPATH)).Click();
 			_webDriver.WaitUntilElementExists(ElementType.Id, warningDialogId, 10);
 			Assert.IsTrue(_webDriver.PageShouldContain(unstoppableJobMessage));
 		}

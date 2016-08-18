@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_jobManager.DeleteJob(_jobId);
 		}
 
-		[SetUp]
-		public void SuiteSetUp()
+		public override void SuiteSetup()
 		{
+			base.SuiteSetup();
 			_serializer = Container.Resolve<ISerializer>();
 			_jobManager = this.Container.Resolve<IJobManager>();
 			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager);

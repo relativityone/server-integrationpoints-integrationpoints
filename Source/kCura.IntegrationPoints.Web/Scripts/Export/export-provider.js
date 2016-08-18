@@ -293,6 +293,18 @@
 			required: true
 		});
 
+		this.ProductionPrecedence = ko.observable(state.ProductionPrecedence).extend({
+			required: {
+				onlyIf: function () {
+					return self.ExportImagesChecked();
+				}
+			}
+		});
+
+		this.IsProductionPrecedenceSelected =  function() {
+			return self.ProductionPrecedence() === ExportEnums.ProductionPrecedenceTypeEnum.Produced;
+		}
+
 		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
 			required: {
 				onlyIf: function () {
@@ -300,6 +312,8 @@
 				}
 			}
 		});
+
+		this.IncludeOriginalImages = ko.observable(state.IncludeOriginalImages || false);
 
 		this.SelectedImageFileType = ko.observable(!self.CopyFileFromRepository() ? 0 : state.SelectedImageFileType).extend({
 			required: {
@@ -400,28 +414,29 @@
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
 		};
 
-		this.ImageProductions = ko.observable(state.ImageProductions || [])
+		this.ImagePrecedence = ko.observable(state.ImagePrecedence || [])
 			.extend({
 				required: {
-					onlyIf: function() {
-						return self.ExportImagesChecked();
+					onlyIf: function () {
+						return self.ExportImagesChecked() && self.IsProductionPrecedenceSelected();
 					}
 				}
 			});
 
-		this.ImageProductionSelection = ko.pureComputed(function() {
-			return getTextRepresentation(self.ImageProductions());
+		this.ImagePrecedenceSelection = ko.pureComputed(function () {
+			return getTextRepresentation(self.ImagePrecedence());
 		});
 
-		var imageProductionPickerViewModel = new ImageProductionPickerViewModel(function(productions) {
-			self.ImageProductions(productions);
+		var imageProductionPickerViewModel = new ImageProductionPickerViewModel(function (productions) {
+			self.ImagePrecedence(productions);
 		});
 
 		Picker.create("ListPicker", imageProductionPickerViewModel);
 
-		this.openImageProductionPicker = function() {
-			imageProductionPickerViewModel.open(self.ImageProductions());
+		this.openImageProductionPicker = function () {
+			imageProductionPickerViewModel.open(self.ImagePrecedence());
 		};
+
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.getSelectedOption = function () {
@@ -461,7 +476,9 @@
 				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
 				"TextPrecedenceFields": self.TextPrecedenceFields(),
 				"TextFileEncodingType": self.TextFileEncodingType(),
-				"ImageProductions": self.ImageProductions()
+				"ImagePrecedence": self.ImagePrecedence(),
+				"ProductionPrecedence": self.ProductionPrecedence(),
+				"IncludeOriginalImages": self.IncludeOriginalImages()
 			};
 		};
 	};

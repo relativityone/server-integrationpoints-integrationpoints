@@ -37,3 +37,13 @@ ExportEnums.FilePathTypeEnum = {
     Absolute: 1,
     UserPrefix: 2
 };
+
+ExportEnums.ProductionPrecedenceType = [
+  { value: 0, key: "Original Images" },
+  { value: 1, key: "Produced Images" }
+];
+
+ExportEnums.ProductionPrecedenceTypeEnum = {
+	Original: 0,
+	Produced: 1
+};

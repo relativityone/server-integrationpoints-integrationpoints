@@ -234,6 +234,7 @@
     <Compile Include="Integration\Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
+    <Compile Include="Integration\Repositories\RelativityAuditRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
     <Compile Include="Integration\JobHistoryErrorsBatchingTests.cs" />

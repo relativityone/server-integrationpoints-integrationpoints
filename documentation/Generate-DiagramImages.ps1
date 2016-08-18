@@ -5,7 +5,7 @@
 if ($plantUmlLocation -eq "") {
     $commonToolsJarExists = Test-Path Env:\COMMONTOOLS
     if ($commonToolsJarExists) {
-			
+        $commonToolsLocation = (Get-Item env:\COMMONTOOLS).value
         $plantUmlLocation = "$commonToolsLocation\DevDocs\plantuml.jar"
     } else {
         $plantUmlLocation = "C:\ProgramData\chocolatey\lib\plantuml\tools\plantuml.jar"
