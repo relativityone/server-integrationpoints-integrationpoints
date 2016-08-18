@@ -7,7 +7,8 @@
 	<property name="source.packages.directory" value="${source.code.directory}\packages" />
 	<property name="source.provider.includes.directory" value="${source.code.directory}\Dependencies\ProviderIncludes" />
 	<property name="lib.directory" value="${root}\lib" />
-	<property name="sdk.directory" value="${root}\sdk" />
+	<property name="sdk.directory" value="${root}\documentation\sdk" />
+	<property name="examples.directory" value="${root}\documentation\examples" />
 	<property name="source.dependency.MVCContrib.directory" value="${source.dependency.directory}\MVCContrib" />
 	<property name="source.dependency.Injection.directory" value="${source.dependency.directory}\Injection"/>
 	<property name="source.dependency.CastleCore.directory" value="${source.packages.directory}\Castle.Core.3.3.0\lib\net45" />
@@ -196,8 +197,11 @@
 		</exec>
 	</target>
 	
-	<target name="package_sdk" description="Creates sdk package for integration points">
+	<target name="package_documentation" description="Creates sdk and example packages">
 		<delete dir="${sdk.directory}" />
+		<delete dir="${examples.directory}" />
+		
+		<!-- Copy sdk -->
 		<copy todir="${sdk.directory}">
 			<fileset basedir="${lib.directory}">
 				<include name="kCura.IntegrationPoints.Contracts.dll" />
@@ -212,10 +216,47 @@
 				<include name="jquery-postMessage.js" />
 			</fileset>
 		</copy>
-		<zip zipfile="${sdk.directory}\IntegrationPoints.SDK.zip">
-			<fileset basedir="${sdk.directory}">
-				<include name="*"/>
+		
+		<!-- Copy MyFirstProvider example -->
+		<copy todir="${examples.directory}\MyFirstProvider\Provider">
+			<fileset basedir="${source.code.directory}\Provider">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
 			</fileset>
-		</zip>
+		</copy>
+		<copy todir="${examples.directory}\MyFirstProvider\Web">
+			<fileset basedir="${source.code.directory}\Web">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.directory}\MyFirstProvider">
+			<fileset basedir="${source.code.directory}">
+				<include name="MyFirstProvider.sln" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy JsonLoader example -->
+		<copy todir="${examples.directory}\JsonLoader\JsonLoader">
+			<fileset basedir="${source.code.directory}\JsonLoader">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.directory}\JsonLoader\JsonWeb">
+			<fileset basedir="${source.code.directory}\JsonWeb">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.directory}\JsonLoader">
+			<fileset basedir="${source.code.directory}">
+				<include name="JsonLoader.sln" />
+			</fileset>
+		</copy>
 	</target>
 </project>
