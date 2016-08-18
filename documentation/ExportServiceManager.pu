@@ -102,6 +102,9 @@ partition "Perform Export" {
 	:Set Total Items to the Job History Rdo;
 	if (ExportAPI returns records) then (true)
 		:SyncData;
+		note right
+			See the "SyncData-RelativityProvider diagram"
+		end note
 	endif
 }
 
@@ -115,6 +118,9 @@ partition "Finalize" {
 				if (No error occurred during job start) then (true)
 					:Tag documents in target workspace
 					 with Source Workspace and Source Job;
+					note right
+						Done via ImportAPI
+					end note
 				:Dispose of 
 					"IntegrationPoint_Relativity_SourceWorkspace"
 					scratch table;
