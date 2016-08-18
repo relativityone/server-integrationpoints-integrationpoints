@@ -22,6 +22,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Web;
 using kCura.Relativity.Client;
+using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -186,14 +187,27 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Agent.UpdateAgent(agent);
 		}
 
-		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
 			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
-			jobHistory.EndTimeUTC = DateTime.Now;
-			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
-			jobHistoryService.UpdateRdo(jobHistory);
+
+			if (jobEnded)
+			{
+				jobHistory.EndTimeUTC = DateTime.Now;
+			}
+
+			if (jobStatusChoice != null)
+			{
+				jobHistory.JobStatus = jobStatusChoice;
+			}
+
+			if (jobEnded || jobStatusChoice != null)
+			{
+				jobHistoryService.UpdateRdo(jobHistory);
+			}
+			
 			return jobHistory;
 		}
 
@@ -217,6 +231,54 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
 			return jobHistoryErrorArtifactIds;
+		}
+
+		protected int GetLastScheduledJobId(int workspaceArtifactTypeId, int ripId)
+		{
+			const string query =
+				"Select Top 1 JobId From [eddsdbo].[ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]" +
+				" Where [WorkspaceID] = @WorkspaceId AND [RelatedObjectArtifactID] = @RipId AND [ScheduleRuleType] IS NOT NULL Order By JobId DESC";
+
+			SqlParameter workspaceId = new SqlParameter("@WorkspaceId", SqlDbType.Int) { Value = workspaceArtifactTypeId };
+			SqlParameter integrationPointId = new SqlParameter("@RipId", SqlDbType.Int) { Value = ripId };
+
+			return Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(query, workspaceId, integrationPointId);
+		}
+
+		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointId)
+		{
+			IJobService jobServiceManager = Container.Resolve<IJobService>();
+
+			List<Job> pickedUpJobs = new List<Job>();
+			try
+			{
+				Job job;
+				do
+				{
+					job = jobServiceManager.GetNextQueueJob(resourcePool, jobServiceManager.AgentTypeInformation.AgentTypeID);
+
+					if (job != null)
+					{
+						// pick up job
+						if (job.RelatedObjectArtifactID == integrationPointId)
+						{
+							return job;
+						}
+						else
+						{
+							pickedUpJobs.Add(job);
+						}
+					}
+				} while (job != null);
+			}
+			finally
+			{
+				foreach (var pickedUpJob in pickedUpJobs)
+				{
+					jobServiceManager.UnlockJobs(pickedUpJob.AgentTypeID);
+				}
+			}
+			throw new Exception("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
 		}
 
 		protected async Task SetupAsync()
