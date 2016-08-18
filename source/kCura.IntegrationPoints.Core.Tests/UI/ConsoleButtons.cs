@@ -84,7 +84,9 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
 			string runAndStopButtonOnClickStopXpath = string.Format(@"//a[@onclick='IP.stopJob({0},{1})']", integrationPoint.ArtifactID, SourceWorkspaceArtifactId);
 			string warningDialogId = "ui-dialog-title-msgDiv";
-			
+			string consoleControlXpath = "//div[contains(@class,'ConsoleControlTitle')]";
+
+
 			_webDriver = Selenium.GetWebDriver(browser);
 
 			//Act
@@ -92,7 +94,8 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			_webDriver.SetFluidStatus(9);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
 			_webDriver.GoToObjectInstance(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _integrationPointArtifactTypeId);
-			_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 10);
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, consoleControlXpath, 10);
+			_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 5);
 			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, runAndStopButtonOnClickStopXpath, 5);
 			_webDriver.FindElement(By.Id(runAndStopId)).Click();
 			_webDriver.WaitUntilElementExists(ElementType.Id, warningDialogId, 10);
