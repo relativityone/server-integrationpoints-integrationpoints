@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public virtual void SuiteTeardown() { }
 
 		[SetUp]
-		public void InitiatTestSetup()
+		public void InitiateTestSetup()
 		{
 			try
 			{

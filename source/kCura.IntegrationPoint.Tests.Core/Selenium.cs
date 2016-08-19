@@ -217,18 +217,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (_fluidEnabled)
 			{
-				driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
+				driver.WaitUntilElementExists(ElementType.Id, externalPage, 10);
 				driver.SwitchTo().Frame(externalPage);
 				newIntegraionPoint = "//button[@title='New Integration Point']";
 			}
 			else
 			{
-				driver.WaitUntilElementExists(ElementType.Id, templateFrame, 5);
+				driver.WaitUntilElementExists(ElementType.Id, templateFrame, 10);
 				driver.SwitchTo().Frame(templateFrame);
 				newIntegraionPoint = "//a[@title='New Integration Point']";
 			}
-
-			driver.WaitUntilElementIsVisible(ElementType.Xpath, newIntegraionPoint, 10);
+			
+			driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(10));
 			driver.FindElement(By.XPath(newIntegraionPoint)).Click();
 			driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
 			driver.SwitchTo().Frame(externalPage);
