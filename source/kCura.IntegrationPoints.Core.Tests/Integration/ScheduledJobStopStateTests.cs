@@ -10,12 +10,10 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
@@ -76,13 +74,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				//click stop
 				Injection.InjectionHelper.RemoveInjectionFromEnvironment("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4");
 
+				//Assert
+				//Verify that after job is stopped, Job exists in the queuetable (based on end date), Job.StopState is set to 0
+				//verify that next runtime is set.
 			}
-
 			finally
 			{
 				Injection.InjectionHelper.CleanupInjectionPoints(new List<kCura.Injection.InjectionPoint>() { cansu1 });
 			}
-			
 		}
 	}
 }
