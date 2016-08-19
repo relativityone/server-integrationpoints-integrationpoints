@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 	[Category("Integration Tests")]
 	public class OtherProvidersConsoleButtonTests : OtherProvidersTemplate
 	{
+		private const int _ADMIN_USER_ID = 9;
 		private IJobService _jobService;
 		private IWebDriver _webDriver;
 		private IObjectTypeRepository _objectTypeRepository;
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 
 				//Act
 				_webDriver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-				_webDriver.SetFluidStatus(9);
+				_webDriver.SetFluidStatus(_ADMIN_USER_ID);
 				_webDriver.GoToWorkspace(WorkspaceArtifactId);
 				_webDriver.GoToObjectInstance(WorkspaceArtifactId, integrationPoint.ArtifactID, _integrationPointArtifactTypeId);
 				_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 60);

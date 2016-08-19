@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 	[Category("Integration Tests")]
 	public class ConsoleButtons : RelativityProviderTemplate
 	{
+		private const int _ADMIN_USER_ID = 9;
 		private ISerializer _serializer;
 		private IJobHistoryService _jobHistoryService;
 		private IJobService _jobService;
@@ -93,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 
 			//Act and Assert
 			_webDriver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-			_webDriver.SetFluidStatus(9);
+			_webDriver.SetFluidStatus(_ADMIN_USER_ID);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
 			_webDriver.GoToObjectInstance(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _integrationPointArtifactTypeId);
 			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, consoleControlXpath, 10);

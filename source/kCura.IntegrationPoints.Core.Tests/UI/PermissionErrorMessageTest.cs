@@ -25,6 +25,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private string _email;
 		private int _groupId;
 
+		private const string _INTEGRATION_POINTS_TAB = "Integration Points";
+
 		public PermissionErrorMessageTest() : base("Error Source", "Error target")
 		{
 		}
@@ -148,7 +150,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			//Act
 			_webDriver.LogIntoRelativity(_email, SharedVariables.RelativityPassword);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
-			_webDriver.GoToTab("Integration Points");
+			_webDriver.GoToTab(_INTEGRATION_POINTS_TAB);
 			_webDriver.ClickNewIntegrationPoint();
 
 			//Assert
@@ -192,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			//Act
 			_webDriver.LogIntoRelativity(_email, SharedVariables.RelativityPassword);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
-			_webDriver.GoToTab("Integration Points");
+			_webDriver.GoToTab(_INTEGRATION_POINTS_TAB);
 			_webDriver.ClickNewIntegrationPoint();
 
 			//Fill out the first page
