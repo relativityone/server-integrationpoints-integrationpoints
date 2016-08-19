@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	using Config = Config.Config;
 
 	[SynchronizedTask]
-	public class SyncManager : BatchManagerBase<string>, IDisposable
+	public class SyncManager : BatchManagerBase<string>
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IDataProviderFactory _providerFactory;
@@ -42,8 +42,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		private readonly IGuidService _guidService;
 		private readonly IJobHistoryService _jobHistoryService;
-		private readonly JobHistoryErrorService _jobHistoryErrorService;
-		private IEnumerable<IBatchStatus> _batchStatus;
+		private readonly IJobHistoryErrorService _jobHistoryErrorService;
+		private IEnumerable<Core.IBatchStatus> _batchStatus;
 
 		protected readonly IHelper Helper;
 		protected readonly IManagerFactory ManagerFactory;
@@ -53,7 +53,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public IEnumerable<IBatchStatus> BatchStatus
 		{
 			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
-			set { _batchStatus = value; }
 		}
 
 		public SyncManager(ICaseServiceContext caseServiceContext,
@@ -65,7 +64,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ISerializer serializer,
 			IGuidService guidService,
 			IJobHistoryService jobHistoryService,
-			JobHistoryErrorService jobHistoryErrorService,
+			IJobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
@@ -117,26 +116,26 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					batchStatus.OnJobStart(job);
 				}
 
-				JobStopManager.ThrowIfStopRequested();
+				JobStopManager?.ThrowIfStopRequested();
 
 				SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
 				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid, Helper);
 
-				JobStopManager.ThrowIfStopRequested();
+				JobStopManager?.ThrowIfStopRequested();
 
 				FieldEntry idField = _integrationPointService.GetIdentifierFieldEntry(IntegrationPoint.ArtifactId);
 				string options = _integrationPointService.GetSourceOptions(IntegrationPoint.ArtifactId);
 				IDataReader idReader = provider.GetBatchableIds(idField, options);
 
-				JobStopManager.ThrowIfStopRequested();
+				JobStopManager?.ThrowIfStopRequested();
 
 				return new ReaderEnumerable(idReader, JobStopManager);
 			}
 			catch (OperationCanceledException)
 			{
-				JobStopManager.Dispose();
+				JobStopManager?.Dispose();
 				throw;
 				// DO NOTHING. Someone attempted to stop the job.
 			}
@@ -184,11 +183,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				while (_reader.Read())
 				{
-					_jobStopManager.ThrowIfStopRequested();
+					_jobStopManager?.ThrowIfStopRequested();
 
 					var result = _reader.GetString(0);
 					yield return result;
 				}
+				Dispose();
 			}
 
 			IEnumerator IEnumerable.GetEnumerator()
@@ -273,8 +273,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					exceptions.Add(exception);
 				}
- 
-				if (JobHistory != null)
+
+				if (this.JobHistory != null)
 				{
 					if (BatchJobCount == 0)
 					{
@@ -380,11 +380,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public Guid GetBatchInstance(Job job)
 		{
 			return new TaskParameterHelper(Serializer, _guidService).GetBatchInstance(job);
-		}
-
-		public void Dispose()
-		{
-			Debug.WriteLine(String.Empty);
 		}
 
 		public override void Execute(Job job)
