@@ -15,7 +15,7 @@ using OpenQA.Selenium;
 namespace kCura.IntegrationPoints.Core.Tests.UI
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class OtherProvidersConsoleButtonTests : OtherProvidersTemplate
 	{
 		private IJobService _jobService;

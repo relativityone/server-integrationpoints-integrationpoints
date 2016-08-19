@@ -22,11 +22,12 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
+using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(Constants.INTEGRATION_CATEGORY)]
 	public class SyncManagerTests : OtherProvidersTemplate
 	{
 		private SyncManager _syncManager;
