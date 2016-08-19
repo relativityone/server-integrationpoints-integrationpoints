@@ -1,35 +1,41 @@
-﻿﻿﻿<div class="card">
-      <div class="label" data-bind="text: PickerName"></div>
+﻿<div>
+    <div class="popupTitle" data-bind="text: PopupTitle"></div>
 
-      <div class="table" data-bind="with: model">
-        <div class="cell">
-            <div class="list-title" style="margin: 10px 0px 5px 0px;">Available:</div>
-            <select class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
-        </div>
-        <div class="cell selection map-move">
-            <div>
-                <a href="#" class="icon-move-last" data-bind="click: addAllValues"></a>
-                <a href="#" class="icon-move-next" data-bind="click: addValue"></a>
-                <a href="#" class="icon-move-previous" data-bind="click: removeValue"></a>
-                <a href="#" class="icon-move-first" data-bind="click: removeAllValues"></a>
+    <div class="card">
+        <div class="label" data-bind="text: PickerName"></div>
+
+        <div class="table" data-bind="with: model">
+            <div class="cell">
+                <div class="list-title" style="margin: 10px 0px 5px 0px;">Available:</div>
+                <select class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
             </div>
-        </div>
-        <div class="cell">
-            <div class="list-title" style="margin: 10px 0px 5px 0px;">Selected:</div>
-            <select class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>
-        </div>
-        <div class="cell selection map-move">
-            <div>
-                <a href="#" class="icon-move-to-top" data-bind="click: moveValueTop"></a>
-                <a href="#" class="icon-move-up" data-bind="click: moveValueUp"></a>
-                <a href="#" class="icon-move-down" data-bind="click: moveValueDown"></a>
-                <a href="#" class="icon-move-to-bottom" data-bind="click: moveValueBottom"></a>
+            <div class="cell selection map-move">
+                <div>
+                    <a href="#" class="icon-move-last" data-bind="click: addAllValues"></a>
+                    <a href="#" class="icon-move-next" data-bind="click: addValue"></a>
+                    <a href="#" class="icon-move-previous" data-bind="click: removeValue"></a>
+                    <a href="#" class="icon-move-first" data-bind="click: removeAllValues"></a>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="list-title" style="margin: 10px 0px 5px 0px;">Selected:</div>
+                <select class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>
+            </div>
+            <div class="cell selection map-move">
+                <div>
+                    <a href="#" class="icon-move-to-top" data-bind="click: moveValueTop"></a>
+                    <a href="#" class="icon-move-up" data-bind="click: moveValueUp"></a>
+                    <a href="#" class="icon-move-down" data-bind="click: moveValueDown"></a>
+                    <a href="#" class="icon-move-to-bottom" data-bind="click: moveValueBottom"></a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="table">
-        <button data-bind="click: ok">OK</button>
-        <button data-bind="click: cancel">Cancel</button>
+    <div class="popupArtifactActionBar">
+        <button class="ActionButton" data-bind="click: ok">OK</button>
+        <button class="ActionButton" data-bind="click: cancel">Cancel</button>
     </div>
 </div>
+<link rel="stylesheet" type="text/css" href="~/Content/buttermilk.9_2.min.css">
+<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">

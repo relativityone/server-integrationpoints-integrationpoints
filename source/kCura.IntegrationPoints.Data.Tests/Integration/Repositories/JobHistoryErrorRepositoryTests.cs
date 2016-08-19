@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//Create an Integration Point and assign a Job History
 			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
-			_jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
+			_jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance, JobStatusChoices.JobHistoryCompletedWithErrors, true);
 		}
 
 		[Test]

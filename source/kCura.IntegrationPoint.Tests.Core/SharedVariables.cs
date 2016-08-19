@@ -84,6 +84,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#endregion RAP File Settings
 
+		#region LDAP Configuration Settings
+
+		public static string LdapConnectionPath { get; set; } = ConfigurationManager.AppSettings["ldapConnectionPath"];
+
+		public static string LdapUsername { get; set; } = ConfigurationManager.AppSettings["ldapUsername"];
+
+		public static string LdapPassword { get; set; } = ConfigurationManager.AppSettings["ldapPassword"];
+
+		#endregion LDAP Configuration Settings
+
 		private static string GetLatestVersion()
 		{
 			DirectoryInfo buildPackagesBranchDirectory = new DirectoryInfo(BuildPackagesBranchPath);
