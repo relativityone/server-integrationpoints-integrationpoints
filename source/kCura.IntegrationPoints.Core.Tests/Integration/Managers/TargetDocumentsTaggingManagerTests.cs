@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			};
 			IntegrationModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
+			JobHistory jobHistory = _jobHistoryService.GetOrCreateSchduleRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
 			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _documentRepository, _synchronizerFactory, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, integrationModelCreated.Destination, jobHistory.ArtifactId, jobHistory.BatchInstance);
 			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();

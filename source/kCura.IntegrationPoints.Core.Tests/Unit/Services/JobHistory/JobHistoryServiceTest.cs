@@ -1,15 +1,19 @@
-﻿using System;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.Client;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using NSubstitute;
-using NSubstitute.ReturnsExtensions;
-using NUnit.Framework;
+using System;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 {
@@ -20,14 +24,37 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		private IWorkspaceRepository _workspaceRepository;
 
 		private JobHistoryService _instance;
+		private ISerializer _serializer;
+		private Data.IntegrationPoint _integrationPoint;
+		private ImportSettings _settings;
+		private WorkspaceDTO _workspace;
+		private int _jobHistoryArtifactId;
+		private Guid _batchGuid;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			_serializer = Substitute.For<ISerializer>();
 
-			_instance = new JobHistoryService(_caseServiceContext, _workspaceRepository);
+			_integrationPoint = new Data.IntegrationPoint()
+			{
+				ArtifactId = 98475,
+				Name = "RIP RIP",
+				DestinationConfiguration = "dest config"
+			};
+			_settings = new ImportSettings()
+			{
+				CaseArtifactId = 987
+			};
+			_workspace = new WorkspaceDTO()
+			{
+				Name = "lol"
+			};
+			_batchGuid = Guid.NewGuid();
+			_jobHistoryArtifactId = 987465;
+			_instance = new JobHistoryService(_caseServiceContext, _workspaceRepository, _serializer);
 		}
 
 		[Test]
@@ -104,6 +131,98 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 
 			//Assert
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Delete(jobHistoryId);
+		}
+
+		[Test]
+		public void CreateRdo_GoldFlow()
+		{
+			// ARRANGE
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(new List<Data.JobHistory>());
+			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
+			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+			
+			// ACT
+			Data.JobHistory jobHistory = _instance.CreateRdo(_integrationPoint, _batchGuid, JobTypeChoices.JobHistoryRun,DateTime.Now);
+
+			// ASSERT
+			ValidateJobHistory(jobHistory, JobTypeChoices.JobHistoryRun);
+		}
+
+		[Test]
+		public void CreateRdo_GetRdoThrowsException()
+		{
+			// ARRANGE
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Throws(new Exception("blah blah"));
+			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
+			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+
+			// ACT
+			Data.JobHistory jobHistory = _instance.CreateRdo(_integrationPoint, _batchGuid, JobTypeChoices.JobHistoryRun, DateTime.Now);
+
+			// ASSERT
+			ValidateJobHistory(jobHistory, JobTypeChoices.JobHistoryRun);
+		}
+
+		[Test]
+		public void GetOrCreateSchduleRunHistoryRdo_FoundRdo()
+		{
+			// ARRANGE
+			Data.JobHistory history = new Data.JobHistory();
+			List<Data.JobHistory> jobHistories = new List<Data.JobHistory>() { history };
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(jobHistories);
+
+			// ACT
+			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduleRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
+
+			// ASSERT
+			Assert.AreSame(history, returnedJobHistory);
+		}
+
+		[Test]
+		public void GetOrCreateSchduleRunHistoryRdo_NoExistingRdo()
+		{
+			// ARRANGE
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(new List<Data.JobHistory>());
+			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
+			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+
+			// ACT
+			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduleRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
+
+			// ASSERT
+			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
+		}
+
+
+		[Test]
+		public void GetOrCreateSchduleRunHistoryRdo_ErrorOnGetRdo()
+		{
+			// ARRANGE
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Throws(new Exception("blah blah"));
+			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
+			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+
+			// ACT
+			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduleRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
+
+			// ASSERT
+			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
+		}
+
+		private void ValidateJobHistory(Data.JobHistory jobHistory, Relativity.Client.Choice jobType)
+		{
+			Assert.IsNotNull(jobHistory);
+			Assert.AreEqual(_jobHistoryArtifactId, jobHistory.ArtifactId);
+			Assert.IsTrue(jobHistory.IntegrationPoint.SequenceEqual(new[] { _integrationPoint.ArtifactId }));
+			Assert.AreEqual(_batchGuid.ToString(), jobHistory.BatchInstance);
+			Assert.IsTrue(jobHistory.JobType.EqualsToChoice(jobType));
+			Assert.IsTrue(jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending));
+			Assert.AreEqual(0, jobHistory.ItemsImported);
+			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 		}
 
 		private bool ValidateCondition<T>(Condition actualCondition, Condition expectedCondition)

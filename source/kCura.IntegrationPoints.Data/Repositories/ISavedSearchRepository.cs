@@ -22,5 +22,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <returns>Returns the current SavedSearchDTO.</returns>
 		SavedSearchDTO RetrieveSavedSearch();
+
+		/// <summary>
+		/// Retrieve total number of saved search documents
+		/// </summary>
+		/// <returns>Number of documents</returns>
+		int GetTotalDocsCount();
 	}
 }

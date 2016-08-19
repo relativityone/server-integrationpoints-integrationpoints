@@ -97,13 +97,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
             JobTracker jobTracker = new JobTracker(jobResourceTracker);
             ISerializer serializer = new JSONSerializer();
             IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-            IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
+			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository, serializer);
             IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
             IManagerFactory managerFactory = new ManagerFactory();
 
             _caseServiceContext = caseServiceContext;
-            _integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
-            _jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
+            _integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService, managerFactory);
         }
 
         internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)
