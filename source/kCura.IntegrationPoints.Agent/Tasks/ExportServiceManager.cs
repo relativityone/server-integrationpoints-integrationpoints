@@ -243,7 +243,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
 
-			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
+			this.JobHistoryDto = _jobHistoryService.GetOrCreateSchduleRunHistoryRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
 
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;

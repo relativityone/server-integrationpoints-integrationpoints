@@ -1,28 +1,29 @@
-﻿using System;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.Client;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Newtonsoft.Json;
+using System;
 
-namespace kCura.IntegrationPoints.Core.Services
+namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
 	public class JobHistoryService : IJobHistoryService
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IWorkspaceRepository _workspaceRepository;
+		private readonly ISerializer _serializer;
 
-		public JobHistoryService(ICaseServiceContext caseServiceContext, IWorkspaceRepository workspaceRepository)
+		public JobHistoryService(ICaseServiceContext caseServiceContext, IWorkspaceRepository workspaceRepository, ISerializer serializer)
 		{
 			_caseServiceContext = caseServiceContext;
 			_workspaceRepository = workspaceRepository;
+			_serializer = serializer;
 		}
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return jobHistories;
 		}
 
-		public Data.JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
+		public Data.JobHistory GetOrCreateSchduleRunHistoryRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;
 
@@ -105,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					ItemsWithErrors = 0
 				};
 
-				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+				ImportSettings setting = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 				WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(setting.CaseArtifactId);
 				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, setting.CaseArtifactId);
 

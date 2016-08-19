@@ -1,7 +1,7 @@
 ﻿var ExportEnums = {};
 
 ExportEnums.DataFileFormats = [
-  { value: 0, key: "Concordance (.dat)" },
+  { value: 0, key: "Relativity (.dat)" },
   { value: 1, key: "HTML (.html)" },
   { value: 2, key: "Comma-separated (.csv)" },
   { value: 3, key: "Custom (.txt)" }
