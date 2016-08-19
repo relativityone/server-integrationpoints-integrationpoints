@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			Job job = null;
 			try
 			{
-				job = GetNextInQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value}, model.ArtifactID); // pick up job
+				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
 
 				TaskParameters parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					_jobService.DeleteJob(job.JobId);
 				}
 			}
-	}
+		}
 
 		[Test]
 		public void AgentPickUpRunNowJobWhenScheduledJobIsRunning()
@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					null, null);
 
 				AssignJobToAgent(fakeAgentId, scheduledJob.JobId); // agent pick up scheduled job
-				job = GetNextInQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
+				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
 
 				TaskParameters runNowParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
@@ -282,7 +282,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointId, 9);
 
 				// run now picked up by an agent
-				job = GetNextInQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID);
+				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID);
 
 				AssignJobToAgent(fakeAgentId, fakeScheduledJob.JobId); // agent pick up the scheduled job
 				TaskParameters scheduledJobParameters = serializer.Deserialize<TaskParameters>(fakeScheduledJob.JobDetails);
@@ -314,52 +314,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					_jobService.DeleteJob(job.JobId);
 				}
 			}
-		}
-
-		private int GetLastScheduledJobId(int workspaceArtifactTypeId, int ripId)
-		{
-			const string query =
-				"Select Top 1 JobId From [eddsdbo].[ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]" +
-				" Where [WorkspaceID] = @WorkspaceId AND [RelatedObjectArtifactID] = @RipId AND [ScheduleRuleType] IS NOT NULL Order By JobId DESC";
-
-			SqlParameter workspaceID = new SqlParameter("@WorkspaceId", SqlDbType.Int) { Value = workspaceArtifactTypeId };
-			SqlParameter ripID = new SqlParameter("@RipId", SqlDbType.Int) { Value = ripId };
-
-			return Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(query, new[] { workspaceID, ripID });
-		}
-
-		private Job GetNextInQueue(int[] resourcePool, int integrationPointId)
-		{
-			List<Job> pickedUpJobs = new List<Job>();
-			Job job = null;
-			try
-			{
-				do
-				{
-					job = _jobServiceManager.GetNextQueueJob(resourcePool, _jobServiceManager.AgentTypeInformation.AgentTypeID);
-
-					if (job != null)
-					{
-						// pick up job
-						if (job.RelatedObjectArtifactID == integrationPointId)
-						{
-							return job;
-						}
-						else
-						{
-							pickedUpJobs.Add(job);
-						}
-					}
-				} while (job != null);
-			}
-			finally
-			{
-				foreach (var pickedUpJob in pickedUpJobs)
-				{
-					_jobServiceManager.UnlockJobs(pickedUpJob.AgentTypeID);
-				}
-			}
-			throw new Exception("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
 		}
 	}
 }

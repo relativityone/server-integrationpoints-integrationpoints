@@ -233,7 +233,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new Exception("Cannot import source provider with unknown id.");
 				}
-				this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+				this.JobHistory = _jobHistoryService.GetOrCreateSchduleRunHistoryRdo(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
 				_jobHistoryErrorService.JobHistory = this.JobHistory;
 				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 				InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");

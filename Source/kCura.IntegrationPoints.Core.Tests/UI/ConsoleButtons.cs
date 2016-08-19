@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
-			JobHistory jobHistory = CreateJobHistoryInPending(integrationPoint.ArtifactID, batchInstance);
+			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance);
 			DataRow row = new CreateScheduledJob(_queueContext).Execute(
 				SourceWorkspaceArtifactId,
 				integrationPoint.ArtifactID,
@@ -106,15 +106,6 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 
 			//Assert
 			Assert.IsTrue(((int)(updatedJob.StopState) == 1));
-		}
-
-		private JobHistory CreateJobHistoryInPending(int integrationPointArtifactId, Guid batchInstance)
-		{
-			Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
-			jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
-			_jobHistoryService.UpdateRdo(jobHistory);
-			return jobHistory;
 		}
 	}
 }

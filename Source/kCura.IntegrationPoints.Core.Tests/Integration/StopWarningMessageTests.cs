@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				"{\"Subject\":\"testing\",\"MessageBody\":\"nothing \",\"Emails\":[\"kwu@kcura.com\"]}";
 			Guid batchInstance = Guid.NewGuid();
 			DateTime dateTime = DateTime.Now.AddDays(30);
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(IP, batchInstance, dateTime);
+			JobHistory jobHistory = _jobHistoryService.GetOrCreateSchduleRunHistoryRdo(IP, batchInstance, dateTime);
 			DataRow row = new CreateScheduledJob(_queueContext).Execute(
 				SourceWorkspaceArtifactId,
 				integrationPoint.ArtifactID,
