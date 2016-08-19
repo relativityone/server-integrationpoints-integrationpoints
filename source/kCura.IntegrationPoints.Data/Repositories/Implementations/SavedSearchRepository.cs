@@ -36,6 +36,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_pageSize = pageSize;
 		}
 
+		public int GetTotalDocsCount()
+		{
+			var query = new Query<kCura.Relativity.Client.DTOs.Document>
+			{
+				Condition = new SavedSearchCondition(_savedSearchId),
+				Fields = FieldValue.NoFields
+			};
+
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				return rsapiClient.Repositories.Document.Query(query).TotalCount;
+			}
+		}
+
 		public ArtifactDTO[] RetrieveNextDocuments()
 		{
 			StartedRetrieving = true;
