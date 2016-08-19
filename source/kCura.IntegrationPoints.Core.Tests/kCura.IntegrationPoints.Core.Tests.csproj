@@ -241,6 +241,7 @@
     <Compile Include="ImportTest.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
+    <Compile Include="Integration\Services\IntegrationPointServiceTestsForOtherProviders.cs" />
     <Compile Include="UI\ConsoleButtons.cs" />
     <Compile Include="UI\OtherProvidersConsoleButtonTests.cs" />
     <Compile Include="UI\PermissionErrorMessageTest.cs" />
