@@ -135,7 +135,7 @@ var IP = IP || {};
 
 		this.SourceProviderConfiguration = ko.observable();
 
-		this.tmpRelativitySourceTypeObject;
+		var tmpRelativitySourceTypeObject = null;
 
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
