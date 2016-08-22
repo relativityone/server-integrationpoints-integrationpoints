@@ -249,7 +249,6 @@
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="Injection.cs" />
-    <Compile Include="InjectionPoints.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />

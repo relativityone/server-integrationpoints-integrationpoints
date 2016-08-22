@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 	[Category("Integration Tests")]
 	public class OtherProvidersConsoleButtonTests : OtherProvidersTemplate
 	{
+		private const int _ADMIN_USER_ID = 9;
 		private IJobService _jobService;
 		private IWebDriver _webDriver;
 		private IObjectTypeRepository _objectTypeRepository;
@@ -58,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 				IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 				Guid batchInstance = Guid.NewGuid();
+				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance);
 
 				DataRow row = new CreateScheduledJob(_queueContext).Execute(
@@ -68,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 					1,
 					null,
 					null,
-					null,
+					jobDetails,
 					0,
 					777,
 					1,
@@ -82,10 +84,11 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 				string warningDialogId = "ui-dialog-title-msgDiv";
 
 				_webDriver = Selenium.GetWebDriver(browser);
+				_webDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(60));
 
 				//Act
 				_webDriver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-				_webDriver.SetFluidStatus(9);
+				_webDriver.SetFluidStatus(_ADMIN_USER_ID);
 				_webDriver.GoToWorkspace(WorkspaceArtifactId);
 				_webDriver.GoToObjectInstance(WorkspaceArtifactId, integrationPoint.ArtifactID, _integrationPointArtifactTypeId);
 				_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 60);

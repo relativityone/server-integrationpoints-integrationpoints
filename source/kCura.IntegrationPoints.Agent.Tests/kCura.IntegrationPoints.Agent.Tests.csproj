@@ -168,6 +168,10 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
+	<Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

@@ -81,6 +81,7 @@
     <Compile Include="InjectionController.cs" />
     <Compile Include="InjectionHelper.cs" />
     <Compile Include="InjectionManager.cs" />
+    <Compile Include="InjectionPoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

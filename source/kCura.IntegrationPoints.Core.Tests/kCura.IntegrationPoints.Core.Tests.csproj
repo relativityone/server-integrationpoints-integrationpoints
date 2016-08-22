@@ -241,12 +241,13 @@
     <Compile Include="ImportTest.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
+    <Compile Include="Integration\ScheduledJobStopStateTests.cs" />
+    <Compile Include="Integration\Services\IntegrationPointServiceTestsForOtherProviders.cs" />
     <Compile Include="UI\ConsoleButtons.cs" />
     <Compile Include="UI\OtherProvidersConsoleButtonTests.cs" />
     <Compile Include="UI\PermissionErrorMessageTest.cs" />
     <Compile Include="Integration\Services\AgentJobManagerTests.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
-    <Compile Include="Integration\StopWarningMessageTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="UI\SchedulerUiTests.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
@@ -323,6 +324,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
+      <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
+      <Name>kCura.IntegrationPoints.Injection</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
