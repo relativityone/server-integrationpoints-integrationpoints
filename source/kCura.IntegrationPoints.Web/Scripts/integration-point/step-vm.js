@@ -17,12 +17,41 @@
 
 
 		this.goToStep = function (step, model) {
+			var _updateStepProgressDOM = function () {
+				if (step === 0) {
+					IP.stepDefinitionProvider.init();
+				}
+				else if (step === 1) {
+					if (model.destinationProviderGuid === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
+						IP.stepDefinitionProvider.loadOverride([
+								{
+									text: 'Setup'
+								},
+								{
+									text: 'Source Information'
+								},
+								{
+									text: 'Destination Information'
+								}
+						]);
+					}
+					else {
+						IP.stepDefinitionProvider.loadDefaults();
+					}
+				}
+			}
+			_updateStepProgressDOM();
 			var totalSteps = 2; // hardcoded to hide additional steps //this.steps().length - 1;
 			if (step > totalSteps) {
 				return totalSteps;
 			}
 			if (step < 0) {
 				return 0;
+			}
+			if (step === 1) {
+				$('#stepProgress').stepProgress({
+					steps: IP.stepDefinitionProvider.stepsOptions['defaultsteps']
+				});
 			}
 			var nextStep = this.steps()[step];
 			if (nextStep.loadModel) {

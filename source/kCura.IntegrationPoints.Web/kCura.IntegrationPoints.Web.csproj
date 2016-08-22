@@ -464,6 +464,7 @@
     <Content Include="Scripts\Export\text-precedence-picker.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
+    <Content Include="Scripts\integration-point\step-definition-provider.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
     <Content Include="Scripts\knockout-3.4.0.debug.js" />
