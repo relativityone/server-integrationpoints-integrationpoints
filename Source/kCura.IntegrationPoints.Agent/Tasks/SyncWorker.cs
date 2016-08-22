@@ -41,9 +41,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		  IHelper helper,
 		  IDataProviderFactory dataProviderFactory,
 		  ISerializer serializer,
-		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+		  ISynchronizerFactory appDomainRdoSynchronizerFactory,
 		  IJobHistoryService jobHistoryService,
-		  JobHistoryErrorService jobHistoryErrorService,
+		  IJobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
 		  IEnumerable<IBatchStatus> statuses,
 		  JobStatisticsService statisticsService,
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				helper,
 				dataProviderFactory,
 				serializer,
-				appDomainRdoSynchronizerFactoryFactory,
+				appDomainRdoSynchronizerFactory,
 				jobHistoryService,
 				jobHistoryErrorService,
 				jobManager,
@@ -70,9 +70,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		  IHelper helper,
 		  IDataProviderFactory dataProviderFactory,
 		  ISerializer serializer,
-		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+		  ISynchronizerFactory appDomainRdoSynchronizerFactory,
 		  IJobHistoryService jobHistoryService,
-		  JobHistoryErrorService jobHistoryErrorService,
+		  IJobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
 		  IEnumerable<IBatchStatus> statuses,
 		  JobStatisticsService statisticsService,
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				helper,
 				dataProviderFactory,
 				serializer,
-				appDomainRdoSynchronizerFactoryFactory,
+				appDomainRdoSynchronizerFactory,
 				jobHistoryService,
 				jobHistoryErrorService,
 				jobManager,
@@ -147,9 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-#pragma warning disable CS0612 // Type or member is obsolete
 				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
-#pragma warning restore CS0612 // Type or member is obsolete
 			}
 		}
 
@@ -178,7 +176,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
 
-				JobStopManager.ThrowIfStopRequested();
+				JobStopManager?.ThrowIfStopRequested();
 
 				ExecuteImport(fieldMap, IntegrationPoint.SourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
 
@@ -285,7 +283,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupStatisticsSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
+			_statisticsService?.Subscribe(synchronizer as IBatchReporter, job);
 		}
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)

@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Domain.Synchronizer
 		/// <param name="data">The records to insert into the system.</param>
 		/// <param name="fieldMap">The field mapping used to import data into the system.</param>
 		/// <param name="options">The option settings used to synchronize the source data with the destination.</param>
-		[Obsolete]
 		void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options);
 
 		/// <summary>
