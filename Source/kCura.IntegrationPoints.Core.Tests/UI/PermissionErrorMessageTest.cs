@@ -172,7 +172,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 			//Arrange
 			string errorMessage = Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE;
-			string templateFrame = "ListTemplateFrame";
 			string externalPage = "_externalPage";
 			string next = "next";
 			string addSourceField = "add-source-field";

@@ -18,18 +18,18 @@ using System.Collections.Generic;
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
-	[Category("Integration Tests")]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ScheduledJobStopState : RelativityProviderTemplate
 	{
 		private ISerializer _serializer;
 		private IJobHistoryService _jobHistoryService;
 		private IJobService _jobService;
-		private IWebDriver _webDriver;
+		private IWebDriver _webDriver = null;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IQueueDBContext _queueContext;
 		private IJobManager _jobManager;
 		private int _integrationPointArtifactTypeId;
-		private long _jobId;
+		private long _jobId = 0;
 
 		public ScheduledJobStopState() : base("IntegrationPointService Source", null)
 		{
