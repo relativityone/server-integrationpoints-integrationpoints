@@ -43,7 +43,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
-	public class AgentInstaller : IWindsorInstaller
+	internal class AgentInstaller : IWindsorInstaller
 	{
 		private readonly IAgentHelper _agentHelper;
 		private readonly Job _job;
