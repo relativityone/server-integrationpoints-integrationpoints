@@ -8,7 +8,7 @@
 	var _buildStep = function (step) {
 		var last = step.step === this.options.steps.length ? "last" : "";
 		var container = '<li class="' + last + '">';
-		container += step.options.text;
+		container += '<div id="step' + step.step + 'text">' + step.options.text + '</div>';
 		var div = "<div class='step'>";
 		div += "<i class='" + settings.pendingClass + "'></i>";
 		div += "<span class='" + settings.pendingClass + "'>" + step.step + "</span>";
@@ -92,9 +92,6 @@
 			return fn.apply(this[0], args); //if you want more than just ID you will have to fix this
 		}
 		return this.each(function () {
-
-			if (this.$this) { return; } //already inited no work for us to do
-
 			$.fn.stepProgress.defaults = {
 				currentStep: 1,
 				steps: []
@@ -104,6 +101,7 @@
 			this.options = local;
 			var self = this;
 			self.$this = $(this);
+			self.$this.empty();
 			var ul = '<ul class="step-progress-bar" data-steps="' + local.steps.length + '">';
 			$.each(local.steps, function (idx) {
 				ul += $.stepProgress.buildStep.call(self, {

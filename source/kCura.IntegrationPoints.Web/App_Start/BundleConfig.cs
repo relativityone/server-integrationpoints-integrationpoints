@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Web
 
 			bundles.Add(new ScriptBundle("~/bundles/ipEdit").Include(
 					"~/Scripts/Controls/step-progress.js",
+					"~/Scripts/integration-point/step-definition-provider.js",
 					"~/Scripts/integration-point/edit.js",
 					"~/Scripts/integration-point/step-vm.js",
 					"~/Scripts/integration-point/step-details.js",

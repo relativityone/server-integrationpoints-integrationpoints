@@ -1,17 +1,8 @@
 ﻿(function (root) {
 	$('#stepProgress').stepProgress({
-		steps: [
-			{
-				text: 'Set Integration Details'
-			},
-			{
-				text: 'Connect to Source' 
-			},
-			{
-				text: 'Map Fields' 
-			}
-		]
+		steps: root.stepDefinitionProvider.stepsOptions['initsteps']
 	});
+
 	$('#next').on('click', function () {
 		root.messaging.publish('next');
 	});
