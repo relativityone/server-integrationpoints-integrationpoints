@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 				var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
 				
-				return Request.CreateResponse(HttpStatusCode.OK, fields);
+				return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 			}
 			catch (Exception ex)
 			{
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				// TODO: isProduction flag should be set accordingly to configuration i.e. settings.ExportType == ExportType.Production, for now it is always Saved Search
 				var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, (int)ArtifactType.Search, false);
 
-				return Request.CreateResponse(HttpStatusCode.OK, fields);
+				return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 			}
 			catch (Exception ex)
 			{
@@ -61,12 +62,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				var fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, (int)ArtifactType.Document);
 
-				return Request.CreateResponse(HttpStatusCode.OK, fields);
+				return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 			}
 			catch (Exception ex)
 			{
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
 			}
+		}
+
+		private IOrderedEnumerable<FieldEntry> SortFields(FieldEntry[] fieldEntries)
+		{
+			return fieldEntries.OrderBy(x => x.DisplayName);
 		}
 	}
 }
