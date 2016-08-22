@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -78,16 +79,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			//Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
 			//so for now we need to create only one worker job
-			yield return null;
+			yield break;
 		}
 
 		public override int BatchTask(Job job, IEnumerable<string> batchIDs)
 		{
-			int integrationPointId = job.RelatedObjectArtifactID;
+			IIntegrationPointManager integrationPointManager = ManagerFactory
+				.CreateIntegrationPointManager(ContextContainerFactory.CreateContextContainer(Helper));
 
-			var integrationPoint = ManagerFactory
-				.CreateIntegrationPointManager(ContextContainerFactory.CreateContextContainer(Helper))
-				.Read(job.WorkspaceID, integrationPointId);
+			var integrationPoint = integrationPointManager.Read(job.WorkspaceID, job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{
