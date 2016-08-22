@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Defines dependency properties -->
+  <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BEAA22C4-7FF1-45FA-8323-4707B92C2C94}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BCrypt.Net, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(BCrypt-Official)\lib\BCrypt.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Config.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Crypto, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.ImageValidator, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.ImageValidator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Notification, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Notification.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.OI.FileID, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.OI.FileID.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.DataReaderClient, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.ImportAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI.Extension, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Windows.Forms, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Windows.Forms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Windows.Process, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Windows.Process.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS.ImportExtension, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSubstitute, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(NUnit)\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\Relativity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Abstract\IExportTestCase.cs" />
+    <Compile Include="Abstract\IInvalidFileshareExportTestCase.cs" />
+    <Compile Include="Helpers\ConfigSettings.cs" />
+    <Compile Include="Helpers\DataFileFormatHelper.cs" />
+    <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
+    <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
+    <Compile Include="Helpers\UserPasswordCredentialProvider.cs" />
+    <Compile Include="Helpers\WorkspaceService.cs" />
+    <Compile Include="Process\ExportProcessRunnerTest.cs" />
+    <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
+    <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />
+    <Compile Include="TestCases\Base\MetadataExportTestCaseBase.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithNestedMultipleChoice.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithNotNestedMultipleChoice.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithWindowsANSIEncoding.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithBigEndianEncoding.cs" />
+    <Compile Include="TestCases\ItShouldExportExtractedText.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
+    <Compile Include="TestCases\ItShouldExportFilesStartingFromGivenRecord.cs" />
+    <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
+    <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForInvalidFilesharePathFormat.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForInvalidStartExportAtRecordValue.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeSubdirectoryStartNumber.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
+    <Compile Include="TestCases\ItShouldNotExportExtractedText.cs" />
+    <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathUserPrefixNative.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathAbsoluteNative.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathRelativeNative.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileAsConcordance.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileAsCsv.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileAsCustom.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileAsHTML.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithUnicodeEncoding.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithUTF8Encoding.cs" />
+    <Compile Include="TestCases\ItShouldExportDirectoriesWithCustomNumbering.cs" />
+    <Compile Include="TestCases\ItShouldExportImageDataFileAsIPROFullText.cs" />
+    <Compile Include="TestCases\ItShouldExportImageDataFileAsIPRO.cs" />
+    <Compile Include="TestCases\ItShouldNotExportImageDataFileWhenExportImagesNotSelected.cs" />
+    <Compile Include="TestCases\ItShouldExportImageDataFileAsOpticon.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesAsMultiplePages.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesAsPdfs.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesAsSinglePages.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesMetadataOnly.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesWithCustomDirectoryPrefix.cs" />
+    <Compile Include="TestCases\ItShouldExportNativesWithCustomDirectoryPrefix.cs" />
+    <Compile Include="TestCases\ItShouldExportSavedSearch.cs" />
+    <Compile Include="TestCases\ItShouldExportSavedSearchMetadataOnly.cs" />
+    <Compile Include="TestCases\ItShouldExportTextFilesWithCustomDirectoryPrefix.cs" />
+    <Compile Include="TestCases\ItShouldExportVolumeWithCustomName.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
+      <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
+      <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\IMAGES\AMEYERS_0000757.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0000757.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0000975.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0000975.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185_001.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185_001.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\NATIVES\AMEYERS_0000757.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\NATIVES\AMEYERS_0001185.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="Release\App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(ProjectDir)..\packages\$(Relativity_ImportExport)\lib\native\*  $(ProjectDir)$(OutDir)  /y</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

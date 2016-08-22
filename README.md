@@ -1,5 +1,6 @@
-# Integration Points - A Relativity application that integrates 3rd party systems with Relativity
- 
+# Integration Points - A Relativity application that integrates 3rd party
+systems with Relativity
+
 ## Overview
  
 Developers can leverage the Integration Point framework to pull data from a
@@ -11,56 +12,80 @@ integrations to the following:
 * Lightweight Directory Access Protocol (LDAP) enabled HR servers such as
 Microsoft Active Directory. 
 * Relativity - Allowing documents to be pushed between workspaces.
+* File Transfer - Providing connection to an FTP server for upload.
  
 ## How to Build
-Add .\source\DevelopmentScripts to your PATH
-OR
-Natigate to <IntegrationPoint Source Code>\source\DevelopmentScripts and run the following commands:
+usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERSION]
+             [-apps] [-noapps] [-test] [-nuget] [-package]
+             [-deploy <workspaceId> <ip_address/localhost>] [help|?]
 
-    usage:
-        build [debug|release] [dev|alpha|beta|rc|gold]
-        [-b quiet|minimal|normal|detailed|diagnostic] [-skip] [-test]
-        [-deploy 1234567 172.17.100.47] [-alert] [help|?]
+options:
 
-    options:
-        -b               sets the verbosity level for msbuild, default is
-                         minimal
-        -sk[ip]          skips build step
-        -t[est]          runs nunit test step
-        -de[ploy]        uploads Integration Point binaries to a given
-    	                 Relativity Instance
+    -e[ditor]                       opens Build Helper Project Editor to edit
+                                    the build.xml file
 
-        -al[ert]         shows alert popup when build completes
+    -v[ersion] VERSION              sets the version # for the build, default
+                                    is 1.0.0.0 (example: 1.3.3.7)
+    -ap[ps]                         skips the build step, continues to only
+                                    build apps
+    -no[apps]                       skips build apps step
+    -sk[ip]                         skips build and build apps step
+    -t[est]                         runs nunit test step
+    -nu[get]                        runs the nuget pack step
+    -p[ackage]                      runs the package step
+    -de[ploy] WORKSPACEID IPADDRESS uploads Integration Point binaries to a
+                                    given Relativity Instance
 
-	Common commands:
-        build /?
-    	build
-    	build -deploy localhost
-    	build -deploy 172.17.100.72
-	
+    -al[ert]                        show alert popup when build completes
+
+Common commands:
+    build /?
+    build
+    build -deploy 1234567 localhost
+    build -deploy 1234567 172.17.100.72
+
 ## How to Test
-Running tests:
+Running unit tests:
 
     unit tests:
         build -test
-    	build -skip -test
- 
+        build -skip -test
+
 ## Build artifacts
- 
-* RAP package (name: RelativityIntegrationPoints.Auto.rap)
-* NuGet packages
+* RAPs
+    * RelativityIntegrationPoints.Auto.rap
+    * MyFirstProvider.rap
+    * JsonLoader.rap
+* DLLs
+* PDBs
+* Custom Pages
+    * IntegrationPoints
+    * MyFirstProvider
+    * JsonLoader
+* NuGet packages on gold build
+    * RelativityIntegrationPoints (Contains RelativityIntegrationPoints.Auto.rap)
     * kCura.IntegrationPoints.Contracts
     * kCura.IntegrationPoints.Services.Interfaces.Private
     * kCura.IntegrationPoints.Web
- 
-## Maintainers
- 
-Diffendoofer team (diffendoofer@kcura.com)
- 
-## Miscellaneous
- 
-[Documentation](https://help.kcura.com/integrationpoints/Content/Relativity_Integration_Points/Integration_Points/Relativity_Integration_Points.htm)
+* SDK
+    kCura.IntegrationPoints.Contracts.dll
+    kCura.IntegrationPonits.Domain.dll
+    kCura.SourceProviderInstaller.dll
+    frame-messaging.js
+    jquery-1.8.2.js
+    jquery-postMessage.js
+* Example projects (Coming soon)
+    * MyFirstProvider.sln
+    * JsonLoader.sln
+* Workflow diagrams
 
+## Maintainers
+* Diffendoofer team (diffendoofer@kcura.com)
+* Krakow team (krakow@kcura.com)
+* Art Kelenzon (akelenzon@kcura.com)
+
+## Miscellaneous
+[Documentation](https://help.kcura.com/integrationpoints/Content/Relativity_Integration_Points/Integration_Points/Relativity_Integration_Points.htm)
 [Developer Documentation](https://platform.kcura.com/9.3/Content/Relativity_Integration_Points/Get_started_with_integration_points.htm)
 
 Integration Points hosts the following private Kepler services:
@@ -68,5 +93,4 @@ Integration Points hosts the following private Kepler services:
 * Document Manager
 * Integration Point Manager
 
-Integration Points is required for the ECA and Investigation
-application.
+Integration Points is required for the ECA and Investigation application.

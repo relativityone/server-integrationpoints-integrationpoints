@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Defines dependency properties -->
+  <Import Project="..\kCura.IntegrationPoints.Dependencies\dependencies.prop" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>kCura.IntegrationPoints.Core</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>DEVENV</DefineConstants>
+    <DebugType>full</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\</OutputPath>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>
+    </DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BCrypt.Net, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(BCrypt-Official)\lib\BCrypt.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\packages\$(Castle_Core)\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Config.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Crypto, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.EDDS.DocumentCompareGateway, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.HTMLSanitizer, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCura_HTMLSanitizer)\lib\kCura.HTMLSanitizer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Injection\kCura.Injection.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Method.Injection, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.DataReaderClient, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.ImportAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI.Extension, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.SearchProvider, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\kCura.SearchProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS.ImportExtension, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\Relativity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.APIHelper, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.APIHelper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core.Api, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core.Api.Contracts, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core.Api.QueryParser, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Data, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_Data)\lib\net45\Relativity.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.DataGrid, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.DataGrid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces.Private, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BatchEmail.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorBatchUpdateManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="ContextContainer.cs" />
+    <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Factories\IHelperClassFactory.cs" />
+    <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
+    <Compile Include="Factories\IManagerFactory.cs" />
+    <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
+    <Compile Include="Factories\Implementations\ManagerFactory.cs" />
+    <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
+    <Compile Include="Helpers\IOnClickEventConstructor.cs" />
+    <Compile Include="IContextContainer.cs" />
+    <Compile Include="Factories\IContextContainerFactory.cs" />
+    <Compile Include="Managers\DestinationWorkspaceFieldManagerBase.cs" />
+    <Compile Include="Managers\IArtifactGuidManager.cs" />
+    <Compile Include="Managers\IJobStopManager.cs" />
+    <Compile Include="Managers\IErrorManager.cs" />
+    <Compile Include="Managers\IFieldManager.cs" />
+    <Compile Include="Managers\IIntegrationPointManager.cs" />
+    <Compile Include="Managers\IJobHistoryErrorManager.cs" />
+    <Compile Include="Managers\IJobHistoryManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\SourceObjectBatchUpdateManager.cs" />
+    <Compile Include="Installers\KeywordInstaller.cs" />
+    <Compile Include="JobHistoryBatchUpdateStatus.cs" />
+    <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
+    <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
+    <Compile Include="Managers\Implementations\JobStopManager.cs" />
+    <Compile Include="Managers\Implementations\ErrorManager.cs" />
+    <Compile Include="Managers\Implementations\FieldManager.cs" />
+    <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
+    <Compile Include="Managers\Implementations\JobHistoryManager.cs" />
+    <Compile Include="Managers\Implementations\JobHistoryErrorManager.cs" />
+    <Compile Include="Managers\Implementations\NullableStopJobManager.cs" />
+    <Compile Include="Managers\Implementations\ObjectTypeManager.cs" />
+    <Compile Include="Managers\Implementations\QueueManager.cs" />
+    <Compile Include="Managers\Implementations\SourceProviderManager.cs" />
+    <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
+    <Compile Include="Managers\Implementations\SourceJobManager.cs" />
+    <Compile Include="Managers\Implementations\StateManager.cs" />
+    <Compile Include="Managers\ISourceProviderManager.cs" />
+    <Compile Include="Managers\IQueueManager.cs" />
+    <Compile Include="Managers\ISourceWorkspaceManager.cs" />
+    <Compile Include="Managers\ISourceJobManager.cs" />
+    <Compile Include="Managers\IObjectTypeManager.cs" />
+    <Compile Include="Managers\IStateManager.cs" />
+    <Compile Include="Models\EmailMessage.cs" />
+    <Compile Include="Models\StoppableJobCollection.cs" />
+    <Compile Include="Properties\JobStatusMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobStatusMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\CustodianService.cs" />
+    <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
+    <Compile Include="Services\CustodianManager\CustodianManagerJobParameters.cs" />
+    <Compile Include="Services\CustodianManager\CustodianManagerMap.cs" />
+    <Compile Include="Services\CustodianManager\ManagerQueueService.cs" />
+    <Compile Include="Services\DeleteHistoryErrorService.cs" />
+    <Compile Include="Services\DeleteHistoryService.cs" />
+    <Compile Include="Services\DeleteIntegrationPoints.cs" />
+    <Compile Include="Services\DestinationTypes\DestinationTypeFactory.cs" />
+    <Compile Include="ISourcePluginProvider.cs" />
+    <Compile Include="Properties\ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="IContextService.cs" />
+    <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
+    <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
+    <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
+    <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
+    <Compile Include="Factories\Implementations\ExporterFactory.cs" />
+    <Compile Include="Services\Exporter\IExporterService.cs" />
+    <Compile Include="Services\Exporter\ILongTextStreamFactory.cs" />
+    <Compile Include="Services\Exporter\LazyExceptArtifactFieldDto.cs" />
+    <Compile Include="Services\Exporter\RelativityExporterService.cs" />
+    <Compile Include="Services\Guid\GuidService.cs" />
+    <Compile Include="Services\Guid\IGuidService.cs" />
+    <Compile Include="Services\IDeleteHistoryErrorService.cs" />
+    <Compile Include="Services\IExportFieldsService.cs" />
+    <Compile Include="Services\IIntegrationPointService.cs" />
+    <Compile Include="Services\IJobStatusUpdater.cs" />
+    <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
+    <Compile Include="Services\JobHistory\IJobHistoryErrorService.cs" />
+    <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryService.cs" />
+    <Compile Include="Services\JobHistory\JobStatisticsService.cs" />
+    <Compile Include="Services\JobStatusUpdater.cs" />
+    <Compile Include="Services\JobTracker.cs" />
+    <Compile Include="Services\Keywords\ErrorKeyword.cs" />
+    <Compile Include="Services\Keywords\IKeyword.cs" />
+    <Compile Include="Services\Keywords\KeywordConverter.cs" />
+    <Compile Include="Services\Keywords\KeywordFactory.cs" />
+    <Compile Include="Services\Keywords\DestinationEmailBodyDataKeyword.cs" />
+    <Compile Include="Services\Keywords\SourceEmailBodyDataKeyword.cs" />
+    <Compile Include="Services\Keywords\RipNameKeyword.cs" />
+    <Compile Include="Services\Keywords\WorkspaceNameKeyword.cs" />
+    <Compile Include="Services\Marshaller\ISerializationHelper.cs" />
+    <Compile Include="Services\Marshaller\SerializationHelper.cs" />
+    <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
+    <Compile Include="Services\Domain\AppDomainFactory.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
+    <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />
+    <Compile Include="Services\ServiceContext\EddsServiceContext.cs" />
+    <Compile Include="Services\ServiceContext\IEddsServiceContext.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextFactory.cs" />
+    <Compile Include="Services\Conversion\DataReaderEnumerable.cs" />
+    <Compile Include="ExternalTabs.cs" />
+    <Compile Include="Installers\ServicesInstaller.cs" />
+    <Compile Include="Services\ServiceContext\ICaseServiceContext.cs" />
+    <Compile Include="Models\ErrorModel.cs" />
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Models\IntegrationModel.cs" />
+    <Compile Include="Models\RdoFilter.cs" />
+    <Compile Include="RsapiClientFactory.cs" />
+    <Compile Include="Services\ServiceContext\CaseServiceContext.cs" />
+    <Compile Include="Services\AgentJobManager.cs" />
+    <Compile Include="Services\ChoiceService.cs" />
+    <Compile Include="Services\Conversion\IObjectBuilder.cs" />
+    <Compile Include="Services\Conversion\SynchronizerObjectBuilder.cs" />
+    <Compile Include="Services\ErrorService.cs" />
+    <Compile Include="Services\IntegrationPointService.cs" />
+    <Compile Include="Services\ObjectTypeService.cs" />
+    <Compile Include="Services\Provider\IDataProviderFactory.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForKelperService.cs" />
+    <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
+    <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
+    <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
+    <Compile Include="Services\Synchronizer\ExportDestinationSynchronizerFactory.cs" />
+    <Compile Include="Services\Synchronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
+    <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />
+    <Compile Include="Services\Synchronizer\RdoSynchronizerProvider.cs" />
+    <Compile Include="Services\Tabs\ITabService.cs" />
+    <Compile Include="Services\Tabs\RSAPITabService.cs" />
+    <Compile Include="Services\TaskParameterHelper.cs" />
+    <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
+    <Compile Include="Agent\IntegrationPointTaskBase.cs" />
+    <Compile Include="Telemetry\ExportTelemetryMetricProvider.cs" />
+    <Compile Include="Telemetry\ITelemetryMetricProvider.cs" />
+    <Compile Include="Telemetry\TelemetryManager.cs" />
+    <Compile Include="Telemetry\TelemetryMetricProvider.cs" />
+    <Compile Include="Telemetry\TelemetryMetricProviderBase.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\ErrorMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\JobStatusMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>JobStatusMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

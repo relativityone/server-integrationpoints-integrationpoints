@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://nant.sf.net/release/0.86-beta1/nant.xsd" name="IntegrationPoints" default="build">
+
+	<!-- Build properties -->
+	<property name="source.code.directory" value="${root}\source" />
+	<property name="source.dependency.directory" value="${source.code.directory}\Dependencies" />
+	<property name="source.packages.directory" value="${source.code.directory}\packages" />
+	<property name="source.provider.includes.directory" value="${source.code.directory}\Dependencies\ProviderIncludes" />
+	<property name="lib.directory" value="${root}\lib" />
+	<property name="sdk.directory" value="${root}\documentation\sdk" />
+	<property name="examples.directory" value="${root}\documentation\examples" />
+	<property name="source.dependency.MVCContrib.directory" value="${source.dependency.directory}\MVCContrib" />
+	<property name="source.dependency.Injection.directory" value="${source.dependency.directory}\Injection"/>
+	<property name="source.dependency.CastleCore.directory" value="${source.packages.directory}\Castle.Core.3.3.0\lib\net45" />
+	<property name="source.dependency.CastleWindsor.directory" value="${source.packages.directory}\Castle.Windsor.3.3.0\lib\net45" />
+	<property name="source.dependency.NewtonsoftJson.directory" value="${source.packages.directory}\Newtonsoft.Json.6.0.8\lib\net45" />
+	<property name="source.dependency.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
+	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.192.5\lib\net45" />
+	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
+	<property name="relativityDependencyVersion" value="9.4.241.2" />
+	
+	<!-- Log properties -->
+	<echo message="Root: ${root}" />
+	<echo message="Build configuration: ${buildconfig}" />
+	<echo message="Relativity dependency version: ${relativityDependencyVersion}" />
+	<echo message="Source code directory: ${source.code.directory}" />
+	<echo message="Source dependency directory ${source.dependency.directory}" />
+	<echo message="Source packages directory ${source.packages.directory}" />
+	<echo message="Lib directory ${lib.directory}" />
+	
+	<target name="merge_all" description="Perform all required ILMerges for this repository" depends="merge_main, merge_ldap, merge_documentsTransfer, merge_source_provider_installer">
+	</target>
+	
+	<target name="merge_main" description="Merge all required main binaries into a single library">
+		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
+			<arg line='/targetplatform:v4' />
+			<arg line='/out:"${lib.directory}\kCura.IntegrationPoints.dll"' />
+			<arg line='/internalize:ilmergeExcludeMain.txt' />
+			<arg line='/log' />
+			<arg line='/AllowDup' />
+			<arg line='/lib:"${lib.directory}"' />
+			
+			<!-- kCura Dependencies -->
+			<arg line='/lib:"${source.packages.directory}\kCura.Agent.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCura.HTMLSanitizer.0.0.21.7\lib"' />
+			<arg line='/lib:"${source.packages.directory}\Nito.AsyncEx.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\AutoMapper.4.2.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Remotion.Linq.2.0.2\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Dynamitey.1.0.2.0\lib\portable-win+net45+sl40+wp80"' />
+			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.149\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.16\lib"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.ServiceBus.1.1.17\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.DataContracts.Shared.9.4.70\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.MetricsCollection.9.4.70\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Vfs.IO.1.0.12\lib\net451"' />
+			<arg line='/lib:"${source.packages.directory}\FluentValidation.6.1.0.0\lib\Net45"' />
+			<arg line='/lib:"${source.packages.directory}\Microsoft.IdentityModel.Protocol.Extensions.1.0.0\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Microsoft.Owin.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Microsoft.Owin.Security.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Microsoft.Owin.Security.OpenIdConnect.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Owin.1.0\lib\net40"' />
+			<arg line='/lib:"${source.packages.directory}\StackExchange.Redis.1.0.328\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\System.IdentityModel.Tokens.Jwt.4.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Thinktecture.IdentityModel.Client.4.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
+			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
+			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
+			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
+			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\FreeImageNET.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\Ionic.Zip.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.ImageValidator.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.OI.FileID.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.DataReaderClient.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.Extension.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Windows.Forms.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Windows.Process.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.WinEDDS.dll"' />
+			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.WinEDDS.ImportExtension.dll"' />
+			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
+			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
+			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
+			<arg line='"${source.dependency.Injection.directory}\kCura.Method.Injection.dll"' />
+			<arg line='"${source.dependency.Injection.directory}\kCura.Injection.dll"' />
+			
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Data.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Email.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Synchronizers.RDO.dll"' />
+			<arg line='"${lib.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
+			<arg line='"${lib.directory}\kCura.ScheduleQueue.Core.dll"' />
+		</exec>
+	</target>
+	
+	<target name="merge_ldap" description="Merge all ldap provider binaries into a single library">
+		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
+			<arg line='/targetplatform:v4' />
+			<arg line='/out:"${lib.directory}\kCura.LDAPProvider.dll"' />
+			<arg line='/internalize:ilmergeExcludeLDAP.txt' />
+			<arg line='/log' />
+			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
+			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
+			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.LDAPProvider.dll"' />
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
+	<target name="merge_documentsTransfer" description="Merge all relativity related binaries into a single library">
+		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
+			<arg line='/targetplatform:v4' />
+			<arg line='/out:"${lib.directory}\kCura.DocumentTransferProvider.dll"' />
+			<arg line='/internalize:ilmergeExcludeDocumentTransferProvider.txt' />
+			<arg line='/log' />
+			<arg line='/lib:"${source.packages.directory}\kCura.EventHandler.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCura.Relativity.Client.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.API.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
+			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
+			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
+			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.DocumentTransferProvider.dll"' />
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
+	<target name="merge_source_provider_installer" description="Merge all source installer binaries into a single library">
+		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
+			<arg line='/targetplatform:v4' />
+			<arg line='/out:"${lib.directory}\kCura.SourceProviderInstaller.dll"' />
+			<arg line='/internalize:ilmergeExcludeSourceProviderInstaller.txt' />
+			<arg line='/log' />
+			<arg line='/lib:"${source.packages.directory}\kCura.EventHandler.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCura.Relativity.Client.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.API.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
+			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
+			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
+			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
+			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
+			<arg line='/lib:"${source.dependency.Injection.directory}"' />
+			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
+			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
+			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Data.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
+	<target name="merge_export_provider" description="Merge all export provider binaries into a single library">
+		<exec program="${source.dependency.directory}\ILMerge\ILMerge.exe" >
+			<arg line='/targetplatform:v4' />
+			<arg line='/out:"${lib.directory}\kCura.IntegrationPoints.FilesDestinationProvider.dll"' />
+			<arg line='/internalize:ilmergeExcludeExportProvider.txt' />
+			<arg line='/log' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
+	<target name="package_documentation" description="Creates sdk and example packages">
+		<delete dir="${sdk.directory}" />
+		<delete dir="${examples.directory}" />
+		
+		<!-- Copy sdk -->
+		<copy todir="${sdk.directory}">
+			<fileset basedir="${lib.directory}">
+				<include name="kCura.IntegrationPoints.Contracts.dll" />
+				<include name="kCura.SourceProviderInstaller.dll" />
+				<include name="kCura.IntegrationPoints.Domain.dll" />
+			</fileset>
+		</copy>
+		<copy todir="${sdk.directory}">
+			<fileset basedir="${source.provider.includes.directory}">
+				<include name="frame-messaging.js" />
+				<include name="jquery-1.8.2.js" />
+				<include name="jquery-postMessage.js" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy MyFirstProvider example -->
+		<copy todir="${examples.directory}\MyFirstProvider\Provider">
+			<fileset basedir="${source.code.directory}\Provider">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.directory}\MyFirstProvider\Web">
+			<fileset basedir="${source.code.directory}\Web">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.directory}\MyFirstProvider">
+			<fileset basedir="${source.code.directory}">
+				<include name="MyFirstProvider.sln" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy JsonLoader example -->
+		<copy todir="${examples.directory}\JsonLoader\JsonLoader">
+			<fileset basedir="${source.code.directory}\JsonLoader">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.directory}\JsonLoader\JsonWeb">
+			<fileset basedir="${source.code.directory}\JsonWeb">
+				<include name="**/*" />
+				<exclude name="**bin**" />
+				<exclude name="**obj**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.directory}\JsonLoader">
+			<fileset basedir="${source.code.directory}">
+				<include name="JsonLoader.sln" />
+			</fileset>
+		</copy>
+	</target>
+</project>
