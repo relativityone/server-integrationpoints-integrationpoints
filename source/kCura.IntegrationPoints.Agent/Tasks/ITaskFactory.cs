@@ -27,6 +27,8 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.MicroKernel.SubSystems.Configuration;
+using kCura.IntegrationPoints.Agent.Installer;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -95,29 +97,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
-			Container.Kernel.Resolver.AddSubResolver(new CollectionResolver(Container.Kernel));
-			Container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => agentBase.ScheduleRuleFactory, true));
-			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _helper, true));
-			Container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _helper, true));
-			Container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>()
-			  .DependsOn(Dependency.OnValue<int>(job.WorkspaceID)));
-			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
-			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
-			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_helper.GetDBContext(job.WorkspaceID))));
-			Container.Register(Component.For<Job>().UsingFactoryMethod(k => job));
-
-			Container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = _helper.GetDBContext(-1)).LifeStyle.Transient);
-			Container.Install(FromAssembly.InThisApplication());
-			Container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
-			  k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(job.WorkspaceID, ExecutionIdentity.System)).LifestyleTransient());
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), job.WorkspaceID)).LifestyleTransient());
-			Container.Register(Component.For<ISendable>()
-			  .ImplementedBy<SMTP>()
-			  .DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
-
-			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
-				.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
-				.LifestyleTransient());
+			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
+			agentInstaller.Install(_container, new DefaultConfigurationStore());
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
