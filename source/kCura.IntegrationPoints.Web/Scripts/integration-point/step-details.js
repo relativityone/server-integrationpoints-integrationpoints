@@ -135,6 +135,8 @@ var IP = IP || {};
 
 		this.SourceProviderConfiguration = ko.observable();
 
+		this.tmpRelativitySourceTypeObject;
+
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
@@ -144,13 +146,40 @@ var IP = IP || {};
 			});
 			self.sourceTypes(types);
 			$.each(self.sourceTypes(), function () {
-
 				if (this.value === settings.selectedType || this.artifactID === self.sourceProvider) {
 					self.selectedType(this.value);
+				}
+
+				if (this.displayName == "Relativity") {
+					tmpRelativitySourceTypeObject = this;
 				}
 			});
 			parentModel.setExportTypeVisibility(parentModel.isExportType());
 		});
+
+		this.displayRelativityInSourceTypes = function (value) {
+			if (tmpRelativitySourceTypeObject === undefined) return;
+
+			if (value === true) {
+				var containsRelativityObj = false;
+				$.each(self.sourceTypes(),
+					function () {
+						if (this.displayName == "Relativity") {
+							containsRelativityObj = true;
+						}
+					});
+				if (containsRelativityObj === false) {
+					self.sourceTypes.push(tmpRelativitySourceTypeObject);
+				}
+			} else {
+				$.each(self.sourceTypes(),
+					function () {
+						if (this === tmpRelativitySourceTypeObject) {
+							self.sourceTypes.remove(this);
+						}
+					});
+			}
+		};
 
 		this.selectedType.subscribe(function (selectedValue) {
 			$.each(self.sourceTypes(), function () {
@@ -201,6 +230,11 @@ var IP = IP || {};
 
 		this.destinationTypes = ko.observableArray();
 		this.selectedDestinationType = ko.observable().extend({ required: true });
+
+		this.selectedDestinationType.subscribe(function (selectedValue) {
+
+		});
+
 		this.destinationProviderVisible = ko.observable(false);
 		this.isDestinationProviderDisabled = ko.observable(false);
 
@@ -214,6 +248,14 @@ var IP = IP || {};
 			return results.length > 0 ? results[0].value : "";
 		}
 
+		this.setRelativityAsDestinationProvider = function () {
+			var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
+				return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+			});
+			if (defaultRelativityProvider.length === 1) {
+				self.selectedDestinationType(defaultRelativityProvider[0].artifactID);
+			}
+		}
 
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
@@ -223,16 +265,8 @@ var IP = IP || {};
 			});
 			self.destinationTypes(types);
 			self.destinationProviderVisible(self.destinationTypes().length > 1);
-			var setRelativityAsDestinationProvider = function () {
-				var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
-					return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
-				});
-				if (defaultRelativityProvider.length === 1) {
-					self.selectedDestinationType(defaultRelativityProvider[0].artifactID);
-				}
-			}
 
-			setRelativityAsDestinationProvider();
+			self.setRelativityAsDestinationProvider();
 
 			$.each(self.destinationTypes(), function () {
 
@@ -581,12 +615,15 @@ var IP = IP || {};
 				self.source.isSourceProviderDisabled(true);
 			} else {
 				if (isExportType === "true") {
+					self.source.displayRelativityInSourceTypes(true);
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
 					self.source.isSourceProviderDisabled(true);
 					self.destination.isDestinationProviderDisabled(false);
 				} else {
+					self.source.displayRelativityInSourceTypes(false);
 					self.source.isSourceProviderDisabled(false);
+					self.destination.setRelativityAsDestinationProvider();
 					self.destination.isDestinationProviderDisabled(true);
 				}
 			}
