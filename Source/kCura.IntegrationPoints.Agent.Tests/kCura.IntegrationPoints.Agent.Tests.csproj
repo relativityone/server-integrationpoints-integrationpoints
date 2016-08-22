@@ -116,6 +116,10 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
+	<Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -133,6 +137,7 @@
     <Compile Include="Integration\SendEmailManagerTests.cs" />
     <Compile Include="Integration\SyncManagerTests.cs" />
     <Compile Include="Unit\SendEmailManagerUnitTests.cs" />
+    <Compile Include="Unit\Tasks\ExportManagerTest.cs" />
     <Compile Include="Unit\Tasks\ExportServiceManagerTests.cs" />
     <Compile Include="Unit\Tasks\ITaskFactoryTests.cs" />
     <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />

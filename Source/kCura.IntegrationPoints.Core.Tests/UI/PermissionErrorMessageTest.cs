@@ -25,7 +25,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private string _email;
 		private int _groupId;
 
-		public PermissionErrorMessageTest() : base("Error Source", null)
+		private const string _INTEGRATION_POINTS_TAB = "Integration Points";
+
+		public PermissionErrorMessageTest() : base("Error Source", "Error target")
 		{
 		}
 
@@ -132,10 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 			//Arrange
 			string errorMessage = "You do not have permission to import. Please contact your administrator for the correct permissions.";
-			string newIntegraionPoint = "//a[@title='New Integration Point']";
 			string errorPopup = "notEnoughPermission";
-			string templateFrame = "ListTemplateFrame";
-			string externalPage = "_externalPage";
 
 			PermissionProperty tempP = new PermissionProperty
 			{
@@ -146,17 +145,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			};
 
 			Permission.SetPermissions(SourceWorkspaceArtifactId, _groupId, tempP);
+			_webDriver.SetFluidStatus(_userCreated);
 
 			//Act
 			_webDriver.LogIntoRelativity(_email, SharedVariables.RelativityPassword);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
-			_webDriver.GoToTab("Integration Points");
-			_webDriver.WaitUntilElementExists(ElementType.Id, templateFrame, 5);
-			_webDriver.SwitchTo().Frame(templateFrame);
-			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, newIntegraionPoint, 10);
-			_webDriver.FindElement(By.XPath(newIntegraionPoint)).Click();
-			_webDriver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
-			_webDriver.SwitchTo().Frame(externalPage);
+			_webDriver.GoToTab(_INTEGRATION_POINTS_TAB);
+			_webDriver.ClickNewIntegrationPoint();
 
 			//Assert
 			_webDriver.WaitUntilElementExists(ElementType.Id, errorPopup, 10);
@@ -177,7 +172,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 			//Arrange
 			string errorMessage = Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE;
-			string newIntegraionPoint = "//a[@title='New Integration Point']";
 			string templateFrame = "ListTemplateFrame";
 			string externalPage = "_externalPage";
 			string next = "next";
@@ -193,21 +187,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
 			IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, _groupId);
 			Permission.SetPermissions(SourceWorkspaceArtifactId, _groupId, tempP);
+			_webDriver.SetFluidStatus(_userCreated);
 
 			//Act
 			_webDriver.LogIntoRelativity(_email, SharedVariables.RelativityPassword);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
-			_webDriver.GoToTab("Integration Points");
+			_webDriver.GoToTab(_INTEGRATION_POINTS_TAB);
+			_webDriver.ClickNewIntegrationPoint();
 
-			_webDriver.WaitUntilElementExists(ElementType.Id, templateFrame, 5);
-			_webDriver.SwitchTo().Frame(templateFrame);
-
-			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, newIntegraionPoint, 10);
-			_webDriver.FindElement(By.XPath(newIntegraionPoint)).Click();
-
-			_webDriver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
-			_webDriver.SwitchTo().Frame(externalPage);
-
+			//Fill out the first page
 			_webDriver.WaitUntilElementExists(ElementType.Id, "name", 10);
 			_webDriver.FindElement(By.Id("name")).SendKeys("RIP" + DateTime.Now);
 			_webDriver.SelectFromDropdownList("sourceProvider", "Relativity");
@@ -216,6 +204,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			_webDriver.WaitUntilElementIsClickable(ElementType.Id, "next", 10);
 			_webDriver.FindElement(By.Id("next")).Click();
 
+			//Fill out the second page
 			_webDriver.WaitUntilElementExists(ElementType.Id, "configurationFrame", 10);
 			_webDriver.SwitchTo().Frame("configurationFrame");
 
@@ -233,9 +222,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			_webDriver.WaitUntilElementIsClickable(ElementType.Id, next, 5);
 			_webDriver.FindElement(By.Id(next)).Click();
 
+			//Fill out the thrid page
 			_webDriver.WaitUntilIdExists("fieldMappings", 10);
 			string sourceField = "//select[@id=\"source-fields\"]/option[contains(.,'[Object Identifier]')]";
-			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, sourceField, 30); // loading field mappings may takes time
+			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, sourceField, 30); // loading field mappings may take time
 			_webDriver.FindElement(By.XPath(sourceField)).Click();
 
 			_webDriver.WaitUntilElementIsClickable(ElementType.Id, addSourceField, 5);
@@ -252,6 +242,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			_webDriver.FindElement(By.Id("save")).Click();
 
 			_webDriver.WaitUntilElementExists(ElementType.Xpath, "//div[contains(@class,'page-message page-error')]", 10);
+
+			//Assert
 			Assert.IsTrue(_webDriver.PageShouldContain(errorMessage));
 		}
 	}

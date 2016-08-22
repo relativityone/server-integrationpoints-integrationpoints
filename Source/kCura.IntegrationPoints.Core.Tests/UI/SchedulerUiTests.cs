@@ -17,6 +17,8 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class SchedulerUiTests : RelativityProviderTemplate
 	{
+		private const int _ADMIN_USER_ID = 9;
+		private const string _INTEGRATION_POINTS_TAB = "Integration Points";
 		private ISerializer _serializer;
 		private IJobHistoryService _jobHistoryService;
 		private IJobService _jobService;
@@ -143,10 +145,10 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 
 		private void GoToCreateAnIntegrationPointPageAndEnableScheduler()
 		{
-			_webDriver.SetFluidStatus(9);
+			_webDriver.SetFluidStatus(_ADMIN_USER_ID);
 			_webDriver.LogIntoRelativity("relativity.admin@kcura.com", SharedVariables.RelativityPassword);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
-			_webDriver.GoToTab("Integration Points");
+			_webDriver.GoToTab(_INTEGRATION_POINTS_TAB);
 			_webDriver.ClickNewIntegrationPoint();
 
 			_webDriver.WaitUntilElementIsClickable(ElementType.Id, nextButtonId, 10);

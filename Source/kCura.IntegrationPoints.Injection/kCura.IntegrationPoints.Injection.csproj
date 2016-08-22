@@ -99,6 +99,7 @@
     <Compile Include="InjectionController.cs" />
     <Compile Include="InjectionHelper.cs" />
     <Compile Include="InjectionManager.cs" />
+    <Compile Include="InjectionPoints.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">

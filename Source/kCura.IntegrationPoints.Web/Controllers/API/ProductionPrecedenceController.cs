@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				var productions = _productionPrecedenceService.GetProductionPrecedence(sourceWorkspaceArtifactId);
 
-				return Request.CreateResponse(HttpStatusCode.OK, productions);
+				return Request.CreateResponse(HttpStatusCode.OK, productions.OrderBy(x => x.DisplayName));
 			}
 			catch (Exception ex)
 			{

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using kCura.Data.RowDataGateway;
+using kCura.Injection;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using kCura.Data.RowDataGateway;
-using kCura.Injection;
+using System.Threading;
 
 namespace kCura.IntegrationPoints.Injection
 {
@@ -116,7 +117,7 @@ namespace kCura.IntegrationPoints.Injection
 		public static void RemoveInjectionPoint(string injectionPointId)
 		{
 			const string deleteInjectionQuery = @"DELETE FROM [InjectionPoint]
-												WHERE [InjectionPointID] = @injectionPointId";
+												WHERE [ID] = @injectionPointId";
 
 			SqlParameter[] parameters = {
 				new SqlParameter("injectionPointId", SqlDbType.UniqueIdentifier) { Value = new Guid(injectionPointId) },
@@ -158,7 +159,7 @@ namespace kCura.IntegrationPoints.Injection
 		public static int GetInjectionExecutionCount(string injectionPointId, DateTime startTime)
 		{
 			const string executionCountQuery = @"SELECT Count(*)
-												FROM [InjectionLog] 
+												FROM [InjectionLog]
 												WHERE [InjectionPointID] = @injectionPointId AND [TimeStamp] >= @startTime";
 
 			SqlParameter[] parameters = {
@@ -174,6 +175,51 @@ namespace kCura.IntegrationPoints.Injection
 			catch (Exception ex)
 			{
 				throw new Exception($"Error occurred while trying to retrieve the execution count for injection point with Guid '{injectionPointId}'", ex);
+			}
+		}
+
+		public static void WaitUntilInjectionPointIsReached(string injectionPointId, DateTime startTime, int timeoutInSeconds = 180, int intervalInMilliseconds = 500)
+		{
+			double timeWaitedInSeconds = 0.0;
+			int executionCount = GetInjectionExecutionCount(injectionPointId, startTime);
+			bool injectionPointEnabled = IsInjectionPointEnabled(injectionPointId);
+
+			if (!injectionPointEnabled)
+			{
+				throw new Exception($"InjectionPointId: { injectionPointId } is not enabled.");
+			}
+
+			while (executionCount == 0)
+			{
+				if (timeWaitedInSeconds >= timeoutInSeconds)
+				{
+					throw new Exception($"Timed out waiting for InjectionPointId: { injectionPointId } to be reached. Waited { timeWaitedInSeconds } seconds.");
+				}
+
+				Thread.Sleep(intervalInMilliseconds);
+				timeWaitedInSeconds += (intervalInMilliseconds / 1000.0);
+				executionCount = GetInjectionExecutionCount(injectionPointId, startTime);
+			}
+		}
+
+		private static bool IsInjectionPointEnabled(string injectionPointId)
+		{
+			string query = "SELECT Count(*) FROM [Injection] WHERE [InjectionPointID] = @injectionPointId";
+
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter("injectionPointId", SqlDbType.UniqueIdentifier) { Value = new Guid(injectionPointId) }
+			};
+
+			try
+			{
+				int executionCount = Context.ExecuteSqlStatementAsScalar<int>(query, parameters);
+
+				return executionCount > 0;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Error occurred while trying to check if InjectionPointId: { injectionPointId } is enabled. { ex.Message }");
 			}
 		}
 
