@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		protected ICaseServiceContext CaseServiceContext;
 		protected IContextContainerFactory ContextContainerFactory;
 		protected IDataProviderFactory DataProviderFactory;
-		protected JobHistoryErrorService JobHistoryErrorService;
+		protected IJobHistoryErrorService JobHistoryErrorService;
 		protected IJobHistoryService JobHistoryService;
 		protected IJobManager JobManager;
 		protected IJobService JobService;
@@ -47,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		  Apps.Common.Utils.Serializers.ISerializer serializer,
 		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 		  IJobHistoryService jobHistoryService,
-		  JobHistoryErrorService jobHistoryErrorService,
+		  IJobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
 		  IManagerFactory managerFactory,
 		  IContextContainerFactory contextContainerFactory,

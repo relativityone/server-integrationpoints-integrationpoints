@@ -63,11 +63,11 @@ ko.validation.rules["minArray"] = {
 };
 
 ko.validation.rules['arrayRange'] = {
-    validator: function (value, params) {
-        if (!$.isNumeric(value) || (value.toString().indexOf(".") != -1)) { return false; }
+	validator: function (value, params) {
+		if (!$.isNumeric(value) || (value.toString().indexOf(".") != -1)) { return false; }
 		var num = parseInt(value, 10);
-        return !isNaN(num) && num >= params.min && num <= params.max;
-    },
+		return !isNaN(num) && num >= params.min && num <= params.max;
+	},
 	message: 'Please enter a value between 1 and 999.'
 };
 
@@ -135,6 +135,8 @@ var IP = IP || {};
 
 		this.SourceProviderConfiguration = ko.observable();
 
+		var tmpRelativitySourceTypeObject = null;
+
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
@@ -144,12 +146,40 @@ var IP = IP || {};
 			});
 			self.sourceTypes(types);
 			$.each(self.sourceTypes(), function () {
-
 				if (this.value === settings.selectedType || this.artifactID === self.sourceProvider) {
 					self.selectedType(this.value);
 				}
+
+				if (this.displayName == "Relativity") {
+					tmpRelativitySourceTypeObject = this;
+				}
 			});
+			parentModel.setExportTypeVisibility(parentModel.isExportType());
 		});
+
+		this.displayRelativityInSourceTypes = function (value) {
+			if (tmpRelativitySourceTypeObject === undefined) return;
+
+			if (value === true) {
+				var containsRelativityObj = false;
+				$.each(self.sourceTypes(),
+					function () {
+						if (this.displayName == "Relativity") {
+							containsRelativityObj = true;
+						}
+					});
+				if (containsRelativityObj === false) {
+					self.sourceTypes.push(tmpRelativitySourceTypeObject);
+				}
+			} else {
+				$.each(self.sourceTypes(),
+					function () {
+						if (this === tmpRelativitySourceTypeObject) {
+							self.sourceTypes.remove(this);
+						}
+					});
+			}
+		};
 
 		this.selectedType.subscribe(function (selectedValue) {
 			$.each(self.sourceTypes(), function () {
@@ -200,66 +230,54 @@ var IP = IP || {};
 
 		this.destinationTypes = ko.observableArray();
 		this.selectedDestinationType = ko.observable().extend({ required: true });
-		this.destinationProviderVisible = ko.observable(false);
 
-		var withArtifactId = function(artifacId) {
-		    return function (element) {
-		        return element.artifactID === artifacId;
-		    }
+		this.selectedDestinationType.subscribe(function (selectedValue) {
+
+		});
+
+		this.destinationProviderVisible = ko.observable(false);
+		this.isDestinationProviderDisabled = ko.observable(false);
+
+		var withArtifactId = function (artifacId) {
+			return function (element) {
+				return element.artifactID === artifacId;
+			}
 		}
 		this.selectedDestinationTypeGuid = function () {
-		    var results = this.destinationTypes().filter(withArtifactId(this.selectedDestinationType()));
-		    return results.length > 0 ? results[0].value : "";
+			var results = this.destinationTypes().filter(withArtifactId(this.selectedDestinationType()));
+			return results.length > 0 ? results[0].value : "";
 		}
-		
+
+		this.setRelativityAsDestinationProvider = function () {
+			var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
+				return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+			});
+			if (defaultRelativityProvider.length === 1) {
+				self.selectedDestinationType(defaultRelativityProvider[0].artifactID);
+			}
+		}
 
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') }).then(function (result) {
-		    var types = $.map(result, function (entry) {
-		        var c = new Choice(entry.name, entry.id, entry.artifactID, entry);
-		        c.href = entry.url;
-		        return c;
-		    });
-		    self.destinationTypes(types);
+			var types = $.map(result, function (entry) {
+				var c = new Choice(entry.name, entry.id, entry.artifactID, entry);
+				c.href = entry.url;
+				return c;
+			});
+			self.destinationTypes(types);
 			self.destinationProviderVisible(self.destinationTypes().length > 1);
-		    var setRelativityAsDestinationProvider = function () {
-		        var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
-		            return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
-		        });
-		        if (defaultRelativityProvider.length === 1) {
-		            self.selectedDestinationType(defaultRelativityProvider[0].artifactID);
-		        }
-		    }
 
-		    setRelativityAsDestinationProvider();
+			self.setRelativityAsDestinationProvider();
 
-		    $.each(self.destinationTypes(), function () {
+			$.each(self.destinationTypes(), function () {
 
-		        if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
-		            self.selectedDestinationType(this.artifactID);
-		        }
-		    });
+				if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
+					self.selectedDestinationType(this.artifactID);
+				}
+			});
+
 		});
 
 		this.artifactTypeID = ko.observable().extend({ required: true });
-   
-		this.selectedDestinationType.subscribe(function (selectedValue) {
-			if (parentModel.hasBeenRun()) {
-				parentModel.source.isSourceProviderDisabled(true);
-			} else {
-				var fileshareChoice = self.destinationTypes().filter(function (obj) {
-					return obj.displayName === "Fileshare";
-				});
-
-				if (fileshareChoice.length === 1 && selectedValue === fileshareChoice[0].artifactID) {
-					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
-					parentModel.source.selectedType(relativitySourceProviderGuid);
-					parentModel.source.isSourceProviderDisabled(true);
-				} else {
-					parentModel.source.isSourceProviderDisabled(false);
-				}
-			}
-		});
-
 		this.UpdateSelectedItem = function () {
 			self.artifactTypeID(settings.artifactTypeID);
 		}
@@ -396,7 +414,7 @@ var IP = IP || {};
 		}
 
 		this.submit = function () {
-		    IP.reverseMapFields = false;
+			IP.reverseMapFields = false;
 			if (ko.utils.unwrapObservable(this.sendOn).submit) {
 				this.sendOn().submit();
 			}
@@ -465,59 +483,59 @@ var IP = IP || {};
 		});
 
 		this.startDate = ko.observable(options.startDate).extend({
-		    date: {
-		        message: 'The field Start Date must be a date.'
-		    }
+			date: {
+				message: 'The field Start Date must be a date.'
+			}
 		}).extend({
-		    validation: {
-		        validator: function (value) {
-		            if (!self.isEnabled()) {
-		                return true;
-		            }
-		            if (value) {
-		                var comp = value.split('/');
-		                if (comp.length > 3) {
-		                    return false;
-		                }
-		                
-		                var m = parseInt(comp[0], 10);
-		                var d = parseInt(comp[1], 10);
-		                var y = parseInt(comp[2], 10);
-		                var date = new Date(y, m - 1, d);
-		                // check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date and year to check if it is the same
-		                if (date.getFullYear() == y && date.getMonth() + 1 == m && date.getDate() == d) {
-		                    // used to make sure the user doesn't chose a date older than today 
-		                    return true;
-		                }
-		            }
-		            return false;
-		        },
-		        message: 'Please enter a valid date.'
-		    }
+			validation: {
+				validator: function (value) {
+					if (!self.isEnabled()) {
+						return true;
+					}
+					if (value) {
+						var comp = value.split('/');
+						if (comp.length > 3) {
+							return false;
+						}
+
+						var m = parseInt(comp[0], 10);
+						var d = parseInt(comp[1], 10);
+						var y = parseInt(comp[2], 10);
+						var date = new Date(y, m - 1, d);
+						// check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date and year to check if it is the same
+						if (date.getFullYear() == y && date.getMonth() + 1 == m && date.getDate() == d) {
+							// used to make sure the user doesn't chose a date older than today 
+							return true;
+						}
+					}
+					return false;
+				},
+				message: 'Please enter a valid date.'
+			}
 		}).extend({
-		    required: {
-		        onlyIf: function () {
-		            return self.isEnabled();
-		        }
-		    }
+			required: {
+				onlyIf: function () {
+					return self.isEnabled();
+				}
+			}
 		});
 
 		this.endDate = ko.observable(options.endDate).extend({
-		    date: {
-		        message: 'The field End Date must be a date.'
-		    }
+			date: {
+				message: 'The field End Date must be a date.'
+			}
 		}).extend({
-		    validation: {
-		        validator: function (value) {
-		            if (value && self.startDate() && (new Date(value).compareTo(new Date(self.startDate())) < 0 || value.split('/').length > 3)) {
+			validation: {
+				validator: function (value) {
+					if (value && self.startDate() && (new Date(value).compareTo(new Date(self.startDate())) < 0 || value.split('/').length > 3)) {
 
-		                return false;
-		            }
+						return false;
+					}
 
-		            return true;
-		        },
-		        message: 'The start date must come before the end date.'
-		    }
+					return true;
+				},
+				message: 'The start date must come before the end date.'
+			}
 		});
 
 		this.scheduledTime = ko.observable(options.scheduledTime).extend({
@@ -547,6 +565,12 @@ var IP = IP || {};
 
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
+
+		this.isExportType = ko.observable(settings.isExportType || "true").extend({ required: true });
+
+		this.isExportType.subscribe(function (value) {
+			self.setExportTypeVisibility(value);
+		});
 
 		var hasBeenRun = false;
 		if (settings.lastRun != null) {
@@ -585,6 +609,25 @@ var IP = IP || {};
 			this.showErrors(true);
 			this.scheduler.submit();
 		};
+
+		self.setExportTypeVisibility = function (isExportType) {
+			if (self.hasBeenRun()) {
+				self.source.isSourceProviderDisabled(true);
+			} else {
+				if (isExportType === "true") {
+					self.source.displayRelativityInSourceTypes(true);
+					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+					self.source.selectedType(relativitySourceProviderGuid);
+					self.source.isSourceProviderDisabled(true);
+					self.destination.isDestinationProviderDisabled(false);
+				} else {
+					self.source.displayRelativityInSourceTypes(false);
+					self.source.isSourceProviderDisabled(false);
+					self.destination.setRelativityAsDestinationProvider();
+					self.destination.isDestinationProviderDisabled(true);
+				}
+			}
+		};
 	};
 
 	var Step = function (settings) {
@@ -613,12 +656,12 @@ var IP = IP || {};
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 			this.model.submit();
 			if (this.model.errors().length === 0) {
-			    this.model.destinationProvider = this.model.destination.selectedDestinationType();
-			    var guid = this.model.destination.selectedDestinationTypeGuid();
-			    this.model.destinationProviderGuid = guid;
-			    this.model.destination = JSON.stringify({
-				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
-				    destinationProviderType: ko.toJS(guid),
+				this.model.destinationProvider = this.model.destination.selectedDestinationType();
+				var guid = this.model.destination.selectedDestinationTypeGuid();
+				this.model.destinationProviderGuid = guid;
+				this.model.destination = JSON.stringify({
+					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
+					destinationProviderType: ko.toJS(guid),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});

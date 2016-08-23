@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			_apiLog = ConnectionHelper.Helper().GetLoggerFactory().GetLogger().ForContext<IntegrationPointsController>();
 		}
 
-		public ActionResult Edit(int? id)
+		public ActionResult Edit(int? artifactId)
 		{
 			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(SessionService.WorkspaceID);
 
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 				return View(new EditPoint
 				{
 					AppID = SessionService.WorkspaceID,
-					ArtifactID = id.GetValueOrDefault(0),
+					ArtifactID = artifactId.GetValueOrDefault(0),
 					UserID = base.SessionService.UserID,
 					CaseUserID = base.SessionService.WorkspaceUserID,
 					URL = previousURL,

@@ -116,7 +116,7 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-	<Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -143,6 +143,7 @@
     <Compile Include="Unit\Tasks\ITaskFactoryTests.cs" />
     <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Unit\Tasks\SyncManagerTests.cs" />
+    <Compile Include="Unit\Tasks\SyncWorkerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

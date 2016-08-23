@@ -33,7 +33,7 @@ using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	using global::kCura.IntegrationPoints.Agent.kCura.IntegrationPoints.Agent;
+	using kCura.IntegrationPoints.Agent;
 	using Injection;
 	public interface ITaskFactory
 	{
