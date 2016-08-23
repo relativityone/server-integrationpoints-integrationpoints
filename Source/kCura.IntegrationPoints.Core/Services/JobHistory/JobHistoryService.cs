@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			return jobHistories;
 		}
 
-		public Data.JobHistory GetOrCreateSchduleRunHistoryRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
+		public Data.JobHistory GetOrCreateSchduledRunHistoryRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;
 
