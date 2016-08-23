@@ -36,7 +36,8 @@ namespace kCura.IntegrationPoints.Injection
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error occurred while trying to insert the injection with Guid '{injectionPointId}'", ex);
+				throw new Exception($"Error occurred while trying to insert the injection with Guid '{injectionPointId}'. " +
+				                    "Make sure the injection point does not already exist.", ex);
 			}
 		}
 
@@ -94,7 +95,10 @@ namespace kCura.IntegrationPoints.Injection
 
 		public static void InsertInjectionPoint(InjectionPoint injectionPoint)
 		{
-			const string insertInjectionPointQuery = @"INSERT INTO [InjectionPoint]
+			const string insertInjectionPointQuery = @"IF NOT EXISTS 
+														(SELECT * FROM [InjectionPoint] 
+														WHERE ID = @injectionPointId)
+													INSERT INTO [InjectionPoint]
 													([ID], [Description], [Feature])
 													VALUES(@injectionPointId, @description, @feature)";
 
@@ -206,16 +210,14 @@ namespace kCura.IntegrationPoints.Injection
 		{
 			string query = "SELECT Count(*) FROM [Injection] WHERE [InjectionPointID] = @injectionPointId";
 
-			SqlParameter[] parameters = new SqlParameter[]
-			{
+			SqlParameter[] parameters = {
 				new SqlParameter("injectionPointId", SqlDbType.UniqueIdentifier) { Value = new Guid(injectionPointId) }
 			};
 
 			try
 			{
-				int executionCount = Context.ExecuteSqlStatementAsScalar<int>(query, parameters);
-
-				return executionCount > 0;
+				int injectionPointCount = Context.ExecuteSqlStatementAsScalar<int>(query, parameters);
+				return injectionPointCount > 0;
 			}
 			catch (Exception ex)
 			{

@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private int _integrationPointArtifactTypeId;
 		private long _jobId = 0;
 
-		public ScheduledJobStopState() : base("IntegrationPointService Source", null)
+		public ScheduledJobStopState() : base("ScheduledJobStopState Source", null)
 		{
 		}
 
@@ -64,10 +64,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				Injection.InjectionHelper.InitializeAndEnableInjectionPoints(new List<kCura.Injection.Injection>() { cansu });
 
 				//IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
-				IntegrationModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "tesing", "Append Only", "01/01/2016", "01/01/2017", ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
+				IntegrationModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", "01/01/2016", "01/01/2017", ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
 				IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
-				Injection.InjectionHelper.WaitUntilInjectionPointIsReached("", DateTime.Now);
+				Injection.InjectionHelper.WaitUntilInjectionPointIsReached("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4", DateTime.Now);
 
 				Guid batchInstance = Guid.NewGuid();
 
