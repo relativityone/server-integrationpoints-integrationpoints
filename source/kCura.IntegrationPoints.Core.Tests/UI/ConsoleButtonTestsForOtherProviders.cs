@@ -62,20 +62,21 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance);
-
+				
 				DataRow row = new CreateScheduledJob(_queueContext).Execute(
-					WorkspaceArtifactId,
-					integrationPoint.ArtifactID,
-					"SyncManager",
-					DateTime.MaxValue,
-					1,
-					null,
-					null,
-					jobDetails,
-					0,
-					777,
-					1,
-					1);
+					workspaceID: WorkspaceArtifactId,
+					relatedObjectArtifactID: integrationPoint.ArtifactID,
+					taskType: "SyncManager",
+					nextRunTime: DateTime.MaxValue,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1);
+
 				Job tempJob = new Job(row);
 				jobId = tempJob.JobId;
 

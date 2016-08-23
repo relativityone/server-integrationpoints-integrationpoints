@@ -14,6 +14,7 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using System;
 using System.Data;
+using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoints.Core.Tests.UI
 {
@@ -67,24 +68,27 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			Guid batchInstance = Guid.NewGuid();
 			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance);
+
 			DataRow row = new CreateScheduledJob(_queueContext).Execute(
-				SourceWorkspaceArtifactId,
-				integrationPoint.ArtifactID,
-				"ExportService",
-				DateTime.MaxValue,
-				1,
-				null,
-				null,
-				jobDetails,
-				0,
-				777,
-				1,
-				1);
+					workspaceID: SourceWorkspaceArtifactId,
+					relatedObjectArtifactID: integrationPoint.ArtifactID,
+					taskType: "ExportService",
+					nextRunTime: DateTime.MaxValue,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1);
+
 			Job tempJob = new Job(row);
 			_jobId = tempJob.JobId;
 
 			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
-			string runAndStopButtonOnClickStopXpath = string.Format(@"//a[@onclick='IP.stopJob({0},{1})']", integrationPoint.ArtifactID, SourceWorkspaceArtifactId);
+			string runAndStopButtonOnClickStopXpath =
+				$@"//a[@onclick='IP.stopJob({integrationPoint.ArtifactID},{SourceWorkspaceArtifactId})']";
 			string warningDialogId = "ui-dialog-title-msgDiv";
 			string consoleControlXpath = "//div[contains(@class,'ConsoleControlTitle')]";
 			string warningMessage = "Stopping this transfer will not remove any data that was transferred. When re-running this transfer, make sure that your overwrite settings will return expected results.";
@@ -114,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			Job updatedJob = _jobService.GetJob(_jobId);
 
 			//Assert
-			Assert.IsTrue(((int)(updatedJob.StopState) == 1));
+			Assert.IsTrue((int)updatedJob.StopState == (int) StopState.Stopping);
 		}
 	}
 }
