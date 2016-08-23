@@ -30,10 +30,12 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -163,6 +165,12 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
 			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
 			container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>());
+			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoSynchronizerPush>().Named(typeof(RdoSynchronizerPush).AssemblyQualifiedName).LifeStyle.Transient);
+			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoSynchronizerPull>().Named(typeof(RdoSynchronizerPull).AssemblyQualifiedName).LifeStyle.Transient);
+			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoCustodianSynchronizer>().Named(typeof(RdoCustodianSynchronizer).AssemblyQualifiedName).LifeStyle.Transient);
+			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<ExportSynchroznizer>().Named(typeof(ExportSynchroznizer).AssemblyQualifiedName).LifeStyle.Transient);
+            container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
+            container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 
 			#region Data
 
@@ -195,6 +203,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<RSAPIRdoQuery>().ImplementedBy<RSAPIRdoQuery>().LifeStyle.Transient);
 			container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>().LifeStyle.Transient);
+            container.Register(Component.For<IFileQuery>().ImplementedBy<FileQuery>().LifeStyle.Transient);
 			#endregion
 
 			#region Keyword
