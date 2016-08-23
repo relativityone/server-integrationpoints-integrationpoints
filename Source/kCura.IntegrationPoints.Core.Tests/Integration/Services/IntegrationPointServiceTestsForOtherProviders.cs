@@ -49,18 +49,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				CreateJobHistoryOnIntegrationPoint(integrationPointId, batchInstance);
 
 				DataRow row = new CreateScheduledJob(_queueContext).Execute(
-					WorkspaceArtifactId,
-					integrationPointId,
-					"SyncManager",
-					DateTime.UtcNow,
-					1,
-					null,
-					null,
-					jobDetails,
-					0,
-					777,
-					1,
-					1);
+					workspaceID: WorkspaceArtifactId,
+					relatedObjectArtifactID: integrationPointId,
+					taskType: "SyncManager",
+					nextRunTime: DateTime.UtcNow,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1);
+
 				fakeJob = new Job(row);
 
 				// ACT & ASSERT
