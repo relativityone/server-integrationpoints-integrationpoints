@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -7,6 +8,7 @@ using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Data.Installers
 {
+	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class QueryInstallers : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)

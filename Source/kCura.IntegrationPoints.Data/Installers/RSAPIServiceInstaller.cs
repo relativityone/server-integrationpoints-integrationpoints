@@ -7,6 +7,7 @@ using Castle.Windsor;
 using Castle.MicroKernel.Registration;
 namespace kCura.IntegrationPoints.Data.Installers
 {
+	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class RSAPIServiceInstaller : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)

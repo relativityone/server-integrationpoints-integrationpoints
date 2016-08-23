@@ -130,7 +130,9 @@ namespace kCura.IntegrationPoints.Services
 			return await Task.Run(() =>
 			{
 				IWindsorContainer container = new WindsorContainer();
+#pragma warning disable 618
 				ServiceInstaller installer = new ServiceInstaller(workspaceArtifactId);
+#pragma warning restore 618
 				installer.Install(container, new DefaultConfigurationStore());
 				return container;
 			}).ConfigureAwait(false);

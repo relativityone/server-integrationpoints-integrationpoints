@@ -1,10 +1,12 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Services.Keywords;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
+	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class KeywordInstaller : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
