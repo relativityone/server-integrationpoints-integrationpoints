@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(jobHistories);
 
 			// ACT
-			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduleRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
+			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduledRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
 
 			// ASSERT
 			Assert.AreSame(history, returnedJobHistory);
@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
-			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduleRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
+			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduledRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
 
 			// ASSERT
 			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
-			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduleRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
+			Data.JobHistory returnedJobHistory = _instance.GetOrCreateSchduledRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
 
 			// ASSERT
 			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
