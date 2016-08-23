@@ -58,6 +58,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
+			string currentAssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+			bool isIlMergedAssembly = currentAssemblyName == "kCura.IntegrationPoints";
+
 			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 			container.Kernel.AddFacility<TypedFactoryFacility>();
 
@@ -173,8 +176,17 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof(GetJobCustodianManagerLinks).Name,
 				typeof(GetJobsCount).Name
 			});
+			FromAssemblyDescriptor fromAssemblyDescriptor = null;
+			if (isIlMergedAssembly)
+			{
+				fromAssemblyDescriptor = Classes.FromThisAssembly();
+			}
+			else
+			{
+				fromAssemblyDescriptor = Classes.FromAssemblyNamed(DATA_ASSEMBLY_NAME);
+			}
 			container.Register(
-				Classes.FromAssemblyNamed(DATA_ASSEMBLY_NAME)
+				fromAssemblyDescriptor
 					.InNamespace("kCura.IntegrationPoints.Data.Queries")
 					.If(x => !x.GetInterfaces().Any())
 					.If(x => !excludedQueryClassNames.Contains(x.Name))
@@ -187,11 +199,17 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			#region Keyword
 			#region Convention
+
+			if (!isIlMergedAssembly)
+			{
+				fromAssemblyDescriptor = Classes.FromAssemblyNamed(CORE_ASSEMBLY_NAME);
+			}
+
 			container.Register(
-				Classes.FromAssemblyNamed(CORE_ASSEMBLY_NAME)
-				.BasedOn<IKeyword>()
-				.WithService.DefaultInterfaces()
-				.Configure(x => x.LifestyleTransient()));
+				fromAssemblyDescriptor
+					.BasedOn<IKeyword>()
+					.WithService.DefaultInterfaces()
+					.Configure(x => x.LifestyleTransient()));
 			#endregion
 
 			container.Register(Component.For<KeywordConverter>().ImplementedBy<KeywordConverter>().LifeStyle.Transient);
@@ -215,8 +233,14 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (CaseManagerWrapperFactory).Name,
 				typeof (ExporterWrapperFactory).Name
 			});
+
+			if (!isIlMergedAssembly)
+			{
+				fromAssemblyDescriptor = Classes.FromAssemblyNamed(FILESDESTINATIONPROVIDER_ASSEMBLY_NAME);
+			}
+
 			container.Register(
-				Classes.FromAssemblyNamed(FILESDESTINATIONPROVIDER_ASSEMBLY_NAME)
+				fromAssemblyDescriptor
 					.IncludeNonPublicTypes()
 					.InNamespace(FILESDESTINATIONPROVIDER_ASSEMBLY_NAME, true)
 					.If(x => x.GetInterfaces().Any())

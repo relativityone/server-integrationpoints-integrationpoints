@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
 			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
-			agentInstaller.Install(_container, new DefaultConfigurationStore());
+			agentInstaller.Install(Container, new DefaultConfigurationStore());
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
