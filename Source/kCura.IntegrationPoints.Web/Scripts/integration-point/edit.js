@@ -1,8 +1,4 @@
 ﻿(function (root) {
-	$('#stepProgress').stepProgress({
-		steps: root.stepDefinitionProvider.stepsOptions['initsteps']
-	});
-
 	$('#next').on('click', function () {
 		root.messaging.publish('next');
 	});
