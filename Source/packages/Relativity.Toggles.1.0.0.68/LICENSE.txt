@@ -1,0 +1,4 @@
+=== Relativity.Toggles ===
+
+Copyright 2015 kCura Corporation.  This software is available for use under the 
+terms of a Relativity license agreement.
