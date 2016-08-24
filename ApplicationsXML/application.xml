@@ -7,9 +7,19 @@
       <ColumnName>Alert</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1002562</ArtifactViewFieldId>
+      <ArtifactViewFieldId>1002782</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>AllCustodians</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002783</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AllCustodiansCustodianDeduplicationOrder</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002562</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AllCustodians_script</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1002709</ArtifactViewFieldId>
@@ -1733,7 +1743,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-08-05T14:03:06.8906475Z</ExtractionDate>
+  <ExtractionDate>2016-08-23T11:54:18.8123821Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -4193,6 +4203,30 @@
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
           <ApplicationVersion>2.0.0.41</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>New Integration Point Custom Page</Name>
+          <Action>&lt;action&gt;&lt;href&gt;%applicationPath%/External.aspx?%AppID%&amp;amp;%ArtifactTypeID%&amp;amp;DirectTo=%25applicationPath%25%2fCustomPages%2fDCF6E9D1-22B6-4DA3-98F6-41381E93C30C%2fIntegrationPoints%2fEdit%2f%3fStandardsCompliance=true&lt;/href&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000033</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>2a9fb60e-c1d8-446b-acd7-df0020e75c50</Guid>
+          <ObjectRuleID>1040548</ObjectRuleID>
+          <Operator />
+          <Type>NewButtonOverride</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Edit Integration Point Custom Page</Name>
+          <Action>&lt;action&gt;&lt;href&gt;%applicationPath%/External.aspx?%AppID%&amp;amp;%ArtifactTypeID%&amp;amp;DirectTo=%25applicationPath%25%2fCustomPages%2fDCF6E9D1-22B6-4DA3-98F6-41381E93C30C%2fIntegrationPoints%2fEdit%3f%artifactid%&amp;amp;StandardsCompliance=true&lt;/href&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000033</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>2a9214eb-5abf-4f4a-9138-904c8fe38f9c</Guid>
+          <ObjectRuleID>1040549</ObjectRuleID>
+          <Operator />
+          <Type>OverrideEditLinkURL</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -6884,7 +6918,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6936,7 +6970,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6988,7 +7022,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7040,7 +7074,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7092,7 +7126,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7144,7 +7178,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -8822,7 +8856,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8874,7 +8908,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8926,7 +8960,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8978,7 +9012,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -9030,7 +9064,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -9082,7 +9116,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.19</ApplicationVersion>
+          <ApplicationVersion>2.0.95.20</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -9154,7 +9188,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.4.224.2</RelativityVersion>
-  <Version>2.0.95.19</Version>
+  <Version>2.0.95.20</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>822363b1-5445-471e-af4f-61384a89304f</OriginSignature>
   <MasterScripts />
@@ -9205,7 +9239,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.19</ApplicationVersion>
+      <ApplicationVersion>2.0.95.20</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9217,7 +9251,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.19</ApplicationVersion>
+      <ApplicationVersion>2.0.95.20</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9229,7 +9263,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.19</ApplicationVersion>
+      <ApplicationVersion>2.0.95.20</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9241,7 +9275,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.19</ApplicationVersion>
+      <ApplicationVersion>2.0.95.20</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9253,7 +9287,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.19</ApplicationVersion>
+      <ApplicationVersion>2.0.95.20</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9265,7 +9299,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.19</ApplicationVersion>
+      <ApplicationVersion>2.0.95.20</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9277,7 +9311,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.19</ApplicationVersion>
+      <ApplicationVersion>2.0.95.20</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>

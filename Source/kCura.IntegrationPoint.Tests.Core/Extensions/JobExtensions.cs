@@ -179,6 +179,22 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 		)
 		OUTPUT
 			Inserted.[JobID]
+			,Inserted.[RootJobID]
+			,Inserted.[ParentJobID]
+			,Inserted.[AgentTypeID]
+			,Inserted.[LockedByAgentID]
+			,Inserted.[WorkspaceID]
+			,Inserted.[RelatedObjectArtifactID]
+			,Inserted.[TaskType]
+			,Inserted.[NextRunTime]
+			,Inserted.[LastRunTime]
+			,Inserted.[ScheduleRuleType]
+			,Inserted.[ScheduleRule]
+			,Inserted.[JobDetails]
+			,Inserted.[JobFlags]
+			,Inserted.[SubmittedDate]
+			,Inserted.[SubmittedBy]
+			,Inserted.[StopState]
 		VALUES
 		(
 			@RootJobID
@@ -198,7 +214,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			,@SubmittedBy
 		)";
 
-		public static int Execute(IQueueDBContext qDBContext,
+		public static Job Execute(IQueueDBContext qDBContext,
 												int workspaceID,
 												int relatedObjectArtifactID,
 												string taskType,
@@ -240,8 +256,15 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			sqlParams.Add(!parentJobID.HasValue || parentJobID.Value == 0
 											? new SqlParameter("@ParentJobID", DBNull.Value)
 											: new SqlParameter("@ParentJobID", parentJobID.Value));
-			int jobId = qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams);
-			return jobId;
+
+			DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
+
+			DataRow row = null;
+			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
+				row = dataTable.Rows[0];
+
+			Job job = new Job(row);
+			return job;
 		}
 	}
 }

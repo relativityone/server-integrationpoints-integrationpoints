@@ -11,6 +11,7 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Web.Installers;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.Web
 			_container = new WindsorContainer();
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-			_container.Install(FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory, "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
+			_container.Install(new ControllerInstaller());
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}

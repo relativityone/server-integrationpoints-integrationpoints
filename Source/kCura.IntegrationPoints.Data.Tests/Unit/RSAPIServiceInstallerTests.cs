@@ -18,7 +18,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			IWindsorContainer container = new WindsorContainer();
 			
 			//ACT
+#pragma warning disable 618
 			container.Install(new RSAPIServiceInstaller());
+#pragma warning restore 618
 			var handlers = GetHandlersFor(typeof(IRSAPIService), container);
 
 			//ASSERT

@@ -135,7 +135,8 @@
     <Compile Include="Integration\AgentConstractorTests.cs" />
     <Compile Include="Integration\ExportServiceManagerTests.cs" />
     <Compile Include="Integration\SendEmailManagerTests.cs" />
-    <Compile Include="Integration\SyncManagerTests.cs" />
+    <Compile Include="Integration\TaskFactoryTestsForOtherProviders.cs" />
+    <Compile Include="Unit\CastleWindsorValidatorTests.cs" />
     <Compile Include="Unit\SendEmailManagerUnitTests.cs" />
     <Compile Include="Unit\Tasks\ExportManagerTest.cs" />
     <Compile Include="Unit\Tasks\ExportServiceManagerTests.cs" />
@@ -183,6 +184,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
+      <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
+      <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

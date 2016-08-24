@@ -1,4 +1,5 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
@@ -9,6 +10,7 @@ using kCura.WinEDDS.Exporters;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
+	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class ExportInstaller : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)

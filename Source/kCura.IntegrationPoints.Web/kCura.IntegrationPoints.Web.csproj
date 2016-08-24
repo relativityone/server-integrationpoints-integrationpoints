@@ -171,7 +171,7 @@
     </Reference>
     <Reference Include="Relativity.DragonGrid.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Relativity.DragonGrid.1.0.48.13\lib\net45\Relativity.DragonGrid.Core.dll</HintPath>
+      <HintPath>..\Dependencies\Relativity.DragonGrid\Relativity.DragonGrid.Core.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -342,6 +342,18 @@
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.svg">
+      <Link>Content\fonts\integration-points.svg</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\integration-points-fonts.css">
+      <Link>Content\integration-points-fonts.css</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.svg">
+      <Link>Content\fonts\legal-hold-icons.svg</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\legal-hold-fonts.css">
+      <Link>Content\legal-hold-fonts.css</Link>
+    </Content>
     <Content Include="Content\buttermilk-variables.css">
       <DependentUpon>buttermilk-variables.scss</DependentUpon>
     </Content>
@@ -358,8 +370,6 @@
     <Content Include="Content\css\select2.png" />
     <Content Include="Content\css\select2search.css" />
     <Content Include="Content\css\select2x2.png" />
-    <Content Include="Content\fonts\integration-points.svg" />
-    <Content Include="Content\fonts\legal-hold-icons.svg" />
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
@@ -367,11 +377,9 @@
     <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\sprite.png" />
-    <Content Include="Content\integration-points-fonts.css" />
     <Content Include="Content\integration-points-view.css" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
-    <Content Include="Content\legal-hold-fonts.css" />
     <Content Include="Content\list-picker.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\scheduler.css">
@@ -413,20 +421,32 @@
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
-    <Content Include="Content\fonts\integration-points.woff" />
-    <Content Include="Content\fonts\integration-points.ttf" />
-    <Content Include="Content\fonts\integration-points.eot" />
     <Content Include="Content\buttermilk.scss" />
     <Content Include="Content\step-progress-bar.scss" />
-    <Content Include="Content\fonts\legal-hold-icons.woff" />
-    <Content Include="Content\fonts\legal-hold-icons.ttf" />
-    <Content Include="Content\fonts\legal-hold-icons.eot" />
     <Content Include="Content\header.scss" />
     <Content Include="Content\select2-overrides.scss" />
     <Content Include="Content\scheduler.scss" />
     <Content Include="Content\controls-grid-pager.scss" />
     <Content Include="Content\buttermilk-variables.scss" />
     <Content Include="Content\buttermilk.9_2.min.css.map" />
+    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.eot">
+      <Link>Content\fonts\integration-points.eot</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.ttf">
+      <Link>Content\fonts\integration-points.ttf</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.woff">
+      <Link>Content\fonts\integration-points.woff</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.eot">
+      <Link>Content\fonts\legal-hold-icons.eot</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.ttf">
+      <Link>Content\fonts\legal-hold-icons.ttf</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.woff">
+      <Link>Content\fonts\legal-hold-icons.woff</Link>
+    </Content>
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
@@ -771,7 +791,7 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
-$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)"</PostBuildEvent>
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(ProjectDir)..\..\lib\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\$(Relativity_ImportExport)\build\Relativity.ImportExport.targets')" />
 </Project>

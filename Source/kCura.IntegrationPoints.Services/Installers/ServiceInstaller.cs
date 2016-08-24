@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -11,6 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services
 {
+	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class ServiceInstaller
 	{
 		private readonly int _caseArtifactId;

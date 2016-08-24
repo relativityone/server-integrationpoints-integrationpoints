@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ using OpenQA.Selenium;
 namespace kCura.IntegrationPoints.Core.Tests.UI
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
+	[Category(IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class OtherProvidersConsoleButtonTests : OtherProvidersTemplate
 	{
 		private const int _ADMIN_USER_ID = 9;
@@ -61,20 +62,21 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance);
-
+				
 				DataRow row = new CreateScheduledJob(_queueContext).Execute(
-					WorkspaceArtifactId,
-					integrationPoint.ArtifactID,
-					"SyncManager",
-					DateTime.MaxValue,
-					1,
-					null,
-					null,
-					jobDetails,
-					0,
-					777,
-					1,
-					1);
+					workspaceID: WorkspaceArtifactId,
+					relatedObjectArtifactID: integrationPoint.ArtifactID,
+					taskType: "SyncManager",
+					nextRunTime: DateTime.MaxValue,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1);
+
 				Job tempJob = new Job(row);
 				jobId = tempJob.JobId;
 
@@ -101,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 				Job updatedJob = _jobService.GetJob(jobId);
 
 				//Assert
-				Assert.IsTrue((int)updatedJob.StopState == 1);
+				Assert.IsTrue((int) updatedJob.StopState == (int) StopState.Stopping);
 			}
 			finally
 			{
