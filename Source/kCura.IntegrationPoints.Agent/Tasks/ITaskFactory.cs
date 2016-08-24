@@ -56,6 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IAgentService _agentService;
 		private IJobService _jobService;
 		private IManagerFactory _managerFactory;
+		private IIntegrationPointService _integrationPointService;
 
 		public TaskFactory(IAgentHelper helper)
 		{
@@ -98,7 +99,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
 			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
-			agentInstaller.Install(Container, new DefaultConfigurationStore());
+			Container.Install(agentInstaller);
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -187,6 +188,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
+			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
@@ -211,12 +213,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
-			IChoiceQuery choiceQuery = new ChoiceQuery(_rsapiClient);
-			JobResourceTracker jobResourceTracker = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
-			JobTracker jobTracker = new JobTracker(jobResourceTracker);
-			IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _serializer, jobTracker);
+			IIntegrationPointService integrationPointService = null;
+			if (_integrationPointService == null)
+			{
+				IChoiceQuery choiceQuery = new ChoiceQuery(_rsapiClient);
+				JobResourceTracker jobResourceTracker = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
+				JobTracker jobTracker = new JobTracker(jobResourceTracker);
+				IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _serializer, jobTracker);
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, _caseServiceContext, _contextContainerFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory);
+				integrationPointService = new IntegrationPointService(_helper, _caseServiceContext,
+					_contextContainerFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory);
+			}
+			else
+			{
+				integrationPointService = _integrationPointService;
+			}
 
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 

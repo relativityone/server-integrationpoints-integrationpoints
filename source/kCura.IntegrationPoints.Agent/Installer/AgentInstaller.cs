@@ -68,7 +68,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			const string CORE_ASSEMBLY_NAME = "kCura.IntegrationPoints.Core";
 
-			// OG ITaskFactory Install method
 			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true));
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _agentHelper, true));
 			container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _agentHelper, true));
@@ -78,12 +77,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_agentHelper.GetDBContext(_job.WorkspaceID))));
 			container.Register(Component.For<Job>().UsingFactoryMethod(k => _job));
-
-//			container.Register(
-//				Component.For<GetApplicationBinaries>()
-//				.ImplementedBy<GetApplicationBinaries>()
-//				.DynamicParameters(
-//					(k, d) => d["eddsDBcontext"] = _agentHelper.GetDBContext(-1)).LifeStyle.Transient);
 			container.Register(
 				Component.For<GetApplicationBinaries>()
 					.ImplementedBy<GetApplicationBinaries>()
@@ -91,18 +84,28 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					.LifestyleTransient());
 
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
-			  k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(_job.WorkspaceID, ExecutionIdentity.System)).LifestyleTransient());
+			  k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(_job.WorkspaceID, ExecutionIdentity.System)));
 			container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(container.Resolve<IHelper>(), _job.WorkspaceID)).LifestyleTransient());
+
+			if (container.Kernel.HasComponent(typeof (IRelativityConfigurationFactory)) == false)
+			{
+				container.Register(
+					Component.For<IRelativityConfigurationFactory>()
+						.ImplementedBy<RelativityConfigurationFactory>()
+						.LifestyleSingleton());
+			}
+
 			container.Register(Component.For<ISendable>()
 			  .ImplementedBy<SMTP>()
-			  .DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
+			  .DependsOn(
+				Dependency.OnValue<EmailConfiguration>(container.Resolve<IRelativityConfigurationFactory>().GetConfiguration())));
 
 			container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
 				.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
 				.LifestyleTransient());
 
-			// OG installer registrations
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifeStyle.Transient);
+			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifeStyle.Transient);
 			container.Register(Component.For<ExportServiceManager>().ImplementedBy<ExportServiceManager>().LifeStyle.Transient);
 			container.Register(Component.For<SyncCustodianManagerWorker>().ImplementedBy<SyncCustodianManagerWorker>().LifeStyle.Transient);
 			container.Register(Component.For<ScheduleQueue.Core.Logging.CreateErrorRdo>().ImplementedBy<ScheduleQueue.Core.Logging.CreateErrorRdo>().LifeStyle.Transient);
@@ -126,11 +129,15 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					.ImplementedBy<JobHistoryErrorServiceProvider>()
 					.LifeStyle.BoundTo<ExportWorker>());
 
-			// Old ServicesInstaller
             container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
             container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
             container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
-            container.Register(Component.For<IIntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
+
+			if (container.Kernel.HasComponent(typeof (IIntegrationPointService)) == false)
+			{
+				container.Register(Component.For<IIntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
+			}
+
             container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 	        container.Register(Component.For<IJobHistoryErrorService>()
@@ -231,14 +238,15 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			#region Convention
 
+			// The following classes are ignored as they are either registered later in a specific fashion
+			// or are not intended to be injected.
 			var excludedFdpClassNames = new HashSet<string>(new[]
 			{
-				typeof (LoggingMediatorFactory).Name,
 				typeof (ExportUserNotification).Name,
 				typeof (ExportLoggingMediator).Name,
 				typeof (ExportFieldsService).Name,
 				typeof (ProductionPrecedenceService).Name,
-				typeof (ExporterWrapper).Name,
+				typeof (ExporterWrapper).Name, // defined earlier in file
 				typeof (CaseManagerWrapperFactory).Name,
 				typeof (ExporterWrapperFactory).Name
 			});

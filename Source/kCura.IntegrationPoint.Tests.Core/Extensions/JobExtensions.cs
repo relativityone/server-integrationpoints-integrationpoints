@@ -89,6 +89,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
+		public static Job CreateJob(long jobId, TaskType taskType, int relatedObjectArtifactID)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = jobId;
+			jobData["TaskType"] = taskType.ToString();
+			jobData["RelatedObjectArtifactID"] = relatedObjectArtifactID;
+
+			return new Job(jobData);
+		}
+
 		private static DataRow CovertToDataRow(Job job)
 		{
 			DataRow jobData = CreateDefaultJobData();
