@@ -1,21 +1,24 @@
 ﻿using System.Collections.Generic;
-using kCura.WinEDDS;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
-	public class CompositeLoggingMediator : ILoggingMediator
+	public interface ICompositeLoggingMediator : ILoggingMediator
 	{
-		private readonly List<ILoggingMediator> _loggingMediators;
+		List<ILoggingMediator> LoggingMediators { get; }
+	}
 
+	public class CompositeLoggingMediator : ICompositeLoggingMediator
+	{
 		public CompositeLoggingMediator()
 		{
-			_loggingMediators = new List<ILoggingMediator>();
+			LoggingMediators = new List<ILoggingMediator>();
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
-			IExporterStatusNotification exporterStatusNotification)
+			ICoreExporterStatusNotification exporterStatusNotification)
 		{
-			foreach (var loggingMediator in _loggingMediators)
+			foreach (var loggingMediator in LoggingMediators)
 			{
 				loggingMediator.RegisterEventHandlers(userMessageNotification, exporterStatusNotification);
 			}
@@ -23,7 +26,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		public void AddLoggingMediator(ILoggingMediator loggingMediator)
 		{
-			_loggingMediators.Add(loggingMediator);
+			LoggingMediators.Add(loggingMediator);
 		}
+
+		public List<ILoggingMediator> LoggingMediators { get; }
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -27,9 +28,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         {
             var settings = new ExportSettings();
 
-            _exportProcessRunner.StartWith(settings);
+	        var job = JobExtensions.CreateJob();
 
-            _exportProcessBuilder.Received().Create(settings);
+			_exportProcessRunner.StartWith(settings, job);
+
+            _exportProcessBuilder.Received().Create(settings, job);
         }
 
 		[Test]
@@ -38,20 +41,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var settings = new ExportUsingSavedSearchSettings();
 			var fieldMap = new List<FieldMap>();
 			var artifactId = 1000;
+			var job = JobExtensions.CreateJob();
 
-			_exportProcessRunner.StartWith(settings, fieldMap, artifactId);
+			_exportProcessRunner.StartWith(settings, fieldMap, artifactId, job);
 
 			_exportSettingsBuilder.Received().Create(settings, fieldMap, artifactId);
-			_exportProcessBuilder.Received().Create(Arg.Any<ExportSettings>());
+			_exportProcessBuilder.Received().Create(Arg.Any<ExportSettings>(), job);
 		}
 
 		[Test]
         public void ItShouldRunExporter()
         {
             var exporter = Substitute.For<IExporter>();
-            _exportProcessBuilder.Create(new ExportSettings()).ReturnsForAnyArgs(exporter);
+			var job = JobExtensions.CreateJob();
+			_exportProcessBuilder.Create(new ExportSettings(), job).ReturnsForAnyArgs(exporter);
 
-            _exportProcessRunner.StartWith(new ExportSettings());
+            _exportProcessRunner.StartWith(new ExportSettings(), job);
 
             exporter.Received().Run();
         }
@@ -60,9 +65,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		public void ItShouldRunExporterForInputData()
 		{
 			var exporter = Substitute.For<IExporter>();
-			_exportProcessBuilder.Create(new ExportSettings()).ReturnsForAnyArgs(exporter);
+			var job = JobExtensions.CreateJob();
+			_exportProcessBuilder.Create(new ExportSettings(), job).ReturnsForAnyArgs(exporter);
 
-			_exportProcessRunner.StartWith(new ExportUsingSavedSearchSettings(), new List<FieldMap>(), 1000);
+			_exportProcessRunner.StartWith(new ExportUsingSavedSearchSettings(), new List<FieldMap>(), 1000, job);
 
 			exporter.Received().Run();
 		}

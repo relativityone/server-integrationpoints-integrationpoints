@@ -98,6 +98,9 @@
     <Reference Include="Relativity.Telemetry.MetricsCollection">
       <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
     </Reference>
+	<Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web.Services" />
@@ -124,6 +127,7 @@
     <Compile Include="Logging\JobErrorLoggingMediator.cs" />
     <Compile Include="Logging\JobHistoryErrorServiceProvider.cs" />
     <Compile Include="Logging\LoggingMediatorFactory.cs" />
+    <Compile Include="Logging\StatisticsLoggingMediator.cs" />
     <Compile Include="Process\DelimitersBuilder.cs" />
     <Compile Include="Process\ExportFieldsService.cs" />
     <Compile Include="Process\ExportFileBuilder.cs" />
@@ -147,6 +151,7 @@
     <Compile Include="SharedLibrary\ExporterWrapperFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\IConfigFactory.cs" />
+    <Compile Include="SharedLibrary\ICoreExporterStatusNotification.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
     <Compile Include="SharedLibrary\IProductionManagerFactory.cs" />
@@ -167,6 +172,10 @@
       <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
@@ -178,6 +187,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

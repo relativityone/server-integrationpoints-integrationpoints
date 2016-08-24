@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
@@ -9,14 +10,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
     public class CompositeLoggingMediatorTests
     {
         private CompositeLoggingMediator _compositeLoggingMediator;
-        private IExporterStatusNotification _exporterStatusNotification;
+        private ICoreExporterStatusNotification _exporterStatusNotification;
         private IUserMessageNotification _userMessageNotification;
 
         [SetUp]
         public void SetUp()
         {
             _compositeLoggingMediator = new CompositeLoggingMediator();
-            _exporterStatusNotification = Substitute.For<IExporterStatusNotification>();
+            _exporterStatusNotification = Substitute.For<ICoreExporterStatusNotification>();
             _userMessageNotification = Substitute.For<IUserMessageNotification>();
         }
 

@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
 using NSubstitute;
@@ -11,7 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
 	public class JobErrorLoggingMediatorTests
 	{
-		private IExporterStatusNotification _exporterStatusNotification;
+		private ICoreExporterStatusNotification _exporterStatusNotification;
 		private IJobHistoryErrorService _historyErrorService;
 		private IUserMessageNotification _userMessageNotification;
 
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		{
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_historyErrorService = Substitute.For<IJobHistoryErrorService>();
-			_exporterStatusNotification = Substitute.For<IExporterStatusNotification>();
+			_exporterStatusNotification = Substitute.For<ICoreExporterStatusNotification>();
 			var jobErrorLoggingMediator = new JobErrorLoggingMediator(_historyErrorService);
 			jobErrorLoggingMediator.RegisterEventHandlers(_userMessageNotification, _exporterStatusNotification);
 		}

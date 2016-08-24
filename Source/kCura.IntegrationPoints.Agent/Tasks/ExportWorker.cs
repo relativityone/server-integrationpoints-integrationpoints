@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			var destinationSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
 
-			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId);
+			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId, job);
 		}
 
 		#endregion //Methods

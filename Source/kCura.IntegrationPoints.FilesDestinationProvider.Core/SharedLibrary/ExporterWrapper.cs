@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
@@ -48,8 +49,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 					Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR,
 					Guid.Empty, MetricTargets.SUM))
 			{
-				return _exporter.ExportSearch();
+				DateTime start = DateTime.UtcNow;
+				var successResult = _exporter.ExportSearch();
+				DateTime end = DateTime.UtcNow;
+
+				OnBatchCompleted?.Invoke(start, end, _exporter.TotalExportArtifactCount, 10);
+
+				return successResult;
 			}
 		}
+
+		public event BatchCompleted OnBatchCompleted;
 	}
 }

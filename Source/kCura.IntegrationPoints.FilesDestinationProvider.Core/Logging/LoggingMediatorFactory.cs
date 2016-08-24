@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			_helper = helper;
 		}
 
-		public ILoggingMediator Create()
+		public ICompositeLoggingMediator Create()
 		{
 			var compositeLoggingMediator = new CompositeLoggingMediator();
 			var apiLog = _helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessRunner>();
@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 			compositeLoggingMediator.AddLoggingMediator(exportLoggingMediator);
 			compositeLoggingMediator.AddLoggingMediator(jobErrorLoggingMediator);
+			compositeLoggingMediator.AddLoggingMediator(new StatisticsLoggingMediator());
 
 			return compositeLoggingMediator;
 		}
