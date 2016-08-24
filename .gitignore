@@ -1,5 +1,4 @@
-﻿packages/
-*.DotSettings.*
+﻿*.DotSettings.*
 bin
 Bin
 obj
@@ -56,7 +55,7 @@ Thumbs.db
 *.dotCover
 *.DotSettings
 TestLogs/*
-Packages/*
+Source/Packages/*
 *.pubxml.user
 *.nupkg
 msbuild.targets
