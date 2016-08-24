@@ -243,8 +243,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private JobHistory GetJobHistory(Job job, IntegrationPoint integrationPointDto)
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPointDto, taskParameters.BatchInstance,
-				String.IsNullOrEmpty(job.ScheduleRuleType) ? JobTypeChoices.JobHistoryRun : JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
+			JobHistory jobHistory = _jobHistoryService.CreateRdo(
+				integrationPointDto, 
+				taskParameters.BatchInstance,
+				String.IsNullOrEmpty(job.ScheduleRuleType) 
+					? JobTypeChoices.JobHistoryRun : JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
 
 			return jobHistory;
 	}
@@ -253,12 +256,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			JobHistory jobHistory = GetJobHistory(job, integrationPointDto);
 
-			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(_caseServiceContext)
-			{
-				IntegrationPoint = integrationPointDto,
-				JobHistory = jobHistory
-			};
-
+			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
+			jobHistoryErrorService.IntegrationPoint = integrationPointDto;
+			jobHistoryErrorService.JobHistory = jobHistory;
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
 			jobHistoryErrorService.CommitErrors();
 
