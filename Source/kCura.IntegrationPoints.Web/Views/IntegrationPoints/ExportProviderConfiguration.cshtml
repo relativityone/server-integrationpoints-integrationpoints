@@ -27,7 +27,7 @@
 					</td>
 					<td class="editFieldValue">
 						<div>
-							<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun(), select2: {}"></select>
+							<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun(), select2: {}"></select>
 							@*<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>*@ 
 							@*TODO: review and fix picker's implementation*@
 						</div>

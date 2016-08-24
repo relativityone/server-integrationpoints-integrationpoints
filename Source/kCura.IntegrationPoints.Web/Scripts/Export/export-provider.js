@@ -209,6 +209,15 @@
 			required: true
 		});
 
+		this.SavedSearch.subscribe(function (selectedValue) {
+			$.each(self.savedSearches(),
+				function () {
+					if (this.value === selectedValue) {
+						self.SavedSearchArtifactId(this.value);
+					}
+				});
+		});
+
 		this.updateSelectedSavedSearch = function () {
 			var selectedSavedSearch = ko.utils.arrayFirst(self.savedSearches(), function (item) {
 				if (item.value === self.SavedSearchArtifactId()) {
