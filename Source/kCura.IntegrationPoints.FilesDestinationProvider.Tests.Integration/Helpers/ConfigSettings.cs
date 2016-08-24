@@ -26,6 +26,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		public int ExportedObjArtifactId { get; set; }
 
+		public int ProductionArtifactId { get; set; }
+
 		public FieldEntry[] DefaultFields { get; set; }
 
 		public FieldEntry[] AdditionalFields { get; set; }
