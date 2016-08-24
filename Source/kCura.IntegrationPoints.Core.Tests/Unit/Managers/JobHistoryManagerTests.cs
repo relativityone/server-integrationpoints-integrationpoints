@@ -110,6 +110,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void SetErrorStatusesToExpired_GoldFlow()
 		{
 			// ARRANGE
@@ -140,6 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void SetErrorStatusesToExpired_UpdatesFail()
 		{
 			// ARRANGE
@@ -162,7 +164,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryErrorRepo
 				.When(repo => repo.UpdateErrorStatuses(Arg.Any<ClaimsPrincipal>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>()))
 				.Do(info => { throw new Exception("error"); });
-
 
 			// ACT
 			Assert.DoesNotThrow(() => _testInstance.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId));
