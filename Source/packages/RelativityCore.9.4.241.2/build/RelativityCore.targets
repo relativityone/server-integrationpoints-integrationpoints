@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Target Name="FreeImage" AfterTargets="Build">
-		<Copy SourceFiles="$(MSBuildThisFileDirectory)..\lib\native\FreeImage.dll" DestinationFiles="$(TargetDir)\FreeImage.dll" SkipUnchangedFiles="true" />
-    </Target>
-</Project>

@@ -108,6 +108,7 @@
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -250,6 +251,8 @@
     <Compile Include="Models\BaseField.cs" />
     <Compile Include="Models\BaseFields.cs" />
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Production.cs" />
+    <Compile Include="ProductionDataSource.cs" />
     <Compile Include="RelativityApplication.cs" />
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
