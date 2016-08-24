@@ -15,11 +15,14 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Castle.MicroKernel.Registration;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
@@ -179,6 +182,46 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 			// assert
 			caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(1).Create(Arg.Any<List<JobHistoryError>>());
+		}
+
+		[Test]
+		public void CreateTask_AllTaskTypesAreResolvable()
+		{
+			foreach (TaskType taskType in Enum.GetValues(typeof (TaskType)))
+			{
+				// Arrange
+				IAgentHelper helper = Substitute.For<IAgentHelper>();
+				IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
+				IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
+				IRelativityConfigurationFactory relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
+
+				IWindsorContainer windsorContainer = new WindsorContainer();
+				windsorContainer.Register(Component.For<IIntegrationPointService>().Instance(integrationPointService));
+				windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(relativityConfigurationFactory));
+
+				var taskFactory = new TaskFactory(helper, windsorContainer);
+				ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+				rsapiClient.APIOptions = new APIOptions(40234);
+				helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(rsapiClient);
+				relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
+
+				int relatedId = 453245;
+				int jobId = 342343;
+
+				integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
+
+				Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
+				try
+				{
+					// Act / Assert
+					taskFactory.CreateTask(job, agentBase);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
+				}
+			}
 		}
 
 		public class TestAgentBase : ScheduleQueueAgentBase
