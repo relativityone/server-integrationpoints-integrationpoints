@@ -135,7 +135,7 @@
     <Compile Include="Integration\AgentConstractorTests.cs" />
     <Compile Include="Integration\ExportServiceManagerTests.cs" />
     <Compile Include="Integration\SendEmailManagerTests.cs" />
-    <Compile Include="Integration\SyncManagerTests.cs" />
+    <Compile Include="Integration\TaskFactoryTestsForOtherProviders.cs" />
     <Compile Include="Unit\CastleWindsorValidatorTests.cs" />
     <Compile Include="Unit\SendEmailManagerUnitTests.cs" />
     <Compile Include="Unit\Tasks\ExportManagerTest.cs" />

@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
@@ -174,16 +175,28 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected void AssignJobToAgent(int agentId, long jobId)
 		{
-			string query = $" Update [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}] SET [LockedByAgentID] = @agentId,  [NextRunTime] = GETUTCDATE() - 1 Where JobId = @JobId";
+			string query = $"Update [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}] SET [LockedByAgentID] = @agentId,  [NextRunTime] = GETUTCDATE() - 1 Where JobId = @JobId";
 
-			SqlParameter agentIdParam = new SqlParameter("@agentId", SqlDbType.BigInt) { Value = agentId };
-			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.Int) { Value = jobId };
+			SqlParameter agentIdParam = new SqlParameter("@agentId", SqlDbType.Int) { Value = agentId };
+			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.BigInt) { Value = jobId };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new[] { agentIdParam, jobIdParam });
 		}
 
-		protected void ControlIntegrationPointAgents(bool enable)
+		protected void ControlIntegrationPointAgents(bool enable, int timeoutInMs = 10000)
 		{
+			int elapsed = 0;
+			while ((AgentArtifactId == 0) && (elapsed < timeoutInMs))
+			{
+				Thread.Sleep(1000);
+				elapsed += 1000;
+			}
+
+			if (AgentArtifactId == 0)
+			{
+				throw new Exception("Integration Points agent artifact id was not set within the timeout specified.");
+			}
+
 			global::Relativity.Services.Agent.Agent agent = Agent.ReadIntegrationPointAgent(AgentArtifactId);
 			agent.Enabled = enable;
 			Agent.UpdateAgent(agent);

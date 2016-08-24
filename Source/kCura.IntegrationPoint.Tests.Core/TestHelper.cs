@@ -72,15 +72,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public IDBContext GetDBContext(int caseId)
 		{
-			kCura.Data.RowDataGateway.Context baseContext = null;
+			Data.RowDataGateway.Context baseContext = null;
 			if (caseId == -1)
 			{
-				baseContext = new kCura.Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
+				baseContext = new Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
 			}
 			else
 			{
 				string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
-				baseContext = new kCura.Data.RowDataGateway.Context(connectionString);
+				baseContext = new Data.RowDataGateway.Context(connectionString);
 			}
 			DBContext context = new DBContext(baseContext);
 			return context;
@@ -612,6 +612,77 @@ namespace kCura.IntegrationPoint.Tests.Core
 			public async Task UpdateSingleAsync(int workspaceArtifactID, global::Relativity.Services.Permission.Permission permissionDTO)
 			{
 				await Manager.UpdateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
+			}
+		}
+
+		public class ExtendedIAgentHelper : IAgentHelper
+		{
+			private readonly ITestHelper _helper;
+
+			public ExtendedIAgentHelper(ITestHelper helper)
+			{
+				_helper = helper;
+			}
+
+			public void Dispose()
+			{
+				throw new NotImplementedException();
+			}
+
+			public IDBContext GetDBContext(int caseID)
+			{
+				Data.RowDataGateway.Context baseContext = null;
+				if (caseID == -1)
+				{
+					baseContext = new Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
+				}
+				else
+				{
+					string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseID);
+					baseContext = new Data.RowDataGateway.Context(connectionString);
+				}
+				DBContext context = new DBContext(baseContext);
+				return context;
+			}
+
+			public IServicesMgr GetServicesManager()
+			{
+				return _helper.GetServicesManager();
+			}
+
+			public IUrlHelper GetUrlHelper()
+			{
+				throw new NotImplementedException();
+			}
+
+			public ILogFactory GetLoggerFactory()
+			{
+				throw new NotImplementedException();
+			}
+
+			public string ResourceDBPrepend()
+			{
+				throw new NotImplementedException();
+			}
+
+			public string ResourceDBPrepend(IDBContext context)
+			{
+				throw new NotImplementedException();
+			}
+
+			public string GetSchemalessResourceDataBasePrepend(IDBContext context)
+			{
+				throw new NotImplementedException();
+			}
+
+			public Guid GetGuid(int workspaceID, int artifactID)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IAuthenticationMgr GetAuthenticationManager()
+			{
+				throw new NotImplementedException();
 			}
 		}
 
