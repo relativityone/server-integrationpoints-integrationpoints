@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			};
 
 			_taskParameters = new TaskParameters();
-			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun };
+			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0};
 			_sourceProvider = new SourceProvider();
 			_mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
@@ -247,6 +247,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopAtTheVeryBeginningOfTheJob()
 		{
 			// ARRANGE
@@ -257,10 +258,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
+			Assert.AreEqual(0, _jobHistory.TotalItems);
 			AssertFinalizedJob(_job);
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopAfterAcquiringTheSynchronizer()
 		{
 			// ARRANGE
@@ -272,10 +275,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
+			Assert.AreEqual(0, _jobHistory.TotalItems);
 			AssertFinalizedJob(_job);
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopBeforeExecutePushingData()
 		{
 			// ARRANGE
@@ -289,9 +294,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
+			Assert.AreEqual(0, _jobHistory.TotalItems);
 			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<Choice>(), Arg.Any<Exception>());
 			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<Choice>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
-
 			AssertFinalizedJob(_job);
 		}
 
