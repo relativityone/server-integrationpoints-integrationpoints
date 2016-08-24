@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -75,15 +74,32 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			return SavedSearch.Create(workspaceId, search);
 		}
 
-		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable, DataTable imageSourceDataTable)
+		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable,
+			DataTable imageSourceDataTable)
 		{
-			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
+			var importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword,
+				_configSettings.WebApiUrl);
 
-			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
-			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
+			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi,
+				_CONTROL_NUMBER_FIELD_ARTIFACT_ID);
+			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi,
+				_CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 		}
 
-		private static void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable, ImportAPI importApi, int identifyFieldArtifactId)
+		internal int CreateProduction(int workspaceArtifactId, int savedSearchId)
+		{
+			var productionId = Production.Create(workspaceArtifactId);
+			var productionDataSourceId = ProductionDataSource.Create(workspaceArtifactId, productionId, savedSearchId,
+				"WhenNoImageExists");
+
+			Production.StageAndWaitForCompletion(workspaceArtifactId, productionId);
+			Production.RunAndWaitToCompletion(workspaceArtifactId, productionId);
+
+			return productionId;
+		}
+
+		private static void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable,
+			ImportAPI importApi, int identifyFieldArtifactId)
 		{
 			var importJob = importApi.NewImageImportJob();
 
