@@ -171,7 +171,7 @@
     </Reference>
     <Reference Include="Relativity.DragonGrid.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\Relativity.DragonGrid\lib\net45\Relativity.DragonGrid.Core.dll</HintPath>
+      <HintPath>..\Dependencies\Relativity.DragonGrid\Relativity.DragonGrid.Core.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
