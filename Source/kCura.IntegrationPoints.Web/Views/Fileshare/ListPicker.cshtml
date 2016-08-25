@@ -5,7 +5,7 @@
         <div class="label" data-bind="text: PickerName"></div>
 
         <div class="table" data-bind="with: model">
-            <div id="available-precedence-list" class="cell">
+            <div id="available-values-list" class="cell">
                 <div class="list-title" style="margin: 10px 0px 5px 0px;">Available:</div>
                 <select id="popup-list-available" class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
             </div>
@@ -17,7 +17,7 @@
                     <a href="#" id="remove-all-items" class="icon-move-first" data-bind="click: removeAllValues"></a>
                 </div>
             </div>
-            <div id="selected-precedence-list" class="cell">
+            <div id="selected-values-list" class="cell">
                 <div class="list-title" style="margin: 10px 0px 5px 0px;">Selected:</div>
                 <select id="popup-list-selected" class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>
             </div>
