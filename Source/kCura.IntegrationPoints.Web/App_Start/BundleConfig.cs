@@ -75,7 +75,8 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/step-progress-bar.css",
 				"~/Content/css/select2.css",
 				"~/Content/select2-overrides.css",
-				"~/Content/buttermilk.css"
+				"~/Content/buttermilk.css",
+				"~/Content/buttermilk.9_2.min.css"
 			));
 
 			bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
