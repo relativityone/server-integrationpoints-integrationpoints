@@ -8,7 +8,7 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -23,6 +23,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
@@ -63,11 +64,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
 			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields, _configSettings.WorkspaceId);
-
+			
 			_documents = GetDocumentDataTable();
 			_images = GetImageDataTable();
 
 			_workspaceService.ImportData(_configSettings.WorkspaceId, _documents, _images);
+
+			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId,
+				_configSettings.ExportedObjArtifactId);
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
@@ -164,7 +168,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				SelViewFieldIds = fieldIds,
 				TextPrecedenceFieldsIds = new List<int> { int.Parse(_configSettings.LongTextField.FieldIdentifier) },
 				DataFileEncoding = Encoding.Unicode,
-				VolumeMaxSize = 650
+				VolumeMaxSize = 650,
+				ImagePrecedence =
+					new[]
+					{
+						new ProductionPrecedenceDTO()
+						{
+							ArtifactID = _configSettings.ProductionArtifactId.ToString(),
+							DisplayName = "Production"
+						}
+					}
 			};
 
 			return settings;
@@ -187,10 +200,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			table.Columns.Add("File Name", typeof(string));
 			table.Columns.Add("Native File", typeof(string));
 			table.Columns.Add("Issue Designation", typeof(string));
+			table.Columns.Add("Has Images", typeof(bool));
 
-			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000757.htm"), "Level1\\Level2");
-			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000975.pdf"), "Level1\\Level2");
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0001185.xls"), "Level1\\Level2");
+			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000757.htm"), "Level1\\Level2", true);
+			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000975.pdf"), "Level1\\Level2", true);
+			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0001185.xls"), "Level1\\Level2", true);
+			table.Rows.Add("AZIPPER_0011318", "AZIPPER_0011318.msg", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AZIPPER_0011318.msg"), "Level1\\Level2", false);
 
 			return table;
 		}

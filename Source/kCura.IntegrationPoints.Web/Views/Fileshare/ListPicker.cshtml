@@ -7,7 +7,7 @@
         <div class="table" data-bind="with: model">
             <div class="cell">
                 <div class="list-title" style="margin: 10px 0px 5px 0px;">Available:</div>
-                <select class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
+                <select id="popup-list-available" class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
             </div>
             <div class="cell selection map-move">
                 <div>
@@ -19,7 +19,7 @@
             </div>
             <div class="cell">
                 <div class="list-title" style="margin: 10px 0px 5px 0px;">Selected:</div>
-                <select class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>
+                <select id="popup-list-selected" class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>
             </div>
             <div class="cell selection map-move">
                 <div>

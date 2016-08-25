@@ -27,7 +27,7 @@
 					</td>
 					<td class="editFieldValue">
 						<div>
-							<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun(), select2: {}"></select>
+							<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun(), select2: {}"></select>
 							@*<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>*@ 
 							@*TODO: review and fix picker's implementation*@
 						</div>
@@ -336,8 +336,8 @@
 								</td>
                                 <td class="editFieldValue">
                                     <label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
-                                    <button data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-                                    <input data-bind="value: ImagePrecedence, visible: false" />
+                                    <button id="image-production-precedence-button" data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                                    <input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
                                 </td>
 							</tr>
 							<tr data-bind="visible: IsProductionPrecedenceSelected()">
@@ -417,8 +417,8 @@
 								</td>
 								<td class="editFieldValue">
 									<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-									<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-									<input data-bind="value: TextPrecedenceFields, visible: false" />
+									<button id="text-precedence-button" data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+									<input id="text-precedence-input" data-bind="value: TextPrecedenceFields, visible: false" />
 								</td>
 							</tr>
 							<tr>
