@@ -233,7 +233,9 @@
 									Column:
 								</td>
 								<td class="editFieldValue" data-bind="visible: isCustom">
-									<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
+									<div>
+										<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator, select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr data-bind="visible: isCustom">
@@ -241,7 +243,9 @@
 									Quote:
 								</td>
 								<td class="editFieldValue">
-									<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
+									<div>
+										<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator, select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr data-bind="visible: isCustom()">
@@ -249,7 +253,9 @@
 									Newline:
 								</td>
 								<td class="editFieldValue">
-									<select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator"></select>
+									<div>
+										<select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator, select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 
@@ -258,7 +264,9 @@
 									Multi-Value:
 								</td>
 								<td class="editFieldValue">
-									<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
+									<div>
+										<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator, select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr data-bind="visible: isCustom()">
@@ -266,7 +274,9 @@
 									Nested Value:
 								</td>
 								<td class="editFieldValue">
-									<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
+									<div>
+										<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator, select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr>
@@ -310,7 +320,9 @@
 									Data File Format:
 								</td>
 								<td class="editFieldValue">
-									<select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun()"></select>
+									<div>
+										<select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr>
@@ -319,7 +331,9 @@
 									File Type:
 								</td>
 								<td class="editFieldValue">
-									<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType"></select>
+									<div>
+										<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr>
@@ -327,7 +341,9 @@
 									Production Precedence:
 								</td>
 								<td class="editFieldValue">
-									<select id="image-production-precedence" data-bind="disable: HasBeenRun(), options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, disable: HasBeenRun()"></select>
+									<div>
+										<select id="image-production-precedence" data-bind="disable: HasBeenRun(), options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, disable: HasBeenRun(), select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr data-bind="visible: IsProductionPrecedenceSelected()">
