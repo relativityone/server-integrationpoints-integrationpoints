@@ -629,16 +629,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 				throw new NotImplementedException();
 			}
 
-			public IDBContext GetDBContext(int caseID)
+			public IDBContext GetDBContext(int caseId)
 			{
 				Data.RowDataGateway.Context baseContext = null;
-				if (caseID == -1)
+				if (caseId == -1)
 				{
 					baseContext = new Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
 				}
 				else
 				{
-					string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseID);
+					string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
 					baseContext = new Data.RowDataGateway.Context(connectionString);
 				}
 				DBContext context = new DBContext(baseContext);
