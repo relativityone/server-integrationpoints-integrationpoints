@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Agent
 {
 	namespace kCura.IntegrationPoints.Agent
 	{
-		public class RelativityConfigurationFactory
+		public class RelativityConfigurationFactory : IRelativityConfigurationFactory
 		{
 			public EmailConfiguration GetConfiguration()
 			{

@@ -22,13 +22,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\</OutputPath>
-    <DefineConstants>TIME_MACHINE</DefineConstants>
+    <DefineConstants>TIME_MACHINE,$(Injections)</DefineConstants>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -184,6 +185,7 @@
     <Compile Include="Attributes\SynchronizedTaskAttribute.cs" />
     <Compile Include="Exceptions\AgentDropJobException.cs" />
     <Compile Include="Installer\AgentInstaller.cs" />
+    <Compile Include="IRelativityConfigurationFactory.cs" />
     <Compile Include="Tasks\ExportManager.cs" />
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />

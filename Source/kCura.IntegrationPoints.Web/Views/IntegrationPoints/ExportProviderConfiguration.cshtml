@@ -16,7 +16,9 @@
 						Workspace :
 					</td>
 					<td class="editFieldValue">
-						<select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, select2: {}"></select>
+						<div>
+							<select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, select2: {}"></select>
+						</div>
 					</td>
 				</tr>
 				<tr>
@@ -24,10 +26,11 @@
 						Saved Search :
 					</td>
 					<td class="editFieldValue">
-						<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun()"></select> <!-- ,select2: {} -->
-						@*
-							<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>
-						*@ @*TODO: review and fix picker's implementation*@
+						<div>
+							<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: SavedSearch, disable: HasBeenRun(), select2: {}"></select>
+							@*<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>*@ 
+							@*TODO: review and fix picker's implementation*@
+						</div>
 					</td>
 				</tr>
 				<tr>
@@ -220,7 +223,9 @@
 									Data File Format:
 								</td>
 								<td class="editFieldValue">
-									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun()"></select>
+									<div>
+										<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
+									</div>
 								</td>
 							</tr>
 							<tr>
@@ -331,8 +336,8 @@
 								</td>
                                 <td class="editFieldValue">
                                     <label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
-                                    <button data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-                                    <input data-bind="value: ImagePrecedence, visible: false" />
+                                    <button id="image-production-precedence-button" data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+                                    <input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
                                 </td>
 							</tr>
 							<tr data-bind="visible: IsProductionPrecedenceSelected()">
@@ -412,8 +417,8 @@
 								</td>
 								<td class="editFieldValue">
 									<label id="text-precedence-selection" data-bind="text: TextPrecedenceSelection"></label>
-									<button data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-									<input data-bind="value: TextPrecedenceFields, visible: false" />
+									<button id="text-precedence-button" data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+									<input id="text-precedence-input" data-bind="value: TextPrecedenceFields, visible: false" />
 								</td>
 							</tr>
 							<tr>

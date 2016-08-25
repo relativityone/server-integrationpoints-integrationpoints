@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Injection
 			SetController(new InjectionController());
 		}
 
-		[Conditional("INJECTION")]
+		[Conditional("EnableInjections")]
 		public void Evaluate(string injectionPointId)
 		{
 			_manager.Evaluate(injectionPointId);
