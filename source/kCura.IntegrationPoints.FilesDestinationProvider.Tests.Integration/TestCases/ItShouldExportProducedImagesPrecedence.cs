@@ -4,13 +4,14 @@ using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
 	public class ItShouldExportProducedImagesPrecedence : ExportTestCaseBase
 	{
-		private readonly string _defaultPlaceholderPath = Path.Combine(Directory.GetCurrentDirectory(),
+		private readonly string _defaultPlaceholderPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
 			@"TestData\DefaultPlaceholder.tif");
 
 		public override ExportSettings Prepare(ExportSettings settings)
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 				var exportedImagesWithSameControlNumber =
 					exportedImages.Where(f => f.Name.Contains(document.ItemArray[0].ToString())).ToList();
-
+				
 				for (var i = 0; i < imagesWithSameControlNumber.Count(); i++)
 				{
 					var file1 = exportedImagesWithSameControlNumber[i];

@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
     public interface IExporter : IExporterStatusNotification
     {
         IUserNotification InteractionManager { get; set; }
-        bool Run();
+        void Run();
     }
 }

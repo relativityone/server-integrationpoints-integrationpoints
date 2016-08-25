@@ -143,8 +143,10 @@
     <Compile Include="Logging\ExportUserNotification.cs" />
     <Compile Include="SharedLibrary\CaseManagerWrapperFactory.cs" />
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
-    <Compile Include="SharedLibrary\ExporterWrapper.cs" />
-    <Compile Include="SharedLibrary\ExporterWrapperFactory.cs" />
+    <Compile Include="SharedLibrary\ExporterEventsWrapper.cs" />
+    <Compile Include="SharedLibrary\SimpleExporter.cs" />
+    <Compile Include="SharedLibrary\StoppableExporter.cs" />
+    <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\IConfigFactory.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />

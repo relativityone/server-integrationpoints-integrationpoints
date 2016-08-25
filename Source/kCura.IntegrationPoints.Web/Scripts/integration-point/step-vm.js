@@ -15,13 +15,18 @@
 			this.currentStep().getTemplate();
 		}, this);
 
-
 		this.goToStep = function (step, model) {
+			var totalSteps = 2; // hardcoded to hide additional steps //this.steps().length - 1;
+			if (step > totalSteps) {
+				return totalSteps;
+			}
+			if (step < 0) {
+				return 0;
+			}
 
 			if (step === 0) {
 				IP.stepDefinitionProvider.init();
-			}
-			else if (step === 1) {
+			} else if (step === 1) {
 				if (model.destinationProviderGuid === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
 					IP.stepDefinitionProvider.loadOverride([
 							{
@@ -34,31 +39,36 @@
 								text: 'Destination Information'
 							}
 					]);
-				}
-				else {
+				} else {
 					IP.stepDefinitionProvider.loadDefaults();
 				}
 			}
 
-			var totalSteps = 2; // hardcoded to hide additional steps //this.steps().length - 1;
-			if (step > totalSteps) {
-				return totalSteps;
+			var nextStep;
+
+			if (model.destinationProviderGuid === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
+				_steps = ko.utils.arrayFilter(this.steps(), function (_step) {
+					return _step.settings.isForRelativityExport;
+				});
+
+				nextStep = _steps[step - 1];
 			}
-			if (step < 0) {
-				return 0;
+
+			if (!nextStep) {
+				nextStep = this.steps()[step];
 			}
-			var nextStep = this.steps()[step];
+
 			if (nextStep.loadModel) {
 				nextStep.loadModel($.extend({}, model));
 			}
+
 			this.currentStep(nextStep);
+
 			return step;
 		};
-
 	};
 
 	$(function () {
-
 		var vm = new viewModel();
 		var step = 0;
 		var model = {};
@@ -69,7 +79,6 @@
 		}).then(function (result) {
 			vm = new viewModel();
 			if (result.scheduler && result.scheduler.scheduledTime) {
-
 				var time = helper.utcToLocal(result.scheduler.scheduledTime.split(':'), "HH:mm");
 				var timeSplit = time.split(':');
 				var hour = parseInt(timeSplit[0], 10);
@@ -86,7 +95,6 @@
 					result.scheduler.scheduledTime = hour + ":" + timeSplit[1];
 					result.scheduler.selectedTimeFormat = 'AM';
 				}
-
 			}
 			vm.goToStep(0, result);
 			artifactID = result.artifactID;
@@ -131,13 +139,11 @@
 
 						result.scheduler.scheduledTime = helper.timeLocalToUtc(hour + ':' + timeSplit[1]);
 					}
-
 				}
 				IP.messaging.publish('saveComplete', result);
 			}, function (error) {
 				IP.message.error.raise(error);
 			});
-
 		});
 
 		IP.messaging.subscribe('saveComplete', function (model) {
@@ -171,7 +177,5 @@
 				IP.messaging.publish('goToStep', step);
 			});
 		});
-
-
 	});
 })(ko, IP.timeUtil);

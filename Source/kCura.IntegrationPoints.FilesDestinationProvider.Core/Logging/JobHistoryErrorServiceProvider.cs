@@ -16,6 +16,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			JobHistoryErrorService = jobHistoryErrorService;
 		}
 
-		public JobHistoryErrorService JobHistoryErrorService { get; private set; }
+		public virtual JobHistoryErrorService JobHistoryErrorService { get; private set; }
 	}
 }

@@ -639,7 +639,18 @@ var IP = IP || {};
 		this.loadModel = function (ip) {
 			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
-			this.model.sourceConfiguration = ip.sourceConfiguration;
+			if (typeof ip.sourceConfiguration === "string") {
+				try {
+					// parse config of existing IP
+					this.model.sourceConfiguration = JSON.parse(ip.sourceConfiguration);
+				} catch (e) {
+					// create new config
+					this.model.sourceConfiguration = {
+						SourceWorkspaceArtifactId: IP.data.params['appID'],
+						SavedSearchArtifactId: 0
+					};
+				}
+			}
 		};
 
 		this.getTemplate = function () {
