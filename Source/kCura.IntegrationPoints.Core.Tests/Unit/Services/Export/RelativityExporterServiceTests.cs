@@ -21,7 +21,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
 		private FieldMap[] _mappedFields;
 		private HashSet<int> _longTextField;
-		private IJobStopManager _jobStopMaanger;
+		private RelativityExporterService _instance;
+		private int[] _avfIds;
+		private IJobStopManager _jobStopManager;
+		private ArtifactDTO _goldFlowExpectedDto;
+		private object[] _goldFlowRetrievableData;
 
 		[OneTimeSetUp]
 		public void Setup()
@@ -53,13 +57,116 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 				}
 			};
 
+			_goldFlowRetrievableData = new object[] { new object[] { "REL01", "FileName", 1111 } };
+			_goldFlowExpectedDto = new ArtifactDTO(1111, 10, "Document", new[]
+			{
+				new ArtifactFieldDTO()
+				{
+					ArtifactId = 123,
+					Value = "REL01",
+					Name = _CONTROL_NUMBER
+				},
+				new ArtifactFieldDTO()
+				{
+					ArtifactId = 456,
+					Value = _FILE_NAME,
+					Name = _FILE_NAME
+				},
+			});
 			_longTextField = new HashSet<int>(new int[] {456});
 		}
 
 		[SetUp]
 		public void TestSetup()
 		{
-			_jobStopMaanger = Substitute.For<IJobStopManager>();
+			_avfIds = new[] { 1, 2 };
+			_jobStopManager = Substitute.For<IJobStopManager>();
+		}
+
+		[Test]
+		public void HasDataToRetrieve_RetunsFalseOnJobThatDoesNotHaveAnythingToRead()
+		{
+			// arrange
+			_exportApiResult.RowCount = 0;
+			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_jobStopManager.IsStopRequested().Returns(false);
+
+			// act
+			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
+
+			// assert
+			Assert.IsFalse(hasDataToRetrieve);
+		}
+
+
+		[Test]
+		public void HasDataToRetrieve_RetunsFalseOnFinishedJob()
+		{
+			// arrange
+			_exportApiResult.RowCount = 1;
+			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
+			_exporter.RetrieveResults(_exportApiResult.RunId, _avfIds, 1).Returns(_goldFlowRetrievableData);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_jobStopManager.IsStopRequested().Returns(false);
+
+			// act
+			ArtifactDTO[] retrievedData = _instance.RetrieveData(1);
+			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
+
+			// assert
+			ValidateArtifact(_goldFlowExpectedDto, retrievedData[0]);
+			Assert.IsFalse(hasDataToRetrieve);
+
+		}
+
+
+		[Test]
+		public void HasDataToRetrieve_RetunsTrueOnRunningJob_WithIntMaxData()
+		{
+			// arrange
+			_exportApiResult.RowCount = Int32.MaxValue;
+			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_jobStopManager.IsStopRequested().Returns(false);
+
+			// act
+			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
+
+			// assert
+			Assert.IsTrue(hasDataToRetrieve);
+		}
+
+		[Test]
+		public void HasDataToRetrieve_RetunsFalseOnRunningJob_WithLongMaxData()
+		{
+			// arrange
+			_exportApiResult.RowCount = Int64.MaxValue;
+			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_jobStopManager.IsStopRequested().Returns(false);
+
+			// act
+			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
+
+			// assert
+			Assert.IsFalse(hasDataToRetrieve);
+		}
+
+		[Test]
+		public void HasDataToRetrieve_RetunsFalseOnStoppedJob()
+		{
+			// arrange
+			_exportApiResult.RowCount = Int64.MaxValue;
+			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_jobStopManager.IsStopRequested().Returns(true);
+
+			// act
+			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
+
+			// assert
+			Assert.IsFalse(hasDataToRetrieve);
 		}
 
 		[Test]
@@ -89,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			});
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopMaanger, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 
@@ -114,7 +221,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopMaanger, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 			// Assert
@@ -137,13 +244,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			_exporter.RetrieveResults(_exportApiResult.RunId, avfIds, 1).Returns((object)null);
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopMaanger, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 			// Assert
 			Assert.NotNull(data);
 			Assert.AreEqual(0, data.Length);
-
 		}
 
 		private void ValidateArtifact(ArtifactDTO expect, ArtifactDTO actual)

@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		#region Fields
 
 		private readonly string[] _defaultFields = new[] { "Control Number", "File Name", "Issue Designation" };
-		private readonly ConfigSettings _configSettings = new ConfigSettings { WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss") };
+		private static readonly ConfigSettings _configSettings = new ConfigSettings { WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss") };
 
 		private ExportProcessRunner _instanceUnderTest;
 		private WorkspaceService _workspaceService;
@@ -47,7 +46,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		public void Init()
 		{
 			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
-
+			
 			_workspaceService = new WorkspaceService(_configSettings);
 
 			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
@@ -201,10 +200,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			table.Columns.Add("Issue Designation", typeof(string));
 			table.Columns.Add("Has Images", typeof(bool));
 
-			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000757.htm"), "Level1\\Level2", true);
-			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000975.pdf"), "Level1\\Level2", true);
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0001185.xls"), "Level1\\Level2", true);
-			table.Rows.Add("AZIPPER_0011318", "AZIPPER_0011318.msg", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AZIPPER_0011318.msg"), "Level1\\Level2", false);
+			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm"), "Level1\\Level2", true);
+			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf"), "Level1\\Level2", true);
+			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls"), "Level1\\Level2", true);
+			table.Rows.Add("AZIPPER_0011318", "AZIPPER_0011318.msg", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg"), "Level1\\Level2", false);
 
 			return table;
 		}
@@ -218,27 +217,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			table.Columns.Add("Bates Beg", typeof(string));
 			table.Columns.Add("File", typeof(string));
 
-			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0000757.tif"));
-			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0000975.tif"));
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0001185.tif"));
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185_001", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0001185_001.tif"));
+			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0000757.tif"));
+			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0000975.tif"));
+			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0001185.tif"));
+			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185_001", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0001185_001.tif"));
 
 			return table;
 		}
 
-		private IEnumerable<IExportTestCase> ExportTestCaseSource()
+		private static IEnumerable<IExportTestCase> ExportTestCaseSource()
 		{
 			InitContainer();
 			return _windsorContainer.ResolveAll<IExportTestCase>();
 		}
 
-		private IEnumerable<IInvalidFileshareExportTestCase> InvalidFileshareExportTestCaseSource()
+		private static IEnumerable<IInvalidFileshareExportTestCase> InvalidFileshareExportTestCaseSource()
 		{
 			InitContainer();
 			return _windsorContainer.ResolveAll<IInvalidFileshareExportTestCase>();
 		}
 
-		private void InitContainer()
+		private static void InitContainer()
 		{
 			if (_windsorContainer != null)
 			{

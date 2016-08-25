@@ -417,7 +417,7 @@
 			self.TextPrecedenceFields(fields);
 		});
 
-		Picker.create("ListPicker", textPrecedencePickerViewModel);
+		Picker.create("TextPrecedenceListPicker", textPrecedencePickerViewModel);
 
 		this.openTextPrecedencePicker = function () {
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
@@ -440,7 +440,7 @@
 			self.ImagePrecedence(productions);
 		});
 
-		Picker.create("ListPicker", imageProductionPickerViewModel);
+		Picker.create("ImageProductionPrecedenceListPicker", imageProductionPickerViewModel);
 
 		this.openImageProductionPicker = function () {
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
