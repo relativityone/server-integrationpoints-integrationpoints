@@ -127,7 +127,7 @@ if($BUILD -and $STATUS){
                                                                         'build_type'=$BUILDTYPE;}
     if ($psake.build_success -eq $false) { $STATUS = $false }
     
-    & nant package_documentation -buildfile:DevelopmentScripts\build.build "-D:root=$root" "-D:buildconfig=$BUILDCONFIG" "-D:action=package_documentation" "-D:buildType=$BUILDTYPE"
+    & nant package_documentation -buildfile:$root\DevelopmentScripts\build.build "-D:root=$root" "-D:buildconfig=$BUILDCONFIG" "-D:action=package_documentation" "-D:buildType=$BUILDTYPE"
     if(-not $?) { $STATUS = $false }
 }
 
@@ -167,7 +167,7 @@ if($DEPLOY -ne "" -and $STATUS){
 
 if($VERSION -ne "1.0.0.0") {
 
-    git revert -- $root\Version
+    git checkout -- $root\Version
 }
 
 $endTime = Get-Date

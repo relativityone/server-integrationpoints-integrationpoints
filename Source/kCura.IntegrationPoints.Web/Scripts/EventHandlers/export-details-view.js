@@ -16,8 +16,7 @@ ExportDetailsView.downloadSummaryPage = function () {
 		var viewModel = new Model(dataContainer);
 		ko.applyBindings(viewModel, document.getElementById('exportSummaryPage'));
 	});
-}
-
+};
 var DataContainer = function () {
 	this.hasErrors = IP.utils.getViewField(IP.hasErrorsId).siblings('.dynamicViewFieldValue').text();
 	this.logErrors = IP.utils.getViewField(IP.logErrorsId).siblings('.dynamicViewFieldValue').text();
@@ -32,8 +31,7 @@ var DataContainer = function () {
 		IP.utils.getViewField(IP.destinationid).parent().hide();
 		IP.utils.getViewField(IP.destinationProviderid).parent().hide();
 	};
-}
-
+};
 var Model = function (dataContainer) {
 	var self = this;
 
@@ -74,15 +72,30 @@ var Model = function (dataContainer) {
 		+ (self.settings.FilePath == ExportEnums.FilePathTypeEnum.UserPrefix ? (": " + self.settings.UserPrefix) : "");
 	};
 
-	this.loadFileInfo = function () {
+	this.setEncoding = function (dataFileEncodingName, callback) {
+		IP.data.ajax({ type: "get", url: IP.utils.generateWebAPIURL("GetAvailableEncodings") }).then(function (result) {
+		    var encoding = ko.utils.arrayFirst(result, function (item) {
+		        return (item.name === dataFileEncodingName);
+		    });
+		    callback(encoding.displayName);
+		});
+	}
+
+	this.concatenateLoadFileFormat = function (displayName) {
 		var fileFormat = "";
-		for (var i = 0; i < ExportEnums.DataFileFormats.length; i++) {
-			if (ExportEnums.DataFileFormats[i].value == self.settings.SelectedDataFileFormat) {
-				fileFormat = ExportEnums.DataFileFormats[i].key;
-			}
-		}
-		return fileFormat + "; " + self.settings.DataFileEncodingType.toUpperCase();
+		var dataFileFormat = ko.utils.arrayFirst(ExportEnums.DataFileFormats, function (item) {
+		    return item.value === self.settings.SelectedDataFileFormat;
+		});
+		fileFormat = dataFileFormat.key;
+
+		self.LoadFileFormat(fileFormat + "; " + displayName);
 	};
+
+	this.LoadFileFormat = ko.observable();
+	this.setLoadFileFormat = function () {
+		self.setEncoding(self.settings.DataFileEncodingType, self.concatenateLoadFileFormat);
+	};
+	this.setLoadFileFormat();
 
 	this.imageFileType = function () {
 		if (self.settings.ExportImagesChecked) {
@@ -135,9 +148,11 @@ var Model = function (dataContainer) {
 		return text;
 	};
 
-	this.textFileEncoding = function () {
-		return self.settings.TextFileEncodingType.toUpperCase();
-	};
+	this.TextFileEncoding = ko.observable();
+	this.setTextFileEncoding = function () {
+		self.setEncoding(self.settings.TextFileEncodingType, self.TextFileEncoding);
+	}
+	this.setTextFileEncoding();
 };
 
 $(function () {

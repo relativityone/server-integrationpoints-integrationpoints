@@ -6,6 +6,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Production
 	{
+		private const int _MAX_RETRIES_COUNT = 100;
+
 		private const string _PRODUCTION_SERVICE_URL_BASE =
 			"api/Relativity.Productions.Services.IProductionModule/Production%20Manager/";
 
@@ -94,9 +96,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static void WaitForProductionStatus(int workspaceId, int productionId, string expectedStatus)
 		{
-			string status;
-			while ((status = GetProductionStatus(workspaceId, productionId)) != expectedStatus)
+			for (int i = 0; i < _MAX_RETRIES_COUNT; i++)
 			{
+				var status = GetProductionStatus(workspaceId, productionId);
+
+				if (status == expectedStatus)
+				{
+					break;
+				}
+
 				if (status.Contains("Error"))
 				{
 					throw new Exception("ProductionOperation finished with errors");
@@ -124,8 +132,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			var productionObject = JsonConvert.DeserializeObject<dynamic>(productionDtoJson);
 			var productionMetadata = productionObject["ProductionMetadata"];
-			var status = productionMetadata["Status"].Value;
-			return status as string;
+			var status = productionMetadata["Status"];
+			return status.ToString();
 		}
 	}
 }

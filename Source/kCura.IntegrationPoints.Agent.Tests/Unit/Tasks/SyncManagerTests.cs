@@ -395,20 +395,86 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		}
 
 		[Test]
-		public void Execute_StoppingOnJobPreExecute()
+		public void BatchTask_StopBeforeBatchingTask()
 		{
 			// arrange
 			PreJobExecutionGoldFlowSetup();
-			_job.SerializedScheduleRule = "blah blah";
-			_integrationPoint.NextScheduledRuntimeUTC = null;
+
+			_syncManagerEventHelper.RaisePreEvent(_job);
+			IEnumerable<string> ids = _syncManagerEventHelper.GetUnbatchedIDs(_job);
 			_jobStopManager.When(obj => obj.ThrowIfStopRequested()).Do(info => { throw new OperationCanceledException(); });
-			_jobStopManager.IsStopRequested().Returns(true);
 
 			// act
-			_instance.Execute(_job);
+			Assert.Throws<OperationCanceledException>(() => _syncManagerEventHelper.BatchTask(_job, ids));
 
 			// assert
-			ValidatePostJobExecuteOnStoppingJob();
+			_jobManager.DidNotReceive().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.SyncWorker, Arg.Any<string>());
+			Assert.AreEqual(0, _syncManagerEventHelper.BatchJobCount);
+		}
+
+		[Test]
+		public void BatchTask_StopWhileCreatingTheFirstSubJob()
+		{
+			// arrange
+			PreJobExecutionGoldFlowSetup();
+			_dataReader.Read().Returns(true);
+			_dataReader.GetString(0).Returns("1", "2", "3");
+
+			_syncManagerEventHelper.RaisePreEvent(_job);
+			IEnumerable<string> ids = _syncManagerEventHelper.GetUnbatchedIDs(_job);
+			_jobStopManager.When(obj => obj.ThrowIfStopRequested())
+				.Do(Callback.First(info => { })
+				.Then(info => { throw new OperationCanceledException(); }));
+
+			// act
+			Assert.Throws<OperationCanceledException>(() => _syncManagerEventHelper.BatchTask(_job, ids));
+
+			// assert
+			_jobManager.DidNotReceive().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.SyncWorker, Arg.Any<string>());
+			Assert.AreEqual(0, _syncManagerEventHelper.BatchJobCount);
+		}
+
+		[Test]
+		public void BatchTask_AfterCreatingAJob()
+		{
+			// arrange
+			PreJobExecutionGoldFlowSetup();
+			_dataReader.Read().Returns(true);
+			_dataReader.GetString(0).Returns("1", "2", "3");
+
+			_syncManagerEventHelper.RaisePreEvent(_job);
+			IEnumerable<string> ids = _syncManagerEventHelper.GetUnbatchedIDs(_job);
+			_jobStopManager.When(obj => obj.ThrowIfStopRequested())
+				.Do(Callback.First(info => { }).Then(info => { })
+				.Then(info => { }).Then(info => { })
+				.Then(info => { throw new OperationCanceledException(); }));
+
+			// act
+			Assert.Throws<OperationCanceledException>(() => _syncManagerEventHelper.BatchTask(_job, ids));
+
+			// assert
+			_jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "1", "2" })), TaskType.SyncWorker, Arg.Any<string>());
+			Assert.AreEqual(1, _syncManagerEventHelper.BatchJobCount);
+		}
+
+		[Test]
+		public void BatchTask_GoldFlow()
+		{
+			// arrange
+			PreJobExecutionGoldFlowSetup();
+			_dataReader.Read().Returns(true, true, true, false);
+			_dataReader.GetString(0).Returns("1", "2", "3");
+
+			_syncManagerEventHelper.RaisePreEvent(_job);
+			IEnumerable<string> ids = _syncManagerEventHelper.GetUnbatchedIDs(_job);
+
+			// act
+			_syncManagerEventHelper.BatchTask(_job, ids);
+
+			// assert
+			_jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "1", "2" })), TaskType.SyncWorker, Arg.Any<string>());
+			_jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "3" })), TaskType.SyncWorker, Arg.Any<string>());
+			Assert.AreEqual(2, _syncManagerEventHelper.BatchJobCount);
 		}
 
 		private void ValidatePostJobExecuteOnStoppingJob()
@@ -470,6 +536,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			{
 				OnRaiseJobPostExecute(job, taskResult, items);
 			}
+
+			public override int BatchSize => 2;
 		}
 	}
 }
