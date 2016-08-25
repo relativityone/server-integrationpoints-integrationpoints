@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core
