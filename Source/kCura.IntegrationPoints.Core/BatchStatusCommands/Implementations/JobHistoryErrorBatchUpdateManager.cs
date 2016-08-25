@@ -14,17 +14,19 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 	{
 		private readonly IJobHistoryErrorManager _jobHistoryErrorManager;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IJobStopManager _jobStopManager;
 		private readonly ClaimsPrincipal _claimsPrincipal;
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private readonly int _jobHistoryErrorTypeId;
 
 		public JobHistoryErrorBatchUpdateManager(IJobHistoryErrorManager jobHistoryErrorManager, IRepositoryFactory repositoryFactory, 
-			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int sourceWorkspaceArtifactId, int submittedBy, 
+			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IJobStopManager jobStopManager, int sourceWorkspaceArtifactId, int submittedBy, 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
 			_jobHistoryErrorManager = jobHistoryErrorManager;
-			_repositoryFactory = repositoryFactory; 
+			_repositoryFactory = repositoryFactory;
+			_jobStopManager = jobStopManager;
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_updateStatusType = updateStatusType;
@@ -87,7 +89,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
 			{
-				if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+				if (_jobStopManager.IsStopRequested())
+				{
+					UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemComplete, jobHistoryErrorRepository,
+						ErrorStatusChoices.JobHistoryErrorExpired);
+				}
+				else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 				{
 					UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemComplete, jobHistoryErrorRepository,
 						ErrorStatusChoices.JobHistoryErrorRetried);

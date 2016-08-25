@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
@@ -22,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 			ISynchronizerFactory synchronizerFactory,
 			ISerializer serializer,
 			IJobHistoryErrorManager jobHistoryErrorManager,
+			IJobStopManager jobStopManager,
 			FieldMap[] mappedFiles,
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
