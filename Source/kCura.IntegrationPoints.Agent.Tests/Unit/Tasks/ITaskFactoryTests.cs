@@ -15,11 +15,14 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Castle.MicroKernel.Registration;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
@@ -148,37 +151,94 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 
 		[Test]
-		public void UpdateJobHistory()
+		public void CreateTask_UnableToResolveTaskType_JobHistoryIsUpdated()
 		{
 			// arrange
-			Job tempJob = JobExtensions.CreateJob();
+			int relatedId = 453245;
+			int jobId = 342343;
+			const string errorMessage = "WOAH WOAH WOAH EERRRROOOORRR!";
+			TaskType taskType = TaskType.SyncManager;
+
+			Job tempJob = JobExtensions.CreateJob(jobId, taskType, relatedId);
 			IAgentHelper helper = Substitute.For<IAgentHelper>();
-			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint();
+			IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
+			rsapiClient.APIOptions = new APIOptions(40234);
+			IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
+			IRelativityConfigurationFactory relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
+			ISerializer serializer = Substitute.For<ISerializer>();
+			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
+			IJobHistoryErrorService jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
+
 			TaskParameters paramerters = new TaskParameters();
 			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234 };
 
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
 			IWindsorContainer container = Substitute.For<IWindsorContainer>();
-			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
-			ISerializer serializer = Substitute.For<ISerializer>();
-			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
-
-			caseServiceContext.RsapiService.IntegrationPointLibrary.Read(Arg.Any<int>()).Returns(integrationPoint);
-			serializer.Deserialize<TaskParameters>(Arg.Any<String>()).Returns(paramerters);
-			jobHistoryService.CreateRdo(integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(jobHistory);
-
-			container.Resolve<SyncManager>().Throws(new Exception("Error message."));
+			container.Resolve<IIntegrationPointService>().Returns(integrationPointService);
+			container.Resolve<IRelativityConfigurationFactory>().Returns(relativityConfigurationFactory);
 			container.Resolve<ISerializer>().Returns(serializer);
-			container.Resolve<ICaseServiceContext>().Returns(caseServiceContext);
 			container.Resolve<IJobHistoryService>().Returns(jobHistoryService);
+			container.Resolve<IJobHistoryErrorService>().Returns(jobHistoryErrorService);
+			container.Resolve<SyncManager>().Throws(new Exception(errorMessage));
+
+			helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(rsapiClient);
+			relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
+			serializer.Deserialize<TaskParameters>(Arg.Any<String>()).Returns(paramerters);
+			jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(jobHistory);
+
+			integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
 
 			TaskFactory taskFactory = new TaskFactory(helper, container);
 
 			// act
-			Assert.Throws<Exception>(() => taskFactory.CreateTask(tempJob, agentBase), "Error message.");
+			Assert.Throws<Exception>(() => taskFactory.CreateTask(tempJob, agentBase), errorMessage);
 
 			// assert
-			caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(1).Create(Arg.Any<List<JobHistoryError>>());
+			jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, Arg.Any<Exception>());	
+			jobHistoryErrorService.Received(1).CommitErrors();
+			jobHistoryService.UpdateRdo(Arg.Is<JobHistory>(
+				x => x.ArtifactId == jobHistory.ArtifactId && x.JobStatus == JobStatusChoices.JobHistoryErrorJobFailed));
+		}
+
+		[Test]
+		public void CreateTask_AllTaskTypesAreResolvable()
+		{
+			foreach (TaskType taskType in Enum.GetValues(typeof (TaskType)))
+			{
+				// Arrange
+				IAgentHelper helper = Substitute.For<IAgentHelper>();
+				IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
+				IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
+				IRelativityConfigurationFactory relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
+
+				IWindsorContainer windsorContainer = new WindsorContainer();
+				windsorContainer.Register(Component.For<IIntegrationPointService>().Instance(integrationPointService));
+				windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(relativityConfigurationFactory));
+
+				var taskFactory = new TaskFactory(helper, windsorContainer);
+				ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+				rsapiClient.APIOptions = new APIOptions(40234);
+				helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(rsapiClient);
+				relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
+
+				int relatedId = 453245;
+				int jobId = 342343;
+
+				integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
+
+				Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
+				try
+				{
+					// Act / Assert
+					taskFactory.CreateTask(job, agentBase);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
+				}
+			}
 		}
 
 		public class TestAgentBase : ScheduleQueueAgentBase

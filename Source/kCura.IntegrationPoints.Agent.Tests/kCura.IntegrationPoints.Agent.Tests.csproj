@@ -185,6 +185,10 @@
       <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Email\kCura.IntegrationPoints.Email.csproj">
+      <Project>{07ec646a-d785-421e-b0f5-70d256a1e1ca}</Project>
+      <Name>kCura.IntegrationPoints.Email</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>

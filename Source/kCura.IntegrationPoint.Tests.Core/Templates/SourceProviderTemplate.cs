@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private readonly string _workspaceTemplate;
 		protected int WorkspaceArtifactId { get; private set; }
 		public int AgentArtifactId { get; set; }
+		public static bool DeleteAgentInTeardown = true;
 		protected DestinationProvider DestinationProvider;
 		protected IEnumerable<SourceProvider> SourceProviders;
 
@@ -80,7 +81,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public override void SuiteTeardown()
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);
-			Agent.DeleteAgent(AgentArtifactId);
+			if (DeleteAgentInTeardown)
+			{
+				Agent.DeleteAgent(AgentArtifactId);
+			}
 			base.SuiteTeardown();
 		}
 
@@ -183,20 +187,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new[] { agentIdParam, jobIdParam });
 		}
 
-		protected void ControlIntegrationPointAgents(bool enable, int timeoutInMs = 10000)
+		protected void ControlIntegrationPointAgents(bool enable)
 		{
-			int elapsed = 0;
-			while ((AgentArtifactId == 0) && (elapsed < timeoutInMs))
-			{
-				Thread.Sleep(1000);
-				elapsed += 1000;
-			}
-
-			if (AgentArtifactId == 0)
-			{
-				throw new Exception("Integration Points agent artifact id was not set within the timeout specified.");
-			}
-
 			global::Relativity.Services.Agent.Agent agent = Agent.ReadIntegrationPointAgent(AgentArtifactId);
 			agent.Enabled = enable;
 			Agent.UpdateAgent(agent);

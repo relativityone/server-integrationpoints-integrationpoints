@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		#region Helper Methods
 
-		protected LDAPSettings CreateDefaultLdapSettings()
+		private LDAPSettings CreateDefaultLdapSettings()
 		{
 			LDAPSettings ldapSettings = new LDAPSettings()
 			{
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return ldapSettings;
 		}
 
-		protected string CreateDefaultLdapSourceConfig()
+		private string CreateDefaultLdapSourceConfig()
 		{
 			IEncryptionManager encryptionManager = Container.Resolve<IEncryptionManager>();
 
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return encryptedLdapSourceConfiguration;
 		}
 
-		protected string CreateDefaultLdapDestinationConfig(int artifactTypeId = (int)ArtifactType.Document, ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOnly)
+		private string CreateDefaultLdapDestinationConfig(int artifactTypeId = (int)ArtifactType.Document, ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOnly)
 		{
 			ImportSettings destinationConfig = new ImportSettings
 			{
@@ -72,13 +72,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
 
-		protected string CreateDefaultLdapFieldMap()
+		private string CreateDefaultLdapFieldMap()
 		{
 			FieldMap[] map = GetDefaultLdapFieldMap();
 			return Container.Resolve<ISerializer>().Serialize(map);
 		}
 
-		protected FieldMap[] GetDefaultLdapFieldMap()
+		private FieldMap[] GetDefaultLdapFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldRepository workspaceFieldRepository = repositoryFactory.GetFieldRepository(WorkspaceArtifactId);

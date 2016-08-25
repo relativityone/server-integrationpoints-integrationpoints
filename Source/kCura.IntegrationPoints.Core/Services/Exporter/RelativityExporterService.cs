@@ -31,10 +31,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly FieldMap[] _mappedFields;
 		private readonly IJobStopManager _jobStopManager;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
-		private readonly int _retrievedDataCount;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private IDataReader _reader;
 		private DataGridContext _dataGridContext;
+		private int _retrievedDataCount;
 
 		/// <summary>
 		/// Testing only
@@ -289,6 +289,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					result.Add(new ArtifactDTO(documentArtifactId, artifactType, String.Empty, fields));
 				}
 			}
+			_retrievedDataCount += result.Count;
 			return result.ToArray();
 		}
 

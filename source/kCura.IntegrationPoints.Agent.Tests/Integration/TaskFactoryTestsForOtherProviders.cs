@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Models;
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_jobService = Container.Resolve<IJobService>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_agent = new Agent();
-			_taskFactory = new TaskFactory(new TestHelper.ExtendedIAgentHelper(Helper));
+			_taskFactory = new TaskFactory(new ExtendedIAgentHelper(Helper));
 		}
 
 		[Test]
