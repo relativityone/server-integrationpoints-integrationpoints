@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS;
+﻿using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
@@ -35,5 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		public abstract IUserNotification InteractionManager { get; set; }
 
 		public abstract void Run();
+
+		public virtual event BatchCompleted OnBatchCompleted;
 	}
 }
