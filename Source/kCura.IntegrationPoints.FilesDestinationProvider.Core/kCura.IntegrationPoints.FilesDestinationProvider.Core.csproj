@@ -127,6 +127,7 @@
     <Compile Include="Logging\JobErrorLoggingMediator.cs" />
     <Compile Include="Logging\JobHistoryErrorServiceProvider.cs" />
     <Compile Include="Logging\LoggingMediatorFactory.cs" />
+    <Compile Include="Logging\StatisticsLoggingMediator.cs" />
     <Compile Include="Process\DelimitersBuilder.cs" />
     <Compile Include="Process\ExportFieldsService.cs" />
     <Compile Include="Process\ExportFileBuilder.cs" />
