@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception sqlException)
 			{
-				if (sqlException.InnerException.Message.Equals("Invalid object name 'JobHistory'."))
+				if (sqlException.InnerException?.Message.Equals("Invalid object name 'JobHistory'.") == true)
 				{
 					return 0;
 				}
@@ -114,18 +114,21 @@ namespace kCura.IntegrationPoints.Services
 
 		private ArrayList GetArtifactTypePermissions(int workspaceArtifactId, int workspaceUserArtifactId, int artifactTypeId)
 		{
-			IPermissionHelper permissionHelper = API.Services.Helper.GetServicesManager().CreateProxy<IPermissionHelper>(ExecutionIdentity.System);
-			ArrayList artifactTypePermissions = permissionHelper.GetViewAclList(workspaceUserArtifactId, workspaceArtifactId, artifactTypeId);
-
-			return artifactTypePermissions;
+			using (IPermissionHelper permissionHelper = API.Services.Helper.GetServicesManager().CreateProxy<IPermissionHelper>(ExecutionIdentity.System))
+			{
+				ArrayList artifactTypePermissions = permissionHelper.GetViewAclList(workspaceUserArtifactId, workspaceArtifactId, artifactTypeId);
+				return artifactTypePermissions;
+			}
 		}
 
 		private FieldValueList<Workspace> GetWorkspacesUserHasPermissionToView(int userArtifactId)
 		{
-			IRSAPIClient rsapiClient = API.Services.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
-			Relativity.Client.DTOs.User user = rsapiClient.Repositories.User.ReadSingle(userArtifactId);
-			FieldValueList<Workspace> workspaces = user.Workspaces;
-			return workspaces;
+			using (IRSAPIClient rsapiClient = API.Services.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			{
+				Relativity.Client.DTOs.User user = rsapiClient.Repositories.User.ReadSingle(userArtifactId);
+				FieldValueList<Workspace> workspaces = user.Workspaces;
+				return workspaces;
+			}
 		}
 
 		private IList<int> GetRelativityProviderJobHistoryArtifactIds(IDBContext workspaceContext, int jobHistoryArtifactTypeId)

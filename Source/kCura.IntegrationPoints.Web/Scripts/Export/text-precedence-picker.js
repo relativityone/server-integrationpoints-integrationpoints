@@ -1,4 +1,4 @@
-﻿var TextPrecedencePickerViewModel = function(okCallback, data) {
+var TextPrecedencePickerViewModel = function(okCallback, data) {
 	var self = this;
 	self.PopupTitle = ko.observable("Select Text Precedence");
 	self.PickerName = ko.observable("Long Text Fields");
@@ -44,4 +44,5 @@
 		self.view.dialog("close");
 	};
 	self.model = new ListPickerViewModel();
+	self.pickerId = ko.observable("textPrecedencePicker");
 }

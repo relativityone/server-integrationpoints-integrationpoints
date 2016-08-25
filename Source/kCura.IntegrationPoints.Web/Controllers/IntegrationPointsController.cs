@@ -1,7 +1,5 @@
-﻿using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Web.Mvc;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
@@ -62,19 +60,25 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationDetailsPartial");
 		}
 
-        public ActionResult StepDetails3Reversed()
-        {
-            return PartialView("_IntegrationMapFieldsReversed");
-        }
-        public ActionResult StepDetails3()
+		public ActionResult StepDetails3Reversed()
+		{
+			return PartialView("_IntegrationMapFieldsReversed");
+		}
+
+		public ActionResult StepDetails3()
 		{
 			return PartialView("_IntegrationMapFields");
 		}
 
-        public ActionResult StepDetails3Export()
-        {
-            return PartialView("ExportProviderFields");
-        }
+		public ActionResult ExportProviderFields()
+		{
+			return PartialView("ExportProviderFields");
+		}
+
+		public ActionResult ExportProviderSettings()
+		{
+			return PartialView("ExportProviderSettings");
+		}
 
 		public ActionResult ConfigurationDetail()
 		{

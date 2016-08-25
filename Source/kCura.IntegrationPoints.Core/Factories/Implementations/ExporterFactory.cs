@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			ISynchronizerFactory synchronizerFactory,
 			ISerializer serializer,
 			IJobHistoryErrorManager jobHistoryErrorManager,
+			IJobStopManager jobStopManager,
 			FieldMap[] mappedFiles,
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
 			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_repositoryFactory, _claimsPrincipalFactory, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _repositoryFactory, _claimsPrincipalFactory, configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _repositoryFactory, _claimsPrincipalFactory, jobStopManager, configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>()
 			{

@@ -188,6 +188,65 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
+		public void CommitErrors_SetHasErrorToFalseWhenStopAndNoErrorOccured()
+		{
+			// arrange
+			_stopJobManager.IsStopRequested().Returns(true);
+
+			// act
+			_instance.CommitErrors();
+
+			// assert
+			Assert.IsFalse(_integrationPoint.HasErrors);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(_integrationPoint);
+
+		}
+
+		[Test]
+		public void CommitErrors_SetHasErrorToFalseWhenRunningAndNoErrorOccured()
+		{
+			// arrange
+			_stopJobManager.IsStopRequested().Returns(false);
+
+			// act
+			_instance.CommitErrors();
+
+			// assert
+			Assert.IsFalse(_integrationPoint.HasErrors);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(_integrationPoint);
+		}
+
+		[Test]
+		public void CommitErrors_SetHasErrorToFalseWhenStopAndErrorsOccured()
+		{
+			// arrange
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, new Exception());
+			_stopJobManager.IsStopRequested().Returns(true);
+
+			// act
+			_instance.CommitErrors();
+
+			// assert
+			Assert.IsFalse(_integrationPoint.HasErrors);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(_integrationPoint);
+		}
+
+		[Test]
+		public void CommitErrors_SetHasErrorToTrueWhenRunningAndErrorsOccured()
+		{
+			// arrange
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, new Exception());
+			_stopJobManager.IsStopRequested().Returns(false);
+
+			// act
+			_instance.CommitErrors();
+
+			// assert
+			Assert.IsTrue(_integrationPoint.HasErrors);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(_integrationPoint);
+		}
+
+		[Test]
 		public void CommitErrors_SuppressErrorOnUpdateHasErrorField()
 		{
 			// ARRANGE

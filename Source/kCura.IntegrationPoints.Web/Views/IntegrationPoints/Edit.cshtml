@@ -1,14 +1,12 @@
-﻿@using kCura.IntegrationPoints.Web.Extensions
-@model kCura.IntegrationPoints.Web.Models.EditPoint
+﻿@model kCura.IntegrationPoints.Web.Models.EditPoint
 
 @section header{
 	<div class="header-actions-container">
-		<div style="position:absolute; right:60px"><button class="button secondary positive" id="cancel" >Cancel</button></div>
-		
-		<div class="tooltip bottom" data-title="Help" style="position:absolute; right:30px">
-			<span  class="legal-hold icon-help"> </span>
-		</div>
+		<div style="position:absolute; right:60px"><button class="button secondary positive" id="cancel">Cancel</button></div>
 
+		<div class="tooltip bottom" data-title="Help" style="position:absolute; right:30px">
+			<span class="legal-hold icon-help"> </span>
+		</div>
 	</div>
 	<h1>Create Integration Point</h1>
 }
@@ -19,7 +17,7 @@
 		<div class="cell v-align h-align" id="progressButtons">
 			<button class="button generic positive" id="back"><i class="icon-arrow-left"></i>Back</button>
 			<button class="button generic positive" id="next">Next<i class="icon-arrow-right"></i></button>
-		    <button class="button generic positive" id="save" style="display: none;"><i></i>Save</button>
+			<button class="button generic positive" id="save" style="display: none;"><i></i>Save</button>
 		</div>
 	</div>
 </div>
@@ -33,36 +31,35 @@
 @section scripts
 {
 	<script src="~/Scripts/iframeResizer.min.js"></script>
-	<script src="~/Scripts/frame-messaging.js"></script>
-	<script src="~/Scripts/knockout-3.4.0.debug.js"></script>
+	<script src="~/Scripts/knockout-3.4.0.js"></script>
 	<script src="~/Scripts/knockout.validation.debug.js"></script>
 	<script src="~/Scripts/core/data.js"></script>
 	<script src="~/Scripts/core/utils.js"></script>
 	<script src="~/Scripts/integration-point/time-utils.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
-	<script src="~/Scripts/jquery-postMessage.js"></script>
-	
 	<script>
-	    var helpURL = "https://help.kcura.com/integrationpoints";
+		var helpURL = "https://help.kcura.com/integrationpoints";
 	</script>
 	<script src="~/Scripts/HelpUtil.js"></script>
 	<script>
-	    IP.data.params = IP.data.params || {};
-	    IP.data.params['appID'] = @Model.AppID;
-	    IP.data.params['artifactID'] = @Model.ArtifactID;
-	    IP.data.params['userID'] = @Model.UserID;
-	    IP.data.params['caseUserID'] = @Model.CaseUserID;
-	    IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
-	    $("#cancel").on("click", function() {
-			
-	        var getBasePath = IP.utils.getBasePath();
-	        var route = IP.redirect.get();
-	        if (!IP.redirect.isEdit()) {
-	            route = document.URL.split('CustomPages')[0]+"@Html.Raw(@Model.URL)" ;
-	        }
-	        window.top.location =route;
-	    });
+		IP.data.params = IP.data.params || {};
+		IP.data.params['appID'] = @Model.AppID;
+		IP.data.params['artifactID'] = @Model.ArtifactID;
+		IP.data.params['userID'] = @Model.UserID;
+		IP.data.params['caseUserID'] = @Model.CaseUserID;
+		IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
+		$("#cancel").on("click", function() {
+
+			var getBasePath = IP.utils.getBasePath();
+			var route = IP.redirect.get();
+			if (!IP.redirect.isEdit()) {
+				route = document.URL.split('CustomPages')[0]+"@Html.Raw(@Model.URL)" ;
+			}
+			window.top.location =route;
+		});
 	</script>
+
 	@Scripts.Render("~/bundles/ipEdit")
 	@Scripts.Render("~/bundles/dragon")
+	@Scripts.Render("~/bundles/exportProvider")
 }
