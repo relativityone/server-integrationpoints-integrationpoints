@@ -264,8 +264,13 @@
     <Compile Include="Templates\OtherProvidersTemplate.cs" />
     <Compile Include="Templates\RelativityProviderTemplate.cs" />
     <Compile Include="Templates\SourceProviderTemplate.cs" />
+    <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
+    <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />
+    <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
+    <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
+    <Compile Include="TestHelpers\ITestHelper.cs" />
+    <Compile Include="TestHelpers\TestHelper.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="TestHelper.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Workspace.cs" />
   </ItemGroup>

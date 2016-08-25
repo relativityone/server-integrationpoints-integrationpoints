@@ -87,6 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		private IBatchStatus _updateJobHistoryStatus;
 		private IBatchStatus _sendingEmailNotification;
 		private IDataSynchronizer _synchornizer;
+		private IJobHistoryManager _historyManager;
 
 		[SetUp]
 		public void SetUp()
@@ -126,6 +127,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
 			_exportServiceObserver = Substitute.For<IBatchStatus>();
 			_synchornizer = Substitute.For<IDataSynchronizer>();
+			_historyManager = Substitute.For<IJobHistoryManager>();
 
 			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _sourceWorkspaceManager, _sourceJobManager,
 				_synchronizerFactory, _serializer, _jobHistoryErrorManager,
@@ -148,7 +150,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			};
 
 			_taskParameters = new TaskParameters();
-			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun };
+			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0};
 			_sourceProvider = new SourceProvider();
 			_mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
@@ -188,6 +190,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
 				null);
+			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_historyManager);
+
 		}
 
 		[Test]
@@ -243,6 +247,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopAtTheVeryBeginningOfTheJob()
 		{
 			// ARRANGE
@@ -253,10 +258,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
+			Assert.AreEqual(0, _jobHistory.TotalItems);
 			AssertFinalizedJob(_job);
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopAfterAcquiringTheSynchronizer()
 		{
 			// ARRANGE
@@ -268,10 +275,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
+			Assert.AreEqual(0, _jobHistory.TotalItems);
 			AssertFinalizedJob(_job);
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopBeforeExecutePushingData()
 		{
 			// ARRANGE
@@ -285,21 +294,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
+			Assert.AreEqual(0, _jobHistory.TotalItems);
 			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<Choice>(), Arg.Any<Exception>());
 			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<Choice>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
-
 			AssertFinalizedJob(_job);
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_NoStopRequested()
 		{
 			// ACT
 			_instance.Execute(_job);
 
 			// ASSERT
+			EnsureToPassTheJobStopManagerToTheJobHistroyErrorService();
 			EnsureToUpdateTotalItemCount();
 			ExporterServiceObjectIsFinalized();
+			// do not tag any errors
+			_historyManager.DidNotReceive().SetErrorStatusesToExpired(Arg.Any<int>(), Arg.Any<int>());
 			AssertFinalizedJob(_job);
 		}
 
@@ -400,6 +413,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_FailToSetJobStateAsUnstoppable_OnFinalizeExportServiceObservers()
 		{
 			// ARRANGE
@@ -462,35 +476,37 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_EnsureToMarkErrorStatusAsExpiredIfTheJobIsStopped()
 		{
 			// ARRAGE
-			IJobHistoryManager historyManager = Substitute.For<IJobHistoryManager>();
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(historyManager);
 			_jobStopManager.IsStopRequested().Returns(true);
 
 			// ACT
 			_instance.Execute(_job);
 
 			// ASSERT
-			historyManager.Received(1).SetErrorStatusesToExpired(_caseContext.WorkspaceID, _jobHistory.ArtifactId);
+			EnsureToPassTheJobStopManagerToTheJobHistroyErrorService();
+			_historyManager.Received(1).SetErrorStatusesToExpired(_caseContext.WorkspaceID, _jobHistory.ArtifactId);
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_FailMarkErrorStatusAsExpiredIfTheJobIsStopped_ExpectNoException()
 		{
 			// ARRAGE
-			IJobHistoryManager historyManager = Substitute.For<IJobHistoryManager>();
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(historyManager);
 			_jobStopManager.IsStopRequested().Returns(true);
-			historyManager.When(manager => manager.SetErrorStatusesToExpired(_caseContext.WorkspaceID, _jobHistory.ArtifactId))
+			_historyManager.When(manager => manager.SetErrorStatusesToExpired(_caseContext.WorkspaceID, _jobHistory.ArtifactId))
 				.Throw<Exception>();
 
 			// ACT &  ASSERT
 			_instance.Execute(_job);
+			EnsureToPassTheJobStopManagerToTheJobHistroyErrorService();
+
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_MakeSureToUpdateJobStopStateToNoneOnScheduledJob()
 		{
 			// ARRANGE
@@ -500,6 +516,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
+			EnsureToPassTheJobStopManagerToTheJobHistroyErrorService();
 			_jobService.Received(1).UpdateStopState(Arg.Is<List<long>>(lst => lst.SequenceEqual(new [] { _job.JobId })), StopState.None);
 		}
 
@@ -550,6 +567,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 				_jobHistoryErrorManager.DidNotReceive().CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.DidNotReceive().DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}
+		}
+
+		private void EnsureToPassTheJobStopManagerToTheJobHistroyErrorService()
+		{
+			_jobHistoryErrorService.Received(1).JobStopManager = _jobStopManager;
 		}
 
 		private void ExporterServiceObjectIsFinalized()

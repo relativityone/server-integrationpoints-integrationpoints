@@ -117,6 +117,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void OnRowError_DoNotAddErrorWhenStopped()
 		{
 			// ARRANGE
@@ -133,6 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void OnRowError_AddErrorWhenRunning()
 		{
 			// ARRANGE
@@ -169,6 +171,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 
 		[TestCase(true)]
 		[TestCase(false)]
+		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void OnJobError_AlwaysAddError(bool isStopped)
 		{
 			// ARRANGE
@@ -192,7 +195,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 
 			// ACT & ASSERT
 			Assert.DoesNotThrow(() => _instance.CommitErrors());
-
 		}
 
 		private class Reporter : IBatchReporter
