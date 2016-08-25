@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Templates;
 using Relativity.Services;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
@@ -12,56 +12,65 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public static class Agent
 	{
 		private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
-		private const int _MAX_AGENT_TO_CREATE = 3;
+		private const int _MAX_NUMBER_OF_AGENTS_TO_CREATE = 4;
 
 		public static int CreateIntegrationPointAgent()
 		{
-			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
+
+			if (agentTypeRef == null)
 			{
-			List<AgentTypeRef> agentTypes =	proxy.GetAgentTypesAsync().GetResultsWithoutContextSync();
-				AgentTypeRef agentTypeRef = agentTypes.FirstOrDefault(agentType => agentType.Name == "Integration Points Agent");
-				if (agentTypeRef != null)
-				{
-					Query query = new Query();
-					AgentQueryResultSet resultSet =	proxy.QueryAsync(query).GetResultsWithoutContextSync();
-					global::Relativity.Services.Agent.Agent[] agents = resultSet.Results.Where(agent => agent.Success && agent.Artifact.AgentType.ArtifactID == agentTypeRef.ArtifactID).Select(result => result.Artifact).ToArray();
-					if (agents.Length > 3)
-					{
-						return 0;
-					}
-				}
+				throw new Exception($"Agent with type name {_INTEGRATION_POINT_AGENT_TYPE_NAME} cannot be found");
+			}
 
+			Query query = new Query
+			{
+				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
+			};
+			AgentQueryResultSet resultSet = QueryAgents(query);
+			global::Relativity.Services.Agent.Agent[] agents = resultSet.Results.Where(agent => agent.Success).Select(result => result.Artifact).ToArray();
 
-				List<ResourceServer> resourceServers = GetAgentServers();
+			if (agents.Length >= _MAX_NUMBER_OF_AGENTS_TO_CREATE)
+			{
+				SourceProviderTemplate.DeleteAgentInTeardown = false;
+				return agents[0].ArtifactID;
+			}
 
-				if (resourceServers.Count == 0)
-				{
-					throw new Exception($"Error: No Agent servers available for agent creation.");
-				}
+			List<ResourceServer> resourceServers = GetAgentServers();
 
-				ResourceServerRef resourceServerRef = new ResourceServerRef
-				{
-					ArtifactID = resourceServers[0].ArtifactID,
-				};
+			if (resourceServers.Count == 0)
+			{
+				throw new Exception("Error: No Agent servers available for agent creation.");
+			}
 
-				global::Relativity.Services.Agent.Agent agentDto = new global::Relativity.Services.Agent.Agent
-				{
-					AgentType = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME),
-					Enabled = true,
-					Interval = 5,
-					LoggingLevel = global::Relativity.Services.Agent.Agent.LoggingLevelEnum.Critical,
-					Server = resourceServerRef
-				};
+			ResourceServerRef resourceServerRef = new ResourceServerRef
+			{
+				ArtifactID = resourceServers[0].ArtifactID,
+			};
 
-				try
+			global::Relativity.Services.Agent.Agent agentDto = new global::Relativity.Services.Agent.Agent
+			{
+				AgentType = agentTypeRef,
+				Enabled = true,
+				Interval = 5,
+				LoggingLevel = global::Relativity.Services.Agent.Agent.LoggingLevelEnum.Critical,
+				Server = resourceServerRef
+			};
+
+			try
+			{
+				using (
+					IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName,
+						SharedVariables.RelativityPassword, true, true))
 				{
 					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
+					SourceProviderTemplate.DeleteAgentInTeardown = true;
 					return artifactId;
 				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error: Failed to create agent. Exception: {ex.Message}");
-				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Error: Failed to create agent. Exception: {ex.Message}");
 			}
 		}
 
@@ -150,7 +159,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				AgentQueryResultSet agentQueryResultSet = proxy.QueryAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
 
-				if(agentQueryResultSet.Success == false)
+				if (agentQueryResultSet.Success == false)
 				{
 					throw new Exception($"Error: Failed querying for agents. Exception: {agentQueryResultSet.Message}");
 				}
