@@ -185,7 +185,7 @@ ko.validation.init({
 		self.submit = function () {
 			var d = root.data.deferred().defer();
 
-			self.ipModel.sourceConfiguration.SavedSearchArtifactId = self.model.savedSearch().value;
+			self.ipModel.sourceConfiguration.SavedSearchArtifactId = self.model.savedSearch();
 			self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
 
 			var fieldMap = [];
@@ -254,6 +254,26 @@ ko.validation.init({
 
 			return d.promise;
 		}
+
+		//root.messaging.subscribe("back", function () {
+		//	if (self.model) {
+		//		if (typeof self.model.savedSearches === 'function') {
+		//			_cache.savedSearches = self.model.savedSearches();
+		//		}
+		//		if (typeof self.model.savedSearch === 'function') {
+		//			_cache.savedSearch = self.model.savedSearch();
+		//		}
+		//		if (typeof self.model.startExportAtRecord === 'function') {
+		//			_cache.startExportAtRecord = self.model.startExportAtRecord();
+		//		}
+		//		if (typeof self.model.availableFields === 'function') {
+		//			_cache.availableFields = self.model.availableFields();
+		//		}
+		//		if (typeof self.model.mappedFields === 'function') {
+		//			_cache.mappedFields = self.model.mappedFields();
+		//		}
+		//	}
+		//});
 	};
 
 	var step = new stepModel({
