@@ -492,7 +492,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		{
 			_job.JobDetails = "something something here";
 			_integrationPointService.GetRdo(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
-			_jobHistoryService.GetOrCreateSchduledRunHistoryRdo(_integrationPoint, _batchInstance, Arg.Any<DateTime>())
+			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchInstance, Arg.Any<DateTime>())
 				.Returns(_jobHistory);
 			_jobHistory.StartTimeUTC = null;
 			_serializer.Deserialize<TaskParameters>(_job.JobDetails)

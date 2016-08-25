@@ -179,6 +179,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
+		public static void DisableAllAgents()
+		{
+			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
+
+			if (agentTypeRef == null)
+			{
+				throw new Exception($"Agent with type name {_INTEGRATION_POINT_AGENT_TYPE_NAME} cannot be found");
+			}
+
+			Query query = new Query
+			{
+				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
+			};
+
+			DisableAgents(query);
+		}
+
 		public static void EnableAgents(Query query)
 		{
 			AgentQueryResultSet agentQueryResultSet = QueryAgents(query);
