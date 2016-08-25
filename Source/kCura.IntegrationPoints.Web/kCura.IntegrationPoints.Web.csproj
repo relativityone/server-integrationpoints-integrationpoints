@@ -455,6 +455,7 @@
     <Content Include="Scripts\EventHandlers\job-history.js" />
     <Content Include="Scripts\EventHandlers\export-details-view.js" />
     <Content Include="Scripts\Export\export-enums.js" />
+    <Content Include="Scripts\Export\export-provider-settings-step.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
     <Content Include="Scripts\Export\export-provider.js" />
     <Content Include="Scripts\Export\field-mapping-view-model.js" />
@@ -673,6 +674,7 @@
     <Content Include="Views\Fileshare\ExportDetails.cshtml" />
     <Content Include="Views\Fileshare\SavedSearchPicker.cshtml" />
     <Content Include="Views\Fileshare\ListPicker.cshtml" />
+    <Content Include="Views\IntegrationPoints\ExportProviderSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

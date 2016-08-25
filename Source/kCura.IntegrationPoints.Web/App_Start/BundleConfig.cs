@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -8,36 +7,45 @@ namespace kCura.IntegrationPoints.Web
 		// For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
 		public static void RegisterBundles(BundleCollection bundles)
 		{
-			bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-									"~/Scripts/jquery-{version}.js"));
+			bundles.Add(new ScriptBundle("~/bundles/jquery").Include("~/Scripts/jquery-{version}.js"));
 
-			bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
-									"~/Scripts/jquery-ui-{version}.js"));
+			bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/Scripts/jquery-ui-{version}.js"));
 
 			bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-									"~/Scripts/jquery.unobtrusive*",
-									"~/Scripts/jquery.validate*"));
+				"~/Scripts/jquery.unobtrusive*",
+				"~/Scripts/jquery.validate*"
+			));
 
 			bundles.Add(new ScriptBundle("~/bundles/messaging").Include(
 				"~/Scripts/postal/conduit.js",
-					"~/Scripts/postal/lodash.js",
-					"~/Scripts/postal/postal.js",
-					"~/Scripts/ip-messaging.js"
-				));
+				"~/Scripts/postal/lodash.js",
+				"~/Scripts/postal/postal.js",
+				"~/Scripts/ip-messaging.js"
+			));
 
 			bundles.Add(new ScriptBundle("~/bundles/ipEdit").Include(
-					"~/Scripts/Controls/step-progress.js",
-					"~/Scripts/integration-point/step-definition-provider.js",
-					"~/Scripts/integration-point/edit.js",
-					"~/Scripts/integration-point/step-vm.js",
-					"~/Scripts/integration-point/step-details.js",
-					"~/Scripts/integration-point/step-import.js ",
-					"~/Scripts/integration-point/step-mapFields-control.js",
-					"~/Scripts/integration-point/step-mapFields.js",
-                    "~/Scripts/Export/export-provider-fields-step.js",
-                    "~/Scripts/Export/field-mapping-view-model.js",
-                    "~/Scripts/route.js"
-				));
+				"~/Scripts/Controls/step-progress.js",
+				"~/Scripts/integration-point/step-definition-provider.js",
+				"~/Scripts/integration-point/edit.js",
+				"~/Scripts/integration-point/step-vm.js",
+				"~/Scripts/integration-point/step-details.js",
+				"~/Scripts/integration-point/step-import.js ",
+				"~/Scripts/integration-point/step-mapFields-control.js",
+				"~/Scripts/integration-point/step-mapFields.js",
+				"~/Scripts/route.js"
+			));
+
+			bundles.Add(new ScriptBundle("~/bundles/exportProvider").Include(
+				"~/Scripts/export/export-provider-fields-step.js",
+				"~/Scripts/export/export-enums.js",
+				"~/Scripts/export/export-provider.js",
+				"~/Scripts/Export/field-mapping-view-model.js",
+				"~/Scripts/export/list-picker-view-model.js",
+				"~/Scripts/export/picker.js",
+				"~/Scripts/export/text-precedence-picker.js",
+				"~/Scripts/export/image-production-picker.js",
+				"~/Scripts/export/export-provider-settings-step.js"
+			));
 
 			bundles.Add(new ScriptBundle("~/bundles/grid").Include(
 				"~/Scripts/grid/dragon-utils.js",
@@ -45,43 +53,46 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/jquery.jqGrid.min.js",
 				"~/Scripts/select2.min.js",
 				"~/Scripts/grid/dragon-grid.js"
-				));
+			));
 
 			bundles.Add(new ScriptBundle("~/bundles/dragon").Include(
 				"~/Scripts/dragon/dragon-core.js",
 				"~/Scripts/dragon/dragon-utils.js",
 				"~/Scripts/dragon/dragon-schedule.js"
-				));
+			));
+
 			// Use the development version of Modernizr to develop with and learn from. Then, when you're
 			// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-									"~/Scripts/modernizr-*"));
+			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include("~/Scripts/modernizr-*"));
 
 			bundles.Add(new StyleBundle("~/Content/css").Include(
 				"~/Content/normalize.css",
 				"~/Content/legal-hold-fonts.css",
-				"~/Content/integration-points-fonts.css",
-				"~/Content/buttermilk.css",
+				"~/Content/integration-points-fonts.css",				
 				"~/Content/header.css",
 				"~/Content/scheduler.css",
-				"~/Content/select2-overrides.css",
+				"~/Content/site.css",
 				"~/Content/step-progress-bar.css",
-				"~/Content/site.css"));
+				"~/Content/css/select2.css",
+				"~/Content/select2-overrides.css",
+				"~/Content/buttermilk.css"
+			));
 
 			bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
-									"~/Content/themes/base/jquery.ui.core.css",
-									"~/Content/themes/base/jquery.ui.resizable.css",
-									"~/Content/themes/base/jquery.ui.selectable.css",
-									"~/Content/themes/base/jquery.ui.accordion.css",
-									"~/Content/themes/base/jquery.ui.autocomplete.css",
-									"~/Content/themes/base/jquery.ui.button.css",
-									"~/Content/themes/base/jquery.ui.dialog.css",
-									"~/Content/themes/base/jquery.ui.slider.css",
-									"~/Content/themes/base/jquery.ui.tabs.css",
-									"~/Content/themes/base/jquery.ui.datepicker.css",
-									"~/Content/themes/base/jquery.ui.progressbar.css",
-									"~/Content/themes/base/jquery.ui.theme.css"));
+				"~/Content/themes/base/jquery.ui.core.css",
+				"~/Content/themes/base/jquery.ui.resizable.css",
+				"~/Content/themes/base/jquery.ui.selectable.css",
+				"~/Content/themes/base/jquery.ui.accordion.css",
+				"~/Content/themes/base/jquery.ui.autocomplete.css",
+				"~/Content/themes/base/jquery.ui.button.css",
+				"~/Content/themes/base/jquery.ui.dialog.css",
+				"~/Content/themes/base/jquery.ui.slider.css",
+				"~/Content/themes/base/jquery.ui.tabs.css",
+				"~/Content/themes/base/jquery.ui.datepicker.css",
+				"~/Content/themes/base/jquery.ui.progressbar.css",
+				"~/Content/themes/base/jquery.ui.theme.css",
+				"~/Content/jquery.jqGrid/ui.jqgrid.css"
+			));
 		}
-
 	}
 }
