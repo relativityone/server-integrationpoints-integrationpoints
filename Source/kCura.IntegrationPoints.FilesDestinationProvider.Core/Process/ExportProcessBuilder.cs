@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -62,7 +61,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			PerformLogin(exportFile);
 			PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds, settings.TextPrecedenceFieldsIds);
 			var exporter = _exporterFactory.Create(exportFile);
-			AttachHandlers(exporter, job);
+			AttachHandlers(exporter);
+			SubscribeToJobStatisticsEvents(job);
 			return exporter;
 		}
 
@@ -140,13 +140,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			   }).ToArray();
 		}
 
-		private void AttachHandlers(IExporter exporter, Job job)
+		private void AttachHandlers(IExporter exporter)   
 		{
 			exporter.InteractionManager = _userNotification;
 			_loggingMediator.RegisterEventHandlers(_userMessageNotification, exporter);
+		}
 
-			foreach(var loggingMediator in 
-				_loggingMediator.LoggingMediators.Where(loggingMediator => loggingMediator.GetType().IsAssignableFrom(typeof(IBatchReporter))))
+		private void SubscribeToJobStatisticsEvents(Job job)
+		{
+			foreach (var loggingMediator in
+				_loggingMediator.LoggingMediators.Where(loggingMediator => loggingMediator.GetType().GetInterfaces().Contains(typeof(IBatchReporter))))
 			{
 				_jobStatisticsService.Subscribe(loggingMediator as IBatchReporter, job);
 			}

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
 

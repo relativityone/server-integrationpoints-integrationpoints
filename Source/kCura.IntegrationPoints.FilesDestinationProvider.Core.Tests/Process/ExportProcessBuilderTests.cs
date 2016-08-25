@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -19,6 +20,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
 	public class ExportProcessBuilderTests
 	{
+		private class BatchReporterMock : IBatchReporter, ILoggingMediator
+		{
+			public event BatchCompleted OnBatchComplete { add { } remove { } }
+			public event BatchSubmitted OnBatchSubmit { add { } remove { } }
+			public event BatchCreated OnBatchCreate { add { } remove { } }
+			public event StatusUpdate OnStatusUpdate { add { } remove { } }
+			public event JobError OnJobError { add { } remove { } }
+			public event RowError OnDocumentError { add { } remove { } }
+
+			public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
+				ICoreExporterStatusNotification exporterStatusNotification)
+			{
+				
+			}
+		}
+
 		#region Fields
 
 		private ICaseManagerFactory _caseManagerFactory;
@@ -280,6 +297,31 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			_loggingMediator.Received().RegisterEventHandlers(_userMessageNotification, exporter);
 			exporter.Received().InteractionManager = _userNotification;
+		}
+
+		[Test]
+		public void ItShouldSubscribeBatchRepoertToJobStatsService()
+		{
+			//Arrange
+			var exporter = Substitute.For<IExporter>();
+			var batchReporterMock = new BatchReporterMock();
+			var job = JobExtensions.CreateJob();
+
+			_exporterFactory.Create(_exportFile).Returns(exporter);
+
+			_loggingMediator.LoggingMediators.Returns(
+				new List<ILoggingMediator>( new [] { batchReporterMock } ));
+			
+			//Act
+			_exportProcessBuilder.Create(new ExportSettings()
+			{
+				SelViewFieldIds = SelectedAvfIds
+			}, job);
+
+			//Assert
+			_loggingMediator.Received().RegisterEventHandlers(_userMessageNotification, exporter);
+			exporter.Received().InteractionManager = _userNotification;
+			_jobStatisticsService.Received().Subscribe(batchReporterMock, job);
 		}
 
 		[Test]

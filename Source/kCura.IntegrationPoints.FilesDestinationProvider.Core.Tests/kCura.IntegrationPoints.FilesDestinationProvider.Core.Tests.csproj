@@ -104,7 +104,7 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.Apps.Common.Utils">
+    <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -124,6 +124,7 @@
     <Compile Include="Logging\ExportLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobErrorLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobHistoryErrorServiceProviderTests.cs" />
+    <Compile Include="Logging\StatisticsLoggingMediatorTest.cs" />
     <Compile Include="Process\DefaultExportSettingsFactory.cs" />
     <Compile Include="Process\DelimitersBuilderTests.cs" />
     <Compile Include="Process\ExportFileBuilderTests.cs" />
