@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_caseContext.RsapiService.IntegrationPointLibrary.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_serializer.Deserialize<SourceConfiguration>(_integrationPoint.SourceConfiguration).Returns(_configuration);
 			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParameters);
-			_jobHistoryService.GetOrCreateSchduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
+			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
 			_caseContext.RsapiService.SourceProviderLibrary.Read(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_mappings);
 			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, _configuration.SourceWorkspaceArtifactId, GetUniqueJobId(_job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
