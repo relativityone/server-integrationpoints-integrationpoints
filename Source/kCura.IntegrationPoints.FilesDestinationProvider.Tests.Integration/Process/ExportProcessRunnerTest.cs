@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
-				new ExporterWrapperFactory(),
+				new StoppableExporterFactory(null),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())
 			);
 

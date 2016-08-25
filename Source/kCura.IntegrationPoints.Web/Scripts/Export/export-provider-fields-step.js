@@ -11,10 +11,32 @@ ko.validation.init({
 }, true);
 
 (function (root, ko) {
-    
-	var Step = function (settings) {
+	var viewModel = function (m) {
+		var state = $.extend({}, {}, m);
+		var self = this;
+
+		// TODO: reintroduce this functionality: IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun()
+		self.HasBeenRun = ko.observable(false);
+
+		self.savedSearches = ko.observableArray(state.savedSearches);
+
+		self.savedSearch = ko.observable(state.savedSearch).extend({
+			required: true
+		});
+
+		self.startExportAtRecord = ko.observable(state.startExportAtRecord).extend({
+			required: true
+		});
+
+		self.fields = new FieldMappingViewModel();
+	};
+
+	var stepModel = function (settings) {
 		var self = this;
 		var _cache = {
+			savedSearches: [],
+			savedSearch: {},
+			startExportAtRecord: 1,
 			availableFields: [],
 			mappedFields: []
 		};
@@ -43,15 +65,56 @@ ko.validation.init({
 			self.ipModel = ip;
 			self.ipModel.SelectedOverwrite = "Append/Overlay"; // hardcoded as this value doesn't relate to export
 
-			self.model = new FieldMappingViewModel();
+			self.model = new viewModel(_cache);
 			self.model.errors = ko.validation.group(self.model);
 
+			self.getAvailableFieldsFor = function (artifactId) {
+				self.ipModel.sourceConfiguration.SavedSearchArtifactId = artifactId;
+
+				root.data.ajax({
+					type: 'post',
+					url: root.utils.generateWebAPIURL('ExportFields/Available'),
+					data: JSON.stringify({
+						options: self.ipModel.sourceConfiguration,
+						type: self.ipModel.source.selectedType
+					})
+				}).then(function (result) {
+					self.model.fields.selectedAvailableFields(result);
+					self.model.fields.addField();
+				}).fail(function (error) {
+					IP.message.error.raise("No attributes were returned from the source provider.");
+				});
+			};
+
+			self.model.savedSearch.subscribe(function (selected) {
+				if (!!selected) {
+					self.getAvailableFieldsFor(selected);
+				}
+			});
+
+			self.updateSelectedSavedSearch = function () {
+				var selectedSavedSearch = ko.utils.arrayFirst(self.model.savedSearches(), function (item) {
+					if (item.value === self.ipModel.sourceConfiguration.SavedSearchArtifactId) {
+						return item;
+					}
+				});
+
+				self.model.savedSearch(selectedSavedSearch);
+			};
+
 			if (_cache.mappedFields.length > 0 || _cache.availableFields.length > 0) {
-				self.model.availableFields(_cache.availableFields);
-				self.model.mappedFields(_cache.mappedFields);
+				self.model.fields.availableFields(_cache.availableFields);
+				self.model.fields.mappedFields(_cache.mappedFields);
 
 				return;
-			}
+			};
+
+			var savedSearchesPromise = root.data.ajax({
+				type: 'get',
+				url: root.utils.generateWebAPIURL('SavedSearchFinder')
+			}).fail(function (error) {
+				IP.message.error.raise("No saved searches were returned from the source provider.");
+			});
 
 			var exportableFieldsPromise = root.data.ajax({
 				type: 'post',
@@ -64,16 +127,21 @@ ko.validation.init({
 				IP.message.error.raise("No attributes were returned from the source provider.");
 			});
 
-			var availableFieldsPromise = root.data.ajax({
-				type: 'post',
-				url: root.utils.generateWebAPIURL('ExportFields/Available'),
-				data: JSON.stringify({
-					options: self.ipModel.sourceConfiguration,
-					type: self.ipModel.source.selectedType
-				})
-			}).fail(function (error) {
-				IP.message.error.raise("No attributes were returned from the source provider.");
-			});
+			var availableFieldsPromise;
+			if (self.ipModel.sourceConfiguration.SavedSearchArtifactId > 0) {
+				availableFieldsPromise = root.data.ajax({
+					type: 'post',
+					url: root.utils.generateWebAPIURL('ExportFields/Available'),
+					data: JSON.stringify({
+						options: self.ipModel.sourceConfiguration,
+						type: self.ipModel.source.selectedType
+					})
+				}).fail(function (error) {
+					IP.message.error.raise("No attributes were returned from the source provider.");
+				});
+			} else {
+				availableFieldsPromise = [];
+			}
 
 			var mappedFieldsPromise;
 			if (self.ipModel.artifactID > 0) {
@@ -87,7 +155,7 @@ ko.validation.init({
 
 			var getMappedFields = function (fields) {
 				var _fields = ko.utils.arrayMap(fields, function (_item1) {
-					var _field = ko.utils.arrayFilter(self.model.availableFields(), function (_item2) {
+					var _field = ko.utils.arrayFilter(self.model.fields.availableFields(), function (_item2) {
 						return (_item1.sourceField) ?
 							(_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) :
 							(_item2.fieldIdentifier === _item1.fieldIdentifier);
@@ -98,26 +166,32 @@ ko.validation.init({
 			};
 
 			root.data.deferred()
-				.all([exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise])
+				.all([savedSearchesPromise, exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise])
 				.then(function (result) {
-					self.model.availableFields(result[0]);
+					self.model.savedSearches(result[0]);
+					self.updateSelectedSavedSearch();
 
-					var mappedFields = (result[2] && result[2].length) ?
-						getMappedFields(result[2]) :
-						getMappedFields(result[1]);
+					self.model.fields.availableFields(result[1]);
 
-					self.model.selectedAvailableFields(mappedFields);
-					self.model.addField();
+					var mappedFields = (result[3] && result[3].length) ?
+						getMappedFields(result[3]) :
+						getMappedFields(result[2]);
+
+					self.model.fields.selectedAvailableFields(mappedFields);
+					self.model.fields.addField();
 				});
 		}
 
 		self.submit = function () {
 			var d = root.data.deferred().defer();
 
+			self.ipModel.sourceConfiguration.SavedSearchArtifactId = self.model.savedSearch();
+			self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
+
 			var fieldMap = [];
 			var hasIdentifier = false;
 
-			self.model.mappedFields().forEach(function (e, i) {
+			self.model.fields.mappedFields().forEach(function (e, i) {
 				fieldMap.push({
 					sourceField: {
 						displayName: e.displayName,
@@ -155,24 +229,58 @@ ko.validation.init({
 			return d.promise;
 		}
 
-		root.messaging.subscribe("back", function () {
+		self.back = function () {
+			var d = root.data.deferred().defer();
+
 			if (self.model) {
-				if (typeof self.model.availableFields === 'function') {
-					_cache.availableFields = self.model.availableFields();
+				if (typeof self.model.savedSearches === 'function') {
+					_cache.savedSearches = self.model.savedSearches();
 				}
-				if (typeof self.model.mappedFields === 'function') {
-					_cache.mappedFields = self.model.mappedFields();
+				if (typeof self.model.savedSearch === 'function') {
+					_cache.savedSearch = self.model.savedSearch();
+				}
+				if (typeof self.model.startExportAtRecord === 'function') {
+					_cache.startExportAtRecord = self.model.startExportAtRecord();
+				}
+				if (typeof self.model.fields.availableFields === 'function') {
+					_cache.availableFields = self.model.fields.availableFields();
+				}
+				if (typeof self.model.fields.mappedFields === 'function') {
+					_cache.mappedFields = self.model.fields.mappedFields();
 				}
 			}
-		});
+
+			d.resolve();
+
+			return d.promise;
+		}
+
+		//root.messaging.subscribe("back", function () {
+		//	if (self.model) {
+		//		if (typeof self.model.savedSearches === 'function') {
+		//			_cache.savedSearches = self.model.savedSearches();
+		//		}
+		//		if (typeof self.model.savedSearch === 'function') {
+		//			_cache.savedSearch = self.model.savedSearch();
+		//		}
+		//		if (typeof self.model.startExportAtRecord === 'function') {
+		//			_cache.startExportAtRecord = self.model.startExportAtRecord();
+		//		}
+		//		if (typeof self.model.availableFields === 'function') {
+		//			_cache.availableFields = self.model.availableFields();
+		//		}
+		//		if (typeof self.model.mappedFields === 'function') {
+		//			_cache.mappedFields = self.model.mappedFields();
+		//		}
+		//	}
+		//});
 	};
 
-	var step = new Step({
-		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3Export'),
-		templateID: 'step3Export',
+	var step = new stepModel({
+		url: IP.utils.generateWebURL('IntegrationPoints', 'ExportProviderFields'),
+		templateID: 'exportProviderFieldsStep',
 		isForRelativityExport: true
 	});
 
 	root.points.steps.push(step);
-
 })(IP, ko);
