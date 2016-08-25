@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_historyManager = Substitute.For<IJobHistoryManager>();
 
 			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _sourceWorkspaceManager, _sourceJobManager,
-				_synchronizerFactory, _serializer, _jobHistoryErrorManager,
+				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager,
 				Arg.Any<FieldMap[]>(), Arg.Any<SourceConfiguration>(), Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
 				Arg.Any<Data.IntegrationPoint>(), Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
 				.Returns(new List<IBatchStatus>() { _exportServiceObserver });
