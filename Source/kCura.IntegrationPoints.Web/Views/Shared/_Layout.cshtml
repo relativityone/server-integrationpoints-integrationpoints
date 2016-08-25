@@ -5,11 +5,10 @@
 	<meta name="viewport" content="width=device-width" />
 	<link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet" type="text/css" />
 	<title>@ViewBag.Title</title>
-	<link href="~/Content/css/select2.css" rel="stylesheet" />
-	@Styles.Render("~/Content/css")
 
 	@Styles.Render("~/Content/themes/base/css")
-	<link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
+	@Styles.Render("~/Content/css")
+
 	@Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
@@ -31,6 +30,5 @@
 	<script>
 		Q.longStackSupport = true;
 	</script>
-	
 </body>
 </html>
