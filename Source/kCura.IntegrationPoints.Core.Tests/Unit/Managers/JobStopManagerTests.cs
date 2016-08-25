@@ -134,6 +134,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
+		public void StopRequestedEvent_RaisesWhenStop()
+		{
+			// arrange
+			var eventTriggered = false;
+			_instance.StopRequestedEvent += (sender, args) => eventTriggered = true;
+			_jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
+			Job job = JobExtensions.CreateJob();
+			job = job.CopyJobWithStopState(StopState.Stopping);
+			_jobService.GetJob(_jobId).Returns(job);
+			_jobHistoryService.GetRdo(_guid).Returns(_jobHistory);
+			_instance.Callback.Invoke(null);
+
+			// act & assert
+			Assert.True(eventTriggered);
+		}
+
+		[Test]
 		public void ThrowIfStopRequested_DoNotThrowExceptionWhenRunning()
 		{
 			// arrange
@@ -145,6 +162,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			// act & assert
 			Assert.DoesNotThrow(() => _instance.ThrowIfStopRequested());
+		}
+
+		[Test]
+		public void StopRequestedEvent_DosentRaiseWhenRunning()
+		{
+			// arrange
+			var eventTriggered = false;
+			_instance.StopRequestedEvent += (sender, args) => eventTriggered = true;
+			Job job = JobExtensions.CreateJob();
+			job = job.CopyJobWithStopState(StopState.None);
+			_jobService.GetJob(_jobId).Returns(job);
+			_jobHistoryService.GetRdo(_guid).Returns(_jobHistory);
+			_instance.Callback.Invoke(null);
+
+			// act & assert
+			Assert.False(eventTriggered);
 		}
 
 		[Test]

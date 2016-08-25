@@ -246,9 +246,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (ExportLoggingMediator).Name,
 				typeof (ExportFieldsService).Name,
 				typeof (ProductionPrecedenceService).Name,
-				typeof (ExporterWrapper).Name, // defined earlier in file
+				typeof (ExporterEventsWrapper).Name, // defined earlier in file
 				typeof (CaseManagerWrapperFactory).Name,
-				typeof (ExporterWrapperFactory).Name
+				typeof (StoppableExporterFactory).Name
 			});
 
 			if (!isIlMergedAssembly)
@@ -271,7 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
 			container.Register(
 				Component.For<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory>()
-				.ImplementedBy<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.ExporterWrapperFactory>());
+				.ImplementedBy<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.StoppableExporterFactory>());
 			#endregion
 		}
 
