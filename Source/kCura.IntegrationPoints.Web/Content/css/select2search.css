@@ -29,7 +29,7 @@ Version: 3.5.1 Timestamp: Tue Jul 22 18:58:56 EDT 2014
 
 .select2-container, .select2-container.select2-container-active, .select2-container.select2-dropdown-open, .select2-drop {
 	font-size: 11px;
-	width: 218px;
+	width: 218px !important;
 }
 
 .select2-container.subgrid-filter-container span.select2-chosen {
@@ -749,7 +749,7 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
 	background-color: #e7f2ff;
 	color: black;
 	border-color: #e7f2ff;
-	font-weight: 200;
+	/*font-weight: 200;*/
 }
 
 .select2-container.filter-container.select2-dropdown-open a, .select2-drop.filter-select.select2-drop-active {
@@ -759,7 +759,7 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
 
 *, a, body, div, html, input, label, p, select {
 	font-family: Arial,Helvetica,sans-serif;
-	font-size: 12px;
+	font-size: 12px !important;
 }
 
 
