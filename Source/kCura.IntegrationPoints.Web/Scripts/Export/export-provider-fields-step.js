@@ -101,13 +101,6 @@ ko.validation.init({
 				}
 			};
 
-			// if (/*_cache.mappedFields.length > 0 ||*/  > 0) {
-			// 	self.model.fields.availableFields(_cache.AvailableFields);
-			// 	// self.model.fields.mappedFields(_cache.mappedFields);
-
-			// 	return;
-			// };
-
 			var savedSearchesPromise;
 			if (_cache.SavedSearches.length > 0) {
 				savedSearchesPromise = _cache.SavedSearches;
@@ -120,21 +113,24 @@ ko.validation.init({
 				});
 			}
 
-			var exportableFieldsPromise = root.data.ajax({
-				type: 'post',
-				url: root.utils.generateWebAPIURL('ExportFields/Exportable'),
-				data: JSON.stringify({
-					options: self.ipModel.sourceConfiguration,
-					type: self.ipModel.source.selectedType
-				})
-			}).fail(function (error) {
-				IP.message.error.raise("No exportable fields were returned from the source provider.");
-			});
+			var exportableFieldsPromise;
+			if (_cache.AvailableFields.length > 0) {
+				exportableFieldsPromise = _cache.AvailableFields;
+			} else {
+				exportableFieldsPromise = root.data.ajax({
+					type: 'post',
+					url: root.utils.generateWebAPIURL('ExportFields/Exportable'),
+					data: JSON.stringify({
+						options: self.ipModel.sourceConfiguration,
+						type: self.ipModel.source.selectedType
+					})
+				}).fail(function (error) {
+					IP.message.error.raise("No exportable fields were returned from the source provider.");
+				});
+			}
 
 			var availableFieldsPromise;
-			if (_cache.AvailableFields.length) {
-				availableFieldsPromise = _cache.AvailableFields;
-			} else if (self.ipModel.sourceConfiguration.SavedSearchArtifactId > 0) {
+			if (self.ipModel.sourceConfiguration.SavedSearchArtifactId > 0) {
 				availableFieldsPromise = root.data.ajax({
 					type: 'post',
 					url: root.utils.generateWebAPIURL('ExportFields/Available'),
