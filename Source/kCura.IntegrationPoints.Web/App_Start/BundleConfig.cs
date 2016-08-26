@@ -72,16 +72,17 @@ namespace kCura.IntegrationPoints.Web
 			// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
 			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include("~/Scripts/modernizr-*"));
 
-			bundles.Add(new StyleBundle("~/Content/css").Include(
+			bundles.Add(new StyleBundle("~/Content/styles").Include(
 				"~/Content/normalize.css",
 				"~/Content/legal-hold-fonts.css",
-				"~/Content/integration-points-fonts.css",				
+				"~/Content/integration-points-fonts.css",
 				"~/Content/header.css",
 				"~/Content/scheduler.css",
 				"~/Content/site.css",
 				"~/Content/step-progress-bar.css",
 				"~/Content/css/select2.css",
 				"~/Content/select2-overrides.css",
+				"~/Content/css/select2search.css",
 				"~/Content/buttermilk.css",
 				"~/Content/buttermilk.9_2.min.css"
 			));
@@ -101,6 +102,8 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/themes/base/jquery.ui.theme.css",
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
+
+			BundleTable.EnableOptimizations = true;
 		}
 	}
 }
