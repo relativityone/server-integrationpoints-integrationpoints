@@ -167,13 +167,13 @@
     </Reference>
     <Reference Include="Relativity.CustomPages, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Relativity.CustomPages.9.4.283.4\lib\net45\Relativity.CustomPages.dll</HintPath>
+      <HintPath>..\packages\$(Relativity_CustomPages)\lib\net45\Relativity.CustomPages.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.DragonGrid.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.DragonGrid.Core, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Relativity.DragonGrid\Relativity.DragonGrid.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
     </Reference>
@@ -189,8 +189,8 @@
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.4.226.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.4.226.9\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_Services_Interface)\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">
