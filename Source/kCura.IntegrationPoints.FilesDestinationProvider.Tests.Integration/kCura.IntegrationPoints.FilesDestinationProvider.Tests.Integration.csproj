@@ -94,7 +94,7 @@
     </Reference>
     <Reference Include="kCura.ScheduleQueue.Core, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\kCura.IntegrationPoints.Web\Bin\kCura.ScheduleQueue.Core.dll</HintPath>
+      <HintPath>..\kCura.ScheduleQueue.Core\bin\x64\kCura.ScheduleQueue.Core.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Utility, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.dll</HintPath>

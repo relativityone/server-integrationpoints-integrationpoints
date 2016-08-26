@@ -69,7 +69,7 @@
       z-index: 999; }
       .step-progress-bar li .step i {
         display: inline-block;
-        font-size: 3em;
+        font-size: 3em !important;
         height: 100%;
         padding-top: 5px;
         width: 100%; }
@@ -81,6 +81,6 @@
         right: 0;
         top: 0;
         bottom: 0;
-        font-size: 2.3em;
+        font-size: 2.3em !important;
         padding-top: 3px; }
 
