@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
@@ -21,21 +24,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly ICredentialProvider _credentialProvider;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IExportFileBuilder _exportFileBuilder;
-		private readonly ILoggingMediator _loggingMediator;
+		private readonly JobStatisticsService _jobStatisticsService;
+		private readonly ICompositeLoggingMediator _loggingMediator;
 		private readonly ISearchManagerFactory _searchManagerFactory;
 		private readonly IUserMessageNotification _userMessageNotification;
 		private readonly IUserNotification _userNotification;
 
 		public ExportProcessBuilder(
 			IConfigFactory configFactory,
-			ILoggingMediator loggingMediator,
+			ICompositeLoggingMediator loggingMediator,
 			IUserMessageNotification userMessageNotification,
 			IUserNotification userNotification,
 			ICredentialProvider credentialProvider,
 			ICaseManagerFactory caseManagerFactory,
 			ISearchManagerFactory searchManagerFactory,
 			IExporterFactory exporterFactory,
-			IExportFileBuilder exportFileBuilder
+			IExportFileBuilder exportFileBuilder,
+			JobStatisticsService jobStatisticsService
 		)
 		{
 			_configFactory = configFactory;
@@ -47,15 +52,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_searchManagerFactory = searchManagerFactory;
 			_exporterFactory = exporterFactory;
 			_exportFileBuilder = exportFileBuilder;
+			_jobStatisticsService = jobStatisticsService;
 		}
 
-		public IExporter Create(ExportSettings settings)
+		public IExporter Create(ExportSettings settings, Job job)
 		{
 			var exportFile = _exportFileBuilder.Create(settings);
 			PerformLogin(exportFile);
 			PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds, settings.TextPrecedenceFieldsIds);
 			var exporter = _exporterFactory.Create(exportFile);
 			AttachHandlers(exporter);
+			SubscribeToJobStatisticsEvents(job);
 			return exporter;
 		}
 
@@ -133,10 +140,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			   }).ToArray();
 		}
 
-		private void AttachHandlers(IExporter exporter)
+		private void AttachHandlers(IExporter exporter)   
 		{
 			exporter.InteractionManager = _userNotification;
 			_loggingMediator.RegisterEventHandlers(_userMessageNotification, exporter);
+		}
+
+		private void SubscribeToJobStatisticsEvents(Job job)
+		{
+			foreach (var loggingMediator in
+				_loggingMediator.LoggingMediators.Where(loggingMediator => loggingMediator.GetType().GetInterfaces().Contains(typeof(IBatchReporter))))
+			{
+				_jobStatisticsService.Subscribe(loggingMediator as IBatchReporter, job);
+			}
 		}
 	}
 }

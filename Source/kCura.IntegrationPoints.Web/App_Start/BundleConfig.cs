@@ -7,7 +7,9 @@ namespace kCura.IntegrationPoints.Web
 		// For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
 		public static void RegisterBundles(BundleCollection bundles)
 		{
-			bundles.Add(new ScriptBundle("~/bundles/jquery").Include("~/Scripts/jquery-{version}.js"));
+			bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
+				"~/Scripts/jquery-{version}.js"
+			));
 
 			bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/Scripts/jquery-ui-{version}.js"));
 
@@ -21,6 +23,11 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/postal/lodash.js",
 				"~/Scripts/postal/postal.js",
 				"~/Scripts/ip-messaging.js"
+			));
+
+			bundles.Add(new ScriptBundle("~/bundles/frame-messaging").Include(
+				"~/Scripts/jquery-postMessage.js",
+				"~/Scripts/frame-messaging.js"
 			));
 
 			bundles.Add(new ScriptBundle("~/bundles/ipEdit").Include(

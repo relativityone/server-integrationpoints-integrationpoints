@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
@@ -14,16 +15,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_exportSettingsBuilder = exportSettingsBuilder;
 		}
 
-		public void StartWith(ExportSettings settings)
+		public void StartWith(ExportSettings settings, Job job)
 		{
-			var exporter = _exportProcessBuilder.Create(settings);
+			var exporter = _exportProcessBuilder.Create(settings, job);
 			exporter.Run();
 		}
 
-		public void StartWith(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId)
+		public void StartWith(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId, Job job)
 		{
 			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, fieldMap, artifactTypeId);
-			StartWith(exportSettings);
+			StartWith(exportSettings, job);
 		}
 	}
 }
