@@ -419,6 +419,16 @@
     <Content Include="Content\themes\base\jquery.ui.slider.css" />
     <Content Include="Content\themes\base\jquery.ui.tabs.css" />
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\default-dark\32px.png" />
+    <Content Include="Content\themes\default-dark\40px.png" />
+    <Content Include="Content\themes\default-dark\style.css" />
+    <Content Include="Content\themes\default-dark\style.min.css" />
+    <Content Include="Content\themes\default-dark\throbber.gif" />
+    <Content Include="Content\themes\default\32px.png" />
+    <Content Include="Content\themes\default\40px.png" />
+    <Content Include="Content\themes\default\style.css" />
+    <Content Include="Content\themes\default\style.min.css" />
+    <Content Include="Content\themes\default\throbber.gif" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
     <Content Include="Content\buttermilk.scss" />
@@ -449,7 +459,6 @@
     </Content>
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
-    <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
@@ -467,8 +476,14 @@
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
+    <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\jquery-migrate-1.4.1.min.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
+    <Content Include="Scripts\jstree.js" />
+    <Content Include="Scripts\jstree.min.js" />
     <Content Include="Scripts\knockout-3.4.0.debug.js" />
     <Content Include="Scripts\knockout-3.4.0.js" />
     <Content Include="Scripts\relativity\Relativity-provider.js" />
@@ -544,11 +559,6 @@
     <Content Include="Scripts\integration-point\step-details.js" />
     <Content Include="Scripts\integration-point\time-utils.js" />
     <Content Include="Scripts\ip-messaging.js" />
-    <Content Include="Scripts\jquery-1.8.2.js" />
-    <Content Include="Scripts\jquery-1.8.2.min.js" />
-    <Content Include="Scripts\jquery-1.8.2.min.js.map">
-      <DependentUpon>jquery-1.8.2.js</DependentUpon>
-    </Content>
     <Content Include="Scripts\jquery-postMessage.js" />
     <Content Include="Scripts\jquery-ui-1.8.11.min.js.map">
       <DependentUpon>jquery-ui-1.9.2.js</DependentUpon>
@@ -556,6 +566,7 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js.map">
       <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
     </Content>
+    <Content Include="Scripts\jquery-1.9.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.9.2.js" />
     <Content Include="Scripts\jquery-ui-1.9.2.min.js" />

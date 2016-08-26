@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -76,8 +77,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
 			var exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
-			var loggingMediator = _windsorContainer.Resolve<ILoggingMediator>();
-
+			var loggingMediator = _windsorContainer.Resolve<ICompositeLoggingMediator>();
+			var jobStats = Substitute.For<JobStatisticsService>();
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
 
@@ -92,8 +93,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
-				new ExporterWrapperFactory(),
-				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())
+				new StoppableExporterFactory(null),
+				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder()),
+				jobStats
 			);
 
 			var exportSettingsBuilder = new ExportSettingsBuilder();
@@ -123,7 +125,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			CreateOutputFolder(directory.FullName);
 
 			// Act
-			_instanceUnderTest.StartWith(settings);
+			_instanceUnderTest.StartWith(settings, JobExtensions.CreateJob());
 
 			// Assert
 			testCase.Verify(directory, _documents, _images);
@@ -137,7 +139,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var settings = testCase.Prepare(CreateExportSettings());
 
 			// Act
-			_instanceUnderTest.StartWith(settings);
+			_instanceUnderTest.StartWith(settings, JobExtensions.CreateJob());
 
 			// Assert
 			testCase.Verify();

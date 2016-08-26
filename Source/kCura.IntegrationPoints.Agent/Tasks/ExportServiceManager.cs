@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers( job, _sourceWorkspaceManager,
 				_sourceJobManager, _synchronizerFactory, 
-				_serializer, _jobHistoryErrorManager, 
+				_serializer, _jobHistoryErrorManager, _jobStopManager,
 				MappedFields.ToArray(), _sourceConfiguration,
 				_updateStatusType, IntegrationPointDto, JobHistoryDto,
 				GetUniqueJobId(job), userImportApiSettings);
@@ -243,7 +243,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
 
-			this.JobHistoryDto = _jobHistoryService.GetOrCreateSchduledRunHistoryRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
+			this.JobHistoryDto = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
 
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
@@ -394,7 +394,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (_jobHistoryErrorService.JobLevelErrorOccurred)
 			{
 				JobHistoryErrorBatchUpdateManager sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory,
-						_onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
+						_onBehalfOfUserClaimsPrincipalFactory, _jobStopManager, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
 				sourceJobHistoryErrorUpdater.OnJobComplete(job);
 			}
 		}

@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IArtifactGuidRepository _artifactGuidRepository;
-		private ClaimsPrincipal _claimsPrincipal = null;
+		private readonly ClaimsPrincipal _claimsPrincipal = null;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private const int _jobHistoryErrorTypeId = 6873784;
 		private const int _errorStatusExpiredChoiceArtifactId = 798523;
@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private const string _noResultsForObjectType = "Unable to retrieve Artifact Type Id for JobHistoryError object type.";
 		private readonly Job _job = null;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
+		private IJobStopManager _jobStopManager;
 
 		private const string _SCRATCHTABLE_ITEMSTART = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
 		private const string _SCRATCHTABLE_ITEMCOMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
@@ -47,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		[SetUp]
 		public void Setup()
 		{
+			_jobStopManager = Substitute.For<IJobStopManager>();
 			_scratchTableRepository = Substitute.For<IScratchTableRepository>();
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
@@ -70,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_jobHistoryErrorManager.JobHistoryErrorJobStart.GetTempTableName().Returns(_SCRATCHTABLE_JOBSTART);
 			_jobHistoryErrorManager.JobHistoryErrorJobComplete.GetTempTableName().Returns(_SCRATCHTABLE_JOBCOMPLETE);
 
-			_testInstance = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,
+			_testInstance = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobStopManager,
 				_sourceWorkspaceId, _submittedBy, _updateStatusType);
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceId).Returns(_jobHistoryErrorRepository);

@@ -26,7 +26,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private int _rowErrors = 0;
 
-        public JobStatisticsService(JobStatisticsQuery query,
+	    internal JobStatisticsService()
+	    {
+	    }
+
+		public JobStatisticsService(JobStatisticsQuery query,
             TaskParameterHelper helper,
             IJobHistoryService service,
             IWorkspaceDBContext context)

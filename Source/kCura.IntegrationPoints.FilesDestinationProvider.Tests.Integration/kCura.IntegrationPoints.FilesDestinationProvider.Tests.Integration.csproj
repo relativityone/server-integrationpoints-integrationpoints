@@ -92,6 +92,10 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.ScheduleQueue.Core, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Web\Bin\kCura.ScheduleQueue.Core.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Utility, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
@@ -150,14 +154,6 @@
     </Reference>
     <Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Sodium, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\libsodium-net.0.8.0\lib\Net40\Sodium.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -298,7 +294,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			//Arrange
 			string docPrefix = "JobLevelImport";
-
+			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			ModifySavedSearch(docPrefix, false);
 
@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string startTempTableName = $"{ jobStartTempTablePrefix }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ jobCompleteTempTablePrefix }_{ tempTableSuffix }";
 			DataTable startTempTable = GetTempTable(startTempTableName);
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -237,6 +237,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string docPrefix = "DocForItemAndJob";
 			string expiredDocPrefix = "ExpForItemAndJob";
 			DataTable importTable = GetImportTable(8000, 1000, docPrefix, expiredDocPrefix);
+			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
+
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(docPrefix, false);
 
@@ -287,7 +289,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem
 			};
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -353,6 +355,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			DataTable importTable = GetImportTable(startingControlNumber, numberOfDocuments, documentPrefix, expiredDocumentPrefix);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(documentPrefix, true);
+			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -404,7 +407,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			{
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly
 			};
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);

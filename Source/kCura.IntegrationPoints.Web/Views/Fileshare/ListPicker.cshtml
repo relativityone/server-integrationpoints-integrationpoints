@@ -1,32 +1,32 @@
-﻿<div>
+<div data-bind="attr: {id: pickerId}">
     <div class="popupTitle" data-bind="text: PopupTitle"></div>
 
     <div class="card">
         <div class="label" data-bind="text: PickerName"></div>
 
         <div class="table" data-bind="with: model">
-            <div class="cell">
+            <div id="available-values-list" class="cell">
                 <div class="list-title" style="margin: 10px 0px 5px 0px;">Available:</div>
                 <select id="popup-list-available" class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
             </div>
             <div class="cell selection map-move">
                 <div>
-                    <a href="#" class="icon-move-last" data-bind="click: addAllValues"></a>
-                    <a href="#" class="icon-move-next" data-bind="click: addValue"></a>
-                    <a href="#" class="icon-move-previous" data-bind="click: removeValue"></a>
-                    <a href="#" class="icon-move-first" data-bind="click: removeAllValues"></a>
+                    <a href="#" id="select-all-items" class="icon-move-last" data-bind="click: addAllValues"></a>
+                    <a href="#" id="select-single-item" class="icon-move-next" data-bind="click: addValue"></a>
+                    <a href="#" id="remove-single-item" class="icon-move-previous" data-bind="click: removeValue"></a>
+                    <a href="#" id="remove-all-items" class="icon-move-first" data-bind="click: removeAllValues"></a>
                 </div>
             </div>
-            <div class="cell">
+            <div id="selected-values-list" class="cell">
                 <div class="list-title" style="margin: 10px 0px 5px 0px;">Selected:</div>
                 <select id="popup-list-selected" class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>
             </div>
-            <div class="cell selection map-move">
+            <div class="cell selection map-move" >
                 <div>
-                    <a href="#" class="icon-move-to-top" data-bind="click: moveValueTop"></a>
-                    <a href="#" class="icon-move-up" data-bind="click: moveValueUp"></a>
-                    <a href="#" class="icon-move-down" data-bind="click: moveValueDown"></a>
-                    <a href="#" class="icon-move-to-bottom" data-bind="click: moveValueBottom"></a>
+                    <a href="#" id="move-item-to-top" class="icon-move-to-top" data-bind="click: moveValueTop"></a>
+                    <a href="#" id="move-item-up" class="icon-move-up" data-bind="click: moveValueUp"></a>
+                    <a href="#" id="move-item-down" class="icon-move-down" data-bind="click: moveValueDown"></a>
+                    <a href="#" id="move-item-to-bottom" class="icon-move-to-bottom" data-bind="click: moveValueBottom"></a>
                 </div>
             </div>
         </div>

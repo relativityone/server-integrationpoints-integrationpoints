@@ -24,12 +24,14 @@
 		@RenderBody()
 	</div>
 	@Scripts.Render("~/bundles/jquery")
+	<script src="~/Scripts/jquery-migrate-1.4.1.min.js"></script>
 	<script src="~/Scripts/select2.js"></script>
 	<script src="~/Scripts/q.js"></script>
 	<script src="~/Scripts/date.js"></script>
 	@Scripts.Render("~/bundles/jqueryui")
 	<script src="~/Scripts/core/messaging.js"></script>
 	@Scripts.Render("~/bundles/messaging")
+	@Scripts.Render("~/bundles/frame-messaging")
 	<script src="~/Scripts/loading-modal.js"></script>
 	@RenderSection("scripts", required: false)
 	<script>

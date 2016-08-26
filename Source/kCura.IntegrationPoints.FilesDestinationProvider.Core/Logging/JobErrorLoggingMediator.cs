@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
 
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
-			IExporterStatusNotification exporterStatusNotification)
+			ICoreExporterStatusNotification exporterStatusNotification)
 		{
 			userMessageNotification.UserFatalMessageEvent += OnUserFatalMessage;
 			userMessageNotification.UserWarningMessageEvent += OnUserWarningMessage;
