@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
 using Relativity.API;
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
-			IExporterStatusNotification exporterStatusNotification)
+			ICoreExporterStatusNotification exporterStatusNotification)
 		{
 			userMessageNotification.UserFatalMessageEvent += OnUserFatalMessage;
 			userMessageNotification.UserWarningMessageEvent += OnUserWarningMessage;

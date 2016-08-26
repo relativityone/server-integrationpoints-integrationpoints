@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
-using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.Relativity.Client;
 using Relativity.Services;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
+using Query = Relativity.Services.Query;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -14,8 +15,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
 		private const int _MAX_NUMBER_OF_AGENTS_TO_CREATE = 4;
 
-		public static int CreateIntegrationPointAgent()
+		public static Result CreateIntegrationPointAgent()
 		{
+			Result agentCreatedResult;
+
 			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
 
 			if (agentTypeRef == null)
@@ -32,8 +35,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (agents.Length >= _MAX_NUMBER_OF_AGENTS_TO_CREATE)
 			{
-				SourceProviderTemplate.DeleteAgentInTeardown = false;
-				return agents[0].ArtifactID;
+				agentCreatedResult = new Result
+				{
+					ArtifactID = agents[0].ArtifactID,
+					Success = false
+				};
+				return agentCreatedResult;
 			}
 
 			List<ResourceServer> resourceServers = GetAgentServers();
@@ -64,8 +71,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 						SharedVariables.RelativityPassword, true, true))
 				{
 					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
-					SourceProviderTemplate.DeleteAgentInTeardown = true;
-					return artifactId;
+
+					agentCreatedResult = new Result
+					{
+						ArtifactID = artifactId,
+						Success = true
+					};
+					return agentCreatedResult;
 				}
 			}
 			catch (Exception ex)
@@ -177,6 +189,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 				result.Artifact.Enabled = false;
 				UpdateAgent(result.Artifact);
 			}
+		}
+
+		public static void DisableAllAgents()
+		{
+			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
+
+			if (agentTypeRef == null)
+			{
+				throw new Exception($"Agent with type name {_INTEGRATION_POINT_AGENT_TYPE_NAME} cannot be found");
+			}
+
+			Query query = new Query
+			{
+				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
+			};
+
+			DisableAgents(query);
 		}
 
 		public static void EnableAgents(Query query)

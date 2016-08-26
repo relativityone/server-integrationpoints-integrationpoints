@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -10,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -93,17 +93,26 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				throw new Exception("Failed to retrieved corresponding Integration Point.");
 			}
-			var sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
 
-			var savedSearchRepo = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID,
-				sourceConfiguration.SavedSearchArtifactId);
+			var sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
 
-			int totalCount = savedSearchRepo.GetTotalDocsCount();
+			int totalCount = GetTotalExportItemsCount(sourceSettings, job);
 			if (totalCount > 0)
 			{
 				CreateBatchJob(job, new List<string>());
 			}
 			return totalCount;
+		}
+
+		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, Job job)
+		{
+			var savedSearchRepo = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID,
+				settings.SavedSearchArtifactId);
+
+			var extractedIndex = Math.Min(savedSearchRepo.GetTotalDocsCount(), Math.Abs(settings.StartExportAtRecord - 1));
+
+			var totalExportItemsCount = savedSearchRepo.GetTotalDocsCount() - extractedIndex;
+			return Math.Max(totalExportItemsCount, 0);
 		}
 
 		#endregion //Methods

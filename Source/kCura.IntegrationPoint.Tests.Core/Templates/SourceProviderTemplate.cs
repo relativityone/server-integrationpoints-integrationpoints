@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private readonly string _workspaceTemplate;
 		protected int WorkspaceArtifactId { get; private set; }
 		public int AgentArtifactId { get; set; }
-		public static bool DeleteAgentInTeardown = true;
+		private bool _deleteAgentInTeardown = true;
 		protected DestinationProvider DestinationProvider;
 		protected IEnumerable<SourceProvider> SourceProviders;
 
@@ -81,7 +80,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public override void SuiteTeardown()
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);
-			if (DeleteAgentInTeardown)
+			if (_deleteAgentInTeardown)
 			{
 				Agent.DeleteAgent(AgentArtifactId);
 			}
@@ -292,7 +291,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			await Task.Run(() => RelativityApplication.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId, 
 				new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), ClaimsPrincipal.Current));
-			AgentArtifactId = await Task.Run(() => Agent.CreateIntegrationPointAgent());
+			Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());
+			AgentArtifactId = agentCreatedResult.ArtifactID;
+			_deleteAgentInTeardown = agentCreatedResult.Success;
 		} 
 
 		#endregion Helper methods

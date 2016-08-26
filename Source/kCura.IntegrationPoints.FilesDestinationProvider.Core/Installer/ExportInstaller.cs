@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
 
 			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
-			container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
+			container.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
 			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
 
 			container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>());
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
 
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
-			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterWrapperFactory>());
+			container.Register(Component.For<IExporterFactory>().ImplementedBy<StoppableExporterFactory>());
 			container.Register(Component.For<ISearchManagerFactory>().ImplementedBy<SearchManagerFactory>());
 
 			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>());

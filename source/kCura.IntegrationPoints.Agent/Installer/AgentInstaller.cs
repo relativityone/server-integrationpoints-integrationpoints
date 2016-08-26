@@ -246,9 +246,14 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (ExportLoggingMediator).Name,
 				typeof (ExportFieldsService).Name,
 				typeof (ProductionPrecedenceService).Name,
-				typeof (ExporterWrapper).Name, // defined earlier in file
+				typeof (ExporterEventsWrapper).Name, // defined earlier in file
 				typeof (CaseManagerWrapperFactory).Name,
-				typeof (ExporterWrapperFactory).Name
+				typeof (StoppableExporterFactory).Name,
+			});
+
+			var excludedFdpInterfaceNames = new HashSet<string>(new []
+			{
+				typeof (IExporter).Name
 			});
 
 			if (!isIlMergedAssembly)
@@ -261,17 +266,19 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					.IncludeNonPublicTypes()
 					.InNamespace(FILESDESTINATIONPROVIDER_ASSEMBLY_NAME, true)
 					.If(x => x.GetInterfaces().Any())
+					.If(x => !x.GetInterfaces().Select(y => y.Name).Intersect(excludedFdpInterfaceNames).Any())
 					.If(x => !excludedFdpClassNames.Contains(x.Name))
 					.WithService.DefaultInterfaces()
 					.Configure(x => x.LifestyleTransient()));
 			#endregion
 
+			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
 			container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
 			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
 			container.Register(
 				Component.For<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory>()
-				.ImplementedBy<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.ExporterWrapperFactory>());
+				.ImplementedBy<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.StoppableExporterFactory>());
 			#endregion
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
 using NSubstitute;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         private readonly string _warningMessageTemplate = "Warning: {message}. Additional info: {@additionalInfo}.";
 
         private IAPILog _apiLog;
-        private IExporterStatusNotification _exporterStatusNotification;
+        private ICoreExporterStatusNotification _exporterStatusNotification;
         private IUserMessageNotification _userMessageNotification;
 
         [SetUp]
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         {
             _apiLog = Substitute.For<IAPILog>();
             _userMessageNotification = Substitute.For<IUserMessageNotification>();
-            _exporterStatusNotification = Substitute.For<IExporterStatusNotification>();
+            _exporterStatusNotification = Substitute.For<ICoreExporterStatusNotification>();
             var exportLogger = new ExportLoggingMediator(_apiLog);
             exportLogger.RegisterEventHandlers(_userMessageNotification, _exporterStatusNotification);
         }
