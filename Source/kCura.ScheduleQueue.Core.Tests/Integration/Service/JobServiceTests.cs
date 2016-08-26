@@ -31,6 +31,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 		[SetUp]
 		public void SetUp()
 		{
+			//IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
 			using (DataTable table = new DataTable())
 			{
 				table.Columns.Add(new DataColumn(_AGENT_TYPEID, typeof(int)));
@@ -213,6 +214,21 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			// TODO : add more verifications
 		}
 
+		[TestCase(StopState.None)]
+		[TestCase(StopState.Stopping)]
+		[TestCase(StopState.Unstoppable)]
+		public void CreateJob_ChildJobGetParentStopState(StopState state)
+		{
+			// arrange
+			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
+			_instance.UpdateStopState(new List<long>() { job.JobId }, state);
+
+			// act
+			Job childJob = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, job.JobId);
+
+			// assert
+			Assert.AreEqual(childJob.StopState, state);
+		}
 
 		private void AssertJobStopState(Job job, StopState state)
 		{
