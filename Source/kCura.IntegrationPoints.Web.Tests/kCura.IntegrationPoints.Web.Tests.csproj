@@ -208,6 +208,7 @@
     <Compile Include="Integration\Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\CastleWindsorValidationTests.cs" />
     <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
+    <Compile Include="Unit\Controllers\API\ProductionPrecedenceControllerTests.cs" />
     <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Unit\Controllers\BaseControllerTests.cs" />
@@ -246,6 +247,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
+      <Project>{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}</Project>
+      <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
