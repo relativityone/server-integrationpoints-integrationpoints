@@ -20,8 +20,8 @@
 			</div>
 			<div class="field-value">
 				<ul id="isExportType">
-					<li><span><input value="false" name="isExportType" type="radio" data-bind="checked: isExportType" />Import</span></li>
-					<li><span><input value="true" name="isExportType" type="radio" data-bind="checked: isExportType" />Export</span></li>
+					<li><span><input id="importTypeRadioButton" value="false" name="isExportType" type="radio" data-bind="checked: isExportType" />Import</span></li>
+					<li><span><input id="exportTypeRadioButton" value="true" name="isExportType" type="radio" data-bind="checked: isExportType" />Export</span></li>
 				</ul>
 			</div>
 		</div>
@@ -50,8 +50,8 @@
 			</div>
 			<div class="field-value">
 				<ul id="logErrors">
-					<li><span><input value="true" name="logErrors" type="radio" data-bind="checked: logErrors" />Yes</span></li>
-					<li><span><input value="false" name="logErrors" type="radio" data-bind="checked: logErrors" />No</span></li>
+					<li><span><input id="enableLogErrorsRadioButton" value="true" name="logErrors" type="radio" data-bind="checked: logErrors" />Yes</span></li>
+					<li><span><input id="disableLogErrorsRadioButton" value="false" name="logErrors" type="radio" data-bind="checked: logErrors" />No</span></li>
 				</ul>
 			</div>
 		</div>
@@ -98,10 +98,10 @@
 		<div class="field-value" id="scheduleRulesEnabled">
 			<ul>
 				<li>
-					<input type="radio" name="enable" value="true" data-bind="checked: enableScheduler" />Yes
+					<input id="enableSchedulerRadioButton" type="radio" name="enable" value="true" data-bind="checked: enableScheduler" />Yes
 				</li>
 				<li>
-					<input type="radio" name="enable" value="false" data-bind="checked: enableScheduler" />No
+					<input id="disableSchedulerRadioButton" type="radio" name="enable" value="false" data-bind="checked: enableScheduler" />No
 				</li>
 			</ul>
 		</div>
