@@ -145,18 +145,12 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 
 				TaskType task;
-				TaskParameters jobDetails = null;
 				SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
 
 
 				if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 				{
 					CheckForProviderAdditionalPermissions(ip, Constants.SourceProvider.Relativity, _context.EddsUserID);
-					jobDetails = new TaskParameters
-					{
-						BatchInstance = Guid.NewGuid()
-					};
-
 					task = TaskType.ExportService;
 				}
 				else
@@ -177,7 +171,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 				if (rule != null)
 				{
-					_jobService.CreateJob<object>(jobDetails, task, _context.WorkspaceID, ip.ArtifactId, rule);
+					_jobService.CreateJob<object>(null, task, _context.WorkspaceID, ip.ArtifactId, rule);
 				}
 				else
 				{

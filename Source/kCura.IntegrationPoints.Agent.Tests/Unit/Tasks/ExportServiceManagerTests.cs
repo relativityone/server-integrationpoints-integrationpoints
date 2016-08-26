@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
 			_jobStopManager.SyncRoot.Returns(_lock);
-
+			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
 			_instance = new ExportServiceManager(_helper,
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory, _exporterFactory,
