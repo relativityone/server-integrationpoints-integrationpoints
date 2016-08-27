@@ -1,11 +1,6 @@
-﻿using kCura.WinEDDS;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-    public interface IExporter : ICoreExporterStatusNotification
+	public interface IExporter : ICoreExporterStatusNotification, WinEDDS.IExporter
 	{
-        IUserNotification InteractionManager { get; set; }
-        void Run();
-    }
+	}
 }

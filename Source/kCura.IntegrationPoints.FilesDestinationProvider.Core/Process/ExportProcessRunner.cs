@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		public void StartWith(ExportSettings settings, Job job)
 		{
 			var exporter = _exportProcessBuilder.Create(settings, job);
-			exporter.Run();
+			exporter.ExportSearch();
 		}
 
 		public void StartWith(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId, Job job)

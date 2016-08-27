@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
             _exportProcessRunner.StartWith(new ExportSettings(), job);
 
-            exporter.Received().Run();
+            exporter.Received().ExportSearch();
         }
 
 		[Test]
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			_exportProcessRunner.StartWith(new ExportUsingSavedSearchSettings(), new List<FieldMap>(), 1000, job);
 
-			exporter.Received().Run();
+			exporter.Received().ExportSearch();
 		}
 	}
 }

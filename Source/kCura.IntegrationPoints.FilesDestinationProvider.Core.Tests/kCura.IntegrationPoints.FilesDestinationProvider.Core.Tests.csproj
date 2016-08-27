@@ -104,6 +104,12 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.MetricsCollection">
+      <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
