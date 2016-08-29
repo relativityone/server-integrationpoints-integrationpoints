@@ -59,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
+		private PermissionCheckDTO _permissionChecksResults;
 
 		[SetUp]
 		public void Setup()
@@ -138,6 +139,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				ScheduleRule = _integrationPoint.ScheduleRule
 			};
 
+			_permissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0], Success = true};
+			_integrationPointManager.UserHasPermissionToStopJob(_sourceWorkspaceArtifactId, _integrationPointDto)
+				.Returns(_permissionChecksResults);
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
 		}
