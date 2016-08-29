@@ -70,8 +70,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_workspaceService.ImportData(_configSettings.WorkspaceId, _documents, _images);
 
-			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId,
-				_configSettings.ExportedObjArtifactId);
+			//Ignored till problems with ProductionsAPI will be resolved
+			//_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId,
+				//_configSettings.ExportedObjArtifactId);
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
@@ -85,6 +86,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var configFactoryMock = Substitute.For<IConfigFactory>();
 			configFactoryMock.Create().Returns(configMock);
 
+			var jobHistoryErrorServiceProvider = _windsorContainer.Resolve<JobHistoryErrorServiceProvider>();
+
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,
 				loggingMediator,
@@ -93,7 +96,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerFactory(),
 				new SearchManagerFactory(),
-				new StoppableExporterFactory(null),
+				new StoppableExporterFactory(jobHistoryErrorServiceProvider),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder()),
 				jobStats
 			);
@@ -247,9 +250,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			}
 			_windsorContainer = new WindsorContainer();
 			_windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(_windsorContainer.Kernel));
-			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IExportTestCase>().WithServiceAllInterfaces().AllowMultipleMatches());
-			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IInvalidFileshareExportTestCase>().WithServiceAllInterfaces().AllowMultipleMatches());
-
+			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IExportTestCase>().Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute))).WithServiceAllInterfaces().AllowMultipleMatches());
+			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IInvalidFileshareExportTestCase>().Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute))).WithServiceAllInterfaces().AllowMultipleMatches());
+			
 			var exportUserNotification = Substitute.ForPartsOf<ExportUserNotification>();
 			_windsorContainer.Register(Component.For<IUserNotification, IUserMessageNotification>().Instance(exportUserNotification).LifestyleSingleton());
 
@@ -259,12 +262,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_windsorContainer.Register(Component.For<IJobHistoryErrorService>().Instance(jobHistoryErrorService).LifestyleSingleton());
 
-			_windsorContainer.Register(Component.For<LoggingMediatorForTestsFactory>().ImplementedBy<LoggingMediatorForTestsFactory>());
-			_windsorContainer.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorForTestsFactory f) => f.Create()).LifestyleSingleton());
+			_windsorContainer.Register(Component.For<LoggingMediatorForTestsFactory>().ImplementedBy<LoggingMediatorForTestsFactory>().LifestyleSingleton());
+			_windsorContainer.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorForTestsFactory f) => f.Create()).LifestyleSingleton());
 
 			_windsorContainer.Register(Component.For<ConfigSettings>().Instance(_configSettings).LifestyleTransient());
 			_windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
 			_windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
+			_windsorContainer.Register(Component.For<JobHistoryErrorServiceProvider>().ImplementedBy<JobHistoryErrorServiceProvider>().LifestyleTransient());
 
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
