@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
-				CreateJobHistoryOnIntegrationPoint(model.ArtifactID, batchInstance);
+				CreateJobHistoryOnIntegrationPoint(model.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
 
 				DataRow row1 = new CreateScheduledJob(_queueContext).Execute(
 					workspaceID: WorkspaceArtifactId,
