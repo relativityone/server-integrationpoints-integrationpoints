@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using kCura.Data.RowDataGateway;
 using kCura.Injection;
 using kCura.Injection.Behavior;
+using kCura.IntegrationPoints.Injection.Behaviors;
 
 namespace kCura.IntegrationPoints.Injection
 {
@@ -119,7 +120,7 @@ namespace kCura.IntegrationPoints.Injection
 					injectionBehavior = new Log();
 					break;
 				case InjectionBehavior.BehaviorType.Error:
-					injectionBehavior = new Error();
+					injectionBehavior = new ErrorWithLog();
 					break;
 				case InjectionBehavior.BehaviorType.InfiniteLoop:
 					injectionBehavior = new InfiniteLoop();
