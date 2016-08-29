@@ -4,6 +4,8 @@ using System.Data;
 using System.Data.SqlClient;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.Injection;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -19,8 +21,10 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
@@ -315,6 +319,49 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				{
 					_jobService.DeleteJob(job.JobId);
 				}
+			}
+		}
+
+		[Test]
+		public void StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers()
+		{
+			global::kCura.Injection.Injection injection = new global::kCura.Injection.Injection(
+				InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE,
+				new global::kCura.Injection.Behavior.InfiniteLoop(), "TargetDocumentsTaggingManager.OnJobComplete");
+			DateTime startTime = DateTime.UtcNow;
+
+			Job job = null;
+			try
+			{
+				DataTable dataTable = Import.GetImportTable("DocId", 50);
+				Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
+
+				IntegrationModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
+					"StopRequestedAtTheBeginningOfJob", "Append Only");
+				model = CreateOrUpdateIntegrationPoint(model); // create integration point
+
+				InjectionHelper.InitializeAndEnableInjectionPoints(new List<global::kCura.Injection.Injection> { injection });
+
+				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
+				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
+
+				//when tagging starts
+				InjectionHelper.WaitUntilInjectionPointIsReached(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ID, startTime, 15);
+
+				InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => _jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Stopping));
+				const string exceptionMessage = "Invalid operation. Job state failed to update.";
+				Assert.That(exceptionMessage, Is.EqualTo(exception.Message));
+
+				InjectionHelper.RemoveInjectionFromEnvironment(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ID);
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, model.ArtifactID);
+			}
+			finally
+			{
+				if (job != null)
+				{
+					_jobService.DeleteJob(job.JobId);
+				}
+				InjectionHelper.CleanupInjectionPoints(new List<InjectionPoint> { InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE });
 			}
 		}
 	}

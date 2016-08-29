@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Injection;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
@@ -73,6 +74,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public void OnJobComplete(Job job)
 		{
+			InjectionManager.Instance.Evaluate(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ID);
 			try
 			{
 				if (!_errorOccurDuringJobStart)
