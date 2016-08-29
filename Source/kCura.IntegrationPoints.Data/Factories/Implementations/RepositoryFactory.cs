@@ -201,6 +201,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new InstanceSettingRepository();
 		}
 
+		public IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId)
+		{
+			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
+			return new RelativityAuditRepository(baseServiceContext);
+		}
+
 		#region Helper Methods
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
