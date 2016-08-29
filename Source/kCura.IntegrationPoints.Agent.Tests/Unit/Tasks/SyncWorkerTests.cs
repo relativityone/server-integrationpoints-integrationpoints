@@ -243,6 +243,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			
 		}
 
+		[Test]
+		public void Excute_EnsureToAlwaysDisposeJobStopManager()
+		{
+			// arrange
+			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(false);
+
+			// act
+			_instance.Execute(_job);
+
+			// assert
+			_jobStopManager.Received(1).Dispose();
+		}
+
 		private void EnsureToSetJobHistroyErrorServiceProperties()
 		{
 			_jobHistoryErrorService.Received(1).JobHistory = _jobHistory;
