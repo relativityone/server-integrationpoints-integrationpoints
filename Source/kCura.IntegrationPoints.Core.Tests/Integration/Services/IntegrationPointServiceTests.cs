@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Assert
 			Assert.AreEqual(false, integrationPointPostJob.HasErrors);
 			Assert.IsNotNull(integrationPointPostJob.LastRun);
-			Assert.AreEqual(3, jobHistory.ItemsImported);
+			Assert.AreEqual(3, jobHistory.ItemsTransferred);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRun.Name, jobHistory.JobType.Name);
@@ -270,7 +270,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Assert
 			Assert.AreEqual(true, integrationPointPostRun.HasErrors, "The first integration point run should have errors");
 			Assert.AreEqual(false, integrationPointPostRetry.HasErrors, "The integration point post retry should not have errors");
-			Assert.AreEqual(3, jobHistory.ItemsImported);
+			Assert.AreEqual(3, jobHistory.ItemsTransferred);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors.Name, jobHistory.JobType.Name);

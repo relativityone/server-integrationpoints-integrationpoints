@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Services
 					continue;
 				}
 
-				int jobHistoryItemsImported = reader.GetInt32(0);
+				int jobHistoryItemsTransferred = reader.GetInt32(0);
 
 				if (totalAvailable >= start && totalAvailable < end)
 				{
@@ -234,14 +234,14 @@ namespace kCura.IntegrationPoints.Services
 
 					var jobHistory = new JobHistoryModel
 					{
-						ItemsImported = jobHistoryItemsImported,
+						ItemsTransferred = jobHistoryItemsTransferred,
 						EndTimeUtc = endTimeUtc,
 						DestinationWorkspace = destinationWorkspace
 					};
 					jobHistories.Add(jobHistory);
 				}
 
-				totalDocuments += jobHistoryItemsImported;
+				totalDocuments += jobHistoryItemsTransferred;
 				totalAvailable++;
 			}
 
@@ -309,11 +309,11 @@ namespace kCura.IntegrationPoints.Services
 				(SELECT TOP 1 [ArtifactID] FROM[JobHistory] WITH (NOLOCK))";
 		
 		private const string _JOB_HISTORIES_COMPLETED_WITH_ITEMS_PUSHED_SQL = @"
-			SELECT [ItemsImported], [EndTimeUTC], [DestinationWorkspace]
+			SELECT [ItemsTransferred], [EndTimeUTC], [DestinationWorkspace]
 			FROM [JobHistory] AS JH WITH (NOLOCK)
 			INNER JOIN [Artifact] AS A WITH (NOLOCK)
 			ON JH.[ArtifactID] = A.[ArtifactID]
-			WHERE A.[AccessControlListID] in ({0}) AND JH.[ArtifactID] in ({1}) AND JH.[EndTimeUTC] IS NOT NULL AND JH.[ItemsImported] > 0
+			WHERE A.[AccessControlListID] in ({0}) AND JH.[ArtifactID] in ({1}) AND JH.[EndTimeUTC] IS NOT NULL AND JH.[ItemsTransferred] > 0
 			ORDER BY [{2}] {3}";
 
 		#endregion

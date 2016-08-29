@@ -546,16 +546,16 @@ namespace kCura.IntegrationPoints.Data
 				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
 			}
 		}
-		[DynamicField(JobHistoryFields.ItemsImported, JobHistoryFieldGuids.ItemsImported, FieldTypes.WholeNumber)]
-		public int? ItemsImported
+		[DynamicField(JobHistoryFields.ItemsTransferred, JobHistoryFieldGuids.ItemsTransferred, FieldTypes.WholeNumber)]
+		public int? ItemsTransferred
 		{
 			get
 			{
-				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsImported));
+				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsTransferred));
 			}
 			set
 			{
-				SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsImported), value);
+				SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsTransferred), value);
 			}
 		}
 		[DynamicField(JobHistoryFields.ItemsWithErrors, JobHistoryFieldGuids.ItemsWithErrors, FieldTypes.WholeNumber)]
