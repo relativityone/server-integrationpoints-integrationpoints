@@ -4,7 +4,7 @@ using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-    internal class CaseManagerWrapperFactory : ICaseManagerFactory
+    internal class CaseManagerFactory : ICaseManagerFactory
     {
         public ICaseManager Create(ICredentials credentials, CookieContainer cookieContainer)
         {

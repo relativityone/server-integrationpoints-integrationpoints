@@ -4,6 +4,8 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Telemetry.MetricsCollection;
+using IExporter = kCura.WinEDDS.IExporter;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
@@ -17,6 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		[SetUp]
 		public void SetUp()
 		{
+			Client.LazyMetricsClient = new Lazy<IMetricsCollector>(() => Substitute.For<IMetricsCollector>());
 			_exporter = Substitute.For<IExporter>();
 			_controller = new Controller();
 			_jobStopManager = Substitute.For<IJobStopManager>();
@@ -26,15 +29,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		[Test]
 		public void ItShouldRunExporter()
 		{
-			_stoppableExporter.Run();
+			_stoppableExporter.ExportSearch();
 
-			_exporter.Received().Run();
+			_exporter.Received().ExportSearch();
 		}
 
 		[Test]
 		public void ItShouldCheckForOperationCanceledException()
 		{
-			_stoppableExporter.Run();
+			_stoppableExporter.ExportSearch();
 
 			_jobStopManager.Received().ThrowIfStopRequested();
 		}
@@ -45,11 +48,46 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			var wasCalled = false;
 			_controller.HaltProcessEvent += id => wasCalled = true;
 
-			_exporter.When(x => x.Run()).Do(info => _jobStopManager.StopRequestedEvent += Raise.Event<EventHandler<EventArgs>>(EventArgs.Empty));
+			_exporter.When(x => x.ExportSearch()).Do(info => _jobStopManager.StopRequestedEvent += Raise.Event<EventHandler<EventArgs>>(EventArgs.Empty));
 
-			_stoppableExporter.Run();
+			_stoppableExporter.ExportSearch();
 
 			Assert.True(wasCalled);
+		}
+
+		[Test]
+		public void ItShouldNotHaltProcessAfterJobCompletion()
+		{
+			var wasCalled = false;
+			_controller.HaltProcessEvent += id => wasCalled = true;
+
+			_stoppableExporter.ExportSearch();
+
+			_jobStopManager.StopRequestedEvent += Raise.Event<EventHandler<EventArgs>>(EventArgs.Empty);
+
+			Assert.False(wasCalled);
+		}
+
+		[Test]
+		public void ItShouldRaiseEventOnCompletion()
+		{
+			const int expectedDocumentsCount = 10;
+
+			_exporter.DocumentsExported.Returns(expectedDocumentsCount);
+
+			var actualDocumentsCount = 0;
+			var actualErrors = 0;
+
+			_stoppableExporter.OnBatchCompleted += (time, endTime, rows, count) =>
+			{
+				actualDocumentsCount = rows;
+				actualErrors = count;
+			};
+
+			_stoppableExporter.ExportSearch();
+
+			Assert.AreEqual(expectedDocumentsCount, actualDocumentsCount);
+			Assert.AreEqual(0, actualErrors);
 		}
 	}
 }

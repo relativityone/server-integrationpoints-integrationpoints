@@ -1,10 +1,10 @@
 ﻿using System.Net;
-using kCura.WinEDDS.Service;
+using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
 	internal interface IProductionManagerFactory
 	{
-		ProductionManager Create(ICredentials credentials, CookieContainer cookieContainer);
+		IProductionManager Create(ICredentials credentials, CookieContainer cookieContainer);
 	}
 }

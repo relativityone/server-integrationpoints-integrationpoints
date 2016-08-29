@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				exportUserNotification,
 				userNotification,
 				new UserPasswordCredentialProvider(_configSettings),
-				new CaseManagerWrapperFactory(),
+				new CaseManagerFactory(),
 				new SearchManagerFactory(),
 				new StoppableExporterFactory(null),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder()),
