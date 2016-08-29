@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 				if (rule != null)
 				{
-					_jobService.CreateJob<object>(null, task, _context.WorkspaceID, ip.ArtifactId, rule);
+					_jobService.CreateJob<TaskParameters>(null, task, _context.WorkspaceID, ip.ArtifactId, rule);
 				}
 				else
 				{
