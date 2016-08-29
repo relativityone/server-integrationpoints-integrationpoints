@@ -449,8 +449,25 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
 		}
 
+		private void CheckStopPermission(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			IIntegrationPointManager manager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
+			IntegrationPoint integrationPoint =	GetRdo(integrationPointArtifactId);
+			PermissionCheckDTO result =	manager.UserHasPermissionToStopJob(workspaceArtifactId, ConvertToIntegrationPointDto(integrationPoint));
+			if (!result.Success)
+			{
+				CreateRelativityError(
+					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					$"User is missing the following permissions:{Environment.NewLine}{String.Join(Environment.NewLine, result.ErrorMessages)}");
+
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
+			}
+		}
+
 		public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
 		{
+			CheckStopPermission(workspaceArtifactId, integrationPointArtifactId);
+
 			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
 			IList<int> allStoppableJobArtifactIds = stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds).ToList();
