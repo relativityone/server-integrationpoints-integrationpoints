@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
-		private PermissionCheckDTO _permissionChecksResults;
+		private PermissionCheckDTO _stopPermissionChecksResults;
 
 		[SetUp]
 		public void Setup()
@@ -139,9 +140,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				ScheduleRule = _integrationPoint.ScheduleRule
 			};
 
-			_permissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0], Success = true};
-			_integrationPointManager.UserHasPermissionToStopJob(_sourceWorkspaceArtifactId, _integrationPointDto)
-				.Returns(_permissionChecksResults);
+			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0], Success = true};
+
+			_integrationPointManager.UserHasPermissionToStopJob(
+				_sourceWorkspaceArtifactId,
+				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)))
+				.Returns(_stopPermissionChecksResults);
+
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
 		}
@@ -532,6 +537,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			Assert.IsTrue(correctExceptionWasThrown, "The correct AggregateException was not thrown.");
 		}
 
+		[Test]
+		public void MarkIntegrationPointToStopJobs_InsufficientPermission()
+		{
+			// arrange
+			const string errorMessage = " whatever !";
+			_stopPermissionChecksResults.Success = false;
+			_stopPermissionChecksResults.ErrorMessages = new[] { errorMessage };
+
+			var expectedErrorMessage = new ErrorDTO()
+			{
+				Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+				FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, errorMessage)}",
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _sourceWorkspaceArtifactId
+			};
+
+			// act
+			Exception exception = Assert.Throws<Exception>( () => _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId));
+
+			// assert
+			Assert.IsNotNull(exception);
+			Assert.AreEqual(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS, exception.Message);
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
+
+
+		}
 
 		[Test]
 		public void RunIntegrationPoint_RelativityProvider_InvalidPermissions_ThrowsException()

@@ -453,7 +453,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IIntegrationPointManager manager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
 			IntegrationPoint integrationPoint =	GetRdo(integrationPointArtifactId);
-			PermissionCheckDTO result =	manager.UserHasPermissionToStopJob(workspaceArtifactId, ConvertToIntegrationPointDto(integrationPoint));
+			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
+			PermissionCheckDTO result =	manager.UserHasPermissionToStopJob(workspaceArtifactId, integrationPointDto);
 			if (!result.Success)
 			{
 				CreateRelativityError(
