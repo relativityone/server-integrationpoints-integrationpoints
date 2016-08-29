@@ -1,6 +1,6 @@
 ﻿var Picker = {
 	create: function(containerId, viewModel, options) {
-		var view = (window.parent.$)('<div id="' + containerId + '" style="padding: 0px;"></div>');
+		var view = (window.$)('<div id="' + containerId + '" style="padding: 0px;"></div>');
 
 		IP.data.ajax({
 				url: IP.utils.generateWebURL("Fileshare", "ListPicker"),
