@@ -287,7 +287,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldAttachEventHandlers()
 		{
-			var exporter = Substitute.For<IExporter>();
+			var exporter = Substitute.For<Core.SharedLibrary.IExporter>();
 			_exporterFactory.Create(_exportFile).Returns(exporter);
 
 			_exportProcessBuilder.Create(new ExportSettings()
@@ -303,7 +303,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		public void ItShouldSubscribeBatchRepoertToJobStatsService()
 		{
 			//Arrange
-			var exporter = Substitute.For<IExporter>();
+			var exporter = Substitute.For<Core.SharedLibrary.IExporter>();
 			var batchReporterMock = new BatchReporterMock();
 			var job = JobExtensions.CreateJob();
 

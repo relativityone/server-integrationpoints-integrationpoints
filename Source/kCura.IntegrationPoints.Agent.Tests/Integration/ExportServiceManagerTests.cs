@@ -25,7 +25,9 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
+using Relativity.Services.ObjectQuery;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
+using Query = Relativity.Services.Query;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {

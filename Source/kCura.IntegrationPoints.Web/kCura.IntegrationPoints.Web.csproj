@@ -57,19 +57,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Config.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Config)\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Crypto, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Crypto.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Crypto)\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.EventHandler, Culture=neutral, processorArchitecture=AMD64">
@@ -165,15 +165,15 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.CustomPages, Version=9.4.239.2, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="Relativity.CustomPages, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Relativity.CustomPages.9.4.239.2\lib\net45\Relativity.CustomPages.dll</HintPath>
+      <HintPath>..\packages\$(Relativity_CustomPages)\lib\net45\Relativity.CustomPages.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.DragonGrid.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.DragonGrid.Core, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Relativity.DragonGrid\Relativity.DragonGrid.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
     </Reference>
@@ -182,15 +182,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.239.2\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.4.226.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.4.226.9\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_Services_Interface)\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">

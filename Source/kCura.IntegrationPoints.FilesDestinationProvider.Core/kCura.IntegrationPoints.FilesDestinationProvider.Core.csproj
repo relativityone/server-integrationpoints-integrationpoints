@@ -145,10 +145,8 @@
     <Compile Include="Process\VolumeInfoBuilder.cs" />
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />
-    <Compile Include="SharedLibrary\CaseManagerWrapperFactory.cs" />
+    <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
-    <Compile Include="SharedLibrary\ExporterEventsWrapper.cs" />
-    <Compile Include="SharedLibrary\SimpleExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
@@ -163,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">

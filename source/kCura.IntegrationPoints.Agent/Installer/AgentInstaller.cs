@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 	        container.Register(Component.For<IJobHistoryErrorService>()
-		        .UsingFactoryMethod((k) => k.Resolve<JobHistoryErrorService>()).LifestyleTransient());
+		        .UsingFactoryMethod( k => k.Resolve<JobHistoryErrorService>()).LifestyleTransient());
 			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
             container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleSingleton());
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<BatchEmail>().LifeStyle.Transient);
@@ -246,9 +246,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (ExportLoggingMediator).Name,
 				typeof (ExportFieldsService).Name,
 				typeof (ProductionPrecedenceService).Name,
-				typeof (ExporterEventsWrapper).Name, // defined earlier in file
-				typeof (CaseManagerWrapperFactory).Name,
+				typeof (CaseManagerFactory).Name,
 				typeof (StoppableExporterFactory).Name,
+				typeof(CompositeLoggingMediator).Name
 			});
 
 			var excludedFdpInterfaceNames = new HashSet<string>(new []
@@ -270,15 +270,17 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					.If(x => !excludedFdpClassNames.Contains(x.Name))
 					.WithService.DefaultInterfaces()
 					.Configure(x => x.LifestyleTransient()));
+
 			#endregion
 
 			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
-			container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
+			container.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
 			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
-			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
+			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerFactory>());
 			container.Register(
-				Component.For<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory>()
-				.ImplementedBy<global::kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.StoppableExporterFactory>());
+				Component.For<FilesDestinationProvider.Core.SharedLibrary.IExporterFactory>()
+				.ImplementedBy<StoppableExporterFactory>());
+
 			#endregion
 		}
 

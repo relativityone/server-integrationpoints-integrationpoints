@@ -37,19 +37,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Config.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Config)\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Crypto, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Crypto.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Crypto)\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
@@ -104,6 +104,12 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.MetricsCollection">
+      <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
@@ -124,6 +130,7 @@
     <Compile Include="Logging\ExportLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobErrorLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobHistoryErrorServiceProviderTests.cs" />
+    <Compile Include="Logging\StatisticsLoggingMediatorTest.cs" />
     <Compile Include="Process\DefaultExportSettingsFactory.cs" />
     <Compile Include="Process\DelimitersBuilderTests.cs" />
     <Compile Include="Process\ExportFileBuilderTests.cs" />

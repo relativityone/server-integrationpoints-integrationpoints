@@ -34,7 +34,7 @@ using System;
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	[SynchronizedTask]
-	public class ExportServiceManager : ITask 
+	public class ExportServiceManager : ITask
 	{
 		private ExportJobErrorService _exportJobErrorService;
 		private Guid _identifier;
@@ -128,9 +128,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_savedSearchArtifactId,
 					job.SubmittedBy))
 				{
-					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 					lock (_jobStopManager.SyncRoot)
 					{
+						JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
+						JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 						UpdateJobStatus();
 					}
 
@@ -165,9 +166,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-			IScratchTableRepository[] scratchTableToMonitorItemLevelError = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
-				.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
-				.Select(observer => observer.ScratchTableRepository).ToArray();
+			IScratchTableRepository[] scratchTableToMonitorItemLevelError =
+				_exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+					.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
+					.Select(observer => observer.ScratchTableRepository).ToArray();
 
 			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
 
@@ -200,7 +202,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				_jobStopManager?.Dispose();
-				_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Unstoppable);
+				_jobService.UpdateStopState(new List<long> {job.JobId}, StopState.Unstoppable);
 			}
 			catch
 			{
@@ -210,8 +212,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
-			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers( job, _sourceWorkspaceManager,
-				_sourceJobManager, _synchronizerFactory, 
+			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, _sourceWorkspaceManager,
+				_sourceJobManager, _synchronizerFactory,
 				_serializer, _jobHistoryErrorManager, _jobStopManager,
 				MappedFields.ToArray(), _sourceConfiguration,
 				_updateStatusType, IntegrationPointDto, JobHistoryDto,
@@ -240,8 +242,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
 
-			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			this._identifier = taskParameters.BatchInstance;
+			if (String.IsNullOrWhiteSpace(job.JobDetails))
+			{
+				TaskParameters taskParameters = new TaskParameters
+				{
+					BatchInstance = Guid.NewGuid()
+				};
+				this._identifier = taskParameters.BatchInstance;
+				job.JobDetails = _serializer.Serialize(taskParameters);
+			}
+			else
+			{
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				this._identifier = taskParameters.BatchInstance;
+			}
 
 			this.JobHistoryDto = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
 
