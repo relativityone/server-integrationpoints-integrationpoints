@@ -62,6 +62,12 @@ ko.validation.init({
 			self.ipModel = ip;
 			self.ipModel.SelectedOverwrite = "Append/Overlay"; // hardcoded as this value doesn't relate to export
 
+			if (!self.ipModel.sourceConfiguration) {
+				self.ipModel.sourceConfiguration = {
+					SourceWorkspaceArtifactId: IP.data.params['appID']
+				};
+			}
+
 			self.model = new viewModel($.extend({}, self.ipModel, _cache));
 			self.model.errors = ko.validation.group(self.model);
 
