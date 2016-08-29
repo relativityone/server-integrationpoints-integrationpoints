@@ -81,6 +81,11 @@ namespace kCura.IntegrationPoints.Core
 				message.Subject = Properties.JobStatusMessages.JOB_FAILED_SUBJECT;
 				message.MessageBody = Properties.JobStatusMessages.JOB_FAILED_BODY;
 			}
+			else if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryStopped))
+			{
+				message.Subject = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT;
+				message.MessageBody = Properties.JobStatusMessages.JOB_STOPPED_BODY;
+			}
 			else
 			{
 				message.Subject = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT;

@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
@@ -8,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -83,6 +85,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			// ACT + ASSERT
 			Assert.DoesNotThrow(()=> { _testInstance.OnJobComplete(job); }, "Sending of email logic should have been skipped");
+		}
+
+		public static object[] GenerateEmailSource = new object[]
+		{
+			new object[] { JobStatusChoices.JobHistoryCompletedWithErrors, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY },
+			new object[] { JobStatusChoices.JobHistoryErrorJobFailed, Properties.JobStatusMessages.JOB_FAILED_SUBJECT, Properties.JobStatusMessages.JOB_FAILED_BODY },
+			new object[] { JobStatusChoices.JobHistoryStopped, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT, Properties.JobStatusMessages.JOB_STOPPED_BODY },
+			new object[] { JobStatusChoices.JobHistoryCompleted, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY },
+		};
+
+		[TestCaseSource(nameof(GenerateEmailSource))]
+		public void GenerateEmail(Choice jobStatus, string expectedSubject, string expectedBody)
+		{
+			// ACT
+			EmailMessage message = _testInstance.GenerateEmail(jobStatus);
+
+			// ASSERT
+			Assert.AreEqual(expectedSubject, message.Subject);
+			Assert.AreEqual(expectedBody, message.MessageBody);
 		}
 
 		private Job GetTestJob()
