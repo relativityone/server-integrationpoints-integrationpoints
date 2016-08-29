@@ -193,11 +193,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Agent.UpdateAgent(agent);
 		}
 
-		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.Choice jobStatusChoice = null, bool jobEnded = false)
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.Choice jobTypeChoice, Relativity.Client.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
-			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
+			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, jobStatusChoice, DateTime.Now);
 
 			if (jobEnded)
 			{
