@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -87,14 +88,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IIntegrationPointManager integrationPointManager = ManagerFactory
 				.CreateIntegrationPointManager(ContextContainerFactory.CreateContextContainer(Helper));
 
-			var integrationPoint = integrationPointManager.Read(job.WorkspaceID, job.RelatedObjectArtifactID);
+			IntegrationPointDTO integrationPoint = integrationPointManager.Read(job.WorkspaceID, job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{
 				throw new Exception("Failed to retrieved corresponding Integration Point.");
 			}
 
-			var sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
+			ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
 
 			int totalCount = GetTotalExportItemsCount(sourceSettings, job);
 			if (totalCount > 0)
@@ -106,13 +107,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, Job job)
 		{
-			var savedSearchRepo = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID,
+			ISavedSearchRepository savedSearchRepo = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID,
 				settings.SavedSearchArtifactId);
 
-			var extractedIndex = Math.Min(savedSearchRepo.GetTotalDocsCount(), Math.Abs(settings.StartExportAtRecord - 1));
+			int totalDocsCount = savedSearchRepo.GetTotalDocsCount();
+			int extractedIndex = Math.Min(totalDocsCount, Math.Abs(settings.StartExportAtRecord - 1));
 
-			var totalExportItemsCount = savedSearchRepo.GetTotalDocsCount() - extractedIndex;
-			return Math.Max(totalExportItemsCount, 0);
+			return Math.Max(totalDocsCount - extractedIndex, 0);
 		}
 
 		#endregion //Methods

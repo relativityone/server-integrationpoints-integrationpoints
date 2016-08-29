@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 					BatchInstance = batchInstance.ToString(),
 					JobType = jobType,
 					JobStatus = JobStatusChoices.JobHistoryPending,
-					ItemsImported = 0,
+					ItemsTransferred = 0,
 					ItemsWithErrors = 0
 				};
 

@@ -35,7 +35,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler, Version=9.4.241.2, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.EventHandler, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCura.EventHandler.9.4.241.2\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>

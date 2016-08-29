@@ -3,12 +3,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
-	public interface ICompositeLoggingMediator : ILoggingMediator
-	{
-		List<ILoggingMediator> LoggingMediators { get; }
-		void AddLoggingMediator(ILoggingMediator loggingMediator);
-	}
-
 	public class CompositeLoggingMediator : ICompositeLoggingMediator
 	{
 		public CompositeLoggingMediator()

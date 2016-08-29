@@ -246,8 +246,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (ExportLoggingMediator).Name,
 				typeof (ExportFieldsService).Name,
 				typeof (ProductionPrecedenceService).Name,
-				typeof (ExporterEventsWrapper).Name, // defined earlier in file
-				typeof (CaseManagerWrapperFactory).Name,
+				typeof (CaseManagerFactory).Name,
 				typeof (StoppableExporterFactory).Name,
 				typeof(CompositeLoggingMediator).Name
 			});
@@ -277,7 +276,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
 			container.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
 			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
-			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
+			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerFactory>());
 			container.Register(
 				Component.For<FilesDestinationProvider.Core.SharedLibrary.IExporterFactory>()
 				.ImplementedBy<StoppableExporterFactory>());

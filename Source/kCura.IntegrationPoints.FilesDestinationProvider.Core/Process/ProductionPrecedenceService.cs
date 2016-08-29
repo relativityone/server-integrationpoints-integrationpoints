@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.WinEDDS.Service;
+using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
@@ -28,18 +28,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			var result = new List<ProductionPrecedenceDTO>();
 			foreach (DataRow row in dt.Rows)
-			{
 				result.Add(new ProductionPrecedenceDTO
 				{
 					ArtifactID = row["ArtifactID"].ToString(),
 					DisplayName = row["Name"].ToString()
 				});
-			}
 
 			return result;
 		}
 
-		private ProductionManager CreateProductionManager()
+		private IProductionManager CreateProductionManager()
 		{
 			WinEDDS.Config.ProgrammaticServiceURL = _config.WebApiPath;
 

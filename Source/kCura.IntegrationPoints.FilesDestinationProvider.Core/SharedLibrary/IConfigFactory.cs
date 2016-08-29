@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Config;
+﻿using kCura.IntegrationPoints.Config;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {

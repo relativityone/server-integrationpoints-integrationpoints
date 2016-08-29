@@ -33,9 +33,12 @@ for ($i = 0; $i -lt $args.count; $i++){
         "^[/-]de"     {
                        $CASE      = $args[$i + 1];
                        $IP        = $args[$i + 2];
+                       $CUSTOMPAGE= $args[$i + 3];
                        $DEPLOY    += $CASE;
                        $DEPLOY    += " ";
                        $DEPLOY    += $IP;
+                       $DEPLOY    += " ";
+                       $DEPLOY    += $CUSTOMPAGE;
                        $i++;
         } 
         "^[/-]al"     {$ALERT   = $true}

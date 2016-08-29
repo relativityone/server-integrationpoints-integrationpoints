@@ -18,12 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			var jobStopManager = _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager;
 			var controller = new Controller();
 			var exporter = new Exporter(exportFile, controller);
-			var exporterWrapper = new SimpleExporter(exporter);
-			if (jobStopManager == null)
-			{
-				return exporterWrapper;
-			}
-			return new StoppableExporter(exporterWrapper, controller, jobStopManager);
+			return new StoppableExporter(exporter, controller, jobStopManager);
 		}
 	}
 }

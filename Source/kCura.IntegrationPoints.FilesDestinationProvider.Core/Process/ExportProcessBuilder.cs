@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_jobStatisticsService = jobStatisticsService;
 		}
 
-		public IExporter Create(ExportSettings settings, Job job)
+		public SharedLibrary.IExporter Create(ExportSettings settings, Job job)
 		{
 			var exportFile = _exportFileBuilder.Create(settings);
 			PerformLogin(exportFile);
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			   }).ToArray();
 		}
 
-		private void AttachHandlers(IExporter exporter)   
+		private void AttachHandlers(SharedLibrary.IExporter exporter)   
 		{
 			exporter.InteractionManager = _userNotification;
 			_loggingMediator.RegisterEventHandlers(_userMessageNotification, exporter);
