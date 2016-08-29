@@ -165,6 +165,10 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.CustomPages, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Relativity_CustomPages)\lib\net45\Relativity.CustomPages.dll</HintPath>

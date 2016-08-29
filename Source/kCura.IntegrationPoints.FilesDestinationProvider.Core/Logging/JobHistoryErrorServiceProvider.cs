@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
@@ -11,11 +12,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 	/// </summary>
 	public class JobHistoryErrorServiceProvider
 	{
-		public JobHistoryErrorServiceProvider(JobHistoryErrorService jobHistoryErrorService)
+		public JobHistoryErrorServiceProvider(IJobHistoryErrorService jobHistoryErrorService)
 		{
 			JobHistoryErrorService = jobHistoryErrorService;
 		}
 
-		public virtual JobHistoryErrorService JobHistoryErrorService { get; private set; }
+		public virtual IJobHistoryErrorService JobHistoryErrorService { get; private set; }
 	}
 }

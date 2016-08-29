@@ -4,11 +4,11 @@ using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
-using NSubstitute;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
+	[Ignore("Ignored till problems with ProductionsAPI will be resolved")]
 	public class ItShouldExportProducedImagesPrecedence : ExportTestCaseBase
 	{
 		private readonly string _defaultPlaceholderPath = Path.Combine(TestContext.CurrentContext.TestDirectory,

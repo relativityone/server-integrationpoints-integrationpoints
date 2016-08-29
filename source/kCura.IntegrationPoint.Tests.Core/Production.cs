@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			WaitForProductionStatus(workspaceId, productionId, "Staged");
 		}
 
-		public static void RunAndWaitToCompletion(int workspaceId, int productionId, bool suppressWarnings = true, bool overrideConflicts = false)
+		public static void RunAndWaitForCompletion(int workspaceId, int productionId, bool suppressWarnings = true, bool overrideConflicts = false)
 		{
 			var json =
 				$@"

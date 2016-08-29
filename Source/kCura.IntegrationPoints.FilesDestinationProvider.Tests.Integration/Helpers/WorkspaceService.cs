@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				"WhenNoImageExists");
 
 			Production.StageAndWaitForCompletion(workspaceArtifactId, productionId);
-			Production.RunAndWaitToCompletion(workspaceArtifactId, productionId);
+			Production.RunAndWaitForCompletion(workspaceArtifactId, productionId);
 
 			return productionId;
 		}

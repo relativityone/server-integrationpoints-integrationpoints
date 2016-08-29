@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			_historyErrorService = historyErrorService;
 		}
 
-		public ILoggingMediator Create()
+		public ICompositeLoggingMediator Create()
 		{
 			var compositeLoggingMediator = new CompositeLoggingMediator();
 			var exportLoggingMediator = new ExportLoggingMediator(_apiLog);
