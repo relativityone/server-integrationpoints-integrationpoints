@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			Assert.AreEqual(_batchGuid.ToString(), jobHistory.BatchInstance);
 			Assert.IsTrue(jobHistory.JobType.EqualsToChoice(jobType));
 			Assert.IsTrue(jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending));
-			Assert.AreEqual(0, jobHistory.ItemsImported);
+			Assert.AreEqual(0, jobHistory.ItemsTransferred);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
 		}
 
