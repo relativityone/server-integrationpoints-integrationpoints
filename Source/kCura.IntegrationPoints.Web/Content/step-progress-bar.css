@@ -56,7 +56,7 @@
       position: absolute;
       background: #e0e0e0;
       top: 50%;
-      margin-top: 17px;
+      margin-top: 14px;
       left: 50%; }
     .step-progress-bar li .step {
       background: url(Images/sprite.png) no-repeat;
@@ -69,9 +69,9 @@
       z-index: 999; }
       .step-progress-bar li .step i {
         display: inline-block;
-        font-size: 3em !important;
+        font-size: 3.3em !important;
         height: 100%;
-        padding-top: 5px;
+        padding-top: 6px;
         width: 100%; }
         .step-progress-bar li .step i:before {
           font-family: "legal-hold-icons" !important; }
@@ -82,5 +82,5 @@
         top: 0;
         bottom: 0;
         font-size: 2.3em !important;
-        padding-top: 3px; }
+        padding-top: 6px; }
 
