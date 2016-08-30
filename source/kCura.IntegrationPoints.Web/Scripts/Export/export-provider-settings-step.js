@@ -12,12 +12,10 @@ ko.validation.init({
 
 (function (root, ko) {
 
-	var viewModel = function (m) {
-		var state = $.extend({}, {}, m);
+	var viewModel = function (state) {
 		var self = this;
 
-		// TODO: reintroduce this functionality: IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun()
-		this.HasBeenRun = ko.observable(false);
+		this.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
 		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
@@ -74,7 +72,7 @@ ko.validation.init({
 				result.push({ key: String.fromCharCode(i) + " (ASCII:" + i + ")", value: i });
 			}
 			return result;
-		}();
+		} ();
 
 		this.SelectedDataFileFormat.subscribe(function (value) {
 			//default values have been taken from RDC application
@@ -132,8 +130,8 @@ ko.validation.init({
 		this.getFileEncodingTypeName = function (value) {
 			if (self.FileEncodingTypeList().length === 3) {
 				var ungroupedFileEncodingList = self.FileEncodingTypeList()[0].children()
-		            .concat(self.FileEncodingTypeList()[1].children())
-		            .concat(self.FileEncodingTypeList()[2].children());
+					.concat(self.FileEncodingTypeList()[1].children())
+					.concat(self.FileEncodingTypeList()[2].children());
 				var selectedFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
 					return item.name === value;
 				});
@@ -393,7 +391,7 @@ ko.validation.init({
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
 
-			self.model = new viewModel();
+			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration, { hasBeenRun: ip.hasBeenRun }));
 			self.model.errors = ko.validation.group(self.model);
 		};
 

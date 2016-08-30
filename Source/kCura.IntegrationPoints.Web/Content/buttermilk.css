@@ -20,7 +20,8 @@ input[type="password"]:focus,
 textarea:focus {
   outline: none;
   border-color: #1b54ab;
-  padding: 0; }
+  /*padding: 0;*/ 
+}
 
 .card, .status-container {
   background-color: #f7f7f7;
@@ -44,7 +45,9 @@ textarea:focus {
     display: table-cell;
     border-right: 3px solid transparent;
     font-size: .85em;
-    vertical-align: top; }
+    vertical-align: top; 
+	font-weight: 700; 
+  }
     .card .field-label.required, .status-container .field-label.required {
       border-right: 3px solid #f59d1f; }
     .card .field-label .sub-message, .status-container .field-label .sub-message {

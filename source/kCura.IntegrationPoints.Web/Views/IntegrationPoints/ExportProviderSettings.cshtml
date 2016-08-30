@@ -1,46 +1,55 @@
 ﻿<script id="exportProviderSettingsStep" type="text/html">
-	<div id="_main">
-		<div id="exportProviderConfiguration">
-			<div class="card">
-				<span class="label">Export Detail</span>
-				<table style="width: 100%;">
-					<tr>
-						<td style="width: 48%;">
-							<div class="field-row">
-								<div class="field-label required">
-									Export Type:
-								</div>
+<div id="_main">
+<div id="exportProviderConfiguration">
+<div class="card">
+	<span class="label">Export Detail</span>
+	<table style="width: 100%;">
+		<tr>
+			<td style="width: 48%;">
+				<div class="field-row">
+					<div class="field-label required">
+						Export Type:
+					</div>
+					<div class="field-value">
+						<ul>
+							<li>
 								<div class="field-value">
-									<ul>
-										<li>
-											<div class="field-value">
-												<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true" />
-												<label disabled="true">Load File</label>
-											</div>
-										</li>
-										<li>
-											<div class="field-value">
-												<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImagesChecked" />
-												<label>Images</label>
-											</div>
-										</li>
-										<li>
-											<div class="field-value">
-												<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: CopyFileFromRepository" />
-												<label>Natives</label>
-											</div>
-										</li>
-										<li>
-											<div class="field-value">
-												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked" />
-												<label>Text Fields As Files</label>
-											</div>
-										</li>
-									</ul>
+									<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true"/>
+									<label disabled="true">Load File</label>
 								</div>
-							</div>
-						</td>
-						<td></td>
+							</li>
+							<li>
+								<div class="field-value">
+									<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImagesChecked"/>
+									<label>Images</label>
+								</div>
+							</li>
+							<li>
+								<div class="field-value">
+									<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: CopyFileFromRepository"/>
+									<label>Natives</label>
+								</div>
+							</li>
+							<li>
+								<div class="field-value">
+									<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked"/>
+									<label>Text Fields As Files</label>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</td>
+			<td style="vertical-align: top;">
+				<div class="field-row">
+					<div class="field-label required">
+						Overwrite files:
+					</div>
+					<div class="field-value middle-vertical-align">
+						<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" class="middle-vertical-align" />
+					</div>
+				</div>
+			</td>
 					</tr>
 					<tr>
 						<td style="width: 48%;">
@@ -73,14 +82,7 @@
 							</div>
 						</td>
 						<td>
-							<div class="field-row">
-								<div class="field-label required">
-									Overwrite files:
-								</div>
-								<div class="field-value middle-vertical-align">
-									<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" class="middle-vertical-align" />
-								</div>
-							</div>
+							
 						</td>
 					</tr>
 				</table>
