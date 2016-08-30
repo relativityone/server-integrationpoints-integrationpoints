@@ -1,14 +1,30 @@
 var LocationJSTreeSelector = function () {
 	var self = this;
+
+	self.create = function (setterCallback) {
+		$('select#location-select').mousedown(function () {
+			if (self.treeVisible) {
+				//self.setSelection(self.SelectedFolderPath);
+			}
+			self.setTreeVisibility(!self.treeVisible);
+		});
+		self.setterCallback = setterCallback;
+		self.initJsTree();
+		self.setTreeVisibility(self.treeVisible);
+	};
+
 	self.initJsTree = function () {
 		$('div#browser-tree').jstree({
 			'core': {
 				'data': [{
-					"text": "Root node",
+					"text": "localhost",
+					"id": "localhost",
 					"children": [{
-						"text": "Child node 1"
+						"text": "Shared",
+						"id": "localhost\\Shared"
 					}, {
-						"text": "Child node 2"
+						"text": "Temp",
+						"id": "localhost\\Temp"
 					}]
 				}]
 			}
@@ -16,8 +32,9 @@ var LocationJSTreeSelector = function () {
 
 		$('div#browser-tree').on('select_node.jstree', function (evt, data) {
 
-			self.setSelection(data.node.text);
-			self.SelectedFolderPath = data.node.id;
+			self.setSelection(data.node.id);
+			self.setterCallback(data.node.id);
+			self.SelectedFolderPath = data.node.text;
 			self.setTreeVisibility(false);
 		}
 	  );
