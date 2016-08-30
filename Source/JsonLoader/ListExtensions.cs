@@ -1,34 +1,54 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 
 namespace JsonLoader
 {
 	public static class ListExtensions
 	{
-		public static DataTable ToDataTable<T>(this List<T> items)
+		public static DataTable ToBatchableIds<T>(this List<T> items, string columnName)
+		{	
+			DataTable dataTable = new DataTable();
+			dataTable.Columns.Add(columnName, typeof(string));
+				
+			PropertyInfo property = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).First(prop => prop.Name == columnName);
+
+			foreach (T item in items)
+			{
+				object value = property.GetValue(item, null);
+				dataTable.Rows.Add(value);
+			}
+
+			return dataTable;
+		}
+
+		public static DataTable ToDataTable<T>(this List<T> items, string identifier, IEnumerable<string> fieldList, HashSet<string> entryIds)
 		{
-			var tb = new DataTable(typeof(T).Name);
+			DataTable dataTable = new DataTable(typeof(T).Name);
 
-			PropertyInfo[] props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			PropertyInfo identifierProperty = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).First(prop => prop.Name == identifier);
+			PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => fieldList.Contains(prop.Name)).ToArray();
 
-			foreach (var prop in props)
+			foreach (PropertyInfo prop in properties)
 			{
-				tb.Columns.Add(prop.Name, prop.PropertyType);
+				dataTable.Columns.Add(prop.Name, prop.PropertyType);
 			}
 
-			foreach (var item in items)
+			foreach (T item in items)
 			{
-				var values = new object[props.Length];
-				for (var i = 0; i < props.Length; i++)
+				string value = (string) identifierProperty.GetValue(item, null);
+				if (entryIds.Contains(value))
 				{
-					values[i] = props[i].GetValue(item, null);
+					object[] values = new object[properties.Length];
+					for (int i = 0; i < properties.Length; i++)
+					{
+						values[i] = properties[i].GetValue(item, null);
+					}
+					dataTable.Rows.Add(values);
 				}
-
-				tb.Rows.Add(values);
 			}
-
-			return tb;
+			return dataTable;
 		}
 	}
 }
