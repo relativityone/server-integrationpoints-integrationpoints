@@ -81,7 +81,7 @@
 				});
 				ajax.fail(function (value) {
 					window.Dragon.dialogs.showConfirm({
-						message: "Failed to stop the job." + value.responseText,
+						message: "Failed to stop the job. " + value.responseText,
 						title: "Unable to Stop the Transfer",
 						okText: 'Ok',
 						showCancel: false,
@@ -123,7 +123,7 @@
 				});
 				ajax.fail(function (value) {
 					window.Dragon.dialogs.showConfirm({
-						message: "Failed to submit the retry job." + value.responseText,
+						message: "Failed to submit the retry job. " + value.responseText,
 						title: "Unable to Retry Errors",
 						okText: 'Ok',
 						showCancel: false,

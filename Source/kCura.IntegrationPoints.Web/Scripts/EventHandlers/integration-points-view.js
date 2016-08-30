@@ -49,7 +49,7 @@
     			});
     			ajax.fail(function (value) {
     				window.Dragon.dialogs.showConfirm({
-    					message: "Failed to stop the job." + value.responseText,
+    					message: "Failed to stop the job. " + value.responseText,
     					title: "Unable to Stop the Transfer",
     					okText: 'Ok',
     					showCancel: false,
