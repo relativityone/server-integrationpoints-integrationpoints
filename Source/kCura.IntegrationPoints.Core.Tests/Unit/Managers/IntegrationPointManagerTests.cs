@@ -208,10 +208,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			};
 			_sourceProviderRepository.Read(_SOURCE_PROVIDER_ID).Returns(sourceProvider);
 
-			var permissionCheckDto = new PermissionCheckDTO()
-			{
-				Success = true
-			};
+			var permissionCheckDto = new PermissionCheckDTO();
 
 			IIntegrationPointManager integrationPointManager = Substitute.ForPartsOf<IntegrationPointManager>(_repositoryFactory);
 			integrationPointManager.When( manager => manager.UserHasPermissionToRunJob(_SOURCE_WORKSPACE_ID, integrationPointDto, provider)).DoNotCallBase();
@@ -234,6 +231,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
 			}
 			integrationPointManager.Received(1).UserHasPermissionToRunJob(_SOURCE_WORKSPACE_ID, integrationPointDto, provider);
+		}
+
+		[TestCase(true, true)]
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		[TestCase(false, false)]
+		public void UserHasPermissionToStopJob_CheckPermissions(bool canEditIntegrationPoint, bool canEditJobHistory)
+		{
+			// arrange
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, INTEGRATION_POINT_ID, ArtifactPermission.Edit).Returns(canEditIntegrationPoint);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is<Guid>(guid => guid == new Guid(ObjectTypeGuids.JobHistory)), ArtifactPermission.Edit).Returns(canEditJobHistory);
+
+			// act
+			PermissionCheckDTO result =	_testInstance.UserHasPermissionToStopJob(_SOURCE_WORKSPACE_ID, INTEGRATION_POINT_ID);
+
+			// assert
+			Assert.AreEqual(canEditIntegrationPoint && canEditJobHistory, result.Success);
+			if (!canEditIntegrationPoint)
+			{
+				Assert.Contains(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT, result.ErrorMessages);
+			}
+			if (!canEditJobHistory)
+			{
+				Assert.Contains(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_EDIT, result.ErrorMessages);
+			}
 		}
 
 		private void ClearAllReceivedCalls()

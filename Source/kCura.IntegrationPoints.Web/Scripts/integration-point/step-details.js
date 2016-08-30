@@ -613,6 +613,7 @@ var IP = IP || {};
 		self.setExportTypeVisibility = function (isExportType) {
 			if (self.hasBeenRun()) {
 				self.source.isSourceProviderDisabled(true);
+				self.destination.isDestinationProviderDisabled(true);
 			} else {
 				if (isExportType === "true") {
 					self.source.displayRelativityInSourceTypes(true);

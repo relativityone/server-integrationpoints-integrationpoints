@@ -140,11 +140,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				ScheduleRule = _integrationPoint.ScheduleRule
 			};
 
-			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0], Success = true};
+			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0]};
 
 			_integrationPointManager.UserHasPermissionToStopJob(
 				_sourceWorkspaceArtifactId,
-				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)))
+				 _integrationPoint.ArtifactId)
 				.Returns(_stopPermissionChecksResults);
 
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
@@ -157,10 +157,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_integrationPointManager.UserHasPermissionToRunJob(
-				Arg.Is(_sourceWorkspaceArtifactId), 
-				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
-				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() {Success = true});
+					Arg.Is(_sourceWorkspaceArtifactId),
+					Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
+					Arg.Is(Constants.SourceProvider.Relativity))
+				.Returns(new PermissionCheckDTO());
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(false);
 
 			// act
@@ -542,7 +542,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// arrange
 			const string errorMessage = " whatever !";
-			_stopPermissionChecksResults.Success = false;
 			_stopPermissionChecksResults.ErrorMessages = new[] { errorMessage };
 
 			var expectedErrorMessage = new ErrorDTO()
@@ -575,7 +574,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = false, ErrorMessages = errorMessages });
+				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages });
 
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId), Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
@@ -618,7 +617,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 					Arg.Is(Constants.SourceProvider.Relativity))
-					.Returns(new PermissionCheckDTO() { Success = true });
+					.Returns(new PermissionCheckDTO());
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
 
 			// act
@@ -644,7 +643,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO() {Success = true});
+				.Returns(new PermissionCheckDTO());
 
 			// act
 			_instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
@@ -668,7 +667,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO() { Success = false, ErrorMessages = errorMessages});
+				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages});
 
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, 12345), String.Join("<br/>", errorMessages));
@@ -704,7 +703,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = true });
+				.Returns(new PermissionCheckDTO());
 
 			// Act
 			Assert.Throws<Exception>(() =>
@@ -732,7 +731,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = false, ErrorMessages = errorMessages });
+				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages });
 
 			// Act
 			Assert.Throws<Exception>(() =>
@@ -789,7 +788,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = true });
+				.Returns(new PermissionCheckDTO());
 			_integrationPoint.HasErrors = true;
 			_integrationPointDto.HasErrors = true;
 
@@ -959,7 +958,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
 				.Returns(new PermissionCheckDTO()
 				{
-					Success = false,
 					ErrorMessages = errorMessages
 				});
 
@@ -1036,10 +1034,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO()
-				{
-					Success = true
-				});
+				.Returns(new PermissionCheckDTO());
 
 			_caseServiceManager.EddsUserID = 1232;
 
@@ -1100,10 +1095,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO()
-				{
-					Success = true
-				});
+				.Returns(new PermissionCheckDTO());
 
 			const int newIntegrationPoinId = 389234;
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
@@ -1195,10 +1187,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 					Arg.Is(Constants.SourceProvider.Relativity))
-					.Returns(new PermissionCheckDTO()
-					{
-						Success = true
-					});
+					.Returns(new PermissionCheckDTO());
 
 			// Act
 			int ipArtifactId = _instance.SaveIntegration(model);

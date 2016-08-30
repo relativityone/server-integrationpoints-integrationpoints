@@ -14,8 +14,7 @@ ko.validation.init({
 	var viewModel = function (state) {
 		var self = this;
 
-		// TODO: reintroduce this functionality: IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun()
-		self.HasBeenRun = ko.observable(false);
+		self.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
 		self.savedSearches = ko.observableArray(state.SavedSearches);
 
@@ -44,8 +43,7 @@ ko.validation.init({
 		var self = this;
 
 		var _cache = {
-			SavedSearches: [],
-			AvailableFields: [],
+			SavedSearches: []
 		};
 
 		self.settings = settings;
@@ -72,10 +70,16 @@ ko.validation.init({
 			self.ipModel = ip;
 			self.ipModel.SelectedOverwrite = "Append/Overlay"; // hardcoded as this value doesn't relate to export
 
-			if (!self.ipModel.sourceConfiguration) {
-				self.ipModel.sourceConfiguration = {
-					SourceWorkspaceArtifactId: IP.data.params['appID']
-				};
+			if (typeof ip.sourceConfiguration === "string") {
+				try {
+					// parse config of existing IP
+					this.ipModel.sourceConfiguration = JSON.parse(ip.sourceConfiguration);
+				} catch (e) {
+					// create new config
+					this.ipModel.sourceConfiguration = {
+						SourceWorkspaceArtifactId: IP.data.params['appID']
+					};
+				}
 			}
 
 			self.model = new viewModel($.extend({}, self.ipModel, _cache));
@@ -99,12 +103,6 @@ ko.validation.init({
 				});
 			};
 
-			self.model.savedSearch.subscribe(function (selected) {
-				if (!!selected) {
-					self.getAvailableFieldsFor(selected);
-				}
-			});
-
 			self.updateSelectedSavedSearch = function () {
 				var selectedSavedSearch = self.model.getSelectedSavedSearch(self.ipModel.sourceConfiguration.SavedSearchArtifactId);
 
@@ -113,33 +111,23 @@ ko.validation.init({
 				}
 			};
 
-			var savedSearchesPromise;
-			if (_cache.SavedSearches.length > 0) {
-				savedSearchesPromise = _cache.SavedSearches;
-			} else {
-				savedSearchesPromise = root.data.ajax({
-					type: 'get',
-					url: root.utils.generateWebAPIURL('SavedSearchFinder')
-				}).fail(function (error) {
-					IP.message.error.raise("No saved searches were returned from the source provider.");
-				});
-			}
+			var savedSearchesPromise = root.data.ajax({
+				type: 'get',
+				url: root.utils.generateWebAPIURL('SavedSearchFinder')
+			}).fail(function (error) {
+				IP.message.error.raise("No saved searches were returned from the source provider.");
+			});
 
-			var exportableFieldsPromise;
-			if (_cache.AvailableFields.length > 0) {
-				exportableFieldsPromise = _cache.AvailableFields;
-			} else {
-				exportableFieldsPromise = root.data.ajax({
-					type: 'post',
-					url: root.utils.generateWebAPIURL('ExportFields/Exportable'),
-					data: JSON.stringify({
-						options: self.ipModel.sourceConfiguration,
-						type: self.ipModel.source.selectedType
-					})
-				}).fail(function (error) {
-					IP.message.error.raise("No exportable fields were returned from the source provider.");
-				});
-			}
+			var exportableFieldsPromise = root.data.ajax({
+				type: 'post',
+				url: root.utils.generateWebAPIURL('ExportFields/Exportable'),
+				data: JSON.stringify({
+					options: self.ipModel.sourceConfiguration,
+					type: self.ipModel.source.selectedType
+				})
+			}).fail(function (error) {
+				IP.message.error.raise("No exportable fields were returned from the source provider.");
+			});
 
 			var availableFieldsPromise;
 			if (self.ipModel.sourceConfiguration.SavedSearchArtifactId > 0) {
@@ -195,6 +183,14 @@ ko.validation.init({
 
 					self.model.fields.selectedAvailableFields(mappedFields);
 					self.model.fields.addField();
+
+					self.model.savedSearch.subscribe(function (selected) {
+						self.model.fields.mappedFields([]);
+
+						if (!!selected) {
+							self.getAvailableFieldsFor(selected);
+						}
+					});
 				});
 		}
 
@@ -237,12 +233,7 @@ ko.validation.init({
 					fieldMap[0].fieldMapType = "Identifier";
 				}
 
-				// self.ipModel.Map = JSON.stringify(fieldMap);
 				self.ipModel.Map = fieldMap;
-
-				// update cache	
-				_cache.SavedSearches = self.model.savedSearches();
-				_cache.AvailableFields = self.model.fields.availableFields();
 
 				d.resolve(self.ipModel);
 			} else {
@@ -255,24 +246,6 @@ ko.validation.init({
 
 		self.back = function () {
 			var d = root.data.deferred().defer();
-
-			if (self.model) {
-				if (typeof self.model.savedSearches === 'function') {
-					_cache.SavedSearches = self.model.savedSearches();
-				}
-				// if (typeof self.model.savedSearch === 'function') {
-				// 	_cache.savedSearch = self.model.savedSearch();
-				// }
-				// if (typeof self.model.startExportAtRecord === 'function') {
-				// 	_cache.startExportAtRecord = self.model.startExportAtRecord();
-				// }
-				if (typeof self.model.fields.availableFields === 'function') {
-					_cache.AvailableFields = self.model.fields.availableFields();
-				}
-				// if (typeof self.model.fields.mappedFields === 'function') {
-				// 	_cache.mappedFields = self.model.fields.mappedFields();
-				// }
-			}
 
 			d.resolve();
 
