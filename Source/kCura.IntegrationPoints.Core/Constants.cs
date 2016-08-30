@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string FILESHARE_PROVIDER_NAME = "Fileshare";
 			public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
+			public const string RETRY_ON_STOPPED_JOB = "The transfer cannot be retried because it has been stopped.";
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
 			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT = "Unable to retrieve Integration Point.";
 			public const string UNABLE_TO_RETRIEVE_SOURCE_PROVIDER = "Unable to retrieve Source Provider.";
