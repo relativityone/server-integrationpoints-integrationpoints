@@ -28,6 +28,16 @@ ko.validation.init({
 		});
 
 		self.fields = new FieldMappingViewModel();
+
+		self.getSelectedSavedSearch = function (artifactId) {
+			var selectedSavedSearch = ko.utils.arrayFirst(self.savedSearches(), function (item) {
+				if (item.value === artifactId) {
+					return item;
+				}
+			});
+
+			return selectedSavedSearch;
+		};
 	};
 
 	var stepModel = function (settings) {
@@ -96,11 +106,7 @@ ko.validation.init({
 			});
 
 			self.updateSelectedSavedSearch = function () {
-				var selectedSavedSearch = ko.utils.arrayFirst(self.model.savedSearches(), function (item) {
-					if (item.value === self.ipModel.sourceConfiguration.SavedSearchArtifactId) {
-						return item;
-					}
-				});
+				var selectedSavedSearch = self.model.getSelectedSavedSearch(self.ipModel.sourceConfiguration.SavedSearchArtifactId);
 
 				if (!!selectedSavedSearch) {
 					self.model.savedSearch(selectedSavedSearch.value);
@@ -197,7 +203,9 @@ ko.validation.init({
 
 			if (self.model.errors().length === 0) {
 				// update integration point's model
-				self.ipModel.sourceConfiguration.SavedSearchArtifactId = self.model.savedSearch();
+				var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
+				self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
+				self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
 				self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
 
 				var fieldMap = [];

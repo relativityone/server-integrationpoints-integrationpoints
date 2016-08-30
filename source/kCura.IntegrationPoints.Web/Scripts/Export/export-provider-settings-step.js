@@ -406,6 +406,8 @@ ko.validation.init({
 				destination.DoNotUseFieldsMapCache = false;
 				self.ipModel.destination = JSON.stringify(destination);
 
+				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
+
 				d.resolve(self.ipModel);
 			} else {
 				self.model.errors.showAllMessages();
