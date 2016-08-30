@@ -156,7 +156,7 @@
       <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -324,7 +324,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(ProjectDir)..\packages\$(Relativity_ImportExport)\lib\native\*  $(ProjectDir)$(OutDir)  /y</PostBuildEvent>
+    <PostBuildEvent>xcopy $(ProjectDir)..\packages\$(Relativity_ImportExport)\lib\native\*  $(ProjectDir)$(OutDir)  /y
+mkdir "$(ProjectDir)..\..\lib\UnitTests"
+xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
+xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
