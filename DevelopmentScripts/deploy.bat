@@ -38,6 +38,6 @@ echo      usage: %~n0 [WorkspaceId] [IPAddress] [custompage]
 echo.
 echo.           WorkspaceId    The local workspaceId of where the dlls will be updated.
 echo.           IPAdress       The IP address of the relativity instance.
-		custompage     If this parameter is custompage then custom page is also updated, otherwise only resource dlls are uploaded
+echo.           custompage     If this parameter is custompage then custom page is also updated, otherwise only resource dlls are uploaded
 echo.
 :end
