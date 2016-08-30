@@ -1,11 +1,8 @@
 ﻿<script id="exportProviderSettingsStep" type="text/html">
 	<div id="_main">
 		<div id="exportProviderConfiguration">
-
-
 			<div class="card">
 				<span class="label">Export Detail</span>
-
 				<table style="width: 100%;">
 					<tr>
 						<td style="width: 48%;">
@@ -61,8 +58,8 @@
 								<div class="field-label required">
 									Overwrite files:
 								</div>
-								<div class="field-value">
-									<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" />
+								<div class="field-value middle-vertical-align">
+									<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" class="middle-vertical-align" />
 								</div>
 							</div>
 						</td>
@@ -115,15 +112,15 @@
 									<input id="volume-max-size-input" type="number" min="1" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
 								</div>
 							</div>
-
 						</td>
 						<td style="vertical-align: text-top;">
-							<p>
-								<h3 style="margin-left: 30px">
-									SUBDIRECTORY
-								</h3>
-							</p>
-
+							<div class="field-row">
+								<p>
+									<h3 style="margin-left: 30px">
+										SUBDIRECTORY
+									</h3>
+								</p>
+							</div>
 							<div class="field-row">
 								<div class="field-label required">
 									Start Number:
@@ -132,7 +129,6 @@
 									<input id="subdirectory-start-files-input" type="number" min="1" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
 								</div>
 							</div>
-
 							<div class="field-row">
 								<div class="field-label required">
 									Number of digits:
@@ -141,7 +137,6 @@
 									<input id="subdirectory-digit-padding-input" type="number" min="1" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
 								</div>
 							</div>
-
 							<div class="field-row">
 								<div class="field-label required">
 									Max Files:
@@ -154,9 +149,6 @@
 					</tr>
 				</table>
 			</div>
-
-
-
 
 			<div class="card">
 				<span class="label">File Breakdown</span>
@@ -179,7 +171,6 @@
 									</ul>
 								</div>
 							</div>
-
 							<div class="field-row">
 								<div class="field-label required">
 									Data File Format:
@@ -188,7 +179,6 @@
 									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
 								</div>
 							</div>
-
 							<div class="field-row" data-bind="visible: isCustom">
 								<div class="field-label">
 									Column:
@@ -197,7 +187,6 @@
 									<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator, select2: {}"></select>
 								</div>
 							</div>
-
 							<div class="field-row" data-bind="visible: isCustom">
 								<div class="field-label">
 									Quote:
@@ -206,7 +195,6 @@
 									<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator, select2: {}"></select>
 								</div>
 							</div>
-
 							<div class="field-row" data-bind="visible: isCustom">
 								<div class="field-label">
 									Newline:
@@ -215,7 +203,6 @@
 									<select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator, select2: {}"></select>
 								</div>
 							</div>
-
 							<div class="field-row" data-bind="visible: isCustom">
 								<div class="field-label">
 									Multi-Value:
@@ -224,7 +211,6 @@
 									<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator, select2: {}"></select>
 								</div>
 							</div>
-
 							<div class="field-row" data-bind="visible: isCustom">
 								<div class="field-label">
 									Nested Value:
@@ -233,8 +219,6 @@
 									<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator, select2: {}"></select>
 								</div>
 							</div>
-
-
 							<div class="field-row">
 								<div class="field-label required">
 									Data File Encoding:
@@ -247,13 +231,12 @@
 									</select>
 								</div>
 							</div>
-
 							<div class="field-row">
 								<div class="field-label">
 									Export Multiple Choice<br />Fields As Nested:
 								</div>
-								<div class="field-value">
-									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" />
+								<div class="field-value middle-vertical-align">
+									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" class="middle-vertical-align" />
 								</div>
 							</div>
 						</td>
@@ -274,7 +257,6 @@
 										<select id="imageDataFileFormatSelector" data-bind="options: ExportEnums.ImageDataFileFormats, optionsText: 'key', optionsValue: 'value', optionsCaption: 'Select...', value: SelectedImageDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
 									</div>
 								</div>
-
 								<div class="field-row">
 									<div class="field-label required">
 										File Type:
@@ -283,7 +265,6 @@
 										<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
 									</div>
 								</div>
-
 								<div class="field-row">
 									<div class="field-label required">
 										Production Precedence:
@@ -332,8 +313,8 @@
 									<div class="field-label">
 										Include Native Files Path:
 									</div>
-									<div class="field-value">
-										<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeNativeFilesPath" />
+									<div class="field-value middle-vertical-align">
+										<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
 									</div>
 								</div>
 								<div class="field-row">
@@ -389,7 +370,6 @@
 						</td>
 					</tr>
 				</table>
-
 			</div>
 			<div style="height: 15px;"></div>
 		</div>

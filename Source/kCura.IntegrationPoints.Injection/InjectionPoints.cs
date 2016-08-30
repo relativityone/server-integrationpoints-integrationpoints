@@ -20,5 +20,10 @@ namespace kCura.IntegrationPoints.Injection
 			new InjectionPoint("624EF1A2-CFE5-4C99-A72B-89A65BB02CC5",
 				"Before agent checks for synchronization and decides which type of task to create",
 				INTEGRATION_POINTS_FEATURE);
+
+		public static readonly InjectionPoint BEFORE_TAGGING_STARTS_ONJOBCOMPLETE =
+			new InjectionPoint("86D2AD3B-7C77-4CC9-8765-5FAAEF7A12E3",
+				"Before tagging starts in TargetDocumentsTaggingManager.OnJobComplete",
+				INTEGRATION_POINTS_FEATURE);
 	}
 }

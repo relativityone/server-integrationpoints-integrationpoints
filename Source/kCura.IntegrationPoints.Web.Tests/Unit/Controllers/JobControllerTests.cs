@@ -10,6 +10,9 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
@@ -21,6 +24,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 	[TestFixture]
 	public class JobControllerTests
 	{
+		private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
+		private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
+		private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
+
 		private const int _WORKSPACE_ARTIFACT_ID = 1020530;
 		private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
 		private const int _USERID = 9;
@@ -33,6 +40,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		private IManagerFactory _managerFactory;
 
 		private JobController _instance;
+		private IRepositoryFactory _repositoryFactory;
+		private IRelativityAuditRepository _auditRepository;
 
 		[SetUp]
 		public void Setup()
@@ -43,8 +52,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_helper = Substitute.For<ICPHelper>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_auditRepository = Substitute.For<IRelativityAuditRepository>();
+			_repositoryFactory.GetRelativityAuditRepository(_WORKSPACE_ARTIFACT_ID).Returns(_auditRepository);
 
-			_instance = new JobController(_integrationPointService, _helper, _contextContainerFactory, _managerFactory)
+			_instance = new JobController(_integrationPointService, _repositoryFactory, _helper, _contextContainerFactory, _managerFactory)
 			{
 				Request = new HttpRequestMessage()
 			};
@@ -66,6 +78,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.Run(_payload);
 
 			// Assert
+			_auditRepository.Received(1)
+				.CreateAuditRecord(_payload.ArtifactId,
+				Arg.Is<AuditElement>(audit => audit.AuditMessage == _RUN_AUDIT_MESSAGE));
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
@@ -142,6 +157,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.Retry(_payload);
 
 			// Assert
+			_auditRepository.Received(1)
+							.CreateAuditRecord(_payload.ArtifactId,
+							Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
@@ -159,6 +177,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.Retry(_payload);
 
 			// Assert
+			_auditRepository.Received(1)
+				.CreateAuditRecord(_payload.ArtifactId,
+				Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().Result.Trim('"'));
@@ -172,6 +193,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.Stop(_payload);
 
 			// Assert
+
+			_auditRepository.Received(1)
+				.CreateAuditRecord(_payload.ArtifactId,
+				Arg.Is<AuditElement>(audit => audit.AuditMessage == _STOP_AUDIT_MESSAGE));
+
 			_integrationPointService
 				.Received(1)
 				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);

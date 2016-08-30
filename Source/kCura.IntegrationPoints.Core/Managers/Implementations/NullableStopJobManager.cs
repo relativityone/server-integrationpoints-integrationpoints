@@ -4,12 +4,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class NullableStopJobManager : IJobStopManager
 	{
+		public object SyncRoot { get; }
+
 		public NullableStopJobManager()
 		{
 			SyncRoot = new object();
 		}
-
-		public object SyncRoot { get; }
 
 		public void Dispose()
 		{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
@@ -18,10 +19,12 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
@@ -57,6 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
+		private PermissionCheckDTO _stopPermissionChecksResults;
 
 		[SetUp]
 		public void Setup()
@@ -135,6 +139,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				//				OverwriteFields = _integrationPoint.OverwriteFields, -- This would require further transformation
 				ScheduleRule = _integrationPoint.ScheduleRule
 			};
+
+			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0], Success = true};
+
+			_integrationPointManager.UserHasPermissionToStopJob(
+				_sourceWorkspaceArtifactId,
+				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)))
+				.Returns(_stopPermissionChecksResults);
 
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
@@ -391,9 +402,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Assert.AreEqual(errorMessageOne, aggregateException.InnerExceptions[0].Message);
 				Assert.AreEqual(errorMessageTwo, aggregateException.InnerExceptions[1].Message);
 			}
-			catch (Exception)
-			{
-			}
 
 			// assert
 			_jobHistoryManager.Received(1)
@@ -529,6 +537,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			Assert.IsTrue(correctExceptionWasThrown, "The correct AggregateException was not thrown.");
 		}
 
+		[Test]
+		public void MarkIntegrationPointToStopJobs_InsufficientPermission()
+		{
+			// arrange
+			const string errorMessage = " whatever !";
+			_stopPermissionChecksResults.Success = false;
+			_stopPermissionChecksResults.ErrorMessages = new[] { errorMessage };
+
+			var expectedErrorMessage = new ErrorDTO()
+			{
+				Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+				FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, errorMessage)}",
+				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				WorkspaceId = _sourceWorkspaceArtifactId
+			};
+
+			// act
+			Exception exception = Assert.Throws<Exception>( () => _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId));
+
+			// assert
+			Assert.IsNotNull(exception);
+			Assert.AreEqual(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS, exception.Message);
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
+
+
+		}
 
 		[Test]
 		public void RunIntegrationPoint_RelativityProvider_InvalidPermissions_ThrowsException()
@@ -1115,6 +1149,62 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve Integration Point");
 
 			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+		}
+
+		[Test]
+		public void SaveIntegration_MakeSureToCreateAJobWithNoBatchInstanceId()
+		{
+			// arrange
+			const int targetWorkspaceArtifactId = 9302;
+			const int integrationPointArtifactId = 9847654;
+			_caseServiceManager.EddsUserID = 78946;
+			_caseServiceManager.WorkspaceID = _sourceWorkspaceArtifactId;
+			var model = new IntegrationModel()
+			{
+				SourceProvider = 9830,
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
+				SelectedOverwrite = "SelectedOverwrite",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = true,
+					StartDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+					EndDate = DateTime.Now.AddDays(1).ToString(CultureInfo.InvariantCulture),
+					SelectedFrequency = ScheduleInterval.Daily.ToString(),
+					Reoccur = 2,
+				},
+				LastRun = null,
+			};
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Create(Arg.Any<Data.IntegrationPoint>())
+				.Returns(integrationPointArtifactId);
+
+			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			{
+				new Choice(2343)
+				{
+					Name = model.SelectedOverwrite
+				}
+			});
+
+			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider))
+				.Returns(new SourceProvider()
+				{
+					Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID
+				});
+
+			_integrationPointManager.UserHasPermissionToSaveIntegrationPoint(
+					Arg.Is(_sourceWorkspaceArtifactId),
+					Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
+					Arg.Is(Constants.SourceProvider.Relativity))
+					.Returns(new PermissionCheckDTO()
+					{
+						Success = true
+					});
+
+			// Act
+			int ipArtifactId = _instance.SaveIntegration(model);
+
+			// Assert
+			_jobManager.Received(1).CreateJob<TaskParameters>(null, TaskType.ExportService, _caseServiceManager.WorkspaceID, ipArtifactId, Arg.Any<IScheduleRule>());
 		}
 
 		[Test]

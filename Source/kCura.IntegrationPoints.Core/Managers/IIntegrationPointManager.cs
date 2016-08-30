@@ -50,5 +50,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 		PermissionCheckDTO UserHasPermissionToSaveIntegrationPoint(int sourceWorkspaceArtifactId,
 			IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null);
 
+		/// <summary>
+		/// Checks to see if the user has the required permissions to stop an Integration Point
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id that the Integration Point is being stopped in.</param>
+		/// <param name="integrationPointDto">The integration point to stop.</param>
+		PermissionCheckDTO UserHasPermissionToStopJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto);
 	}
 }

@@ -9,6 +9,9 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
@@ -18,15 +21,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class JobController : ApiController
 	{
 		private const string _RELATIVITY_USERID = "rel_uai";
+		private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
+		private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
+		private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
 
 		private readonly IIntegrationPointService _integrationPointService;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
 		private readonly ICPHelper _helper;
 
-		public JobController(IIntegrationPointService integrationPointService, ICPHelper helper, IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory)
+		public JobController(IIntegrationPointService integrationPointService,
+			IRepositoryFactory repositoryFactory,
+			ICPHelper helper, 
+			IContextContainerFactory contextContainerFactory,
+			IManagerFactory managerFactory)
 		{
 			_integrationPointService = integrationPointService;
+			_repositoryFactory = repositoryFactory;
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
 			_helper = helper;
@@ -36,6 +48,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Run(Payload payload)
 		{
+			AuditAction(payload, _RUN_AUDIT_MESSAGE);
 			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
 		}
@@ -44,6 +57,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Retry(Payload payload)
 		{
+			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, _integrationPointService.RetryIntegrationPoint);
 			return httpResponseMessage;
 		}
@@ -52,6 +66,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Stop(Payload payload)
 		{
+			AuditAction(payload, _STOP_AUDIT_MESSAGE);
+
 			string errorMessage = String.Empty;
 			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
 			try
@@ -107,6 +123,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
 
 			return response;
+		}
+
+		private void AuditAction(Payload payload, string auditMessage)
+		{
+			IRelativityAuditRepository auditRepository = _repositoryFactory.GetRelativityAuditRepository(payload.AppId);
+			AuditElement audit = new AuditElement {AuditMessage = auditMessage};
+			auditRepository.CreateAuditRecord(payload.ArtifactId, audit);
 		}
 
 		private int GetUserIdIfExists()

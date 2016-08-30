@@ -151,4 +151,15 @@ Error: [Error]</value>
   <data name="JOB_FAILED_SUBJECT" xml:space="preserve">
     <value>Relativity Job completed with errors for "[RIP.NAME]".</value>
   </data>
+  <data name="JOB_STOPPED_BODY" xml:space="preserve">
+    <value>A Job for the following Relativity Integration Point has successfully stopped.
+
+Name: [RIP.Name]
+
+[RIP.SOURCEEMAILBODYDATA]
+[RIP.DESTINATIONEMAILBODYDATA]</value>
+  </data>
+  <data name="JOB_STOPPED_SUBJECT" xml:space="preserve">
+    <value>Relativity Job successfully stopped for "[RIP.NAME]".</value>
+  </data>
 </root>
