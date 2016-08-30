@@ -123,7 +123,13 @@
 					})
 				});
 				ajax.fail(function (value) {
-					IP.message.error.raise("Failed to submit the retry job. " + value.responseText, $(".cardContainer"));
+					window.Dragon.dialogs.showConfirm({
+						message: "Failed to submit the retry job. " + value.responseText,
+						title: "Unable to Retry Errors",
+						okText: 'Ok',
+						showCancel: false,
+						width: 450
+					});
 				});
 				ajax.done(function () {
 					IP.message.info.raise("Retry job started", $(".cardContainer"));
