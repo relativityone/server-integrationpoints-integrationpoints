@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private readonly int _savedSearchArtifactId = 93032;
 		private readonly int _sourceProviderId = 321;
 		private readonly int _userId = 951;
-		private int _previousJobHistroyArtifactId = Int32.MaxValue;
+		private int _previousJobHistoryArtifactId = Int32.MaxValue;
 
 		private IHelper _helper;
 		private ICaseServiceContext _caseServiceManager;
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
 		private PermissionCheckDTO _stopPermissionChecksResults;
-		private Data.JobHistory _previousJobHistroy;
+		private Data.JobHistory _previousJobHistory;
 
 		[SetUp]
 		public void Setup()
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				//				OverwriteFields = _integrationPoint.OverwriteFields, -- This would require further transformation
 				ScheduleRule = _integrationPoint.ScheduleRule
 			};
-			_previousJobHistroy = new Data.JobHistory() {JobStatus = JobStatusChoices.JobHistoryCompleted};
+			_previousJobHistory = new Data.JobHistory() {JobStatus = JobStatusChoices.JobHistoryCompleted};
 			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0]};
 
 			_integrationPointManager.UserHasPermissionToStopJob(
@@ -150,8 +150,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(_stopPermissionChecksResults);
 
 			_jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
-				.Returns(_previousJobHistroyArtifactId);
-			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistroyArtifactId).Returns(_previousJobHistroy);
+				.Returns(_previousJobHistoryArtifactId);
+			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
 
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
@@ -797,7 +797,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(new PermissionCheckDTO());
 			_integrationPoint.HasErrors = true;
 			_integrationPointDto.HasErrors = true;
-			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistroyArtifactId).Returns((Data.JobHistory)null);
+			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Returns((Data.JobHistory)null);
 
 			// Act
 			Exception exception = Assert.Throws<Exception>(() =>	_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
@@ -807,7 +807,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		}
 
 		[Test]
-		public void RetryIntegrationPoint_FailToRetrieveJobHistory_RecieveException()
+		public void RetryIntegrationPoint_FailToRetrieveJobHistory_ReceiveException()
 		{
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
@@ -818,7 +818,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(new PermissionCheckDTO());
 			_integrationPoint.HasErrors = true;
 			_integrationPointDto.HasErrors = true;
-			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistroyArtifactId).Throws<Exception>();
+			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Throws<Exception>();
 
 			// Act
 			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
@@ -840,7 +840,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(new PermissionCheckDTO());
 			_integrationPoint.HasErrors = true;
 			_integrationPointDto.HasErrors = true;
-			_previousJobHistroy.JobStatus = JobStatusChoices.JobHistoryStopped;
+			_previousJobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
 
 			// Act
 			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
