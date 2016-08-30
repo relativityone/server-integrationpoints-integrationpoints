@@ -1,0 +1,17 @@
+#jstree-holder-div {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  height: 50%;
+  z-index: 200;
+  border-radius: 3px;
+  border: 1px solid #c1c1c1;
+}
+
+
+#location-select {
+    width: 218px;
+    border: 1px solid #c1c1c1;
+    border-radius: 3px;
+}
