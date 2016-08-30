@@ -62,7 +62,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			var permissionCheck = new PermissionCheckDTO()
 			{
-				Success = !errorMessages.Any(),
 				ErrorMessages = errorMessages.ToArray()
 			};
 
@@ -98,20 +97,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			// Get the run permissions
 			PermissionCheckDTO runPermissionCheck = this.UserHasPermissionToRunJob(sourceWorkspaceArtifactId, integrationPointDto, sourceProvider);
+			errorMessages.AddRange(runPermissionCheck.ErrorMessages);
 
 			// Merge the save and run permissions
 			var permissionCheck = new PermissionCheckDTO()
 			{
-				Success = !errorMessages.Any(),
 				ErrorMessages = errorMessages.ToArray()
 			};
-
-			permissionCheck.Success = runPermissionCheck.Success && permissionCheck.Success;
-
-			if (runPermissionCheck.ErrorMessages != null && runPermissionCheck.ErrorMessages.Any())
-			{
-				permissionCheck.ErrorMessages = permissionCheck.ErrorMessages.Concat(runPermissionCheck.ErrorMessages).ToArray();
-			}
 
 			return permissionCheck;
 		}
@@ -269,33 +261,31 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			var permissionCheck = new PermissionCheckDTO()
 			{
-				Success = !errorMessages.Any(),
 				ErrorMessages = errorMessages.ToArray()
 			};
 
 			return permissionCheck;
 		}
 
-		public PermissionCheckDTO UserHasPermissionToStopJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		public PermissionCheckDTO UserHasPermissionToStopJob(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IPermissionRepository sourcePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
-			bool hasPermissionToEditIntegrationPoint = sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+			bool hasPermissionToEditIntegrationPoint = sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointArtifactId, ArtifactPermission.Edit);
 			bool hasPermissionToEditJobHistory = sourcePermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
 
 			List<string> errorMessages = new List<string>();
 
-			if (hasPermissionToEditIntegrationPoint)
+			if (!hasPermissionToEditIntegrationPoint)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT);
 			}
-			if (hasPermissionToEditJobHistory)
+			if (!hasPermissionToEditJobHistory)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_EDIT);
 			}
 
 			PermissionCheckDTO result = new PermissionCheckDTO()
 			{
-				Success = !errorMessages.Any(),
 				ErrorMessages = errorMessages.ToArray()
 			};
 			return result;

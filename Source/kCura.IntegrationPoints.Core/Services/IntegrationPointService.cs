@@ -452,9 +452,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void CheckStopPermission(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IIntegrationPointManager manager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
-			IntegrationPoint integrationPoint =	GetRdo(integrationPointArtifactId);
-			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
-			PermissionCheckDTO result =	manager.UserHasPermissionToStopJob(workspaceArtifactId, integrationPointDto);
+			PermissionCheckDTO result =	manager.UserHasPermissionToStopJob(workspaceArtifactId, integrationPointArtifactId);
 			if (!result.Success)
 			{
 				CreateRelativityError(
@@ -667,8 +665,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (userId == 0)
 			{
-				permissionCheck.Success = false;
-
 				var errorMessages = new List<string>(permissionCheck.ErrorMessages ?? new string[0]);
 				errorMessages.Add(Constants.IntegrationPoints.NO_USERID);
 
