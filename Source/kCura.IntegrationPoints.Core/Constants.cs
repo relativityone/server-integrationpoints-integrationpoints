@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string JOBS_ALREADY_RUNNING = "There are other jobs currently running or awaiting execution.";
 			public const string NO_PERMISSION_TO_ACCESS_SAVEDSEARCH = "The saved search is no longer accessible. Please verify your settings or create a new Integration Point.";
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
+			public const string NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT = "User does not have permission to edit the integration point.";
 			public const string NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE = "User does not have permission to import in this workspace.";
 			public const string NO_PERMISSION_TO_IMPORT_TARGETWORKSPACE = "User does not have permission to import in the target workspace.";
 			public const string NO_SOURCE_PROVIDER_SPECIFIED = "A source provider was not specified for the integration point. Please create a new integration point.";
@@ -65,6 +66,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
 				public const string UNABLE_TO_EXPORT = "Job failed. Please ensure that you have valid permissions and a valid saved search.";
 				public const string JOB_HISTORY_NO_VIEW = "User does not have permission to view Job History RDOs.";
+				public const string JOB_HISTORY_NO_EDIT = "User does not have permission to edit Job History RDOs.";
 				public const string JOB_HISTORY_ERROR_NO_VIEW = "User does not have permission to view Job History Errors RDOs.";
 				public const string DESTINATION_PROVIDER_NO_VIEW = "User does not have permission to view Destination Provider RDOs.";
 				public const string SOURCE_PROVIDER_NO_VIEW = "User does not have permission to view Source Provider RDOs.";

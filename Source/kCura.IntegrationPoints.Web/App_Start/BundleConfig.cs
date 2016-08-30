@@ -51,7 +51,8 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/export/picker.js",
 				"~/Scripts/export/text-precedence-picker.js",
 				"~/Scripts/export/image-production-picker.js",
-				"~/Scripts/export/export-provider-settings-step.js"
+				"~/Scripts/export/export-provider-settings-step.js",
+				"~/Scripts/export/location-jstree-selector.js"
 			));
 
 			bundles.Add(new ScriptBundle("~/bundles/grid").Include(
@@ -102,6 +103,8 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/themes/base/jquery.ui.theme.css",
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
+
+			//BundleTable.EnableOptimizations = true;
 		}
 	}
 }

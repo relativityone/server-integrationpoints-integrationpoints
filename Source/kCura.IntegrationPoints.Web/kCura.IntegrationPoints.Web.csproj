@@ -384,6 +384,7 @@
     <Content Include="Content\integration-points-view.css" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
+    <Content Include="Content\jstree-fluid.css" />
     <Content Include="Content\list-picker.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\scheduler.css">
@@ -474,6 +475,7 @@
     <Content Include="Scripts\Export\field-mapping-view-model.js" />
     <Content Include="Scripts\Export\image-production-picker.js" />
     <Content Include="Scripts\Export\list-picker-view-model.js" />
+    <Content Include="Scripts\Export\location-jstree-selector.js" />
     <Content Include="Scripts\Export\picker.js" />
     <Content Include="Scripts\Export\saved-search-picker.js" />
     <Content Include="Scripts\Export\text-precedence-picker.js" />
