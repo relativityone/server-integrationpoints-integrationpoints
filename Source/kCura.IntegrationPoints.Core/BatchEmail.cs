@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core
 			}
 			else if (choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryStopped))
 			{
-				message.Subject = Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT;
+				message.Subject = Properties.JobStatusMessages.JOB_STOPPED_SUBJECT;
 				message.MessageBody = Properties.JobStatusMessages.JOB_STOPPED_BODY;
 			}
 			else
