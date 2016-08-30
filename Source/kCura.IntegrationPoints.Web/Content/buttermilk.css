@@ -45,7 +45,9 @@ textarea:focus {
     display: table-cell;
     border-right: 3px solid transparent;
     font-size: .85em;
-    vertical-align: top; }
+    vertical-align: top; 
+	font-weight: 700; 
+  }
     .card .field-label.required, .status-container .field-label.required {
       border-right: 3px solid #f59d1f; }
     .card .field-label .sub-message, .status-container .field-label .sub-message {
