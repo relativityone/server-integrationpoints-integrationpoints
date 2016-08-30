@@ -25,7 +25,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class IntegrationPointService : IIntegrationPointService
 	{
-		private const string _UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
+		private const string _UNABLE_TO_SAVE_FORMAT =
+			"Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
 
 		private readonly ICaseServiceContext _context;
 		private readonly IContextContainer _contextContainer;
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			catch (Exception ex)
 			{
 				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT, ex);
-			}	
+			}
 			return _rdo;
 		}
 
@@ -190,9 +191,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				CreateRelativityError(
 					Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-					String.Join(System.Environment.NewLine, new[] { e.Message, e.StackTrace }));
+					String.Join(System.Environment.NewLine, new[] {e.Message, e.StackTrace}));
 
-				throw new Exception(Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);	
+				throw new Exception(Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
 			}
 			return ip.ArtifactId;
 		}
@@ -287,7 +288,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			IEnumerable<string> emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim());
 			return emailRecipientList;
 		}
+
 		#region Please refactor
+
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
@@ -332,7 +335,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				return new List<DayOfWeek>();
 			}
-			var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
+			var values = (DaysOfWeek[]) Enum.GetValues(typeof(DaysOfWeek));
 			return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
 		}
 
@@ -356,7 +359,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			TimeSpan time;
 			if (TimeSpan.TryParse(model.Scheduler.ScheduledTime, out time))
 			{
-				periodicScheduleRule.LocalTimeOfDay = DateTime.UtcNow.Date.Add(new DateTime(time.Ticks, DateTimeKind.Utc).TimeOfDay).ToLocalTime().TimeOfDay;
+				periodicScheduleRule.LocalTimeOfDay =
+					DateTime.UtcNow.Date.Add(new DateTime(time.Ticks, DateTimeKind.Utc).TimeOfDay).ToLocalTime().TimeOfDay;
 			}
 			ScheduleInterval interval;
 			if (Enum.TryParse(model.Scheduler.SelectedFrequency, true, out interval))
@@ -370,7 +374,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				case ScheduleInterval.Weekly:
 					var sendOn = _serializer.Deserialize<Weekly>(model.Scheduler.SendOn);
-					periodicScheduleRule.DaysToRun = FromDayOfWeek(sendOn.SelectedDays.Select(x => (DayOfWeek)Enum.Parse(typeof(DayOfWeek), x)).ToList());
+					periodicScheduleRule.DaysToRun =
+						FromDayOfWeek(sendOn.SelectedDays.Select(x => (DayOfWeek) Enum.Parse(typeof(DayOfWeek), x)).ToList());
 					break;
 				case ScheduleInterval.Monthly:
 					var monthlySendOn = _serializer.Deserialize<Monthly>(model.Scheduler.SendOn);
@@ -406,8 +411,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			catch (Exception e)
 			{
 				CreateRelativityError(
-						Core.Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
-						String.Join(System.Environment.NewLine, new[] { e.Message, e.StackTrace }));
+					Core.Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
+					String.Join(System.Environment.NewLine, new[] {e.Message, e.StackTrace}));
 
 				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE);
 			}
@@ -428,8 +433,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			catch (Exception e)
 			{
 				CreateRelativityError(
-						Core.Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
-						String.Join(System.Environment.NewLine, new[] { e.Message, e.StackTrace }));
+					Core.Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
+					String.Join(System.Environment.NewLine, new[] {e.Message, e.StackTrace}));
 
 				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE);
 			}
@@ -441,12 +446,40 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, userId);
 
+			CheckPreviousJobHistoryStatusOnRetry(workspaceArtifactId, integrationPointArtifactId);
+
 			if (integrationPoint.HasErrors.HasValue == false || integrationPoint.HasErrors.Value == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 			}
 
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
+		}
+
+		private void CheckPreviousJobHistoryStatusOnRetry(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			const string failToRetrieveJobHistory = "Unable to retrieve the previous job history.";
+			Data.JobHistory lastJobHistory = null;
+			try
+			{
+				var jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+				int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
+				lastJobHistory = _context.RsapiService.JobHistoryLibrary.Read(lastJobHistoryArtifactId);
+			}
+			catch (Exception exception)
+			{
+				throw new Exception(failToRetrieveJobHistory, exception);
+			}
+
+			if (lastJobHistory == null)
+			{
+				throw new Exception(failToRetrieveJobHistory);
+			}
+
+			if (lastJobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_ON_STOPPED_JOB);
+			}
 		}
 
 		private void CheckStopPermission(int workspaceArtifactId, int integrationPointArtifactId)
