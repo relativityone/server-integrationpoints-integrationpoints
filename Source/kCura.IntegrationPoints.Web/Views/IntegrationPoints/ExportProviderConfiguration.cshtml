@@ -87,7 +87,27 @@
 									Export location:
 								</td>
 								<td class="editFieldValue">
-									<input id="fileshare-input" type="text" data-bind="value: Fileshare, disable: HasBeenRun()" />
+									<input id="fileshare-input" type="text" data-bind="value: Fileshare, disable: HasBeenRun()"/>
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldNameRequired" colspan="1">
+									Processing Source:
+								</td>
+								<td id="sourceDropdown" class="editFieldValue" colspan="1">
+									<select class="fluid-mock-select" id="processingSources"></select>
+								</td>
+								<td id="sourceText" class="viewFieldValue viewFieldValueUnderline" colspan="1">
+									<span id="downloadSourceText"></span>
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldNameRequired" colspan="1">Load Data From:</td>
+								<td class="editFieldValue" colspan="1">
+									<select id="location-select" class="fluid-mock-select fluid-mock-fullwidth"></select>
+									<div id="jstree-holder-div" class="jstree-holder browse">
+										<div id="browser-tree" tabindex="0"></div>
+									</div>
 								</td>
 							</tr>
 						</table>
