@@ -377,12 +377,18 @@ ko.validation.init({
 				$('body').append(result);
 				self.hasTemplate = true;
 				self.template(self.settings.templateID);
+				self.onDOMLoaded();
 				root.messaging.publish('details-loaded');
 			});
 		}
 
 		self.ipModel = {};
 		self.model = {};
+
+		self.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.create(self.model.Fileshare);
+		};
 
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
@@ -396,7 +402,7 @@ ko.validation.init({
 
 			if (self.model.errors().length === 0) {
 				var settings = self.model.getSelectedOption();
-								
+
 				$.extend(self.ipModel.sourceConfiguration, settings);
 				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
@@ -405,6 +411,8 @@ ko.validation.init({
 				destination.Provider = "Fileshare";
 				destination.DoNotUseFieldsMapCache = false;
 				self.ipModel.destination = JSON.stringify(destination);
+
+				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
 
 				d.resolve(self.ipModel);
 			} else {
