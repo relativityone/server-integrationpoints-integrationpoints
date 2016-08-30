@@ -61,7 +61,6 @@
 
 	root.stopJob = function (artifactId, appId) {
 		var confirmationMessage = "Stopping this transfer will not remove any data that was transferred. When re-running this transfer, make sure that your overwrite settings will return expected results.";
-		var failureMessage = "The transfer cannot be stopped at this point in the process.";
 
 		window.Dragon.dialogs.showConfirm({
 			message: confirmationMessage,
@@ -82,7 +81,7 @@
 				});
 				ajax.fail(function (value) {
 					window.Dragon.dialogs.showConfirm({
-						message: failureMessage,
+						message: "Failed to submit the stop job." + value.responseText,
 						title: "Unable to Stop the Transfer",
 						okText: 'Ok',
 						showCancel: false,
@@ -124,7 +123,7 @@
 				});
 				ajax.fail(function (value) {
 					window.Dragon.dialogs.showConfirm({
-						message: "Failed to submit the retry job. " + value.responseText,
+						message: "Failed to submit the retry job." + value.responseText,
 						title: "Unable to Retry Errors",
 						okText: 'Ok',
 						showCancel: false,
