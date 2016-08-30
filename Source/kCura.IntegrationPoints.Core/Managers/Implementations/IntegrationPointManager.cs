@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
@@ -53,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			if (!permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View))
 			{
-				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW);	
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW);
 			}
 
 			if (!permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistoryError), ArtifactPermission.View))
@@ -134,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
 			bool sourceProviderTypeView = sourcePermissionRepository.UserHasArtifactTypePermission(sourceProviderGuid,
 				ArtifactPermission.View);
-			bool sourceProviderInstanceView  = sourcePermissionRepository.UserHasArtifactInstancePermission(sourceProviderGuid, integrationPointDto.SourceProvider.Value, ArtifactPermission.View);
+			bool sourceProviderInstanceView = sourcePermissionRepository.UserHasArtifactInstancePermission(sourceProviderGuid, integrationPointDto.SourceProvider.Value, ArtifactPermission.View);
 
 			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPointDto.DestinationConfiguration);
 
@@ -166,13 +165,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				destinationWorkspacePermission = destinationPermissionRepository.UserHasPermissionToAccessWorkspace();
 				destinationImportPermission = destinationPermissionRepository.UserCanImport();
 				destinationRdoPermissions = destinationPermissionRepository.UserHasArtifactTypePermissions(
-					destinationConfiguration.ArtifactTypeId, 
+					destinationConfiguration.ArtifactTypeId,
 					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create });
 				sourceDocumentEditPermissions = sourcePermissionRepository.UserCanEditDocuments();
 
-
 				// Important Note: If the saved search is null, that means it either doesn't exist or the current user does not have permissions to it.
-				// Make sure to never give information the user is not privy to 
+				// Make sure to never give information the user is not privy to
 				// (i.e. if they don't have access to the saved search, don't tell them that it is also not public
 				SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch();
 				if (savedSearch != null)
@@ -185,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			{
 				sourceImportPermission = sourcePermissionRepository.UserCanImport();
 				destinationRdoPermissions = sourcePermissionRepository.UserHasArtifactTypePermissions(
-					destinationConfiguration.ArtifactTypeId, 
+					destinationConfiguration.ArtifactTypeId,
 					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create });
 			}
 
@@ -276,6 +274,31 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			};
 
 			return permissionCheck;
+		}
+
+		public PermissionCheckDTO UserHasPermissionToStopJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		{
+			IPermissionRepository sourcePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+			bool hasPermissionToEditIntegrationPoint = sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+			bool hasPermissionToEditJobHistory = sourcePermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Edit);
+
+			List<string> errorMessages = new List<string>();
+
+			if (hasPermissionToEditIntegrationPoint)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT);
+			}
+			if (hasPermissionToEditJobHistory)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_EDIT);
+			}
+
+			PermissionCheckDTO result = new PermissionCheckDTO()
+			{
+				Success = !errorMessages.Any(),
+				ErrorMessages = errorMessages.ToArray()
+			};
+			return result;
 		}
 	}
 }

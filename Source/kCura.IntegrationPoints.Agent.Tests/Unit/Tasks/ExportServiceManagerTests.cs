@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 {
@@ -92,7 +93,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		[SetUp]
 		public void SetUp()
 		{
+			Job job = JobExtensions.CreateJob();
+			SetUp(job);
+		}
 
+
+		public void SetUp(Job job)
+		{
+			_job = job;
 			_helper = Substitute.For<IHelper>();
 			_caseContext = Substitute.For<ICaseServiceContext>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
@@ -136,7 +144,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 				.Returns(new List<IBatchStatus>() { _exportServiceObserver });
 
 			_lock = new object();
-			_job = JobExtensions.CreateJob();
 			_integrationPoint = new Data.IntegrationPoint()
 			{
 				SourceConfiguration = "source config",
@@ -146,29 +153,30 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			};
 			_configuration = new SourceConfiguration()
 			{
+				SourceWorkspaceArtifactId = 8465,
 				SavedSearchArtifactId = 987654
 			};
 
-			_taskParameters = new TaskParameters();
+			_taskParameters = new TaskParameters() {BatchInstance = Guid.NewGuid() };
 			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0};
 			_sourceProvider = new SourceProvider();
 			_mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
 
-			_caseContext.RsapiService.IntegrationPointLibrary.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_caseContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_serializer.Deserialize<SourceConfiguration>(_integrationPoint.SourceConfiguration).Returns(_configuration);
-			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParameters);
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
 			_caseContext.RsapiService.SourceProviderLibrary.Read(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_mappings);
-			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, _configuration.SourceWorkspaceArtifactId, GetUniqueJobId(_job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
-			_jobHistoryErrorManager.StageForUpdatingErrors(_job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
+			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, _configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
+			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
 			_repositoryFactory.GetSavedSearchRepository(_configuration.SourceWorkspaceArtifactId, _configuration.SavedSearchArtifactId).Returns(_savedSearchRepository);
 			_savedSearchRepository.RetrieveSavedSearch().Returns(new SavedSearchDTO());
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
-			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
+			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
 			_synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration).Returns(_synchornizer);
-			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, _job.JobId, true).Returns(_jobStopManager);
+			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, true).Returns(_jobStopManager);
 
 			ImportSettings settings = new ImportSettings();
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(settings);
@@ -177,11 +185,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(_documentRepository);
 
 			_exporterFactory.BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration,
-				_configuration.SavedSearchArtifactId, _job.SubmittedBy).Returns(_exporterService);
+				_configuration.SavedSearchArtifactId, job.SubmittedBy).Returns(_exporterService);
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
 			_jobStopManager.SyncRoot.Returns(_lock);
-			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
+			_serializer.Deserialize<TaskParameters>(job.JobDetails)
+				.Returns(_taskParameters);
+			_jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
 			_instance = new ExportServiceManager(_helper,
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory, _exporterFactory,
@@ -191,7 +201,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 				_jobHistoryErrorService,
 				null);
 			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_historyManager);
-
 		}
 
 		[Test]
@@ -534,6 +543,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 			// ASSERT
 			_synchornizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
+		}
+
+		[Test]
+		public void Execute_JobHasNoBatchId_ExpectNewBatchIdToBeGenerated()
+		{
+			// ARRANGE
+			const string newConfig = "new config";
+			Job job = JobExtensions.CreateJob(_configuration.SourceWorkspaceArtifactId, _integrationPoint.ArtifactId, String.Empty);
+			SetUp(job);
+			_serializer.Serialize(Arg.Any<TaskParameters>()).Returns(newConfig);
+			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
+
+			// ACT
+			_instance.Execute(job);
+
+			// ASSERT
+			Assert.AreEqual(newConfig, _job.JobDetails);
 		}
 
 		private void AssertFinalizedJob(Job job)

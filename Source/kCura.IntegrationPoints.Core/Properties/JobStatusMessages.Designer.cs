@@ -129,5 +129,28 @@ namespace kCura.IntegrationPoints.Core.Properties {
                 return ResourceManager.GetString("JOB_FAILED_SUBJECT", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A Job for the following Relativity Integration Point has successfully stopped.
+        ///
+        ///Name: [RIP.Name]
+        ///
+        ///[RIP.SOURCEEMAILBODYDATA]
+        ///[RIP.DESTINATIONEMAILBODYDATA].
+        /// </summary>
+        internal static string JOB_STOPPED_BODY {
+            get {
+                return ResourceManager.GetString("JOB_STOPPED_BODY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Relativity Job successfully stopped for &quot;[RIP.NAME]&quot;..
+        /// </summary>
+        internal static string JOB_STOPPED_SUBJECT {
+            get {
+                return ResourceManager.GetString("JOB_STOPPED_SUBJECT", resourceCulture);
+            }
+        }
     }
 }

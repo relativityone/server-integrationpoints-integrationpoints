@@ -41,7 +41,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["SubmittedBy"] = submittedByArtifactId;
 			jobData["WorkspaceID"] = workspaceArtifactId;
 			jobData["RootJobId"] = rootJobId;
-
 			return new Job(jobData);
 		}
 
@@ -158,7 +157,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["TaskType"] = TaskType.SyncManager.ToString();
 			jobData["NextRunTime"] = default(DateTime);
 			jobData["LastRunTime"] = default(DateTime);
-			jobData["JobDetails"] = new JSONSerializer().Serialize(new TaskParameters());
+			jobData["JobDetails"] = new JSONSerializer().Serialize(new TaskParameters() { BatchInstance = Guid.NewGuid()});
 			jobData["JobFlags"] = default(int);
 			jobData["SubmittedDate"] = default(DateTime);
 			jobData["SubmittedBy"] = default(int);

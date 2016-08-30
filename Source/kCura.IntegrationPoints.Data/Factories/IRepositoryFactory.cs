@@ -161,5 +161,12 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// </summary>
 		/// <returns>A class implementing the IInstanceSettingRepository interface.</returns>
 		IInstanceSettingRepository GetInstanceSettingRepository();
+
+		/// <summary>
+		/// Returns a class implementing the IRelativityAuditRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">Workspace artifact id.</param>
+		/// <returns>A class implementing the IRelativityAuditRepository interface.</returns>
+		IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId);
 	}
 }

@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
 
-			BundleTable.EnableOptimizations = true;
+			//BundleTable.EnableOptimizations = true;
 		}
 	}
 }

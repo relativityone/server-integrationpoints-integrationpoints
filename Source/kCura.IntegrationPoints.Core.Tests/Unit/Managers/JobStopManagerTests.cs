@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void StopRequestedEvent_DosentRaiseWhenRunning()
+		public void StopRequestedEvent_DoesntRaiseWhenRunning()
 		{
 			// arrange
 			var eventTriggered = false;
