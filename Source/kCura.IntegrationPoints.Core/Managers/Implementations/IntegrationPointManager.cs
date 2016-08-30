@@ -97,7 +97,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			// Get the run permissions
 			PermissionCheckDTO runPermissionCheck = this.UserHasPermissionToRunJob(sourceWorkspaceArtifactId, integrationPointDto, sourceProvider);
-			errorMessages.AddRange(runPermissionCheck.ErrorMessages);
+			if (runPermissionCheck.ErrorMessages != null)
+			{
+				errorMessages.AddRange(runPermissionCheck.ErrorMessages);
+			}
 
 			// Merge the save and run permissions
 			var permissionCheck = new PermissionCheckDTO()
