@@ -15,7 +15,7 @@
     <kCura_Data_RowDataGateway>kCura.Data.RowDataGateway.9.4.283.9</kCura_Data_RowDataGateway>
     <libsodium-net>libsodium-net.0.8.0</libsodium-net>
     <Microsoft_AspNet_Identity_Core>Microsoft.AspNet.Identity.Core.2.2.1</Microsoft_AspNet_Identity_Core>
-    <Microsoft_IdentityModel_Protocol_Extensions>Microsoft.IdentityModel.Protocol.Extensions.1.0.0</Microsoft_IdentityModel_Protocol_Extensions>
+    <Microsoft_IdentityModel_Protocol_Extensions>Microsoft.IdentityModel.Protocol.Extensions.1.0.2.206221351</Microsoft_IdentityModel_Protocol_Extensions>
     <Microsoft_Owin>Microsoft.Owin.3.0.1</Microsoft_Owin>
     <Microsoft_Owin_FileSystems>Microsoft.Owin.FileSystems.3.0.1</Microsoft_Owin_FileSystems>
     <Microsoft_Owin_Host_SystemWeb>Microsoft.Owin.Host.SystemWeb.3.0.1</Microsoft_Owin_Host_SystemWeb>
@@ -31,15 +31,15 @@
     <NSubstitute>NSubstitute.1.10.0.0</NSubstitute>
     <NUnit>NUnit.3.4.1</NUnit>
     <Owin>Owin.1.0</Owin>
-    <Relativity_Kepler>Relativity.Kepler.1.0.1.149</Relativity_Kepler>
-    <Relativity_Kepler_Client>Relativity.Kepler.Client.1.0.1.149</Relativity_Kepler_Client>
+    <Relativity_Kepler>Relativity.Kepler.1.0.1.226</Relativity_Kepler>
+    <Relativity_Kepler_Client>Relativity.Kepler.Client.1.0.1.192</Relativity_Kepler_Client>
     <Relativity_SecretCatalog>Relativity.SecretCatalog.1.0.16</Relativity_SecretCatalog>
     <Relativity_SecretCatalog_AzureKeyVault>Relativity.SecretCatalog.AzureKeyVault.1.0.16</Relativity_SecretCatalog_AzureKeyVault>
-    <Relativity_ServiceBus>Relativity.ServiceBus.1.1.17</Relativity_ServiceBus>
+    <Relativity_ServiceBus>Relativity.ServiceBus.2.1.2</Relativity_ServiceBus>
     <Relativity_Services_DataContracts>Relativity.Services.DataContracts.9.4.283.9</Relativity_Services_DataContracts>
     <Relativity_Services_Interfaces>Relativity.Services.Interfaces.9.4.283.9</Relativity_Services_Interfaces>
-    <Relativity_Telemetry_DataContracts_Shared>Relativity.Telemetry.DataContracts.Shared.9.4.70</Relativity_Telemetry_DataContracts_Shared>
-    <Relativity_Telemetry_MetricsCollection>Relativity.Telemetry.MetricsCollection.9.4.70</Relativity_Telemetry_MetricsCollection>
+    <Relativity_Telemetry_DataContracts_Shared>Relativity.Telemetry.DataContracts.Shared.9.4.74</Relativity_Telemetry_DataContracts_Shared>
+    <Relativity_Telemetry_MetricsCollection>Relativity.Telemetry.MetricsCollection.9.4.74</Relativity_Telemetry_MetricsCollection>
     <Relativity_Telemetry_Services_Interface>Relativity.Telemetry.Services.Interface.9.4.226.9</Relativity_Telemetry_Services_Interface>
     <Relativity_Toggles>Relativity.Toggles.1.0.0.68</Relativity_Toggles>
     <Relativity_Vfs>Relativity.Vfs.1.0.12</Relativity_Vfs>
@@ -50,7 +50,7 @@
     <Serilog_Sinks_MSSqlServer>Serilog.Sinks.MSSqlServer.1.4.168</Serilog_Sinks_MSSqlServer>
     <ServiceBus_v1_1>ServiceBus.v1_1.1.0.5</ServiceBus_v1_1>
     <StackExchange_Redis>StackExchange.Redis.1.0.328</StackExchange_Redis>
-    <System_IdentityModel_Tokens_Jwt>System.IdentityModel.Tokens.Jwt.4.0.1</System_IdentityModel_Tokens_Jwt>
+    <System_IdentityModel_Tokens_Jwt>System.IdentityModel.Tokens.Jwt.4.0.2.206221351</System_IdentityModel_Tokens_Jwt>
     <SystemWrapper_Interfaces>SystemWrapper.Interfaces.0.7.0.0</SystemWrapper_Interfaces>
     <SystemWrapper_Wrappers>SystemWrapper.Wrappers.0.7.0.0</SystemWrapper_Wrappers>
     <Thinktecture_IdentityModel_Client>Thinktecture.IdentityModel.Client.4.0.1</Thinktecture_IdentityModel_Client>
