@@ -331,7 +331,7 @@ ul li .day-select
 
 .integrationName
 {
-	width: 450px;
+	width: 450px !important;
 	height: 26px;
 }
 
