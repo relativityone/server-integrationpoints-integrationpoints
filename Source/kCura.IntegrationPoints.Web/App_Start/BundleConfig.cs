@@ -45,7 +45,6 @@ namespace kCura.IntegrationPoints.Web
 			bundles.Add(new ScriptBundle("~/bundles/exportProvider").Include(
 				"~/Scripts/export/export-provider-fields-step.js",
 				"~/Scripts/export/export-enums.js",
-				"~/Scripts/export/export-provider.js",
 				"~/Scripts/Export/field-mapping-view-model.js",
 				"~/Scripts/export/list-picker-view-model.js",
 				"~/Scripts/export/picker.js",
