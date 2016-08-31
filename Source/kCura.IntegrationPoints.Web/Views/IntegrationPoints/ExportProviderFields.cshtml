@@ -4,7 +4,7 @@
 		<div class="field-row">
 			<div class="field-label required">Source:</div>
 			<div class="field-value">
-				<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: savedSearch, disable: HasBeenRun(), select2: {}"></select>
+				<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: savedSearch, disable: HasBeenRun(), select2searchable: {}"></select>
 				@*<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>*@ 
 				@*TODO: review and fix picker's implementation*@				
 			</div>
