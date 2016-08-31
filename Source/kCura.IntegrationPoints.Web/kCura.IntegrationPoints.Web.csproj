@@ -355,12 +355,6 @@
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.svg">
-      <Link>Content\fonts\integration-points.svg</Link>
-    </Content>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\integration-points-fonts.css">
-      <Link>Content\integration-points-fonts.css</Link>
-    </Content>
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.svg">
       <Link>Content\fonts\legal-hold-icons.svg</Link>
     </Content>
@@ -453,15 +447,6 @@
     <Content Include="Content\controls-grid-pager.scss" />
     <Content Include="Content\buttermilk-variables.scss" />
     <Content Include="Content\buttermilk.9_2.min.css.map" />
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.eot">
-      <Link>Content\fonts\integration-points.eot</Link>
-    </Content>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.ttf">
-      <Link>Content\fonts\integration-points.ttf</Link>
-    </Content>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.woff">
-      <Link>Content\fonts\integration-points.woff</Link>
-    </Content>
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.eot">
       <Link>Content\fonts\legal-hold-icons.eot</Link>
     </Content>
