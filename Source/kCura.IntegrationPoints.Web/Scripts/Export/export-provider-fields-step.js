@@ -42,10 +42,6 @@ ko.validation.init({
 	var stepModel = function (settings) {
 		var self = this;
 
-		var _cache = {
-			SavedSearches: []
-		};
-
 		self.settings = settings;
 		self.template = ko.observable();
 		self.hasTemplate = false;
@@ -82,7 +78,7 @@ ko.validation.init({
 				}
 			}
 
-			self.model = new viewModel($.extend({}, self.ipModel, _cache));
+			self.model = new viewModel($.extend({}, self.ipModel, { hasBeenRun: ip.hasBeenRun }));
 			self.model.errors = ko.validation.group(self.model);
 
 			self.getAvailableFieldsFor = function (artifactId) {
@@ -96,8 +92,7 @@ ko.validation.init({
 						type: self.ipModel.source.selectedType
 					})
 				}).then(function (result) {
-					self.model.fields.selectedAvailableFields(result);
-					self.model.fields.addField();
+					self.model.fields.mappedFields(result);
 				}).fail(function (error) {
 					IP.message.error.raise("No attributes were returned from the source provider.");
 				});
@@ -185,10 +180,10 @@ ko.validation.init({
 					self.model.fields.addField();
 
 					self.model.savedSearch.subscribe(function (selected) {
-						self.model.fields.mappedFields([]);
-
 						if (!!selected) {
 							self.getAvailableFieldsFor(selected);
+						} else {
+							self.model.fields.mappedFields([]);
 						}
 					});
 				});

@@ -69,7 +69,7 @@
 									<select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
 								</div>
 							</div>*@
-							<div class="field-row">
+							@*<div class="field-row">
 								<div class="field-label required">
 									Load Data From:
 								</div>
@@ -79,7 +79,7 @@
 										<div id="browser-tree" tabindex="0"></div>
 									</div>
 								</div>
-							</div>
+							</div>*@
 						</td>
 						<td>
 							
@@ -90,8 +90,12 @@
 			</div>
 
 			<div class="card" data-bind="visible: CopyFileFromRepository() || ExportImagesChecked() || ExportTextFieldsAsFilesChecked()">
-				<span class="label">Volume & Subdirectory Detail</span>
-				<table style="width: 100%;">
+				<div id="subdirectory_accordion" style="cursor: pointer;">
+					<span class="label" style="display: inline-block;">Volume & Subdirectory Detail</span>
+					<img class="collapsed_arrow" src="/Relativity/images/arrow_collapsed.png" alt="" style="display: none; vertical-align: text-bottom;" />
+					<img class="expanded_arrow" src="/Relativity/images/arrow_expanded.png" alt="" style="vertical-align: text-bottom;" />
+				</div>
+				<table style="width: 100%; display: none;">
 					<tr>
 						<td style="vertical-align: text-top; width: 48%;">
 							<div>
@@ -172,7 +176,7 @@
 			</div>
 
 			<div class="card">
-				<span class="label">File Breakdown</span>
+				<span class="label">Output Settings</span>
 				<table style="width: 100%;">
 					<tr>
 						<td style="vertical-align: text-top; width: 48%;">
@@ -395,4 +399,15 @@
 			<div style="height: 15px;"></div>
 		</div>
 	</div>
+</script>
+<script>
+$('#bodyContainer').on('click', '#subdirectory_accordion', function() {
+	$header = $(this);
+	$content = $header.next();
+
+	$content.slideToggle(0, function(){
+		$header.find('.collapsed_arrow').slideToggle(0);
+		$header.find('.expanded_arrow').slideToggle(0);
+	});
+});
 </script>
