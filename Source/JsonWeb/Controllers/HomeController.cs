@@ -12,10 +12,5 @@ namespace JsonWeb.Controllers
 		{
 			return View();
 		}
-
-		public JsonResult GetJson()
-		{
-			throw new NotImplementedException("Get json not implemented");
-		}
 	}
 }

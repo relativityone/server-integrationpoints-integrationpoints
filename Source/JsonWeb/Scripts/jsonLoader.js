@@ -1,5 +1,4 @@
-﻿
-var IP  = IP || {};
+﻿var IP  = IP || {};
 
 (function () {
 	
@@ -12,7 +11,7 @@ var IP  = IP || {};
 		this.publish("saveState", localModel); //save the model incase of error
 		this.publish('saveComplete', localModel);
 
-});
+	});
 	var viewModel = function (model) {
 		var self = this;
 		this.fieldLocation = ko.observable(model.fieldLocation);
@@ -35,7 +34,4 @@ var IP  = IP || {};
 		pageModel = new viewModel(model);
 		ko.applyBindings(pageModel, document.getElementById('jsonConfiguration'));
 	});
-
-		
-	
 })();
