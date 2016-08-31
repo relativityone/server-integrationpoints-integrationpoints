@@ -165,7 +165,7 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -199,6 +199,14 @@
     </Reference>
     <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+	<Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SystemWrapper, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(SystemWrapper_Wrappers)\lib\net45\SystemWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -302,6 +310,7 @@
     <Compile Include="Controllers\API\JobController.cs" />
     <Compile Include="Controllers\API\LdapController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
+    <Compile Include="Controllers\API\ResourcePoolController.cs" />
     <Compile Include="Controllers\API\SavedSearchFinderController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\DestinationTypeController.cs" />

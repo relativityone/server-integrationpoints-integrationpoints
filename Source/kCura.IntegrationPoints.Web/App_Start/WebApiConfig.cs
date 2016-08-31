@@ -109,6 +109,18 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetProcessingSourceLocations",
+				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocations",
+				defaults: new { controller = "ResourcePool", action = "GetProcessingSourceLocations" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetProcessingSourceLocationStructure",
+				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocationStructure/{artifactId}",
+				defaults: new { controller = "ResourcePool", action = "GetProcessingSourceLocationStructure" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
 				defaults: new { id = RouteParameter.Optional }
