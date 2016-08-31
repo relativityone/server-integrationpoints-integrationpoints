@@ -116,6 +116,8 @@
     <Compile Include="Integration\ViewErrors.cs" />
     <Compile Include="Unit\Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Unit\IntegrationPoints\ConsoleEventHandlerTests.cs" />
+    <Compile Include="Unit\MassOperations\MassCopyIntegrationPointHelper.cs" />
+    <Compile Include="Unit\MassOperations\IntegrationPointMassCopyTests.cs" />
     <Compile Include="Unit\PageInteractionHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
