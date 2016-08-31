@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				{
 					var newDirectoryItem = new DirectoryTreeItem
 					{
-						Text = fullPathDir.Substring(fullPathDir.LastIndexOf('\\')),
+						Text = fullPathDir.Substring(fullPathDir.LastIndexOf('\\') + 1),
 						Id = fullPathDir
 					};
 					directoryItemsToProcessed.Push(newDirectoryItem);
