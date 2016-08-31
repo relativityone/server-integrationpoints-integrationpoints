@@ -2,7 +2,8 @@
 {
 	public class PermissionCheckDTO
 	{
-		public bool Success { get; set; } 
+		public bool Success => ErrorMessages == null || ErrorMessages.Length == 0;
+
 		public string[] ErrorMessages { get; set; }
 	}
 }

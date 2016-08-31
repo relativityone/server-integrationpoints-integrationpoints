@@ -12,12 +12,10 @@ ko.validation.init({
 
 (function (root, ko) {
 
-	var viewModel = function (m) {
-		var state = $.extend({}, {}, m);
+	var viewModel = function (state) {
 		var self = this;
 
-		// TODO: reintroduce this functionality: IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun()
-		this.HasBeenRun = ko.observable(false);
+		this.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
 		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
@@ -74,7 +72,7 @@ ko.validation.init({
 				result.push({ key: String.fromCharCode(i) + " (ASCII:" + i + ")", value: i });
 			}
 			return result;
-		}();
+		} ();
 
 		this.SelectedDataFileFormat.subscribe(function (value) {
 			//default values have been taken from RDC application
@@ -132,8 +130,8 @@ ko.validation.init({
 		this.getFileEncodingTypeName = function (value) {
 			if (self.FileEncodingTypeList().length === 3) {
 				var ungroupedFileEncodingList = self.FileEncodingTypeList()[0].children()
-		            .concat(self.FileEncodingTypeList()[1].children())
-		            .concat(self.FileEncodingTypeList()[2].children());
+					.concat(self.FileEncodingTypeList()[1].children())
+					.concat(self.FileEncodingTypeList()[2].children());
 				var selectedFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
 					return item.name === value;
 				});
@@ -233,7 +231,7 @@ ko.validation.init({
 		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
 			required: true
 		});
-		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 650).extend({
+		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 4400).extend({
 			required: true
 		});
 
@@ -377,6 +375,7 @@ ko.validation.init({
 				$('body').append(result);
 				self.hasTemplate = true;
 				self.template(self.settings.templateID);
+				self.onDOMLoaded();
 				root.messaging.publish('details-loaded');
 			});
 		}
@@ -384,10 +383,15 @@ ko.validation.init({
 		self.ipModel = {};
 		self.model = {};
 
+		self.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.create(self.model.Fileshare);
+		};
+
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
 
-			self.model = new viewModel();
+			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration, { hasBeenRun: ip.hasBeenRun }));
 			self.model.errors = ko.validation.group(self.model);
 		};
 
@@ -396,7 +400,7 @@ ko.validation.init({
 
 			if (self.model.errors().length === 0) {
 				var settings = self.model.getSelectedOption();
-								
+
 				$.extend(self.ipModel.sourceConfiguration, settings);
 				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
@@ -405,6 +409,8 @@ ko.validation.init({
 				destination.Provider = "Fileshare";
 				destination.DoNotUseFieldsMapCache = false;
 				self.ipModel.destination = JSON.stringify(destination);
+
+				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
 
 				d.resolve(self.ipModel);
 			} else {

@@ -45,13 +45,13 @@ namespace kCura.IntegrationPoints.Web
 			bundles.Add(new ScriptBundle("~/bundles/exportProvider").Include(
 				"~/Scripts/export/export-provider-fields-step.js",
 				"~/Scripts/export/export-enums.js",
-				"~/Scripts/export/export-provider.js",
 				"~/Scripts/Export/field-mapping-view-model.js",
 				"~/Scripts/export/list-picker-view-model.js",
 				"~/Scripts/export/picker.js",
 				"~/Scripts/export/text-precedence-picker.js",
 				"~/Scripts/export/image-production-picker.js",
-				"~/Scripts/export/export-provider-settings-step.js"
+				"~/Scripts/export/export-provider-settings-step.js",
+				"~/Scripts/export/location-jstree-selector.js"
 			));
 
 			bundles.Add(new ScriptBundle("~/bundles/grid").Include(
@@ -102,6 +102,8 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/themes/base/jquery.ui.theme.css",
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
+
+			//BundleTable.EnableOptimizations = true;
 		}
 	}
 }
