@@ -1,17 +1,50 @@
 #jstree-holder-div {
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  background-color: white;
-  height: 50%;
-  z-index: 200;
-  border-radius: 3px;
-  border: 1px solid #c1c1c1;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	background-color: white;
+	height: 50%;
+	z-index: 200;
+	border-radius: 3px;
+	border: 1px solid #c1c1c1;
+}
+
+.jstree-default .jstree-icon:empty {
+	width: 24px;
+	height: 22px;
+	line-height: 24px;
+}
+
+.jstree-default .jstree-clicked .jstree-themeicon {
+	background-position: -129px -70px;
+}
+
+.jstree-default .jstree-clicked {
+	background: #dfebf8 !important;
+	font-weight: 600;
+	box-shadow: inset 0 0 1px #999;
+	border: 1px solid #c1c1c1;
+	border-color: #5d99df;
+}
+
+.jstree-holder .jstree-default .jstree-hovered {
+	border: 1px solid #c1c1c1;
+	border-color: #5d99df;
+}
+
+.jstree-default .jstree-hovered {
+	background: white;
+	box-shadow: inset 0 0 0px #999;
 }
 
 
+
+.jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover, .jstree-anchor:active {
+	text-decoration: none !important;
+}
+
 #location-select {
-    width: 218px;
-    border: 1px solid #c1c1c1;
-    border-radius: 3px;
+	width: 218px;
+	border: 1px solid #c1c1c1;
+	border-radius: 3px;
 }
