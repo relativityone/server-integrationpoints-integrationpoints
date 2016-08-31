@@ -201,6 +201,14 @@
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SystemWrapper, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(SystemWrapper_Wrappers)\lib\net45\SystemWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -302,6 +310,7 @@
     <Compile Include="Controllers\API\JobController.cs" />
     <Compile Include="Controllers\API\LdapController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
+    <Compile Include="Controllers\API\ResourcePoolController.cs" />
     <Compile Include="Controllers\API\SavedSearchFinderController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\DestinationTypeController.cs" />

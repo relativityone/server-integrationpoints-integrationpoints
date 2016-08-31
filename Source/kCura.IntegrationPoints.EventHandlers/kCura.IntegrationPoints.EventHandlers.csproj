@@ -163,6 +163,8 @@
     <Compile Include="Constant.cs" />
     <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
+    <Compile Include="MassOperations\IntegrationPointMassCopy.cs" />
+    <Compile Include="MassOperations\IntegrationPointMassCopyHandler.cs" />
     <Compile Include="IntegrationPoints\JobHistoryErrorPageInteraction.cs" />
     <Compile Include="IntegrationPoints\PageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\SourceProvidersMigrationEventHandler.cs" />
