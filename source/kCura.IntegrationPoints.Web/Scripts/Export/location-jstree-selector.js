@@ -19,6 +19,7 @@ var LocationJSTreeSelector = function () {
 				'data': [{
 					"text": "localhost",
 					"id": "localhost",
+					"icon": "jstree-root-folder",
 					"children": [{
 						"text": "Shared",
 						"id": "localhost\\Shared"
