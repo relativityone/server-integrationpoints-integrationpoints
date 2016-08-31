@@ -173,6 +173,10 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
@@ -212,6 +216,8 @@
     <Compile Include="Factories\IManagerFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
+    <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
+    <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
     <Compile Include="IContextContainer.cs" />
@@ -238,16 +244,19 @@
     <Compile Include="Managers\Implementations\NullableStopJobManager.cs" />
     <Compile Include="Managers\Implementations\ObjectTypeManager.cs" />
     <Compile Include="Managers\Implementations\QueueManager.cs" />
+    <Compile Include="Managers\Implementations\ResourcePoolManager.cs" />
     <Compile Include="Managers\Implementations\SourceProviderManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
     <Compile Include="Managers\Implementations\SourceJobManager.cs" />
     <Compile Include="Managers\Implementations\StateManager.cs" />
+    <Compile Include="Managers\IResourcePoolManager.cs" />
     <Compile Include="Managers\ISourceProviderManager.cs" />
     <Compile Include="Managers\IQueueManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
     <Compile Include="Managers\ISourceJobManager.cs" />
     <Compile Include="Managers\IObjectTypeManager.cs" />
     <Compile Include="Managers\IStateManager.cs" />
+    <Compile Include="Models\DirectoryTreeItem.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Models\StoppableJobCollection.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">

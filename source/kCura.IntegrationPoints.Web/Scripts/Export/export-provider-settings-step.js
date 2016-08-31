@@ -231,7 +231,7 @@ ko.validation.init({
 		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
 			required: true
 		});
-		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 650).extend({
+		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 4400).extend({
 			required: true
 		});
 

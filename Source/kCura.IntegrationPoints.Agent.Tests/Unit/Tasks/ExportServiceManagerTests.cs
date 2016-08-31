@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 		}
 
 
-		public void SetUp(Job job)
+		private void SetUp(Job job)
 		{
 			_job = job;
 			_helper = Substitute.For<IHelper>();

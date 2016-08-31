@@ -95,11 +95,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View("RelativityProviderConfiguration", "_StepLayout");
 		}
 
-		public ActionResult ExportProviderConfiguration()
-		{
-			return View("ExportProviderConfiguration", "_StepLayout");
-		}
-
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);
