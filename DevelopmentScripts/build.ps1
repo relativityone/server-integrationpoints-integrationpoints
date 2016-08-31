@@ -116,6 +116,7 @@ if($EDITOR) {
 }
 
 if($VERSION -ne "1.0.0.0") {
+
     Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;
                                                                           'server_type'='local';
                                                                           'build_config'=$BUILDCONFIG;
