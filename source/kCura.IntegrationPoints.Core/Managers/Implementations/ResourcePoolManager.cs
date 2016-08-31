@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				new ProcessingSourceLocationDTO
 				{
 					ArtifactId = 1,
-					Location = "\\localhost"
+					Location = @"\\localhost\Export"
 				}
 			};
 			return processingSourceLocations;

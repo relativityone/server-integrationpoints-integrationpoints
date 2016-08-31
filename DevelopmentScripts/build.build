@@ -17,6 +17,8 @@
 	<property name="source.dependency.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.192.5\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
+	<property name="source.dependency.SystemWrapper.directory" value="${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45" />
+	<property name="source.dependency.SystemInterface.directory" value="${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45" />
 	<property name="relativityDependencyVersion" value="9.4.283.9" />
 	
 	<!-- Log properties -->
@@ -71,6 +73,7 @@
 			<arg line='/lib:"${source.packages.directory}\StackExchange.Redis.1.0.328\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Thinktecture.IdentityModel.Client.4.0.1\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
@@ -97,6 +100,7 @@
 			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
 			<arg line='"${source.dependency.Injection.directory}\kCura.Method.Injection.dll"' />
 			<arg line='"${source.dependency.Injection.directory}\kCura.Injection.dll"' />
+			
 			
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />
@@ -172,6 +176,7 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
