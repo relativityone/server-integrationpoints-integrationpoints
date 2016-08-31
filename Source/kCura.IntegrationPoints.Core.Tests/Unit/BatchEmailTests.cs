@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		{
 			new object[] { JobStatusChoices.JobHistoryCompletedWithErrors, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY },
 			new object[] { JobStatusChoices.JobHistoryErrorJobFailed, Properties.JobStatusMessages.JOB_FAILED_SUBJECT, Properties.JobStatusMessages.JOB_FAILED_BODY },
-			new object[] { JobStatusChoices.JobHistoryStopped, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT, Properties.JobStatusMessages.JOB_STOPPED_BODY },
+			new object[] { JobStatusChoices.JobHistoryStopped, Properties.JobStatusMessages.JOB_STOPPED_SUBJECT, Properties.JobStatusMessages.JOB_STOPPED_BODY },
 			new object[] { JobStatusChoices.JobHistoryCompleted, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_SUCCESS_BODY },
 		};
 

@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
-		public void CreateRdo_GetRdoThrowsException()
+		public void CreateRdo_WhenGetRdoThrowsException_NewJobHistoryCreated()
 		{
 			// ARRANGE
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Throws(new Exception("blah blah"));

@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private readonly int _savedSearchArtifactId = 93032;
 		private readonly int _sourceProviderId = 321;
 		private readonly int _userId = 951;
+		private int _previousJobHistoryArtifactId = Int32.MaxValue;
 
 		private IHelper _helper;
 		private ICaseServiceContext _caseServiceManager;
@@ -61,6 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
 		private PermissionCheckDTO _stopPermissionChecksResults;
+		private Data.JobHistory _previousJobHistory;
 
 		[SetUp]
 		public void Setup()
@@ -117,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId}, SavedSearchArtifactId: {_savedSearchArtifactId} }}",
 				NextScheduledRuntimeUTC = null,
 				//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
-				ScheduleRule = ""
+				ScheduleRule = String.Empty
 			};
 			_sourceProvider = new SourceProvider();
 			_integrationPointDto = new IntegrationPointDTO()
@@ -139,13 +141,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				//				OverwriteFields = _integrationPoint.OverwriteFields, -- This would require further transformation
 				ScheduleRule = _integrationPoint.ScheduleRule
 			};
-
-			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0], Success = true};
+			_previousJobHistory = new Data.JobHistory() {JobStatus = JobStatusChoices.JobHistoryCompleted};
+			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0]};
 
 			_integrationPointManager.UserHasPermissionToStopJob(
 				_sourceWorkspaceArtifactId,
-				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)))
+				 _integrationPoint.ArtifactId)
 				.Returns(_stopPermissionChecksResults);
+
+			_jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
+				.Returns(_previousJobHistoryArtifactId);
+			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
 
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
@@ -157,10 +163,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_integrationPointManager.UserHasPermissionToRunJob(
-				Arg.Is(_sourceWorkspaceArtifactId), 
-				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
-				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() {Success = true});
+					Arg.Is(_sourceWorkspaceArtifactId),
+					Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
+					Arg.Is(Constants.SourceProvider.Relativity))
+				.Returns(new PermissionCheckDTO());
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(false);
 
 			// act
@@ -542,7 +548,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// arrange
 			const string errorMessage = " whatever !";
-			_stopPermissionChecksResults.Success = false;
 			_stopPermissionChecksResults.ErrorMessages = new[] { errorMessage };
 
 			var expectedErrorMessage = new ErrorDTO()
@@ -575,7 +580,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = false, ErrorMessages = errorMessages });
+				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages });
 
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId), Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
@@ -618,7 +623,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 					Arg.Is(Constants.SourceProvider.Relativity))
-					.Returns(new PermissionCheckDTO() { Success = true });
+					.Returns(new PermissionCheckDTO());
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
 
 			// act
@@ -644,7 +649,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO() {Success = true});
+				.Returns(new PermissionCheckDTO());
 
 			// act
 			_instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
@@ -668,7 +673,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO() { Success = false, ErrorMessages = errorMessages});
+				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages});
 
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, 12345), String.Join("<br/>", errorMessages));
@@ -704,7 +709,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = true });
+				.Returns(new PermissionCheckDTO());
 
 			// Act
 			Assert.Throws<Exception>(() =>
@@ -732,7 +737,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = false, ErrorMessages = errorMessages });
+				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages });
 
 			// Act
 			Assert.Throws<Exception>(() =>
@@ -781,6 +786,70 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		}
 
 		[Test]
+		public void RetryIntegrationPoint_FailToRetrieveJobHistory_NullValue()
+		{
+			// Arrange
+			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_integrationPointManager.UserHasPermissionToRunJob(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
+				Arg.Is(Constants.SourceProvider.Relativity))
+				.Returns(new PermissionCheckDTO());
+			_integrationPoint.HasErrors = true;
+			_integrationPointDto.HasErrors = true;
+			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Returns((Data.JobHistory)null);
+
+			// Act
+			Exception exception = Assert.Throws<Exception>(() =>	_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
+
+			// Assert
+			Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
+		}
+
+		[Test]
+		public void RetryIntegrationPoint_FailToRetrieveJobHistory_ReceiveException()
+		{
+			// Arrange
+			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_integrationPointManager.UserHasPermissionToRunJob(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
+				Arg.Is(Constants.SourceProvider.Relativity))
+				.Returns(new PermissionCheckDTO());
+			_integrationPoint.HasErrors = true;
+			_integrationPointDto.HasErrors = true;
+			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Throws<Exception>();
+
+			// Act
+			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
+
+			// Assert
+			Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
+		}
+
+
+		[Test]
+		public void RetryIntegrationPoint_RetryOnStoppedJob()
+		{
+			// Arrange
+			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_integrationPointManager.UserHasPermissionToRunJob(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
+				Arg.Is(Constants.SourceProvider.Relativity))
+				.Returns(new PermissionCheckDTO());
+			_integrationPoint.HasErrors = true;
+			_integrationPointDto.HasErrors = true;
+			_previousJobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
+
+			// Act
+			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
+
+			// Assert
+			Assert.AreEqual(Constants.IntegrationPoints.RETRY_ON_STOPPED_JOB, exception.Message);
+		}
+
+		[Test]
 		public void RetryIntegrationPoint_GoldFlow_Test()
 		{
 			// Arrange
@@ -789,7 +858,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity))
-				.Returns(new PermissionCheckDTO() { Success = true });
+				.Returns(new PermissionCheckDTO());
 			_integrationPoint.HasErrors = true;
 			_integrationPointDto.HasErrors = true;
 
@@ -959,7 +1028,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
 				.Returns(new PermissionCheckDTO()
 				{
-					Success = false,
 					ErrorMessages = errorMessages
 				});
 
@@ -1036,10 +1104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO()
-				{
-					Success = true
-				});
+				.Returns(new PermissionCheckDTO());
 
 			_caseServiceManager.EddsUserID = 1232;
 
@@ -1100,10 +1165,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO()
-				{
-					Success = true
-				});
+				.Returns(new PermissionCheckDTO());
 
 			const int newIntegrationPoinId = 389234;
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
@@ -1195,10 +1257,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 					Arg.Is(Constants.SourceProvider.Relativity))
-					.Returns(new PermissionCheckDTO()
-					{
-						Success = true
-					});
+					.Returns(new PermissionCheckDTO());
 
 			// Act
 			int ipArtifactId = _instance.SaveIntegration(model);

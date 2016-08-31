@@ -115,37 +115,43 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				string userImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
-
-				_jobStopManager.ThrowIfStopRequested();
-
-				InitializeExportServiceObservers(job, userImportApiSettings);
-				SetupSubscriptions(synchronizer, job);
-
-				_jobStopManager.ThrowIfStopRequested();
-				// Push documents
-				using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
-					IntegrationPointDto.SourceConfiguration,
-					_savedSearchArtifactId,
-					job.SubmittedBy))
+				
+				try
 				{
-					lock (_jobStopManager.SyncRoot)
-					{
-						JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
-						JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
-						UpdateJobStatus();
-					}
+					_jobStopManager.ThrowIfStopRequested();
 
-					if (exporter.TotalRecordsFound > 0)
-					{
-						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
-							.Select(observer => observer.ScratchTableRepository).ToArray();
+					InitializeExportServiceObservers(job, userImportApiSettings);
+					SetupSubscriptions(synchronizer, job);
 
-						IDataReader dataReader = exporter.GetDataReader(scratchTables);
-						synchronizer.SyncData(dataReader, MappedFields, userImportApiSettings);
+					_jobStopManager.ThrowIfStopRequested();
+
+					// Push documents
+					using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
+						IntegrationPointDto.SourceConfiguration,
+						_savedSearchArtifactId,
+						job.SubmittedBy))
+					{
+						lock (_jobStopManager.SyncRoot)
+						{
+							JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
+							JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
+							UpdateJobStatus();
+						}
+
+						if (exporter.TotalRecordsFound > 0)
+						{
+							IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+								.Select(observer => observer.ScratchTableRepository).ToArray();
+
+							IDataReader dataReader = exporter.GetDataReader(scratchTables);
+							synchronizer.SyncData(dataReader, MappedFields, userImportApiSettings);
+						}
 					}
 				}
-
-				FinalizeExportServiceObservers(job);
+				finally
+				{
+					FinalizeExportServiceObservers(job);
+				}
 			}
 			catch (OperationCanceledException)
 			{

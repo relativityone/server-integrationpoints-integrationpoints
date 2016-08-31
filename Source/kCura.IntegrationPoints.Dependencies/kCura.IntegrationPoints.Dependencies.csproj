@@ -270,8 +270,8 @@
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocol.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Protocol.Extensions.1.0.0\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Protocol.Extensions, Version=1.0.2.33, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocol.Extensions.1.0.2.206221351\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -434,8 +434,8 @@
       <HintPath>..\packages\RelativityCore.9.4.283.9\lib\net45\Relativity.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.1.0.1.149\lib\net45\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.226, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.226\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
@@ -466,12 +466,12 @@
       <HintPath>..\packages\RelativityCore.9.4.283.9\lib\net45\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus, Version=1.1.17.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.1.1.17\lib\net45\Relativity.ServiceBus.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.2.1.2\lib\net45\Relativity.ServiceBus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.Providers.Configuration, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.283.9\lib\net45\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus.Providers.Configuration, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.2.1.2\lib\net45\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus.Utilities, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -490,16 +490,16 @@
       <HintPath>..\packages\RelativityCore.9.4.283.9\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.163, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.283.9\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.192, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.192\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.70.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.70\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.74.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.74\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.70.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.70\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.74.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.74\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.MetricsCollection.Factory, Version=9.4.283.9, Culture=neutral, processorArchitecture=MSIL">
@@ -574,8 +574,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.1\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.20622.1351, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />

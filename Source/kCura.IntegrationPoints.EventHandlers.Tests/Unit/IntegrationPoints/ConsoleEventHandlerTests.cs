@@ -137,7 +137,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(
 				new PermissionCheckDTO()
 				{
-					Success = hasViewErrorsPermissions,
 					ErrorMessages = hasViewErrorsPermissions ? null : viewErrorMessages
 				});
 
