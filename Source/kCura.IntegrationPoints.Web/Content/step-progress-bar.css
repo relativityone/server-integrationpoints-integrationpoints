@@ -120,6 +120,7 @@
 				margin-top: 6px;
 				width: 100%;
 				position: relative;
+				margin-top: 8px\9; /* IE6, IE7, IE8, IE9 */
 			}
 
 				.step-progress-bar li .step i:before {
@@ -135,3 +136,12 @@
 				font-size: 2.3em !important;
 				margin-top: 7px;
 			}
+
+*::-ms-backdrop, .step-progress-bar li .step i
+{ 
+	margin-top: 8px;
+} /* IE11 */
+.ie10 .step-progress-bar li .step i
+{ 
+	margin-top: 8px; 
+} /* Only works in IE10 */ 
