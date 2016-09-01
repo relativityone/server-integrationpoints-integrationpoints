@@ -222,6 +222,7 @@
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
+    <Compile Include="Managers\Implementations\AuditManager.cs" />
     <Compile Include="Managers\DestinationWorkspaceFieldManagerBase.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
     <Compile Include="Managers\IJobStopManager.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="JobHistoryBatchUpdateStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
     <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
+    <Compile Include="Managers\IAuditManager.cs" />
     <Compile Include="Managers\Implementations\JobStopManager.cs" />
     <Compile Include="Managers\Implementations\ErrorManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
