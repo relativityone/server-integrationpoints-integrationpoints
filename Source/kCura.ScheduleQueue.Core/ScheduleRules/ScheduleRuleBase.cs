@@ -83,7 +83,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		///<summary>
 		///Date/Time is returned in UTC
 		///</summary>
-		public DateTime? GetNextRunTimeByInterval(ScheduleInterval interval, DateTime startDate, long localTimeOfDayTicks, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDayOfMonth, DateTime? endDate, int? reoccur, OccuranceInMonth? occuranceInMonth)
+		protected DateTime? GetNextRunTimeByInterval(ScheduleInterval interval, IEndDateComparer comparer, DateTime startDate, long localTimeOfDayTicks, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDayOfMonth, DateTime? endDate, int? reoccur, OccuranceInMonth? occuranceInMonth)
 		{
 			//* Due to Daylight Saving Time (DST) all calculations are done with local date/time to insure final time corresponds to Scheduled time
 			//* However, returning value in UTC, since Method Agent framework operates in UTC.
@@ -91,6 +91,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DateTime localNow = TimeService.UtcNow.ToLocalTime();
 			DateTime nextRunTimeDate = startDate.Date > localNow.Date ? startDate.Date : localNow.Date;
 			nextRunTimeDate = nextRunTimeDate.AddTicks(localTimeOfDayTicks);
+			endDate = endDate?.AddTicks(localTimeOfDayTicks);
 			switch (interval)
 			{
 				case ScheduleInterval.Immediate:
@@ -140,9 +141,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					break;
 			}
 
-			// we do expect the given end date to be under the utc time.
-			DateTime nextRunTimeInUtc = nextRunTimeDate.ToUniversalTime();
-			if (endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTimeInUtc.Date)
+			if (comparer.Compare(endDate, nextRunTimeDate))
 			{
 				return null;
 			}
@@ -335,5 +334,58 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			if (!string.IsNullOrEmpty(weekDays)) weekDays = weekDays.Substring(0, weekDays.Length - 2);
 			return weekDays;
 		}
+
+		#region Comparer
+
+		/// <summary>
+		/// An interface represent the a comparer of scheduler's end date and its next runtime
+		/// </summary>
+		protected interface IEndDateComparer
+		{
+			/// <summary>
+			/// Determine whether the end date has passed
+			/// </summary>
+			/// <param name="endDate">The end date of the scheduler.</param>
+			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
+			/// <returns></returns>
+			bool Compare(DateTime? endDate, DateTime nextRunTime);
+		}
+
+		/// <summary>
+		/// Only use to handle the v1 logic of the scheduler where it uses the client's local time to calculate the next runtime.
+		/// DO NOT USE THIS.
+		/// </summary>
+		protected class LocalEndDateComparer : IEndDateComparer
+		{
+			/// <summary>
+			/// Determine whether the end date has passed
+			/// </summary>
+			/// <param name="endDate">The unknown timezone end date of the scheduler.</param>
+			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
+			/// <returns></returns>
+			public bool Compare(DateTime? endDate, DateTime nextRunTime)
+			{
+				return endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTime.Date;
+			}
+		}
+
+		/// <summary>
+		/// Uses this interface to compare utc end date and the next runtime.
+		/// </summary>
+		protected class UtcEndDateComparer : IEndDateComparer
+		{
+			/// <summary>
+			/// Determine whether the end date has passed
+			/// </summary>
+			/// <param name="endDate">The utc end date of the scheduler.</param>
+			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
+			/// <returns></returns>
+			public bool Compare(DateTime? endDate, DateTime nextRunTime)
+			{
+				DateTime nextRunTimeInUtc = nextRunTime.ToUniversalTime();
+				return endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTimeInUtc.Date;
+			}
+		}
+		#endregion
 	}
 }

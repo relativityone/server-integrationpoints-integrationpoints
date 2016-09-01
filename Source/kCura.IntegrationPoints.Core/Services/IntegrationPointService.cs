@@ -352,9 +352,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			DateTime endDate;
 			if (DateTime.TryParse(model.Scheduler.EndDate, out endDate))
 			{
-				var dateTime = endDate.Date.AddDays(-model.Scheduler.UtcDateOffSet);
-				periodicScheduleRule.EndDate = dateTime;
+				periodicScheduleRule.EndDate = endDate;
 			}
+			periodicScheduleRule.TimeZoneOffset = model.Scheduler.TimeZoneOffset;
 
 			//since we do not know what user local time is, time is passed in UTC
 			TimeSpan time;
