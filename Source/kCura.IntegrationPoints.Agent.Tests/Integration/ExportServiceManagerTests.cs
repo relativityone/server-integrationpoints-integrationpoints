@@ -326,7 +326,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public void StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers()
 		{
 			global::kCura.Injection.Injection injection = new global::kCura.Injection.Injection(
-				InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE,
+				InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ConvertToKcuraInjection(),
 				new global::kCura.Injection.Behavior.InfiniteLoop(), "TargetDocumentsTaggingManager.OnJobComplete");
 			DateTime startTime = DateTime.UtcNow;
 
@@ -346,13 +346,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
 
 				//when tagging starts
-				InjectionHelper.WaitUntilInjectionPointIsReached(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ID, startTime, 15);
+				InjectionHelper.WaitUntilInjectionPointIsReached(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id, startTime, 15);
 
 				InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => _jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Stopping));
 				const string exceptionMessage = "Invalid operation. Job state failed to update.";
 				Assert.That(exceptionMessage, Is.EqualTo(exception.Message));
 
-				InjectionHelper.RemoveInjectionFromEnvironment(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ID);
+				InjectionHelper.RemoveInjectionFromEnvironment(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id);
 				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, model.ArtifactID);
 			}
 			finally
@@ -361,7 +361,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				{
 					_jobService.DeleteJob(job.JobId);
 				}
-				InjectionHelper.CleanupInjectionPoints(new List<InjectionPoint> { InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE });
+				InjectionHelper.CleanupInjectionPoints(new List<InjectionPoint> { InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ConvertToKcuraInjection() });
 			}
 		}
 	}

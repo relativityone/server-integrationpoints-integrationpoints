@@ -103,9 +103,7 @@
 			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
-			<arg line='"${source.dependency.Injection.directory}\kCura.Method.Injection.dll"' />
-			<arg line='"${source.dependency.Injection.directory}\kCura.Injection.dll"' />
-			
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Injection.dll"' />
 			
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />

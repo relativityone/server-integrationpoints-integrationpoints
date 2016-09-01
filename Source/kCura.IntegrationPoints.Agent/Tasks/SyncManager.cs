@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Injection;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.Core;
@@ -27,8 +28,6 @@ using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	using Method.Injection;
-
 	using Config = Config.Config;
 
 	[SynchronizedTask]

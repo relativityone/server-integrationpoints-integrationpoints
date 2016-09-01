@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Contracts.Domain
             "kCura.Apps.Common.Config",
             "kCura.Apps.Common.Data",
             "kCura.Apps.Common.Utils",
-            "kCura.Method.Injection",
+			"kCura.IntegrationPoints.Injection",
             "kCura.Injection",
             "kCura.IntegrationPoints.Core.Contracts",
             "kCura.ScheduleQueue.AgentBase",

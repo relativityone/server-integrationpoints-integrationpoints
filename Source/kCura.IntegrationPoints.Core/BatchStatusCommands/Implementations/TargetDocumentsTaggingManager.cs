@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public void OnJobComplete(Job job)
 		{
-			InjectionManager.Instance.Evaluate(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ID);
+			InjectionManager.Instance.Evaluate(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id);
 			try
 			{
 				if (!_errorOccurDuringJobStart)

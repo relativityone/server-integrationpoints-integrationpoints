@@ -67,7 +67,7 @@
       <HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+    <Reference Include="kCura.Injection, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Injection\kCura.Injection.dll</HintPath>
     </Reference>
@@ -105,6 +105,7 @@
     <Compile Include="InjectionController.cs" />
     <Compile Include="InjectionHelper.cs" />
     <Compile Include="InjectionManager.cs" />
+    <Compile Include="InjectionPointDto.cs" />
     <Compile Include="InjectionPoints.cs" />
   </ItemGroup>
   <ItemGroup>

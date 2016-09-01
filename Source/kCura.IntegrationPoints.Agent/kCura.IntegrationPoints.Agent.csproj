@@ -84,17 +84,9 @@
       <HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Injection, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Injection.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.HTMLSanitizer, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_HTMLSanitizer)\lib\kCura.HTMLSanitizer.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Method.Injection,Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>

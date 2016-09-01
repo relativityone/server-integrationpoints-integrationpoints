@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Injection;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				{
 					if (_jobHistoryErrorList.Any())
 					{
-						kCura.Method.Injection.InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
+						InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
 						_errorOccurredDuringJob = true;
 						IntegrationPoint.HasErrors = true;
 
@@ -148,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				if (IntegrationPoint != null)
 				{
-					kCura.Method.Injection.InjectionManager.Instance.Evaluate("6a620133-011a-4fb8-8b37-758b53a46872");
+					InjectionManager.Instance.Evaluate("6a620133-011a-4fb8-8b37-758b53a46872");
 					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 				}
 			}

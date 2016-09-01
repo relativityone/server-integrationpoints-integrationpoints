@@ -16,7 +16,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Method.Injection;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -27,6 +26,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Authentication;
 using System;
+using kCura.IntegrationPoints.Injection;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
