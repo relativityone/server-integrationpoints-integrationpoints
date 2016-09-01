@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -6,7 +7,11 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
+using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -16,15 +21,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IDirectoryTreeCreator _directoryTreeCreator;
+		private readonly IRSAPIClient _context;
+		private readonly IErrorRepository _errorRepository;
 
 		#endregion //Fields
 
 		#region Constructors
 
-		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IDirectoryTreeCreator directoryTreeCreator)
+		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IDirectoryTreeCreator directoryTreeCreator,
+			IRSAPIClient context, IRepositoryFactory repositoryFactory)
 		{
 			_resourcePoolManager = resourcePoolManager;
 			_directoryTreeCreator = directoryTreeCreator;
+			_context = context;
+			_errorRepository = repositoryFactory.GetErrorRepository();
 		}
 
 		#endregion //Constructors
@@ -34,28 +44,43 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		public HttpResponseMessage GetProcessingSourceLocations(int workspaceId)
 		{
-			List<ProcessingSourceLocationDTO> processingSourceLocations =
-				_resourcePoolManager.GetProcessingSourceLocation(workspaceId);
-			
-			return Request.CreateResponse(HttpStatusCode.OK, processingSourceLocations);
+			try
+			{
+				List<ProcessingSourceLocationDTO> processingSourceLocations = _resourcePoolManager.GetProcessingSourceLocation(workspaceId);
+				return Request.CreateResponse(HttpStatusCode.OK, processingSourceLocations);
+			}
+			catch (Exception ex)
+			{
+				this.HandleError(_context, _errorRepository, ex,
+					$"Unable to retrieve processing source location for {workspaceId} workspace. Please contact the system administrator.");
+				return Request.CreateResponse(HttpStatusCode.InternalServerError);
+			}
 		}
 
 		[HttpGet]
 		public HttpResponseMessage GetProcessingSourceLocationStructure(int workspaceId, int artifactId)
 		{
-			List<ProcessingSourceLocationDTO> processingSourceLocations =
-				_resourcePoolManager.GetProcessingSourceLocation(workspaceId);
-
-			ProcessingSourceLocationDTO foundProcessingSourceLocation = processingSourceLocations.FirstOrDefault(
-				processingSourceLocation => processingSourceLocation.ArtifactId == artifactId);
-
-			if (foundProcessingSourceLocation == null)
+			try
 			{
-				return Request.CreateResponse(HttpStatusCode.NotFound, "Cannot find processing source location artifact id");
-			}
+				List<ProcessingSourceLocationDTO> processingSourceLocations =
+					_resourcePoolManager.GetProcessingSourceLocation(workspaceId);
 
-			DirectoryTreeItem rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
-			return Request.CreateResponse(HttpStatusCode.OK, rootFolderTreeDirectoryItem);
+				ProcessingSourceLocationDTO foundProcessingSourceLocation = processingSourceLocations.FirstOrDefault(
+					processingSourceLocation => processingSourceLocation.ArtifactId == artifactId);
+
+				if (foundProcessingSourceLocation == null)
+				{
+					return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
+				}
+				DirectoryTreeItem rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
+				return Request.CreateResponse(HttpStatusCode.OK, rootFolderTreeDirectoryItem);
+			}
+			catch (Exception ex)
+			{
+				this.HandleError(_context, _errorRepository, ex,
+					$"Unable to retrieve folder structure for processing source location {artifactId}. Please contact the system administrator.");
+				return Request.CreateResponse(HttpStatusCode.InternalServerError);
+			}
 		}
 
 		#endregion //Methods

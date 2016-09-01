@@ -201,7 +201,7 @@
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -299,6 +299,7 @@
     <Compile Include="Attributes\WebAPIFilterException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Controllers\LogErrorExtension.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
