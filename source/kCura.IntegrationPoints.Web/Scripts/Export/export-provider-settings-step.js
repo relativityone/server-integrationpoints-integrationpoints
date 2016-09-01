@@ -67,35 +67,35 @@
 			required: true
 		});
 
-		this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
+		this.ColumnSeparator = ko.observable(state.ColumnSeparator || 20).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
+		this.QuoteSeparator = ko.observable(state.QuoteSeparator || 254).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
+		this.NewlineSeparator = ko.observable(state.NewlineSeparator || 174).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
+		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator || 59).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
+		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator || 92).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
