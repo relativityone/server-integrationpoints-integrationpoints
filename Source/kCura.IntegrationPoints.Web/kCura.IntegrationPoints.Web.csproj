@@ -201,7 +201,7 @@
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -299,6 +299,7 @@
     <Compile Include="Attributes\WebAPIFilterException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Extensions\LogErrorExtensions.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
@@ -355,12 +356,6 @@
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.svg">
-      <Link>Content\fonts\integration-points.svg</Link>
-    </Content>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\integration-points-fonts.css">
-      <Link>Content\integration-points-fonts.css</Link>
-    </Content>
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.svg">
       <Link>Content\fonts\legal-hold-icons.svg</Link>
     </Content>
@@ -453,15 +448,6 @@
     <Content Include="Content\controls-grid-pager.scss" />
     <Content Include="Content\buttermilk-variables.scss" />
     <Content Include="Content\buttermilk.9_2.min.css.map" />
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.eot">
-      <Link>Content\fonts\integration-points.eot</Link>
-    </Content>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.ttf">
-      <Link>Content\fonts\integration-points.ttf</Link>
-    </Content>
-    <Content Include="..\Dependencies\kCura.IntegrationPoints.Fonts\Content\fonts\integration-points.woff">
-      <Link>Content\fonts\integration-points.woff</Link>
-    </Content>
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.eot">
       <Link>Content\fonts\legal-hold-icons.eot</Link>
     </Content>
@@ -480,6 +466,7 @@
     <Content Include="Scripts\Export\export-enums.js" />
     <Content Include="Scripts\Export\export-provider-settings-step.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
+    <Content Include="Scripts\Export\export-validation.js" />
     <Content Include="Scripts\Export\field-mapping-view-model.js" />
     <Content Include="Scripts\Export\image-production-picker.js" />
     <Content Include="Scripts\Export\list-picker-view-model.js" />

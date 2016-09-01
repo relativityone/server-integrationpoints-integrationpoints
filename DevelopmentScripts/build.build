@@ -84,6 +84,11 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
+			
+			<!-- primary dll -->
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
+			
+			<!-- secondary dlls -->
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\FreeImageNET.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\Ionic.Zip.dll"' />
@@ -104,7 +109,6 @@
 			
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />
-			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Data.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Email.dll"' />

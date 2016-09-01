@@ -24,8 +24,8 @@ properties {
 
     #assembly info variables
     $company = 'kCura LLC'
-    $product = [System.IO.Path]::GetFileName($root)
-    $product_description =  [System.IO.Path]::GetFileName($root) + ' Description'
+    $product = 'kCura.IntegrationPoints'
+    $product_description = 'kCura.IntegrationPoints'
 
     #versioning database info
     $server = 'bld-mstr-01.kcura.corp'

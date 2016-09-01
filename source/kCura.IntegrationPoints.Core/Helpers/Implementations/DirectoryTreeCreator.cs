@@ -17,12 +17,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public DirectoryTreeItem TraverseTree(string root)
 		{
-			Stack<DirectoryTreeItem> directoryItemsToProcessed = new Stack<DirectoryTreeItem>();
+			ValidateFolder(root);
 
-			if (!_directory.Exists(root))
-			{
-				throw new ArgumentException($"{root} folder does not exist!");
-			}
+			Stack<DirectoryTreeItem> directoryItemsToProcessed = new Stack<DirectoryTreeItem>();
 
 			DirectoryTreeItem rootDirectoryItem = new DirectoryTreeItem()
 			{
@@ -43,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				{
 					var newDirectoryItem = new DirectoryTreeItem
 					{
-						Text = fullPathDir.Substring(fullPathDir.LastIndexOf('\\')),
+						Text = fullPathDir.Substring(fullPathDir.LastIndexOf('\\') + 1),
 						Id = fullPathDir
 					};
 					directoryItemsToProcessed.Push(newDirectoryItem);
@@ -51,6 +48,18 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				}
 			}
 			return rootDirectoryItem;
+		}
+
+		private void ValidateFolder(string root)
+		{
+			if (string.IsNullOrEmpty(root))
+			{
+				throw new ArgumentException($"Argumenent '{nameof(root)}' should not be empty!");
+			}
+			if (!_directory.Exists(root))
+			{
+				throw new ArgumentException($"{root} folder does not exist!");
+			}
 		}
 
 		private string[] GetSubItems(DirectoryTreeItem dirItem)

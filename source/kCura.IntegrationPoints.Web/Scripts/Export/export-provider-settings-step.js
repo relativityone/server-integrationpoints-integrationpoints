@@ -1,15 +1,5 @@
 ﻿var IP = IP || {};
 
-ko.validation.rules.pattern.message = 'Invalid.';
-
-ko.validation.init({
-	registerExtenders: true,
-	messagesOnModified: true,
-	insertMessages: true,
-	parseInputAttributes: true,
-	messageTemplate: null
-}, true);
-
 (function (root, ko) {
 
 	var viewModel = function (state) {
@@ -255,34 +245,57 @@ ko.validation.init({
 		});
 
 		this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
-			required: true
+			required: true,
+			min: 1,			
+			nonNegativeNaturalNumber: {}	
 		});
 		this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 256,
+			nonNegativeNaturalNumber: {}
 		});
 		this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 2000000,
+			nonNegativeNaturalNumber: {}
 		});
 		this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}	
 		});
 		this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
-			required: true
+			required: true,
+			min: 1,
+			nonNegativeNaturalNumber: {}			
 		});
 		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 256,
+			nonNegativeNaturalNumber: {}
 		});
 		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 4400).extend({
-			required: true
+			required: true,
+			min: 1,
+			nonNegativeNaturalNumber: {}
 		});
 
 		function pad(str, max) {
@@ -302,7 +315,9 @@ ko.validation.init({
 				onlyIf: function () {
 					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
 				}
-			}
+			},
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 
 		this.isUserPrefix = ko.observable(false);
@@ -470,7 +485,9 @@ ko.validation.init({
 		self.back = function () {
 			var d = root.data.deferred().defer();
 
-			d.resolve();
+			$.extend(self.ipModel.sourceConfiguration, self.model.getSelectedOption());
+
+			d.resolve(self.ipModel);
 
 			return d.promise;
 		}

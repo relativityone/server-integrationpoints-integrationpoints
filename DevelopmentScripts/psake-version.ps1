@@ -5,8 +5,8 @@ task default -depends version
 
 
 task version {
-    $NewVersion = 'AssemblyVersionAttribute("' + $version + '")'
-    $NewFileVersion = 'AssemblyFileVersionAttribute("' + $version + '")'
+    $NewVersion = 'AssemblyVersion("' + $version + '")'
+    $NewFileVersion = 'AssemblyFileVersion("' + $version + '")'
 
     $buildtypeversioninfo = $build_type
 
@@ -21,11 +21,11 @@ task version {
 
 
     $NewInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '-' + $branch + '-' + $buildtypeversioninfo + '")'
-    $NewCopyright = 'AssemblyCopyrightAttribute("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $company + '")'
-    $NewTitle = 'AssemblyTitleAttribute("' + $product + '")'
-    $NewDescription = 'AssemblyDescriptionAttribute("' + $product_description + '")'
-    $NewCompany = 'AssemblyCompanyAttribute("' + $company + '")'
-    $NewProduct = 'AssemblyProductAttribute("' + $product + '")'
+    $NewCopyright = 'AssemblyCopyright("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $company + '")'
+    $NewTitle = 'AssemblyTitle("' + $product + '")'
+    $NewDescription = 'AssemblyDescription("' + $product_description + '")'
+    $NewCompany = 'AssemblyCompany("' + $company + '")'
+    $NewProduct = 'AssemblyProduct("' + $product + '")'
 
     foreach($o in Get-ChildItem $version_directory){
 
@@ -34,14 +34,14 @@ task version {
        Write-Host "Updating" $o.FullName "to version" $version "..."
        
        $tmp = Get-Content $o.FullName | 
-       %{$_ -replace 'AssemblyVersionAttribute\(".*"\)', $NewVersion} |
-       %{$_ -replace 'AssemblyFileVersionAttribute\(".*"\)', $NewFileVersion} |
+       %{$_ -replace 'AssemblyVersion\(".*"\)', $NewVersion} |
+       %{$_ -replace 'AssemblyFileVersion\(".*"\)', $NewFileVersion} |
        %{$_ -replace 'AssemblyInformationalVersionAttribute\(".*"\)', $NewInfoVersion} |
-       %{$_ -replace 'AssemblyCopyrightAttribute\(".*"\)', $NewCopyright} |
-       %{$_ -replace 'AssemblyTitleAttribute\(".*"\)', $NewTitle} |
-       %{$_ -replace 'AssemblyDescriptionAttribute\(".*"\)', $NewDescription} |
-       %{$_ -replace 'AssemblyCompanyAttribute\(".*"\)', $NewCompany} |
-       %{$_ -replace 'AssemblyProductAttribute\(".*"\)', $NewProduct}
+       %{$_ -replace 'AssemblyCopyright\(".*"\)', $NewCopyright} |
+       %{$_ -replace 'AssemblyTitle\(".*"\)', $NewTitle} |
+       %{$_ -replace 'AssemblyDescription\(".*"\)', $NewDescription} |
+       %{$_ -replace 'AssemblyCompany\(".*"\)', $NewCompany} |
+       %{$_ -replace 'AssemblyProduct\(".*"\)', $NewProduct}
 
        [System.IO.File]::WriteAllLines($o.FullName, $tmp)
     }   

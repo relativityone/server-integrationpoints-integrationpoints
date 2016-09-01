@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.Web
 			));
 
 			bundles.Add(new ScriptBundle("~/bundles/exportProvider").Include(
+				"~/Scripts/export/export-validation.js",
 				"~/Scripts/export/export-provider-fields-step.js",
 				"~/Scripts/export/export-enums.js",
 				"~/Scripts/Export/field-mapping-view-model.js",
@@ -75,7 +76,6 @@ namespace kCura.IntegrationPoints.Web
 			bundles.Add(new StyleBundle("~/Content/styles").Include(
 				"~/Content/normalize.css",
 				"~/Content/legal-hold-fonts.css",
-				"~/Content/integration-points-fonts.css",
 				"~/Content/header.css",
 				"~/Content/scheduler.css",
 				"~/Content/site.css",
@@ -102,8 +102,6 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/themes/base/jquery.ui.theme.css",
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
-
-			//BundleTable.EnableOptimizations = true;
 		}
 	}
 }

@@ -60,7 +60,11 @@ namespace kCura.IntegrationPoints.EventHandlers.MassOperations
 
 		public override Response ValidateSelection()
 		{
-			return new Response {Success = true};
+			return new Response
+			{
+				Success = true,
+				Message = "Warning: The below details the items that will be copied and settings that will be carried over when performing a copy."
+			};
 		}
 
 		public override Response ValidateLayout()

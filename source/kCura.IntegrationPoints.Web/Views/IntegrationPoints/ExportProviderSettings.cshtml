@@ -1,6 +1,6 @@
 ﻿<script id="exportProviderSettingsStep" type="text/html">
 <div id="_main">
-<div id="exportProviderConfiguration">
+<div id="exportProviderConfiguration" style="min-width: 900px;">
 <div class="card">
 	<span class="label">Export Detail</span>
 	<table style="width: 100%;">
@@ -190,7 +190,7 @@
 											<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }" />
 											<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
 											<!-- ko if: value==2 -->
-											<input type="text" data-bind="enable: $parent.isUserPrefix(), value: $parent.UserPrefix(), attr: { id: 'filePathUserprefix_' + $index() }" />
+											<input type="text" data-bind="enable: $parent.isUserPrefix, value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
 											<!-- /ko -->
 										</li>
 									</ul>
