@@ -1,15 +1,5 @@
 ﻿var IP = IP || {};
 
-ko.validation.rules.pattern.message = 'Invalid.';
-
-ko.validation.init({
-	registerExtenders: true,
-	messagesOnModified: true,
-	insertMessages: true,
-	parseInputAttributes: true,
-	messageTemplate: null
-}, true);
-
 (function (root, ko) {
 	var viewModel = function (state) {
 		var self = this;
@@ -23,7 +13,9 @@ ko.validation.init({
 		});
 
 		self.startExportAtRecord = ko.observable(state.StartExportAtRecord || 1).extend({
-			required: true
+			required: true,
+			min: 1,
+			nonNegativeNaturalNumber: {}
 		});
 
 		self.fields = new FieldMappingViewModel();
