@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
@@ -68,6 +69,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				manager = new NullableStopJobManager();
 			}
 			return manager;
+		}
+
+		public IAuditManager CreateAuditManager(IContextContainer contextContainer, int workspaceArtifactId)
+		{
+			IRepositoryFactory  repositoryFactory = CreateRepositoryFactory(contextContainer);
+			IRelativityAuditRepository relativityAuditRepository =	repositoryFactory.GetRelativityAuditRepository(workspaceArtifactId);
+			return new AuditManager(relativityAuditRepository);
 		}
 
 		public IStateManager CreateStateManager()

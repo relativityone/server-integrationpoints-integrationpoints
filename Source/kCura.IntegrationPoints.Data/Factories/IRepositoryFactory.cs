@@ -168,5 +168,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <param name="workspaceArtifactId">Workspace artifact id.</param>
 		/// <returns>A class implementing the IRelativityAuditRepository interface.</returns>
 		IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId);
+
 	}
 }
