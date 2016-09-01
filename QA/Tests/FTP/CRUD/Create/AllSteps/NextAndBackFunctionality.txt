@@ -13,12 +13,12 @@
 
 | ${WorkspaceName}			| LDAP Sync
 | ${IntegrationName}		| FTP Next and Back Storage Test
-| ${Host}					| filetransfer.kcura.com
+| ${Host}					| files.kcura.com
 | ${Protocol}				| FTP
 | ${Port}					| 21
-| ${FTPUsername}			| admin
-| ${FTPPassword}			| C@m3l!ts
-| ${Filepath}				| /Custom Development/ftp/LegalHold/AppendFTP.csv
+| ${FTPUsername}			| rip
+| ${FTPPassword}			| GameOfHolds
+| ${Filepath}				| /ftp/LegalHold/AppendFTP.csv
 | ${OverwriteList}			| s2id_overwrite
 | ${UniqueIdentifierList}	| s2id_overlay-identifier
 

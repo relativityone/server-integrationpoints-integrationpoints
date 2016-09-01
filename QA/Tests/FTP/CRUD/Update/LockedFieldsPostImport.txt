@@ -58,7 +58,7 @@
 | | ... | 12/12/2112
 | | ... | 12/12/2121
 | | ... | 12:12 AM
-| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/LockedFields.csv
+| | @{Step2Fields}=	| Create list | files.kcura.com | FTP | 21 | rip | GameOfHolds | /ftp/LegalHold/LockedFields.csv
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 
 | | ... | Email			| Email		 
