@@ -1,15 +1,5 @@
 ﻿var IP = IP || {};
 
-ko.validation.rules.pattern.message = 'Invalid.';
-
-ko.validation.init({
-	registerExtenders: true,
-	messagesOnModified: true,
-	insertMessages: true,
-	parseInputAttributes: true,
-	messageTemplate: null
-}, true);
-
 (function (root, ko) {
 
 	var viewModel = function (state) {
@@ -21,41 +11,91 @@ ko.validation.init({
 			required: true
 		});
 
+		this.ProcessingSourceLocation = ko.observable(state.ProcessingSourceLocation).extend({
+			required: true
+		});
+
+		this.ProcessingSourceLocation.subscribe(function(value) {
+			self.getDirectories(value);
+		});
+
+		this.ProcessingSourceLocationList = ko.observableArray([]);
+
+		this.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.init(self.Fileshare(), [], {
+				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+			});
+			self.getProcessingSources();
+		};
+
+		this.getProcessingSources = function () {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.ProcessingSourceLocationList(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
+
+		this.getDirectories = function (artifacId) {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.locationSelector.reload(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
+
 		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
 		});
 
-		this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
+		this.ColumnSeparator = ko.observable(state.ColumnSeparator || 20).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
+		this.QuoteSeparator = ko.observable(state.QuoteSeparator || 254).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
+		this.NewlineSeparator = ko.observable(state.NewlineSeparator || 174).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
+		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator || 59).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
+		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator || 92).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
@@ -115,11 +155,11 @@ ko.validation.init({
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
-		this.DataFileEncodingType = ko.observable().extend({
+		this.DataFileEncodingType = ko.observable("").extend({
 			required: true
 		});
 
-		this.TextFileEncodingType = ko.observable().extend({
+		this.TextFileEncodingType = ko.observable("").extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportTextFieldsAsFilesChecked();
@@ -205,34 +245,57 @@ ko.validation.init({
 		});
 
 		this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
-			required: true
+			required: true,
+			min: 1,			
+			nonNegativeNaturalNumber: {}	
 		});
 		this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 256,
+			nonNegativeNaturalNumber: {}
 		});
 		this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 2000000,
+			nonNegativeNaturalNumber: {}
 		});
 		this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}	
 		});
 		this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
-			required: true
+			required: true,
+			min: 1,
+			nonNegativeNaturalNumber: {}			
 		});
 		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 256,
+			nonNegativeNaturalNumber: {}
 		});
 		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 4400).extend({
-			required: true
+			required: true,
+			min: 1,
+			nonNegativeNaturalNumber: {}
 		});
 
 		function pad(str, max) {
@@ -252,7 +315,9 @@ ko.validation.init({
 				onlyIf: function () {
 					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
 				}
-			}
+			},
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 
 		this.isUserPrefix = ko.observable(false);
@@ -375,18 +440,14 @@ ko.validation.init({
 				$('body').append(result);
 				self.hasTemplate = true;
 				self.template(self.settings.templateID);
-				self.onDOMLoaded();
-				root.messaging.publish('details-loaded');
+				self.model.onDOMLoaded();
+				var detailsLoaded = 'details-loaded';
+				root.messaging.publish(detailsLoaded);
 			});
 		}
 
 		self.ipModel = {};
 		self.model = {};
-
-		self.onDOMLoaded = function () {
-			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.create(self.model.Fileshare);
-		};
 
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
@@ -424,7 +485,9 @@ ko.validation.init({
 		self.back = function () {
 			var d = root.data.deferred().defer();
 
-			d.resolve();
+			$.extend(self.ipModel.sourceConfiguration, self.model.getSelectedOption());
+
+			d.resolve(self.ipModel);
 
 			return d.promise;
 		}

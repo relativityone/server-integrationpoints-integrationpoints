@@ -171,7 +171,8 @@
 				};
 			}
 
-			vm.currentStep().back().then(function () {
+			vm.currentStep().back().then(function (result) {
+				$.extend(model, result);				
 				step = vm.goToStep(--step, model);
 				IP.message.error.clear();
 				IP.messaging.publish('goToStep', step);

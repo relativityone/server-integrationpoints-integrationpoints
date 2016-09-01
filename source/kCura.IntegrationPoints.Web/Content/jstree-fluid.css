@@ -9,6 +9,10 @@
 	border: 1px solid #c1c1c1;
 }
 
+.jstree-children, .jstree-container-ul {
+	margin: 2px !important;
+}
+
 .jstree-default .jstree-icon:empty {
 	width: 24px;
 	height: 22px;
@@ -19,17 +23,26 @@
 	background-position: -129px -70px;
 }
 
+.jstree-default .jstree-themeicon-custom {
+	background-image: url('themes/default/32px.png');
+	background-position: -166px -70px;
+}
+
+.jstree-default .jstree-clicked .jstree-themeicon-custom {
+	background-image: url('themes/default/32px.png');
+	background-position: -200px -70px;
+}
+
+
 .jstree-default .jstree-clicked {
 	background: #dfebf8 !important;
 	font-weight: 600;
-	box-shadow: inset 0 0 1px #999;
-	border: 1px solid #c1c1c1;
-	border-color: #5d99df;
+	box-shadow: inset 0 0 1px #5d99df;
+	border: 1px solid #5d99df;
 }
 
 .jstree-holder .jstree-default .jstree-hovered {
-	border: 1px solid #c1c1c1;
-	border-color: #5d99df;
+	border: 1px solid #5d99df;
 }
 
 .jstree-default .jstree-hovered {
@@ -41,6 +54,7 @@
 
 .jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover, .jstree-anchor:active {
 	text-decoration: none !important;
+	border: 1px solid transparent;
 }
 
 #location-select {
