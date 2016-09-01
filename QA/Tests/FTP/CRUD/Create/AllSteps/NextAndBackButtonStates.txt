@@ -13,12 +13,12 @@
 *** Variables ***
 
 | ${WorkspaceName}		| LDAP Sync
-| ${Host}				| filetransfer.kcura.com
+| ${Host}				| files.kcura.com
 | ${Protocol}			| FTP
 | ${Port}				| 21
-| ${FTPUsername}		| admin
-| ${FTPPassword}		| C@m3l!ts
-| ${Filepath}			| /Custom Development/ftp/LegalHold/AppendFTP.csv
+| ${FTPUsername}		| rip
+| ${FTPPassword}		| GameOfHolds
+| ${Filepath}			| /ftp/LegalHold/AppendFTP.csv
 | ${Back Button}		| back
 | ${Next Button}		| next
 | ${Save Button}		| save
