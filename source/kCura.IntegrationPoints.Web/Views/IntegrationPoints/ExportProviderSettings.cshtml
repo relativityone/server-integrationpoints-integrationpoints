@@ -61,15 +61,15 @@
 									<input id="fileshare-input" type="text" data-bind="value: Fileshare, disable: HasBeenRun()" />
 								</div>
 							</div>
-							@*<div class="field-row">
+							<div class="field-row">
 								<div class="field-label required">
 									Processing Source:
 								</div>
 								<div class="field-value">
-									<select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
+									<select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: ProcessingSourceLocationList, optionsCaption: 'Select...', value: ProcessingSourceLocation, disable: HasBeenRun(), select2: {}"></select>
 								</div>
-							</div>*@
-							@*<div class="field-row">
+							</div>
+							<div class="field-row">
 								<div class="field-label required">
 									Load Data From:
 								</div>
@@ -79,7 +79,7 @@
 										<div id="browser-tree" tabindex="0"></div>
 									</div>
 								</div>
-							</div>*@
+							</div>
 						</td>
 						<td>
 							
