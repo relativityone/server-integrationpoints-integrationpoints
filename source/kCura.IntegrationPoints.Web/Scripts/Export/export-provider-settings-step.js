@@ -105,11 +105,11 @@
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
-		this.DataFileEncodingType = ko.observable().extend({
+		this.DataFileEncodingType = ko.observable("").extend({
 			required: true
 		});
 
-		this.TextFileEncodingType = ko.observable().extend({
+		this.TextFileEncodingType = ko.observable("").extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportTextFieldsAsFilesChecked();
