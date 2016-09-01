@@ -234,7 +234,7 @@
 		self.back = function () {
 			var d = root.data.deferred().defer();
 
-			d.resolve();
+			d.resolve(self.ipModel);
 
 			return d.promise;
 		}

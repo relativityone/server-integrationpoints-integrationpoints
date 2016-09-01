@@ -439,7 +439,9 @@
 		self.back = function () {
 			var d = root.data.deferred().defer();
 
-			d.resolve();
+			$.extend(self.ipModel.sourceConfiguration, self.model.getSelectedOption());
+
+			d.resolve(self.ipModel);
 
 			return d.promise;
 		}
