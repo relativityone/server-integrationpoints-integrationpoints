@@ -10,8 +10,8 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.Relativity.Client;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {

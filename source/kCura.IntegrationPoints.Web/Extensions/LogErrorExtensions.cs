@@ -4,9 +4,9 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 
-namespace kCura.IntegrationPoints.Web.Controllers.API
+namespace kCura.IntegrationPoints.Web.Extensions
 {
-	public static class LogErrorExtension
+	public static class LogErrorExtensions
 	{
 		public static void HandleError(this ApiController apiController, IRSAPIClient context, IErrorRepository errorRepository, Exception ex, string userMessage = null)
 		{
