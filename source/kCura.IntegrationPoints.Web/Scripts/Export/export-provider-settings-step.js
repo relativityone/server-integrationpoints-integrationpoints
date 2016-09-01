@@ -21,6 +21,56 @@ ko.validation.init({
 			required: true
 		});
 
+		this.ProcessingSourceLocation = ko.observable(state.ProcessingSourceLocation).extend({
+			required: true
+		});
+
+		this.ProcessingSourceLocation.subscribe(function(value) {
+			self.getDirectories(value);
+		});
+
+		this.ProcessingSourceLocationList = ko.observableArray([]);
+
+		this.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.init(self.Fileshare(), [], {
+				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+			});
+			self.getProcessingSources();
+		};
+
+		this.getProcessingSources = function () {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.ProcessingSourceLocationList(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
+
+		this.getDirectories = function (artifacId) {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.locationSelector.reload(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
+
 		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
@@ -375,18 +425,14 @@ ko.validation.init({
 				$('body').append(result);
 				self.hasTemplate = true;
 				self.template(self.settings.templateID);
-				self.onDOMLoaded();
-				root.messaging.publish('details-loaded');
+				self.model.onDOMLoaded();
+				var detailsLoaded = 'details-loaded';
+				root.messaging.publish(detailsLoaded);
 			});
 		}
 
 		self.ipModel = {};
 		self.model = {};
-
-		self.onDOMLoaded = function () {
-			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.create(self.model.Fileshare);
-		};
 
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
