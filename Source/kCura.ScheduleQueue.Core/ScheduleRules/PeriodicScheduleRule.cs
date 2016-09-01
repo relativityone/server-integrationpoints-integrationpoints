@@ -18,6 +18,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		public DateTime? StartDate { get; set; }
 		[DataMember]
 		public DateTime? EndDate { get; set; }
+
+		[DataMember(EmitDefaultValue = true)]
+		public int UtcDateOffSet { get; set; }
+
 		[DataMember]
 		public int? DayOfMonth { get; set; }
 		[DataMember]
@@ -45,7 +49,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		public PeriodicScheduleRule(
 			ScheduleInterval interval, DateTime startDate, TimeSpan localTimeOfDay,
-			DateTime? endDate = null, DaysOfWeek? daysToRun = null,
+			DateTime? endDate = null, int utcDateTimeOffSet = 0, DaysOfWeek? daysToRun = null,
 			int? dayOfMonth = null, bool? setLastDayOfMonth = null,
 			int? reoccur = null, OccuranceInMonth? occuranceInMonth = null
 			)
@@ -59,12 +63,15 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DayOfMonth = dayOfMonth;
 			SetLastDayOfMonth = setLastDayOfMonth;
 			Reoccur = reoccur;
+			UtcDateOffSet = utcDateTimeOffSet;
 			OccuranceInMonth = occuranceInMonth;
 		}
 
-		public override DateTime? GetNextUTCRunDateTime(DateTime? LastRunTime = null, TaskStatusEnum? lastTaskStatus = null)
+		public override DateTime? GetNextUTCRunDateTime(DateTime? lastRunTime = null, TaskStatusEnum? lastTaskStatus = null)
 		{
-			return GetNextRunTimeByInterval(Interval, StartDate.GetValueOrDefault(DateTime.UtcNow), localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks), DaysToRun, DayOfMonth, SetLastDayOfMonth, EndDate, Reoccur, OccuranceInMonth);
+			return GetNextRunTimeByInterval(Interval, StartDate.GetValueOrDefault(DateTime.UtcNow),
+				localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks),
+				DaysToRun, DayOfMonth, SetLastDayOfMonth, EndDate, Reoccur, OccuranceInMonth);
 		}
 
 		public override string Description

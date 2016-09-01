@@ -520,6 +520,11 @@ var IP = IP || {};
 			}
 		});
 
+		this.utcDateOffSet = ko.computed(function () {
+			var date = new Date();
+			return date.getDate() - date.getUTCDate();
+		}, this);
+
 		this.endDate = ko.observable(options.endDate).extend({
 			date: {
 				message: 'The field End Date must be a date.'
