@@ -265,6 +265,7 @@
     <Compile Include="Templates\RelativityProviderTemplate.cs" />
     <Compile Include="Templates\SourceProviderTemplate.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
+    <Compile Include="TestHelpers\ExtendedIKeywordSearchManager.cs" />
     <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
