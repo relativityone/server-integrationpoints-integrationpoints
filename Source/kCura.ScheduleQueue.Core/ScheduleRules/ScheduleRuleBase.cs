@@ -105,7 +105,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					if (nextRunTimeDate < localNow)
 					{
 						nextRunTimeDate = new DateTime(localNow.Year, localNow.Month, localNow.Day, localNow.Hour, nextRunTimeDate.Minute, nextRunTimeDate.Second);
-						if (nextRunTimeDate < localNow) nextRunTimeDate = nextRunTimeDate.AddHours(1);
+						if (nextRunTimeDate < localNow)
+						{
+							nextRunTimeDate = nextRunTimeDate.AddHours(1);
+						}
 					}
 					break;
 
@@ -137,7 +140,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					break;
 			}
 
-			if (endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTimeDate.Date)
+			// we do expect the given end date to be under the utc time.
+			DateTime nextRunTimeInUtc = nextRunTimeDate.ToUniversalTime();
+			if (endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTimeInUtc.Date)
 			{
 				return null;
 			}
