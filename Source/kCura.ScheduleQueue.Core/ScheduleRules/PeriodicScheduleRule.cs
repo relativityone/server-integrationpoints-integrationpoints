@@ -19,7 +19,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		[DataMember]
 		public DateTime? EndDate { get; set; }
 
-		[DataMember(EmitDefaultValue = true)]
+		[DataMember]
 		public int UtcDateOffSet { get; set; }
 
 		[DataMember]
