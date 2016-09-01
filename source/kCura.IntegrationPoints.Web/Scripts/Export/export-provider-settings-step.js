@@ -11,41 +11,91 @@
 			required: true
 		});
 
+		this.ProcessingSourceLocation = ko.observable(state.ProcessingSourceLocation).extend({
+			required: true
+		});
+
+		this.ProcessingSourceLocation.subscribe(function(value) {
+			self.getDirectories(value);
+		});
+
+		this.ProcessingSourceLocationList = ko.observableArray([]);
+
+		this.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.init(self.Fileshare(), [], {
+				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+			});
+			self.getProcessingSources();
+		};
+
+		this.getProcessingSources = function () {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.ProcessingSourceLocationList(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
+
+		this.getDirectories = function (artifacId) {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.locationSelector.reload(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
+
 		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
 		});
 
-		this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
+		this.ColumnSeparator = ko.observable(state.ColumnSeparator || 20).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
+		this.QuoteSeparator = ko.observable(state.QuoteSeparator || 254).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
+		this.NewlineSeparator = ko.observable(state.NewlineSeparator || 174).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
+		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator || 59).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
+		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator || 92).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
@@ -390,18 +440,14 @@
 				$('body').append(result);
 				self.hasTemplate = true;
 				self.template(self.settings.templateID);
-				self.onDOMLoaded();
-				root.messaging.publish('details-loaded');
+				self.model.onDOMLoaded();
+				var detailsLoaded = 'details-loaded';
+				root.messaging.publish(detailsLoaded);
 			});
 		}
 
 		self.ipModel = {};
 		self.model = {};
-
-		self.onDOMLoaded = function () {
-			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.create(self.model.Fileshare);
-		};
 
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
