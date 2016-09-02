@@ -1,17 +1,16 @@
 ﻿var Picker = {
-	create: function(containerId, viewModel, options) {
+	create: function (containerId, viewName, viewModel, options) {	
 		var view = (window.$)('<div id="' + containerId + '" style="padding: 0px;"></div>');
 
 		IP.data.ajax({
-				url: IP.utils.generateWebURL("Fileshare", "ListPicker"),
-				type: "get",
-				dataType: "html"
-			})
-			.then(function(result) {
-				Picker.createDialog(result, view, viewModel, options);
-			});
+			url: IP.utils.generateWebURL("Fileshare", viewName),
+			type: "get",
+			dataType: "html"
+		}).then(function (result) {
+			Picker.createDialog(result, view, viewModel, options);
+		});
 	},
-	createDialog: function(modalHTML, view, viewModel, options) {
+	createDialog: function (modalHTML, view, viewModel, options) {
 		var $myWin = $(window);
 
 		var selectedOptions;
@@ -25,13 +24,16 @@
 
 		view.append(modalHTML).dialog(selectedOptions);
 
-		setTimeout(function() {
+		setTimeout(function () {
 			viewModel.construct(view);
 			view.removeClass("ui-dialog-content").prev().hide();
 			ko.applyBindings(viewModel, view.get()[0]);
 		});
 	},
-	getDefaultOptions: function() {
+	closeDialog: function (containerId) {
+		$('#' + containerId).dialog('destroy').remove();
+	},
+	getDefaultOptions: function () {
 		return {
 			autoOpen: false,
 			modal: true,
@@ -49,14 +51,14 @@
 };
 
 //This is template for Pickers' ViewModel
-var ViewModelBase = function(okCallback) {
+var ViewModelBase = function (okCallback) {
 	this.view = null;
 	this.okCallback = okCallback;
 
-	this.construct = function(view) {
+	this.construct = function (view) {
 		this.view = view;
 	};
-	this.open = function(currentSelection) {
+	this.open = function (currentSelection) {
 		self.view.dialog("open");
 	};
 };
