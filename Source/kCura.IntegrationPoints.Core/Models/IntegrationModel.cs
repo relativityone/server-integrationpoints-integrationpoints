@@ -79,6 +79,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public bool EnableScheduler { get; set; }
 		public string EndDate { get; set; }
+		public int TimeZoneOffset { get; set; }
 		public string StartDate { get; set; }
 		public string SelectedFrequency { get; set; }
 		public int Reoccur { get; set; }

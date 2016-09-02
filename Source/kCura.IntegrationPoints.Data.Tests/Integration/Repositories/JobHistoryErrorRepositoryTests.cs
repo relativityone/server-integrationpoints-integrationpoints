@@ -54,7 +54,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				true);
 		}
 
-		[Test]
 		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Item)]
 		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Job)]
 		public void RetrieveJobHistoryErrorArtifactIds_NoError(JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
@@ -68,7 +67,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 
-		private object[] RetrieveJobHistoryErrorSources = new []
+		private static readonly object[] RetrieveJobHistoryErrorSources = new []
 		{
 			new object[] {ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem},
 			new object[] {ErrorStatusChoices.JobHistoryErrorInProgress, ErrorTypeChoices.JobHistoryErrorItem},
@@ -98,7 +97,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			CollectionAssert.AreEqual(jobHistoryArtifactId, result);
 		}
 
-		[Test]
 		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Item)]
 		[TestCase(JobHistoryErrorDTO.Choices.ErrorType.Values.Job)]
 		public void RetrieveJobHistoryErrorIdsAndSourceUniqueIds_NoError(JobHistoryErrorDTO.Choices.ErrorType.Values errorType)

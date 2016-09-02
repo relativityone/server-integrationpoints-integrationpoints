@@ -118,12 +118,12 @@
 | | ... | No
 
 | | @{Step2Fields}=	| Create List	| 
-| | ... | filetransfer.kcura.com
+| | ... | files.kcura.com
 | | ... | FTP
 | | ... | 21
-| | ... | admin
-| | ... | C@m3l!ts
-| | ... | /Custom Development/ftp/LegalHold/OverlayFTP.csv
+| | ... | rip
+| | ... | GameOfHolds
+| | ... | /ftp/LegalHold/OverlayFTP.csv
 
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| Email

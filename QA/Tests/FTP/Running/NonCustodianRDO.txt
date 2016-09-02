@@ -56,13 +56,13 @@
 | | ... | Project
 | | ... | No
 
-| | @{Step2Fields}=	| Create List	|
-| | ... | filetransfer.kcura.com
+| | @{Step2Fields}=	| Create List	| 
+| | ... | files.kcura.com
 | | ... | FTP
 | | ... | 21
-| | ... | admin
-| | ... | C@m3l!ts
-| | ... | /Custom Development/ftp/LegalHold/ProjectsFTP.csv
+| | ... | rip
+| | ... | GameOfHolds
+| | ... | /ftp/LegalHold/ProjectsFTP.csv
 
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Project Description		| Description

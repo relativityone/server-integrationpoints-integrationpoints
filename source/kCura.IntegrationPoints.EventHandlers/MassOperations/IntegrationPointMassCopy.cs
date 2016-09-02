@@ -14,8 +14,8 @@ namespace kCura.IntegrationPoints.EventHandlers.MassOperations
 
 		public void Copy(IEnumerable<int> integrationPointArtifactIds)
 		{
-			var selectedIntegrationPoints = _service.IntegrationPointLibrary.Read(integrationPointArtifactIds);
-			foreach (var integrationPoint in selectedIntegrationPoints)
+			List<Data.IntegrationPoint> selectedIntegrationPoints = _service.IntegrationPointLibrary.Read(integrationPointArtifactIds);
+			foreach (Data.IntegrationPoint integrationPoint in selectedIntegrationPoints)
 			{
 				var newIntegrationPoint = BuildIntegrationPointModel(integrationPoint);
 				_service.IntegrationPointLibrary.Create(newIntegrationPoint);

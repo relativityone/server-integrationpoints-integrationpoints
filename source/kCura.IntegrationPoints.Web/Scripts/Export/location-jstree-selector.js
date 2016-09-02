@@ -1,70 +1,86 @@
 var LocationJSTreeSelector = function () {
 	var self = this;
+	self.domSelectorSettings = {
+		dropdownSelector : 'select#location-select',
+		dropdownOptionSelectedSelector: 'select#location-select option:selected',
+		browserTreeSelector : 'div#browser-tree',
+		jstreeHolderDivSelector: '#jstree-holder-div',
+		onNodeSelectedEventHandler: function () { }
+	}
+	self.treeVisible = false;
+	self.SelectedNode = '';
 
-	self.create = function (setterCallback) {
-		$('select#location-select').mousedown(function () {
-			if (self.treeVisible) {
-				//self.setSelection(self.SelectedFolderPath);
-			}
+	self.init = function (selectedNode, data, settings) {
+		if (settings !== undefined) {
+			$.extend(self.domSelectorSettings,settings);
+		}
+
+		$(self.domSelectorSettings.dropdownSelector).mousedown(function () {
 			self.setTreeVisibility(!self.treeVisible);
 		});
-		self.setterCallback = setterCallback;
-		self.initJsTree();
+		
+		if (selectedNode !== undefined) {
+			self.SelectedNode = selectedNode ;
+			self.setSelection(selectedNode);
+		}
+		
+		self.initJsTree(data);
 		self.setTreeVisibility(self.treeVisible);
 	};
 
-	self.initJsTree = function () {
-		$('div#browser-tree').jstree({
+	self.reload = function (data) {
+		self.initJsTree(data);
+		self.setTreeVisibility(self.treeVisible);
+	};
+
+	self.initJsTree = function (data) {
+		
+		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
+		var root = $.extend({ "icon": "jstree-root-folder" }, data);
+
+		$(self.domSelectorSettings.browserTreeSelector).jstree({
 			'core': {
-				'data': [{
-					"text": "localhost",
-					"id": "localhost",
-					"children": [{
-						"text": "Shared",
-						"id": "localhost\\Shared"
-					}, {
-						"text": "Temp",
-						"id": "localhost\\Temp"
-					}]
-				}]
+				'data': root
 			}
 		});
 
-		$('div#browser-tree').on('select_node.jstree', function (evt, data) {
-
+		$(self.domSelectorSettings.browserTreeSelector).on('select_node.jstree', function (evt, data) {
 			self.setSelection(data.node.id);
-			self.setterCallback(data.node.id);
-			self.SelectedFolderPath = data.node.text;
+			self.SelectedNode = data.node.text;
+			self.domSelectorSettings.onNodeSelectedEventHandler(data.node);
 			self.setTreeVisibility(false);
-		}
-	  );
+		});
 	};
-	self.treeVisible = false;
-	self.SelectedFolderPath = '';
 
 	self.setTreeVisibility = function (visible) {
 		if (visible) {
-			$('#jstree-holder-div').width($('select#location-select').outerWidth());
-			$('#jstree-holder-div').show();
+			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).outerWidth());
+			$(self.domSelectorSettings.jstreeHolderDivSelector).show();
 			self.treeVisible = true;
 		} else {
-			$('#jstree-holder-div').width($('select#location-select').outerWidth());
-			$('#jstree-holder-div').hide();
+			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).outerWidth());
+			$(self.domSelectorSettings.jstreeHolderDivSelector).hide();
 			self.treeVisible = false;
 		}
 	};
 
 	self.clearSelection = function () {
-		$('select#location-select').empty();
-		$('select#location-select').prop('selectedIndex', 0);
-		$('select#location-select option:selected').hide();
+		$(self.domSelectorSettings.dropdownSelector).empty();
+		$(self.domSelectorSettings.dropdownSelector).prop('selectedIndex', 0);
+		$(self.domSelectorSettings.dropdownOptionSelectedSelector).hide();
 	};
 
 	self.setSelection = function (newValue) {
-		$('select#location-select').empty();
-		$('select#location-select').append('<option>' + newValue + '</option>');
-		$('select#location-select').prop('selectedIndex', 0);
-		$('select#location-select option:selected').hide();
+		$(self.domSelectorSettings.dropdownSelector).empty();
+		$(self.domSelectorSettings.dropdownSelector).append('<option>' + newValue + '</option>');
+		$(self.domSelectorSettings.dropdownSelector).prop('selectedIndex', 0);
+		$(self.domSelectorSettings.dropdownOptionSelectedSelector).hide();
 	};
+
+	return {
+		init: self.init,
+		reload: self.reload,
+		SelectedNode: self.SelectedNode
+	}
 
 }
