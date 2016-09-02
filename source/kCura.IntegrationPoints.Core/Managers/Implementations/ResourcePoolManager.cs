@@ -1,22 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
+
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class ResourcePoolManager : IResourcePoolManager
 	{
+		#region Fields
+
+		private readonly IResourcePoolRepository _resourcePoolRepository;
+		private readonly IRSAPIClient _rsapiClient;
+
+		#endregion //Fields
+
+		#region Constructors
+
+		public ResourcePoolManager(IRepositoryFactory repositoryFactory, IRSAPIClient rsapiClient)
+		{
+			_rsapiClient = rsapiClient;
+			_resourcePoolRepository = repositoryFactory.GetResourcePoolRepository();
+		}
+
+		#endregion //Constructors
+
+		#region Methods
+
 		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocation(int workspaceId)
 		{
-			// Just a temoral solution (mock) to not block UI work
-			List<ProcessingSourceLocationDTO> processingSourceLocations = new List<ProcessingSourceLocationDTO>
+			Workspace wksp = _rsapiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
+
+			if (wksp == null)
 			{
-				new ProcessingSourceLocationDTO
-				{
-					ArtifactId = 1,
-					Location = @"\\localhost\Export"
-				}
-			};
+				throw new ArgumentException($"Cannot find workspace with artifact id: {workspaceId}");
+			}
+
+			List<ProcessingSourceLocationDTO> processingSourceLocations =
+				_resourcePoolRepository.GetProcessingSourceLocationsBy(wksp.ResourcePoolID.Value);
 			return processingSourceLocations;
 		}
+
+		#endregion //Methods
 	}
 }

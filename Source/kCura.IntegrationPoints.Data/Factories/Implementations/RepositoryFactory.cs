@@ -207,6 +207,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new RelativityAuditRepository(baseServiceContext);
 		}
 
+		public IResourcePoolRepository GetResourcePoolRepository()
+		{
+			return new ResourcePoolRepository(_helper);
+		}
+
 		#region Helper Methods
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
