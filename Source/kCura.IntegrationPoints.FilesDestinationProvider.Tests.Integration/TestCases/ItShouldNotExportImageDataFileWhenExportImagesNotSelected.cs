@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = false;
-			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.Opticon;
+			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.None;
 
 			return base.Prepare(settings);
 		}

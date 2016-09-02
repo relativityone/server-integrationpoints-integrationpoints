@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 
 		public EventHandlerTest() : base("Eventhandler Tests", null)
 		{
+			CreateAgent = false;
 		}
 
 		public override void SuiteSetup()

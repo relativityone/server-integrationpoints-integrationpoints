@@ -23,8 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			_jobHistoryErrorService.ClearReceivedCalls();
 
 			settings.VolumeStartNumber = -1;
-			settings.CopyFileFromRepository = true;
-			settings.IncludeNativeFilesPath = true;
+			settings.ExportNatives = true;
 
 			return base.Prepare(settings);
 		}

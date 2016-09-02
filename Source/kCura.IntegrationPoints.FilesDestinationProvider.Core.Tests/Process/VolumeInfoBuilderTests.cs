@@ -65,13 +65,25 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		[TestCase(true)]
 		[TestCase(false)]
-		public void ItShouldRewriteCopyFilesFromRepository(bool copyFilesFromRepository)
+		public void ItShouldRewriteCopyNativeFilesFromRepository(bool copyNativeFilesFromRepository)
 		{
-			_exportSettings.CopyFileFromRepository = copyFilesFromRepository;
+			_exportSettings.ExportNatives = copyNativeFilesFromRepository;
 
 			_volumeInfoBuilder.SetVolumeInfo(_exportSettings, _exportFile);
 
-			Assert.AreEqual(copyFilesFromRepository, _exportFile.VolumeInfo.CopyFilesFromRepository);
+			Assert.AreEqual(copyNativeFilesFromRepository, _exportFile.VolumeInfo.CopyNativeFilesFromRepository);
+		}
+
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldRewriteCopyImageFilesFromRepository(bool copyImageFilesFromRepository)
+		{
+			_exportSettings.ExportImages = copyImageFilesFromRepository;
+
+			_volumeInfoBuilder.SetVolumeInfo(_exportSettings, _exportFile);
+
+			Assert.AreEqual(copyImageFilesFromRepository, _exportFile.VolumeInfo.CopyImageFilesFromRepository);
 		}
 	}
 }

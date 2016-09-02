@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 {
+	[TestFixture]
 	public class IntegrationPointMassCopyTests
 	{
 		private IntegrationPointMassCopy _massCopy;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 		[Test]
 		public void ItShouldSetArtifactIdTo0()
 		{
-			var ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
+			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
 
 			_service.IntegrationPointLibrary.Read(Arg.Any<IEnumerable<int>>()).Returns(new List<Data.IntegrationPoint> {ip});
 
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 		[Test]
 		public void ItShouldDisableScheduler()
 		{
-			var ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
+			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
 
 			_service.IntegrationPointLibrary.Read(Arg.Any<IEnumerable<int>>()).Returns(new List<Data.IntegrationPoint> {ip});
 
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 		[Test]
 		public void ItShouldClearErrors()
 		{
-			var ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
+			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
 
 			_service.IntegrationPointLibrary.Read(Arg.Any<IEnumerable<int>>()).Returns(new List<Data.IntegrationPoint> {ip});
 
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 			const string ipName = "Custom IP Name";
 			var expectedName = ipName + "_copy";
 
-			var ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
+			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
 			MassCopyIntegrationPointHelper.MockIntegrationPointName(ip, ipName);
 
 			_service.IntegrationPointLibrary.Read(Arg.Any<IEnumerable<int>>()).Returns(new List<Data.IntegrationPoint> {ip});
@@ -86,7 +87,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 			const string emailNotificationRecipients = "expected_email_notification";
 			var overwriteFields = new Choice(Guid.Empty, "Append/Overwrite");
 
-			var ip = MassCopyIntegrationPointHelper.CreateIntegrationPoint(logErrors, "name", destinationProvider, destinationConfiguration, sourceConfiguration, fieldMappings,
+			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateIntegrationPoint(logErrors, "name", destinationProvider, destinationConfiguration, sourceConfiguration, fieldMappings,
 				emailNotificationRecipients, sourceProvider, overwriteFields);
 
 			_service.IntegrationPointLibrary.Read(Arg.Any<IEnumerable<int>>()).Returns(new List<Data.IntegrationPoint> {ip});

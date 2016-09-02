@@ -91,31 +91,31 @@
 
 # --------------------------------------------------------------------------------------------------------
 
-#| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
-#| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point	| ${IntegrationName}
-#
-#| | @{Step1Fields}=	| Create List	| 
-#| | ... | ${IntegrationName}
-#| | ... | FTP (CSV File)
-#| | ... | Custodian
-#| | ... | No
-#
-#| | @{Step2Fields}=	| Create List	| 
-#| | ... | filetransfer.kcura.com
-#| | ... | FTP
-#| | ... | 21
-#| | ... | admin
-#| | ... | C@m3l!ts
-#| | ... | /Custom Development/ftp/LegalHold/AppendOverlayFTP.csv
-#
-#| | @{Step3Mapping}=	| Create List	|
-#| | ... | Department	| Department
-#| | ... | Email			| Email
-#| | ... | First Name	| FirstName
-#| | ... | Last Name		| LastName
-#| | ... | UniqueID		| unique_id
-#
-#| | Create FTP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Append/Overlay	| Email
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point	| ${IntegrationName}
+
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | FTP (CSV File)
+| | ... | Custodian
+| | ... | No
+
+| | @{Step2Fields}=	| Create List	| 
+| | ... | files.kcura.com
+| | ... | FTP
+| | ... | 21
+| | ... | rip
+| | ... | GameOfHolds
+| | ... | /ftp/LegalHold/AppendOverlayFTP.csv
+
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Department	| Department
+| | ... | Email			| Email
+| | ... | First Name	| FirstName
+| | ... | Last Name		| LastName
+| | ... | UniqueID		| unique_id
+
+| | Create FTP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Append/Overlay	| Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Run Keywords	| Drop connection to the relativity services api	| Capture Page Screenshot

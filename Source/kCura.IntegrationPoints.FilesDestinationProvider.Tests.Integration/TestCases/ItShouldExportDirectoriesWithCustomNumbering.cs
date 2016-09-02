@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
@@ -11,9 +12,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 	{
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.CopyFileFromRepository = true;
+			settings.ExportNatives = true;
 			settings.ExportImages = true;
-			settings.IncludeNativeFilesPath = true;
+			settings.ExportFullTextAsFile = true;
+
+			settings.ImageType = ExportSettings.ImageFileType.SinglePage;
+			settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Concordance;
+			settings.DataFileEncoding = Encoding.UTF8;
+			settings.TextFileEncodingType = Encoding.UTF8;
 
 			settings.SubdirectoryMaxFiles = 1;
 			settings.SubdirectoryStartNumber = 3;
@@ -27,8 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			var fileCount = documents.Rows.Count;
 			ValidateDirectoriesExistence("NATIVES", directory, fileCount);
 			ValidateDirectoriesExistence("IMAGES", directory, fileCount);
-			//TODO this can be done after export extracted text is completed
-			//ValidateDirectoriesExistence("TEXT", directory, images);
+			ValidateDirectoriesExistence("TEXT", directory, fileCount);
 		}
 
 		private void ValidateDirectoriesExistence(string rootDirectoryName, DirectoryInfo directory, int fileCount)

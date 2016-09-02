@@ -31,17 +31,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	[TestFixture]
 	public class SourceProviderTemplate : IntegrationTestBase
 	{
+		protected bool CreateAgent { get; set; } = true;
+
 		private readonly string _workspaceName;
 		private readonly string _workspaceTemplate;
 		protected int WorkspaceArtifactId { get; private set; }
-		public int AgentArtifactId { get; set; }
+		protected int AgentArtifactId { get; private set; }
 		private bool _deleteAgentInTeardown = true;
 		protected DestinationProvider DestinationProvider;
 		protected IEnumerable<SourceProvider> SourceProviders;
 
 		protected ICaseServiceContext CaseContext;
 
-		protected SourceProviderTemplate(string workspaceName, string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+		protected SourceProviderTemplate(string workspaceName,
+			string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
 		{
 			_workspaceName = workspaceName;
 			_workspaceTemplate = workspaceTemplate;
@@ -291,9 +294,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			await Task.Run(() => RelativityApplication.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId, 
 				new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), ClaimsPrincipal.Current));
-			Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());
-			AgentArtifactId = agentCreatedResult.ArtifactID;
-			_deleteAgentInTeardown = agentCreatedResult.Success;
+			if (CreateAgent)
+			{
+				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());
+				AgentArtifactId = agentCreatedResult.ArtifactID;
+				_deleteAgentInTeardown = agentCreatedResult.Success;
+			}
 		} 
 
 		#endregion Helper methods

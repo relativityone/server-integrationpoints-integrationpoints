@@ -16,6 +16,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		[NonSerialized()]
 		private static ISerializer _serializer;
+
 		[XmlIgnore]
 		public static ISerializer Serializer
 		{
@@ -31,21 +32,17 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		[NonSerialized()]
 		private ITimeService _timeService = null;
+
 		[XmlIgnore]
 		public ITimeService TimeService
 		{
 			set { _timeService = value; }
-			get
-			{
-				if (_timeService == null)
-					_timeService = new DefaultTimeService();
-
-				return _timeService;
-			}
+			get { return _timeService ?? (_timeService = new DefaultTimeService()); }
 		}
 
 		[NonSerialized()]
 		private static Dictionary<DaysOfWeek, DayOfWeek> _daysOfWeekMap = null;
+
 		[XmlIgnore]
 		public static Dictionary<DaysOfWeek, DayOfWeek> DaysOfWeekMap
 		{
@@ -69,8 +66,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			}
 		}
 
-		public abstract DateTime? GetNextUTCRunDateTime(DateTime? LastRunTime = null, TaskStatusEnum? lastTaskStatus = null);
+		public abstract DateTime? GetNextUTCRunDateTime(DateTime? lastRunTime = null, TaskStatusEnum? lastTaskStatus = null);
+
 		public abstract string Description { get; }
+
 		public string ToSerializedString()
 		{
 			return Serializer.Serialize(this);
@@ -84,54 +83,69 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		///<summary>
 		///Date/Time is returned in UTC
 		///</summary>
-		public DateTime? GetNextRunTimeByInterval(ScheduleInterval Interval, DateTime StartDate, long localTimeOfDayTicks, DaysOfWeek? DaysToRun, int? DayOfMonth, bool? SetLastDayOfMonth, DateTime? EndDate, int? reoccur, OccuranceInMonth? occuranceInMonth)
+		protected DateTime? GetNextRunTimeByInterval(ScheduleInterval interval, IEndDateComparer comparer, DateTime startDate, long localTimeOfDayTicks, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDayOfMonth, DateTime? endDate, int? reoccur, OccuranceInMonth? occuranceInMonth)
 		{
 			//* Due to Daylight Saving Time (DST) all calculations are done with local date/time to insure final time corresponds to Scheduled time
 			//* However, returning value in UTC, since Method Agent framework operates in UTC.
 
 			DateTime localNow = TimeService.UtcNow.ToLocalTime();
-			DateTime nextRunTimeDate = StartDate.Date > localNow.Date ? StartDate.Date : localNow.Date;
+			DateTime nextRunTimeDate = startDate.Date > localNow.Date ? startDate.Date : localNow.Date;
 			nextRunTimeDate = nextRunTimeDate.AddTicks(localTimeOfDayTicks);
-			switch (Interval)
+			endDate = endDate?.AddTicks(localTimeOfDayTicks);
+			switch (interval)
 			{
 				case ScheduleInterval.Immediate:
 					if (nextRunTimeDate < localNow)
-					{ nextRunTimeDate = localNow; }
+					{
+						nextRunTimeDate = localNow;
+					}
 					nextRunTimeDate = nextRunTimeDate.AddMinutes(3);
 					break;
+
 				case ScheduleInterval.Hourly:
 					if (nextRunTimeDate < localNow)
 					{
 						nextRunTimeDate = new DateTime(localNow.Year, localNow.Month, localNow.Day, localNow.Hour, nextRunTimeDate.Minute, nextRunTimeDate.Second);
-						if (nextRunTimeDate < localNow) nextRunTimeDate = nextRunTimeDate.AddHours(1);
+						if (nextRunTimeDate < localNow)
+						{
+							nextRunTimeDate = nextRunTimeDate.AddHours(1);
+						}
 					}
 					break;
+
 				case ScheduleInterval.Daily:
 					if (nextRunTimeDate < localNow)
-					{ nextRunTimeDate = nextRunTimeDate.AddDays(1); }
+					{
+						nextRunTimeDate = nextRunTimeDate.AddDays(1);
+					}
 					break;
+
 				case ScheduleInterval.Weekly:
 					if (nextRunTimeDate < localNow)
-					{ nextRunTimeDate = nextRunTimeDate.AddDays(1); }
-					nextRunTimeDate = GetNextScheduledWeekDay(DaysToRun.Value, nextRunTimeDate, localNow, reoccur);
-					break;
-				case ScheduleInterval.Monthly:
-					CheckForOverride(ref SetLastDayOfMonth, ref DayOfMonth, DaysToRun, occuranceInMonth);
-
-					if ((SetLastDayOfMonth.HasValue && SetLastDayOfMonth.Value) || DayOfMonth.HasValue)
 					{
-						nextRunTimeDate = GetNextScheduledMonthDayByDay(nextRunTimeDate, StartDate, localTimeOfDayTicks, SetLastDayOfMonth, DayOfMonth, localNow, reoccur);
+						nextRunTimeDate = nextRunTimeDate.AddDays(1);
+					}
+					nextRunTimeDate = GetNextScheduledWeekDay(daysToRun.Value, nextRunTimeDate, localNow, reoccur);
+					break;
+
+				case ScheduleInterval.Monthly:
+					CheckForOverride(ref setLastDayOfMonth, ref dayOfMonth, daysToRun, occuranceInMonth);
+					if ((setLastDayOfMonth.HasValue && setLastDayOfMonth.Value) || dayOfMonth.HasValue)
+					{
+						nextRunTimeDate = GetNextScheduledMonthDayByDay(nextRunTimeDate, startDate, localTimeOfDayTicks, setLastDayOfMonth, dayOfMonth, localNow, reoccur);
 					}
 					else
 					{
-						nextRunTimeDate = GetNextScheduledMonthDayByWeek(nextRunTimeDate, StartDate, localTimeOfDayTicks, localNow, DaysToRun, reoccur, occuranceInMonth);
+						nextRunTimeDate = GetNextScheduledMonthDayByWeek(nextRunTimeDate, startDate, localTimeOfDayTicks, localNow, daysToRun, reoccur, occuranceInMonth);
 					}
 					break;
 			}
-			if (EndDate.HasValue && EndDate.Value.AddDays(1).Date <= nextRunTimeDate.Date)
+
+			if (comparer.Compare(endDate, nextRunTimeDate))
+			{
 				return null;
-			else
-				return nextRunTimeDate.ToUniversalTime();
+			}
+			return nextRunTimeDate.ToUniversalTime();
 		}
 
 		public DateTime GetNextScheduledWeekDay(DaysOfWeek scheduleDayOfWeek, DateTime nextRunTimeDate, DateTime localNow, int? reoccur)
@@ -158,14 +172,14 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			return nextRunTimeDate.AddDays(i);
 		}
 
-		public DateTime GetNextScheduledMonthDayByDay(DateTime nextRunTimeDate, DateTime StartDate, long localTimeOfDayTicks, bool? SetLastDayOfMonth, int? DayOfMonth, DateTime localNow, int? reoccur)
+		public DateTime GetNextScheduledMonthDayByDay(DateTime nextRunTimeDate, DateTime startDate, long localTimeOfDayTicks, bool? setLastDayOfMonth, int? DayOfMonth, DateTime localNow, int? reoccur)
 		{
 			int year = nextRunTimeDate.Year;
 			int month = nextRunTimeDate.Month;
 			int numberOfDaysInTheMonth = DateTime.DaysInMonth(year, month);
 			int dayOfMonth = localNow.Day;
 
-			if (SetLastDayOfMonth.HasValue && SetLastDayOfMonth.Value)
+			if (setLastDayOfMonth.HasValue && setLastDayOfMonth.Value)
 			{
 				dayOfMonth = numberOfDaysInTheMonth;
 			}
@@ -174,7 +188,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 				dayOfMonth = numberOfDaysInTheMonth < DayOfMonth.Value ? numberOfDaysInTheMonth : DayOfMonth.Value;
 			}
 			nextRunTimeDate = new DateTime(year, month, dayOfMonth, nextRunTimeDate.Hour, nextRunTimeDate.Minute, nextRunTimeDate.Second);
-			if (nextRunTimeDate < localNow || nextRunTimeDate < StartDate.AddTicks(localTimeOfDayTicks))
+			if (nextRunTimeDate < localNow || nextRunTimeDate < startDate.AddTicks(localTimeOfDayTicks))
 			{
 				int monthReoccurance = 1;
 				if (reoccur.HasValue) monthReoccurance = reoccur.Value;
@@ -182,7 +196,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 				year = nextRunTimeDate.Year;
 				month = nextRunTimeDate.Month;
 				numberOfDaysInTheMonth = DateTime.DaysInMonth(year, month);
-				if (SetLastDayOfMonth.HasValue && SetLastDayOfMonth.Value)
+				if (setLastDayOfMonth.HasValue && setLastDayOfMonth.Value)
 				{ dayOfMonth = numberOfDaysInTheMonth; }
 				else
 				{ dayOfMonth = numberOfDaysInTheMonth < DayOfMonth.Value ? numberOfDaysInTheMonth : DayOfMonth.Value; }
@@ -247,37 +261,41 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			return dt;
 		}
 
-		private void CheckForOverride(ref bool? SetLastDayOfMonth, ref int? DayOfMonth, DaysOfWeek? DaysToRun, OccuranceInMonth? occuranceInMonth)
+		private void CheckForOverride(ref bool? setLastDayOfMonth, ref int? dayOfMonth, DaysOfWeek? daysToRun, OccuranceInMonth? occuranceInMonth)
 		{
-			if (DaysToRun.HasValue && ((DaysToRun & DaysOfWeek.Day) == DaysOfWeek.Day) && occuranceInMonth.HasValue)
+			if (daysToRun.HasValue && ((daysToRun & DaysOfWeek.Day) == DaysOfWeek.Day) && occuranceInMonth.HasValue)
 			{
 				switch (occuranceInMonth.Value)
 				{
 					case OccuranceInMonth.First:
-						DayOfMonth = 1;
+						dayOfMonth = 1;
 						break;
+
 					case OccuranceInMonth.Second:
-						DayOfMonth = 2;
+						dayOfMonth = 2;
 						break;
+
 					case OccuranceInMonth.Third:
-						DayOfMonth = 3;
+						dayOfMonth = 3;
 						break;
+
 					case OccuranceInMonth.Fourth:
-						DayOfMonth = 4;
+						dayOfMonth = 4;
 						break;
+
 					case OccuranceInMonth.Last:
-						SetLastDayOfMonth = true;
+						setLastDayOfMonth = true;
 						break;
 				}
 			}
 		}
 
-		public DateTime GetNextScheduledMonthDayByWeek(DateTime nextRunTimeDate, DateTime StartDate, long localTimeOfDayTicks, DateTime localNow, DaysOfWeek? DaysToRun, int? reoccur, OccuranceInMonth? occuranceInMonth)
+		public DateTime GetNextScheduledMonthDayByWeek(DateTime nextRunTimeDate, DateTime startDate, long localTimeOfDayTicks, DateTime localNow, DaysOfWeek? daysToRun, int? reoccur, OccuranceInMonth? occuranceInMonth)
 		{
 			int reoccurance = 1;
 			if (reoccur.HasValue && reoccur.Value > 1) reoccurance = reoccur.Value;
 			bool continueSearch = false;
-			DayOfWeek dayOfWeekToRun = DaysOfWeekMap[DaysToRun.Value];
+			DayOfWeek dayOfWeekToRun = DaysOfWeekMap[daysToRun.Value];
 
 			do
 			{
@@ -292,7 +310,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					DateTime dt = SearchMonthForForwardOccuranceOfDay(nextRunTimeDate.Year, nextRunTimeDate.Month, (ForwardValidOccurance)(int)occuranceInMonth, dayOfWeekToRun);
 					nextRunTimeDate = new DateTime(dt.Year, dt.Month, dt.Day, nextRunTimeDate.Hour, nextRunTimeDate.Minute, nextRunTimeDate.Second);
 				}
-				if (nextRunTimeDate < localNow || nextRunTimeDate.Date < StartDate.Date)
+				if (nextRunTimeDate < localNow || nextRunTimeDate.Date < startDate.Date)
 				{
 					//need to move to future month
 					nextRunTimeDate = nextRunTimeDate.AddMonths(reoccurance);
@@ -316,5 +334,58 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			if (!string.IsNullOrEmpty(weekDays)) weekDays = weekDays.Substring(0, weekDays.Length - 2);
 			return weekDays;
 		}
+
+		#region Comparer
+
+		/// <summary>
+		/// An interface represent the a comparer of scheduler's end date and its next runtime
+		/// </summary>
+		protected interface IEndDateComparer
+		{
+			/// <summary>
+			/// Determine whether the end date has passed
+			/// </summary>
+			/// <param name="endDate">The end date of the scheduler.</param>
+			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
+			/// <returns></returns>
+			bool Compare(DateTime? endDate, DateTime nextRunTime);
+		}
+
+		/// <summary>
+		/// Only use to handle the v1 logic of the scheduler where it uses the client's local time to calculate the next runtime.
+		/// DO NOT USE THIS.
+		/// </summary>
+		protected class LocalEndDateComparer : IEndDateComparer
+		{
+			/// <summary>
+			/// Determine whether the end date has passed
+			/// </summary>
+			/// <param name="endDate">The unknown timezone end date of the scheduler.</param>
+			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
+			/// <returns></returns>
+			public bool Compare(DateTime? endDate, DateTime nextRunTime)
+			{
+				return endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTime.Date;
+			}
+		}
+
+		/// <summary>
+		/// Uses this interface to compare utc end date and the next runtime.
+		/// </summary>
+		protected class UtcEndDateComparer : IEndDateComparer
+		{
+			/// <summary>
+			/// Determine whether the end date has passed
+			/// </summary>
+			/// <param name="endDate">The utc end date of the scheduler.</param>
+			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
+			/// <returns></returns>
+			public bool Compare(DateTime? endDate, DateTime nextRunTime)
+			{
+				DateTime nextRunTimeInUtc = nextRunTime.ToUniversalTime();
+				return endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTimeInUtc.Date;
+			}
+		}
+		#endregion
 	}
 }

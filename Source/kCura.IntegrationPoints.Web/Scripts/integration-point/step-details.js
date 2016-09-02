@@ -219,7 +219,6 @@ var IP = IP || {};
 				return new Choice(entry.name, entry.value);
 			});
 			self.allRdoTypes(types);
-			self.UpdateSelectedItem();
 		}, function () {
 
 		});
@@ -519,6 +518,11 @@ var IP = IP || {};
 				}
 			}
 		});
+
+		this.timeZoneOffset = ko.computed(function () {
+			var date = new Date();
+			return date.getTimezoneOffset() / 60;
+		}, this);
 
 		this.endDate = ko.observable(options.endDate).extend({
 			date: {

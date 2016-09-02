@@ -17,12 +17,11 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public string SavedSearch { set; get; }
 		public int StartExportAtRecord { get; set; }
 		public string Fileshare { get; set; }
-		public bool CopyFileFromRepository { get; set; }
+		public bool ExportNatives { get; set; }
 		public bool OverwriteFiles { get; set; }
-		public bool ExportImagesChecked { get; set; }
+		public bool ExportImages { get; set; }
 		public string SelectedImageFileType { get; set; }
 		public string SelectedDataFileFormat { get; set; }
-		public bool IncludeNativeFilesPath { get; set; }
 		public string DataFileEncodingType { get; set; }
 		public string SelectedImageDataFileFormat { get; set; }
         public char ColumnSeparator { get; set; }

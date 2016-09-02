@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[TestCase(null, null)]
 		public void ItShouldSetCorrectImageTypeWhenCopyingFilesFromRepository(ExportSettings.ImageFileType givenSetting, ExportFile.ImageType expectedSetting)
 		{
-			_exportSettings.CopyFileFromRepository = true;
+			_exportSettings.ExportNatives = true;
 			_exportSettings.ImageType = givenSetting;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldSetImageTypeToSinglePageWhenNotCopyingFilesFromRepository()
 		{
-			_exportSettings.CopyFileFromRepository = false;
+			_exportSettings.ExportNatives = false;
 			_exportSettings.ImageType = ExportSettings.ImageFileType.MultiPage;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldThrowExceptionForUnknownImageFileTypeWhenCopyingFromRepository()
 		{
-			_exportSettings.CopyFileFromRepository = true;
+			_exportSettings.ExportNatives = true;
 
 			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.ImageFileType)).Cast<ExportSettings.ImageFileType>().Max() + 1;
 			_exportSettings.ImageType = incorrectEnumValue;
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldNotThrowExceptionForImageFileBeingNullWhenCopyingFromRepository()
 		{
-			_exportSettings.CopyFileFromRepository = true;
+			_exportSettings.ExportNatives = true;
 
 			_exportSettings.ImageType = null;
 
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[TestCase(null, null)]
 		public void ItShouldSetCorrectImageDataFileFormatWhenCopyingFilesFromRepository(ExportSettings.ImageDataFileFormat givenSetting, LoadFileType.FileFormat expectedSetting)
 		{
-			_exportSettings.CopyFileFromRepository = true;
+			_exportSettings.ExportNatives = true;
 			_exportSettings.SelectedImageDataFileFormat = givenSetting;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldThrowExceptionForUnknownImageDataFileFormatTypeWhenCopyingFromRepository()
 		{
-			_exportSettings.CopyFileFromRepository = true;
+			_exportSettings.ExportNatives = true;
 
 			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
 			_exportSettings.SelectedImageDataFileFormat = incorrectEnumValue;
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldThrowExceptionForImageDataFileFormatBeingNullWhenCopyingFromRepository()
 		{
-			_exportSettings.CopyFileFromRepository = true;
+			_exportSettings.ExportNatives = true;
 
 			_exportSettings.SelectedImageDataFileFormat = null;
 
@@ -288,7 +288,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			const int artifactTypeId = 10;
 			const int exportedObjArtifactId = 20;
-			const bool includeNativeFilesPath = true;
 			const string exportFilesLocation = "folder_path";
 			const bool overwriteFiles = true;
 			const int workspaceId = 30;
@@ -300,7 +299,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			_exportSettings.ArtifactTypeId = artifactTypeId;
 			_exportSettings.ExportedObjArtifactId = exportedObjArtifactId;
-			_exportSettings.IncludeNativeFilesPath = includeNativeFilesPath;
 			_exportSettings.ExportFilesLocation = exportFilesLocation;
 			_exportSettings.OverwriteFiles = overwriteFiles;
 			_exportSettings.WorkspaceId = workspaceId;
@@ -314,7 +312,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			Assert.AreEqual(exportFile.ArtifactTypeID, artifactTypeId);
 			Assert.AreEqual(exportFile.ArtifactID, exportedObjArtifactId);
-			Assert.AreEqual(exportFile.ExportNative, includeNativeFilesPath);
 			Assert.AreEqual(exportFile.FolderPath, exportFilesLocation);
 			Assert.AreEqual(exportFile.Overwrite, overwriteFiles);
 			Assert.AreEqual(exportFile.CaseInfo.ArtifactID, workspaceId);

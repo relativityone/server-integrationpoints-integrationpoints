@@ -1,15 +1,5 @@
 ﻿var IP = IP || {};
 
-ko.validation.rules.pattern.message = 'Invalid.';
-
-ko.validation.init({
-	registerExtenders: true,
-	messagesOnModified: true,
-	insertMessages: true,
-	parseInputAttributes: true,
-	messageTemplate: null
-}, true);
-
 (function (root, ko) {
 
 	var viewModel = function (state) {
@@ -21,41 +11,89 @@ ko.validation.init({
 			required: true
 		});
 
-		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
+		this.ProcessingSourceLocation = ko.observable(state.ProcessingSourceLocation).extend({
+			required: true
+		});
+
+		this.ProcessingSourceLocation.subscribe(function(value) {
+			self.getDirectories(value);
+		});
+
+		this.ProcessingSourceLocationList = ko.observableArray([]);
+
+		this.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.init(self.Fileshare(), [], {
+				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+			});
+			self.getProcessingSources();
+		};
+
+		this.getProcessingSources = function () {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.ProcessingSourceLocationList(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
+
+		this.getDirectories = function (artifacId) {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			})
+					.then(function (result) {
+						self.locationSelector.reload(result);
+					})
+					.fail(function (error) {
+						root.message.error.raise("No attributes were returned from the source provider.");
+					});
+		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
 		});
 
-		this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
+		this.ColumnSeparator = ko.observable(state.ColumnSeparator || 20).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
+		this.QuoteSeparator = ko.observable(state.QuoteSeparator || 254).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
+		this.NewlineSeparator = ko.observable(state.NewlineSeparator || 174).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
+		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator || 59).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
+		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator || 92).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
@@ -104,25 +142,25 @@ ko.validation.init({
 
 		this.SelectedDataFileFormat.subscribe(self.UpdateIsCustomDataFileFormatChanged);
 
-		this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || false);
-		this.CopyFileFromRepository.subscribe(function (value) {
+		this.ExportNatives = ko.observable(state.ExportNatives || false);
+		this.ExportNatives.subscribe(function (value) {
 			if (!value) {
 				self.SelectedImageFileType(0);
 			}
 		});
 
-		this.ExportTextFieldsAsFilesChecked = ko.observable(state.ExportFullTextAsFile || false);
+		this.ExportTextFieldsAsFiles = ko.observable(state.ExportFullTextAsFile || false);
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
-		this.DataFileEncodingType = ko.observable().extend({
+		this.DataFileEncodingType = ko.observable("").extend({
 			required: true
 		});
 
-		this.TextFileEncodingType = ko.observable().extend({
+		this.TextFileEncodingType = ko.observable("").extend({
 			required: {
 				onlyIf: function () {
-					return self.ExportTextFieldsAsFilesChecked();
+					return self.ExportTextFieldsAsFiles();
 				}
 			}
 		});
@@ -170,14 +208,14 @@ ko.validation.init({
 			self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType));
 		}
 
-		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || false).extend({
+		this.ExportImages = ko.observable(state.ExportImages || false).extend({
 			required: true
 		});
 
 		this.ProductionPrecedence = ko.observable(state.ProductionPrecedence).extend({
 			required: {
 				onlyIf: function () {
-					return self.ExportImagesChecked();
+					return self.ExportImages();
 				}
 			}
 		});
@@ -189,50 +227,73 @@ ko.validation.init({
 		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
 			required: {
 				onlyIf: function () {
-					return self.ExportImagesChecked();
+					return self.ExportImages();
 				}
 			}
 		});
 
 		this.IncludeOriginalImages = ko.observable(state.IncludeOriginalImages || false);
 
-		this.SelectedImageFileType = ko.observable(!self.CopyFileFromRepository() ? 0 : state.SelectedImageFileType).extend({
+		this.SelectedImageFileType = ko.observable(!self.ExportNatives() ? 0 : state.SelectedImageFileType).extend({
 			required: {
 				onlyIf: function () {
-					return self.ExportImagesChecked();
+					return self.ExportImages();
 				}
 			}
 		});
 
 		this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 		this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
-			required: true
+			required: true,
+			min: 1,			
+			nonNegativeNaturalNumber: {}	
 		});
 		this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 256,
+			nonNegativeNaturalNumber: {}
 		});
 		this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 2000000,
+			nonNegativeNaturalNumber: {}
 		});
 		this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
-			required: true
+			required: true,
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}	
 		});
 		this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
-			required: true
+			required: true,
+			min: 1,
+			nonNegativeNaturalNumber: {}			
 		});
 		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
-			required: true
+			required: true,
+			min: 1,
+			max: 256,
+			nonNegativeNaturalNumber: {}
 		});
 		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 4400).extend({
-			required: true
+			required: true,
+			min: 1,
+			nonNegativeNaturalNumber: {}
 		});
 
 		function pad(str, max) {
@@ -252,7 +313,9 @@ ko.validation.init({
 				onlyIf: function () {
 					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
 				}
-			}
+			},
+			maxLength: 256,
+			textFieldWithoutSpecialCharacters: {}
 		});
 
 		this.isUserPrefix = ko.observable(false);
@@ -276,7 +339,7 @@ ko.validation.init({
 			.extend({
 				required: {
 					onlyIf: function () {
-						return self.ExportTextFieldsAsFilesChecked();
+						return self.ExportTextFieldsAsFiles();
 					}
 				}
 			});
@@ -289,7 +352,7 @@ ko.validation.init({
 			self.TextPrecedenceFields(fields);
 		});
 
-		Picker.create("ListPicker", textPrecedencePickerViewModel);
+		Picker.create("textPrecedencePicker", "ListPicker", textPrecedencePickerViewModel);
 
 		this.openTextPrecedencePicker = function () {
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
@@ -299,7 +362,7 @@ ko.validation.init({
 			.extend({
 				required: {
 					onlyIf: function () {
-						return self.ExportImagesChecked() && self.IsProductionPrecedenceSelected();
+						return self.ExportImages() && self.IsProductionPrecedenceSelected();
 					}
 				}
 			});
@@ -312,7 +375,7 @@ ko.validation.init({
 			self.ImagePrecedence(productions);
 		});
 
-		Picker.create("ListPicker", imageProductionPickerViewModel);
+		Picker.create("imageProductionPicker", "ListPicker", imageProductionPickerViewModel);
 
 		this.openImageProductionPicker = function () {
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
@@ -323,15 +386,14 @@ ko.validation.init({
 		this.getSelectedOption = function () {
 			return {
 				"ColumnSeparator": self.ColumnSeparator(),
-				"CopyFileFromRepository": self.CopyFileFromRepository(),
+				"ExportNatives": self.ExportNatives(),
 				"DataFileEncodingType": self.DataFileEncodingType(),
-				"ExportFullTextAsFile": self.ExportTextFieldsAsFilesChecked(),
-				"ExportImagesChecked": self.ExportImagesChecked(),
+				"ExportFullTextAsFile": self.ExportTextFieldsAsFiles(),
+				"ExportImages": self.ExportImages(),
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"FilePath": self.FilePath(),
 				"Fileshare": self.Fileshare(),
 				"ImagePrecedence": self.ImagePrecedence(),
-				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
 				"IncludeOriginalImages": self.IncludeOriginalImages(),
 				"MultiValueSeparator": self.MultiValueSeparator(),
 				"NestedValueSeparator": self.NestedValueSeparator(),
@@ -375,18 +437,14 @@ ko.validation.init({
 				$('body').append(result);
 				self.hasTemplate = true;
 				self.template(self.settings.templateID);
-				self.onDOMLoaded();
-				root.messaging.publish('details-loaded');
+				self.model.onDOMLoaded();
+				var detailsLoaded = 'details-loaded';
+				root.messaging.publish(detailsLoaded);
 			});
 		}
 
 		self.ipModel = {};
 		self.model = {};
-
-		self.onDOMLoaded = function () {
-			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.create(self.model.Fileshare);
-		};
 
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
@@ -412,6 +470,9 @@ ko.validation.init({
 
 				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
 
+				Picker.closeDialog("textPrecedencePicker");
+				Picker.closeDialog("imageProductionPicker");
+
 				d.resolve(self.ipModel);
 			} else {
 				self.model.errors.showAllMessages();
@@ -424,7 +485,12 @@ ko.validation.init({
 		self.back = function () {
 			var d = root.data.deferred().defer();
 
-			d.resolve();
+			$.extend(self.ipModel.sourceConfiguration, self.model.getSelectedOption());
+
+			Picker.closeDialog("textPrecedencePicker");
+			Picker.closeDialog("imageProductionPicker");
+
+			d.resolve(self.ipModel);
 
 			return d.promise;
 		}

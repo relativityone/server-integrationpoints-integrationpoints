@@ -4,7 +4,6 @@
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Suite Setup Keyword
-#| Test Setup		| NONE | # All cases have Test Setups 
 | Test Teardown 	| Capture Screenshot if Test Fails
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
@@ -241,9 +240,9 @@
 | | ... | filetransfer.kcura.com
 | | ... | FTP
 | | ... | 21
-| | ... | admin
-| | ... | C@m3l!ts
-| | ... | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | ... | rip
+| | ... | GameOfHolds
+| | ... | /ftp/LegalHold/AppendFTP.csv
 
 | | @{Step3Mapping}=	| Create List	| 
 | | ... | UniqueID		| unique_id
@@ -327,12 +326,12 @@
 | | ... | No
 
 | | @{Step2Fields}=	| Create List	| 
-| | ... | filetransfer.kcura.com
+| | ... | files.kcura.com
 | | ... | FTP
 | | ... | 21
-| | ... | admin
-| | ... | C@m3l!ts
-| | ... | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | ... | rip
+| | ... | GameOfHolds
+| | ... | /ftp/LegalHold/AppendFTP.csv
 
 | | @{Step3Mapping}=	| Create List	| 
 | | ... | UniqueID		| unique_id

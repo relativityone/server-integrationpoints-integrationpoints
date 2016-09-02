@@ -21,6 +21,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		/// <summary>
 		/// Child subfolders
 		/// </summary>
-		public List<DirectoryTreeItem> Children { get; set; }
+		public List<DirectoryTreeItem> Children { get; }
 	}
 }

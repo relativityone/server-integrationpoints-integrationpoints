@@ -8,11 +8,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	internal class ExportFileBuilder : IExportFileBuilder
 	{
-		private readonly IDelimitersBuilder _delimitersBuilder;
-		private readonly IVolumeInfoBuilder _volumeInfoBuilder;
-
 		public const string _ORIGINAL_PRODUCTION_PRECEDENCE_TEXT = "Original";
 		public const string _ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT = "-1";
+		private readonly IDelimitersBuilder _delimitersBuilder;
+		private readonly IVolumeInfoBuilder _volumeInfoBuilder;
 
 		public ExportFileBuilder(IDelimitersBuilder delimitersBuilder, IVolumeInfoBuilder volumeInfoBuilder)
 		{
@@ -30,7 +29,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			SetStartDocumentNumber(exportSettings, exportFile);
 
-			exportFile.ExportNative = exportSettings.IncludeNativeFilesPath;
 			exportFile.FolderPath = exportSettings.ExportFilesLocation;
 			exportFile.Overwrite = exportSettings.OverwriteFiles;
 
@@ -44,6 +42,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.TypeOfExportedFilePath = ParseFilePath(exportSettings.FilePath);
 			exportFile.FilePrefix = exportSettings.UserPrefix;
 
+			exportFile.ExportNative = exportSettings.ExportNatives;
 			exportFile.MulticodesAsNested = exportSettings.ExportMultipleChoiceFieldsAsNested;
 			exportFile.ExportFullTextAsFile = exportSettings.ExportFullTextAsFile;
 			exportFile.TextFileEncoding = exportSettings.TextFileEncodingType;
@@ -65,7 +64,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					imagePrecs.Add(new Pair(productionPrecedence.ArtifactID, productionPrecedence.DisplayName));
 				}
 			}
-			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Original || exportSettings.IncludeOriginalImages)
+			if ((exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Original) || exportSettings.IncludeOriginalImages)
 			{
 				imagePrecs.Add(new Pair(_ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT, _ORIGINAL_PRODUCTION_PRECEDENCE_TEXT));
 			}
@@ -107,14 +106,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private static void SetImagesSettings(ExportSettings exportSettings, ExportFile exportFile)
 		{
-			exportFile.ExportImages = exportSettings.ExportImages;
+			if (exportSettings.ExportImages || (exportSettings.SelectedImageDataFileFormat != ExportSettings.ImageDataFileFormat.None))
+			{
+				exportFile.ExportImages = true;
+			}
 			exportFile.LogFileFormat = ParseImageImageDataFileFormat(exportSettings.SelectedImageDataFileFormat);
 			SetTypeOfImage(exportSettings, exportFile);
 		}
 
 		private static void SetTypeOfImage(ExportSettings exportSettings, ExportFile exportFile)
 		{
-			if (exportSettings.CopyFileFromRepository)
+			if (exportSettings.ExportNatives)
 			{
 				exportFile.TypeOfImage = ParseImageFileType(exportSettings.ImageType);
 			}
@@ -127,7 +129,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private static ExportFile.ImageType? ParseImageFileType(ExportSettings.ImageFileType? fileType)
 		{
 			if (!fileType.HasValue)
+			{
 				return null;
+			}
 
 			switch (fileType)
 			{
@@ -167,10 +171,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private static LoadFileType.FileFormat? ParseImageImageDataFileFormat(ExportSettings.ImageDataFileFormat? imageDataFileFormat)
 		{
 			if (!imageDataFileFormat.HasValue)
+			{
 				return null;
+			}
 
 			switch (imageDataFileFormat)
 			{
+				case ExportSettings.ImageDataFileFormat.None:
 				case ExportSettings.ImageDataFileFormat.Opticon:
 					return LoadFileType.FileFormat.Opticon;
 				case ExportSettings.ImageDataFileFormat.IPRO:

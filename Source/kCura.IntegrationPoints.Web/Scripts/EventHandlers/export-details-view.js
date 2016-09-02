@@ -47,16 +47,16 @@ var Model = function (dataContainer) {
 
 	this.subdirectoryInfo = function () {
 
-		return (self.settings.ExportImagesChecked ? self.settings.SubdirectoryImagePrefix + "; " : "")
-			+ (self.settings.CopyFileFromRepository ? self.settings.SubdirectoryNativePrefix + "; " : "")
+		return (self.settings.ExportImages ? self.settings.SubdirectoryImagePrefix + "; " : "")
+			+ (self.settings.ExportNatives ? self.settings.SubdirectoryNativePrefix + "; " : "")
 			+ (self.settings.ExportFullTextAsFile ? self.settings.SubdirectoryTextPrefix + "; " : "")
 			+ self.settings.SubdirectoryStartNumber + "; " + self.settings.SubdirectoryDigitPadding + "; " + self.settings.SubdirectoryMaxFiles;
 	};
 
 	this.exportType = function () {
 		return "Load file"
-		+ (self.settings.ExportImagesChecked ? "; Images" : "")
-		+ (self.settings.CopyFileFromRepository ? "; Natives" : "")
+		+ (self.settings.ExportImages ? "; Images" : "")
+		+ (self.settings.ExportNatives ? "; Natives" : "")
 		+ (self.settings.ExportFullTextAsFile ? "; Text As Files" : "");
 	};
 
@@ -98,7 +98,7 @@ var Model = function (dataContainer) {
 	this.setLoadFileFormat();
 
 	this.imageFileType = function () {
-		if (self.settings.ExportImagesChecked) {
+		if (self.settings.ExportImages) {
 			for (var i = 0; i < ExportEnums.ImageFileTypes.length; i++) {
 				if (ExportEnums.ImageFileTypes[i].value == self.settings.SelectedImageFileType) {
 					return ExportEnums.ImageFileTypes[i].key;
@@ -109,7 +109,7 @@ var Model = function (dataContainer) {
 	};
 
 	this.imageDataFileFormat = function () {
-		if (self.settings.ExportImagesChecked) {
+		if (self.settings.ExportImages) {
 			for (var i = 0; i < ExportEnums.ImageDataFileFormats.length; i++) {
 				if (ExportEnums.ImageDataFileFormats[i].value == self.settings.SelectedImageDataFileFormat) {
 					return ExportEnums.ImageDataFileFormats[i].key;
@@ -121,7 +121,7 @@ var Model = function (dataContainer) {
 
 	this.imagePrecedenceList = function () {
 		var text = "";
-		if (self.settings.ExportImagesChecked) {
+		if (self.settings.ExportImages) {
 			if (self.settings.ProductionPrecedence === ExportEnums.ProductionPrecedenceTypeEnum.Original) {
 				text = "Original";
 			}

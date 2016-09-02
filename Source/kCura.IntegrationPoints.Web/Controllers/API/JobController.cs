@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
@@ -26,19 +25,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
 
 		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
 		private readonly ICPHelper _helper;
 
 		public JobController(IIntegrationPointService integrationPointService,
-			IRepositoryFactory repositoryFactory,
 			ICPHelper helper, 
 			IContextContainerFactory contextContainerFactory,
 			IManagerFactory managerFactory)
 		{
 			_integrationPointService = integrationPointService;
-			_repositoryFactory = repositoryFactory;
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
 			_helper = helper;
@@ -127,9 +123,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private void AuditAction(Payload payload, string auditMessage)
 		{
-			IRelativityAuditRepository auditRepository = _repositoryFactory.GetRelativityAuditRepository(payload.AppId);
+			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+			IAuditManager auditManager = _managerFactory.CreateAuditManager(contextContainer, payload.AppId);
 			AuditElement audit = new AuditElement {AuditMessage = auditMessage};
-			auditRepository.CreateAuditRecord(payload.ArtifactId, audit);
+			auditManager.RelativityAuditRepository.CreateAuditRecord(payload.ArtifactId, audit);
 		}
 
 		private int GetUserIdIfExists()
