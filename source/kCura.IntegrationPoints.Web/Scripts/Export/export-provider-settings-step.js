@@ -352,7 +352,7 @@
 			self.TextPrecedenceFields(fields);
 		});
 
-		Picker.create("ListPicker", textPrecedencePickerViewModel);
+		Picker.create("textPrecedencePicker", "ListPicker", textPrecedencePickerViewModel);
 
 		this.openTextPrecedencePicker = function () {
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
@@ -375,7 +375,7 @@
 			self.ImagePrecedence(productions);
 		});
 
-		Picker.create("ListPicker", imageProductionPickerViewModel);
+		Picker.create("imageProductionPicker", "ListPicker", imageProductionPickerViewModel);
 
 		this.openImageProductionPicker = function () {
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
@@ -470,6 +470,9 @@
 
 				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
 
+				Picker.closeDialog("textPrecedencePicker");
+				Picker.closeDialog("imageProductionPicker");
+
 				d.resolve(self.ipModel);
 			} else {
 				self.model.errors.showAllMessages();
@@ -483,6 +486,9 @@
 			var d = root.data.deferred().defer();
 
 			$.extend(self.ipModel.sourceConfiguration, self.model.getSelectedOption());
+
+			Picker.closeDialog("textPrecedencePicker");
+			Picker.closeDialog("imageProductionPicker");
 
 			d.resolve(self.ipModel);
 
