@@ -200,7 +200,7 @@
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
-	<Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -235,6 +235,7 @@
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Integration\ScheduledJobStopStateTests.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTestsForOtherProviders.cs" />
+    <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="UI\ConsoleButtons.cs" />
     <Compile Include="UI\ConsoleButtonTestsForOtherProviders.cs" />
     <Compile Include="UI\PermissionErrorMessageTest.cs" />

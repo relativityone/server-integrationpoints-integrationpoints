@@ -6,13 +6,12 @@ namespace kCura.IntegrationPoints.Injection
 {
 	public class InjectionManager
 	{
-		private static readonly Lazy<InjectionManager> _instance 
-			= new Lazy<InjectionManager>(() => new InjectionManager());
+		private static readonly Lazy<InjectionManager> _instance = new Lazy<InjectionManager>(() => new InjectionManager());
 		private readonly Manager _manager;
 
 		public static InjectionManager Instance => _instance.Value;
 
-		protected InjectionManager()
+		protected internal InjectionManager()
 		{
 			_manager = new Manager();
 			SetController(new InjectionController());
