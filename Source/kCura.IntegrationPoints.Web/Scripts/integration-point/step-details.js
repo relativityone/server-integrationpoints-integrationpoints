@@ -219,7 +219,6 @@ var IP = IP || {};
 				return new Choice(entry.name, entry.value);
 			});
 			self.allRdoTypes(types);
-			self.UpdateSelectedItem();
 		}, function () {
 
 		});
