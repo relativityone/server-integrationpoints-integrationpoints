@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -8,7 +9,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 {
     internal class ItShouldExportSavedSearchMetadataOnly : MetadataExportTestCaseBase
     {
-        public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+	    public override ExportSettings Prepare(ExportSettings settings)
+	    {
+			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.None;
+
+		    return base.Prepare(settings);
+	    }
+
+	    public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
         {
             // verify that metadata file was created
             var actual = GetFileInfo(directory);
