@@ -91,5 +91,15 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="isStoppableJob">A boolean flag to indicate whether the job stop manager is on an unstoppable job.</param>
 		/// <returns></returns>
 		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob);
+
+
+		/// <summary>
+		/// Creates an audit manager.
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <param name="workspaceArtifactId">Artifact id of a workspace</param>
+		/// <returns>Audit Manager</returns>
+		IAuditManager CreateAuditManager(IContextContainer contextContainer, int workspaceArtifactId);
+
 	}
 }

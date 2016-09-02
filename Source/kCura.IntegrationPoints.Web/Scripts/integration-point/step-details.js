@@ -520,6 +520,11 @@ var IP = IP || {};
 			}
 		});
 
+		this.timeZoneOffset = ko.computed(function () {
+			var date = new Date();
+			return date.getTimezoneOffset() / 60;
+		}, this);
+
 		this.endDate = ko.observable(options.endDate).extend({
 			date: {
 				message: 'The field End Date must be a date.'

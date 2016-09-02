@@ -20,7 +20,7 @@
 | | [Documentation]	| Verify that when the Host field is blank the correct warning message is shown when clicking Next.
 | | ...				| [id] 047cb540-2f36-11e6-8ebb-989096e24b46
 | | [Tags]			| automated	| required
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | ${EMPTY} | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | ${EMPTY} | FTP | 21 | rip | GameOfHolds | /ftp/LegalHold/AppendFTP.csv
 | | Click | Next
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| 
 | | ... | Verify that a Page Error with the following Text is present on the Wizard	| Please enter a valid host name. e.g. 172.31.24.97
@@ -31,7 +31,7 @@
 | | ...				| [id] 06807480-2f36-11e6-a127-989096e24b46
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| A Blank Host field shows an error message after clicking Next
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | filetransfer.kcura.com
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | files.kcura.com
 | | Click | Next
 | | Wait Until Keyword Succeeds	| 30s | 2s | Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
@@ -40,7 +40,7 @@
 | | [Documentation]	| Verify that when the Host field is invalid the correct warning message is shown when clicking Next.
 | | ...				| [id] 26f882f0-2f3d-11e6-8498-989096e24b46
 | | [Tags]			| automated	| required
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | Cats | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | Cats | FTP | 21 | rip | GameOfHolds | /ftp/LegalHold/AppendFTP.csv
 | | Click | Next
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| 
 | | ... | Verify that a Page Error with the following Text is present on the Wizard	| The remote name could not be resolved: 'cats'
@@ -51,7 +51,7 @@
 | | ...				| [id] 06807480-2f36-11e6-a127-989096e24b46
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| An invalid Host shows an error message after clicking Next
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | filetransfer.kcura.com
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | files.kcura.com
 | | Click | Next
 | | Wait Until Keyword Succeeds	| 30s | 2s | Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
@@ -60,7 +60,7 @@
 | | [Documentation]	| Verify that when the CSV Filepath field is invalid the correct warning message is shown when clicking Next.
 | | ...				| [id] 1f8438f0-2f35-11e6-80cc-989096e24b46
 | | [Tags]			| automated	| required
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/JUNK.csv
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | files.kcura.com | FTP | 21 | rip | GameOfHolds | /ftp/LegalHold/JUNK.csv
 | | Click | Next
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| 
 | | ... | Verify that a Page Error with the following Text is present on the Wizard | File not found.
@@ -71,7 +71,7 @@
 | | ...				| [id] 0d1aabcf-2f36-11e6-954a-989096e24b46
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| An invalid CSV Filepath shows a message after clicking Next
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | files.kcura.com | FTP | 21 | rip | GameOfHolds | /ftp/LegalHold/AppendFTP.csv
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 30s | 2s | Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
@@ -80,7 +80,7 @@
 | | [Documentation]	| Verify that the "Unable to connect to source using the specified settings" warning message is displayed after clicking Next while the connection details are invalid
 | | ...				| [id] 4260a38f-2f44-11e6-9f17-989096e24b46
 | | [Tags]			| automated	| required
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | filetransfer.kcura.com | FTP | 212 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | files.kcura.com | FTP | 212 | rip | GameOfHolds | /ftp/LegalHold/AppendFTP.csv
 | | Click | Next
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| 
 | | ... | Verify that a Page Error with the following Text is present on the Wizard | Unable to connect to the remote server 
@@ -91,7 +91,7 @@
 | | ...				| [id] 46280bcf-2f44-11e6-9436-989096e24b46
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Unable to connect to the remote server message is displayed when unable to connect using the given values
-| | Fill out the Following Fields of the FTP Integration Point Step 2 form | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | files.kcura.com | FTP | 21 | rip | GameOfHolds | /ftp/LegalHold/AppendFTP.csv
 | | Click | Next
 | | Wait Until Keyword Succeeds	| 30s | 2s | Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 

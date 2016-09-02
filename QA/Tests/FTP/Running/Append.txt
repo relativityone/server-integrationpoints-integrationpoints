@@ -172,12 +172,12 @@
 | | ... | No
 
 | | @{Step2Fields}=	| Create List	| 
-| | ... | filetransfer.kcura.com
+| | ... | files.kcura.com
 | | ... | FTP
 | | ... | 21
-| | ... | admin
-| | ... | C@m3l!ts
-| | ... | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | ... | rip
+| | ... | GameOfHolds
+| | ... | /ftp/LegalHold/AppendFTP.csv
 
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department
