@@ -267,6 +267,7 @@
     <Compile Include="Unit\Managers\NullableStopJobManagerTests.cs" />
     <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
+    <Compile Include="Unit\Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Unit\Managers\SourceJobManagerTests.cs" />
     <Compile Include="Unit\Managers\SourceWorkspaceManagerTests.cs" />
     <Compile Include="Unit\Managers\StateManagerTests.cs" />

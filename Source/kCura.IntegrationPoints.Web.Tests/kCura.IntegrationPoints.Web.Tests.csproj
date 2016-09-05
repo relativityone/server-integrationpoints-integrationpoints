@@ -222,6 +222,7 @@
     <Compile Include="Unit\Controllers\BaseControllerTests.cs" />
     <Compile Include="Unit\Controllers\LdapControllerTests.cs" />
     <Compile Include="Unit\Controllers\RelativityControllerTests.cs" />
+    <Compile Include="Unit\Controllers\API\ResourcePoolControllerTests.cs" />
     <Compile Include="Unit\Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\JobControllerTests.cs" />

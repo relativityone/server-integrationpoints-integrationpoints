@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Extensions;
-using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -21,7 +20,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IDirectoryTreeCreator _directoryTreeCreator;
-		private readonly IRSAPIClient _context;
 		private readonly IErrorRepository _errorRepository;
 
 		#endregion //Fields
@@ -29,11 +27,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		#region Constructors
 
 		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IDirectoryTreeCreator directoryTreeCreator,
-			IRSAPIClient context, IRepositoryFactory repositoryFactory)
+			IRepositoryFactory repositoryFactory)
 		{
 			_resourcePoolManager = resourcePoolManager;
 			_directoryTreeCreator = directoryTreeCreator;
-			_context = context;
 			_errorRepository = repositoryFactory.GetErrorRepository();
 		}
 
@@ -51,7 +48,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				this.HandleError(_context, _errorRepository, ex,
+				this.HandleError(workspaceId, _errorRepository, ex,
 					$"Unable to retrieve processing source location for {workspaceId} workspace. Please contact the system administrator.");
 				return Request.CreateResponse(HttpStatusCode.InternalServerError);
 			}
@@ -77,7 +74,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				this.HandleError(_context, _errorRepository, ex,
+				this.HandleError(workspaceId, _errorRepository, ex,
 					$"Unable to retrieve folder structure for processing source location {artifactId}. Please contact the system administrator.");
 				return Request.CreateResponse(HttpStatusCode.InternalServerError);
 			}

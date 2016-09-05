@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.Choice;
 using Relativity.Services.ResourcePool;
@@ -33,11 +32,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IResourcePoolManagerSvc resourcePoolManagerSvcProxy =
 					_helper.GetServicesManager().CreateProxy<IResourcePoolManagerSvc>(ExecutionIdentity.CurrentUser))
 			{
-
-				List<ChoiceRef> choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(new ResourcePoolRef
-				{
-					ArtifactID = resourcePoolId
-				}).Result;
+				List<ChoiceRef> choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(
+					new ResourcePoolRef(resourcePoolId)).Result;
 
 				choiceRefs.ForEach(choiceRef => processingSourceLocations.Add(
 					new ProcessingSourceLocationDTO

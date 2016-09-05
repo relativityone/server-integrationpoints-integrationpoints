@@ -33,26 +33,24 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocation(int workspaceId)
 		{
-			var wkspId = _rsapiClient.APIOptions.WorkspaceID;
-			try
+			Workspace wksp = GetWorkspace(workspaceId);
+			if (wksp == null)
 			{
-				_rsapiClient.APIOptions.WorkspaceID = -1;
-
-				Workspace wksp = _rsapiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
-
-				if (wksp == null)
-				{
-					throw new ArgumentException($"Cannot find workspace with artifact id: {workspaceId}");
-				}
-
-				List<ProcessingSourceLocationDTO> processingSourceLocations =
-					_resourcePoolRepository.GetProcessingSourceLocationsBy(wksp.ResourcePoolID.Value);
-				return processingSourceLocations;
+				throw new ArgumentException($"Cannot find workspace with artifact id: {workspaceId}");
 			}
-			finally
-			{
-				_rsapiClient.APIOptions.WorkspaceID = wkspId;
-			}
+
+			List<ProcessingSourceLocationDTO> processingSourceLocations =
+				_resourcePoolRepository.GetProcessingSourceLocationsBy(wksp.ResourcePoolID.Value);
+			return processingSourceLocations;
+		}
+
+		/// <summary>
+		/// This method is extracted to remove rsapi unit testing limitatiations
+		/// </summary>
+		protected virtual Workspace GetWorkspace(int workspaceId)
+		{
+			_rsapiClient.APIOptions.WorkspaceID = -1;
+			return _rsapiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
 		}
 
 		#endregion //Methods
