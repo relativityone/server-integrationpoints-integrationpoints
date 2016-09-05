@@ -25,18 +25,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 						}}
 					}}";
 
-			//var json =
-			//	$@"
-			//		{{
-			//		  ""workspaceArtifactID"": {workspaceId},
-			//		  ""placeholder"":
-			//			{{
-			//				""PlaceholderType"": ""Custom"",
-			//				""CustomText"": ""<div style=\""text-align:center;\""><span style=\""font-weight:bold;font-size:24px;font-family:Arial;\"">No image available for this record.</span></div>"",
-			//				""Name"": ""CustomPlaceholder""
-			//			}}
-			//		}}";
-
 			string output = Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, false, json);
 			return int.Parse(output);
 		}
