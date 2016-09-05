@@ -570,7 +570,7 @@ var IP = IP || {};
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
 
-		this.isExportType = ko.observable(settings.isExportType || "true").extend({ required: true });
+		this.isExportType = ko.observable(settings.isExportType).extend({ required: true });
 
 		this.isExportType.subscribe(function (value) {
 			self.setExportTypeVisibility(value);
@@ -616,20 +616,29 @@ var IP = IP || {};
 
 		self.setExportTypeVisibility = function (isExportType) {
 			if (self.hasBeenRun()) {
+				if (isExportType === undefined) {
+					self.isExportType(self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2' ? 'true' : 'false');
+				}
 				self.source.isSourceProviderDisabled(true);
 				self.destination.isDestinationProviderDisabled(true);
 			} else {
-				if (isExportType === "true") {
+				if (isExportType === undefined && self.destinationProvider != null){
+					if(self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
+						self.isExportType('true');
+					} else {
+						self.isExportType('false');
+					}
+				} else if (isExportType === "false") {
+					self.source.displayRelativityInSourceTypes(false);
+					self.source.isSourceProviderDisabled(false);
+					self.destination.setRelativityAsDestinationProvider();
+					self.destination.isDestinationProviderDisabled(true);
+				} else {
 					self.source.displayRelativityInSourceTypes(true);
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
 					self.source.isSourceProviderDisabled(true);
 					self.destination.isDestinationProviderDisabled(false);
-				} else {
-					self.source.displayRelativityInSourceTypes(false);
-					self.source.isSourceProviderDisabled(false);
-					self.destination.setRelativityAsDestinationProvider();
-					self.destination.isDestinationProviderDisabled(true);
 				}
 			}
 		};

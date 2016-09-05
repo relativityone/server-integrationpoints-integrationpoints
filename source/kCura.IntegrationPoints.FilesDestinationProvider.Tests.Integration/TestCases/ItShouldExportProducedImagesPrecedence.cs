@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	[Ignore("Ignored till problems with ProductionsAPI will be resolved")]
 	public class ItShouldExportProducedImagesPrecedence : ExportTestCaseBase
 	{
 		private readonly string _defaultPlaceholderPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
@@ -19,7 +18,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			settings.ExportNatives = true;
 			settings.ExportImages = true;
 			settings.ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced;
-
 
 			return base.Prepare(settings);
 		}
