@@ -70,10 +70,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_workspaceService.ImportData(_configSettings.WorkspaceId, _documents, _images);
 
-			//Ignored till problems with ProductionsAPI will be resolved
-			//_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId,
-				//_configSettings.ExportedObjArtifactId);
-
+			_configSettings.ProductionArtifactId = CreateProduction();
+			
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
@@ -273,6 +271,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
 			_windsorContainer.Register(Component.For<IConfig>().Instance(configMock).LifestyleSingleton());
+		}
+
+		private int CreateProduction()
+		{
+			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory,
+				@"TestData\DefaultPlaceholder.tif");
+
+			var placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
+
+			var productionId =  _workspaceService.CreateProduction(_configSettings.WorkspaceId,
+				_configSettings.ExportedObjArtifactId, placeHolderFileData);
+
+			return productionId;
 		}
 
 		#endregion Methods

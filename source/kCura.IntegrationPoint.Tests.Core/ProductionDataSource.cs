@@ -8,7 +8,7 @@
 		private const string _CREATE_SINGLE_SERVICE =
 			_PRODUCTION_DATA_SOURCE_SERVICE_BASE + "CreateSingleAsync";
 
-		public static int Create(int workspaceId, int productionId, int savedSearchId, string useImagePlaceholder)
+		public static int CreateDataSourceWithPlaceholder(int workspaceId, int productionId, int savedSearchId, string useImagePlaceholder, int placeholderId)
 		{
 			var json =
 				$@"
@@ -22,8 +22,8 @@
 						}},
 						""UseImagePlaceholder"": ""{useImagePlaceholder}"",
 						""Placeholder"": {{
-							""ArtifactID"": 1039165,
-							""Name"": ""Default""
+							""ArtifactID"": {placeholderId},
+							""Name"": ""CustomPlaceholder""
 						  }},
 						""MarkupSet"": {{
 						  ""ArtifactID"": 1034197

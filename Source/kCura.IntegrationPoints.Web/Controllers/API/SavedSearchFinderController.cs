@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception exception)
 			{
-				this.HandleError(_context, _errorRepository, exception, "Unable to retrieve the saved searches. Please contact the system administrator.");
+				this.HandleError(_context.APIOptions.WorkspaceID, _errorRepository, exception, "Unable to retrieve the saved searches. Please contact the system administrator.");
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, new List<SavedSearchModel>());
 			}
 		}

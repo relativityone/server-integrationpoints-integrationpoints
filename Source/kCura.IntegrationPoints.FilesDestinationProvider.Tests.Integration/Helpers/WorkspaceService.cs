@@ -86,11 +86,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				_CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 		}
 
-		internal int CreateProduction(int workspaceArtifactId, int savedSearchId)
+		internal int CreateProduction(int workspaceArtifactId, int savedSearchId, string placeHolderFileData)
 		{
 			var productionId = Production.Create(workspaceArtifactId);
-			var productionDataSourceId = ProductionDataSource.Create(workspaceArtifactId, productionId, savedSearchId,
-				"WhenNoImageExists");
+
+			var placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileData);
+			var productionDataSourceId = ProductionDataSource.CreateDataSourceWithPlaceholder(workspaceArtifactId, productionId,
+				savedSearchId,
+				"WhenNoImageExists", placeholderId);
 
 			Production.StageAndWaitForCompletion(workspaceArtifactId, productionId);
 			Production.RunAndWaitForCompletion(workspaceArtifactId, productionId);
