@@ -33,16 +33,26 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocation(int workspaceId)
 		{
-			Workspace wksp = _rsapiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
-
-			if (wksp == null)
+			var wkspId = _rsapiClient.APIOptions.WorkspaceID;
+			try
 			{
-				throw new ArgumentException($"Cannot find workspace with artifact id: {workspaceId}");
-			}
+				_rsapiClient.APIOptions.WorkspaceID = -1;
 
-			List<ProcessingSourceLocationDTO> processingSourceLocations =
-				_resourcePoolRepository.GetProcessingSourceLocationsBy(wksp.ResourcePoolID.Value);
-			return processingSourceLocations;
+				Workspace wksp = _rsapiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
+
+				if (wksp == null)
+				{
+					throw new ArgumentException($"Cannot find workspace with artifact id: {workspaceId}");
+				}
+
+				List<ProcessingSourceLocationDTO> processingSourceLocations =
+					_resourcePoolRepository.GetProcessingSourceLocationsBy(wksp.ResourcePoolID.Value);
+				return processingSourceLocations;
+			}
+			finally
+			{
+				_rsapiClient.APIOptions.WorkspaceID = wkspId;
+			}
 		}
 
 		#endregion //Methods
