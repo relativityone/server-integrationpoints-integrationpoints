@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.CopyFileFromRepository = true;
+			settings.ExportNatives = true;
 			settings.ExportImages = true;
 			settings.SubdirectoryImagePrefix = _PREFIX;
 

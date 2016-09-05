@@ -20,19 +20,19 @@
 							</li>
 							<li>
 								<div class="field-value">
-									<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImagesChecked"/>
+									<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages"/>
 									<label>Images</label>
 								</div>
 							</li>
 							<li>
 								<div class="field-value">
-									<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: CopyFileFromRepository"/>
+									<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives"/>
 									<label>Natives</label>
 								</div>
 							</li>
 							<li>
 								<div class="field-value">
-									<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFilesChecked"/>
+									<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles"/>
 									<label>Text Fields As Files</label>
 								</div>
 							</li>
@@ -89,7 +89,7 @@
 
 			</div>
 
-			<div class="card" data-bind="visible: CopyFileFromRepository() || ExportImagesChecked() || ExportTextFieldsAsFilesChecked()">
+			<div class="card" data-bind="visible: ExportNatives() || ExportImages() || ExportTextFieldsAsFiles()">
 				<div id="subdirectory_accordion" style="cursor: pointer;">
 					<span class="label" style="display: inline-block;">Volume & Subdirectory Detail</span>
 					<img class="collapsed_arrow" src="/Relativity/images/arrow_collapsed.png" alt="" style="display: none; vertical-align: text-bottom;" />
@@ -266,7 +266,7 @@
 							</div>
 						</td>
 						<td style="vertical-align: text-top;">
-							<div data-bind="visible: ExportImagesChecked">
+							<div data-bind="visible: ExportImages">
 								<div class="field-row">
 									<p>
 										<h3 style="margin-left: 30px">
@@ -287,7 +287,7 @@
 										File Type:
 									</div>
 									<div class="field-value">
-										<select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
+										<select id="imageFileTypesSelector" data-bind="enable: ExportNatives && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
 									</div>
 								</div>
 								<div class="field-row">
@@ -326,21 +326,13 @@
 									</div>
 								</div>
 							</div>
-							<div data-bind="visible: CopyFileFromRepository">
+							<div data-bind="visible: ExportNatives">
 								<div>
 									<p>
 										<h3 style="margin-left: 30px">
 											NATIVE
 										</h3>
 									</p>
-								</div>
-								<div class="field-row">
-									<div class="field-label">
-										Include Native Files Path:
-									</div>
-									<div class="field-value middle-vertical-align">
-										<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
-									</div>
 								</div>
 								<div class="field-row">
 									<div class="field-label required">
@@ -352,7 +344,7 @@
 									</div>
 								</div>
 							</div>
-							<div data-bind="visible: ExportTextFieldsAsFilesChecked">
+							<div data-bind="visible: ExportTextFieldsAsFiles">
 								<div>
 									<p>
 										<h3 style="margin-left: 30px">

@@ -12,8 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Concordance;
-			settings.IncludeNativeFilesPath = true;
-			settings.CopyFileFromRepository = true;
+			settings.ExportNatives = true;
 			settings.FilePath = ExportSettings.FilePathType.Relative;
 
 			return base.Prepare(settings);

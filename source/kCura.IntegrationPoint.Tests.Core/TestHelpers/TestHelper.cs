@@ -5,6 +5,7 @@ using NSubstitute;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Permission;
+using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
@@ -28,6 +29,8 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(new ExtendedIObjectQueryManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIObjectQueryManager(this, ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System).Returns(new ExtendedIKeywordSearchManager(this, ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIKeywordSearchManager(this, ExecutionIdentity.CurrentUser));
 		}
 
 		public T CreateUserProxy<T>() where T : IDisposable

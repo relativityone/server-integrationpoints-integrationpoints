@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.Method.Data.Utility
+namespace kCura.IntegrationPoints.Data
 {
 	public class RelativityVersion
 	{

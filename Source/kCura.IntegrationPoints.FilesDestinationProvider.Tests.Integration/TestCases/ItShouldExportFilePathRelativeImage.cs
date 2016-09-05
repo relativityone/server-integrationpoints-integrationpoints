@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;
-			settings.CopyFileFromRepository = true;
+			settings.ExportNatives = true;
 			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.Opticon;
 			settings.FilePath = ExportSettings.FilePathType.Relative;
 

@@ -78,8 +78,8 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.ImageValidator.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Injection, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Injection.dll</HintPath>
+    <Reference Include="kCura.Injection, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Dependencies\Injection\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Notification, Culture=neutral, processorArchitecture=MSIL">

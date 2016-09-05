@@ -17,7 +17,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		{
 			Opticon = 0,
 			IPRO = 1,
-			IPRO_FullText = 2
+			IPRO_FullText = 2,
+			//Mock until REL-102630 is done
+			None = 9
 		}
 
 		public enum DataFileFormat
@@ -49,11 +51,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public List<int> SelViewFieldIds { get; set; }
 		public int ArtifactTypeId { get; set; }
 		public bool OverwriteFiles { get; set; }
-		public bool CopyFileFromRepository { get; set; }
+		public bool ExportNatives { get; set; }
 		public bool ExportImages { get; set; }
 		public ImageFileType? ImageType { get; set; }
 		public DataFileFormat OutputDataFileFormat { get; set; }
-		public bool IncludeNativeFilesPath { get; set; }
 		public Encoding DataFileEncoding { get; set; }
 		public ImageDataFileFormat? SelectedImageDataFileFormat { get; set; }
         public char ColumnSeparator { get; set; }

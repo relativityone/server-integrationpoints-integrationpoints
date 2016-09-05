@@ -19,7 +19,7 @@
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
 	<property name="source.dependency.SystemWrapper.directory" value="${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45" />
 	<property name="source.dependency.SystemInterface.directory" value="${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45" />
-	<property name="relativityDependencyVersion" value="9.4.283.9" />
+	<property name="relativityDependencyVersion" value="9.4.290.3" />
 	
 	<!-- Log properties -->
 	<echo message="Root: ${root}" />
@@ -103,9 +103,7 @@
 			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
-			<arg line='"${source.dependency.Injection.directory}\kCura.Method.Injection.dll"' />
-			<arg line='"${source.dependency.Injection.directory}\kCura.Injection.dll"' />
-			
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Injection.dll"' />
 			
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />

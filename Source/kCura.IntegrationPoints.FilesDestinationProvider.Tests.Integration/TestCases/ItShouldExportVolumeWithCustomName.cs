@@ -11,9 +11,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 	{
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.CopyFileFromRepository = true;
+			settings.ExportNatives = true;
 			settings.ExportImages = true;
-			settings.IncludeNativeFilesPath = true;
 
 			settings.VolumePrefix = "test_volume_prefix";
 			settings.VolumeDigitPadding = 5;

@@ -12,7 +12,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			SetVolumeInfo(exportSettings, exportFile.VolumeInfo);
 			SetSubdirectoryInfo(exportSettings, exportFile.VolumeInfo);
 
-			exportFile.VolumeInfo.CopyFilesFromRepository = exportSettings.CopyFileFromRepository;
+			exportFile.VolumeInfo.CopyNativeFilesFromRepository = exportSettings.ExportNatives;
+			exportFile.VolumeInfo.CopyImageFilesFromRepository = exportSettings.ExportImages;
 		}
 
 		private static void SetVolumeInfo(ExportSettings exportSettings, VolumeInfo volumeInfo)

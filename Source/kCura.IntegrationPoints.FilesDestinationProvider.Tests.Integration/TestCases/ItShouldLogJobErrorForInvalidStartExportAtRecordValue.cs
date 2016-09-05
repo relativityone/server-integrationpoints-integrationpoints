@@ -21,8 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			_jobHistoryErrorService.ClearReceivedCalls();
 
-			settings.CopyFileFromRepository = true;
-			settings.IncludeNativeFilesPath = true;
+			settings.ExportNatives = true;
 
 			settings.StartExportAtRecord = int.MaxValue;
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Authentication;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
-using kCura.Method.Data.Utility;
 using kCura.Relativity.ImportAPI;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
