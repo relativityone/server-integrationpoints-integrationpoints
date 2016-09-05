@@ -179,6 +179,7 @@
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
     <Compile Include="Helpers\FileComparer.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
+    <Compile Include="Helpers\FileToBase64Converter.cs" />
     <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
     <Compile Include="Helpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="Helpers\WorkspaceService.cs" />
