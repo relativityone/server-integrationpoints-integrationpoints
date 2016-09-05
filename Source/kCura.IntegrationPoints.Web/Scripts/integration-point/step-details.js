@@ -616,6 +616,9 @@ var IP = IP || {};
 
 		self.setExportTypeVisibility = function (isExportType) {
 			if (self.hasBeenRun()) {
+				if (isExportType === undefined) {
+					self.isExportType(self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2' ? 'true' : 'false');
+				}
 				self.source.isSourceProviderDisabled(true);
 				self.destination.isDestinationProviderDisabled(true);
 			} else {
