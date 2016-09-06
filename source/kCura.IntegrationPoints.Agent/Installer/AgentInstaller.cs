@@ -178,6 +178,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<ExportSynchroznizer>().Named(typeof(ExportSynchroznizer).AssemblyQualifiedName).LifeStyle.Transient);
             container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
             container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
+			container.Register(Component.For<IInstanceSettingRepository>().ImplementedBy<InstanceSettingRepository>().LifestyleTransient());
 
 			#region Data
 
@@ -248,6 +249,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (ProductionPrecedenceService).Name,
 				typeof (CaseManagerFactory).Name,
 				typeof (StoppableExporterFactory).Name,
+				typeof (CoreExportManager).Name,
+				typeof (CoreServiceFactory).Name,
 				typeof(CompositeLoggingMediator).Name
 			});
 

@@ -84,6 +84,26 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Core, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core.Api, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core.Api.Contracts, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core.Api.QueryParser, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Data, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_Data)\lib\net45\Relativity.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
@@ -148,6 +168,8 @@
     <Compile Include="Logging\ExportUserNotification.cs" />
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
+    <Compile Include="SharedLibrary\CoreExportManager.cs" />
+    <Compile Include="SharedLibrary\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
