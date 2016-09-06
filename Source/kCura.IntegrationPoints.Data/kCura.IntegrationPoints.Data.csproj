@@ -200,6 +200,7 @@
     <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
     <Compile Include="Repositories\Implementations\ResourcePoolRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiRdoRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
@@ -227,6 +228,7 @@
     <Compile Include="Repositories\IRelativityAuditRepository.cs" />
     <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
     <Compile Include="Repositories\IResourcePoolRepository.cs" />
+    <Compile Include="Repositories\IRsapiClientRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
