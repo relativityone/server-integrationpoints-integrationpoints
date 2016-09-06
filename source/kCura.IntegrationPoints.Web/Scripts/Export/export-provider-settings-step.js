@@ -26,6 +26,7 @@
 			self.locationSelector.init(self.Fileshare(), [], {
 				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
 			});
+			self.ProcessingSourceLocation.isModified(false);
 			self.getProcessingSources();
 		};
 
@@ -39,6 +40,7 @@
 			})
 					.then(function (result) {
 						self.ProcessingSourceLocationList(result);
+						self.ProcessingSourceLocation(state.ProcessingSourceLocation);
 					})
 					.fail(function (error) {
 						root.message.error.raise("No attributes were returned from the source provider.");
@@ -208,9 +210,35 @@
 			self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType));
 		}
 
-		this.ExportImages = ko.observable(state.ExportImages || false).extend({
-			required: true
+		this.ExportImages = ko.observable(state.ExportImages || false);
+
+		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat || "").extend({
+			required: {
+				onlyIf: function () {
+					return self.ExportImages();
+				}
+			}
 		});
+		
+		this.ImageFileFormatList = ko.observableArray([]);
+
+		this._updateImageFileFormat = function(){
+			var formats = [ExportEnums.ImageDataFileFormats[0], ExportEnums.ImageDataFileFormats[1], ExportEnums.ImageDataFileFormats[2]];
+			if(self.ExportImages()){
+				var defaultOption = { key: "Select...", value: "" };
+				self.ImageFileFormatList([defaultOption].concat(formats));
+				self.SelectedImageDataFileFormat(state.SelectedImageDataFileFormat || self.ImageFileFormatList()[0]);
+				self.SelectedImageDataFileFormat.isModified(false);		
+			}
+			else{
+				self.ImageFileFormatList([ExportEnums.ImageDataFileFormats[3]].concat(formats));
+				self.SelectedImageDataFileFormat(state.SelectedImageDataFileFormat || self.ImageFileFormatList()[0]);
+			}
+		}
+		
+		this.ExportImages.subscribe(self._updateImageFileFormat);
+
+		self._updateImageFileFormat();
 
 		this.ProductionPrecedence = ko.observable(state.ProductionPrecedence).extend({
 			required: {
@@ -222,15 +250,7 @@
 
 		this.IsProductionPrecedenceSelected = function () {
 			return self.ProductionPrecedence() === ExportEnums.ProductionPrecedenceTypeEnum.Produced;
-		}
-
-		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
-			required: {
-				onlyIf: function () {
-					return self.ExportImages();
-				}
-			}
-		});
+		}		
 
 		this.IncludeOriginalImages = ko.observable(state.IncludeOriginalImages || false);
 
@@ -393,6 +413,7 @@
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"FilePath": self.FilePath(),
 				"Fileshare": self.Fileshare(),
+				"ProcessingSourceLocation": self.ProcessingSourceLocation(),
 				"ImagePrecedence": self.ImagePrecedence(),
 				"IncludeOriginalImages": self.IncludeOriginalImages(),
 				"MultiValueSeparator": self.MultiValueSeparator(),

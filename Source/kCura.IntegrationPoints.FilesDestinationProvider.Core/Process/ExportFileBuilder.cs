@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	internal class ExportFileBuilder : IExportFileBuilder
 	{
-		public const string _ORIGINAL_PRODUCTION_PRECEDENCE_TEXT = "Original";
-		public const string _ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT = "-1";
+		public const string ORIGINAL_PRODUCTION_PRECEDENCE_TEXT = "Original";
+		public const string ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT = "-1";
 		private readonly IDelimitersBuilder _delimitersBuilder;
 		private readonly IVolumeInfoBuilder _volumeInfoBuilder;
 
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			}
 			if ((exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Original) || exportSettings.IncludeOriginalImages)
 			{
-				imagePrecs.Add(new Pair(_ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT, _ORIGINAL_PRODUCTION_PRECEDENCE_TEXT));
+				imagePrecs.Add(new Pair(ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT, ORIGINAL_PRODUCTION_PRECEDENCE_TEXT));
 			}
 
 			exportFile.ImagePrecedence = imagePrecs.ToArray();

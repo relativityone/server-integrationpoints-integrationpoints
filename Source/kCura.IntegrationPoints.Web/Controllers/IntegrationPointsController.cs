@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Tabs;
@@ -35,13 +36,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? artifactId)
 		{
-			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(SessionService.WorkspaceID);
+			
 
 			var objectTypeId = _rdoQuery.GetObjectTypeID(Data.ObjectTypes.IntegrationPoint);
 			var tabID = _tabService.GetTabId(objectTypeId);
 			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
 			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
-			if (permissionRepository.UserCanImport())
+			if (HasPermissions(artifactId))
 			{
 				return View(new EditPoint
 				{
@@ -53,6 +54,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
 				});
 			}
 			return View("NotEnoughPermission", new EditPoint { URL = previousURL });
+		}
+
+		private bool HasPermissions(int? artifactId)
+		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(SessionService.WorkspaceID);
+			bool canImport = permissionRepository.UserCanImport();
+			bool canAddOrEdit = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), artifactId.HasValue ? ArtifactPermission.Edit : ArtifactPermission.Create);
+			bool canEditExistingIp = !artifactId.HasValue || permissionRepository.UserHasArtifactInstancePermission(new Guid(ObjectTypeGuids.IntegrationPoint), artifactId.Value, ArtifactPermission.Edit);
+			return canImport && canAddOrEdit && canEditExistingIp;
 		}
 
 		public ActionResult StepDetails()

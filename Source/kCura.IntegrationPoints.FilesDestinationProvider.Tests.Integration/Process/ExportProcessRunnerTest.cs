@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -81,6 +82,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
 
+			var instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
+			instanceSettingRepository.GetConfigurationValue(Arg.Any<string>(), Arg.Any<string>()).Returns("true");
+
 			var configFactoryMock = Substitute.For<IConfigFactory>();
 			configFactoryMock.Create().Returns(configMock);
 
@@ -94,7 +98,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerFactory(),
 				new SearchManagerFactory(),
-				new StoppableExporterFactory(jobHistoryErrorServiceProvider),
+				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder()),
 				jobStats
 			);

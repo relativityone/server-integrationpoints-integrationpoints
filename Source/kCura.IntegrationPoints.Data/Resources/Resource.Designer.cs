@@ -61,6 +61,16 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IF (NOT EXISTS(SELECT 1 FROM [EDDS].[eddsdbo].[InstanceSetting] WHERE [Section] = N&apos;kCura.IntegrationPoints&apos; AND [Name] = N&apos;ReplaceWebAPIWithExportCore&apos; AND [MachineName] = &apos;&apos;))
+        ///    EXEC [eddsdbo].CreateInstanceSetting @section = &apos;kCura.IntegrationPoints&apos;, @name = &apos;ReplaceWebAPIWithExportCore&apos;, @machineName = &apos;&apos;, @value = &apos;true&apos;, @description = &apos;Determines if Integration Points should use Export Core instead of older WebAPI Export.&apos;, @valueType = &apos;bit&apos;, @initialValue = &apos;true&apos;, @createAsSystemArtifact = 1.
+        /// </summary>
+        internal static string AddReplaceWebAPIWithExportCoreSetting {
+            get {
+                return ResourceManager.GetString("AddReplaceWebAPIWithExportCoreSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IF NOT EXISTS (SELECT * FROM [eddsdbo].[Configuration] WHERE [Section] = &apos;kCura.IntegrationPoints&apos; AND [Name] = &apos;WebAPIPath&apos;)
         ///BEGIN
         ///	insert into [eddsdbo].[Configuration] ([Section], [Name], [Value],  [MachineName], [Description])
@@ -84,17 +94,20 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///   Looks up a localized string similar to SET ANSI_NULLS ON
         ///SET QUOTED_IDENTIFIER ON
         ///
-        ///--Do cleanup first - delete old tables (over 24 hours old)
+        ///--Do cleanup first - delete old tables (over 72 hours old)
         ///DECLARE @table varchar(255) 
         ///DECLARE @dropCommand varchar(300) 
         ///
         ///DECLARE tableCursor CURSOR FOR 
-        ///		SELECT QUOTENAME(&apos;EDDSResource&apos;)+&apos;.&apos;+QUOTENAME(s.name)+&apos;.&apos;+QUOTENAME(t.name) 
-        ///		FROM [EDDSResource].[sys].[tables] AS t 
-        ///		INNER JOIN [EDDSResource].[sys].[schemas] AS s 
+        ///		SELECT &apos;{0}.&apos;+QUOTENAME(t.name) 
+        ///		FROM {1}.[sys].[tables] AS t 
+        ///		INNER JOIN {1}.[sys].[schemas] AS s 
         ///		ON t.[schema_id] = s.[schema_id] 
         ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72
-        ///		AND t.name LIKE &apos;RIP_CustodianManag [rest of string was truncated]&quot;;.
+        ///		AND t.name LIKE &apos;RIP_CustodianManager_%&apos;
+        ///
+        ///OPEN tableCursor 
+        ///FETCH next FROM tableCursor INTO @table [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateCustodianManagerResourceTable {
             get {
@@ -103,18 +116,23 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IF (NOT EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = &apos;eddsdbo&apos; AND  TABLE_NAME = @tableName))
+        ///   Looks up a localized string similar to IF OBJECT_ID(N&apos;{0}.[{1}]&apos;,N&apos;U&apos;) IS NULL
         ///BEGIN
-        ///	declare @table nvarchar(max) = N&apos;
-        ///CREATE TABLE [EDDSRESOURCE].[EDDSDBO].[&apos; + @tableName +&apos;] 
+        ///	CREATE TABLE {0}.[{1}] 
         ///	([JobID] bigint,
         ///	[TotalRecords] int,
         ///	[ErrorRecords] int,
         ///	[Completed] bit,
-        ///	CONSTRAINT [PK_&apos; + @tableName + &apos; ] PRIMARY KEY CLUSTERED 
+        ///	CONSTRAINT [PK_{1}] PRIMARY KEY CLUSTERED 
         ///	(
-        ///	[JobID] ASC
-        ///	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_ [rest of string was truncated]&quot;;.
+        ///		[JobID] ASC
+        ///	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+        ///	) ON [PRIMARY]
+        ///END
+        ///
+        ///IF (NOT EXISTS (SELECT * FROM {0}.[{1}] WHERE JobID = @jobID))
+        ///BEGIN
+        ///	insert into {0}.[{1}] ([JobID],[Completed]) values (@jobID,  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateJobTrackingEntry {
             get {
@@ -169,14 +187,14 @@ namespace kCura.IntegrationPoints.Data.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to --bypass duplicate records
-        ///UPDATE	[EDDSResource].[eddsdbo].[{0}]
+        ///UPDATE	{0}.[{1}]
         ///SET
         ///				[LockedByJobID]	= -1
         ///FROM 
-        ///				[EDDSResource].[eddsdbo].[{0}] t1 
+        ///				{0}.[{1}] t1 
         ///JOIN
         ///				(
-        ///					SELECT * FROM [EDDSResource].[eddsdbo].[{0}] WHERE NOT [LockedByJobID] IS NULL
+        ///					SELECT * FROM {0}.[{1}] WHERE NOT [LockedByJobID] IS NULL
         ///				) t2
         ///	ON		t1.[CustodianID] = t2.[CustodianID] AND t1.[ManagerID] = t2.[ManagerID] 
         ///WHERE
@@ -184,12 +202,16 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///				
         ///
         ///--get next batch
-        ///UPDATE	[EDDSResource].[eddsdbo].[{0}]
+        ///UPDATE			{0}.[{1}]
         ///SET
         ///				[LockedByJobID]	= @JobID
         ///OUTPUT 
         ///				INSERTED.[CustodianID],
-        ///			 [rest of string was truncated]&quot;;.
+        ///				INSERTED.[ManagerID]
+        ///FROM 
+        ///				{0}.[{1}] t1
+        ///WHERE
+        ///				t1.[LockedByJobID] IS N [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetJobCustodianManagerLinks {
             get {
@@ -198,7 +220,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT COUNT(JobID) FROM {0} WHERE (JobID = @RootJobID OR RootJobID=@RootJobID).
+        ///   Looks up a localized string similar to SELECT COUNT(JobID) FROM [{0}] WHERE (JobID = @RootJobID OR RootJobID=@RootJobID).
         /// </summary>
         internal static string GetJobsCount {
             get {
@@ -216,7 +238,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///	JOIN [EDDSDBO].[AccessControlListPermission]  acl WITH(NOLOCK) on gu.GroupArtifactID = acl.GroupID
         ///	JOIN [EDDSDBO].[Permission] p WITH(NOLOCK) on p.PermissionID = acl.PermissionID
         ///	JOIN [EDDSDBO].[ArtifactTypeGrouping] atg WITH(NOLOCK) on atg.ArtifactGroupingID = p.ArtifactGrouping
-        ///	WHERE p.[Type] = 6
+        ///	WHERE p.[Type] = 1
         ///	AND  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetObjectTypes {
@@ -229,17 +251,21 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///   Looks up a localized string similar to SET ANSI_NULLS ON
         ///SET QUOTED_IDENTIFIER ON
         ///
-        ///--Do cleanup first - delete old tables (over 24 hours old)
+        ///--Do cleanup first - delete old tables (over 72 hours old)
         ///DECLARE @table varchar(255) 
         ///DECLARE @dropCommand varchar(300) 
         ///DECLARE tableCursor CURSOR FOR 
-        ///		SELECT QUOTENAME(&apos;EDDSResource&apos;)+&apos;.&apos;+QUOTENAME(s.name)+&apos;.&apos;+QUOTENAME(t.name) 
-        ///		FROM [EDDSResource].[sys].[tables] AS t 
-        ///		INNER JOIN [EDDSResource].[sys].[schemas] AS s 
+        ///		SELECT &apos;{0}.&apos; + QUOTENAME(t.name) 
+        ///		FROM {1}.[sys].[tables] AS t 
+        ///		INNER JOIN {1}.[sys].[schemas] AS s 
         ///		ON t.[schema_id] = s.[schema_id] 
-        ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72 
+        ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72
         ///		AND t.name LIKE &apos;RIP_JobTracker_%&apos;
-        /// [rest of string was truncated]&quot;;.
+        ///
+        ///OPEN tableCursor 
+        ///FETCH next FROM tableCursor INTO @table 
+        ///
+        ///W [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string RemoveEntryAndCheckBatchStatus {
             get {
@@ -259,21 +285,18 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///declare @update nvarchar(max) = &apos;
-        ///UPDATE [EDDSRESOURCE].[EDDSDBO].[&apos; + @tableName + &apos;]
+        ///   Looks up a localized string similar to UPDATE {0}.[{1}]
         ///	SET
         ///		[TotalRecords] = @total,
         ///		[ErrorRecords] = @errored
         ///	WHERE
-        ///		[JobId] = @id
+        ///		[JobId] = @jobID
         ///
         ///SELECT
         ///	SUM(COALESCE([TotalRecords],0)) as [TotalRecords],
         ///	SUM(COALESCE([ErrorRecords],0)) as [ErrorRecords]
-        ///FROM [EDDSRESOURCE].[EDDSDBO].[&apos; + @tableName + &apos;]&apos;;
-        ///DECLARE @uParams nvarchar(max) = N&apos;@id bigint, @total bigint, @errored bigint&apos;;
-        ///EXECUTE sp_executesql @update, @uParams, @id = @jobID, @total = @total, @errored =  [rest of string was truncated]&quot;;.
+        ///FROM {0}.[{1}]
+        ///.
         /// </summary>
         internal static string UpdateJobStatistics {
             get {
