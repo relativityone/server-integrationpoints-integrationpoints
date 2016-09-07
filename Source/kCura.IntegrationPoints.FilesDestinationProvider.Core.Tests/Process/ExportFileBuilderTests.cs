@@ -240,14 +240,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
 			var imagePrecedenceList = exportFile.ImagePrecedence
-				.Where(item => item.Display == ExportFileBuilder._ORIGINAL_PRODUCTION_PRECEDENCE_TEXT).ToList();
+				.Where(item => item.Display == ExportFileBuilder.ORIGINAL_PRODUCTION_PRECEDENCE_TEXT).ToList();
 
 			if (outputShouldIncludeOrigImage)
 			{
 				Assert.That(imagePrecedenceList.Any());
 				Assert.That(imagePrecedenceList.Count, Is.EqualTo(1));
 				Assert.That(imagePrecedenceList.First().Value,
-					Is.EqualTo(ExportFileBuilder._ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT));
+					Is.EqualTo(ExportFileBuilder.ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT));
 			}
 			else
 			{

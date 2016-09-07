@@ -259,6 +259,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\CustodianManager\IManagerQueueService.cs" />
     <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerJobParameters.cs" />

@@ -63,6 +63,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
+		public IDestinationProviderRepository GetDestinationProviderRepository(int workspaceArtifactId)
+		{
+			var repository = new DestinationProviderRepository(_helper, workspaceArtifactId);
+			return repository;
+		}
+
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)
 		{
 			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(_helper, sourceWorkspaceArtifactId);
@@ -210,6 +216,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IResourcePoolRepository GetResourcePoolRepository()
 		{
 			return new ResourcePoolRepository(_helper);
+		}
+
+		public IRsapiClientRepository GetRsapiClientRepository(int workspaceArtifactId)
+		{
+			IRsapiClientRepository rsapiClientRepository = new RsapiRdoRepository(_helper, workspaceArtifactId);
+			return rsapiClientRepository;
 		}
 
 		#region Helper Methods

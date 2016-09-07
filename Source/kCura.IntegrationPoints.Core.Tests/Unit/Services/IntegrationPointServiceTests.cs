@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private readonly int _integrationPointArtifactId = 741;
 		private readonly int _savedSearchArtifactId = 93032;
 		private readonly int _sourceProviderId = 321;
+		private readonly int _destinationProviderId = 424;
 		private readonly int _userId = 951;
 		private int _previousJobHistoryArtifactId = Int32.MaxValue;
 
@@ -55,6 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private Data.IntegrationPoint _integrationPoint;
 		private IntegrationPointDTO _integrationPointDto;
 		private SourceProvider _sourceProvider;
+		private DestinationProvider _destinationProvider;
 		private IIntegrationPointManager _integrationPointManager;
 		private IErrorManager _errorManager;
 		private IJobHistoryManager _jobHistoryManager;
@@ -107,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				ArtifactId = _integrationPointArtifactId,
 				Name = "IP Name",
 				DestinationConfiguration = $"{{ DestinationProviderType : \"{Core.Services.Synchronizer.RdoSynchronizerProvider.RDO_SYNC_TYPE_GUID}\" }}",
-				DestinationProvider = 0,
+				DestinationProvider = _destinationProviderId,
 				EmailNotificationRecipients = "emails",
 				EnableScheduler = false,
 				FieldMappings = "",
@@ -115,13 +117,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				JobHistory = null,
 				LastRuntimeUTC = null,
 				LogErrors = false,
-				SourceProvider = _sourceProviderId,
+				SourceProvider = _sourceProviderId,				
 				SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId}, SavedSearchArtifactId: {_savedSearchArtifactId} }}",
 				NextScheduledRuntimeUTC = null,
 				//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
 				ScheduleRule = String.Empty
 			};
 			_sourceProvider = new SourceProvider();
+			_destinationProvider = new DestinationProvider();
 			_integrationPointDto = new IntegrationPointDTO()
 			{
 				ArtifactId = _integrationPoint.ArtifactId,
@@ -155,6 +158,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
+			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(_destinationProviderId).Returns(_destinationProvider);
 		}
 
 		[Test]
@@ -162,6 +166,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			_integrationPointManager.UserHasPermissionToRunJob(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -574,6 +580,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			string[] errorMessages = {"Uh", "oh"};
 			_integrationPointManager.UserHasPermissionToRunJob(
@@ -599,6 +606,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, 0), Constants.IntegrationPoints.NO_USERID);
@@ -617,6 +625,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
 
 			_integrationPointManager.UserHasPermissionToRunJob(
@@ -645,6 +655,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// arrange
 			_sourceProvider.Identifier = "some thing else";
+
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -667,7 +678,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		public void RunIntegrationPoint_GoldFlow_OtherProviders_InvalidPermissions()
 		{
 			// arrange
-			_sourceProvider.Identifier = "some thing else";
+			_sourceProvider.Identifier = "some thing else";	
 			string[] errorMessages = {"Uh", "oh"};
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
@@ -703,6 +714,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			_integrationPoint.HasErrors = null;
 			_integrationPointDto.HasErrors = null;
 			_integrationPointManager.UserHasPermissionToRunJob(
@@ -718,6 +731,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			// Assert
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
+			_caseServiceManager.RsapiService.DestinationProviderLibrary.Received(1).Read(_integrationPoint.DestinationProvider.Value);
 			_integrationPointManager.Received(1).UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -732,6 +746,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			string[] errorMessages = { "Uh", "oh" };
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
@@ -746,6 +762,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			// Assert
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
+			_caseServiceManager.RsapiService.DestinationProviderLibrary.Received(1).Read(_integrationPoint.DestinationProvider.Value);
 			_integrationPointManager.Received(1).UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -790,6 +807,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -811,6 +830,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -833,6 +854,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -854,6 +877,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		{
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -988,6 +1013,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				ArtifactID = 123,
 				SourceProvider = 9830,
 				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
+				DestinationProvider = 4242,
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler() { EnableScheduler = false },
 				LastRun = null
@@ -1016,6 +1042,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(new SourceProvider()
 				{
 					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
+				});
+			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(Arg.Is(model.DestinationProvider))
+				.Returns(new DestinationProvider
+				{
+					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID : System.Guid.NewGuid().ToString()
 				});
 
 			_managerFactory.CreateIntegrationPointManager(_contextContainer)
@@ -1049,6 +1080,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary
 				.Received(1)
 				.Read(Arg.Is(model.SourceProvider));
+			_caseServiceManager.RsapiService.DestinationProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.DestinationProvider));
 			_integrationPointManager.Received(1).UserHasPermissionToSaveIntegrationPoint(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
@@ -1066,6 +1100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
+				DestinationProvider = 4242,
 				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler() { EnableScheduler = false },
@@ -1077,6 +1112,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				ArtifactID = model.ArtifactID,
 				SourceProvider = model.SourceProvider,
 				SourceConfiguration = model.SourceConfiguration,
+				DestinationProvider = model.DestinationProvider,
 				SelectedOverwrite = model.SelectedOverwrite,
 				Scheduler = model.Scheduler,
 				LastRun = null
@@ -1095,6 +1131,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(new SourceProvider()
 				{
 					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
+				});
+			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(Arg.Is(model.DestinationProvider))
+				.Returns(new DestinationProvider()
+				{
+					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID : System.Guid.NewGuid().ToString()
 				});
 
 			_managerFactory.CreateIntegrationPointManager(_contextContainer)
@@ -1117,6 +1158,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary
 				.Received(1)
 				.Read(Arg.Is(model.SourceProvider));
+			_caseServiceManager.RsapiService.DestinationProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.DestinationProvider));
 			_integrationPointManager.Received(1).UserHasPermissionToSaveIntegrationPoint(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
@@ -1139,6 +1183,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				ArtifactID = 0,
 				SourceProvider = 9830,
 				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
+				DestinationProvider = 4242,
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler() { EnableScheduler = false },
 				LastRun = null
@@ -1156,6 +1201,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(new SourceProvider()
 				{
 					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
+				});
+			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(Arg.Is(model.DestinationProvider))
+				.Returns(new DestinationProvider
+				{
+					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID : System.Guid.NewGuid().ToString()
 				});
 
 			_managerFactory.CreateIntegrationPointManager(_contextContainer)
@@ -1181,6 +1231,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary
 				.Received(1)
 				.Read(Arg.Is(model.SourceProvider));
+			_caseServiceManager.RsapiService.DestinationProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.DestinationProvider));
 			_integrationPointManager.Received(1).UserHasPermissionToSaveIntegrationPoint(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
@@ -1225,6 +1278,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			{
 				SourceProvider = 9830,
 				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
+				DestinationProvider = 4242,
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler()
 				{
@@ -1251,6 +1305,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Returns(new SourceProvider()
 				{
 					Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID
+				});
+			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(Arg.Is(model.DestinationProvider))
+				.Returns(new DestinationProvider()
+				{
+					Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID
 				});
 
 			_integrationPointManager.UserHasPermissionToSaveIntegrationPoint(

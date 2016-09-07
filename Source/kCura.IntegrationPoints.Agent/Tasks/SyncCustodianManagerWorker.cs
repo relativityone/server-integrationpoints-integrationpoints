@@ -9,11 +9,14 @@ using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
+using kCura.IntegrationPoints.Core.Services.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -30,7 +33,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SyncCustodianManagerWorker : SyncWorker
 	{
 		private IRSAPIClient _workspaceRsapiClient;
-		private ManagerQueueService _managerQueueService;
+		private IManagerQueueService _managerQueueService;
+		private IRepositoryFactory _repositoryFactory;
+
+		private int _workspaceArtifactId;
 
 		public SyncCustodianManagerWorker(ICaseServiceContext caseServiceContext,
 			IDataProviderFactory dataProviderFactory,
@@ -38,14 +44,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ISerializer serializer,
 			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 			IJobHistoryService jobHistoryService,
-			JobHistoryErrorService jobHistoryErrorService,
+			IJobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IRSAPIClient workspaceRsapiClient,
-			ManagerQueueService managerQueueService,
+			IManagerQueueService managerQueueService,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService)
+			IJobService jobService,
+			IRepositoryFactory repositoryFactory)
 				: base(caseServiceContext, helper, dataProviderFactory, serializer,
 						appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
 						jobManager, null, statisticsService, managerFactory,
@@ -53,6 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;
 			_managerQueueService = managerQueueService;
+			_repositoryFactory = repositoryFactory;
 		}
 
 		private List<CustodianManagerMap> _custodianManagerMap;
@@ -77,6 +85,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				base.SetIntegrationPoint(job);
 
 				base.SetJobHistory();
+
+				_workspaceArtifactId = job.WorkspaceID;
 
 				InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
@@ -259,6 +269,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IDictionary<string, int> GetManagerArtifactIDs(int uniqueFieldID, string[] managerUniqueIDs)
 		{
+			IRsapiClientRepository rsapiClientRepository = _repositoryFactory.GetRsapiClientRepository(_workspaceArtifactId);
+			
 			IDictionary<string, int> managerIDs = new Dictionary<string, int>();
 
 			var query = new Query<RDO>();
@@ -267,7 +279,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			query.Fields.Add(new FieldValue(uniqueFieldID));
 
-			var result = _workspaceRsapiClient.Repositories.RDO.Query(query);
+			var result = rsapiClientRepository.Query(query);
 			if (!result.Success)
 			{
 				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
@@ -285,9 +297,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int GetCustodianManagerFieldArtifactID()
 		{
+			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(_workspaceArtifactId);
+
 			Relativity.Client.DTOs.Field dto = new Relativity.Client.DTOs.Field(new Guid(CustodianFieldGuids.Manager));
 
-			ResultSet<Relativity.Client.DTOs.Field> resultSet = _workspaceRsapiClient.Repositories.Field.Read(dto);
+			ResultSet<Relativity.Client.DTOs.Field> resultSet = fieldRepository.Read(dto);
 			if (!resultSet.Success)
 			{
 				var messages = resultSet.Results.Where(x => !x.Success).Select(x => x.Message);

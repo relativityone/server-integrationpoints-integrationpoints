@@ -27,6 +27,8 @@
 	    public const string REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME = "RemoveErrorsFromScratchTableBatchSize";
         public const string WEB_API_PATH = "WebAPIPath";
         public const string SOURCEPROVIDER_ARTIFACTID_FIELD = "4A091F69-D750-441C-A4F0-24C990D208AE";
+		public const string DESTINATION_PROVIDER_ARTIFACTID_FIELD = "C8B6AA0B-C854-43CA-B213-152A472ED023";
+	    public const string REPLACE_WEB_API_WITH_EXPORT_CORE = "ReplaceWebAPIWithExportCore";
         public const string RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
         public const char MULTI_VALUE_DELIMITER = ';';
         public const char NESTED_VALUE_DELIMITER = '/';

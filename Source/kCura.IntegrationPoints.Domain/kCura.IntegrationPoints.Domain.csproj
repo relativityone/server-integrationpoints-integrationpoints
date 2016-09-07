@@ -209,6 +209,7 @@
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\BaseDTO.cs" />
     <Compile Include="Models\ButtonStateDTO.cs" />
+    <Compile Include="Models\DestinationProviderDTO.cs" />
     <Compile Include="Models\DestinationWorkspaceDTO.cs" />
     <Compile Include="Models\ErrorDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />

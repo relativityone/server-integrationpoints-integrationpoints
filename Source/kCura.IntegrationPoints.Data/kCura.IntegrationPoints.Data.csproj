@@ -178,9 +178,11 @@
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
     <Compile Include="Models\AuditElement.cs" />
     <Compile Include="Models\MassEditObject.cs" />
     <Compile Include="Queries\GetJobsCount.cs" />
+    <Compile Include="Repositories\IDestinationProviderRepository.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
@@ -190,6 +192,7 @@
     <Compile Include="Repositories\IInstanceSettingRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\DestinationProviderRepository.cs" />
     <Compile Include="Repositories\Implementations\InstanceSettingRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
@@ -200,6 +203,7 @@
     <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
     <Compile Include="Repositories\Implementations\ResourcePoolRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiRdoRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
@@ -227,6 +231,7 @@
     <Compile Include="Repositories\IRelativityAuditRepository.cs" />
     <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
     <Compile Include="Repositories\IResourcePoolRepository.cs" />
+    <Compile Include="Repositories\IRsapiClientRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
@@ -356,6 +361,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\AddReplaceWebAPIWithExportCoreSetting.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
     <Content Include="Resources\GetJobsCount.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />

@@ -146,10 +146,11 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 
 				TaskType task;
-				SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
+				SourceProvider sourceProvider = GetSourceProvider(ip);
+				DestinationProvider destinationProvider = GetDestinationProvider(ip);
 
-
-				if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+				if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
+					destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
 				{
 					CheckForProviderAdditionalPermissions(ip, Constants.SourceProvider.Relativity, _context.EddsUserID);
 					task = TaskType.ExportService;
@@ -404,10 +405,13 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IntegrationPoint integrationPoint = null;
 			SourceProvider sourceProvider = null;
+			DestinationProvider destinationProvider = null;
+
 			try
 			{
 				integrationPoint = GetRdo(integrationPointArtifactId);
 				sourceProvider = GetSourceProvider(integrationPoint);
+				destinationProvider = GetDestinationProvider(integrationPoint);
 			}
 			catch (Exception e)
 			{
@@ -418,7 +422,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE);
 			}
 
-			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, userId);
+			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, destinationProvider, userId);
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
 		}
 
@@ -426,10 +430,13 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IntegrationPoint integrationPoint = null;
 			SourceProvider sourceProvider = null;
+			DestinationProvider destinationProvider = null;
+
 			try
 			{
 				integrationPoint = GetRdo(integrationPointArtifactId);
 				sourceProvider = GetSourceProvider(integrationPoint);
+				destinationProvider = GetDestinationProvider(integrationPoint);
 			}
 			catch (Exception e)
 			{
@@ -445,7 +452,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 			}
 
-			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, userId);
+			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, destinationProvider, userId);
 
 			CheckPreviousJobHistoryStatusOnRetry(workspaceArtifactId, integrationPointArtifactId);
 
@@ -577,19 +584,20 @@ namespace kCura.IntegrationPoints.Core.Services
 		}
 
 
-		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
+		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, DestinationProvider destinationProvider, int userId)
 		{
+			if (userId == 0)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_USERID);
+			}
+
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
 			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
 
 			Constants.SourceProvider sourceProviderEnum = Constants.SourceProvider.Other;
-			if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+			if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
+				destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
 			{
-				if (userId == 0)
-				{
-					throw new Exception(Constants.IntegrationPoints.NO_USERID);
-				}
-
 				sourceProviderEnum = Constants.SourceProvider.Relativity;	
 			}
 
@@ -657,6 +665,26 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 
 			return sourceProvider;
+		}
+
+		private DestinationProvider GetDestinationProvider(IntegrationPoint integrationPoint)
+		{
+			if (!integrationPoint.DestinationProvider.HasValue)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
+			}
+
+			DestinationProvider destinationProvider = null;
+			try
+			{
+				destinationProvider = _context.RsapiService.DestinationProviderLibrary.Read(integrationPoint.DestinationProvider.Value);
+			}
+			catch (Exception e)
+			{
+				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_SOURCE_PROVIDER, e);
+			}
+
+			return destinationProvider;
 		}
 
 		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Choice jobType, int workspaceArtifactId, int userId)
@@ -741,13 +769,6 @@ namespace kCura.IntegrationPoints.Core.Services
 					throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
 				}
 			}
-		}
-
-		internal class WorkspaceConfiguration
-		{
-			public int TargetWorkspaceArtifactId;
-			public int SourceWorkspaceArtifactId;
-			public int SavedSearchArtifactId;
 		}
 	}
 }

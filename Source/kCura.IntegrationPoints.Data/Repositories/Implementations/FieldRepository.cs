@@ -130,6 +130,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
+		public ResultSet<Relativity.Client.DTOs.Field> Read(Relativity.Client.DTOs.Field dto)
+		{
+			ResultSet<Relativity.Client.DTOs.Field> resultSet = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				try
+				{
+					resultSet = rsapiClient.Repositories.Field.Read(dto);
+				}
+				catch (Exception e)
+				{
+					throw new Exception("Unable to read Field dto", e);
+				}
+
+				return resultSet;
+			}
+		}
+
 		public int? RetrieveArtifactViewFieldId(int fieldArtifactId)
 		{
 			const string artifactIdParamName = "@ArtifactId";

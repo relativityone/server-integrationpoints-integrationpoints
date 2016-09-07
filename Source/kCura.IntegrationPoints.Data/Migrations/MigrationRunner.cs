@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Data.Migrations
 {
@@ -27,6 +23,7 @@ namespace kCura.IntegrationPoints.Data.Migrations
 		{
 			yield return new AddWebApiConfigValueMigration(_eddsContext);
 			yield return new UpdateJobErrorsBlankToNo(_workspaceContext);
+			yield return new AddReplaceWebApiWithExportCoreSetting(_eddsContext);
 		}
 
 	}

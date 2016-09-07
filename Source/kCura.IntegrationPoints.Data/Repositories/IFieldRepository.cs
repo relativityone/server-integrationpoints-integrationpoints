@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -69,5 +70,12 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="artifactViewFieldId">The artifact view field id of the field</param>
 		/// <param name="filterType">The filter type to set</param>
 		void UpdateFilterType(int artifactViewFieldId, string filterType);
+
+		/// <summary>
+		/// Reads a given Field Dto
+		/// </summary>
+		/// <param name="dto">Field Dto to be read</param>
+		/// <returns>A ResultSet of Field matching the provided Field Dto</returns>
+		ResultSet<Field> Read(Field dto);
 	}
 }
