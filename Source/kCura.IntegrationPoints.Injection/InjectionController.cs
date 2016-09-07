@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Injection
 
 			if (injectionPoint == null)
 			{
-				throw new Exception($"Injection Point with Guid '{injectionPointId}' is not found in the database.");
+				return null;
 			}
 
 			using (DataTable injectionDataTable = GetInjectionFromDatabase(injectionPointId))
