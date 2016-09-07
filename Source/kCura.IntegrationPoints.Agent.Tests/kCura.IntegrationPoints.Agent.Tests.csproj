@@ -51,6 +51,9 @@
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.DataGrid.Logging">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.DataGrid.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
