@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				GetUniqueJobId(job), userImportApiSettings);
 
 			var exceptions = new ConcurrentQueue<Exception>();
-			Parallel.ForEach(_exportServiceJobObservers, batch =>
+			_exportServiceJobObservers.ForEach(batch =>
 			{
 				try
 				{
