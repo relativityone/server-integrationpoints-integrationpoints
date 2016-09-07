@@ -38,13 +38,14 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 		private DataRow Execute(string sql, List<SqlParameter> sqlParams)
 		{
-			var dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
+			using (DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray()))
+			{
+				DataRow row = null;
+				if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
+					row = dataTable.Rows[0];
 
-			DataRow row = null;
-			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
-				row = dataTable.Rows[0];
-
-			return row;
+				return row;
+			}
 		}
 	}
 }
