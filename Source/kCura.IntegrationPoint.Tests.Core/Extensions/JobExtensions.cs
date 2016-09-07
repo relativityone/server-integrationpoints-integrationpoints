@@ -69,14 +69,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 
 		public static Job CopyJobWithStopState(this Job job, StopState state)
 		{
-			DataRow row = CovertToDataRow(job);
+			DataRow row = ConvertToDataRow(job);
 			row["StopState"] = (int)state;
 			return new Job(row);
 		}
 
 		public static Job CopyJobWithJobId(this Job job, int id)
 		{
-			DataRow row = CovertToDataRow(job);
+			DataRow row = ConvertToDataRow(job);
 			row["JobID"] = id;
 			return new Job(row);
 		}
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
-		private static DataRow CovertToDataRow(Job job)
+		private static DataRow ConvertToDataRow(Job job)
 		{
 			DataRow jobData = CreateDefaultJobData();
 			jobData["JobID"] = job.JobId;
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["RelatedObjectArtifactID"] = job.RelatedObjectArtifactID;
 			jobData["TaskType"] = job.TaskType;
 			jobData["NextRunTime"] = job.NextRunTime;
-			jobData["LastRunTime"] = job.LastRunTime;
+			jobData["LastRunTime"] = (object) job.LastRunTime ?? DBNull.Value;
 			jobData["JobDetails"] = job.JobDetails;
 			jobData["JobFlags"] = job.JobFlags;
 			jobData["SubmittedDate"] = job.SubmittedDate;
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["LockedByAgentID"] = default(int);
 			jobData["WorkspaceID"] = default(int);
 			jobData["RelatedObjectArtifactID"] = default(int);
-			jobData["TaskType"] = TaskType.SyncManager.ToString();
+			jobData["TaskType"] = TaskType.ExportService.ToString();
 			jobData["NextRunTime"] = default(DateTime);
 			jobData["LastRunTime"] = default(DateTime);
 			jobData["JobDetails"] = new JSONSerializer().Serialize(new TaskParameters() { BatchInstance = Guid.NewGuid()});
@@ -185,6 +185,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			,[JobFlags]
 			,[SubmittedDate]
 			,[SubmittedBy]
+			,[StopState]
 		)
 		OUTPUT
 			Inserted.[JobID]
@@ -221,6 +222,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			, @JobFlags
 			, GETUTCDATE()
 			,@SubmittedBy
+			,@StopState
 		)";
 
 		public static Job Execute(IQueueDBContext qDBContext,
@@ -236,7 +238,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 												int SubmittedBy,
 												int locked,
 												long? rootJobID,
-												long? parentJobID = null
+												long? parentJobID = null,
+												int stopState = (int) StopState.None
 												)
 		{
 			string sql = string.Format(insertJob, qDBContext.TableName);
@@ -265,6 +268,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			sqlParams.Add(!parentJobID.HasValue || parentJobID.Value == 0
 											? new SqlParameter("@ParentJobID", DBNull.Value)
 											: new SqlParameter("@ParentJobID", parentJobID.Value));
+			sqlParams.Add(new SqlParameter("@StopState", stopState));
 
 			using (DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams))
 			{
