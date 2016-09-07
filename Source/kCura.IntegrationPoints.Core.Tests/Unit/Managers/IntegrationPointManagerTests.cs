@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private IRepositoryFactory _repositoryFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private ISourceProviderRepository _sourceProviderRepository;
+		private IDestinationProviderRepository _destinationProviderRepository;
 		private IPermissionRepository _sourcePermissionRepository;
 		private IPermissionRepository _destinationPermissionRepository;
 		private ISavedSearchRepository _savedSearchRepository;
@@ -30,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private const int INTEGRATION_POINT_ID = 101323;
 		private const int _ARTIFACT_TYPE_ID = 1232;
 		private const int _SOURCE_PROVIDER_ID = 39309;
+		private const int _DESTINATION_PROVIDER_ID = 42042;
 		private const int _SAVED_SEARCH_ID = 9492;
 		private Guid _DESTINATION_PROVIDER_GUID = new Guid(ObjectTypeGuids.DestinationProvider);
 
@@ -40,6 +42,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			_sourceProviderRepository = Substitute.For<ISourceProviderRepository>();
 			_sourcePermissionRepository = Substitute.For<IPermissionRepository>();
+
+			_destinationProviderRepository = Substitute.For<IDestinationProviderRepository>();
 			_destinationPermissionRepository = Substitute.For<IPermissionRepository>();
 			_savedSearchRepository = Substitute.For<ISavedSearchRepository>();
 
@@ -49,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory.GetPermissionRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_sourcePermissionRepository);
 			_repositoryFactory.GetPermissionRepository(Arg.Is(_DESTINATION_WORKSPACE_ID)).Returns(_destinationPermissionRepository);
 			_repositoryFactory.GetSourceProviderRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_sourceProviderRepository);
+			_repositoryFactory.GetDestinationProviderRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_destinationProviderRepository);
 			_repositoryFactory.GetSavedSearchRepository(Arg.Is(_SOURCE_WORKSPACE_ID), _SAVED_SEARCH_ID).Returns(_savedSearchRepository);
 
 			_testInstance = new IntegrationPointManager(_repositoryFactory);
@@ -199,7 +204,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			{
 				ArtifactId = isNew ? 0 : INTEGRATION_POINT_ID,
 				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
-				SourceProvider = _SOURCE_PROVIDER_ID
+				SourceProvider = _SOURCE_PROVIDER_ID,
+				DestinationProvider = _DESTINATION_PROVIDER_ID
 			};
 
 			var sourceProvider = new SourceProviderDTO()
@@ -207,6 +213,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 			};
 			_sourceProviderRepository.Read(_SOURCE_PROVIDER_ID).Returns(sourceProvider);
+			var destinationProvider = new DestinationProviderDTO()
+			{
+				Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
+			};
+			_destinationProviderRepository.Read(_DESTINATION_PROVIDER_ID).Returns(destinationProvider);
 
 			var permissionCheckDto = new PermissionCheckDTO();
 
@@ -287,7 +298,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			{
 				ArtifactId = isNew ? 0 : INTEGRATION_POINT_ID,
 				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
-				SourceProvider = _SOURCE_PROVIDER_ID
+				SourceProvider = _SOURCE_PROVIDER_ID,
+				DestinationProvider = _DESTINATION_PROVIDER_ID
 			};
 
 			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
@@ -454,7 +466,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				ArtifactId = isNew ? 0 : INTEGRATION_POINT_ID,
 				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
 				SourceConfiguration = $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
-				SourceProvider = _SOURCE_PROVIDER_ID
+				SourceProvider = _SOURCE_PROVIDER_ID,
+				DestinationProvider = _DESTINATION_PROVIDER_ID
 			};
 
 			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
@@ -498,6 +511,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			{
 				_sourceProviderRepository.Read(Arg.Is(_SOURCE_PROVIDER_ID))
 					.Returns(new SourceProviderDTO() { Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) });
+				_destinationProviderRepository.Read(Arg.Is(_DESTINATION_PROVIDER_ID))
+					.Returns(new DestinationProviderDTO() { Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID) });
 			}
 
 			// ACT
@@ -652,7 +667,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			{
 				ArtifactId = INTEGRATION_POINT_ID,
 				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
-				SourceProvider = _SOURCE_PROVIDER_ID
+				SourceProvider = _SOURCE_PROVIDER_ID,
+				DestinationProvider = _DESTINATION_PROVIDER_ID
 			};
 
 			_sourcePermissionRepository.UserHasPermissionToAccessWorkspace().Returns(sourceWorkspacePermission);
@@ -756,6 +772,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				Arg.Is(_ARTIFACT_TYPE_ID),
 				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
 			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
+			_destinationProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_DESTINATION_PROVIDER_ID));
 		}
 
 		private void UserHasPermissionToRunJob_RelativityProvider_GoldFlow(
@@ -781,7 +798,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				ArtifactId = INTEGRATION_POINT_ID,
 				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
 				SourceConfiguration = $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
-				SourceProvider = _SOURCE_PROVIDER_ID
+				SourceProvider = _SOURCE_PROVIDER_ID,
+				DestinationProvider = _DESTINATION_PROVIDER_ID
 			};
 
 			_sourcePermissionRepository.UserHasPermissionToAccessWorkspace().Returns(sourceWorkspacePermission);
@@ -814,6 +832,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			{
 				_sourceProviderRepository.Read(Arg.Is(_SOURCE_PROVIDER_ID))
 					.Returns(new SourceProviderDTO() { Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) });
+				_destinationProviderRepository.Read(Arg.Is(_DESTINATION_PROVIDER_ID))
+					.Returns(new DestinationProviderDTO() { Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID) });
 			}
 
 			// ACT
@@ -925,6 +945,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.Received(1).UserCanEditDocuments();
 			_savedSearchRepository.Received(1).RetrieveSavedSearch();
 			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
+			_destinationProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_DESTINATION_PROVIDER_ID));
 		}
 
 		[TestCase(true, true)]

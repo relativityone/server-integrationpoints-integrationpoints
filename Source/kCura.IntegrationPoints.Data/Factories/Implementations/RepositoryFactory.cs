@@ -63,6 +63,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
+		public IDestinationProviderRepository GetDestinationProviderRepository(int workspaceArtifactId)
+		{
+			var repository = new DestinationProviderRepository(_helper, workspaceArtifactId);
+			return repository;
+		}
+
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)
 		{
 			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(_helper, sourceWorkspaceArtifactId);

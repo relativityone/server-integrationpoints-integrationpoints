@@ -480,8 +480,7 @@
 			if (self.model.errors().length === 0) {
 				var settings = self.model.getSelectedOption();
 
-				$.extend(self.ipModel.sourceConfiguration, settings);
-				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
+				$.extend(self.ipModel.sourceConfiguration, settings);				
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 
 				var destination = JSON.parse(self.ipModel.destination);
