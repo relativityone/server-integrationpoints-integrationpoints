@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	/// <summary>
 	/// Responsible for handling Rsapi Rdo Repository functionality
 	/// </summary>
-	public interface IRsapiClientRepository
+	public interface IRdoRepository
 	{
 		/// <summary>
 		/// Queries an Rdo instance based on query conditions

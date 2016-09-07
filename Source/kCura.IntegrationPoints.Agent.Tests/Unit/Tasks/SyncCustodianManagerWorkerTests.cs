@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 		private ISerializer _jsonSerializer;
 		private int _workspaceArtifactId;
-		private IRsapiClientRepository _rsapiClientRepository;
+		private IRdoRepository _rdoRepository;
 		private IFieldRepository _fieldRepository;
 
 		[OneTimeSetUp]
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
 
-			_rsapiClientRepository = Substitute.For<IRsapiClientRepository>();
+			_rdoRepository = Substitute.For<IRdoRepository>();
 			_fieldRepository = Substitute.For<IFieldRepository>();
 
 			_workspaceArtifactId = 12345;
@@ -255,8 +255,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParams.BatchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_fieldsMap);
-			_repositoryFactory.GetRsapiClientRepository(_workspaceArtifactId).Returns(_rsapiClientRepository);
-			_rsapiClientRepository.Query(Arg.Any<Query<RDO>>()).Returns(rdoQueryResultSet);
+			_repositoryFactory.GetRdoRepository(_workspaceArtifactId).Returns(_rdoRepository);
+			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(rdoQueryResultSet);
 			_repositoryFactory.GetFieldRepository(_workspaceArtifactId).Returns(_fieldRepository);
 			_fieldRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
 			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
