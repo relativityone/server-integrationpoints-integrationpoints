@@ -20,11 +20,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public IExporter Create(ExportFile exportFile)
 		{
-			var useCoreApi = _instanceSettingRepository.GetConfigurationValue(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION, Constants.REPLACE_WEB_API_WITH_EXPORT_CORE);
+			var useCoreApiConfig = _instanceSettingRepository.GetConfigurationValue(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+				Constants.REPLACE_WEB_API_WITH_EXPORT_CORE);
 			var jobStopManager = _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager;
 			var controller = new Controller();
+
+			bool useCoreApi;
 			IServiceFactory serviceFactory;
-			if (useCoreApi == "true")
+			if (bool.TryParse(useCoreApiConfig, out useCoreApi) && useCoreApi)
 			{
 				serviceFactory = new CoreServiceFactory(exportFile);
 			}
