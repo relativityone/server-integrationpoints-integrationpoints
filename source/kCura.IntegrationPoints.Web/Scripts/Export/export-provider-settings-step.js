@@ -155,11 +155,11 @@
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
-		this.DataFileEncodingType = ko.observable("").extend({
+		this.DataFileEncodingType = ko.observable(state.DataFileEncodingType || "").extend({
 			required: true
 		});
 
-		this.TextFileEncodingType = ko.observable("").extend({
+		this.TextFileEncodingType = ko.observable(state.TextFileEncodingType || "").extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportTextFieldsAsFiles();
@@ -263,57 +263,207 @@
 		});
 
 		this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
-			required: true,
-			maxLength: 256,
-			textFieldWithoutSpecialCharacters: {}
+			required: {
+				onlyIf: function () {
+					return self.ExportImages();
+				}
+			},
+			maxLength:{
+				onlyIf: function () {
+					return self.ExportImages();
+				},
+				params: 256
+			},
+			textFieldWithoutSpecialCharacters: {
+				onlyIf: function () {
+					return self.ExportImages();
+				}
+			}
 		});
 		this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
-			required: true,
-			maxLength: 256,
-			textFieldWithoutSpecialCharacters: {}
+			required: {
+				onlyIf: function () {
+					return self.ExportNatives();
+				}
+			},
+			maxLength:{
+				onlyIf: function () {
+					return self.ExportNatives();
+				},
+				params: 256
+			},
+			textFieldWithoutSpecialCharacters: {
+				onlyIf: function () {
+					return self.ExportNatives();
+				}
+			}
 		});
 		this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
-			required: true,
-			maxLength: 256,
-			textFieldWithoutSpecialCharacters: {}
+			required: {
+				onlyIf: function () {
+					return self.ExportTextFieldsAsFiles();
+				}
+			},
+			maxLength:{
+				onlyIf: function () {
+					return self.ExportTextFieldsAsFiles();
+				},
+				params: 256
+			},
+			textFieldWithoutSpecialCharacters: {
+				onlyIf: function () {
+					return self.ExportTextFieldsAsFiles();
+				}
+			}
 		});
+
+		this.IsVolumeAndSubdirectioryDetailVisible = function() {
+			return self.ExportImages() || self.ExportNatives() || self.ExportTextFieldsAsFiles();
+		}
+
 		this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
-			required: true,
-			min: 1,			
-			nonNegativeNaturalNumber: {}	
+			required: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+			},
+			min: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 1
+			},
+			nonNegativeNaturalNumber: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				}
+			}
 		});
 		this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
-			required: true,
-			min: 1,
-			max: 256,
-			nonNegativeNaturalNumber: {}
+			required: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+			},
+			min: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 1
+			},
+			max: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 256
+			},
+			nonNegativeNaturalNumber: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				}
+			}
 		});
 		this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
-			required: true,
-			min: 1,
-			max: 2000000,
-			nonNegativeNaturalNumber: {}
+			required: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+			},
+			min: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 1
+			},
+			max: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 2000000
+			},
+			nonNegativeNaturalNumber: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				}
+			}
 		});
 		this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
-			required: true,
-			maxLength: 256,
-			textFieldWithoutSpecialCharacters: {}	
+			required: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+			},
+			maxLength: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 256
+			},
+			textFieldWithoutSpecialCharacters: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				}
+			}
 		});
 		this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
-			required: true,
-			min: 1,
-			nonNegativeNaturalNumber: {}			
+			required: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+			},
+			min: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 1
+			},
+			nonNegativeNaturalNumber: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				}
+			}
 		});
 		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
-			required: true,
-			min: 1,
-			max: 256,
-			nonNegativeNaturalNumber: {}
+			required: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+			},
+			min: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 1
+			},
+			max: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 256
+			},
+			nonNegativeNaturalNumber: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				}
+			}
 		});
 		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 4400).extend({
-			required: true,
-			min: 1,
-			nonNegativeNaturalNumber: {}
+			required: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+			},
+			min: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				},
+				params: 1
+			},
+			nonNegativeNaturalNumber: {
+				onlyIf: function () {
+					return self.IsVolumeAndSubdirectioryDetailVisible();
+				}
+			}
 		});
 
 		function pad(str, max) {
@@ -334,11 +484,20 @@
 					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
 				}
 			},
-			maxLength: 256,
-			textFieldWithoutSpecialCharacters: {}
+			maxLength:{
+				onlyIf: function () {
+					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
+				},
+				params: 256
+			},
+			textFieldWithoutSpecialCharacters: {
+				onlyIf: function () {
+					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
+				}
+			}
 		});
-
-		this.isUserPrefix = ko.observable(false);
+		
+		this.isUserPrefix = ko.observable(state.UserPrefix || state.UserPrefix == 0); // empty string equals zero - isn't javascript beautiful?  (allow if user prefix is selected but not yet specified)
 
 		this.FilePath.subscribe(function (value) {
 			self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
@@ -480,8 +639,7 @@
 			if (self.model.errors().length === 0) {
 				var settings = self.model.getSelectedOption();
 
-				$.extend(self.ipModel.sourceConfiguration, settings);
-				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
+				$.extend(self.ipModel.sourceConfiguration, settings);				
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 
 				var destination = JSON.parse(self.ipModel.destination);
@@ -497,6 +655,7 @@
 				d.resolve(self.ipModel);
 			} else {
 				self.model.errors.showAllMessages();
+				root.message.error.raise("Resolve all errors before proceeding");
 				d.reject();
 			}
 

@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
 
 			var instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
-			instanceSettingRepository.GetConfigurationValue(Arg.Any<string>(), Arg.Any<string>()).Returns("true");
+			instanceSettingRepository.GetConfigurationValue(Arg.Any<string>(), Arg.Any<string>()).Returns("false");
 
 			var configFactoryMock = Substitute.For<IConfigFactory>();
 			configFactoryMock.Create().Returns(configMock);

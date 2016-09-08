@@ -22,11 +22,13 @@ namespace kCura.IntegrationPoints.Core
 			public const string NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE = "User does not have permission to import in this workspace.";
 			public const string NO_PERMISSION_TO_IMPORT_TARGETWORKSPACE = "User does not have permission to import in the target workspace.";
 			public const string NO_SOURCE_PROVIDER_SPECIFIED = "A source provider was not specified for the integration point. Please create a new integration point.";
+			public const string NO_DESTINATION_PROVIDER_SPECIFIED = "A destination provider was not specified for the integration point. Please create a new integration point.";
 			public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 			public const string RELATIVITY_CUSTOMPAGE_GUID = "dcf6e9d1-22b6-4da3-98f6-41381e93c30c";
 			public const string RELATIVITY_PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
 			public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID;
 			public const string RELATIVITY_PROVIDER_NAME = "Relativity";
+			public const string RELATIVITY_DESTINATION_PROVIDER_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 			public const string FILESHARE_PROVIDER_NAME = "Fileshare";
 			public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
 			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT = "Unable to retrieve Integration Point.";
 			public const string UNABLE_TO_RETRIEVE_SOURCE_PROVIDER = "Unable to retrieve Source Provider.";
+			public const string UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER = "Unable to retrieve Destination Provider.";
 			public const string UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE = "Unable to run this Integration Point. Please contact your system administrator.";
 			public const string UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to run Integration Point.";
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE = "Unable to retry this Integration Point. Please contact your system administrator.";

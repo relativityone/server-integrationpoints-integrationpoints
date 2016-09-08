@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.Injection;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -25,13 +25,11 @@ using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services;
-using Relativity.Services.ObjectQuery;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
-using Query = Relativity.Services.Query;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -41,12 +39,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 	{
 		private ExportServiceManager _exportManager;
 		private IIntegrationPointService _integrationPointService;
-		private IJobService _jobServiceManager;
 		private IJobService _jobService;
 		private ICaseServiceContext _caseContext;
+		private IQueueDBContext _queueContext;
 		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
-		private int _agentTypeId;
-		private Query _integrationPointAgentsQuery;
 
 		public ExportServiceManagerTests() : base("ExportServiceManagerTests", null)
 		{ }
@@ -54,17 +50,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			_agentTypeId = IntegrationPoint.Tests.Core.Agent.GetAgentTypeByName("Integration Points Agent").ArtifactID;
-			_integrationPointAgentsQuery = new Query()
-			{
-				Condition = $"'AgentTypeArtifactID' == {_agentTypeId}"
-			};
-			IntegrationPoint.Tests.Core.Agent.DisableAgents(_integrationPointAgentsQuery);
+
+			ControlIntegrationPointAgents(false);
+			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
 		public override void SuiteTeardown()
 		{
-			IntegrationPoint.Tests.Core.Agent.EnableAgents(_integrationPointAgentsQuery);
+			ControlIntegrationPointAgents(true);
 			base.SuiteTeardown();
 		}
 
@@ -77,7 +70,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				.LifestyleTransient());
 			Container.Register(
 				Component.For<IRSAPIService>()
-					.Instance(new RSAPIService(Container.Resolve<IHelper>(), SourceWorkspaceArtifactId))
+					.Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId))
 					.LifestyleTransient());
 		}
 
@@ -96,7 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_jobService = Container.Resolve<IJobService>();
 			IScheduleRuleFactory scheduleRuleFactory = new DefaultScheduleRuleFactory();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			JobHistoryErrorService jobHistoryErrorManager = Container.Resolve<JobHistoryErrorService>();
+			JobHistoryErrorService jobHistoryErrorService = Container.Resolve<JobHistoryErrorService>();
 			JobStatisticsService jobStatisticsService = Container.Resolve<JobStatisticsService>();
 
 			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
@@ -116,13 +109,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_jobService,
 				scheduleRuleFactory,
 				jobHistoryService,
-				jobHistoryErrorManager,
+				jobHistoryErrorService,
 				jobStatisticsService
 				);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_jobServiceManager = Container.Resolve<IJobService>();
-			_sourceWorkspaceDto = IntegrationPoint.Tests.Core.Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
+			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 		}
 
 		[Test]
@@ -333,17 +325,37 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			Job job = null;
 			try
 			{
-				DataTable dataTable = Import.GetImportTable("DocId", 50);
+				DataTable dataTable = Import.GetImportTable("DocId", 5);
 				Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
 
 				IntegrationModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
-					"StopRequestedAtTheBeginningOfJob", "Append Only");
+					"StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers", "Append Only");
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
 				InjectionHelper.InitializeAndEnableInjectionPoints(new List<global::kCura.Injection.Injection> { injection });
 
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
 				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
+
+				Guid batchInstance = Guid.NewGuid();
+				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
+				job = JobExtensions.Execute(
+					qDBContext: _queueContext,
+					workspaceID: SourceWorkspaceArtifactId,
+					relatedObjectArtifactID: model.ArtifactID,
+					taskType: TaskType.ExportService.ToString(),
+					nextRunTime: DateTime.MaxValue,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					locked: AgentArtifactId,
+					rootJobID: 1,
+					parentJobID: 1);
+
+				_exportManager.Execute(job);
 
 				//when tagging starts
 				InjectionHelper.WaitUntilInjectionPointIsReached(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id, startTime, 15);

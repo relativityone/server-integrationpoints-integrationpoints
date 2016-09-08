@@ -13,16 +13,15 @@ namespace kCura.ScheduleQueue.Core.Data
 		public IHelper DBHelper { get; private set; }
 		public string TableName { get; private set; }
 
-		private IDBContext _eddsDBContext;
+		private readonly object _lock = new object();
 		public IDBContext EddsDBContext
 		{
 			get
 			{
-				if (_eddsDBContext == null)
+				lock (_lock)
 				{
-					_eddsDBContext = DBHelper.GetDBContext(-1);
+					return DBHelper.GetDBContext(-1);
 				}
-				return _eddsDBContext;
 			}
 		}
 	}

@@ -84,7 +84,14 @@
 						type: self.ipModel.source.selectedType
 					})
 				}).then(function (result) {
-					self.model.fields.mappedFields(result);
+					self.model.fields.removeAllFields();
+					self.model.fields.selectedAvailableFields(ko.utils.arrayMap(result, function (_item1) {
+						var _field = ko.utils.arrayFilter(self.model.fields.availableFields(), function (_item2) {
+							return _item1.fieldIdentifier === _item2.fieldIdentifier;
+						});
+						return _field[0];
+					}));
+					self.model.fields.addField();
 				}).fail(function (error) {
 					IP.message.error.raise("No attributes were returned from the source provider.");
 				});
@@ -175,7 +182,7 @@
 						if (!!selected) {
 							self.getAvailableFieldsFor(selected);
 						} else {
-							self.model.fields.mappedFields([]);
+							self.model.fields.removeAllFields();
 						}
 					});
 				});

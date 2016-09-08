@@ -29,17 +29,18 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public Constants.SourceProvider GetSourceProvider(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
-			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
-			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
+			ISourceProviderRepository sourceProviderRepository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
+			SourceProviderDTO sourceProviderDto = sourceProviderRepository.Read(integrationPointDto.SourceProvider.Value);
 
-			Constants.SourceProvider sourceProvider;
-			if (dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+			IDestinationProviderRepository destinationProviderRepository = _repositoryFactory.GetDestinationProviderRepository(workspaceArtifactId);
+			DestinationProviderDTO destinationProviderDto = destinationProviderRepository.Read(integrationPointDto.DestinationProvider.Value);
+
+			var sourceProvider = Constants.SourceProvider.Other;
+
+			if ((sourceProviderDto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)) && 
+				(destinationProviderDto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)))
 			{
 				sourceProvider = Constants.SourceProvider.Relativity;
-			}
-			else
-			{
-				sourceProvider = Constants.SourceProvider.Other;
 			}
 
 			return sourceProvider;

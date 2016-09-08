@@ -94,7 +94,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				EnableMutex(identifier);
 
 				Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
-				historyRdo.ItemsTransferred += transferredItem;
+				if(transferredItem > 0)
+					historyRdo.ItemsTransferred += transferredItem;
+
 				historyRdo.ItemsWithErrors += erroredCount;
 				_service.UpdateRdo(historyRdo);
 

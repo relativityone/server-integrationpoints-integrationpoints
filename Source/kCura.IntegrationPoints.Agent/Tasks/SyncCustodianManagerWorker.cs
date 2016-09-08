@@ -269,7 +269,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IDictionary<string, int> GetManagerArtifactIDs(int uniqueFieldID, string[] managerUniqueIDs)
 		{
-			IRsapiClientRepository rsapiClientRepository = _repositoryFactory.GetRsapiClientRepository(_workspaceArtifactId);
+			IRdoRepository rdoRepository = _repositoryFactory.GetRdoRepository(_workspaceArtifactId);
 			
 			IDictionary<string, int> managerIDs = new Dictionary<string, int>();
 
@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			query.Fields.Add(new FieldValue(uniqueFieldID));
 
-			var result = rsapiClientRepository.Query(query);
+			var result = rdoRepository.Query(query);
 			if (!result.Success)
 			{
 				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
