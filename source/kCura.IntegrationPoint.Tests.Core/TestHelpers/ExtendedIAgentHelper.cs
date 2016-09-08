@@ -19,18 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public IDBContext GetDBContext(int caseId)
 		{
-			Data.RowDataGateway.Context baseContext;
-			if (caseId == -1)
-			{
-				baseContext = new Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
-			}
-			else
-			{
-				string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
-				baseContext = new Data.RowDataGateway.Context(connectionString);
-			}
-			DBContext context = new DBContext(baseContext);
-			return context;
+			return _helper.GetDBContext(caseId);
 		}
 
 		public IServicesMgr GetServicesManager()
