@@ -496,8 +496,8 @@
 				}
 			}
 		});
-
-		this.isUserPrefix = ko.observable(false);
+		
+		this.isUserPrefix = ko.observable(state.UserPrefix || state.UserPrefix == 0); // empty string equals zero - isn't javascript beautiful?  (allow if user prefix is selected but not yet specified)
 
 		this.FilePath.subscribe(function (value) {
 			self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
