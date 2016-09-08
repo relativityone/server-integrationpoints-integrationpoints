@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			List<ProcessingSourceLocationDTO> processingSourceLocations =
-				_resourcePoolRepository.GetProcessingSourceLocationsBy(wksp.ResourcePoolID.Value);
+				_resourcePoolRepository.GetProcessingSourceLocationsByResourcePool(wksp.ResourcePoolID.Value);
 			return processingSourceLocations;
 		}
 

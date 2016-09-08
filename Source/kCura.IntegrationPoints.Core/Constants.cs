@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Core
 
 				#region Export
 
-				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.Execute.Duration";
+				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.SharedLibrary.Export.Duration";
 
 				#endregion //Export
 			}

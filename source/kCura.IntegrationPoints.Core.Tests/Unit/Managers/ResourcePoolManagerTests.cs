@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void ItShouldReturnProcessingSourceLocations()
 		{
 			var procSourceLocations = new List<ProcessingSourceLocationDTO> { _processingSourceLocation };
-			_resourcePoolRepositoryMock.GetProcessingSourceLocationsBy(_RESOURCE_POOL_ID).Returns(procSourceLocations);
+			_resourcePoolRepositoryMock.GetProcessingSourceLocationsByResourcePool(_RESOURCE_POOL_ID).Returns(procSourceLocations);
 
 			const int wkspId = 1;
 			List<ProcessingSourceLocationDTO> processingSourceLocations = _subjectUnderTest.GetProcessingSourceLocation(wkspId);
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			const int wkspId = 0;
 			Assert.Throws<ArgumentException>(() => _subjectUnderTest.GetProcessingSourceLocation(wkspId));
 
-			_resourcePoolRepositoryMock.DidNotReceive().GetProcessingSourceLocationsBy(Arg.Any<int>());
+			_resourcePoolRepositoryMock.DidNotReceive().GetProcessingSourceLocationsByResourcePool(Arg.Any<int>());
 		}
 	}
 }

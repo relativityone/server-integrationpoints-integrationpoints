@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IResourcePoolRepository
 	{
-		List<ProcessingSourceLocationDTO> GetProcessingSourceLocationsBy(int resourcePoolId);
+		List<ProcessingSourceLocationDTO> GetProcessingSourceLocationsByResourcePool(int resourcePoolId);
 	}
 }

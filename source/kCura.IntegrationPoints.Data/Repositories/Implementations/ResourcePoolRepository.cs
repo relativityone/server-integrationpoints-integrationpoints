@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.Services.Choice;
@@ -26,23 +27,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		#region Methods
 
-		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocationsBy(int resourcePoolId)
+		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocationsByResourcePool(int resourcePoolId)
 		{
-			List<ProcessingSourceLocationDTO> processingSourceLocations = new List<ProcessingSourceLocationDTO>();
 			using (IResourcePoolManagerSvc resourcePoolManagerSvcProxy =
 					_helper.GetServicesManager().CreateProxy<IResourcePoolManagerSvc>(ExecutionIdentity.CurrentUser))
 			{
 				List<ChoiceRef> choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(
 					new ResourcePoolRef(resourcePoolId)).Result;
 
-				choiceRefs.ForEach(choiceRef => processingSourceLocations.Add(
-					new ProcessingSourceLocationDTO
-					{
-						ArtifactId = choiceRef.ArtifactID,
-						Location = choiceRef.Name
-					}));
+				return choiceRefs.Select(item => new ProcessingSourceLocationDTO
+				{
+					ArtifactId = item.ArtifactID,
+					Location = item.Name
+				}).ToList();
 			}
-			return processingSourceLocations;
 		}
 
 		#endregion Methods
