@@ -89,7 +89,7 @@
 
 			</div>
 
-			<div class="card" data-bind="visible: ExportNatives() || ExportImages() || ExportTextFieldsAsFiles()">
+			<div class="card" data-bind="visible: IsVolumeAndSubdirectioryDetailVisible()">
 				<div id="subdirectory_accordion" style="cursor: pointer;">
 					<span class="label" style="display: inline-block;">Volume & Subdirectory Detail</span>
 					<img class="collapsed_arrow" src="/Relativity/images/arrow_collapsed.png" alt="" style="display: none; vertical-align: text-bottom;" />
@@ -118,7 +118,7 @@
 									Start Number:
 								</div>
 								<div class="field-value">
-									<input id="volume-start-files-input" type="number" min="1" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
+									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
 								</div>
 							</div>
 							<div class="field-row">
@@ -126,7 +126,7 @@
 									Number of digits:
 								</div>
 								<div class="field-value">
-									<input id="volume-digit-padding-input" type="number" min="1" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
+									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
 								</div>
 							</div>
 							<div class="field-row">
@@ -134,7 +134,7 @@
 									Max Size (MB):
 								</div>
 								<div class="field-value">
-									<input id="volume-max-size-input" type="number" min="1" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
+									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
 								</div>
 							</div>
 						</td>
@@ -151,7 +151,7 @@
 									Start Number:
 								</div>
 								<div class="field-value">
-									<input id="subdirectory-start-files-input" type="number" min="1" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
+									<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
 								</div>
 							</div>
 							<div class="field-row">
@@ -159,7 +159,7 @@
 									Number of digits:
 								</div>
 								<div class="field-value">
-									<input id="subdirectory-digit-padding-input" type="number" min="1" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
+									<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
 								</div>
 							</div>
 							<div class="field-row">
@@ -167,7 +167,7 @@
 									Max Files:
 								</div>
 								<div class="field-value">
-									<input id="subdirectory-max-files-input" type="number" min="1" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
+									<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
 								</div>
 							</div>
 						</td>
