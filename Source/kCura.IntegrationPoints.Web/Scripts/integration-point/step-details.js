@@ -201,6 +201,7 @@ var IP = IP || {};
 					parentModel.destination.UpdateSelectedItem();
 				}
 			});
+			self.selectedType.isModified(false);
 		});
 	};
 
@@ -686,6 +687,7 @@ var IP = IP || {};
 				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();
+				root.message.error.raise("Resolve all errors before proceeding");
 				d.reject();
 			}
 			return d.promise;

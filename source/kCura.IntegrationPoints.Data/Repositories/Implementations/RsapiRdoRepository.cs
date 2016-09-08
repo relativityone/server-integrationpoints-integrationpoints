@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class RsapiRdoRepository : IRsapiClientRepository
+	public class RsapiRdoRepository : IRdoRepository
 	{
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;

@@ -218,10 +218,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new ResourcePoolRepository(_helper);
 		}
 
-		public IRsapiClientRepository GetRsapiClientRepository(int workspaceArtifactId)
+		public IRdoRepository GetRdoRepository(int workspaceArtifactId)
 		{
-			IRsapiClientRepository rsapiClientRepository = new RsapiRdoRepository(_helper, workspaceArtifactId);
-			return rsapiClientRepository;
+			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId);
+			return rdoRepository;
 		}
 
 		#region Helper Methods

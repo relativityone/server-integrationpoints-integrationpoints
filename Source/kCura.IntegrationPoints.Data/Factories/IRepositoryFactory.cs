@@ -182,9 +182,9 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IResourcePoolRepository GetResourcePoolRepository();
 
 		/// <summary>
-		/// Returns a class implementing the IRsapiClientRepository interface.
+		/// Returns a class implementing the IRdoRepository interface.
 		/// </summary>
-		/// <returns>A class implementing the IRsapiClientRepository interface.</returns>
-		IRsapiClientRepository GetRsapiClientRepository(int workspaceArtifactId);
+		/// <returns>A class implementing the IRdoRepository interface.</returns>
+		IRdoRepository GetRdoRepository(int workspaceArtifactId);
 	}
 }
