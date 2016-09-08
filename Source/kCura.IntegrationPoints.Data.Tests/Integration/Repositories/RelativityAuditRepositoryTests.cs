@@ -1,38 +1,58 @@
-﻿using System.Security.Claims;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data.Extensions;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
+	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
-	public class RelativityAuditRepositoryTests
+	public class RelativityAuditRepositoryTests : RelativityProviderTemplate
 	{
-		private RelativityAuditRepository _instance;
+		public RelativityAuditRepositoryTests() : base("RelativityAuditRepositoryTests", null)
+		{
+		}
+
+		private IAuditManager _auditManager;
 
 		[SetUp]
 		public void SetUp()
 		{
-			int workspaceId = 1536135;
-			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
-			{
-				ClaimsPrincipalFactory factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal2(9);
-			};
-			var serviceContext = ClaimsPrincipal.Current.GetUnversionContext(workspaceId);
-			_instance = new RelativityAuditRepository(serviceContext);
+			IManagerFactory factory = Container.Resolve<IManagerFactory>();
+			IContextContainerFactory contextFactory = Container.Resolve<IContextContainerFactory>();
+			IContextContainer contextContainer = contextFactory.CreateContextContainer(Helper);
+			_auditManager = factory.CreateAuditManager(contextContainer, WorkspaceArtifactId);
 		}
 
 		[Test]
 		public void CreateAuditRecord()
 		{
+			// arrange
+			const string auditMessage = "Test audit.";
+			IntegrationModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
+				"CreateAuditRecord ", "Append Only");
+			model = CreateOrUpdateIntegrationPoint(model);
+
+			// act
 			AuditElement detail = new AuditElement()
 			{
-				AuditMessage = "Test audit."
+				AuditMessage = auditMessage
 			};
-			_instance.CreateAuditRecord(1038143, detail);
+			_auditManager.RelativityAuditRepository.CreateAuditRecord(model.ArtifactID, detail);
+
+			// assert
+			var auditHelper = new kCura.IntegrationPoint.Tests.Core.AuditHelper(Helper);
+			Audit audit = auditHelper.RetrieveLastAuditsForArtifact(WorkspaceArtifactId,
+				Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, model.Name)[0];
+
+			Assert.AreEqual("Run", audit.AuditAction);
+			Assert.AreEqual($"<auditElement><auditMessage>{auditMessage}</auditMessage></auditElement>", audit.AuditDetails);
+			Assert.AreEqual(model.Name, audit.ArtifactName);
 		}
 	}
 }
