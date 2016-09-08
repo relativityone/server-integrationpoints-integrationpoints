@@ -120,5 +120,62 @@ namespace kCura.IntegrationPoints.Core.Tests.UI
 			//Assert
 			Assert.IsTrue((int)updatedJob.StopState == (int) StopState.Stopping);
 		}
+
+		[TestCase(TestBrowser.Chrome)]
+		public void StopButton_ErrorMessageWhenJobIsNotValid(TestBrowser browser)
+		{
+			//Arrange
+			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
+			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			Guid batchInstance = Guid.NewGuid();
+			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
+			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
+
+			DataRow row = new CreateScheduledJob(_queueContext).Execute(
+					workspaceID: SourceWorkspaceArtifactId,
+					relatedObjectArtifactID: integrationPoint.ArtifactID,
+					taskType: "ExportService",
+					nextRunTime: DateTime.MaxValue,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1);
+
+			Job tempJob = new Job(row);
+			_jobId = tempJob.JobId;
+
+			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
+			string runAndStopButtonOnClickStopXpath =
+				$@"//a[@onclick='IP.stopJob({integrationPoint.ArtifactID},{SourceWorkspaceArtifactId})']";
+			string warningDialogId = "ui-dialog-title-msgDiv";
+			string consoleControlXpath = "//div[contains(@class,'ConsoleControlTitle')]";
+			string errorMessage = "Unable to retrieve job(s) in the queue. Please contact your system administrator.";
+
+
+			_webDriver = Selenium.GetWebDriver(browser);
+
+			//Act and Assert
+			_webDriver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			_webDriver.SetFluidStatus(_ADMIN_USER_ID);
+			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
+			_webDriver.GoToObjectInstance(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _integrationPointArtifactTypeId);
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, consoleControlXpath, 10);
+			_webDriver.WaitUntilElementIsClickable(ElementType.Id, runAndStopId, 5);
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, runAndStopButtonOnClickStopXpath, 5);
+			_webDriver.WaitUntilElementExists(ElementType.Id, warningDialogId, 10);
+
+			//Remove the job from the queue table before the stop attempt
+			_jobService.DeleteJob(_jobId);
+			
+			_webDriver.FindElement(By.XPath(STOP_TRANSFER_BUTTON_XPATH)).Click();
+			_webDriver.WaitUntilElementIsVisible(ElementType.Xpath, JOBHISTORY_STATUS_STOPPING_XPATH, 10);
+
+			//Assert
+			Assert.IsTrue(_webDriver.PageShouldContain(errorMessage));
+		}
 	}
 }
