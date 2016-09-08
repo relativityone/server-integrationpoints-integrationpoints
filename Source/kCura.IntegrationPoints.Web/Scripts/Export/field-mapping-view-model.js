@@ -34,6 +34,7 @@
           self.selectedMappedFields,
           self.availableFields
         );
+        self.sortAvailableFieldsAsc();
     };
 
     self.removeAllFields = function () {
@@ -42,6 +43,7 @@
           self.mappedFields,
           self.availableFields
         );
+        self.sortAvailableFieldsAsc();
     };
 
     self.moveFieldTop = function () {
@@ -70,5 +72,11 @@
           self.mappedFields,
           self.selectedMappedFields()
         );
+    };
+
+    self.sortAvailableFieldsAsc = function () {
+        self.availableFields.sort(function (item1, item2) {
+            return item1.displayName > item2.displayName ? 1 : -1;
+        });
     };
 };
