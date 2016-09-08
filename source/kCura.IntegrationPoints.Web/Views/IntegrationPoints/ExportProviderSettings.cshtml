@@ -393,6 +393,7 @@
 	</div>
 </script>
 <script>
+$('#bodyContainer').off('click', '#subdirectory_accordion');
 $('#bodyContainer').on('click', '#subdirectory_accordion', function() {
 	$header = $(this);
 	$content = $header.next();
