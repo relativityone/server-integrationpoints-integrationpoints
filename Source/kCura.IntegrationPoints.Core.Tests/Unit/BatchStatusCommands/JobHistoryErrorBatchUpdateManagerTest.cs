@@ -344,5 +344,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 				_errorStatusRetriedChoiceArtifactId,_SCRATCHTABLE_ITEMCOMPLETE);
 			_jobHistoryErrorManager.JobHistoryErrorItemComplete.Received(1).Dispose();
 		}
+
+		[Test]
+		public void OnJobComplete_RetryErrors_StopRequested()
+		{
+			//Arrange
+			_jobStopManager.IsStopRequested().Returns(true);
+
+			//Act
+			_testInstance.OnJobComplete(_job);
+
+			//Assert
+			_jobHistoryErrorRepository.Received(1).UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId,
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMCOMPLETE);
+			_jobHistoryErrorManager.JobHistoryErrorItemComplete.Received(1).Dispose();
+		}
 	}
 }

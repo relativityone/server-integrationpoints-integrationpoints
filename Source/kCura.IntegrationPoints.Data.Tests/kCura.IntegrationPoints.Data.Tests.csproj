@@ -59,6 +59,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Config, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\$(kCura_Apps_Common_Config)\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
@@ -254,6 +265,9 @@
     <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
     <Compile Include="Unit\Toggle\ExtendedRelativityToggleTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
