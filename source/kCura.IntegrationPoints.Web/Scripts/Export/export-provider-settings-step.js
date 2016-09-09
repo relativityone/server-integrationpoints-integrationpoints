@@ -501,6 +501,12 @@
 
 		this.FilePath.subscribe(function (value) {
 			self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
+			if (value === ExportEnums.FilePathTypeEnum.UserPrefix) {
+				self.isUserPrefix(true);
+			} else {
+				self.isUserPrefix(false);
+				self.UserPrefix(null);
+			}
 		});
 
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
