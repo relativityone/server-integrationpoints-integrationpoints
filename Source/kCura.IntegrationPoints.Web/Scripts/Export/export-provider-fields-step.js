@@ -183,6 +183,7 @@
 							self.getAvailableFieldsFor(selected);
 						} else {
 							self.model.fields.removeAllFields();
+							self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
 						}
 					});
 				});
