@@ -373,17 +373,15 @@
       <DependentUpon>controls-grid-pager.scss</DependentUpon>
     </Content>
     <Content Include="Content\controls.grid.css" />
-    <Content Include="Content\css\select2-spinner.gif" />
-    <Content Include="Content\css\select2.css" />
-    <Content Include="Content\css\select2.png" />
-    <Content Include="Content\css\select2search.css" />
-    <Content Include="Content\css\select2x2.png" />
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\loading.gif" />
+    <Content Include="Content\Images\select2-spinner.gif" />
+    <Content Include="Content\Images\select2.png" />
+    <Content Include="Content\Images\select2x2.png" />
     <Content Include="Content\Images\sprite.png" />
     <Content Include="Content\integration-points-view.css" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
@@ -397,6 +395,8 @@
     <Content Include="Content\select2-overrides.css">
       <DependentUpon>select2-overrides.scss</DependentUpon>
     </Content>
+    <Content Include="Content\select2.css" />
+    <Content Include="Content\select2search.css" />
     <Content Include="Content\step-progress-bar.css">
       <DependentUpon>step-progress-bar.scss</DependentUpon>
     </Content>
