@@ -30,21 +30,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void GoToWorkspace(this IWebDriver driver, int artifactId)
 		{
-			string workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}']";
-			driver.SwitchTo().DefaultContent();
-
-			if (_fluidEnabled)
-			{
-				driver.SwitchTo().Frame("_externalPage");
-			}
-			else
-			{
-				driver.SwitchTo().Frame("ListTemplateFrame");
-				workspaceXpath = $"//a[@href='/Relativity/RedirectHandler.aspx?defaultCasePage=1&AppID={artifactId}&RootFolderID=1003697']";
-			}
-
-			driver.WaitUntilElementExists(ElementType.Xpath, workspaceXpath, 15);
-			driver.FindElement(By.XPath(workspaceXpath)).Click();
+			string workspaceUrl = $"http://{SharedVariables.TargetHost}/relativity/List.aspx?AppID={artifactId}&ArtifactID=1003663&ArtifactTypeID=10";
+			driver.GoToUrl(workspaceUrl);			
 		}
 
 		public static void GoToTab(this IWebDriver driver, string tabName)
@@ -217,18 +204,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (_fluidEnabled)
 			{
-				driver.WaitUntilElementExists(ElementType.Id, externalPage, 10);
+				driver.WaitUntilElementExists(ElementType.Id, externalPage, 15);
 				driver.SwitchTo().Frame(externalPage);
 				newIntegraionPoint = "//button[@title='New Integration Point']";
 			}
 			else
 			{
-				driver.WaitUntilElementExists(ElementType.Id, templateFrame, 10);
+				driver.WaitUntilElementExists(ElementType.Id, templateFrame, 15);
 				driver.SwitchTo().Frame(templateFrame);
 				newIntegraionPoint = "//a[@title='New Integration Point']";
 			}
 			
-			driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(10));
+			driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(15));
 			driver.FindElement(By.XPath(newIntegraionPoint)).Click();
 			driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
 			driver.SwitchTo().Frame(externalPage);
