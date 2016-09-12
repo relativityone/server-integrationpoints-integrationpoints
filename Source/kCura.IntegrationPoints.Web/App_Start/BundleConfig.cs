@@ -80,11 +80,11 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/scheduler.css",
 				"~/Content/site.css",
 				"~/Content/step-progress-bar.css",
-				"~/Content/css/select2.css",
+				"~/Content/select2.css",
 				"~/Content/select2-overrides.css",
-				"~/Content/css/select2search.css",
-				"~/Content/buttermilk.css",
-				"~/Content/buttermilk.9_2.min.css"
+				"~/Content/select2search.css",
+				"~/Content/buttermilk.css"
+				//"~/Content/buttermilk.9_2.min.css"
 			));
 
 			bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
@@ -102,6 +102,7 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/themes/base/jquery.ui.theme.css",
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
+            
 		}
 	}
 }
