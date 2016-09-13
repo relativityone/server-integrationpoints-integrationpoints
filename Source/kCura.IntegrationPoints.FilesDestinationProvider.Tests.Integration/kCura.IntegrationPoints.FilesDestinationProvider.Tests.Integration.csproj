@@ -196,6 +196,7 @@
     <Compile Include="TestCases\ItShouldExportFilesStartingFromGivenRecord.cs" />
     <Compile Include="TestCases\ItShouldExportOriginalImagesPrecendence.cs" />
     <Compile Include="TestCases\ItShouldExportProducedImagesPrecedence.cs" />
+    <Compile Include="TestCases\ItShouldIncludeNativeFilesPathWithoutExportingNatives.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForInvalidFilesharePathFormat.cs" />

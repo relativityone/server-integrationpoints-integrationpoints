@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.TypeOfExportedFilePath = ParseFilePath(exportSettings.FilePath);
 			exportFile.FilePrefix = exportSettings.UserPrefix;
 
-			exportFile.ExportNative = exportSettings.ExportNatives;
+			exportFile.ExportNative = exportSettings.ExportNatives || exportSettings.IncludeNativeFilesPath;
 			exportFile.MulticodesAsNested = exportSettings.ExportMultipleChoiceFieldsAsNested;
 			exportFile.ExportFullTextAsFile = exportSettings.ExportFullTextAsFile;
 			exportFile.TextFileEncoding = exportSettings.TextFileEncodingType;

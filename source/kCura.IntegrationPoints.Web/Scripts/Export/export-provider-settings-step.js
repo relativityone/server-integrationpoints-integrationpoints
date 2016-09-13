@@ -149,6 +149,9 @@
 			if (!value) {
 				self.SelectedImageFileType(0);
 			}
+			if (value) {
+				self.IncludeNativeFilesPath(true);
+			}
 		});
 
 		this.ExportTextFieldsAsFiles = ko.observable(state.ExportFullTextAsFile || false);
@@ -512,6 +515,8 @@
 			}
 		});
 
+		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
+
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
 		var getTextRepresentation = function (value) {
@@ -605,7 +610,8 @@
 				"VolumeDigitPadding": self.VolumeDigitPadding(),
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"VolumePrefix": self.VolumePrefix(),
-				"VolumeStartNumber": self.VolumeStartNumber()
+				"VolumeStartNumber": self.VolumeStartNumber(),
+				"IncludeNativeFilesPath": self.IncludeNativeFilesPath()
 			};
 		};
 	};

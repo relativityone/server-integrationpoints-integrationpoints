@@ -182,22 +182,6 @@
 						<td style="vertical-align: text-top; width: 48%;">
 							<div class="field-row">
 								<div class="field-label required">
-									File Path:
-								</div>
-								<div class="field-value">
-									<ul data-bind="foreach: ExportEnums.FilePathType">
-										<li>
-											<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
-											<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
-											<!-- ko if: value==2 -->
-											<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
-											<!-- /ko -->
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
 									Image File Format:
 								</div>
 								<div class="field-value">
@@ -265,6 +249,30 @@
 											</optgroup>
 										<!-- /ko -->
 									</select>
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									File Path:
+								</div>
+								<div class="field-value">
+									<ul data-bind="foreach: ExportEnums.FilePathType">
+										<li>
+											<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
+											<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
+											<!-- ko if: value==2 -->
+											<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
+											<!-- /ko -->
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label">
+									Include Native Files Path:
+								</div>
+								<div class="field-value middle-vertical-align">
+									<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun() || ExportNatives(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
 								</div>
 							</div>
 							<div class="field-row">
