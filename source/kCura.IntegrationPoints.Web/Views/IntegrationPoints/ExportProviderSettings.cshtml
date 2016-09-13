@@ -42,7 +42,7 @@
 			</td>
 			<td style="vertical-align: top;">
 				<div class="field-row">
-					<div class="field-label required">
+					<div class="field-label">
 						Overwrite files:
 					</div>
 					<div class="field-value middle-vertical-align">
@@ -182,22 +182,6 @@
 						<td style="vertical-align: text-top; width: 48%;">
 							<div class="field-row">
 								<div class="field-label required">
-									File Path:
-								</div>
-								<div class="field-value">
-									<ul data-bind="foreach: ExportEnums.FilePathType">
-										<li>
-											<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
-											<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
-											<!-- ko if: value==2 -->
-											<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
-											<!-- /ko -->
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
 									Image File Format:
 								</div>
 								<div class="field-value">
@@ -257,11 +241,38 @@
 									Data File Encoding:
 								</div>
 								<div class="field-value">
-									<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
-										<optgroup data-bind="attr: {label: label}, foreach: children">
-											<option data-bind="text: displayName, value: name"></option>
-										</optgroup>
+									<select id="dataFileEncodingSelector" data-bind="value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+										<option data-bind="value: ''">Select...</option>
+										<!-- ko foreach: FileEncodingTypeList -->
+											<optgroup data-bind="attr: {label: label}, foreach: children">
+												<option data-bind="text: displayName, value: name"></option>
+											</optgroup>
+										<!-- /ko -->
 									</select>
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									File Path:
+								</div>
+								<div class="field-value">
+									<ul data-bind="foreach: ExportEnums.FilePathType">
+										<li>
+											<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
+											<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
+											<!-- ko if: value==2 -->
+											<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
+											<!-- /ko -->
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label">
+									Include Native Files Path:
+								</div>
+								<div class="field-value middle-vertical-align">
+									<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun() || ExportNatives(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
 								</div>
 							</div>
 							<div class="field-row">
@@ -357,10 +368,13 @@
 										Text File Encoding:
 									</div>
 									<div class="field-value">
-										<select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
-											<optgroup data-bind="attr: {label: label}, foreach: children">
-												<option data-bind="text: displayName, value: name"></option>
-											</optgroup>
+										<select id="textFileEncodingSelector" data-bind="value: TextFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+											<option data-bind="value: ''">Select...</option>
+											<!-- ko foreach: FileEncodingTypeList -->
+												<optgroup data-bind="attr: {label: label}, foreach: children">
+													<option data-bind="text: displayName, value: name"></option>
+												</optgroup>
+											<!-- /ko -->
 										</select>
 									</div>
 								</div>

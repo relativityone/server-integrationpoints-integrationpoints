@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public string FilePath { get; set; }
 		public string UserPrefix { get; set; }
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
+		public bool IncludeNativeFilesPath { get; set; }
 		public bool ExportFullTextAsFile { get; set; }
 		public IEnumerable<FieldEntry> TextPrecedenceFields { get; set; }
 		public string TextFileEncodingType { get; set; }

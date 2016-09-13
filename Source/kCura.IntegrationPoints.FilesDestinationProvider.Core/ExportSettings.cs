@@ -75,6 +75,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public FilePathType FilePath { get; set; }
 		public string UserPrefix { get; set; }
 		public bool ExportMultipleChoiceFieldsAsNested { get; set; }
+		public bool IncludeNativeFilesPath { get; set; }
 		public bool ExportFullTextAsFile { get; set; }
 		public List<int> TextPrecedenceFieldsIds { get; set; }
 		public Encoding TextFileEncodingType { get; set; }

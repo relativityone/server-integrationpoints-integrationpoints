@@ -61,6 +61,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				FilePath = filePath,
 				UserPrefix = sourceSettings.UserPrefix,
 				ExportMultipleChoiceFieldsAsNested = sourceSettings.ExportMultipleChoiceFieldsAsNested,
+				IncludeNativeFilesPath = sourceSettings.IncludeNativeFilesPath,
 				ExportFullTextAsFile = sourceSettings.ExportFullTextAsFile,
 				TextPrecedenceFieldsIds = sourceSettings.TextPrecedenceFields.Select(x => int.Parse(x.FieldIdentifier)).ToList(),
 				TextFileEncodingType = textFileEncoding,
