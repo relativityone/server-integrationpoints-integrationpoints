@@ -145,20 +145,18 @@ namespace kCura.IntegrationPoints.Core.Services
 					rule = null;
 				}
 
-				TaskType task;
 				SourceProvider sourceProvider = GetSourceProvider(ip);
 				DestinationProvider destinationProvider = GetDestinationProvider(ip);
+				TaskType task = GetJobTaskType(ip, sourceProvider);
 
 				if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
 					destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
 				{
 					CheckForProviderAdditionalPermissions(ip, Constants.SourceProvider.Relativity, _context.EddsUserID);
-					task = TaskType.ExportService;
 				}
 				else
 				{
 					CheckForProviderAdditionalPermissions(ip, Constants.SourceProvider.Other, _context.EddsUserID);
-					task = TaskType.SyncManager;
 				}
 
 				//save RDO
@@ -759,7 +757,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CheckForOtherJobsExecutingOrInQueue(TaskType taskType, int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			if (taskType == TaskType.ExportService || taskType == TaskType.SyncManager)
+			if (taskType == TaskType.ExportService || taskType == TaskType.SyncManager || taskType == TaskType.ExportManager)
 			{
 				IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
