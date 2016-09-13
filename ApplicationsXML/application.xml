@@ -1763,7 +1763,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-09-01T10:46:25.8428936Z</ExtractionDate>
+  <ExtractionDate>2016-09-13T07:56:16.4129085Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -9261,14 +9261,14 @@
               <LayoutTextId>1000285</LayoutTextId>
               <Order>0</Order>
               <Row>1</Row>
-              <Value>&lt;p style="margin:0px;" /&gt;&lt;ul&gt;&lt;li&gt;&lt;span style="line-height:1.42857;"&gt;Integration name will be: [existing name]_copy&lt;/span&gt;&lt;br /&gt;&lt;/li&gt;&lt;li&gt;Copy Field Mappings&lt;/li&gt;&lt;li&gt;Copy Import / Export settings&lt;/li&gt;&lt;li&gt;Any scheduled run settings will be removed&lt;/li&gt;&lt;/ul&gt;&lt;p style="margin:0px;"&gt;&lt;span style="font-style:italic;font-size:12px;"&gt;Note: After copy the job will be in a state of &amp;quot;Not Run&amp;quot; so that the settings can be edited.&lt;/span&gt;&lt;br /&gt;&lt;/p&gt;&lt;p style="margin:0px;" /&gt;</Value>
+              <Value>&lt;p style="margin:0px;" /&gt;&lt;ul&gt;&lt;li&gt;Copy Field Mappings&lt;/li&gt;&lt;li&gt;Copy Import / Export settings&lt;/li&gt;&lt;li&gt;Any scheduled run settings will be removed&lt;/li&gt;&lt;/ul&gt;&lt;p style="margin:0px;"&gt;&lt;span style="font-style:italic;font-size:12px;"&gt;Note: After copy the job will be in a state of &amp;quot;Not Run&amp;quot; so that the settings can be edited.&lt;/span&gt;&lt;br /&gt;&lt;/p&gt;&lt;p style="margin:0px;" /&gt;</Value>
             </LayoutText>
           </LayoutTexts>
           <LayoutViews />
           <Name>Mass Copy Integration Point Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>2.0.95.26</ApplicationVersion>
+          <ApplicationVersion>2.0.95.27</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Mass Copy Integration Point</Name>
@@ -9649,7 +9649,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.4.224.2</RelativityVersion>
-  <Version>2.0.95.26</Version>
+  <Version>2.0.95.27</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>822363b1-5445-471e-af4f-61384a89304f</OriginSignature>
   <MasterScripts />
@@ -9700,7 +9700,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.26</ApplicationVersion>
+      <ApplicationVersion>2.0.95.27</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9712,7 +9712,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.26</ApplicationVersion>
+      <ApplicationVersion>2.0.95.27</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9724,7 +9724,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.26</ApplicationVersion>
+      <ApplicationVersion>2.0.95.27</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9736,7 +9736,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.26</ApplicationVersion>
+      <ApplicationVersion>2.0.95.27</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9748,7 +9748,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.26</ApplicationVersion>
+      <ApplicationVersion>2.0.95.27</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9760,7 +9760,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.26</ApplicationVersion>
+      <ApplicationVersion>2.0.95.27</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -9772,7 +9772,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.95.26</ApplicationVersion>
+      <ApplicationVersion>2.0.95.27</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>

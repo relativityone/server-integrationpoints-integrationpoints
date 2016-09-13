@@ -135,6 +135,14 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Core, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Data, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_Data)\lib\net45\Relativity.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
@@ -153,6 +161,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleEventHandlerBase.cs" />
+    <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />
     <Compile Include="Installers\RunEveryTimeInstaller.cs" />
@@ -163,6 +172,9 @@
     <Compile Include="Constant.cs" />
     <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
+    <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidator.cs" />
+    <Compile Include="MassOperations\IntegrationPointNameHelper.cs" />
+    <Compile Include="MassOperations\IIntegrationPointNameHelper.cs" />
     <Compile Include="MassOperations\IntegrationPointMassCopy.cs" />
     <Compile Include="MassOperations\IntegrationPointMassCopyHandler.cs" />
     <Compile Include="IntegrationPoints\JobHistoryErrorPageInteraction.cs" />

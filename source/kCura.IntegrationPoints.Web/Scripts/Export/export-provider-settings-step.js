@@ -149,17 +149,20 @@
 			if (!value) {
 				self.SelectedImageFileType(0);
 			}
+			if (value) {
+				self.IncludeNativeFilesPath(true);
+			}
 		});
 
 		this.ExportTextFieldsAsFiles = ko.observable(state.ExportFullTextAsFile || false);
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
-		this.DataFileEncodingType = ko.observable(state.DataFileEncodingType || "").extend({
+		this.DataFileEncodingType = ko.observable("").extend({
 			required: true
 		});
 
-		this.TextFileEncodingType = ko.observable(state.TextFileEncodingType || "").extend({
+		this.TextFileEncodingType = ko.observable("").extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportTextFieldsAsFiles();
@@ -167,27 +170,14 @@
 			}
 		});
 
-		this.getFileEncodingTypeName = function (value) {
-			if (self.FileEncodingTypeList().length === 3) {
-				var ungroupedFileEncodingList = self.FileEncodingTypeList()[0].children()
-					.concat(self.FileEncodingTypeList()[1].children())
-					.concat(self.FileEncodingTypeList()[2].children());
-				var selectedFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
-					return item.name === value;
-				});
-
-				return selectedFileEncodingType.name;
-			}
-		};
-
 		this.FileEncodingTypeList = ko.observableArray([]);
-		if (self.FileEncodingTypeList.length === 0) {
+		this._UpdateFileEncodingTypeList = function () {
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
 				function Group(label, children) {
 					this.label = ko.observable(label);
 					this.children = ko.observableArray(children);
 				}
-				var defaultOption = { displayName: "Select..", name: "" };
+				var defaultOption = { displayName: "Select...", name: "" };
 				var favorite = [];
 				var others = [];
 				for (var i = 0; i < result.length; i++) {
@@ -199,43 +189,59 @@
 					}
 				}
 				// By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-				self.FileEncodingTypeList([new Group("", [defaultOption]), new Group("Favorite", favorite), new Group("Others", others)]);
+				self.FileEncodingTypeList([new Group("Favorite", favorite), new Group("Others", others)]);
 
-				self.DataFileEncodingType(self.getFileEncodingTypeName(state.DataFileEncodingType || ""));
-				self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType || ""));
+				self.DataFileEncodingType(state.DataFileEncodingType || defaultOption);
+				self.DataFileEncodingType.isModified(false);
+
+				self.TextFileEncodingType(state.TextFileEncodingType || defaultOption);
+				self.TextFileEncodingType.isModified(false);
 			});
 		}
-		else {
-			self.DataFileEncodingType(self.getFileEncodingTypeName(state.DataFileEncodingType));
-			self.TextFileEncodingType(self.getFileEncodingTypeName(state.TextFileEncodingType));
-		}
+
+		self._UpdateFileEncodingTypeList();
 
 		this.ExportImages = ko.observable(state.ExportImages || false);
 
-		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat || "").extend({
+		this.SelectedImageDataFileFormat = ko.observable().extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportImages();
 				}
 			}
 		});
-		
+
 		this.ImageFileFormatList = ko.observableArray([]);
 
-		this._updateImageFileFormat = function(){
+		this._updateImageFileFormat = function () {
+			var setSelectedImageDataFileFormat = function () {
+				if (state.SelectedImageDataFileFormat === 0) {
+					self.SelectedImageDataFileFormat("0");
+				}
+				else if (state.SelectedImageDataFileFormat === undefined) {
+					self.SelectedImageDataFileFormat(self.ImageFileFormatList()[0].value.toString());
+				}
+				else {
+					self.SelectedImageDataFileFormat(state.SelectedImageDataFileFormat.toString());
+				}
+			}
+
 			var formats = [ExportEnums.ImageDataFileFormats[0], ExportEnums.ImageDataFileFormats[1], ExportEnums.ImageDataFileFormats[2]];
-			if(self.ExportImages()){
+			if (self.ExportImages()) {
 				var defaultOption = { key: "Select...", value: "" };
 				self.ImageFileFormatList([defaultOption].concat(formats));
-				self.SelectedImageDataFileFormat(state.SelectedImageDataFileFormat || self.ImageFileFormatList()[0]);
-				self.SelectedImageDataFileFormat.isModified(false);		
+
+				setSelectedImageDataFileFormat();
+
+				self.SelectedImageDataFileFormat.isModified(false);
 			}
-			else{
+			else {
 				self.ImageFileFormatList([ExportEnums.ImageDataFileFormats[3]].concat(formats));
-				self.SelectedImageDataFileFormat(state.SelectedImageDataFileFormat || self.ImageFileFormatList()[0]);
+
+				setSelectedImageDataFileFormat();
 			}
 		}
-		
+
 		this.ExportImages.subscribe(self._updateImageFileFormat);
 
 		self._updateImageFileFormat();
@@ -509,6 +515,8 @@
 			}
 		});
 
+		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
+
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
 		var getTextRepresentation = function (value) {
@@ -602,7 +610,8 @@
 				"VolumeDigitPadding": self.VolumeDigitPadding(),
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"VolumePrefix": self.VolumePrefix(),
-				"VolumeStartNumber": self.VolumeStartNumber()
+				"VolumeStartNumber": self.VolumeStartNumber(),
+				"IncludeNativeFilesPath": self.IncludeNativeFilesPath()
 			};
 		};
 	};
@@ -644,6 +653,14 @@
 
 			if (self.model.errors().length === 0) {
 				var settings = self.model.getSelectedOption();
+				
+				if(settings.TextFileEncodingType === 'Select...'){
+					settings.TextFileEncodingType = '';
+				}
+
+				if(settings.DataFileEncodingType === 'Select...'){
+					settings.DataFileEncodingType = '';
+				}
 
 				$.extend(self.ipModel.sourceConfiguration, settings);
 				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace

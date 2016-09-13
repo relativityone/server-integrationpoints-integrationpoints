@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.MassOperationHandlers;
+using Relativity.Core;
 
 namespace kCura.IntegrationPoints.EventHandlers.MassOperations
 {
@@ -17,7 +20,9 @@ namespace kCura.IntegrationPoints.EventHandlers.MassOperations
 			try
 			{
 				IRSAPIService service = new RSAPIService(Helper, Helper.GetActiveCaseID());
-				massCopy = new IntegrationPointMassCopy(service);
+				BaseServiceContext baseServiceContext = ClaimsPrincipal.Current.GetUnversionContext(Helper.GetActiveCaseID());
+				IIntegrationPointNameHelper integrationPointNameHelper = new IntegrationPointNameHelper(baseServiceContext.ChicagoContext.ThreadSafeChicagoContext);
+				massCopy = new IntegrationPointMassCopy(service, integrationPointNameHelper);
 			}
 			catch (Exception ex)
 			{

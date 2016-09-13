@@ -283,6 +283,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.True(productionPrecedenceList.All(x => exportFile.ImagePrecedence.Any(y => y.Display == x.DisplayName && y.Value == x.ArtifactID)));
 		}
 
+		[Test]
+		public void ItShouldSetExportNativesWhenIncludingNativeFilesPath()
+		{
+			_exportSettings.IncludeNativeFilesPath = true;
+			_exportSettings.ExportNatives = false;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.True(exportFile.ExportNative);
+		}
+
 
 		public void ItShouldRewriteOtherSettings()
 		{

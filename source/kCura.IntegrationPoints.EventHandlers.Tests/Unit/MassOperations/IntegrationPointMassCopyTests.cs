@@ -13,13 +13,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 	{
 		private IntegrationPointMassCopy _massCopy;
 		private IRSAPIService _service;
+		private IIntegrationPointNameHelper _nameHelper;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_service = Substitute.For<IRSAPIService>();
+			_nameHelper = Substitute.For<IIntegrationPointNameHelper>();
 
-			_massCopy = new IntegrationPointMassCopy(_service);
+			_massCopy = new IntegrationPointMassCopy(_service, _nameHelper);
 		}
 
 		[Test]
@@ -63,12 +65,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 		public void ItShouldSetNameWithSuffix_Copy()
 		{
 			const string ipName = "Custom IP Name";
-			var expectedName = ipName + "_copy";
+			var expectedName = $"{ipName} (1)";
 
 			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateExampleIntegrationPoint();
 			MassCopyIntegrationPointHelper.MockIntegrationPointName(ip, ipName);
 
 			_service.IntegrationPointLibrary.Read(Arg.Any<IEnumerable<int>>()).Returns(new List<Data.IntegrationPoint> {ip});
+			_nameHelper.CreateNameForCopy(ip).Returns(expectedName);
 
 			_massCopy.Copy(new List<int> {1});
 

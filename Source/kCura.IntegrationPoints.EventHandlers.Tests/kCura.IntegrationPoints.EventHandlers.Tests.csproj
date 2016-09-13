@@ -44,6 +44,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
+	<Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
@@ -118,6 +122,7 @@
     <Compile Include="Integration\ViewErrors.cs" />
     <Compile Include="Unit\Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Unit\IntegrationPoints\ConsoleEventHandlerTests.cs" />
+    <Compile Include="Unit\IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
     <Compile Include="Unit\MassOperations\MassCopyIntegrationPointHelper.cs" />
     <Compile Include="Unit\MassOperations\IntegrationPointMassCopyTests.cs" />
     <Compile Include="Unit\PageInteractionHelperTests.cs" />
