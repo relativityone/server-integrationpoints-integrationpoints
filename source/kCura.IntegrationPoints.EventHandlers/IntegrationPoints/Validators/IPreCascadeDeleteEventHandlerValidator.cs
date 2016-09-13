@@ -1,5 +1,5 @@
 ﻿
-namespace kCura.IntegrationPoints.EventHandlers
+namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
 {
 	public interface IPreCascadeDeleteEventHandlerValidator
 	{
