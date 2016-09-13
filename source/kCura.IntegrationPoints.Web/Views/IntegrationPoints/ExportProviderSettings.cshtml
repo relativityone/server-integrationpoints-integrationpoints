@@ -257,10 +257,13 @@
 									Data File Encoding:
 								</div>
 								<div class="field-value">
-									<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
-										<optgroup data-bind="attr: {label: label}, foreach: children">
-											<option data-bind="text: displayName, value: name"></option>
-										</optgroup>
+									<select id="dataFileEncodingSelector" data-bind="value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+										<option data-bind="value: ''">Select...</option>
+										<!-- ko foreach: FileEncodingTypeList -->
+											<optgroup data-bind="attr: {label: label}, foreach: children">
+												<option data-bind="text: displayName, value: name"></option>
+											</optgroup>
+										<!-- /ko -->
 									</select>
 								</div>
 							</div>
@@ -357,10 +360,13 @@
 										Text File Encoding:
 									</div>
 									<div class="field-value">
-										<select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...', disable: HasBeenRun(), select2searchable: {}">
-											<optgroup data-bind="attr: {label: label}, foreach: children">
-												<option data-bind="text: displayName, value: name"></option>
-											</optgroup>
+										<select id="textFileEncodingSelector" data-bind="value: TextFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+											<option data-bind="value: ''">Select...</option>
+											<!-- ko foreach: FileEncodingTypeList -->
+												<optgroup data-bind="attr: {label: label}, foreach: children">
+													<option data-bind="text: displayName, value: name"></option>
+												</optgroup>
+											<!-- /ko -->
 										</select>
 									</div>
 								</div>
