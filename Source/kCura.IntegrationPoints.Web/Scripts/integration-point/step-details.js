@@ -520,9 +520,9 @@ var IP = IP || {};
 			}
 		});
 
-		this.timeZoneOffset = ko.computed(function () {
+		this.timeZoneOffsetInMinute = ko.computed(function () {
 			var date = new Date();
-			return date.getTimezoneOffset() / 60;
+			return date.getTimezoneOffset();
 		}, this);
 
 		this.endDate = ko.observable(options.endDate).extend({

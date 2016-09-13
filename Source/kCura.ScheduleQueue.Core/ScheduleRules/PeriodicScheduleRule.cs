@@ -20,7 +20,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		public DateTime? EndDate { get; set; }
 
 		[DataMember]
-		public int? TimeZoneOffset { get; set; }
+		public int? TimeZoneOffsetInMinute { get; set; }
 
 		[DataMember]
 		public int? DayOfMonth { get; set; }
@@ -49,7 +49,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		public PeriodicScheduleRule(
 			ScheduleInterval interval, DateTime startDate, TimeSpan localTimeOfDay,
-			DateTime? endDate = null, int timeZoneOffset = 0, DaysOfWeek? daysToRun = null,
+			DateTime? endDate = null, int? timeZoneOffset = null, DaysOfWeek? daysToRun = null,
 			int? dayOfMonth = null, bool? setLastDayOfMonth = null,
 			int? reoccur = null, OccuranceInMonth? occuranceInMonth = null
 			)
@@ -63,20 +63,20 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DayOfMonth = dayOfMonth;
 			SetLastDayOfMonth = setLastDayOfMonth;
 			Reoccur = reoccur;
-			TimeZoneOffset = timeZoneOffset;
+			TimeZoneOffsetInMinute = timeZoneOffset;
 			OccuranceInMonth = occuranceInMonth;
 		}
 
 		public override DateTime? GetNextUTCRunDateTime(DateTime? lastRunTime = null, TaskStatusEnum? lastTaskStatus = null)
 		{
 			IEndDateComparer comparer = null;
-			if (TimeZoneOffset == null)
+			if (TimeZoneOffsetInMinute == null)
 			{
 				comparer = new LocalEndDateComparer();
 			}
 			else
 			{
-				EndDate = EndDate?.AddHours(TimeZoneOffset.GetValueOrDefault());
+				EndDate = EndDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault());
 				comparer = new UtcEndDateComparer();
 			}
 

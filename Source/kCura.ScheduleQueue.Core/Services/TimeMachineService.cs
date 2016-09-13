@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections;
-using kCura.Apps.Common.Config;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
 
@@ -10,13 +6,14 @@ namespace kCura.ScheduleQueue.Core.Services
 {
 	public class TimeMachineService : ITimeService
 	{
-		private int _workspaceID;
-		public TimeMachineService(int workspaceID)
+		private readonly int _workspaceId;
+
+		public TimeMachineService(int workspaceId)
 		{
-			_workspaceID = workspaceID;
+			_workspaceId = workspaceId;
 		}
-		
-		DateTime ITimeService.UtcNow
+
+		public DateTime UtcNow
 		{
 			get
 			{
@@ -25,7 +22,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				{
 					if (AgentTimeMachineProvider.Current.WorkspaceID > 0)
 					{
-						if (AgentTimeMachineProvider.Current.WorkspaceID.Equals(_workspaceID))
+						if (AgentTimeMachineProvider.Current.WorkspaceID.Equals(_workspaceId))
 						{
 							returnValue = AgentTimeMachineProvider.Current.UtcNow;
 						}
@@ -38,5 +35,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				return returnValue;
 			}
 		}
+
+		public DateTime LocalTime => UtcNow.ToLocalTime();
 	}
 }

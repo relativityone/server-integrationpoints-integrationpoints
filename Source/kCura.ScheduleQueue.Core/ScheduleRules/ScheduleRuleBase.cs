@@ -88,7 +88,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			//* Due to Daylight Saving Time (DST) all calculations are done with local date/time to insure final time corresponds to Scheduled time
 			//* However, returning value in UTC, since Method Agent framework operates in UTC.
 
-			DateTime localNow = TimeService.UtcNow.ToLocalTime();
+			DateTime localNow = TimeService.LocalTime;
 			DateTime nextRunTimeDate = startDate.Date > localNow.Date ? startDate.Date : localNow.Date;
 			nextRunTimeDate = nextRunTimeDate.AddTicks(localTimeOfDayTicks);
 			endDate = endDate?.AddTicks(localTimeOfDayTicks);
