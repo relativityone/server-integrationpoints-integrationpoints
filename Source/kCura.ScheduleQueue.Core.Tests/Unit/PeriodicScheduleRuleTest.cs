@@ -712,8 +712,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var utcNow = DateTime.Parse(utc);
 			rule.TimeService = Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
-			rule.TimeService.LocalTime.Returns(rule.TimeService.UtcNow.ToLocalTime());
+			rule.TimeService.UtcNow.Returns(utcNow);
+			rule.TimeService.LocalTime.Returns(utcNow.ToLocalTime());
 		}
 	}
 }
