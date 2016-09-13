@@ -5,39 +5,42 @@ namespace kCura.IntegrationPoints.EventHandlers.MassOperations
 {
 	public class IntegrationPointMassCopy
 	{
+		private readonly IIntegrationPointNameHelper _integrationPointNameHelper;
 		private readonly IRSAPIService _service;
 
-		public IntegrationPointMassCopy(IRSAPIService service)
+		public IntegrationPointMassCopy(IRSAPIService service, IIntegrationPointNameHelper integrationPointNameHelper)
 		{
 			_service = service;
+			_integrationPointNameHelper = integrationPointNameHelper;
 		}
 
 		public void Copy(IEnumerable<int> integrationPointArtifactIds)
 		{
-			List<Data.IntegrationPoint> selectedIntegrationPoints = _service.IntegrationPointLibrary.Read(integrationPointArtifactIds);
-			foreach (Data.IntegrationPoint integrationPoint in selectedIntegrationPoints)
+			var selectedIntegrationPoints = _service.IntegrationPointLibrary.Read(integrationPointArtifactIds);
+			foreach (var integrationPoint in selectedIntegrationPoints)
 			{
 				var newIntegrationPoint = BuildIntegrationPointModel(integrationPoint);
 				_service.IntegrationPointLibrary.Create(newIntegrationPoint);
 			}
 		}
 
-		private Data.IntegrationPoint BuildIntegrationPointModel(Data.IntegrationPoint row)
+		private Data.IntegrationPoint BuildIntegrationPointModel(Data.IntegrationPoint integrationPoint)
 		{
+			var newName = _integrationPointNameHelper.CreateNameForCopy(integrationPoint);
 			var ip = new Data.IntegrationPoint
 			{
 				ArtifactId = 0,
 				EnableScheduler = false,
 				HasErrors = false,
-				LogErrors = row.LogErrors,
-				Name = row.Name + "_copy",
-				DestinationProvider = row.DestinationProvider,
-				DestinationConfiguration = row.DestinationConfiguration,
-				SourceConfiguration = row.SourceConfiguration,
-				FieldMappings = row.FieldMappings,
-				EmailNotificationRecipients = row.EmailNotificationRecipients,
-				SourceProvider = row.SourceProvider,
-				OverwriteFields = row.OverwriteFields
+				LogErrors = integrationPoint.LogErrors,
+				Name = newName,
+				DestinationProvider = integrationPoint.DestinationProvider,
+				DestinationConfiguration = integrationPoint.DestinationConfiguration,
+				SourceConfiguration = integrationPoint.SourceConfiguration,
+				FieldMappings = integrationPoint.FieldMappings,
+				EmailNotificationRecipients = integrationPoint.EmailNotificationRecipients,
+				SourceProvider = integrationPoint.SourceProvider,
+				OverwriteFields = integrationPoint.OverwriteFields
 			};
 			return ip;
 		}
