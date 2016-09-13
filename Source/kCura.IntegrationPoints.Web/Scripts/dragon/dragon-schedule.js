@@ -117,7 +117,7 @@
 	function manageDayMessage(scheduleOptions, day) {
 		if (day > 28) {
 			//show message
-			var message = "Months with fewer than {0} days will send on the last day of the month."
+			var message = "For months containing fewer than {0} days, Relativity will attempt to initiate the job on the last day of the month";
 			scheduleOptions.$dayLabel.show().text(D.format(message, day));
 		} else {
 			scheduleOptions.$dayLabel.hide();
