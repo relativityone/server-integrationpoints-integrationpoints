@@ -153,6 +153,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleEventHandlerBase.cs" />
+    <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />
     <Compile Include="Installers\RunEveryTimeInstaller.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Constant.cs" />
     <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
+    <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="MassOperations\IntegrationPointMassCopy.cs" />
     <Compile Include="MassOperations\IntegrationPointMassCopyHandler.cs" />
     <Compile Include="IntegrationPoints\JobHistoryErrorPageInteraction.cs" />
