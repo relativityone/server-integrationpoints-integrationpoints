@@ -653,6 +653,14 @@
 
 			if (self.model.errors().length === 0) {
 				var settings = self.model.getSelectedOption();
+				
+				if(settings.TextFileEncodingType === 'Select...'){
+					settings.TextFileEncodingType = '';
+				}
+
+				if(settings.DataFileEncodingType === 'Select...'){
+					settings.DataFileEncodingType = '';
+				}
 
 				$.extend(self.ipModel.sourceConfiguration, settings);
 				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
