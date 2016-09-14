@@ -4,9 +4,10 @@
 	padding: 0;
 	background-color: white;
 	height: 50%;
-	z-index: 200;
-	border-radius: 3px;
+	z-index: 200;	
 	border: 1px solid #c1c1c1;
+	border-top: 0px;
+	box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
 }
 
 .jstree-children, .jstree-container-ul {
@@ -50,15 +51,50 @@
 	box-shadow: inset 0 0 0px #999;
 }
 
-
-
 .jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover, .jstree-anchor:active {
 	text-decoration: none !important;
 	border: 1px solid transparent;
 }
 
 #location-select {
-	width: 218px;
+	width: 100%;
 	border: 1px solid #c1c1c1;
-	border-radius: 3px;
+	position:relative;	
+	cursor: pointer;
+}
+
+#location-input {
+	width: 407px; 
+	border: 0px; 
+	padding-left: 7px;
+	cursor: pointer;
+}
+
+#location-input::-webkit-input-placeholder {
+   color: #000;
+}
+
+#location-input:-moz-placeholder {
+   color: #000;
+}
+
+#location-input::-moz-placeholder {
+   color: #000;
+}
+
+#location-input:-ms-input-placeholder {
+   color: #000;
+}
+
+#location-span {
+	height: 100%; 
+	padding-top: 6px; 
+	position: absolute; 
+	background-color: #fff;
+}
+
+.location-disabled {
+	background-color: #e8e8e8!important;
+	cursor: default!important;
+	pointer-events: none!important;
 }
