@@ -1016,7 +1016,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				DestinationProvider = 4242,
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler() { EnableScheduler = false },
-				LastRun = null
+				LastRun = null,
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
 			var existingModel = new IntegrationModel()
@@ -1104,7 +1105,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler() { EnableScheduler = false },
-				LastRun = null
+				LastRun = null,
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
 			var existingModel = new IntegrationModel()
@@ -1186,7 +1188,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				DestinationProvider = 4242,
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler() { EnableScheduler = false },
-				LastRun = null
+				LastRun = null,
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
@@ -1289,6 +1292,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 					Reoccur = 2,
 				},
 				LastRun = null,
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = ""})
 			};
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Create(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
