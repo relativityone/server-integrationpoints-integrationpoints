@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.MassOperations
 
 
 		[Test]
-		public void ItShouldSetNameWithSuffix_Copy()
+		public void ItShouldSetNameReturnedFromNameHelper()
 		{
 			const string ipName = "Custom IP Name";
 			var expectedName = $"{ipName} (1)";
