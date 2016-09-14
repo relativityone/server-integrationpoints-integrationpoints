@@ -299,6 +299,7 @@
     <Compile Include="Attributes\WebAPIFilterException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />

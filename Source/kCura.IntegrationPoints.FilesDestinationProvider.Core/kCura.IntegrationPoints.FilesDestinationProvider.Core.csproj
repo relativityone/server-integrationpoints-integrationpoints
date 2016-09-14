@@ -76,6 +76,10 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
@@ -156,10 +160,12 @@
     <Compile Include="Process\ExportProcessBuilder.cs" />
     <Compile Include="Process\ExportProcessRunner.cs" />
     <Compile Include="Process\ExportSettingsBuilder.cs" />
+    <Compile Include="Process\ExportSettingsValidationService.cs" />
     <Compile Include="Process\IDelimitersBuilder.cs" />
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Process\IExportSettingsBuilder.cs" />
+    <Compile Include="Process\IExportSettingsValidationService.cs" />
     <Compile Include="Process\IProductionPrecedenceService.cs" />
     <Compile Include="Process\ProductionPrecedenceService.cs" />
     <Compile Include="Process\IVolumeInfoBuilder.cs" />
@@ -171,6 +177,8 @@
     <Compile Include="SharedLibrary\CoreExportManager.cs" />
     <Compile Include="SharedLibrary\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\InitializationResultsExtensions.cs" />
+    <Compile Include="SharedLibrary\IPaddingValidator.cs" />
+    <Compile Include="SharedLibrary\PaddingValidator.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />

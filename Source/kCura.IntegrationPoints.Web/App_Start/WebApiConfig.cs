@@ -109,6 +109,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ValidateSettings",
+				routeTemplate: "{workspaceID}/api/ExportSettingsValidation/Validate",
+				defaults: new { controller = "ExportSettingsValidation", action = "ValidateSettings" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "GetProcessingSourceLocations",
 				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocations",
 				defaults: new { controller = "ResourcePool", action = "GetProcessingSourceLocations" }
