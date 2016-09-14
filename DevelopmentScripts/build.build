@@ -19,7 +19,7 @@
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
 	<property name="source.dependency.SystemWrapper.directory" value="${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45" />
 	<property name="source.dependency.SystemInterface.directory" value="${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45" />
-	<property name="relativityDependencyVersion" value="9.4.290.3" />
+	<property name="relativityDependencyVersion" value="9.4.302.1" />
 	
 	<!-- Log properties -->
 	<echo message="Root: ${root}" />

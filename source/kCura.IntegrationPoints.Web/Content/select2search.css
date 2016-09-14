@@ -28,8 +28,12 @@ Version: 3.5.1 Timestamp: Tue Jul 22 18:58:56 EDT 2014
 }
 
 .select2-container, .select2-container.select2-container-active, .select2-container.select2-dropdown-open, .select2-drop {
-	font-size: 11px;
-	width: 218px !important;
+	font-size: 11px;	
+	min-width: 218px;
+}
+
+div.select2-double-width {
+	min-width: 436px;
 }
 
 .select2-container.subgrid-filter-container span.select2-chosen {

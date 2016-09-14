@@ -1,8 +1,8 @@
 var LocationJSTreeSelector = function () {
 	var self = this;
 	self.domSelectorSettings = {
-		dropdownSelector : 'select#location-select',
-		dropdownOptionSelectedSelector: 'select#location-select option:selected',
+		dropdownSelector : 'div#location-select',
+		inputSelector: 'input#location-input',
 		browserTreeSelector : 'div#browser-tree',
 		jstreeHolderDivSelector: '#jstree-holder-div',
 		onNodeSelectedEventHandler: function () { }
@@ -33,8 +33,7 @@ var LocationJSTreeSelector = function () {
 		self.setTreeVisibility(self.treeVisible);
 	};
 
-	self.initJsTree = function (data) {
-		
+	self.initJsTree = function (data) {		
 		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
 		var root = $.extend({ "icon": "jstree-root-folder" }, data);
 
@@ -54,32 +53,29 @@ var LocationJSTreeSelector = function () {
 
 	self.setTreeVisibility = function (visible) {
 		if (visible) {
-			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).outerWidth());
+			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 			$(self.domSelectorSettings.jstreeHolderDivSelector).show();
 			self.treeVisible = true;
 		} else {
-			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).outerWidth());
+			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 			$(self.domSelectorSettings.jstreeHolderDivSelector).hide();
 			self.treeVisible = false;
 		}
 	};
 
 	self.clearSelection = function () {
-		$(self.domSelectorSettings.dropdownSelector).empty();
-		$(self.domSelectorSettings.dropdownSelector).prop('selectedIndex', 0);
-		$(self.domSelectorSettings.dropdownOptionSelectedSelector).hide();
+		$(self.inputSelector).attr("value", "");
+		self.reload(undefined);
 	};
 
 	self.setSelection = function (newValue) {
-		$(self.domSelectorSettings.dropdownSelector).empty();
-		$(self.domSelectorSettings.dropdownSelector).append('<option>' + newValue + '</option>');
-		$(self.domSelectorSettings.dropdownSelector).prop('selectedIndex', 0);
-		$(self.domSelectorSettings.dropdownOptionSelectedSelector).hide();
+		$(self.inputSelector).attr("value", newValue);
 	};
 
 	return {
 		init: self.init,
 		reload: self.reload,
+		clear: self.clearSelection,
 		SelectedNode: self.SelectedNode
 	}
 

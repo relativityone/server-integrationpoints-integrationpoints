@@ -38,6 +38,7 @@ using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FtpProvider.Connection;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
@@ -159,6 +160,13 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
 			container.Register(Component.For<IProductionPrecedenceService>().ImplementedBy<ProductionPrecedenceService>().LifestyleTransient());
+
+			container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
+			container.Register(Component.For<IPaddingValidator>().ImplementedBy<PaddingValidator>().LifestyleTransient());
+			container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>().LifestyleTransient());
+			container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>().LifestyleTransient());
+			container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>().LifestyleTransient());
+			container.Register(Component.For<IVolumeInfoBuilder>().ImplementedBy<VolumeInfoBuilder>().LifestyleTransient());
 
 			#region FTP Provider
 			container.Register(Component.For<IConnectorFactory>().ImplementedBy<ConnectorFactory>().LifestyleSingleton().OnlyNewServices());

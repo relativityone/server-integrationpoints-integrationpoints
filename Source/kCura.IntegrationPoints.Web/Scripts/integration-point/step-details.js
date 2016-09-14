@@ -343,7 +343,7 @@ var IP = IP || {};
 			this.selectedDay = ko.observable(currentState.selectedDay);
 
 			this.overflowMessage = ko.computed(function () {
-				return 'Months with fewer than ' + self.selectedDay() + ' days will send on the last day of the month.';
+				return 'For months containing fewer than '+ self.selectedDay() + ' days, Relativity will attempt to initiate the job on the last day of the month';
 			});
 
 			this.dayTypes = ko.observableArray([
@@ -520,9 +520,9 @@ var IP = IP || {};
 			}
 		});
 
-		this.timeZoneOffset = ko.computed(function () {
+		this.timeZoneOffsetInMinute = ko.computed(function () {
 			var date = new Date();
-			return date.getTimezoneOffset() / 60;
+			return date.getTimezoneOffset();
 		}, this);
 
 		this.endDate = ko.observable(options.endDate).extend({

@@ -4,15 +4,19 @@ ko.bindingHandlers.select2 = {
 		ko.utils.domNodeDisposal.addDisposeCallback(el, function () {
 			$(el).select2('destroy');
 		});
+
 		var allBindings = allBindingsAccessor(),
 			select2 = ko.utils.unwrapObservable(allBindings.select2),
 			$element = $(el);
-		$element.select2({
-			dropdownAutoWidth: false,
-			dropdownCssClass: "filter-select",
-			containerCssClass: "filter-container",
-			minimumResultsForSearch: Infinity,
-		});
+	
+		$element.select2(
+			$.extend({
+				dropdownAutoWidth: false,
+				dropdownCssClass: "filter-select",
+				containerCssClass: "filter-container",
+				minimumResultsForSearch: Infinity			
+			}, valueAccessor())
+		);
 
 		if (viewModel.disable) {
 			$element.select2('disable');
@@ -21,10 +25,9 @@ ko.bindingHandlers.select2 = {
 		$element.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon legal-hold icon-chevron-down");
 	},
 	update: function (el, valueAccessor, allBindingsAccessor, viewModel) {
-
 		var allBindings = allBindingsAccessor();
 		if ("value" in allBindings) {
-		    $(el).select2("val", allBindings.value());
+			$(el).select2("val", allBindings.value());
 		} else if ("selectedOptions" in allBindings) {
 			var converted = [];
 			var textAccessor = function (value) { return value; };
@@ -54,14 +57,18 @@ ko.bindingHandlers.select2searchable = {
 		ko.utils.domNodeDisposal.addDisposeCallback(el, function () {
 			$(el).select2('destroy');
 		});
+
 		var allBindings = allBindingsAccessor(),
 			select2 = ko.utils.unwrapObservable(allBindings.select2searchable),
 			$element = $(el);
-		$element.select2({
-			dropdownAutoWidth: false,
-			dropdownCssClass: "filter-select",
-			containerCssClass: "filter-container",
-		});
+
+		$element.select2(
+			$.extend({
+				dropdownAutoWidth: false,
+				dropdownCssClass: "filter-select",
+				containerCssClass: "filter-container",
+			}, valueAccessor())
+		);
 
 		if (viewModel.disable) {
 			$element.select2('disable');
@@ -105,7 +112,7 @@ ko.bindingHandlers.datepicker = {
 	init: function (element, valueAccessor, allBindingsAccessor) {
 		//initialize datepicker with some optional options
 		var options = allBindingsAccessor().datepickerOptions || {},
-				$el = $(element);
+			$el = $(element);
 
 		options.onSelect = function (date) {
 			var observable = valueAccessor();
@@ -128,7 +135,7 @@ ko.bindingHandlers.datepicker = {
 	},
 	update: function (element, valueAccessor) {
 		var value = ko.utils.unwrapObservable(valueAccessor()),
-				$el = $(element);
+			$el = $(element);
 
 		//handle date data coming via json from Microsoft
 		if (String(value).indexOf('/Date(') == 0) {
@@ -145,11 +152,11 @@ ko.bindingHandlers.datepicker = {
 ko.bindingHandlers.doubleClick = {
 	init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 		var handler = valueAccessor(),
-				delay = 200,
-				clickTimeout = false;
+			delay = 200,
+			clickTimeout = false;
 
 		$(element).on('dblclick', function () {
-				handler.call(viewModel);
+			handler.call(viewModel);
 		});
 	}
 };

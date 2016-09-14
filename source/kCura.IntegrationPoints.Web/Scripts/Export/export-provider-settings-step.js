@@ -15,19 +15,36 @@
 			required: true
 		});
 
-		this.ProcessingSourceLocation.subscribe(function(value) {
-			self.getDirectories(value);
-		});
+		this.ProcessingSourceLocation.subscribe(function (value) {
+			if (!!value) {
+				self.getDirectories(value);
+			} else {
+				self.Fileshare(undefined);
+
+				if (self.locationSelector) {
+					self.locationSelector.clear();
+				}
+			}
+
+			self.toggleLocation(!!value);
+		});		
 
 		this.ProcessingSourceLocationList = ko.observableArray([]);
 
 		this.onDOMLoaded = function () {
-			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.init(self.Fileshare(), [], {
-				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
-			});
-			self.ProcessingSourceLocation.isModified(false);
-			self.getProcessingSources();
+			if (self.HasBeenRun()) {
+				self.toggleLocation(false);
+			} else {
+				self.locationSelector = new LocationJSTreeSelector();
+				self.locationSelector.init(self.Fileshare(), [], {
+					onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+				});
+				
+				self.ProcessingSourceLocation.isModified(false);
+				self.getProcessingSources();
+
+				self.toggleLocation(!!self.ProcessingSourceLocation());
+			}
 		};
 
 		this.getProcessingSources = function () {
@@ -37,14 +54,12 @@
 				data: {
 					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
 				}
-			})
-					.then(function (result) {
-						self.ProcessingSourceLocationList(result);
-						self.ProcessingSourceLocation(state.ProcessingSourceLocation);
-					})
-					.fail(function (error) {
-						root.message.error.raise("No attributes were returned from the source provider.");
-					});
+			}).then(function (result) {
+				self.ProcessingSourceLocationList(result);
+				self.ProcessingSourceLocation(state.ProcessingSourceLocation);
+			}).fail(function (error) {
+				root.message.error.raise("No attributes were returned from the source provider.");
+			});
 		};
 
 		this.getDirectories = function (artifacId) {
@@ -54,14 +69,20 @@
 				data: {
 					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
 				}
-			})
-					.then(function (result) {
-						self.locationSelector.reload(result);
-					})
-					.fail(function (error) {
-						root.message.error.raise("No attributes were returned from the source provider.");
-					});
+			}).then(function (result) {
+				self.locationSelector.reload(result);
+			}).fail(function (error) {
+				root.message.error.raise("No attributes were returned from the source provider.");
+			});
 		};
+
+		this.toggleLocation = function (enabled) {
+			var $el = $("#location-select");
+			$el.toggleClass('location-disabled', !enabled);
+			$el.children().each(function (i, e) {
+				$(e).toggleClass('location-disabled', !enabled);
+			});
+		};		
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
@@ -503,15 +524,18 @@
 			}
 		});
 		
-		this.isUserPrefix = ko.observable(state.UserPrefix || state.UserPrefix == 0); // empty string equals zero - isn't javascript beautiful?  (allow if user prefix is selected but not yet specified)
-
+		this.isUserPrefix = ko.observable((self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix));
+		
 		this.FilePath.subscribe(function (value) {
 			self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
 			if (value === ExportEnums.FilePathTypeEnum.UserPrefix) {
 				self.isUserPrefix(true);
+
+				if(self.UserPrefix() !== ""){
+					self.UserPrefix.notifySubscribers();
+				}								
 			} else {
 				self.isUserPrefix(false);
-				self.UserPrefix(null);
 			}
 		});
 

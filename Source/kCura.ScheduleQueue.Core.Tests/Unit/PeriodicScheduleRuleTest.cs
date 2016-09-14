@@ -9,7 +9,6 @@ namespace kCura.ScheduleQueue.Core.Tests
 	[TestFixture]
 	internal class PeriodicScheduleRuleTest
 	{
-
 		private const string dailyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Daily</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
 		private const string weeklyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun>Monday Friday</DaysToRun><EndDate i:nil=""true""/><Interval>Weekly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
 		private const string monthlyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth>15</DayOfMonth><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Monthly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
@@ -31,14 +30,12 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
 		}
 
-
 		[Test]
 		public void LocalTimeOfDay_SetGet_ValidateCorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate, DateTime.Parse("01/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("01/29/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/29/2010 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("01/29/2010 12:31");
 
 			var result = rule.LocalTimeOfDay;
@@ -50,9 +47,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void LocalTimeOfDay_SetJanGetInJuly_ValidateCorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate, DateTime.Parse("01/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("01/29/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/29/2010 10:00:00");
 			DateTime expectedTime = DateTime.Parse("01/29/2010 12:31");
 
 			var result = rule.LocalTimeOfDay;
@@ -60,14 +55,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual(expectedTime.TimeOfDay, result);
 		}
 
-
 		[Test]
 		public void GetNextUTCRunDateTime_ImmediateStartDateTimeAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/28/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/28/2010 10:00:00");
 			DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -79,9 +71,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_ImmediateStartDateBeforeTimeAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/30/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
 			DateTime expectedTime = DateTime.Parse("12/30/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -94,8 +84,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
 			var utcNow = DateTime.Parse("12/30/2010 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
 
 			var result = rule.GetNextUTCRunDateTime();
 
@@ -106,9 +95,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_HourlyStartDateTimeAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Hourly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/28/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/28/2010 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -120,9 +108,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_HourlyStartDateBeforeTimeAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Hourly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/30/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("12/30/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -134,9 +121,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_HourlyStartDateTimeBeforeNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Hourly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/30/2010 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
+
 			DateTime expectedTime = DateTime.Parse("12/30/2010 21:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -148,9 +134,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_DailyStartDateTimeAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/28/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/28/2010 10:00:00");
 			DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -162,9 +146,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_DailyStartDateSameTimeAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/29/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/29/2010 10:00:00");
 			DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -176,9 +158,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_DailyStartDateBeforeTimeAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/30/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
 			DateTime expectedTime = DateTime.Parse("12/30/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -190,9 +170,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_DailyStartDateTimeBeforeNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-			var utcNow = DateTime.Parse("12/30/2010 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
 			DateTime expectedTime = DateTime.Parse("12/31/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -204,9 +182,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_WeeklyMondaysOnlyStartDateTimeThursdayBeforeNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday);
-			var utcNow = DateTime.Parse("12/30/2010 21:00:00"); //--Thursday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 21:00:00"); //--Thursday
+
 			DateTime expectedTime = DateTime.Parse("01/03/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -219,9 +196,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_WeeklyMondaysOnlyStartDateTimeMondayBeforeNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday);
-			var utcNow = DateTime.Parse("01/03/2011 10:00:00"); //--Monday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/03/2011 10:00:00"); //--Monday
+
 			DateTime expectedTime = DateTime.Parse("01/03/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -234,9 +210,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_WeeklyMondaysOnlyStartDateTimeMondayAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday);
-			var utcNow = DateTime.Parse("01/03/2011 21:00:00"); //--Monday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/03/2011 21:00:00"); //--Monday
+
 			DateTime expectedTime = DateTime.Parse("01/10/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -249,9 +224,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_WeeklyMondaysFridaysOnlyNowDateTimeTuesday_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday | DaysOfWeek.Friday);
-			var utcNow = DateTime.Parse("01/04/2011 21:00:00"); //--Tuesday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/04/2011 21:00:00"); //--Tuesday
+
 			DateTime expectedTime = DateTime.Parse("01/07/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -264,9 +238,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_WeeklyMondaysFridaysOnlyNowDateTimeSaturday_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday | DaysOfWeek.Friday);
-			var utcNow = DateTime.Parse("01/08/2011 21:00:00"); //--Saturday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/08/2011 21:00:00"); //--Saturday
 			DateTime expectedTime = DateTime.Parse("01/10/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -279,9 +251,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_Every15DayMonthlyStartDateTimeBeforeNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, null, 15);
-			var utcNow = DateTime.Parse("12/30/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("01/15/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -294,9 +265,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_Every31DayMonthlyIn28DayMonth_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, null, 31);
-			var utcNow = DateTime.Parse("02/01/2011 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("02/01/2011 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("02/28/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -308,9 +278,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_Every31DayMonthlyIn29DayMonth_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, null, 31);
-			var utcNow = DateTime.Parse("02/01/2012 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("02/01/2012 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("02/29/2012 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -322,9 +291,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_Every31DayMonthlyIn30DayMonth_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, null, 31);
-			var utcNow = DateTime.Parse("04/01/2011 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("04/01/2011 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("04/30/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -336,9 +304,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_Every31DayMonthlyIn31DayMonth_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, null, 31);
-			var utcNow = DateTime.Parse("05/01/2011 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("05/01/2011 10:00:00");
 			DateTime expectedTime = DateTime.Parse("05/31/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -350,9 +316,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_Every15DayMonthlyStartDateLaterThenNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, null, 15);
-			var utcNow = DateTime.Parse("05/01/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
 			DateTime expectedTime = DateTime.Parse("01/15/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -364,9 +328,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_NextRunTimeDateBeforeEndDate_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), DateTime.Parse("2/1/2011"), 0, null, 15);
-			var utcNow = DateTime.Parse("05/01/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
 
 			var result = rule.GetNextUTCRunDateTime();
 
@@ -377,9 +339,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_NextRunTimeDateOnEndDate_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), DateTime.Parse("1/15/2011"), 0, null, 15);
-			var utcNow = DateTime.Parse("05/01/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
 
 			var result = rule.GetNextUTCRunDateTime();
 
@@ -390,10 +350,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_NextRunTimeDateAfterEndDate_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), DateTime.Parse("1/1/2011"), 0, null, 15);
-			var utcNow = DateTime.Parse("05/01/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
-
+			rule.ArrageTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
 			var result = rule.GetNextUTCRunDateTime();
 
 			Assert.IsNull(result);
@@ -403,9 +360,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_NextRunTimeDateNextDayAfterEndDate_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), DateTime.Parse("1/14/2011"), 0, null, 15);
-			var utcNow = DateTime.Parse("12/29/2010 22:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/29/2010 22:00:00");
 
 			var result = rule.GetNextUTCRunDateTime();
 
@@ -419,9 +374,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			string xml = dailyRuleOldXML.Replace("kCura.Method.Data.ScheduleRules", "kCura.ScheduleQueue.Core.ScheduleRules");
 			PeriodicScheduleRule rule = (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain, typeof(PeriodicScheduleRule).FullName, xml);
 			//PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
-			var utcNow = DateTime.Parse("12/30/2010 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
 			DateTime expectedTime = DateTime.Parse("12/31/2010 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -436,9 +389,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			string xml = weeklyRuleOldXML.Replace("kCura.Method.Data.ScheduleRules", "kCura.ScheduleQueue.Core.ScheduleRules");
 			PeriodicScheduleRule rule = (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain, typeof(PeriodicScheduleRule).FullName, xml);
 			//PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
-			var utcNow = DateTime.Parse("01/08/2011 21:00:00"); //--Saturday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/08/2011 21:00:00"); //--Saturday
 			DateTime expectedTime = DateTime.Parse("01/10/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -453,9 +404,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 			string xml = monthlyRuleOldXML.Replace("kCura.Method.Data.ScheduleRules", "kCura.ScheduleQueue.Core.ScheduleRules");
 			PeriodicScheduleRule rule = (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain, typeof(PeriodicScheduleRule).FullName, xml);
 			//PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
-			var utcNow = DateTime.Parse("05/01/2010 10:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
+
 			DateTime expectedTime = DateTime.Parse("01/15/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -467,9 +417,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_WeeklyMondaysSaturdaysStartDateTimeWednesdayAfterNowReoccur2_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday | DaysOfWeek.Saturday, null, null, 2);
-			var utcNow = DateTime.Parse("01/05/2011 21:00:00"); //--Wednesday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/05/2011 21:00:00"); //--Wednesday
 			DateTime expectedTime = DateTime.Parse("01/08/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -482,9 +430,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_WeeklyMondaysSaturdaysStartDateTimeSundayAfterNowReoccur2_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday | DaysOfWeek.Saturday, null, null, 2);
-			var utcNow = DateTime.Parse("01/09/2011 21:00:00"); //--Sunday
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("01/09/2011 21:00:00"); //--Sunday
 			DateTime expectedTime = DateTime.Parse("01/17/2011 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -497,9 +443,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_MonthlyFirstMondaysReoccurEveryMonthStartDateBeforeNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("9/15/2014"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday, null, null, 1, OccuranceInMonth.First);
-			var utcNow = DateTime.Parse("10/01/2014 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
 			DateTime expectedTime = DateTime.Parse("10/06/2014 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -511,9 +455,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_MonthlyFirstMondaysReoccurEveryMonthStartDateAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Monday, null, null, 1, OccuranceInMonth.First);
-			var utcNow = DateTime.Parse("10/01/2014 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
 			DateTime expectedTime = DateTime.Parse("11/03/2014 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -525,9 +467,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_MonthlySecondTuesdayReoccurEveryMonthStartDateAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Tuesday, null, null, 1, OccuranceInMonth.Second);
-			var utcNow = DateTime.Parse("10/01/2014 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
 			DateTime expectedTime = DateTime.Parse("11/11/2014 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -539,9 +479,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_MonthlyFourthWendesdayReoccurEvery3MonthStartDateAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/25/2014"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Wednesday, null, null, 3, OccuranceInMonth.Fourth);
-			var utcNow = DateTime.Parse("10/24/2014 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("10/24/2014 21:00:00");
 			DateTime expectedTime = DateTime.Parse("1/28/2015 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -553,9 +491,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_MonthlyThirdSaturdayReoccurEvery3MonthStartDateAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Saturday, null, null, 3, OccuranceInMonth.Third);
-			var utcNow = DateTime.Parse("10/01/2014 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
 			DateTime expectedTime = DateTime.Parse("10/18/2014 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -567,9 +503,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextUTCRunDateTime_MonthlyLastFridayReoccurEvery3MonthStartDateAfterNow_CorrectValue()
 		{
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, 0, DaysOfWeek.Friday, null, null, 3, OccuranceInMonth.Last);
-			var utcNow = DateTime.Parse("10/01/2014 21:00:00");
-			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			rule.ArrageTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
 			DateTime expectedTime = DateTime.Parse("10/31/2014 12:31");
 
 			var result = rule.GetNextUTCRunDateTime();
@@ -711,8 +645,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 
 			Assert.AreEqual(expectedTime, result);
 		}
-		#endregion
 
+		#endregion SearchMonthForForwardOccuranceOfDay
 
 		#region SearchMonthForLastOccuranceOfDay
 
@@ -759,8 +693,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 
 			Assert.AreEqual(expectedTime, result);
 		}
-		#endregion
 
+		#endregion SearchMonthForLastOccuranceOfDay
 
 		#region ForwardValidOccurance
 
@@ -772,7 +706,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual((int)OccuranceInMonth.Third, (int)ForwardValidOccurance.Third);
 			Assert.AreEqual((int)OccuranceInMonth.Fourth, (int)ForwardValidOccurance.Fourth);
 		}
-		#endregion
+
+		#endregion ForwardValidOccurance
 
 		#region ForwardValidOccurance
 
@@ -787,6 +722,54 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual(DayOfWeek.Saturday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Saturday]);
 			Assert.AreEqual(DayOfWeek.Sunday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Sunday]);
 		}
-		#endregion
+
+		#endregion ForwardValidOccurance
+
+		[TestCase("Tokyo Standard Time", "12:30 PM", "Central Standard Time", "5:30 PM")]
+		[TestCase("Central Standard Time", "12:30 PM", "Tokyo Standard Time", null)]
+		public void CalculateLastDayOfScheduledJob(string clientTimeZone, string clientLocalTime, string serverTimeZone, string expectedRunUtcTime)
+		{
+			// arrange
+			// client time
+			TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
+			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+			TimeSpan clientUtcOffSet = clientTimeZoneInfo.BaseUtcOffset;
+
+			// server time
+			TimeZoneInfo serverTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(serverTimeZone);
+			TimeSpan serverUtcOffSet = clientlocalTime.Subtract(clientUtcOffSet).Add(serverTimeZoneInfo.BaseUtcOffset);
+			DateTime serverLocalTime = DateTime.Today
+									  .Add(serverUtcOffSet);
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Today, clientlocalTime, DateTime.Today, (int) clientUtcOffSet.TotalHours)
+			{
+				TimeService = Substitute.For<ITimeService>()
+			};
+			rule.TimeService.LocalTime.Returns(serverLocalTime);
+
+			// act
+			DateTime? nextRunTime =	rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+
+			// assert
+			if (expectedRunUtcTime == null)
+			{
+				Assert.IsNull(nextRunTime);
+			}
+			else
+			{
+				Assert.IsNotNull(nextRunTime);
+				Assert.AreEqual(DateTime.Parse(expectedRunUtcTime).TimeOfDay, nextRunTime.Value.TimeOfDay);
+			}
+		}
+	}
+
+	public static class ExtendedPeriodicScheduleRule
+	{
+		public static void ArrageTimeServiceBaseOnUtcNow(this PeriodicScheduleRule rule, string utc)
+		{
+			var utcNow = DateTime.Parse(utc);
+			rule.TimeService = Substitute.For<ITimeService>();
+			rule.TimeService.UtcNow.Returns(utcNow);
+			rule.TimeService.LocalTime.Returns(utcNow.ToLocalTime());
+		}
 	}
 }
