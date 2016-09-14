@@ -25,67 +25,41 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		public object[] RetrieveResultsBlock(int appID, Guid runId, int artifactTypeID, int[] avfIds, int chunkSize, bool displayMulticodesAsNested, char multiValueDelimiter,
 			char nestedValueDelimiter, int[] textPrecedenceAvfIds)
 		{
-			_baseServiceContext.AppArtifactID = appID;
-			var export = CreateExport(artifactTypeID, textPrecedenceAvfIds);
-			var result = export.RetrieveResultsBlock(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter);
-			return result;
+			var export = CreateExport(appID, artifactTypeID, textPrecedenceAvfIds);
+			return export.RetrieveResultsBlock(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter);
 		}
 
 		public object[] RetrieveResultsBlockForProduction(int appID, Guid runId, int artifactTypeID, int[] avfIds, int chunkSize, bool displayMulticodesAsNested,
 			char multiValueDelimiter, char nestedValueDelimiter, int[] textPrecedenceAvfIds, int productionId)
 		{
-			_baseServiceContext.AppArtifactID = appID;
-			var export = CreateExport(artifactTypeID, textPrecedenceAvfIds);
-			var result = export.RetrieveResultsBlockForProduction(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
+			var export = CreateExport(appID, artifactTypeID, textPrecedenceAvfIds);
+			return export.RetrieveResultsBlockForProduction(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
 				nestedValueDelimiter, productionId);
-			return result;
 		}
 
 		public InitializationResults InitializeFolderExport(int appID, int viewArtifactID, int parentArtifactID, bool includeSubFolders, int[] avfIds, int startAtRecord,
 			int artifactTypeID)
 		{
-			_baseServiceContext.AppArtifactID = appID;
-			var export = CreateExport(artifactTypeID);
-			CheckExportPermissions(export);
-			var result = export.InitializeFolderExport(viewArtifactID, parentArtifactID, includeSubFolders, _dynamicallyLoadedDlls, avfIds, startAtRecord);
-
-			return CreateInitializationResults(result);
+			var export = CreateExportWithPermissionCheck(appID);
+			return export.InitializeFolderExport(viewArtifactID, parentArtifactID, includeSubFolders, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
 		}
 
 		public InitializationResults InitializeProductionExport(int appID, int productionArtifactID, int[] avfIds, int startAtRecord)
 		{
-			_baseServiceContext.AppArtifactID = appID;
-			var export = CreateExport((int) ArtifactType.Document);
-			CheckExportPermissions(export);
-			var result = export.InitializeProductionExport(productionArtifactID, _dynamicallyLoadedDlls, avfIds, startAtRecord);
-
-			return CreateInitializationResults(result);
+			var export = CreateExportWithPermissionCheck(appID);
+			return export.InitializeProductionExport(productionArtifactID, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
 		}
 
 		public InitializationResults InitializeSearchExport(int appID, int searchArtifactID, int[] avfIds, int startAtRecord)
 		{
-			_baseServiceContext.AppArtifactID = appID;
-			var export = CreateExport((int) ArtifactType.Document);
-			CheckExportPermissions(export);
-			var result = export.InitializeSavedSearchExport(searchArtifactID, _dynamicallyLoadedDlls, avfIds, startAtRecord);
-
-			return CreateInitializationResults(result);
+			var export = CreateExportWithPermissionCheck(appID);
+			return export.InitializeSavedSearchExport(searchArtifactID, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
 		}
 
 		public bool HasExportPermissions(int appID)
 		{
 			_baseServiceContext.AppArtifactID = appID;
 			return PermissionsHelper.HasAdminOperationPermission(_baseServiceContext, Permission.AllowDesktopClientExport);
-		}
-
-		private InitializationResults CreateInitializationResults(Export.InitializationResults result)
-		{
-			return new InitializationResults
-			{
-				ColumnNames = result.ColumnNames,
-				RowCount = result.RowCount,
-				RunId = result.RunId
-			};
 		}
 
 		private void CheckExportPermissions(Export export)
@@ -96,8 +70,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			}
 		}
 
-		private Export CreateExport(int artifactTypeID, int[] textPrecedenceAvfIds = null)
+		private Export CreateExportWithPermissionCheck(int appID)
 		{
+			var export = CreateExport(appID, (int) ArtifactType.Document);
+			CheckExportPermissions(export);
+			return export;
+		}
+
+		private Export CreateExport(int appID, int artifactTypeID, int[] textPrecedenceAvfIds = null)
+		{
+			_baseServiceContext.AppArtifactID = appID;
 			Export export;
 			if (textPrecedenceAvfIds == null)
 			{

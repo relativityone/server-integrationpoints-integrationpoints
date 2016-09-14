@@ -170,6 +170,7 @@
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
     <Compile Include="SharedLibrary\CoreExportManager.cs" />
     <Compile Include="SharedLibrary\CoreServiceFactory.cs" />
+    <Compile Include="SharedLibrary\InitializationResultsExtensions.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
