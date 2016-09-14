@@ -511,6 +511,62 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual(expectedTime.ToUniversalTime(), result);
 		}
 
+		[Test]
+		[TestCase("10/01/2014 21:00:00", ScheduleInterval.Monthly, "02/01/2016", "12:31", null, 0, DaysOfWeek.Monday, null, null, 1, OccuranceInMonth.Last, "02/29/2016")]
+		public void GetNextUTCRunDateTime_CorrectValue(string utcNowTime, ScheduleInterval interval, string startDate, string scheduledLocalTime, DateTime? endDate, int timeZoneOffSet, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDay, int? reoccur, OccuranceInMonth? occuranceInMonth, string expectedDate)
+		{
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(interval, DateTime.Parse(startDate), TimeSpan.Parse(scheduledLocalTime), endDate, timeZoneOffSet, daysToRun, dayOfMonth, setLastDay, reoccur, occuranceInMonth);
+			var utcNow = DateTime.Parse(utcNowTime);
+			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
+			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			DateTime expectedTime = DateTime.Parse(expectedDate + " " + scheduledLocalTime);
+
+			var result = rule.GetNextUTCRunDateTime();
+
+			Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+		}
+
+		[Test]
+		//[TestCase("Dateline Standard Time")]
+		//[TestCase("UTC-11")]
+		//[TestCase("Hawaiian Standard Time")]
+		//[TestCase("Pacific Standard Time")]
+		//[TestCase("Mountain Standard Time")]
+		[TestCase("Central Standard Time")]
+		//[TestCase("Eastern Standard Time")]
+		//[TestCase("Atlantic Standard Time")]
+		//[TestCase("Argentina Standard Time")]
+		//[TestCase("Mid-Atlantic Standard Time")]
+		//[TestCase("Azores Standard Time")]
+		//[TestCase("UTC")]
+		//[TestCase("Central Europe Standard Time")]
+		//[TestCase("GTB Standard Time")]
+		//[TestCase("Arab Standard Time")]
+		//[TestCase("Arabian Standard Time")]
+		//[TestCase("Afghanistan Standard Time")]
+		//[TestCase("Nepal Standard Time")]
+		//[TestCase("China Standard Time")]
+		//[TestCase("Tokyo Standard Time")]
+		//[TestCase("AUS Central Standard Time")]
+		[TestCase("AUS Eastern Standard Time")]
+		public void GetNextUTCRunDateTime_TimeZone(string timeZone)
+		{
+			TimeZoneInfo tst = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+			DateTime tstTime = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, tst);
+			var offSet = tst.GetUtcOffset(tstTime);
+			int flippedOffSet = offSet.Hours / (-1);
+
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("9/13/2016"), TimeSpan.Parse("23:40"), DateTime.Parse("9/13/2016"), flippedOffSet, DaysOfWeek.All, null, null, null, null);
+			var utcNow = DateTime.Parse("9/14/2016 04:39:00");
+			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
+			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
+			DateTime expectedTime = DateTime.Parse("9/13/2016 23:40");
+
+			var result = rule.GetNextUTCRunDateTime();
+
+			Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+		}
+
 		#region SearchMonthForForwardOccuranceOfDay
 
 		[Test]
