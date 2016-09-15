@@ -216,7 +216,7 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-		<Project path="Source\JsonLoaderTests\JsonLoaderTests.csproj">
+        <Project path="Source\JsonLoaderTests\JsonLoaderTests.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
           </Platforms>
@@ -246,6 +246,14 @@
             <Platform>AnyCPU</Platform>
           </Platforms>
           <Publish>default.pubxml</Publish>
+          <IgnoreRules>
+            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
+          </IgnoreRules>
+        </Project>
+        <Project path="Source\kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj">
+          <Platforms>
+            <Platform>AnyCPU</Platform>
+          </Platforms>
           <IgnoreRules>
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
@@ -405,8 +413,8 @@
       <allow>kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging.CompositeLoggingMediatorTests.ItShouldHandleEmptyChildrenList</allow>
       <allow>kCura.IntegrationPoints.FtpProvider.Tests.FtpProviderTests.ValidateColumns_AllMatch</allow>
       <allow>kCura.IntegrationPoints.Data.Tests.Unit.PermissionServiceTest.UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse</allow>
-	  <allow>kCura.IntegrationPoints.Agent.Tests.Unit.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
-	  <allow>kCura.IntegrationPoints.Web.Tests.Unit.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
+      <allow>kCura.IntegrationPoints.Agent.Tests.Unit.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
+      <allow>kCura.IntegrationPoints.Web.Tests.Unit.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
@@ -433,7 +441,7 @@
           <Assembly>lib\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
           <Assembly>lib\Renci.SshNet.dll</Assembly>
         </Assemblies>
-        <ReSourceFiles />
+        <ResourceFiles />
         <CustomPages>
           <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">Source\CustomPages\IntegrationPoints</CustomPage>
         </CustomPages>
@@ -447,7 +455,7 @@
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
           <Assembly>Source\Provider\bin\Provider.dll</Assembly>
         </Assemblies>
-        <ReSourceFiles />
+        <ResourceFiles />
         <CustomPages>
           <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">Source\CustomPages\MyFirstProvider</CustomPage>
         </CustomPages>
@@ -462,7 +470,7 @@
           <Assembly>Source\JsonLoader\bin\JsonLoader.dll</Assembly>
           <Assembly>Source\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
         </Assemblies>
-        <ReSourceFiles />
+        <ResourceFiles />
         <CustomPages>
           <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">Source\CustomPages\JsonLoader</CustomPage>
         </CustomPages>
