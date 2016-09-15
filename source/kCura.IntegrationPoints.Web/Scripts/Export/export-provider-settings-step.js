@@ -7,15 +7,17 @@
 
 		this.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
-		this.Fileshare = ko.observable(state.Fileshare).extend({
+		this.ProcessingSourceLocationList = ko.observableArray([]);
+
+		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation || 0;
+
+		this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
 			required: true
 		});
 
-		this.ProcessingSourceLocation = ko.observable(state.ProcessingSourceLocation).extend({
-			required: true
-		});
+		this.ProcessingSourceLocation.isModified(false);
 
-		this.ProcessingSourceLocation.subscribe(function (value) {
+		this.updateProcessingSourceLocation = function (value) {
 			if (!!value) {
 				self.getDirectories(value);
 			} else {
@@ -27,9 +29,15 @@
 			}
 
 			self.toggleLocation(!!value);
-		});		
+		};
 
-		this.ProcessingSourceLocationList = ko.observableArray([]);
+		this.Fileshare = ko.observable(state.Fileshare).extend({
+			required: {
+				onlyIf: function () {
+					return self.ProcessingSourceLocation();
+				}
+			}
+		});
 
 		this.onDOMLoaded = function () {
 			if (self.HasBeenRun()) {
@@ -39,27 +47,11 @@
 				self.locationSelector.init(self.Fileshare(), [], {
 					onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
 				});
-				
-				self.ProcessingSourceLocation.isModified(false);
-				self.getProcessingSources();
 
 				self.toggleLocation(!!self.ProcessingSourceLocation());
 			}
-		};
 
-		this.getProcessingSources = function () {
-			root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
-				data: {
-					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-				}
-			}).then(function (result) {
-				self.ProcessingSourceLocationList(result);
-				self.ProcessingSourceLocation(state.ProcessingSourceLocation);
-			}).fail(function (error) {
-				root.message.error.raise("No attributes were returned from the source provider.");
-			});
+			self.ProcessingSourceLocation.isModified(false);
 		};
 
 		this.getDirectories = function (artifacId) {
@@ -82,7 +74,7 @@
 			$el.children().each(function (i, e) {
 				$(e).toggleClass('location-disabled', !enabled);
 			});
-		};		
+		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
 			required: true
@@ -277,7 +269,7 @@
 
 		this.IsProductionPrecedenceSelected = function () {
 			return self.ProductionPrecedence() === ExportEnums.ProductionPrecedenceTypeEnum.Produced;
-		}		
+		}
 
 		this.IncludeOriginalImages = ko.observable(state.IncludeOriginalImages || false);
 
@@ -295,7 +287,7 @@
 					return self.ExportImages();
 				}
 			},
-			maxLength:{
+			maxLength: {
 				onlyIf: function () {
 					return self.ExportImages();
 				},
@@ -313,7 +305,7 @@
 					return self.ExportNatives();
 				}
 			},
-			maxLength:{
+			maxLength: {
 				onlyIf: function () {
 					return self.ExportNatives();
 				},
@@ -331,7 +323,7 @@
 					return self.ExportTextFieldsAsFiles();
 				}
 			},
-			maxLength:{
+			maxLength: {
 				onlyIf: function () {
 					return self.ExportTextFieldsAsFiles();
 				},
@@ -344,7 +336,7 @@
 			}
 		});
 
-		this.IsVolumeAndSubdirectioryDetailVisible = function() {
+		this.IsVolumeAndSubdirectioryDetailVisible = function () {
 			return self.ExportImages() || self.ExportNatives() || self.ExportTextFieldsAsFiles();
 		}
 
@@ -511,7 +503,7 @@
 					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
 				}
 			},
-			maxLength:{
+			maxLength: {
 				onlyIf: function () {
 					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
 				},
@@ -523,17 +515,17 @@
 				}
 			}
 		});
-		
+
 		this.isUserPrefix = ko.observable((self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix));
-		
+
 		this.FilePath.subscribe(function (value) {
 			self.isUserPrefix(value == ExportEnums.FilePathTypeEnum.UserPrefix);
 			if (value === ExportEnums.FilePathTypeEnum.UserPrefix) {
 				self.isUserPrefix(true);
 
-				if(self.UserPrefix() !== ""){
+				if (self.UserPrefix() !== "") {
 					self.UserPrefix.notifySubscribers();
-				}								
+				}
 			} else {
 				self.isUserPrefix(false);
 			}
@@ -670,6 +662,34 @@
 
 			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration, { hasBeenRun: ip.hasBeenRun }));
 			self.model.errors = ko.validation.group(self.model);
+
+			var processingSourceLocationListPromise = root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(function (error) {
+				IP.message.error.raise("No processing source locations were returned from source provider");
+			});
+
+			root.data.deferred()
+				.all([processingSourceLocationListPromise])
+				.then(function (result) {
+					self.model.ProcessingSourceLocationList(result[0]);
+					self.model.ProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
+					self.model.ProcessingSourceLocation.isModified(false);
+
+					if (!self.model.HasBeenRun()) {
+						if (self.model.ProcessingSourceLocationArtifactId > 0) {
+							self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId)
+						}
+
+						self.model.ProcessingSourceLocation.subscribe(function (value) {
+							self.model.updateProcessingSourceLocation(value);
+						});
+					}
+				});
 		};
 
 		self.submit = function () {
@@ -677,12 +697,12 @@
 
 			if (self.model.errors().length === 0) {
 				var settings = self.model.getSelectedOption();
-				
-				if(settings.TextFileEncodingType === 'Select...'){
+
+				if (settings.TextFileEncodingType === 'Select...') {
 					settings.TextFileEncodingType = '';
 				}
 
-				if(settings.DataFileEncodingType === 'Select...'){
+				if (settings.DataFileEncodingType === 'Select...') {
 					settings.DataFileEncodingType = '';
 				}
 
