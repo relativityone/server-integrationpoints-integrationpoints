@@ -80,91 +80,6 @@
 				</table>
 			</div>
 
-			<div class="card" data-bind="visible: IsVolumeAndSubdirectioryDetailVisible()">
-				<div id="subdirectory_accordion" style="cursor: pointer;">
-					<span class="label" style="display: inline-block;">Volume & Subdirectory Detail</span>
-					<img class="collapsed_arrow" src="/Relativity/images/arrow_collapsed.png" alt="" style="display: none; vertical-align: text-bottom;" />
-					<img class="expanded_arrow" src="/Relativity/images/arrow_expanded.png" alt="" style="vertical-align: text-bottom;" />
-				</div>
-				<table style="width: 100%; display: none;">
-					<tr>
-						<td style="vertical-align: text-top; width: 48%;">
-							<div>
-								<p>
-									<h3 style="margin-left: 30px">
-										VOLUME
-									</h3>
-								</p>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Prefix:
-								</div>
-								<div class="field-value">
-									<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Start Number:
-								</div>
-								<div class="field-value">
-									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Number of digits:
-								</div>
-								<div class="field-value">
-									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Max Size (MB):
-								</div>
-								<div class="field-value">
-									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
-								</div>
-							</div>
-						</td>
-						<td style="vertical-align: text-top;">
-							<div class="field-row">
-								<p>
-									<h3 style="margin-left: 30px">
-										SUBDIRECTORY
-									</h3>
-								</p>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Start Number:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Number of digits:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Max Files:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
-								</div>
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
 
 			<div class="card">
 				<span class="label">Output Settings</span>
@@ -393,19 +308,89 @@
 					</tr>
 				</table>
 			</div>
+			<div class="card" data-bind="visible: IsVolumeAndSubdirectioryDetailVisible()">
+				<span class="label">Volume & Subdirectory Detail</span>
+				<table style="width: 100%;">
+					<tr>
+						<td style="vertical-align: text-top; width: 48%;">
+							<div>
+								<p>
+									<h3 style="margin-left: 30px">
+										VOLUME
+									</h3>
+								</p>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Prefix:
+								</div>
+								<div class="field-value">
+									<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Start Number:
+								</div>
+								<div class="field-value">
+									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Number of digits:
+								</div>
+								<div class="field-value">
+									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Max Size (MB):
+								</div>
+								<div class="field-value">
+									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
+								</div>
+							</div>
+						</td>
+						<td style="vertical-align: text-top;">
+							<div class="field-row">
+								<p>
+									<h3 style="margin-left: 30px">
+										SUBDIRECTORY
+									</h3>
+								</p>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Start Number:
+								</div>
+								<div class="field-value">
+									<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Number of digits:
+								</div>
+								<div class="field-value">
+									<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Max Files:
+								</div>
+								<div class="field-value">
+									<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
 			<div style="height: 15px;"></div>
 		</div>
 	</div>
 </script>
-<script>
-$('#bodyContainer').off('click', '#subdirectory_accordion');
-$('#bodyContainer').on('click', '#subdirectory_accordion', function() {
-	$header = $(this);
-	$content = $header.next();
 
-	$content.slideToggle(0, function(){
-		$header.find('.collapsed_arrow').slideToggle(0);
-		$header.find('.expanded_arrow').slideToggle(0);
-	});
-});
-</script>
