@@ -686,6 +686,7 @@
     <Content Include="Views\Fileshare\SavedSearchPicker.cshtml" />
     <Content Include="Views\Fileshare\ListPicker.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderSettings.cshtml" />
+    <Content Include="Views\ImportProvider\ImportSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

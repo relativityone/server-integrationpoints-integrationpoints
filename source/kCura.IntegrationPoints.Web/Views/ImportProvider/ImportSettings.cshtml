@@ -1,0 +1,44 @@
+﻿<h3>Views/ImportProvider/ImportSettings.cshtm</h3>
+
+<script id="importProviderSettingsStep" type="text/html"></script>
+<div id="_main">
+    <div id="import-provider-configuration" style="min-width: 900px;">
+        <div class="card">
+            <span class="label">Import Detail</span>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Import Type:
+                            </div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <input type="submit" name="input-loadfile-filechoicebtn" id="import-loadfile-filechoicebtn" value="..." />
+                                        <div class="field-value" >
+                                            <input id="import-loadfile-textfield" placeholder="Select a file ..." />
+                                            <label disabled="true">Load File</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="field-value">
+                                            <input id="import-hascolumnnames-checkbox" type="checkbox" />
+                                            @* data-bind="disable: HasBeenRun()m checked: ExportImages"*@
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="field-value">
+                                            <input id="import-columnname-numbers" type="number" placeholder="0" />
+                                            <label>Start Line</label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
