@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider
 {
+    [kCura.IntegrationPoints.Contracts.DataSourceProvider(Constants.Guids.ImportProviderEventHandler)]
     public class ImportProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
     {
         public IDataReader GetBatchableIds(FieldEntry identifier, string options)

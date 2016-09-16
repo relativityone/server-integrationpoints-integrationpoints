@@ -252,11 +252,8 @@
         </Project>
         <Project path="Source\kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj">
           <Platforms>
-            <Platform>AnyCPU</Platform>
+            <Platform>x64</Platform>
           </Platforms>
-          <IgnoreRules>
-            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
-          </IgnoreRules>
         </Project>
       </Build>
       <Ignore>
