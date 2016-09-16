@@ -437,6 +437,7 @@
           <Assembly>lib\kCura.IntegrationPoints.FtpProvider.Connection.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
           <Assembly>lib\Renci.SshNet.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
