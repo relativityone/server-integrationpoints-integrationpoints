@@ -77,7 +77,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			else
 			{
 				EndDate = EndDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault());
-				comparer = new UtcEndDateComparer(TimeZoneOffsetInMinute.GetValueOrDefault());
+				comparer = new UtcEndDateComparer();
 			}
 
 			return GetNextRunTimeByInterval(Interval, comparer, StartDate.GetValueOrDefault(DateTime.UtcNow),
