@@ -363,6 +363,7 @@
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\legal-hold-fonts.css">
       <Link>Content\legal-hold-fonts.css</Link>
     </Content>
+    <Content Include="Content\buttermilk-overrides.css" />
     <Content Include="Content\buttermilk-variables.css">
       <DependentUpon>buttermilk-variables.scss</DependentUpon>
     </Content>
