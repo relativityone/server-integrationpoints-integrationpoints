@@ -141,7 +141,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					break;
 			}
 
-			return comparer.Compare(endDate, nextRunTimeDate);
+			if (comparer.Compare(endDate, nextRunTimeDate))
+			{
+				return null;
+			}
+			return nextRunTimeDate.ToUniversalTime();
 		}
 
 		public DateTime GetNextScheduledWeekDay(DaysOfWeek scheduleDayOfWeek, DateTime nextRunTimeDate, DateTime localNow, int? reoccur)
@@ -344,7 +348,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			/// <param name="endDate">The end date of the scheduler.</param>
 			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
 			/// <returns></returns>
-			DateTime? Compare(DateTime? endDate, DateTime nextRunTime);
+			bool Compare(DateTime? endDate, DateTime nextRunTime);
 		}
 
 		/// <summary>
@@ -359,17 +363,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			/// <param name="endDate">The unknown timezone end date of the scheduler.</param>
 			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
 			/// <returns></returns>
-			public DateTime? Compare(DateTime? endDate, DateTime nextRunTime)
+			public bool Compare(DateTime? endDate, DateTime nextRunTime)
 			{
-				if(endDate.HasValue == false)
-				{
-					return nextRunTime.ToUniversalTime();
-				}
-				if (endDate.Value.AddDays(1).Date <= nextRunTime.Date)
-				{
-					return null;
-				};
-				return nextRunTime.ToUniversalTime();
+				return endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTime.Date;
 			}
 		}
 
@@ -378,34 +374,16 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		/// </summary>
 		protected class UtcEndDateComparer : IEndDateComparer
 		{
-			private readonly int _clientUtcOffSet;
-			//private readonly int _serverTimeOffset;
-
-			public UtcEndDateComparer(int clientUtcOffSet)
-			{
-				_clientUtcOffSet = clientUtcOffSet;
-				//_serverTimeOffset = (int)(DateTime.UtcNow - DateTime.Now).TotalMinutes;
-			}
-
 			/// <summary>
 			/// Determine whether the end date has passed
 			/// </summary>
 			/// <param name="endDate">The utc end date of the scheduler.</param>
 			/// <param name="nextRunTime">The next runtime of the scheduler.</param>
 			/// <returns></returns>
-			public DateTime? Compare(DateTime? endDate, DateTime nextRunTime)
+			public bool Compare(DateTime? endDate, DateTime nextRunTime)
 			{
-				//DateTime nextRunTimeInUtc = nextRunTime.ToUniversalTime();
-				DateTime nextRunTimeInUtc = nextRunTime.AddMinutes(_clientUtcOffSet);
-				if(endDate.HasValue == false)
-				{
-					return nextRunTimeInUtc;
-				}
-				if(endDate.Value.Date <= nextRunTimeInUtc.Date)
-				{
-					return nextRunTimeInUtc;
-				}
-				return null;
+				DateTime nextRunTimeInUtc = nextRunTime.ToUniversalTime();
+				return endDate.HasValue && endDate.Value.AddDays(1).Date <= nextRunTimeInUtc.Date;
 			}
 		}
 		#endregion
