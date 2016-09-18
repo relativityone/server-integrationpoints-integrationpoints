@@ -9,7 +9,6 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -69,10 +68,7 @@ namespace kCura.IntegrationPoints.Domain
 				if (type != default(Type))
 				{
 					var instance = Activator.CreateInstance(type) as IStartUp;
-					if (instance != null)
-					{
-						instance.Execute();
-					}
+					instance?.Execute();
 				}
 			}
 
@@ -119,34 +115,28 @@ namespace kCura.IntegrationPoints.Domain
 					.FilterByName(this.FilterByAllowedAssemblyNames)));
 		}
 
+		//AK: perhaps the filter should be a little more generic to cover all related binaries  kCura.IntegrationPoints.*
+		private static readonly HashSet<string> _allowedInstallerAssemblies = new HashSet <string>()
+		{
+			"kCura.IntegrationPoints",
+			"kCura.IntegrationPoints.Contracts",
+			"kCura.IntegrationPoints.Core",
+			"kCura.IntegrationPoints.Data",
+			"kCura.IntegrationPoints.FtpProvider"
+		};
+
 		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
 		{
-			//AK: perhaps the filter should be a little more generic to cover all related binaries  kCura.IntegrationPoints.*
-			string[] allowedInstallerAssemblies = new[]
-			{
-				"kCura.IntegrationPoints",
-				"kCura.IntegrationPoints.Contracts",
-				"kCura.IntegrationPoints.Core",
-				"kCura.IntegrationPoints.Data",
-				"kCura.IntegrationPoints.FtpProvider"
-			};
-
-			if (allowedInstallerAssemblies.Contains(assemblyName.Name))
-			{
-				return true;
-			}
-
-			return false;
+			return _allowedInstallerAssemblies.Contains(assemblyName.Name);
 		}
 
 
 		/// <summary>
-		/// Gets the provider in the app domain from the specific identifier
+		/// Gets the provider in the app domain from the specific identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier that represents the provider</param>
-		/// <param name="helper">Optional IHelper object to use for resolving classes</param>
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public IDataSourceProvider GetProvider(Guid identifier, IHelper helper)
+		public IDataSourceProvider GetProvider(Guid identifier)
 		{
 			if (_windsorContainer == null)
 			{
@@ -155,14 +145,6 @@ namespace kCura.IntegrationPoints.Domain
 
 			if (_providerFactory == null)
 			{
-				if (helper != null)
-				{
-					if (!_windsorContainer.Kernel.HasComponent(typeof(IHelper)))
-					{
-						_windsorContainer.Register(Component.For<IHelper>().Instance(helper).LifestyleSingleton());
-					}
-				}
-
 				try
 				{
 					_providerFactory = _windsorContainer.Resolve<IProviderFactory>();

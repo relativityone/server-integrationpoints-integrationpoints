@@ -28,6 +28,14 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldNames);
 
 		/// <summary>
+		/// Retrieves fields for an rdo
+		/// </summary>
+		/// <param name="rdoTypeId">The artifact id of the rdo's type</param>
+		/// <param name="fieldNames">The names of the fields to retrieve for the field artifact</param>
+		/// <returns>An array of ArtifactDTO with populated fields for the given rdo type</returns>
+		ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldNames);
+
+		/// <summary>
 		/// Retrieves the artifact ID of a field.
 		/// </summary>
 		/// <param name="displayName">The display name of the field.</param>
