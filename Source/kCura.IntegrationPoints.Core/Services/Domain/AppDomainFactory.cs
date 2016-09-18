@@ -1,6 +1,8 @@
 ﻿using System;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using Relativity.API;
 
@@ -28,7 +30,11 @@ namespace kCura.IntegrationPoints.Core.Domain
 			_newDomain = _domainHelper.CreateNewDomain(_relativityFeaturePathService);
 			DomainManager domainManager = _domainHelper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
 
-			return domainManager.GetProvider(providerGuid, helper);
+			IDataSourceProvider provider = domainManager.GetProvider(providerGuid);
+			IInternalDataSourceProvider internalProvider = provider as IInternalDataSourceProvider;
+			internalProvider?.RegisterDependency<IRepositoryFactory>(new RepositoryFactory(helper));
+
+			return provider;
 		}
 
 		public void Dispose()

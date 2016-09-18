@@ -18,7 +18,7 @@ using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
-	public class RepositoryFactory : IRepositoryFactory
+	public class RepositoryFactory : MarshalByRefObject, IRepositoryFactory
 	{
 		private readonly IHelper _helper;
 		private readonly Lazy<IExtendedRelativityToggle> _toggleProvider;

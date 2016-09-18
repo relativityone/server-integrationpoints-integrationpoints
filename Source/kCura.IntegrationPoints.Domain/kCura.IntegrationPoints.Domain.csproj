@@ -203,6 +203,7 @@
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="IAppDomainDataMarshaller.cs" />
     <Compile Include="IEmailBodyData.cs" />
+    <Compile Include="IInternalDataSourceProvider.cs" />
     <Compile Include="IPluginProvider.cs" />
     <Compile Include="ISynchronizerFactory.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />

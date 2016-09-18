@@ -1,5 +1,8 @@
-﻿namespace kCura.IntegrationPoints.Domain.Models
+﻿using System;
+
+namespace kCura.IntegrationPoints.Domain.Models
 {
+	[Serializable]
 	public class WorkspaceDTO
 	{
 		public int ArtifactId { get; set; } 
