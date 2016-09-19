@@ -769,12 +769,12 @@
 						showCancel: true,
 						width: 450,
 						success: function (calls) {
-							d.resolve(true);
 							calls.close();
+							d.resolve(true);
 						},
 						cancel: function (calls) {
-							d.resolve(false);
 							calls.close();
+							d.resolve(false);
 						}
 					});
 				} else {
