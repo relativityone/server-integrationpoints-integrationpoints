@@ -103,6 +103,7 @@
 
 		var _next = function () {
 			var d = IP.data.deferred().defer();
+
 			vm.currentStep().submit().then(function (result) {
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
@@ -124,23 +125,44 @@
 			_next();
 		});
 
+		var proceedToSaveComplete = function (result) {
+			if (result.scheduler && result.scheduler.scheduledTime) {
+				var timeSplit = result.scheduler.scheduledTime.split(':');
+				var time = result.scheduler.scheduledTime;
+				if (result.scheduler.selectedTimeFormat == "AM") {
+					result.scheduler.scheduledTime = timeSplit[0] == 12 ? helper.timeLocalToUtc(0 + ':' + timeSplit[1]) : helper.timeLocalToUtc(time);
+				} else {
+					var hour = 12;
+					if (parseInt(timeSplit[0], 10) < 12) {
+						hour = parseInt(timeSplit[0], 10) + 12;
+					}
+
+					result.scheduler.scheduledTime = helper.timeLocalToUtc(hour + ':' + timeSplit[1]);
+				}
+			}
+			IP.messaging.publish('saveComplete', result);
+		}
+
 		IP.messaging.subscribe('save', function () {
 			_next().then(function (result) {
-				if (result.scheduler && result.scheduler.scheduledTime) {
-					var timeSplit = result.scheduler.scheduledTime.split(':');
-					var time = result.scheduler.scheduledTime;
-					if (result.scheduler.selectedTimeFormat == "AM") {
-						result.scheduler.scheduledTime = timeSplit[0] == 12 ? helper.timeLocalToUtc(0 + ':' + timeSplit[1]) : helper.timeLocalToUtc(time);
-					} else {
-						var hour = 12;
-						if (parseInt(timeSplit[0], 10) < 12) {
-							hour = parseInt(timeSplit[0], 10) + 12;
-						}
 
-						result.scheduler.scheduledTime = helper.timeLocalToUtc(hour + ':' + timeSplit[1]);
-					}
+				if (typeof (vm.currentStep().validate) !== "function") {
+					vm.currentStep().validate = function () {
+						var d = IP.data.deferred().defer();
+						d.resolve(true);
+						return d.promise;
+					};
 				}
-				IP.messaging.publish('saveComplete', result);
+
+				vm.currentStep().validate(result).then(function (validationResult) {
+					console.log(validationResult);
+					if (validationResult === true) {
+						proceedToSaveComplete(result);
+					}
+				}).fail(function (err) {
+					console.log(err);
+					IP.message.error.raise(err);
+				});
 			}, function (error) {
 				IP.message.error.raise(error);
 			});
@@ -172,7 +194,7 @@
 			}
 
 			vm.currentStep().back().then(function (result) {
-				$.extend(model, result);				
+				$.extend(model, result);
 				step = vm.goToStep(--step, model);
 				IP.message.error.clear();
 				IP.messaging.publish('goToStep', step);

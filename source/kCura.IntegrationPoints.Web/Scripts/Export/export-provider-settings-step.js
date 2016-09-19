@@ -708,14 +708,22 @@
 
 				$.extend(self.ipModel.sourceConfiguration, settings);
 				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
-				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
+				
+				if (typeof (self.ipModel.sourceConfiguration) !== 'string') {
+					self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
+				}
 
 				var destination = JSON.parse(self.ipModel.destination);
 				destination.Provider = "Fileshare";
 				destination.DoNotUseFieldsMapCache = false;
-				self.ipModel.destination = JSON.stringify(destination);
 
-				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
+				if (typeof (self.ipModel.destination) !== 'string') {
+					self.ipModel.destination = JSON.stringify(destination);
+				}
+
+				if (typeof (self.ipModel.Map) !== 'string') {
+					self.ipModel.Map = JSON.stringify(self.ipModel.Map);
+				}
 
 				Picker.closeDialog("textPrecedencePicker");
 				Picker.closeDialog("imageProductionPicker");
@@ -739,6 +747,43 @@
 			Picker.closeDialog("imageProductionPicker");
 
 			d.resolve(self.ipModel);
+
+			return d.promise;
+		}
+
+		self.validate = function (model) {
+			var d = root.data.deferred().defer();
+
+			IP.data.ajax({
+				type: 'POST',
+				url: IP.utils.generateWebAPIURL('ExportSettingsValidation/ValidateSettings'),
+				async: false,
+				data: JSON.stringify(model)
+			}).then(function (result) {
+
+				if (result.message == "") {
+					d.resolve(true);
+					return d.promise;
+				}
+
+				window.Dragon.dialogs.showConfirmWithCancelHandler({
+					message: result.message,
+					title: 'Integration Point Validation',
+					showCancel: true,
+					width: 450,
+					success: function (calls) {
+						d.resolve(true);
+						return d.promise;
+					},
+					cancel: function (calls) {
+						d.resolve(false);
+						return d.promise;
+					}
+				});
+
+			}).fail(function (error) {
+				d.reject(error);
+			});
 
 			return d.promise;
 		}
