@@ -130,9 +130,6 @@ if($BUILD -and $STATUS){
                                                                         'build_config'=$BUILDCONFIG;
                                                                         'build_type'=$BUILDTYPE;}
     if ($psake.build_success -eq $false) { $STATUS = $false }
-    
-    & nant package_documentation -buildfile:$root\DevelopmentScripts\build.build "-D:root=$root" "-D:buildconfig=$BUILDCONFIG" "-D:action=package_documentation" "-D:buildType=$BUILDTYPE"
-    if(-not $?) { $STATUS = $false }
 }
 
 if($APPS -and $STATUS){
