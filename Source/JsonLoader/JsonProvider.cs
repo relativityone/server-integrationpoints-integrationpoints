@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -41,7 +42,7 @@ namespace JsonLoader
 			string identifier = fieldEntries.First(f => f.IsIdentifier).FieldIdentifier;
 
 			List<DataObject> objects = JsonConvert.DeserializeObject<List<DataObject>>(file);
-			HashSet<string> ids = new HashSet<string>(entryIds);
+			HashSet<string> ids = new HashSet<string>(entryIds, StringComparer.OrdinalIgnoreCase);
 
 			using (DataTable dataTable = objects.ToDataTable(identifier, fieldList, ids))
 			{
