@@ -1,6 +1,4 @@
-﻿<h3>Views/ImportProvider/ImportSettings.cshtm</h3>
-
-<script id="importProviderSettingsStep" type="text/html">
+﻿<script id="importProviderSettingsStep" type="text/html">
 </script>
 <div id="_main">
     <div id="import-provider-configuration" style="min-width: 900px;">
@@ -8,6 +6,9 @@
             <span class="label">Import Detail</span>
             <table style="width: 100%;">
                 <tr>
+                    <td style="width: 48%">
+
+                    </td>
                     <td style="width: 48%;">
                         <div class="field-row">
                             <div class="field-label required">
@@ -17,19 +18,19 @@
                                 <ul>
                                     <li>
                                         <div class="field-value">
-                                            <input id="import-loadfile-textfield" placeholder="Select a file ..." />
+                                            <input id="import-loadfile-textfield" placeholder="Select a file ..."/>
                                             <label disabled="true">Load File</label>
                                         </div>
                                     </li>
                                     <li>
                                         <div class="field-value">
-                                            <input id="import-hascolumnnames-checkbox" type="checkbox" />
+                                            <input id="import-hascolumnnames-checkbox" type="checkbox"/>
                                             @* data-bind="disable: HasBeenRun()m checked: ExportImages"*@
                                         </div>
                                     </li>
                                     <li>
                                         <div class="field-value">
-                                            <input id="import-columnname-numbers" type="number" placeholder="0" />
+                                            <input id="import-columnname-numbers" type="number" placeholder="0"/>
                                             <label>Start Line</label>
                                         </div>
                                     </li>
@@ -42,3 +43,5 @@
         </div>
     </div>
 </div>
+
+<script src="~/Scripts/Import/import-provider-settings-step.js"></script>

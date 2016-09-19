@@ -1,0 +1,1 @@
+﻿console.log("If you are seeing this message, the file has been linked up properly.");
