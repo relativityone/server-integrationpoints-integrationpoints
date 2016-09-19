@@ -706,24 +706,25 @@
 					settings.DataFileEncodingType = '';
 				}
 
+				if (typeof (self.ipModel.sourceConfiguration) === 'string') {
+					self.ipModel.sourceConfiguration = JSON.parse(self.ipModel.sourceConfiguration);
+				}
+
+				if (typeof (self.ipModel.Map) === 'string') {
+					self.ipModel.Map = JSON.parse(self.ipModel.Map);
+				}
+
 				$.extend(self.ipModel.sourceConfiguration, settings);
 				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
-				
-				if (typeof (self.ipModel.sourceConfiguration) !== 'string') {
-					self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
-				}
+
+				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 
 				var destination = JSON.parse(self.ipModel.destination);
 				destination.Provider = "Fileshare";
 				destination.DoNotUseFieldsMapCache = false;
+				self.ipModel.destination = JSON.stringify(destination);
 
-				if (typeof (self.ipModel.destination) !== 'string') {
-					self.ipModel.destination = JSON.stringify(destination);
-				}
-
-				if (typeof (self.ipModel.Map) !== 'string') {
-					self.ipModel.Map = JSON.stringify(self.ipModel.Map);
-				}
+				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
 
 				Picker.closeDialog("textPrecedencePicker");
 				Picker.closeDialog("imageProductionPicker");
@@ -761,25 +762,24 @@
 				data: JSON.stringify(model)
 			}).then(function (result) {
 
-				if (result.message == "") {
+				if (!result.isValid) {
+					window.Dragon.dialogs.showConfirmWithCancelHandler({
+						message: result.message,
+						title: 'Integration Point Validation',
+						showCancel: true,
+						width: 450,
+						success: function (calls) {
+							d.resolve(true);
+							calls.close();
+						},
+						cancel: function (calls) {
+							d.resolve(false);
+							calls.close();
+						}
+					});
+				} else {
 					d.resolve(true);
-					return d.promise;
 				}
-
-				window.Dragon.dialogs.showConfirmWithCancelHandler({
-					message: result.message,
-					title: 'Integration Point Validation',
-					showCancel: true,
-					width: 450,
-					success: function (calls) {
-						d.resolve(true);
-						return d.promise;
-					},
-					cancel: function (calls) {
-						d.resolve(false);
-						return d.promise;
-					}
-				});
 
 			}).fail(function (error) {
 				d.reject(error);
