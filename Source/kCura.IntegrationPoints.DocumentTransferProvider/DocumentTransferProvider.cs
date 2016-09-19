@@ -29,6 +29,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 	[Contracts.DataSourceProvider(Domain.Constants.RELATIVITY_PROVIDER_GUID)]
 	public class DocumentTransferProvider : IInternalDataSourceProvider, IEmailBodyData
 	{
+		private readonly IDictionary<Type, object> _dependencies = new Dictionary<Type, object>();
+
+
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
@@ -169,12 +172,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		protected virtual WorkspaceDTO GetWorkspace(int workspaceArtifactIds)
 		{
-			IWorkspaceRepository workspaceRepository = ResolveDependencies<IRepositoryFactory>().GetWorkspaceRepository();
+			IRepositoryFactory repositoryFactory = ResolveDependencies<IRepositoryFactory>();
+			IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
 			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(workspaceArtifactIds);
 			return workspaceDto;
 		}
-
-		private readonly IDictionary<Type, object> _dependencies = new Dictionary<Type, object>();
 
 		public void RegisterDependency<T>(T dependencies)
 		{

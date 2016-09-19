@@ -19,6 +19,16 @@ namespace kCura.IntegrationPoints.Domain
 	///  </summary>
 	public class DomainManager : MarshalByRefObject
 	{
+		//AK: perhaps the filter should be a little more generic to cover all related binaries  kCura.IntegrationPoints.*
+		private static readonly HashSet<string> _allowedInstallerAssemblies = new HashSet<string>()
+		{
+			"kCura.IntegrationPoints",
+			"kCura.IntegrationPoints.Contracts",
+			"kCura.IntegrationPoints.Core",
+			"kCura.IntegrationPoints.Data",
+			"kCura.IntegrationPoints.FtpProvider"
+		};
+
 		private IProviderFactory _providerFactory;
 		private WindsorContainer _windsorContainer;
 
@@ -114,16 +124,6 @@ namespace kCura.IntegrationPoints.Domain
 					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
 					.FilterByName(this.FilterByAllowedAssemblyNames)));
 		}
-
-		//AK: perhaps the filter should be a little more generic to cover all related binaries  kCura.IntegrationPoints.*
-		private static readonly HashSet<string> _allowedInstallerAssemblies = new HashSet <string>()
-		{
-			"kCura.IntegrationPoints",
-			"kCura.IntegrationPoints.Contracts",
-			"kCura.IntegrationPoints.Core",
-			"kCura.IntegrationPoints.Data",
-			"kCura.IntegrationPoints.FtpProvider"
-		};
 
 		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
 		{
