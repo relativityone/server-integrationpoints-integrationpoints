@@ -155,12 +155,10 @@
 				}
 
 				vm.currentStep().validate(result).then(function (validationResult) {
-					console.log(validationResult);
 					if (validationResult === true) {
 						proceedToSaveComplete(result);
 					}
 				}).fail(function (err) {
-					console.log(err);
 					IP.message.error.raise(err);
 				});
 			}, function (error) {
