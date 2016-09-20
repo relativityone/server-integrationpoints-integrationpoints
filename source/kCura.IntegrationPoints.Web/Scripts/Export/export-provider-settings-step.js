@@ -171,11 +171,15 @@
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
-		this.DataFileEncodingType = ko.observable("").extend({
+		this.DataFileEncodingTypeValue = state.DataFileEncodingType || "";
+
+		this.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({
 			required: true
 		});
 
-		this.TextFileEncodingType = ko.observable("").extend({
+		this.TextFileEncodingTypeValue = state.TextFileEncodingType || "";
+
+		this.TextFileEncodingType = ko.observable(self.TextFileEncodingTypeValue).extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportTextFieldsAsFiles();
@@ -189,25 +193,32 @@
 				function Group(label, children) {
 					this.label = ko.observable(label);
 					this.children = ko.observableArray(children);
-				}
-				var defaultOption = { displayName: "Select...", name: "" };
+				};
+				function Option(displayName, name) {
+					this.displayName = ko.observable(displayName);
+					this.name = ko.observable(name);
+				};				
+
 				var favorite = [];
 				var others = [];
+
 				for (var i = 0; i < result.length; i++) {
+					var option = new Option(result[i].displayName, result[i].name);
+
 					if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
-						favorite.push(result[i]);
-					}
-					else {
-						others.push(result[i]);
+						favorite.push(option);
+					} else {
+						others.push(option);
 					}
 				}
-				// By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-				self.FileEncodingTypeList([new Group("Favorite", favorite), new Group("Others", others)]);
 
-				self.DataFileEncodingType(state.DataFileEncodingType || defaultOption);
+				// By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
+				self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
+
+				self.DataFileEncodingType(self.DataFileEncodingTypeValue);
 				self.DataFileEncodingType.isModified(false);
 
-				self.TextFileEncodingType(state.TextFileEncodingType || defaultOption);
+				self.TextFileEncodingType(self.TextFileEncodingTypeValue);
 				self.TextFileEncodingType.isModified(false);
 			});
 		}
