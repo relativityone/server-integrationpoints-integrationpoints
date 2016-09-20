@@ -2,9 +2,6 @@
     Layout = "~/Views/Shared/_StepLayout.cshtml";
 }
 
-<script id="importProviderSettingsStep" type="text/html">
-</script>
-
 <div id="_main" class="table full-width">
     <div id="import-provider-configuration">
         <div class="card">
@@ -36,7 +33,9 @@
                                 <ul>
                                     <li>
                                         <div class="field-value">
-                                            <select class="fluid-mock-select" id="processingSources"></select>
+                                            <div id="sourceDropdown" class="viewFieldValue" colspan="1">
+                                                <select class="fluid-mock-select" id="processingSources"></select>
+                                            </div>
                                             <div id="sourceText" class="viewFieldValue viewFieldValueUnderline" colspan="1">
                                                 <span id="downloadSourceText"></span>
                                             </div>

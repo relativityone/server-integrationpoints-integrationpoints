@@ -1,4 +1,4 @@
-﻿(function () {
+﻿(function (windowObj) {
 
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
@@ -6,7 +6,8 @@
     var _getModel = function () {
         var model = {
             ImportType: $("input:radio[name=import-provider-import-detail-radio]").val(),
-            LoadFile: $("#import-loadfile-textfield").val(),
+            ProcessingSource: windowObj.import.StorageRoot,
+            LoadDataFrom: windowObj.import.SelectedFolderPath,
             HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
             LineNumber: HashChangeEvent ? $("#import-columnname-numbers").val() : null
         };
