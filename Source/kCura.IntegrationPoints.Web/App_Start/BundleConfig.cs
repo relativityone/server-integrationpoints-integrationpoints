@@ -84,7 +84,6 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/select2-overrides.css",
 				"~/Content/select2search.css",
 				"~/Content/buttermilk.css"
-				//"~/Content/buttermilk.9_2.min.css"
 			));
 
 			bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(

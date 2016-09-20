@@ -364,6 +364,7 @@
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\legal-hold-fonts.css">
       <Link>Content\legal-hold-fonts.css</Link>
     </Content>
+    <Content Include="Content\buttermilk-overrides.css" />
     <Content Include="Content\buttermilk-variables.css">
       <DependentUpon>buttermilk-variables.scss</DependentUpon>
     </Content>
@@ -385,6 +386,7 @@
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
     <Content Include="Content\Images\sprite.png" />
+    <Content Include="Content\Images\ui-bg_flat_100_666666_40x100.png" />
     <Content Include="Content\integration-points-view.css" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
@@ -440,6 +442,7 @@
     <Content Include="Content\themes\default\style.css" />
     <Content Include="Content\themes\default\style.min.css" />
     <Content Include="Content\themes\default\throbber.gif" />
+    <Content Include="Content\ui-dialog.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
     <Content Include="Content\buttermilk.scss" />
