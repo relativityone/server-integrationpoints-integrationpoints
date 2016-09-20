@@ -301,7 +301,7 @@
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
-    <Compile Include="Controllers\API\SearchFolderController.cs" />p
+    <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />
