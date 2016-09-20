@@ -9,14 +9,14 @@ using kCura.IntegrationPoints.Domain.Models;
 namespace kCura.IntegrationPoints.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
-	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IEmailBodyData
+	internal class ProviderWrapper : MarshalByRefObject, IInternalDataSourceProvider, IEmailBodyData
 	{
 		private readonly IDataSourceProvider _provider;
 		internal ProviderWrapper(IDataSourceProvider provider)
 		{
 			if (provider == null)
 			{
-				throw new ArgumentNullException("provider");
+				throw new ArgumentNullException(nameof(provider));
 			}
 			_provider = provider;
 		}
@@ -68,6 +68,12 @@ namespace kCura.IntegrationPoints.Domain
 			{
 				return string.Empty;
 			}
+		}
+
+		public void RegisterDependency<T>(T dependencies)
+		{
+			IInternalDataSourceProvider internalProvider = _provider as IInternalDataSourceProvider;
+			internalProvider?.RegisterDependency(dependencies);
 		}
 	}
 }

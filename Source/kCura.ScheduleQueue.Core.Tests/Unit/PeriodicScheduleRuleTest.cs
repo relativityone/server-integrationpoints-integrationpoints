@@ -760,6 +760,91 @@ namespace kCura.ScheduleQueue.Core.Tests
 				Assert.AreEqual(DateTime.Parse(expectedRunUtcTime).TimeOfDay, nextRunTime.Value.TimeOfDay);
 			}
 		}
+
+		//server ahead
+		[TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, null, null, null, null)]
+		[TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "9/15/2016", null, "10/15/2016", null, null, null, null)]
+		[TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "11/15/2016", null, "11/15/2016", null, null, null, null)]
+		[TestCase(ScheduleInterval.Weekly, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, 1, DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
+		[TestCase(ScheduleInterval.Weekly, "9/15/2016", "10/15/2016", "9/15/2016", null, "10/16/2016", 1, DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
+		[TestCase(ScheduleInterval.Weekly, "9/15/2016", "10/15/2016", "11/15/2016", null, "11/20/2016", 1, DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, 1, null, 8, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", null, "11/8/2016", 1, null, 8, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "11/15/2016", null, "12/8/2016", 1, null, 8, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, 1, DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", null, "10/27/2016", 1, DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "11/15/2016", null, "11/24/2016", 1, DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
+		[TestCase(ScheduleInterval.Monthly, "1/15/2016", "2/15/2016", "1/15/2016", "3/1/2016", "2/29/2016", 1, DaysOfWeek.Monday, null, OccuranceInMonth.Last)]
+		[TestCase(ScheduleInterval.Monthly, "1/15/2016", "2/15/2016", "1/15/2016", "3/1/2016", "2/29/2016", 1, DaysOfWeek.Day, null, OccuranceInMonth.Last)]
+		//client ahead
+		[TestCase(ScheduleInterval.Daily, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", "9/15/2016", null, null, null, null)]
+		[TestCase(ScheduleInterval.Daily, "9/15/2016", "8/15/2016", "7/15/2016", null, "8/15/2016", null, null, null, null)]
+		[TestCase(ScheduleInterval.Daily, "9/15/2016", "8/15/2016", "7/15/2016", "7/17/2016", null, null, null, null, null)]
+		[TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", null, 1, DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
+		[TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "9/15/2016", "9/20/2016", "9/18/2016", 1, DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
+		[TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "7/15/2016", null, "8/15/2016", 1, DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
+		[TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "7/15/2016", "7/17/2016", null, 1, DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", null, 1, null, 8, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/8/2016", "9/8/2016", "9/8/2016", 1, null, 8, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "7/15/2016", null, "9/8/2016", 1, null, 8, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "7/15/2016", "7/17/2016", null, 1, null, 8, null)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", null, 1, DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/15/2016", null, "9/22/2016", 1, DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
+		[TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "7/15/2016", null, "8/25/2016", 1, DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
+		[TestCase(ScheduleInterval.Monthly, "3/15/2016", "2/15/2016", "2/15/2016", "3/1/2016", "2/29/2016", 1, DaysOfWeek.Monday, null, OccuranceInMonth.Last)]
+		[TestCase(ScheduleInterval.Monthly, "3/15/2016", "2/15/2016", "2/15/2016", "3/1/2016", "2/29/2016", 1, DaysOfWeek.Day, null, OccuranceInMonth.Last)]
+		public void GetNextRunDate_ClientAndServerOnDifferentDates(
+			ScheduleInterval frequency,
+			string clientDate,
+			string serverDate,
+			string startDate,
+			string endDate,
+			string expectedNextRunTime,
+			int? reoccur,
+			DaysOfWeek? daysToRun,
+			int? monthlySendOnDayOfMonth,
+			OccuranceInMonth? monthlySendOnOccurenceInMonth)
+		{
+			// arrange
+			TimeSpan clientTimeOfDay = DateTime.Parse("12:00 PM").TimeOfDay;
+
+			DateTime serverDateTime = DateTime.Parse(serverDate);
+			TimeSpan serverDateTimeTime = DateTime.Parse("12:00 PM").TimeOfDay;
+			serverDateTime = serverDateTime.Date + serverDateTimeTime;
+
+			DateTime startDateTime = DateTime.Parse(startDate);
+			DateTime? endDateTime = String.IsNullOrEmpty(endDate) ? (DateTime?)null : DateTime.Parse(endDate);
+
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(
+				interval: frequency,
+				startDate: startDateTime,
+				localTimeOfDay: clientTimeOfDay,
+				endDate: endDateTime,
+				timeZoneOffset: null,
+				daysToRun: daysToRun,
+				dayOfMonth: monthlySendOnDayOfMonth,
+				setLastDayOfMonth: daysToRun == DaysOfWeek.Day && monthlySendOnOccurenceInMonth == OccuranceInMonth.Last ? true : (bool?) null,
+				reoccur: reoccur,
+				occuranceInMonth: monthlySendOnOccurenceInMonth)
+			{
+				TimeService = Substitute.For<ITimeService>()
+			};
+			rule.TimeService.LocalTime.Returns(serverDateTime);
+
+			// act
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+
+			// assert
+			if (expectedNextRunTime == null)
+			{
+				Assert.IsNull(nextRunTime);
+			}
+			else
+			{
+				Assert.IsNotNull(nextRunTime);
+				Assert.AreEqual(DateTime.Parse(expectedNextRunTime).Date, nextRunTime.Value.Date);
+			}
+		}
 	}
 
 	public static class ExtendedPeriodicScheduleRule
