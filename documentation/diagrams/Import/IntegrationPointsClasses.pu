@@ -1,0 +1,63 @@
+@startuml
+title <b>Import - Integration Points - Class diagram \n<b>(New classes in green)\n
+interface ISynchronizerFactory {
+CreateSynchronizer()
+}
+interface IDataSynchronizer {
+SyncData()
+}
+interface IFieldProvider {
+GetFields()
+}
+
+interface ITask {
+Execute(Job)
+}
+class SyncWorker{
++Execute(Job)
+--virtual --
++GetEntryIDs(Job)
++GetFieldMap()
++ProcessData()
++ExecuteTask(Job)
++GetSourceProvider()
++GetDestinationProvider()
+}
+'note left: 'ExecuteImport' method will be renamed to 'ProcessData' as\nit will be used by both Export/Import tasks
+class SyncCustodianManagerWorker{
+--override--
++ExecuteTask(Job)
++GetDestinationProvider()
+}
+class ImageImportWorker #LightGreen{
+--override--
++ExecuteTask(Job)
++GetDestinationProvider()
+}
+class RdoSynchronizerBase{
++SyncData()
+--virtual--
++GetFields()
+}
+class ImageImportSynchronizer #LightGreen{
++SyncData()
++GetFields()
+}
+class GeneralWithCustodianRdoSynchronizerFactory{
++CreateSynchronizer()
+}
+class ImageImportSynchronizerFactory #LightGreen{
++CreateSynchronizer()
+}
+
+ITask <|-- SyncWorker
+SyncWorker <|-- SyncCustodianManagerWorker
+SyncWorker <|-- ImageImportWorker
+ISynchronizerFactory -left--o SyncWorker
+ISynchronizerFactory ..> IDataSynchronizer : << creates >>
+IDataSynchronizer -right--|> IFieldProvider
+RdoSynchronizerBase -up--|>  IDataSynchronizer
+ImageImportSynchronizer -up--|>  IDataSynchronizer
+GeneralWithCustodianRdoSynchronizerFactory --|>  ISynchronizerFactory
+ImageImportSynchronizerFactory --|>  ISynchronizerFactory
+@enduml

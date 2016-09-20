@@ -1,0 +1,37 @@
+@startuml
+title Import Provider Sequence
+actor User
+participant IntegrationPoints
+participant "Import Settings Page" as CustomPage
+participant "ImportExport \n Package" as ImportExport
+database "Relativity DB" as DB
+participant Agent
+participant "Import Provider" as ImportProvider
+User -> IntegrationPoints : Select Import Provider
+IntegrationPoints --> User : Render Import Settings Page
+User -> CustomPage : Select Import Type
+CustomPage --> User : Render type specific UI
+User -> CustomPage: Select Load File
+User -> CustomPage: Configure Options
+note left: Select delimiters, etc.
+CustomPage -> ImportExport : Preview / Error Check
+ImportExport --> CustomPage : Preview / Error Results
+CustomPage -> User : Render Preview and Present Errors
+alt Document / RDO Import
+    User -> IntegrationPoints : Click Next
+    IntegrationPoints --> User : Render Field Mapping Screen
+    User -> IntegrationPoints : Map Document / RDO Fields
+    User -> IntegrationPoints : Click Save
+else Image / Production Import
+    User -> IntegrationPoints : Click Save
+end
+    IntegrationPoints -> DB : Save Settings To Database
+    ...
+    IntegrationPoints --> User : Render Integration Point Details Screen
+User -> IntegrationPoints : Click Run Now
+IntegrationPoints -> DB : Queue Job
+...
+Agent -> DB : Query for Queued Jobs
+DB --> Agent: Saved Job Settings
+Agent -> ImportProvider : Run Provider
+@enduml
