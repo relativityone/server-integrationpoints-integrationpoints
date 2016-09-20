@@ -19,9 +19,9 @@
                                 <ul>
                                     <li>
                                         <div class="field-value">
-                                            <input name="import-provider-import-detail-radio" value="production" type="radio" />Production<br />
-                                            <input name="import-provider-import-detail-radio" value="document" type="radio" />Document<br />
-                                            <input name="import-provider-import-detail-radio" value="image" type="radio" />Image<br />
+                                            <input name="import-type" value="production" type="radio" data-bind="checked: ImportTypeChoiceValue"/>Production<br />
+                                            <input name="import-type" value="document" type="radio" data-bind="checked: ImportTypeChoiceValue"/>Document<br />
+                                            <input name="import-type" value="image" type="radio" data-bind="checked: ImportTypeChoiceValue"/>Image<br />
                                         </div>
                                     </li>
                                 </ul>
@@ -71,7 +71,7 @@
                                 <ul>
                                     <li>
                                         <div class="field-value">
-                                            <input type="text" id="input-loadFile-text" placeholder="Select a file ..."/>
+                                            <input type="text" id="import-loadFile-text" placeholder="Select a file ..." />
                                         </div>
                                     </li>
                                 </ul>
@@ -103,11 +103,56 @@
                 </tr>
             </table>
         </div>
+
+        @*Todo: Show and Hide Cards - dependent on radio buttons for Input Type*@
+
+        <div class="card" data-bind="visible: ImportTypeChoiceValue() == 'production'">
+            <span class="label">Production</span>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Production Label:
+                            </div>
+                        </div>
+                    </td>
+            </table>
+        </div>
+
+        <div class="card" data-bind="visible: ImportTypeChoiceValue() == 'document'">
+            <span class="label">Document</span>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Document Label:
+                            </div>
+                        </div>
+                    </td>
+            </table>
+        </div>
+
+        <div class="card" data-bind="visible: ImportTypeChoiceValue() == 'image'">
+            <span class="label">Image</span>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Image Data:
+                            </div>
+                        </div>
+                    </td>
+            </table>
+        </div>
     </div>
 </div>
 
 @section scripts
 {
+    <script src="~/Scripts/knockout-3.4.0.js"></script>
     <script src="~/Scripts/jstree.min.js"></script>
     <script src="~/Scripts/Import/import-setup.js"></script>
     <script src="~/Scripts/Import/import-provider-settings-step.js"></script>

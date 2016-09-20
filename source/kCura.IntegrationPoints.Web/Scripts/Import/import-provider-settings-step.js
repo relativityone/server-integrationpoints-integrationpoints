@@ -1,16 +1,23 @@
-﻿(function (windowObj) {
+﻿(function (windowObj, ko) {
 
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
 
+    var ViewModel = function () {
+        var self = this;
+        self.ImportTypeChoiceValue = ko.observable();
+        self.ImportTypeChoiceValue('document');
+    };
+    ko.applyBindings(new ViewModel());
+
     var _getModel = function () {
         var model = {
-            ImportType: $("input:radio[name=import-provider-import-detail-radio]").val(),
+            InputType: $('input:radio[name=import-type]:checked').val(),
             ProcessingSource: windowObj.import.StorageRoot,
             LoadDataFrom: windowObj.import.SelectedFolderPath,
             HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
             LineNumber: $("#import-columnname-numbers").val(),
-            LoadFile: $("#input-loadFile-text").val()
+            LoadFile: $("#import-loadFile-text").val()
         };
 
         console.log(model);
@@ -53,4 +60,4 @@
     //    windowObj.o365.IPFrameMessagingLoadEvent = true;
     //});
 
-})(this);
+})(this, ko);
