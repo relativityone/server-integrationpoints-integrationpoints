@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception)
 			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, "Failed to validate Integration Point settings");
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, "Integration Point settings: Failed to validate export settings");
 			}
 		}
 	}

@@ -254,6 +254,7 @@
     <Compile Include="Unit\BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\Helpers\DirectoryTreeCreatorTest.cs" />
     <Compile Include="Unit\Helpers\OnClickEventConstructorTests.cs" />
+    <Compile Include="Unit\Helpers\TreeByParentIdCreatorTests.cs" />
     <Compile Include="Unit\JobHistoryBatchUpdateStatusTests.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />

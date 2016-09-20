@@ -5,12 +5,10 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -93,7 +91,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		public void ItShouldGetProcessingSourceLocationStructure()
 		{
 			// Arrange
-			DirectoryTreeItem directoryTreeItem = new DirectoryTreeItem()
+			TreeItemDTO directoryTreeItem = new TreeItemDTO()
 			{
 				Id = "A",
 				Text = "B"
@@ -108,7 +106,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetProcessingSourceLocationStructure(_WORKSPACE_ID, _PROC_SOURCE_LOC_ID);
 
 			// Assert
-			DirectoryTreeItem retValue;
+			TreeItemDTO retValue;
 			httpResponseMessage.TryGetContentValue(out retValue);
 
 			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));

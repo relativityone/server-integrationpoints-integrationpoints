@@ -2,12 +2,13 @@
 using System.Data;
 using System.Net;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
 	public class ProductionPrecedenceService : IProductionPrecedenceService
 	{

@@ -1,0 +1,28 @@
+﻿.ui-dialog-titlebar-close {
+	display: none;
+}
+.ui-widget-header {
+	border: 0px none;
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+	padding: 0 1em 0 1em;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+    text-align: left;
+    border-width: 1px 0 0 0;
+    background-image: none;
+    margin: .5em 0 0 0;
+    padding: .3em 1em .5em .4em;
+}
+
+.ui-dialog {
+	line-height: 150%;
+}
+
+.ui-widget-overlay {
+    background: #666666 url(Images/ui-bg_flat_100_666666_40x100.png) 50% 50% repeat-x;
+    opacity: .50;
+    filter: Alpha(Opacity=50);
+}

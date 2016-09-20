@@ -1,10 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
-using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 		private const string _SUB_FOLDER_1 = @"1";
 		private const string _SUB_FOLDER_2 = @"2";
 
-		DirectoryTreeItem dirTreeItem = new DirectoryTreeItem();
+		TreeItemDTO dirTreeItem = new TreeItemDTO();
 
 		
 		[SetUp]
@@ -66,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			});
 
 			//Act
-			DirectoryTreeItem rootDirTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
+			TreeItemDTO rootDirTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
 
 			//Assert
 
@@ -77,31 +76,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.That(rootDirTreeItem.Children.Count, Is.EqualTo(2));
 
 			//Folder Root\A
-			DirectoryTreeItem subFolderA = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderAPath);
+			TreeItemDTO subFolderA = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderAPath);
 			Assert.That(subFolderA, Is.Not.Null);
 			Assert.That(subFolderA.Text, Is.EqualTo(_SUB_FOLDER_A));
 			Assert.That(subFolderA.Children.Count, Is.EqualTo(2));
 
 			//Folder Root\A\1
-			DirectoryTreeItem subFolderA1 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA1Path);
+			TreeItemDTO subFolderA1 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA1Path);
 			Assert.That(subFolderA1, Is.Not.Null);
 			Assert.That(subFolderA1.Text, Is.EqualTo(_SUB_FOLDER_1));
 			Assert.That(subFolderA1.Children.Count, Is.EqualTo(0));
 
 			//Folder Root\A\2
-			DirectoryTreeItem subFolderA2 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA2Path);
+			TreeItemDTO subFolderA2 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA2Path);
 			Assert.That(subFolderA2, Is.Not.Null);
 			Assert.That(subFolderA2.Text, Is.EqualTo(_SUB_FOLDER_2));
 			Assert.That(subFolderA2.Children.Count, Is.EqualTo(0));
 
 			//Folder Root\B
-			DirectoryTreeItem subFolderB = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
+			TreeItemDTO subFolderB = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
 			Assert.That(subFolderB, Is.Not.Null);
 			Assert.That(subFolderB.Text, Is.EqualTo(_SUB_FOLDER_B));
 			Assert.That(subFolderB.Children.Count, Is.EqualTo(1));
 
 			//Folder Root\B\1
-			DirectoryTreeItem subFolderB1 = subFolderB.Children.FirstOrDefault(item => item.Id == subFolderB1Path);
+			TreeItemDTO subFolderB1 = subFolderB.Children.FirstOrDefault(item => item.Id == subFolderB1Path);
 			Assert.That(subFolderB1, Is.Not.Null);
 			Assert.That(subFolderB1.Text, Is.EqualTo(_SUB_FOLDER_1));
 			Assert.That(subFolderB1.Children.Count, Is.EqualTo(0));
@@ -135,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			_directoryMock.GetDirectories(subFolderBPath).Throws<UnauthorizedAccessException>();
 
 			//Act
-			DirectoryTreeItem rootDirTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
+			TreeItemDTO rootDirTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
 
 			//Root
 			Assert.That(rootDirTreeItem, Is.Not.Null);
@@ -144,7 +143,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			Assert.That(rootDirTreeItem.Children.Count, Is.EqualTo(1));
 
 			//Folder Root\A
-			DirectoryTreeItem subFolderB = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
+			TreeItemDTO subFolderB = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
 			Assert.That(subFolderB, Is.Not.Null);
 			Assert.That(subFolderB.Text, Is.EqualTo(_SUB_FOLDER_B));
 			Assert.That(subFolderB.Children.Count, Is.EqualTo(0));

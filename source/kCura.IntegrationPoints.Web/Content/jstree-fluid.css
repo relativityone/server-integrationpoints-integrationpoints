@@ -8,6 +8,7 @@
 	border: 1px solid #c1c1c1;
 	border-top: 0px;
 	box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
+	overflow: auto;
 }
 
 .jstree-children, .jstree-container-ul {
