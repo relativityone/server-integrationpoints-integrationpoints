@@ -479,6 +479,7 @@
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
     <Content Include="Scripts\Import\import-provider-settings-step.js" />
+    <Content Include="Scripts\Import\import-setup.js" />
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.9.1.js" />

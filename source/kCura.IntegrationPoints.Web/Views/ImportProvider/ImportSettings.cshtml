@@ -2,10 +2,11 @@
     Layout = "~/Views/Shared/_StepLayout.cshtml";
 }
 
-<script id="importProviderSettingsStep" type="text/html"></script>
+<script id="importProviderSettingsStep" type="text/html">
+</script>
 
-<div id="_main">
-    <div id="import-provider-configuration" style="min-width: 900px;">
+<div id="_main" class="table full-width">
+    <div id="import-provider-configuration">
         <div class="card">
             <span class="label">Import Detail</span>
             <table style="width: 100%;">
@@ -29,13 +30,30 @@
                         </div>
                         <div class="field-row">
                             <div class="field-label required">
-                                Load File:
+                                Processing Source:
                             </div>
                             <div class="field-value">
                                 <ul>
                                     <li>
                                         <div class="field-value">
-                                            <input id="import-loadfile-textfield" type="text" placeholder="Select a file ..."/>
+                                            <select class="fluid-mock-select" id="processingSources"></select>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Load Data From:
+                            </div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <div class="field-value">
+                                            <select class="fluid-mock-select fluid-mock-fullwidth" id="location-select"></select>
+                                            <div id="jstree-holder-div" class="jstree-holder browse">
+                                                <div id="browser-tree" tabindex="0"></div>
+                                            </div>
                                         </div>
                                     </li>
                                 </ul>
@@ -49,14 +67,14 @@
                                 <ul>
                                     <li>
                                         <div class="field-value">
-                                            <input id="import-hascolumnnames-checkbox" type="checkbox"/>
+                                            <input id="import-hascolumnnames-checkbox" type="checkbox" />
                                             <span>First line contains column numbers</span>
                                             @* data-bind="disable: HasBeenRun()m checked: ExportImages"*@
                                         </div>
                                     </li>
                                     <li>
                                         <div class="field-value">
-                                            <input id="import-columnname-numbers" type="number" min="0" placeholder="0"/>
+                                            <input id="import-columnname-numbers" type="number" min="0" placeholder="0" />
                                         </div>
                                     </li>
                                 </ul>
@@ -71,5 +89,8 @@
 
 @section scripts
 {
+    <script src="~/Scripts/jstree.min.js"></script>
+    <script src="~/Scripts/Import/import-setup.js"></script>
     <script src="~/Scripts/Import/import-provider-settings-step.js"></script>
+
 }
