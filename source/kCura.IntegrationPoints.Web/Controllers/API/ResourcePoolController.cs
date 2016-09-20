@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -69,7 +68,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
 				}
-				DirectoryTreeItem rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
+				TreeItemDTO rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
 				return Request.CreateResponse(HttpStatusCode.OK, rootFolderTreeDirectoryItem);
 			}
 			catch (Exception ex)

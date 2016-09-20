@@ -201,6 +201,7 @@
     <Compile Include="DefaultSynchronizerFactory.cs" />
     <Compile Include="DomainHelper.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Extensions\ArtifactExtensions.cs" />
     <Compile Include="IAppDomainDataMarshaller.cs" />
     <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IInternalDataSourceProvider.cs" />
@@ -212,6 +213,7 @@
     <Compile Include="Models\ButtonStateDTO.cs" />
     <Compile Include="Models\DestinationProviderDTO.cs" />
     <Compile Include="Models\DestinationWorkspaceDTO.cs" />
+    <Compile Include="Models\TreeItemDTO.cs" />
     <Compile Include="Models\ErrorDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\ExportSettingsValidationResult.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
     <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />
+    <Compile Include="Models\TreeItemWithParentIdDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="ProviderManager.cs" />
     <Compile Include="ProviderWrapper.cs" />

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+namespace kCura.IntegrationPoints.Core.Services
 {
 	public interface IProductionPrecedenceService
 	{

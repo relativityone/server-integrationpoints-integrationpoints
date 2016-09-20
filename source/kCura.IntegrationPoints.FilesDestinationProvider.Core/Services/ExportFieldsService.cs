@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using kCura.IntegrationPoints.Config;
@@ -10,7 +9,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
 using Relativity;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
 	public class ExportFieldsService : IExportFieldsService
 	{

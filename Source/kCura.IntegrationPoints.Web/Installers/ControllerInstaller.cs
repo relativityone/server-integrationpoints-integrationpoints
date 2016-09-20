@@ -38,6 +38,7 @@ using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FtpProvider.Connection;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
@@ -160,7 +161,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
 			container.Register(Component.For<IProductionPrecedenceService>().ImplementedBy<ProductionPrecedenceService>().LifestyleTransient());
-
+			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
 			container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
 			container.Register(Component.For<IPaddingValidator>().ImplementedBy<PaddingValidator>().LifestyleTransient());
 			container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>().LifestyleTransient());
@@ -249,6 +250,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.LifeStyle.Transient);
 
 			container.Register(Component.For<IDirectoryTreeCreator>().ImplementedBy<DirectoryTreeCreator>().LifestyleTransient());
+			container.Register(Component.For<ITreeByParentIdCreator>().ImplementedBy<TreeByParentIdCreator>().LifestyleTransient());
 			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
 			container.Register(Component.For<IDirectory>().ImplementedBy<DirectoryWrap>().LifestyleTransient());
 			#endregion

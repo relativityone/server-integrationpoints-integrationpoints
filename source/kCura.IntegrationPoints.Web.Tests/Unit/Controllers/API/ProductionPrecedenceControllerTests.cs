@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Hosting;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;

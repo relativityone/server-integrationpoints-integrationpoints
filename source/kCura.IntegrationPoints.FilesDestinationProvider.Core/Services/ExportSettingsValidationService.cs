@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using Newtonsoft.Json;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
 	public class ExportSettingsValidationService : IExportSettingsValidationService
 	{
