@@ -1,6 +1,8 @@
 ﻿@{
     Layout = "~/Views/Shared/_StepLayout.cshtml";
 }
+<meta name="import-base-url" content="/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" />
+<link href="~/Content/import.css" rel="stylesheet" />
 
 <div id="_main" class="table full-width">
     <div id="import-provider-configuration">
@@ -63,6 +65,21 @@
                         </div>
                         <div class="field-row">
                             <div class="field-label required">
+                                Load File:
+                            </div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <div class="field-value">
+                                            <input type="text" id="input-loadFile-text" placeholder="Select a file ..."/>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                        <div class="field-row">
+                            <div class="field-label required">
                                 Start Line:
                             </div>
                             <div class="field-value">
@@ -70,7 +87,7 @@
                                     <li>
                                         <div class="field-value">
                                             <input id="import-hascolumnnames-checkbox" type="checkbox" />
-                                            <span>First line contains column numbers</span>
+                                            <span>First line contains column names</span>
                                             @* data-bind="disable: HasBeenRun()m checked: ExportImages"*@
                                         </div>
                                     </li>
