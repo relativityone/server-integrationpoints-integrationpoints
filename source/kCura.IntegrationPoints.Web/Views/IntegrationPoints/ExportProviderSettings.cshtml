@@ -1,4 +1,7 @@
-﻿<script id="exportProviderSettingsStep" type="text/html">
+﻿<script src="~/Scripts/dragon/dragon-dialogs.js"></script>
+<link type="text/css" rel="stylesheet" href="~/Content/ui-dialog.css"/>
+
+<script id="exportProviderSettingsStep" type="text/html">
 <div id="_main">
 <div id="exportProviderConfiguration" style="min-width: 900px;">
 <div class="card">
@@ -43,7 +46,7 @@
 			<td style="vertical-align: top;">
 				<div class="field-row">
 					<div class="field-label">
-						Overwrite files:
+						Overwrite Files:
 					</div>
 					<div class="field-value middle-vertical-align">
 						<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" class="middle-vertical-align" />
@@ -55,7 +58,7 @@
 						<td style="width: 48%;">
 							<div class="field-row">
 								<div class="field-label required">
-									Processing Source:
+									Export Location:
 								</div>
 								<div class="field-value select2-double-width">
 									<select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: ProcessingSourceLocationList, optionsCaption: 'Select...', value: ProcessingSourceLocation, disable: HasBeenRun(), select2: { width: '100%' }"></select>
@@ -70,7 +73,7 @@
 										<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: Fileshare" />
 										<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>																																																					
 									</div>
-									<div id="jstree-holder-div" class="jstree-holder browse">
+									<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
 										<div id="browser-tree" tabindex="0"></div>
 									</div>																		
 								</div>								
@@ -80,91 +83,6 @@
 				</table>
 			</div>
 
-			<div class="card" data-bind="visible: IsVolumeAndSubdirectioryDetailVisible()">
-				<div id="subdirectory_accordion" style="cursor: pointer;">
-					<span class="label" style="display: inline-block;">Volume & Subdirectory Detail</span>
-					<img class="collapsed_arrow" src="/Relativity/images/arrow_collapsed.png" alt="" style="display: none; vertical-align: text-bottom;" />
-					<img class="expanded_arrow" src="/Relativity/images/arrow_expanded.png" alt="" style="vertical-align: text-bottom;" />
-				</div>
-				<table style="width: 100%; display: none;">
-					<tr>
-						<td style="vertical-align: text-top; width: 48%;">
-							<div>
-								<p>
-									<h3 style="margin-left: 30px">
-										VOLUME
-									</h3>
-								</p>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Prefix:
-								</div>
-								<div class="field-value">
-									<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Start Number:
-								</div>
-								<div class="field-value">
-									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Number of digits:
-								</div>
-								<div class="field-value">
-									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Max Size (MB):
-								</div>
-								<div class="field-value">
-									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
-								</div>
-							</div>
-						</td>
-						<td style="vertical-align: text-top;">
-							<div class="field-row">
-								<p>
-									<h3 style="margin-left: 30px">
-										SUBDIRECTORY
-									</h3>
-								</p>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Start Number:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Number of digits:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Max Files:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
-								</div>
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
 
 			<div class="card">
 				<span class="label">Output Settings</span>
@@ -232,13 +150,10 @@
 									Data File Encoding:
 								</div>
 								<div class="field-value">
-									<select id="dataFileEncodingSelector" data-bind="value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
-										<option data-bind="value: ''">Select...</option>
-										<!-- ko foreach: FileEncodingTypeList -->
-											<optgroup data-bind="attr: {label: label}, foreach: children">
-												<option data-bind="text: displayName, value: name"></option>
-											</optgroup>
-										<!-- /ko -->
+									<select data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+										<optgroup data-bind="attr: {label: label}, foreach: children">
+											<option data-bind="text: displayName, value: name"></option>
+										</optgroup>
 									</select>
 								</div>
 							</div>
@@ -312,15 +227,15 @@
 								</div>
 								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected()">
 									<div class="field-label">
-										Include original images if not produced:
+										Include Original Images<br/>If Not Produced:
 									</div>
-									<div class="field-value">
+									<div class="field-value" style="vertical-align: middle;">
 										<input id="image-include-original-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeOriginalImages" />
 									</div>
 								</div>
 								<div class="field-row">
 									<div class="field-label required">
-										Subdirectory Prefix For Image:
+										Subdirectory Prefix:
 									</div>
 									<div class="field-value">
 										<input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix, disable: HasBeenRun()" />
@@ -338,7 +253,7 @@
 								</div>
 								<div class="field-row">
 									<div class="field-label required">
-										Subdirectory prefix for Native:
+										Subdirectory Prefix:
 									</div>
 									<div class="field-value">
 										<input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix, disable: HasBeenRun()" />
@@ -359,14 +274,11 @@
 										Text File Encoding:
 									</div>
 									<div class="field-value">
-										<select id="textFileEncodingSelector" data-bind="value: TextFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
-											<option data-bind="value: ''">Select...</option>
-											<!-- ko foreach: FileEncodingTypeList -->
-												<optgroup data-bind="attr: {label: label}, foreach: children">
-													<option data-bind="text: displayName, value: name"></option>
-												</optgroup>
-											<!-- /ko -->
-										</select>
+										<select data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+											<optgroup data-bind="attr: {label: label}, foreach: children">
+												<option data-bind="text: displayName, value: name"></option>
+											</optgroup>
+										</select>										
 									</div>
 								</div>
 								<div class="field-row">
@@ -381,7 +293,7 @@
 								</div>
 								<div class="field-row">
 									<div class="field-label required">
-										Subdirectory prefix for Text:
+										Subdirectory Prefix:
 									</div>
 									<div class="field-value">
 										<input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix, disable: HasBeenRun()" />
@@ -393,19 +305,89 @@
 					</tr>
 				</table>
 			</div>
+			<div class="card" data-bind="visible: IsVolumeAndSubdirectioryDetailVisible()">
+				<span class="label">Volume & Subdirectory Detail</span>
+				<table style="width: 100%;">
+					<tr>
+						<td style="vertical-align: text-top; width: 48%;">
+							<div>
+								<p>
+									<h3 style="margin-left: 30px">
+										VOLUME
+									</h3>
+								</p>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Prefix:
+								</div>
+								<div class="field-value">
+									<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Start Number:
+								</div>
+								<div class="field-value">
+									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Number Of Digits:
+								</div>
+								<div class="field-value">
+									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Max Size (MB):
+								</div>
+								<div class="field-value">
+									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
+								</div>
+							</div>
+						</td>
+						<td style="vertical-align: text-top;">
+							<div class="field-row">
+								<p>
+									<h3 style="margin-left: 30px">
+										SUBDIRECTORY
+									</h3>
+								</p>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Start Number:
+								</div>
+								<div class="field-value">
+									<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Number Of Digits:
+								</div>
+								<div class="field-value">
+									<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
+								</div>
+							</div>
+							<div class="field-row">
+								<div class="field-label required">
+									Max Files:
+								</div>
+								<div class="field-value">
+									<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
 			<div style="height: 15px;"></div>
 		</div>
 	</div>
 </script>
-<script>
-$('#bodyContainer').off('click', '#subdirectory_accordion');
-$('#bodyContainer').on('click', '#subdirectory_accordion', function() {
-	$header = $(this);
-	$content = $header.next();
 
-	$content.slideToggle(0, function(){
-		$header.find('.collapsed_arrow').slideToggle(0);
-		$header.find('.expanded_arrow').slideToggle(0);
-	});
-});
-</script>

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception)
 			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, "Failed to validate Integration Point settings");
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, "Integration Point settings: Failed to validate export settings");
 			}
 		}
 	}

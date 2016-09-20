@@ -9,12 +9,25 @@
 
 		function handleSuccess(callback) {
 			var $dialog = this,
-	close = function () { $dialog.dialog('close') },
-	enable = function () { $dialog.parent().find('.button.primary').attr('disabled', false) },
-	result;
+			close = function () { $dialog.dialog('close') },
+			enable = function () { $dialog.parent().find('.button.primary').attr('disabled', false) },
+			result;
 
 			$dialog.parent().find('.button.primary').attr('disabled', true);
-			result = (typeof callback !== "function") || callback.call(this, { close: close, enable: enable })
+			result = (typeof callback !== "function") || callback.call(this, { close: close, enable: enable });
+			if (result) {
+				close();
+			}
+		};
+
+		function handleCancel(callback) {
+			var $dialog = this,
+			close = function () { $dialog.dialog('close') },
+			enable = function () { $dialog.parent().find('.button.secondary').attr('disabled', false) },
+			result;
+
+			$dialog.parent().find('.button.secondary').attr('disabled', true);
+			result = (typeof callback !== "function") || callback.call(this, { close: close, enable: enable });
 			if (result) {
 				close();
 			}
@@ -61,6 +74,72 @@
 							$(this).dialog('close');
 						},
 						'class': 'button secondary'
+					});
+				}
+
+				$dialog.dialog({
+					autoOpen: true,
+					resizable: false,
+					draggable: false,
+					title: settings.title,
+					modal: true,
+					height: settings.height,
+					width: settings.width,
+					dialogClass: 'msg',
+					buttons: buttons,
+					beforeClose: function () {
+						$(this).remove();
+					},
+					dialogClass: 'prompt'
+				});
+				return p.promise;
+			};
+
+			return confirm;
+		})();
+
+		dialogs.showConfirmWithCancelHandler = (function () {
+			var confirmDefaults = {
+				message: '',
+				title: 'Confirmation',
+				okText: 'OK',
+				cancelText: 'Cancel',
+				width: 'auto',
+				height: 'auto',
+				showOk: true,
+				showCancel: true,
+				hideTitlebarBorder: true
+			};
+
+			function confirm(options) {
+				var p = deferred.defer(),
+					settings,
+					$dialog = getDialog(),
+					enable,
+					buttons = [];
+
+				settings = $.extend(true, {}, confirmDefaults, options);
+				$dialog.html($('<label/>').text(settings.message));
+
+				close = function () { $dialog.dialog('close'); };
+
+				if (settings.showOk) {
+					buttons.push({
+						text: settings.okText,
+						click: function () {
+							handleSuccess.call($dialog, settings.success);
+						},
+						'class': 'button primary'
+					});
+				}
+
+				if (settings.showCancel) {
+					buttons.push({
+						text: settings.cancelText,
+						click: function () {
+							handleCancel.call($dialog, settings.cancel);
+						},
+						'class': 'button primary'
 					});
 				}
 

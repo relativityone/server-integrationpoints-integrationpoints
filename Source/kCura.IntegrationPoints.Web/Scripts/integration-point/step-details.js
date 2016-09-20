@@ -281,6 +281,8 @@ var IP = IP || {};
 		this.UpdateSelectedItem = function () {
 			self.artifactTypeID(settings.artifactTypeID);
 		}
+
+		this.isDestinationObjectDisabled = ko.observable(false);
 	};
 
 	var Scheduler = function (model) {
@@ -577,6 +579,8 @@ var IP = IP || {};
 			self.setExportTypeVisibility(value);
 		});
 
+		this.isEdit = ko.observable(settings !== undefined && parseInt(settings.artifactID) > 0)
+
 		var hasBeenRun = false;
 		if (settings.lastRun != null) {
 			hasBeenRun = true;
@@ -615,32 +619,37 @@ var IP = IP || {};
 			this.scheduler.submit();
 		};
 
+		this.isTypeDisabled = ko.observable(false);
+
 		self.setExportTypeVisibility = function (isExportType) {
-			if (self.hasBeenRun()) {
-				if (isExportType === undefined) {
-					self.isExportType(self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2' ? 'true' : 'false');
+			if (isExportType === undefined && self.destinationProvider != null){
+				if(self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
+					self.isExportType('true');
+				} 
+				else {
+					self.isExportType('false');
 				}
+			} 
+
+			if (self.hasBeenRun() || self.isEdit()) {				
 				self.source.isSourceProviderDisabled(true);
 				self.destination.isDestinationProviderDisabled(true);
+				self.destination.isDestinationObjectDisabled(true)
+				self.isTypeDisabled(true)
+			} 			
+			else {
+				if (isExportType === "false") {
+				self.source.displayRelativityInSourceTypes(false);
+				self.source.isSourceProviderDisabled(false);
+				self.destination.setRelativityAsDestinationProvider();
+				self.destination.isDestinationProviderDisabled(true);
 			} else {
-				if (isExportType === undefined && self.destinationProvider != null){
-					if(self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
-						self.isExportType('true');
-					} else {
-						self.isExportType('false');
-					}
-				} else if (isExportType === "false") {
-					self.source.displayRelativityInSourceTypes(false);
-					self.source.isSourceProviderDisabled(false);
-					self.destination.setRelativityAsDestinationProvider();
-					self.destination.isDestinationProviderDisabled(true);
-				} else {
-					self.source.displayRelativityInSourceTypes(true);
-					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
-					self.source.selectedType(relativitySourceProviderGuid);
-					self.source.isSourceProviderDisabled(true);
-					self.destination.isDestinationProviderDisabled(false);
-				}
+				self.source.displayRelativityInSourceTypes(true);
+				var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+				self.source.selectedType(relativitySourceProviderGuid);
+				self.source.isSourceProviderDisabled(true);
+				self.destination.isDestinationProviderDisabled(false);
+			}
 			}
 		};
 	};

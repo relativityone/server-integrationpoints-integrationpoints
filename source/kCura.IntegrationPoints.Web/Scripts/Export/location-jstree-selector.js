@@ -34,6 +34,8 @@ var LocationJSTreeSelector = function () {
 	};
 
 	self.initJsTree = function (data) {		
+		$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
+
 		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
 		var root = $.extend({ "icon": "jstree-root-folder" }, data);
 
@@ -53,11 +55,9 @@ var LocationJSTreeSelector = function () {
 
 	self.setTreeVisibility = function (visible) {
 		if (visible) {
-			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 			$(self.domSelectorSettings.jstreeHolderDivSelector).show();
 			self.treeVisible = true;
 		} else {
-			$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 			$(self.domSelectorSettings.jstreeHolderDivSelector).hide();
 			self.treeVisible = false;
 		}
