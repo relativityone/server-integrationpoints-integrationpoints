@@ -13,7 +13,7 @@
     windowObj.import.view = {};
     windowObj.import.view.treeVisible = false;
 
-    var baseUrl = windowObj.import.MetaHelper('base-url');
+    var baseUrl = windowObj.import.MetaHelper('import-base-url');
 
     windowObj.import.view.setTreeVisibility = function (visible) {
         if (visible) {
