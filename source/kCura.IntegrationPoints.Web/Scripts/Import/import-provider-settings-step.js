@@ -9,7 +9,7 @@
             ProcessingSource: windowObj.import.StorageRoot,
             LoadDataFrom: windowObj.import.SelectedFolderPath,
             HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
-            LineNumber: HashChangeEvent ? $("#import-columnname-numbers").val() : null
+            LineNumber: this.HasStartLine ? $("#import-columnname-numbers").val() : null
         };
 
         console.log(model);
