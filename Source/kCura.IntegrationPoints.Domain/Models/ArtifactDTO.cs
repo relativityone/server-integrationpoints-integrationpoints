@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
 	/// <summary>
 	/// A data transfer object class representing a Relativity Artifact.
 	/// </summary>
+	[Serializable]
 	public class ArtifactDTO
 	{
 		private readonly IDictionary<int, ArtifactFieldDTO> _fieldDictionary;
@@ -59,13 +60,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 		/// <returns>The field with the given artifact id.</returns>
 		public ArtifactFieldDTO GetFieldForIdentifier(int artifactId)
 		{
-			if (_fieldDictionary == null)
-			{
-				return null;
-			}
-
-			ArtifactFieldDTO field = _fieldDictionary[artifactId];
-
+			ArtifactFieldDTO field = _fieldDictionary?[artifactId];
 			return field;
 		}
 	}

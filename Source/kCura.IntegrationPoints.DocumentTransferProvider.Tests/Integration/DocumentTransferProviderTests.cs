@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 		private readonly DocumentTransferProvider _documentTransferProvider;
 		public DocumentTransferProviderTests() : base("DestinationWorkspaceRepositoryTests", null)
 		{	
-			_documentTransferProvider = new DocumentTransferProvider(Helper);
+			_documentTransferProvider = new DocumentTransferProvider();
 		}
 
 		[Test]

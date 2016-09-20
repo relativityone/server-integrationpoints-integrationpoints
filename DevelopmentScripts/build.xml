@@ -416,7 +416,7 @@
   </TestRunner>
   <RAPBuilder>
     <Applications>
-      <Application name="Relativity.IntegrationPoints">
+      <Application name="kCura.IntegrationPoints" generatenuspec="true">
         <Destination>Applications\RelativityIntegrationPoints.Auto.rap</Destination>
         <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
         <Assemblies>

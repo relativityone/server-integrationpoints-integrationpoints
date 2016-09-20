@@ -35,6 +35,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -247,6 +248,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (ExportUserNotification).Name,
 				typeof (ExportLoggingMediator).Name,
 				typeof (ExportFieldsService).Name,
+				typeof (ExportSettingsValidationService).Name,
+				typeof (ArtifactTreeService).Name,
 				typeof (ProductionPrecedenceService).Name,
 				typeof (CaseManagerFactory).Name,
 				typeof (StoppableExporterFactory).Name,

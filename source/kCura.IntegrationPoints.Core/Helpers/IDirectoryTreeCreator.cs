@@ -1,9 +1,9 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Helpers
 {
 	public interface IDirectoryTreeCreator
 	{
-		DirectoryTreeItem TraverseTree(string root);
+		TreeItemDTO TraverseTree(string root);
 	}
 }

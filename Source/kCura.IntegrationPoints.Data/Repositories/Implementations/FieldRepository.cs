@@ -4,10 +4,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -28,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public FieldRepository(
 			IHelper helper,
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor, 
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor,
 			BaseServiceContext serviceContext,
 			BaseContext baseContext,
 			int workspaceArtifactId) : base(objectQueryManagerAdaptor)
@@ -52,13 +50,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			ArtifactDTO[] artifactDtos = null;
 			try
 			{
-				 artifactDtos = await this.RetrieveAllArtifactsAsync(longTextFieldsQuery);
+				artifactDtos = await this.RetrieveAllArtifactsAsync(longTextFieldsQuery);
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to retrieve long text fields", e);	
+				throw new Exception("Unable to retrieve long text fields", e);
 			}
-
 
 			ArtifactFieldDTO[] fieldDtos =
 				artifactDtos.Select(x => new ArtifactFieldDTO()
@@ -87,11 +84,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to retrieve fields", e);	
+				throw new Exception("Unable to retrieve fields", e);
 			}
 
 			return fieldArtifactDtos;
 		}
+
+		public ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldNames)
+		{
+			return Task.Run(() => RetrieveFieldsAsync(rdoTypeId, fieldNames)).GetResultsWithoutContextSync();
+		}
+
 
 		public int? RetrieveField(string displayName, int fieldArtifactTypeId, int fieldTypeId)
 		{

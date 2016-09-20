@@ -212,7 +212,9 @@
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
+    <Compile Include="Helpers\Implementations\TreeByParentIdCreator.cs" />
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
+    <Compile Include="Helpers\ITreeByParentIdCreator.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
@@ -251,7 +253,6 @@
     <Compile Include="Managers\ISourceJobManager.cs" />
     <Compile Include="Managers\IObjectTypeManager.cs" />
     <Compile Include="Managers\IStateManager.cs" />
-    <Compile Include="Models\DirectoryTreeItem.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Models\StoppableJobCollection.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
@@ -289,8 +290,11 @@
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
     <Compile Include="Services\IExportFieldsService.cs" />
+    <Compile Include="Services\IExportSettingsValidationService.cs" />
     <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
+    <Compile Include="Services\IProductionPrecedenceService.cs" />
+    <Compile Include="Services\IArtifactTreeService.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
