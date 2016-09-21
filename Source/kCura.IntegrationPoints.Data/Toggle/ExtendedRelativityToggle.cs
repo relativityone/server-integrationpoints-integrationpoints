@@ -36,10 +36,10 @@ namespace kCura.IntegrationPoints.Data.Toggle
 		{
 			// Do not check on the toggle of this feature !!! - SAMO 5/31/2016.
 			// the default value of the toggle itself is off, which will make the check be invalid when it gets removed.
-			if ((Configuration.IsCloudInstance || !Configuration.UseEDDSResource))
+			if (Configuration.IsCloudInstance || !Configuration.UseEDDSResource)
 			{
 				return true;
-			};
+			}
 			return false;
 		}
 
