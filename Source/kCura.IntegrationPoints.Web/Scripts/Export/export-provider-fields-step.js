@@ -123,8 +123,9 @@
 			self.model = new viewModel($.extend({}, self.ipModel, { hasBeenRun: ip.hasBeenRun }));
 			self.model.errors = ko.validation.group(self.model);
 
-			self.getAvailableFieldsFor = function (artifactId) {
-				self.ipModel.sourceConfiguration.SavedSearchArtifactId = artifactId;
+			self.getAvailableFields = function () {
+				//Mock until REL-104887 is done (3 - Saved Search)
+				self.ipModel.sourceConfiguration.ExportType = 3;
 
 				root.data.ajax({
 					type: 'post',
@@ -230,7 +231,8 @@
 
 					self.model.savedSearch.subscribe(function (selected) {
 						if (!!selected) {
-							self.getAvailableFieldsFor(selected);
+							self.ipModel.sourceConfiguration.SavedSearchArtifactId = selected;
+							self.getAvailableFields();
 						} else {
 							self.model.fields.removeAllFields();
 							self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
