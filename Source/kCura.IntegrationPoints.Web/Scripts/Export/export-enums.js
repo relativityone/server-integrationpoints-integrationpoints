@@ -48,3 +48,17 @@ ExportEnums.ProductionPrecedenceTypeEnum = {
 	Original: 0,
 	Produced: 1
 };
+
+ExportEnums.SourceOptions = [
+  { value: 0, key: "Folder" },
+  { value: 1, key: "Folder + Subfolder" },
+  { value: 2, key: "Production" },
+  { value: 3, key: "Saved Search" }
+];
+
+ExportEnums.SourceOptionsEnum = {
+	Folder: 0,
+	FolderSubfolder: 1,
+	Production: 2,
+	SavedSearch: 3
+};

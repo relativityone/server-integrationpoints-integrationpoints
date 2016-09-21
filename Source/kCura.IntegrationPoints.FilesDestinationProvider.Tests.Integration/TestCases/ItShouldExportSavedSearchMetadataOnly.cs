@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
             // verify that metadata file was created
             var actual = GetFileInfo(directory);
 
-            var expectedMetadataFilename = $"{ExportSettings.ExportedObjName}_export.{MetadataFormat}";
+            var expectedMetadataFilename = $"{ExportSettings.SavedSearchName}_export.{MetadataFormat}";
 
 			Assert.That(actual, Is.Not.Null);
             Assert.That(actual?.Name, Is.EqualTo(expectedMetadataFilename));

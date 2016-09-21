@@ -13,8 +13,12 @@ namespace kCura.IntegrationPoints.Domain.Models
 
 	public class ExportUsingSavedSearchSettings : ExportSettings
 	{
+		public string ExportType { get; set; }
 		public int SavedSearchArtifactId { set; get; }
 		public string SavedSearch { set; get; }
+		public int FolderArtifactId { get; set; }
+		public int ViewId { get; set; }
+		public string ViewName { set; get; }
 		public int StartExportAtRecord { get; set; }
 		public string Fileshare { get; set; }
 		public bool ExportNatives { get; set; }
@@ -24,11 +28,11 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public string SelectedDataFileFormat { get; set; }
 		public string DataFileEncodingType { get; set; }
 		public string SelectedImageDataFileFormat { get; set; }
-        public char ColumnSeparator { get; set; }
-        public char QuoteSeparator { get; set; }
-        public char NewlineSeparator { get; set; }
-        public char MultiValueSeparator { get; set; }
-        public char NestedValueSeparator { get; set; }
+		public char ColumnSeparator { get; set; }
+		public char QuoteSeparator { get; set; }
+		public char NewlineSeparator { get; set; }
+		public char MultiValueSeparator { get; set; }
+		public char NestedValueSeparator { get; set; }
 		public string SubdirectoryImagePrefix { get; set; }
 		public string SubdirectoryNativePrefix { get; set; }
 		public string SubdirectoryTextPrefix { get; set; }

@@ -14,8 +14,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		[DataMember]
 		public ScheduleInterval Interval { get; set; }
+
 		[DataMember]
 		public DateTime? StartDate { get; set; }
+
 		[DataMember]
 		public DateTime? EndDate { get; set; }
 
@@ -24,12 +26,16 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		[DataMember]
 		public int? DayOfMonth { get; set; }
+
 		[DataMember]
 		public bool? SetLastDayOfMonth { get; set; }
+
 		[DataMember]
 		public DaysOfWeek? DaysToRun { get; set; }
+
 		[DataMember]
 		public int? Reoccur { get; set; }
+
 		[DataMember]
 		public OccuranceInMonth? OccuranceInMonth { get; set; }
 
@@ -69,20 +75,29 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		public override DateTime? GetNextUTCRunDateTime(DateTime? lastRunTime = null, TaskStatusEnum? lastTaskStatus = null)
 		{
-			IEndDateComparer comparer = null;
+			ReturnerBase returner = null;
+			//Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
 			if (TimeZoneOffsetInMinute == null)
 			{
-				comparer = new LocalEndDateComparer();
-			}
-			else
-			{
-				EndDate = EndDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault());
-				comparer = new UtcEndDateComparer(TimeZoneOffsetInMinute.GetValueOrDefault());
+				returner = new LocalEndDateReturner(TimeService);
+				returner.EndDate = EndDate;
+				returner.StartDate = StartDate ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
+				returner.LocalTimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks);
 			}
 
-			return GetNextRunTimeByInterval(Interval, comparer, StartDate.GetValueOrDefault(DateTime.UtcNow),
-				localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks),
-				DaysToRun, DayOfMonth, SetLastDayOfMonth, EndDate, Reoccur, OccuranceInMonth);
+			//Use the timeZoneOffSet to compare time in utc
+			else
+			{
+				returner = new UtcEndDateReturner(TimeService);
+
+				returner.EndDate = EndDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).AddTicks(localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks));
+				returner.StartDate = StartDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()) ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
+				returner.LocalTimeOfDayTick = localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks); //set the local schedule time value
+				returner.LocalTimeOfDayTick += TimeSpan.FromMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).Ticks; //adjut to utc
+			}
+
+			return GetNextRunTimeByInterval(Interval, returner,
+				DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
 		}
 
 		public override string Description
@@ -98,18 +113,22 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					case ScheduleInterval.Daily:
 						returnValue.Append(string.Format(", run this job every day"));
 						break;
+
 					case ScheduleInterval.Weekly:
 						returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} week(s)", Reoccur.Value) : "week"));
 						if (DaysToRun.HasValue) returnValue.Append(string.Format(" on {0}", DaysOfWeekToString(DaysToRun.Value)));
 						break;
+
 					case ScheduleInterval.Monthly:
 						returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} month(s)", Reoccur.Value) : "month"));
 						if (DayOfMonth.HasValue) returnValue.Append(string.Format(" on {0} day", DayOfMonth.Value));
 						else if (OccuranceInMonth.HasValue) returnValue.Append(string.Format(" the {0} {1} of the month", OccuranceInMonth.Value.ToString(), DaysOfWeekToString(DaysToRun.Value)));
 						break;
+
 					case ScheduleInterval.None:
 						returnValue.Append(", run this job once");
 						break;
+
 					default:
 						throw new NotImplementedException(
 							"Scheduling rule does not exist on this object, this only supports Daily, Weekly, Monthly");

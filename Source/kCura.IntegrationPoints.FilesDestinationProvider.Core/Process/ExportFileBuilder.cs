@@ -25,7 +25,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			ExportFileHelper.SetDefaultValues(exportFile);
 
-			exportFile.ArtifactID = exportSettings.ExportedObjArtifactId;
+			exportFile.TypeOfExport = ParseExportType(exportSettings.TypeOfExport);
+
+			SetExportedObjectIdAndName(exportSettings, exportFile);
 
 			SetStartDocumentNumber(exportSettings, exportFile);
 
@@ -51,6 +53,26 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			SetImagePrecedence(exportSettings, exportFile);
 
 			return exportFile;
+		}
+
+		private static void SetExportedObjectIdAndName(ExportSettings exportSettings, ExportFile exportFile)
+		{
+			switch (exportSettings.TypeOfExport)
+			{
+				case ExportSettings.ExportType.SavedSearch:
+					exportFile.ArtifactID = exportSettings.SavedSearchArtifactId;
+					exportFile.LoadFilesPrefix = exportSettings.SavedSearchName;
+					break;
+				case ExportSettings.ExportType.Folder:
+				case ExportSettings.ExportType.FolderAndSubfolders:
+					exportFile.ArtifactID = exportSettings.FolderArtifactId;
+					exportFile.ViewID = exportSettings.ViewId;
+					exportFile.LoadFilesPrefix = exportSettings.ViewName;
+					break;
+				case ExportSettings.ExportType.ProductionSet:
+					//TODO when exporting production set is done
+					break;
+			}
 		}
 
 		private void SetImagePrecedence(ExportSettings exportSettings, ExportFile exportFile)
@@ -87,7 +109,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.LoadFileEncoding = exportSettings.DataFileEncoding;
 			exportFile.LoadFileExtension = ParseDataFileFormat(exportSettings.OutputDataFileFormat);
 			exportFile.LoadFileIsHtml = IsHtml(exportSettings.OutputDataFileFormat);
-			exportFile.LoadFilesPrefix = exportSettings.ExportedObjName;
 		}
 
 		private void SetDigitPaddings(ExportSettings exportSettings, ExportFile exportFile)
@@ -123,6 +144,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			else
 			{
 				exportFile.TypeOfImage = ExportFile.ImageType.SinglePage;
+			}
+		}
+
+		private static ExportFile.ExportType ParseExportType(ExportSettings.ExportType exportType)
+		{
+			switch (exportType)
+			{
+				case ExportSettings.ExportType.Folder:
+					return ExportFile.ExportType.ParentSearch;
+				case ExportSettings.ExportType.FolderAndSubfolders:
+					return ExportFile.ExportType.AncestorSearch;
+				case ExportSettings.ExportType.ProductionSet:
+					return ExportFile.ExportType.Production;
+				case ExportSettings.ExportType.SavedSearch:
+					return ExportFile.ExportType.ArtifactSearch;
+				default:
+					throw new InvalidEnumArgumentException($"Unknown ExportSettings.ExportType ({exportType})");
 			}
 		}
 

@@ -18,8 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			Opticon = 0,
 			IPRO = 1,
 			IPRO_FullText = 2,
-			//Mock until REL-102630 is done
-			None = 9
+			None = 3
 		}
 
 		public enum DataFileFormat
@@ -43,9 +42,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			Produced
 		}
 
+		public enum ExportType
+		{
+			Folder = 0,
+			FolderAndSubfolders = 1,
+			ProductionSet = 2,
+			SavedSearch = 3
+		}
+
+		public ExportType TypeOfExport { get; set; }
+		public int SavedSearchArtifactId { get; set; }
+		public string SavedSearchName { get; set; }
+		public int FolderArtifactId { get; set; }
+		public int ViewId { get; set; }
+		public string ViewName { get; set; }
 		public int StartExportAtRecord { get; set; }
-		public int ExportedObjArtifactId { get; set; }
-		public string ExportedObjName { get; set; }
 		public int WorkspaceId { get; set; }
 		public string ExportFilesLocation { get; set; }
 		public List<int> SelViewFieldIds { get; set; }
@@ -57,11 +68,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public DataFileFormat OutputDataFileFormat { get; set; }
 		public Encoding DataFileEncoding { get; set; }
 		public ImageDataFileFormat? SelectedImageDataFileFormat { get; set; }
-        public char ColumnSeparator { get; set; }
-        public char QuoteSeparator { get; set; }
-        public char NewlineSeparator { get; set; }
-        public char MultiValueSeparator { get; set; }
-        public char NestedValueSeparator { get; set; }
+		public char ColumnSeparator { get; set; }
+		public char QuoteSeparator { get; set; }
+		public char NewlineSeparator { get; set; }
+		public char MultiValueSeparator { get; set; }
+		public char NestedValueSeparator { get; set; }
 		public string SubdirectoryImagePrefix { get; set; }
 		public string SubdirectoryNativePrefix { get; set; }
 		public string SubdirectoryTextPrefix { get; set; }
