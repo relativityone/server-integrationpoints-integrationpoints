@@ -52,20 +52,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					throw new InvalidEnumArgumentException("Invalid export type specified");
 				}
 
-				int artifactId;
-				if (exportType == ExportSettings.ExportType.ProductionSet)
-				{
-					//TODO exporting production set - set artifact id
-					artifactId = -1;
-				}
-				else if ((exportType == ExportSettings.ExportType.Folder) || (exportType == ExportSettings.ExportType.FolderAndSubfolders))
-				{
-					artifactId = settings.ViewId;
-				}
-				else
-				{
-					artifactId = settings.SavedSearchArtifactId;
-				}
+				var artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
 
 				var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, (int) ArtifactType.Document,
 					exportType == ExportSettings.ExportType.ProductionSet);
@@ -76,6 +63,25 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
 			}
+		}
+
+		private int RetrieveArtifactIdBasedOnExportType(ExportSettings.ExportType exportType, ExportUsingSavedSearchSettings settings)
+		{
+			int artifactId;
+			if (exportType == ExportSettings.ExportType.ProductionSet)
+			{
+				//TODO exporting production set - set artifact id
+				artifactId = -1;
+			}
+			else if ((exportType == ExportSettings.ExportType.Folder) || (exportType == ExportSettings.ExportType.FolderAndSubfolders))
+			{
+				artifactId = settings.ViewId;
+			}
+			else
+			{
+				artifactId = settings.SavedSearchArtifactId;
+			}
+			return artifactId;
 		}
 
 		[HttpGet]
