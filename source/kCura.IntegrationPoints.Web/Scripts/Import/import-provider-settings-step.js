@@ -1,12 +1,11 @@
 ﻿(function (windowObj, ko) {
-
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
 
     var ViewModel = function () {
         var self = this;
         self.ImportTypeChoiceValue = ko.observable();
-        self.ImportTypeChoiceValue('document');
+        self.ImportTypeChoiceValue("document");
     };
     ko.applyBindings(new ViewModel());
 
@@ -19,6 +18,15 @@
             LineNumber: $("#import-columnname-numbers").val(),
             LoadFile: $("#import-loadFile-text").val()
         };
+
+        if (model.ProcessingSource !== undefined || model.SelectedFolderPath !== undefined) {
+            windowObj.import.StorageRoot = model.ProcessingSource;
+            windowObj.import.SelectedFolderPath = model.LoadDataFrom;
+        }
+        else {
+            model.ProcessingSource = "";
+            model.LoadDataFrom = "";
+        }
 
         console.log(model);
         return JSON.stringify(model);
@@ -48,16 +56,15 @@
 
     ////An event raised when the host page has loaded the current settings page.
     //message.subscribe('load', function (model) {
-    //    if (model != '') {
-    //        var sourceConfig = JSON.parse(model);
-    //        windowObj.o365.StorageRoot = sourceConfig.StorageRoot;
-    //        windowObj.o365.SelectedFolderPath = sourceConfig.CsvFilePath;
-    //    }
-    //    else {
-    //        windowObj.o365.StorageRoot = '';
-    //        windowObj.o365.SelectedFolderPath = '';
-    //    }
-    //    windowObj.o365.IPFrameMessagingLoadEvent = true;
+    //if (model != '') {
+    //    var sourceConfig = JSON.parse(model);
+    //    windowObj.import.StorageRoot = sourceConfig.StorageRoot;
+    //    windowObj.import.SelectedFolderPath = sourceConfig.CsvFilePath;
+    //}
+    //else {
+    //    windowObj.import.StorageRoot = "";
+    //    windowObj.import.SelectedFolderPath = "";
+    //}
+    //windowObj.import.IPFrameMessagingLoadEvent = true;
     //});
-
 })(this, ko);
