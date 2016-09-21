@@ -25,13 +25,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			ExportSettings.ProductionPrecedenceType productionPrecedence;
 			EnumHelper.Parse(sourceSettings.ProductionPrecedence, out productionPrecedence);
 
+			ExportSettings.ExportType exportType;
+			EnumHelper.Parse(sourceSettings.ExportType, out exportType);
+
 			var textFileEncoding = sourceSettings.TextFileEncodingType.IsNullOrEmpty() ? null : Encoding.GetEncoding(sourceSettings.TextFileEncodingType);
 
 			var exportSettings = new ExportSettings
 			{
+				TypeOfExport = exportType,
 				StartExportAtRecord = sourceSettings.StartExportAtRecord,
-				ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
-				ExportedObjName = sourceSettings.SavedSearch,
+				SavedSearchArtifactId = sourceSettings.SavedSearchArtifactId,
+				SavedSearchName = sourceSettings.SavedSearch,
+				ViewId = sourceSettings.ViewId,
+				ViewName = sourceSettings.ViewName,
 				ExportImages = sourceSettings.ExportImages,
 				ImageType = imageType,
 				WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,

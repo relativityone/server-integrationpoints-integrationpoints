@@ -18,7 +18,7 @@
 
 | Open the Browsers and then Go to the Fields tab and use the Automated RDO Checking View
 | | Setup connection to the relativity database
-| | Open and Log in to Legal Hold
+| | Open and Log in to Workspace
 | | Go to the Tab	| Fields
 | | @{FieldValueList}=	| Create List	| Name	| Automated RDO Checking	| Order	| 99999	| Object Type	| Field
 | | @{FieldList}=	| Create List	| Object Type	| Name	| Field Type	| Is Required	| Linked	| Associative Object Type

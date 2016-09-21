@@ -314,7 +314,7 @@
 | | [Documentation]	| Opens the browser and then deletes any of the Integration Points used in this suite that already exist in the workspace.
 | | ...				| Run as the Suite Setup.
 | | Setup connection to the relativity database
-| | Open and Log in to Legal Hold
+| | Open and Log in to Workspace
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #------------------------------------------------------------------------------------------------------------------------

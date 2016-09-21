@@ -72,10 +72,19 @@ var LocationJSTreeSelector = function () {
 		$(self.inputSelector).attr("value", newValue);
 	};
 
+	self.toggleLocation = function (enabled) {
+		var $el = $("#location-select");
+		$el.toggleClass('location-disabled', !enabled);
+		$el.children().each(function (i, e) {
+			$(e).toggleClass('location-disabled', !enabled);
+		});
+	};
+
 	return {
 		init: self.init,
 		reload: self.reload,
 		clear: self.clearSelection,
+		toggle: self.toggleLocation,
 		SelectedNode: self.SelectedNode
 	}
 
