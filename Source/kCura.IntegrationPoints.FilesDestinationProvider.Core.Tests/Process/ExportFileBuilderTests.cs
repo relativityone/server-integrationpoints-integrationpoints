@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
@@ -294,43 +293,34 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.True(exportFile.ExportNative);
 		}
 
-
-		public void ItShouldRewriteOtherSettings()
+		[Test]
+		public void ItShouldSetSavedSearchSettings()
 		{
-			const int artifactTypeId = 10;
-			const int exportedObjArtifactId = 20;
-			const string exportFilesLocation = "folder_path";
-			const bool overwriteFiles = true;
-			const int workspaceId = 30;
-			var dataFileEncoding = Encoding.UTF8;
-			const string exportedObjName = "files_prefix";
-			const bool exportImages = true;
-			const bool exportMultipleChoiceFieldsAsNested = true;
-			var textFileEncoding = Encoding.Unicode;
-
-			_exportSettings.ArtifactTypeId = artifactTypeId;
-			_exportSettings.ExportedObjArtifactId = exportedObjArtifactId;
-			_exportSettings.ExportFilesLocation = exportFilesLocation;
-			_exportSettings.OverwriteFiles = overwriteFiles;
-			_exportSettings.WorkspaceId = workspaceId;
-			_exportSettings.DataFileEncoding = dataFileEncoding;
-			_exportSettings.ExportedObjName = exportedObjName;
-			_exportSettings.ExportImages = exportImages;
-			_exportSettings.ExportMultipleChoiceFieldsAsNested = exportMultipleChoiceFieldsAsNested;
-			_exportSettings.TextFileEncodingType = textFileEncoding;
+			_exportSettings.TypeOfExport = ExportSettings.ExportType.SavedSearch;
+			_exportSettings.SavedSearchArtifactId = 834;
+			_exportSettings.SavedSearchName = "saved_search_name_327";
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
-			Assert.AreEqual(exportFile.ArtifactTypeID, artifactTypeId);
-			Assert.AreEqual(exportFile.ArtifactID, exportedObjArtifactId);
-			Assert.AreEqual(exportFile.FolderPath, exportFilesLocation);
-			Assert.AreEqual(exportFile.Overwrite, overwriteFiles);
-			Assert.AreEqual(exportFile.CaseInfo.ArtifactID, workspaceId);
-			Assert.AreEqual(exportFile.LoadFileEncoding, dataFileEncoding);
-			Assert.AreEqual(exportFile.LoadFilesPrefix, exportedObjName);
-			Assert.AreEqual(exportFile.ExportImages, exportImages);
-			Assert.AreEqual(exportFile.MulticodesAsNested, exportMultipleChoiceFieldsAsNested);
-			Assert.AreEqual(exportFile.TextFileEncoding, textFileEncoding);
+			Assert.That(exportFile.ArtifactID, Is.EqualTo(_exportSettings.SavedSearchArtifactId));
+			Assert.That(exportFile.LoadFilesPrefix, Is.EqualTo(_exportSettings.SavedSearchName));
+		}
+
+		[Test]
+		[TestCase(ExportSettings.ExportType.Folder)]
+		[TestCase(ExportSettings.ExportType.FolderAndSubfolders)]
+		public void ItShouldSetFolderSettings(ExportSettings.ExportType exportType)
+		{
+			_exportSettings.TypeOfExport = exportType;
+			_exportSettings.FolderArtifactId = 972;
+			_exportSettings.ViewId = 171;
+			_exportSettings.ViewName = "view_name_803";
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(exportFile.ArtifactID, Is.EqualTo(_exportSettings.FolderArtifactId));
+			Assert.That(exportFile.ViewID, Is.EqualTo(_exportSettings.ViewId));
+			Assert.That(exportFile.LoadFilesPrefix, Is.EqualTo(_exportSettings.ViewName));
 		}
 	}
 }

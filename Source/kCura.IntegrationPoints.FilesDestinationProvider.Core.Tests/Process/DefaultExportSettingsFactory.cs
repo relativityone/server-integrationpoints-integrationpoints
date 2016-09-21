@@ -1,13 +1,14 @@
 ﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-    internal class DefaultExportSettingsFactory
-    {
-        public static ExportSettings Create()
-        {
-            return new ExportSettings
-            {
-                ExportedObjName = string.Empty
-            };
-        }
-    }
+	internal class DefaultExportSettingsFactory
+	{
+		public static ExportSettings Create()
+		{
+			return new ExportSettings
+			{
+				SavedSearchName = string.Empty,
+				ViewName = string.Empty
+			};
+		}
+	}
 }
