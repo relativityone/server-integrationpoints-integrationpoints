@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using System.Net;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public IEnumerable<ProductionPrecedenceDTO> GetProductionPrecedence(int workspaceArtifactID)
 		{
-			var productionManager = CreateProductionManager();
+			var productionManager = ServiceManagerProvider.Create<IProductionManager, ProductionManagerFactory>(_config, _credentialProvider);
 
 			var dt = productionManager.RetrieveProducedByContextArtifactID(workspaceArtifactID).Tables[0];
 
@@ -36,18 +35,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				});
 
 			return result;
-		}
-
-		private IProductionManager CreateProductionManager()
-		{
-			WinEDDS.Config.ProgrammaticServiceURL = _config.WebApiPath;
-
-			var cookieContainer = new CookieContainer();
-			var credentials = _credentialProvider.Authenticate(cookieContainer);
-
-			var productionManager = new ProductionManagerFactory().Create(credentials, cookieContainer);
-
-			return productionManager;
 		}
 	}
 }

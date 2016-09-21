@@ -171,13 +171,16 @@
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />
     <Compile Include="Services\ArtifactTreeService.cs" />
+    <Compile Include="Services\ViewService.cs" />
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
     <Compile Include="SharedLibrary\CoreExportManager.cs" />
     <Compile Include="SharedLibrary\CoreServiceFactory.cs" />
+    <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="SharedLibrary\InitializationResultsExtensions.cs" />
     <Compile Include="SharedLibrary\IPaddingValidator.cs" />
     <Compile Include="SharedLibrary\PaddingValidator.cs" />
+    <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
@@ -185,8 +188,6 @@
     <Compile Include="SharedLibrary\ICoreExporterStatusNotification.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
-    <Compile Include="SharedLibrary\IProductionManagerFactory.cs" />
-    <Compile Include="SharedLibrary\ISearchManagerFactory.cs" />
     <Compile Include="SharedLibrary\ProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
   </ItemGroup>

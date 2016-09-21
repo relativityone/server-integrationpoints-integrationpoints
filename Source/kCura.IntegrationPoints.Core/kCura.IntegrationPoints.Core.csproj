@@ -295,6 +295,7 @@
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\IProductionPrecedenceService.cs" />
     <Compile Include="Services\IArtifactTreeService.cs" />
+    <Compile Include="Services\IViewService.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />

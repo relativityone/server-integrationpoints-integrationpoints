@@ -4,7 +4,7 @@ using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-	internal class ProductionManagerFactory : IProductionManagerFactory
+	internal class ProductionManagerFactory : IManagerFactory<IProductionManager>
 	{
 		public IProductionManager Create(ICredentials credentials, CookieContainer cookieContainer)
 		{

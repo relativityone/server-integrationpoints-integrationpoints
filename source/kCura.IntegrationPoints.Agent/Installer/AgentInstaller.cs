@@ -255,7 +255,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (StoppableExporterFactory).Name,
 				typeof (CoreExportManager).Name,
 				typeof (CoreServiceFactory).Name,
-				typeof(CompositeLoggingMediator).Name
+				typeof(CompositeLoggingMediator).Name,
+				typeof(SearchManagerFactory).Name
 			});
 
 			var excludedFdpInterfaceNames = new HashSet<string>(new []
@@ -280,12 +281,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			#endregion
 
+			container.Register(Component.For<IManagerFactory<WinEDDS.Service.Export.ISearchManager>>()
+					.ImplementedBy<SearchManagerFactory>());
 			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
 			container.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
 			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerFactory>());
-			container.Register(
-				Component.For<FilesDestinationProvider.Core.SharedLibrary.IExporterFactory>()
+			container.Register(Component.For<FilesDestinationProvider.Core.SharedLibrary.IExporterFactory>()
 				.ImplementedBy<StoppableExporterFactory>());
 
 			#endregion

@@ -234,6 +234,7 @@
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
     <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />
     <Compile Include="Models\TreeItemWithParentIdDTO.cs" />
+    <Compile Include="Models\ViewDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="ProviderManager.cs" />
     <Compile Include="ProviderWrapper.cs" />
