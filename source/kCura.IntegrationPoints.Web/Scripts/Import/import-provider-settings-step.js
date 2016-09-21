@@ -12,21 +12,12 @@
     var _getModel = function () {
         var model = {
             InputType: $('input:radio[name=import-type]:checked').val(),
-            ProcessingSource: windowObj.import.StorageRoot,
-            LoadDataFrom: windowObj.import.SelectedFolderPath,
+            ProcessingSource: windowObj.import.StorageRoot ? windowObj.import.StorageRoot : "",
+            LoadDataFrom: windowObj.import.SelectedFolderPath ? windowObj.import.SelectedFolderPath : "",
             HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
             LineNumber: $("#import-columnname-numbers").val(),
             LoadFile: $("#import-loadFile-text").val()
         };
-
-        if (model.ProcessingSource !== undefined || model.SelectedFolderPath !== undefined) {
-            windowObj.import.StorageRoot = model.ProcessingSource;
-            windowObj.import.SelectedFolderPath = model.LoadDataFrom;
-        }
-        else {
-            model.ProcessingSource = "";
-            model.LoadDataFrom = "";
-        }
 
         console.log(model);
         return JSON.stringify(model);
