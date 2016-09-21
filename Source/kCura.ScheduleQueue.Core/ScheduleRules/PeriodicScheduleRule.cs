@@ -75,28 +75,28 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		public override DateTime? GetNextUTCRunDateTime(DateTime? lastRunTime = null, TaskStatusEnum? lastTaskStatus = null)
 		{
-			ReturnerBase returner = null;
+			EndDateHelperBase endDateHelper = null;
 			//Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
 			if (TimeZoneOffsetInMinute == null)
 			{
-				returner = new LocalEndDateReturner(TimeService);
-				returner.EndDate = EndDate;
-				returner.StartDate = StartDate ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
-				returner.LocalTimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks);
+				endDateHelper = new LocalEndDate(TimeService);
+				endDateHelper.EndDate = EndDate;
+				endDateHelper.StartDate = StartDate ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
+				endDateHelper.LocalTimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks);
 			}
 
 			//Use the timeZoneOffSet to compare time in utc
 			else
 			{
-				returner = new UtcEndDateReturner(TimeService);
+				endDateHelper = new UtcEndDate(TimeService);
 
-				returner.EndDate = EndDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).AddTicks(localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks));
-				returner.StartDate = StartDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()) ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
-				returner.LocalTimeOfDayTick = localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks); //set the local schedule time value
-				returner.LocalTimeOfDayTick += TimeSpan.FromMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).Ticks; //adjut to utc
+				endDateHelper.EndDate = EndDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).AddTicks(localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks));
+				endDateHelper.StartDate = StartDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()) ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
+				endDateHelper.LocalTimeOfDayTick = localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks); //set the local schedule time value
+				endDateHelper.LocalTimeOfDayTick += TimeSpan.FromMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).Ticks; //adjut to utc
 			}
 
-			return GetNextRunTimeByInterval(Interval, returner,
+			return GetNextRunTimeByInterval(Interval, endDateHelper,
 				DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
 		}
 
