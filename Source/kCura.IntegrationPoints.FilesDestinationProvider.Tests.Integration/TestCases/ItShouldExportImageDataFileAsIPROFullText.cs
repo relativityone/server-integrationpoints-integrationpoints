@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
 			var fileInfo = GetFileInfo(directory);
-            Assert.That(fileInfo.Name, Is.EqualTo($"{ExportSettings.ExportedObjName}_export_FULLTEXT_.{MetadataFormat}"));
+            Assert.That(fileInfo.Name, Is.EqualTo($"{ExportSettings.SavedSearchName}_export_FULLTEXT_.{MetadataFormat}"));
 			Assert.That(DataFileFormatHelper.FileStartWith("FT,AMEYERS_0000757", fileInfo));
 		}
 

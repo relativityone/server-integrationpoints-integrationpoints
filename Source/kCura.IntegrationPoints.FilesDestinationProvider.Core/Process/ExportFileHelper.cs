@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using kCura.WinEDDS;
+﻿using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
@@ -11,8 +10,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
 			expFile.ObjectTypeName = "Document";
 			expFile.RenameFilesToIdentifier = true;
-			expFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch;
-			expFile.ViewID = 0;
 		}
 	}
 }

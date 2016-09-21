@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			// verify that metadata file was created
 			var actual = GetFileInfo(directory);
-            Assert.That(actual?.Name, Is.EqualTo($"{ExportSettings.ExportedObjName}_export.{MetadataFormat}"));
+            Assert.That(actual?.Name, Is.EqualTo($"{ExportSettings.SavedSearchName}_export.{MetadataFormat}"));
 			Assert.That(actual?.Length, Is.GreaterThan(0));
 
 			// verify that no images were exported

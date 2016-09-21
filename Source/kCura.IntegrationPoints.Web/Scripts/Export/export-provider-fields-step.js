@@ -195,6 +195,10 @@
 			if (self.model.errors().length === 0) {
 				// update integration point's model
 				var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
+
+				//Mock until REL-104887 is done (3 - Saved Search)
+				self.ipModel.sourceConfiguration.ExportType = 3;
+
 				self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
 				self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
 				self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();

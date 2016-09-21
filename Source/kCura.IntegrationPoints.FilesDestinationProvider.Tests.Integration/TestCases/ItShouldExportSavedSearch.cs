@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			Assert.That(nativeFileInfos.Any(item => expectedFileNames.Exists(name => name == item.Name)));
 
 			var datFileInfo = GetFileInfo(directory);
-			Assert.That(datFileInfo?.Name, Is.EqualTo($"{ExportSettings.ExportedObjName}_export.{MetadataFormat}"));
+			Assert.That(datFileInfo?.Name, Is.EqualTo($"{ExportSettings.SavedSearchName}_export.{MetadataFormat}"));
 			Assert.That(datFileInfo?.Length, Is.GreaterThan(0));
 		}
 

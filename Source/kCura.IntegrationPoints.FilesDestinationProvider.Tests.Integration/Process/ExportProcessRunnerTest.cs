@@ -167,10 +167,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var settings = new ExportSettings
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
+				TypeOfExport = ExportSettings.ExportType.SavedSearch,
 				ExportFilesLocation = Path.Combine(_configSettings.DestinationPath, DateTime.UtcNow.ToString("HHmmss_fff")),
 				WorkspaceId = _configSettings.WorkspaceId,
-				ExportedObjArtifactId = _configSettings.ExportedObjArtifactId,
-				ExportedObjName = _configSettings.SavedSearchArtifactName,
+				SavedSearchArtifactId = _configSettings.ExportedObjArtifactId,
+				SavedSearchName = _configSettings.SavedSearchArtifactName,
 				SelViewFieldIds = fieldIds,
 				TextPrecedenceFieldsIds = new List<int> { int.Parse(_configSettings.LongTextField.FieldIdentifier) },
 				DataFileEncoding = Encoding.Unicode,

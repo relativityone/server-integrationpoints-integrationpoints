@@ -22,7 +22,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionForUnknownImageFileType()
+		public void ItShouldThrowExceptionForUnknownExportType()
+		{
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ExportType)).Cast<ExportSettings.ExportType>().Max() + 1;
+
+			var sourceSettings = CreateSourceSettings();
+			sourceSettings.ExportType = ((int)incorrectEnumValue).ToString();
+
+			Assert.That(() => _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1),
+				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ExportType ({incorrectEnumValue})"));
+		}
+
+		[Test]
+		public void ItShouldReturnNullForUnknownImageFileType()
 		{
 			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageFileType)).Cast<ExportSettings.ImageFileType>().Max() + 1;
 
@@ -48,7 +60,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 
 		[Test]
-		public void ItShouldThrowExceptionForUnknownImageDataFileFormat()
+		public void ItShouldReturnNullForUnknownImageDataFileFormat()
 		{
 			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
 
@@ -121,6 +133,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelectedDataFileFormat = ((int)default(ExportSettings.DataFileFormat)).ToString(),
 				SelectedImageDataFileFormat = ((int)default(ExportSettings.ImageDataFileFormat)).ToString(),
 				FilePath = ((int)default(ExportSettings.FilePathType)).ToString(),
+				ExportType = ((int)default(ExportSettings.ExportType)).ToString(),
 				DataFileEncodingType = "Unicode",
 				TextFileEncodingType = "Unicode",
 				ExportFullTextAsFile = _EXPORT_FULL_TEXT_AS_FILE,
