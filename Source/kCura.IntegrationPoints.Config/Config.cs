@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Config
 				{
 					const string setting = "UseEDDSResource";
 					var config = Manager.Instance.GetConfig("Relativity.Data");
-					bool useEddsResource = true;
+					bool useEddsResource = false;
 					if (config.Contains(setting))
 					{
 						Boolean.TryParse(config[setting] as string, out useEddsResource);
