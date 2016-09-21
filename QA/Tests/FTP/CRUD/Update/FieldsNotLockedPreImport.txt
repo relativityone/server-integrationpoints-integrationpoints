@@ -42,7 +42,7 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Legal Hold
+| | Open and Log in to Workspace
 
 # --------------------------------------------------------------------------------------------------------
 
