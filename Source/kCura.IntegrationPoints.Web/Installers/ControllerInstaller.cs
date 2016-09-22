@@ -160,6 +160,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>().ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>().LifestyleTransient());
 
 			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
+			container.Register(Component.For<IViewService>().ImplementedBy<ViewService>().LifestyleTransient());
 			container.Register(Component.For<IProductionPrecedenceService>().ImplementedBy<ProductionPrecedenceService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
 			container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
