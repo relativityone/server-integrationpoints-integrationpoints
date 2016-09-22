@@ -1,8 +1,14 @@
 ﻿
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.WinEDDS.Service.Export;
 using ViewDTO = kCura.IntegrationPoints.Domain.Models.ViewDTO;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
@@ -30,11 +36,29 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public List<ViewDTO> GetViewsByWorkspaceAndArtifactType(int workspceId, int artifactTypeId)
 		{
-			// TODO (after upgrading new Rel GOLD build package)
-			// ISearchManager searchManager = ServiceManagerProvider.Create<ISearchManager, SearchManagerFactory>(_config, _credentialProvider);
-			// searchManager.RetrieveViewsByContextArtifactID(workspceId, artifactType)
+			ISearchManager searchManager = ServiceManagerProvider.Create<ISearchManager, SearchManagerFactory>(_config, _credentialProvider);
+			// Third argument has to be always False in case of RIP Export
+			DataTableCollection retTables = searchManager.RetrieveViewsByContextArtifactID(workspceId, artifactTypeId, false).Tables;
 
-			return new List<ViewDTO>();
+			if (retTables.IsNullOrEmpty())
+			{
+				throw new Exception($"No result returned when call to {nameof(ISearchManager.RetrieveViewsByContextArtifactID)} method!");
+			}
+			return ConvertToView(retTables);
+		}
+
+		private List<ViewDTO> ConvertToView(DataTableCollection retTables)
+		{
+			return retTables[0]
+				.AsEnumerable()
+				.Select(item => new ViewDTO()
+				{
+					ArtifactId = item.Field<int>("ArtifactID"),
+					Name = item.Field<string>("ArtifactID"),
+					IsAvailableInObjectTab = item.Field<bool>("AvailableInObjectTab")
+				})
+				.Where(view => view.IsAvailableInObjectTab = true)
+				.ToList();
 		}
 
 		#endregion //Methods

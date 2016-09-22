@@ -11,7 +11,7 @@ using kCura.IntegrationPoints.Web.Extensions;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class ViewController : ApiController
+	public class WorkspaceViewController : ApiController
 	{
 		#region Fields
 
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		#region Constructors
 
-		public ViewController(IViewService viewService, IRepositoryFactory repositoryFactory)
+		public WorkspaceViewController(IViewService viewService, IRepositoryFactory repositoryFactory)
 		{
 			_viewService = viewService;
 			_errorRepository = repositoryFactory.GetErrorRepository();
@@ -33,17 +33,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		#region Methods
 
 		[HttpGet]
-		public HttpResponseMessage GetViewsByWorkspaceAndArtifactType(int workspaceId, int artifactType)
+		public HttpResponseMessage GetViewsByWorkspaceAndArtifactType(int workspaceId, int artifactTypeId)
 		{
 			try
 			{
-				List<ViewDTO> views =_viewService.GetViewsByWorkspaceAndArtifactType(workspaceId, artifactType);
+				List<ViewDTO> views =_viewService.GetViewsByWorkspaceAndArtifactType(workspaceId, artifactTypeId);
 				return Request.CreateResponse(HttpStatusCode.OK, views);
 			}
 			catch (Exception ex)
 			{
 				this.HandleError(workspaceId, _errorRepository, ex,
-					$"Unable to Views for {workspaceId} workspace and artifact type {artifactType}. Please contact the system administrator.");
+					$"Unable to Views for {workspaceId} workspace and artifact type {artifactTypeId}. Please contact the system administrator.");
 				return Request.CreateResponse(HttpStatusCode.InternalServerError);
 			}
 		}

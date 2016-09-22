@@ -127,6 +127,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetProcessingSourceLocationStructure",
+				routeTemplate: "{workspaceID}/api/WorkspaceView/GetViews/{artifactTypeId}",
+				defaults: new { controller = "WorkspaceView", action = "GetViewsByWorkspaceAndArtifactType" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
 				defaults: new { id = RouteParameter.Optional }
