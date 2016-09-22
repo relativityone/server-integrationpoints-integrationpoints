@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				.Select(item => new ViewDTO()
 				{
 					ArtifactId = item.Field<int>("ArtifactID"),
-					Name = item.Field<string>("ArtifactID"),
+					Name = item.Field<string>("Name"),
 					IsAvailableInObjectTab = item.Field<bool>("AvailableInObjectTab")
 				})
 				.Where(view => view.IsAvailableInObjectTab = true)
