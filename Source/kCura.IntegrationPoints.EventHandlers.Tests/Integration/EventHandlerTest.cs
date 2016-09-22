@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IScratchTableRepository _scratchTableRepository;
 		private IJobService _jobService;
+		private IIntegrationPointService _integrationPointService;
 		private IntegrationModel _integrationModel;
 
 		public EventHandlerTest() : base("Eventhandler Tests", null)
@@ -41,21 +43,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
 			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, "EventHandlerTesting", "LikeASir");
 			_jobService = Container.Resolve<IJobService>();
-			_integrationModel = new IntegrationModel
-			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
-				SelectedOverwrite = "Overlay Only",
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				},
-				Map = CreateDefaultFieldMap()
-			};
+			_integrationPointService = Container.Resolve<IIntegrationPointService>();
+			_integrationModel = CreateIntegrationModel();
 		}
 
 		public override void TestTeardown()
@@ -250,6 +239,51 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		}
 
 		[Test]
+		public void PreCascade_DeleteJobsWithAndWithoutHistory_Success()
+		{
+			//Arrange
+			IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
+			{
+				TempTableNameWithParentArtifactsToDelete = _scratchTableRepository.GetTempTableName(),
+				Application = new Application(SourceWorkspaceArtifactId, null, null),
+				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId)
+			};
+			
+			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
+			IntegrationModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
+			IntegrationModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
+			Data.IntegrationPoint integrationPointRdo = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactID);
+			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
+
+			JobHistory jobHistory1 = _jobHistoryService.CreateRdo(integrationPointRdo, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
+			JobHistory jobHistory2 = _jobHistoryService.CreateRdo(integrationPointRdo2, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
+			CreateJobLevelJobHistoryError(jobHistory2.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
+			CreateJobLevelJobHistoryError(jobHistory2.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorJob);
+
+			int[] integrationPointArtifactIds = new int[] { integrationPointModel.ArtifactID, integrationPointModel2.ArtifactID, integrationPointModel3.ArtifactID };
+			_scratchTableRepository.AddArtifactIdsIntoTempTable(integrationPointArtifactIds);
+			
+			//Act
+			Response eventHandlerResponse = preCascadeDeleteEventHandler.Execute();
+			
+			//Assert
+			Data.IntegrationPoint integrationPoint1AfterRun = _integrationPointService.GetRdo(integrationPointModel.ArtifactID);
+			Data.IntegrationPoint integrationPoint2AfterRun = _integrationPointService.GetRdo(integrationPointModel2.ArtifactID);
+			Data.IntegrationPoint integrationPoint3AfterRun = _integrationPointService.GetRdo(integrationPointModel3.ArtifactID);
+
+			int jobHistory1ItemCount = integrationPoint1AfterRun.JobHistory.Length;
+			int jobHistory2ItemCount = integrationPoint2AfterRun.JobHistory.Length;
+			int jobHistory3ItemCount = integrationPoint3AfterRun.JobHistory.Length;
+
+			Assert.AreEqual(0, jobHistory1ItemCount);
+			Assert.AreEqual(0, jobHistory2ItemCount);
+			Assert.AreEqual(0, jobHistory3ItemCount);
+			Assert.AreEqual(true, eventHandlerResponse.Success);
+			
+		}
+
+
+		[Test]
 		public void Delete_DeletesJobs_Success()
 		{
 			//Arrange
@@ -309,7 +343,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 
 			//Assert
 			Assert.AreEqual(false, eventHandlerResponse.Success);
-			StringAssert.Contains("An error occurred while executing the Pre-Mass-Event handler.", eventHandlerResponse.Message);
+			StringAssert.Contains("An error occurred while executing the Mass Delete operation.", eventHandlerResponse.Exception.Message);
 		}
 
 		[Test]
@@ -328,6 +362,25 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			//Assert
 			Assert.AreEqual(false, eventHandlerResponse.Success);
 			StringAssert.Contains("Failed to delete corresponding job.", eventHandlerResponse.Message);
+		}
+
+		private IntegrationModel CreateIntegrationModel()
+		{
+			return new IntegrationModel
+			{
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				SelectedOverwrite = "Overlay Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				},
+				Map = CreateDefaultFieldMap()
+			};
 		}
 
 		private void CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Relativity.Client.Choice errorStatus, Relativity.Client.Choice errorType)
