@@ -774,8 +774,9 @@
 			}).then(function (result) {
 
 				if (!result.isValid) {
+					var formattedMessage = result.message.replace(new RegExp('\r?\n', 'g'), '.<br />');
 					window.Dragon.dialogs.showConfirmWithCancelHandler({
-						message: result.message,
+						message: formattedMessage,
 						title: 'Integration Point Validation',
 						showCancel: true,
 						width: 450,
