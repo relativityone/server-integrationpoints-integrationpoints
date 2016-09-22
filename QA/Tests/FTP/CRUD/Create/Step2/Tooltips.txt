@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Connect to Source step (Step 2) Fields have the correct Tooltips when using FTP.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points	| automateable
-| Suite Setup		| Run Keywords	| Open and Log in to Legal Hold	| Go to Step 2 of the Create Integration Point Process
+| Suite Setup		| Run Keywords	| Open and Log in to Workspace	| Go to Step 2 of the Create Integration Point Process
 #| Test Setup		| NONE
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Close All Browsers

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -8,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 using Relativity;
+using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -44,8 +46,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-				// TODO: isProduction flag should be set accordingly to configuration i.e. settings.ExportType == ExportType.Production, for now it is always Saved Search
-				var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, (int)ArtifactType.Search, false);
+				ExportSettings.ExportType exportType;
+				if (!Enum.TryParse(settings.ExportType, out exportType))
+				{
+					throw new InvalidEnumArgumentException("Invalid export type specified");
+				}
+
+				var artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
+
+				var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, (int) ArtifactType.Document,
+					exportType == ExportSettings.ExportType.ProductionSet);
 
 				return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 			}
@@ -53,6 +63,25 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
 			}
+		}
+
+		private int RetrieveArtifactIdBasedOnExportType(ExportSettings.ExportType exportType, ExportUsingSavedSearchSettings settings)
+		{
+			int artifactId;
+			if (exportType == ExportSettings.ExportType.ProductionSet)
+			{
+				//TODO exporting production set - set artifact id
+				artifactId = -1;
+			}
+			else if ((exportType == ExportSettings.ExportType.Folder) || (exportType == ExportSettings.ExportType.FolderAndSubfolders))
+			{
+				artifactId = settings.ViewId;
+			}
+			else
+			{
+				artifactId = settings.SavedSearchArtifactId;
+			}
+			return artifactId;
 		}
 
 		[HttpGet]

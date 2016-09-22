@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Integration Points tab's List View is correct.
 | Metadata		    | Authors	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Legal Hold
+| Suite Setup		| Open and Log in to Workspace
 #| Test Setup		| NONE
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers

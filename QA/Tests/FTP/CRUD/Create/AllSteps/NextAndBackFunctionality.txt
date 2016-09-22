@@ -3,7 +3,7 @@
 | Documentation 	| Verify that Next and Back buttons on the Integration Point Wizard affect the data correctly when using FTP.
 | Metadata			| Authors	| William Sehy	| Daniel Oliver
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Run Keywords	| Setup connection to the relativity database	| Open and Log in to Legal Hold
+| Suite Setup		| Run Keywords	| Setup connection to the relativity database	| Open and Log in to Workspace
 #| Test Setup		| NONE
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers

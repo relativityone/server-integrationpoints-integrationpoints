@@ -29,7 +29,7 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Legal Hold
+| | Open and Log in to Workspace
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #------------------------------------------------------------------------------------------------------------------------

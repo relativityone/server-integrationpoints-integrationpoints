@@ -4,7 +4,7 @@
 | ...				| have the correct states (enabled/disabled) under various conditions.
 | Metadata		    | Authors	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Legal Hold
+| Suite Setup		| Open and Log in to Workspace
 #| Test Setup		| NONE
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Close All Browsers

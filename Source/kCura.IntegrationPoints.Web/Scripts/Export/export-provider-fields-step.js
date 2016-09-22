@@ -12,6 +12,12 @@
 			required: true
 		});
 
+		self.SelectedSource = ko.observable();
+
+		self.FolderArtifactId = ko.observable();
+		self.FolderArtifactName = ko.observable();
+		self.FolderLabelDescription = ko.observable();
+
 		self.startExportAtRecord = ko.observable(state.StartExportAtRecord || 1).extend({
 			required: true,
 			min: 1,
@@ -28,6 +34,49 @@
 			});
 
 			return selectedSavedSearch;
+		};
+
+		self.IsSavedSearchSelected = function () {
+			return self.SelectedSource() === ExportEnums.SourceOptionsEnum.SavedSearch;
+		};
+
+		self.IsFolderOrSubfolderSelected = function () {
+			var isFolderOrSubfolderSelected = false;
+			if (self.SelectedSource() === ExportEnums.SourceOptionsEnum.Folder) {
+				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.Folder].key);
+				isFolderOrSubfolderSelected = true;
+			}
+			if (self.SelectedSource() === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
+				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.FolderSubfolder].key);
+				isFolderOrSubfolderSelected = true;
+			}
+			if (isFolderOrSubfolderSelected) {
+				self.getFolderAndSubFolders();
+			}
+			return isFolderOrSubfolderSelected;
+		};
+
+		self.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			if (self.HasBeenRun()) {
+				self.locationSelector.toggle(false);
+			} else {
+				self.locationSelector.init(self.FolderArtifactName(), [], {
+					onNodeSelectedEventHandler: function (node) { self.FolderArtifactName(node.text) }
+				});
+				self.locationSelector.toggle(true);
+			}
+		};
+
+		self.getFolderAndSubFolders = function () {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("SearchFolder")
+			}).then(function (result) {
+				self.locationSelector.reload(result);
+			}).fail(function (error) {
+				root.message.error.raise("No attributes were returned from the source provider.");
+			});
 		};
 	};
 
@@ -47,6 +96,7 @@
 				$('body').append(result);
 				self.hasTemplate = true;
 				self.template(self.settings.templateID);
+				self.model.onDOMLoaded();
 				root.messaging.publish('details-loaded');
 			});
 		}
@@ -73,8 +123,9 @@
 			self.model = new viewModel($.extend({}, self.ipModel, { hasBeenRun: ip.hasBeenRun }));
 			self.model.errors = ko.validation.group(self.model);
 
-			self.getAvailableFieldsFor = function (artifactId) {
-				self.ipModel.sourceConfiguration.SavedSearchArtifactId = artifactId;
+			self.getAvailableFields = function () {
+				//Mock until REL-104887 is done (3 - Saved Search)
+				self.ipModel.sourceConfiguration.ExportType = 3;
 
 				root.data.ajax({
 					type: 'post',
@@ -180,7 +231,8 @@
 
 					self.model.savedSearch.subscribe(function (selected) {
 						if (!!selected) {
-							self.getAvailableFieldsFor(selected);
+							self.ipModel.sourceConfiguration.SavedSearchArtifactId = selected;
+							self.getAvailableFields();
 						} else {
 							self.model.fields.removeAllFields();
 							self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
