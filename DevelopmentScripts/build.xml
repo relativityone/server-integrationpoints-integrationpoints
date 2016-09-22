@@ -260,6 +260,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
       </Build>
       <Ignore>
         <Project path="Source\kCura.IntegrationPoints.Documentation\kCura.IntegrationPoints.Documentation.shfbproj" />
@@ -444,6 +449,7 @@
           <Assembly>lib\Renci.SshNet.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.ImportProvider.Helpers.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

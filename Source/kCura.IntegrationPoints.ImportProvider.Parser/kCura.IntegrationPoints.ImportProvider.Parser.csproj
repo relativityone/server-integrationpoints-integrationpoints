@@ -82,6 +82,9 @@
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\kCura.OI.FileID.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Relativity.Client">
+      <HintPath>..\packages\kCura.Relativity.Client.9.4.302.1\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.310.7, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
       <Private>True</Private>
@@ -122,6 +125,15 @@
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.API">
+      <HintPath>..\packages\Relativity.API.9.4.302.1\lib\net45\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.DataContracts">
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.4.302.1\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.302.1\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -135,9 +147,11 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="FieldParserFactory.cs" />
     <Compile Include="Interfaces\IDataReaderFactory.cs" />
     <Compile Include="Interfaces\IFieldParser.cs" />
     <Compile Include="Interfaces\IFieldParserFactory.cs" />
+    <Compile Include="LoadFileFieldParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
@@ -153,6 +167,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.4.310.7\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.4.310.7\build\Relativity.ImportExport.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
+$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(ProjectDir)..\..\lib\$(TargetName).pdb"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
