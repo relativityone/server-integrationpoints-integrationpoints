@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.ImportProvider.Helpers.Logging;
 
 namespace kCura.IntegrationPoints.ImportProvider
 {
@@ -23,7 +24,20 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IEnumerable<FieldEntry> GetFields(string options)
         {
-            throw new NotImplementedException();
+            SeqLogger.Info("Got Options: {Options}", options);
+
+            var result = new List<FieldEntry>();
+            result.Add(new FieldEntry
+            {
+                DisplayName = "JustThisOneField",
+                FieldIdentifier = "JustThisOneField",
+                FieldType = FieldType.String,
+                IsIdentifier = true
+            });
+
+            SeqLogger.Info("Finished constructing result. About to return...");
+
+            return result;
         }
     }
 }
