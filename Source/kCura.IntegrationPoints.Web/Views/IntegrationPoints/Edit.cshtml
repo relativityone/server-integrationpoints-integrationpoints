@@ -33,6 +33,7 @@
 	<script src="~/Scripts/iframeResizer.min.js"></script>
 	<script src="~/Scripts/knockout-3.4.0.js"></script>
 	<script src="~/Scripts/knockout.validation.debug.js"></script>
+	<script src="~/Scripts/unsaved-changes-handler.js"></script>
 	<script src="~/Scripts/core/data.js"></script>
 	<script src="~/Scripts/core/utils.js"></script>
 	<script src="~/Scripts/integration-point/time-utils.js"></script>
@@ -48,8 +49,12 @@
 		IP.data.params['userID'] = @Model.UserID;
 		IP.data.params['caseUserID'] = @Model.CaseUserID;
 		IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
-		$("#cancel").on("click", function() {
 
+		IP.unsavedChangesHandler = new UnsavedChangesHandler();
+		IP.unsavedChangesHandler.register();
+
+		$("#cancel").on("click", function() {
+			IP.unsavedChangesHandler.unregister();
 			var getBasePath = IP.utils.getBasePath();
 			var route = IP.redirect.get();
 			if (!IP.redirect.isEdit()) {

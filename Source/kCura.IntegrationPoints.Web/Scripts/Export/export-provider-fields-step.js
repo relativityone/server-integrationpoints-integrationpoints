@@ -6,23 +6,35 @@
 
 		self.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
+		self.TypeOfExport = ko.observable(state.TypeOfExport || ExportEnums.SourceOptionsEnum.SavedSearch);
+
+		self.IsSavedSearchSelected = function () {
+			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.SavedSearch;
+		};
+
 		self.savedSearches = ko.observableArray(state.SavedSearches);
 
 		self.savedSearch = ko.observable(state.SavedSearch).extend({
-			required: true
+			required: {
+				onlyIf: function () {
+					return self.IsSavedSearchSelected();
+				}
+			}
 		});
-
-		self.SelectedSource = ko.observable();
-
-		self.FolderArtifactId = ko.observable();
-		self.FolderArtifactName = ko.observable();
-		self.FolderLabelDescription = ko.observable();
 
 		self.startExportAtRecord = ko.observable(state.StartExportAtRecord || 1).extend({
 			required: true,
 			min: 1,
 			nonNegativeNaturalNumber: {}
 		});
+
+		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
+		self.FolderArtifactName = ko.observable(state.FolderArtifactName);
+		self.FolderLabelDescription = ko.observable();
+
+		self.availableViews = ko.observableArray(['Test']);
+		self.ViewName = ko.observable(state.ViewName);
+		self.ViewId = ko.observable(state.ViewId);
 
 		self.fields = new FieldMappingViewModel();
 
@@ -36,17 +48,15 @@
 			return selectedSavedSearch;
 		};
 
-		self.IsSavedSearchSelected = function () {
-			return self.SelectedSource() === ExportEnums.SourceOptionsEnum.SavedSearch;
-		};
+
 
 		self.IsFolderOrSubfolderSelected = function () {
 			var isFolderOrSubfolderSelected = false;
-			if (self.SelectedSource() === ExportEnums.SourceOptionsEnum.Folder) {
+			if (self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Folder) {
 				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.Folder].key);
 				isFolderOrSubfolderSelected = true;
 			}
-			if (self.SelectedSource() === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
+			if (self.TypeOfExport() === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
 				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.FolderSubfolder].key);
 				isFolderOrSubfolderSelected = true;
 			}
@@ -62,7 +72,9 @@
 				self.locationSelector.toggle(false);
 			} else {
 				self.locationSelector.init(self.FolderArtifactName(), [], {
-					onNodeSelectedEventHandler: function (node) { self.FolderArtifactName(node.text) }
+					onNodeSelectedEventHandler: function (node) {
+						self.FolderArtifactName(node.text)
+					}
 				});
 				self.locationSelector.toggle(true);
 			}
@@ -124,8 +136,7 @@
 			self.model.errors = ko.validation.group(self.model);
 
 			self.getAvailableFields = function () {
-				//Mock until REL-104887 is done (3 - Saved Search)
-				self.ipModel.sourceConfiguration.ExportType = 3;
+				
 
 				root.data.ajax({
 					type: 'post',
@@ -232,6 +243,7 @@
 					self.model.savedSearch.subscribe(function (selected) {
 						if (!!selected) {
 							self.ipModel.sourceConfiguration.SavedSearchArtifactId = selected;
+							self.ipModel.sourceConfiguration.ExportType = ExportEnums.SourceOptionsEnum.SavedSearch;
 							self.getAvailableFields();
 						} else {
 							self.model.fields.removeAllFields();
@@ -248,12 +260,21 @@
 				// update integration point's model
 				var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
 
-				//Mock until REL-104887 is done (3 - Saved Search)
-				self.ipModel.sourceConfiguration.ExportType = 3;
+				var exportType = self.model.TypeOfExport();
+				self.ipModel.sourceConfiguration.ExportType = exportType;
+				if (exportType === ExportEnums.SourceOptionsEnum.SavedSearch) {
 
-				self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
-				self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
-				self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
+					self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
+					self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
+					self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
+				} else if (exportType === ExportEnums.SourceOptionsEnum.Folder ||
+                    exportType === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
+
+					self.ipModel.sourceConfiguration.FolderArtifactId = self.model.FolderArtifactId();
+					self.ipModel.sourceConfiguration.FolderArtifactName = self.model.FolderArtifactName();
+					self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
+					self.ipModel.sourceConfiguration.ViewId = self.model.ViewName();
+				}
 
 				var fieldMap = [];
 				var hasIdentifier = false;
