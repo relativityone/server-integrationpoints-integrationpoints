@@ -22,8 +22,8 @@
 			selectedMessage = appendOverlayMesssage;
 		}
 		if (IP.isFileshareProvider) {
-            		selectedMessage = "Please confirm running the export from Relativity. If you set up a scheduled action export process will start at the set time";
-        	}
+			selectedMessage = "Documents will be exported to your selected destination. If you chose to schedule your job, export will begin at the selected time.";
+        }
 		var consoleContainer = $(".ConsoleControl");
 		var hasErrors = $(consoleContainer.find(":contains('Retry Errors')")).hasClass("consoleButtonEnabled");
 		if (hasErrors) {
