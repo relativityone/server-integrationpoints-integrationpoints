@@ -119,7 +119,7 @@
 					buttons = [];
 
 				settings = $.extend(true, {}, confirmDefaults, options);
-				$dialog.html($('<label/>').text(settings.message));
+				$dialog.html($('<label/>').append(settings.message));
 
 				close = function () { $dialog.dialog('close'); };
 
