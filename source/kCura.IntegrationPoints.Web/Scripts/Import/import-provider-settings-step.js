@@ -22,6 +22,21 @@
 
         $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"), function (data) {
             self.ProcessingSourceLocationList(data);
+            self.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
+
+            $("#processingSources").change(function (c, item) {
+                var artifacIddd = $("#processingSources option:selected").val();
+                $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacIddd))
+                    .done(function(folder) {
+                        console.log("working");
+                        console.log(folder);
+                    })
+                    .fail(function(error) {
+                        console.log("error");
+                        console.log(error);
+                    });
+            });
+
         });
 
         var _getModel = function () {
