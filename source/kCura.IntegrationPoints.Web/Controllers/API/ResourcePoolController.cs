@@ -48,9 +48,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				this.HandleError(workspaceId, _errorRepository, ex,
-					$"Unable to retrieve processing source location for {workspaceId} workspace. Please contact the system administrator.");
-				return Request.CreateResponse(HttpStatusCode.InternalServerError);
+				string errMsg =
+					$"Unable to retrieve processing source location for {workspaceId} workspace. Please contact system administrator.";
+				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
 			}
 		}
 
@@ -74,9 +75,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				this.HandleError(workspaceId, _errorRepository, ex,
-					$"Unable to retrieve folder structure for processing source location {artifactId}. Please contact the system administrator.");
-				return Request.CreateResponse(HttpStatusCode.InternalServerError);
+				string errMsg =
+					$"Unable to retrieve processing source location folder structure {artifactId} (Folder is not accessible). Please contact system administrator.";
+				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
 			}
 		}
 
