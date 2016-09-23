@@ -1,19 +1,36 @@
-﻿(function (windowObj, ko) {
+﻿var IP = IP || {};
+
+(function (windowObj, root, ko) {
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
 
     var ViewModel = function () {
+
         var self = this;
         self.ImportTypeChoiceValue = ko.observable();
         self.ImportTypeChoiceValue("document");
+
+        this.ProcessingSourceLocationList = ko.observableArray([]);
+        this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
+
+        this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
+            required: true
+        });
     };
     ko.applyBindings(new ViewModel());
+
+    $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"), function (data) {
+        $.each(data,
+            function (index, dataObject) {
+                $("#processingSources").append($("<option />").val(dataObject.artifactId).text(dataObject.location));
+            });
+    });
 
     var _getModel = function () {
         var model = {
             InputType: $('input:radio[name=import-type]:checked').val(),
-            ProcessingSource: windowObj.import.StorageRoot ? windowObj.import.StorageRoot : "",
-            LoadDataFrom: windowObj.import.SelectedFolderPath ? windowObj.import.SelectedFolderPath : "",
+            //ProcessingSource: windowObj.import.StorageRoot ? windowObj.import.StorageRoot : "",
+            //LoadDataFrom: windowObj.import.SelectedFolderPath ? windowObj.import.SelectedFolderPath : "",
             HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
             LineNumber: $("#import-columnname-numbers").val(),
             LoadFile: $("#import-loadFile-text").val()
@@ -58,4 +75,5 @@
     //}
     //windowObj.import.IPFrameMessagingLoadEvent = true;
     //});
-})(this, ko);
+
+})(this, IP, ko);

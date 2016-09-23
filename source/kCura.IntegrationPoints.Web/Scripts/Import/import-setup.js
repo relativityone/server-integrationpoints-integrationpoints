@@ -1,4 +1,4 @@
-﻿(function (windowObj) {
+﻿/*(function (windowObj) {
     //Resize frame and fix scroll
     //var configFrame = $('#configurationFrame', window.parent.document);
     //configFrame.css('height', '100%');
@@ -178,4 +178,4 @@
 
     windowObj.import.updateSources();
     windowObj.import.initJsTree();
-})(this);
+})(this);*/

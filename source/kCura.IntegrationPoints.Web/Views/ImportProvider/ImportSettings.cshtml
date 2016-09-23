@@ -4,7 +4,8 @@
 <meta name="import-base-url" content="/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" />
 <link href="~/Content/import.css" rel="stylesheet" />
 
-<div id="_main" class="table full-width">
+
+<div id="_main">
     <div id="import-provider-configuration">
         <div class="card">
             <span class="label">Import Detail</span>
@@ -19,9 +20,9 @@
                                 <ul>
                                     <li>
                                         <div class="field-value">
-                                            <input name="import-type" value="production" type="radio" data-bind="checked: ImportTypeChoiceValue"/>Production<br />
-                                            <input name="import-type" value="document" type="radio" data-bind="checked: ImportTypeChoiceValue"/>Document<br />
-                                            <input name="import-type" value="image" type="radio" data-bind="checked: ImportTypeChoiceValue"/>Image<br />
+                                            <input name="import-type" value="production" type="radio" data-bind="checked: ImportTypeChoiceValue" />Production<br />
+                                            <input name="import-type" value="document" type="radio" data-bind="checked: ImportTypeChoiceValue" />Document<br />
+                                            <input name="import-type" value="image" type="radio" data-bind="checked: ImportTypeChoiceValue" />Image<br />
                                         </div>
                                     </li>
                                 </ul>
@@ -34,13 +35,8 @@
                             <div class="field-value">
                                 <ul>
                                     <li>
-                                        <div class="field-value">
-                                            <div id="sourceDropdown" class="viewFieldValue" colspan="1">
-                                                <select class="fluid-mock-select" id="processingSources"></select>
-                                            </div>
-                                            <div id="sourceText" class="viewFieldValue viewFieldValueUnderline" colspan="1">
-                                                <span id="downloadSourceText"></span>
-                                            </div>
+                                        <div class="field-value select2-double-width">
+                                            <select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: ProcessingSourceLocationList, optionsCaption: 'Select...', value: ProcessingSourceLocation, select2: { width: '100%' }"></select>
                                         </div>
                                     </li>
                                 </ul>
@@ -152,6 +148,8 @@
 
 @section scripts
 {
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
     <script src="~/Scripts/knockout-3.4.0.js"></script>
     <script src="~/Scripts/jstree.min.js"></script>
     <script src="~/Scripts/Import/import-setup.js"></script>
