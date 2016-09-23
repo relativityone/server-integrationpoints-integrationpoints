@@ -1,45 +1,45 @@
 ﻿<script id="exportProviderFieldsStep" type="text/html">
 	<div class="card">
-		<div class="label">Source Detail</div>
-		<div class="field-row">
-			<div class="field-label required">Source:</div>
-			<div class="field-value">
-				<select id="sourceSelector" data-bind="options: ExportEnums.SourceOptions , optionsText: 'key', optionsValue: 'value',  optionsCaption: 'Select...', value: TypeOfExport, disable: HasBeenRun(), select2: {}"></select>
-			</div>
-		</div>
-		<div class="field-row" data-bind="visible: IsFolderOrSubfolderSelected()">
-			<div class="field-label required" data-bind="text: FolderLabelDescription">
-			</div>
-			<div class="field-value select2-double-width">
-				<div id="location-select" class="select2-container fluid-mock-select filter-container">
-					<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: FolderArtifactName" />
-					<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
-				</div>
-				<div id="jstree-holder-div" class="jstree-holder browse">
-					<div id="browser-tree" tabindex="0"></div>
-				</div>
-			</div>
-		</div>
-		<div class="field-row" data-bind="visible: IsFolderOrSubfolderSelected()">
-			<div class="field-label required">Views:</div>
-			<div class="field-value">
-				<select id="viewSelector" data-bind="options: availableViews ,  optionsCaption: 'Select...', value: ViewName, disable: HasBeenRun(), select2: {}"></select>
-			</div>
-		</div>
-		<div class="field-row" data-bind="visible: IsSavedSearchSelected()">
-			<div class="field-label required">Saved Search:</div>
-			<div class="field-value">
-				<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: savedSearch, disable: HasBeenRun(), select2searchable: {}"></select>
-				@*<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>*@
-				@*TODO: review and fix picker's implementation*@
-			</div>
-		</div>
-		<div class="field-row">
-			<div class="field-label required">Start Export at Record:</div>
-			<div class="field-value">
-				<input id="start-export-at-record" type="number" min="1" data-bind="value: startExportAtRecord, disable: HasBeenRun()" />
-			</div>
-		</div>
+        <div class="label">Source Detail</div>
+        <div class="field-row">
+            <div class="field-label required">Source:</div>
+            <div class="field-value">
+                <select id="sourceSelector" data-bind="options: ExportEnums.SourceOptions , optionsText: 'key', optionsValue: 'value',  optionsCaption: 'Select...', value: TypeOfExport, disable: HasBeenRun(), select2: {}"></select>
+            </div>
+        </div>
+        <div class="field-row" data-bind="visible: IsFolderOrSubfolderSelected()">
+            <div class="field-label required" data-bind="text: FolderLabelDescription">
+            </div>
+            <div class="field-value select2-double-width">
+                <div id="location-select" class="select2-container fluid-mock-select filter-container">
+                    <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: FolderArtifactName" />
+                    <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+                </div>
+                <div id="jstree-holder-div" class="jstree-holder browse">
+                    <div id="browser-tree" tabindex="0"></div>
+                </div>
+            </div>
+        </div>
+        <div class="field-row" data-bind="visible: IsFolderOrSubfolderSelected()">
+            <div class="field-label required">Views:</div>
+            <div class="field-value">
+                <select id="viewSelector" data-bind="options: availableViews ,  optionsCaption: 'Select...',optionsText: 'name', optionsValue: 'artifactId', value: ViewId, disable: HasBeenRun(), select2: {}"></select>
+            </div>
+        </div>
+        <div class="field-row" data-bind="visible: IsSavedSearchSelected()">
+            <div class="field-label required">Saved Search:</div>
+            <div class="field-value">
+                <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: savedSearch, disable: HasBeenRun(), select2searchable: {}"></select>
+                @*<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>*@
+                @*TODO: review and fix picker's implementation*@
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field-label required">Start Export at Record:</div>
+            <div class="field-value">
+                <input id="start-export-at-record" type="number" min="1" data-bind="value: startExportAtRecord, disable: HasBeenRun()" />
+            </div>
+        </div>
 	</div>
 	<div class="card" data-bind="with: fields">
 		<div class="label">Columns To Export</div>
