@@ -18,14 +18,15 @@
 		this.ProcessingSourceLocation.isModified(false);
 
 		this.updateProcessingSourceLocation = function (value) {
+			self.Fileshare(undefined);
+			self.Fileshare.isModified(false);
+
+			if (self.locationSelector) {
+				self.locationSelector.clear();
+			}
+
 			if (!!value) {
 				self.getDirectories(value);
-			} else {
-				self.Fileshare(undefined);
-
-				if (self.locationSelector) {
-					self.locationSelector.clear();
-				}
 			}
 
 			self.toggleLocation(!!value);
@@ -64,7 +65,8 @@
 			}).then(function (result) {
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
-				root.message.error.raise("No attributes were returned from the source provider.");
+				root.message.error.raise(error);
+				self.toggleLocation(false);
 			});
 		};
 
@@ -197,7 +199,7 @@
 				function Option(displayName, name) {
 					this.displayName = ko.observable(displayName);
 					this.name = ko.observable(name);
-				};				
+				};
 
 				var favorite = [];
 				var others = [];
@@ -676,7 +678,7 @@
 
 			var processingSourceLocationListPromise = root.data.ajax({
 				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
 				data: {
 					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
 				}
