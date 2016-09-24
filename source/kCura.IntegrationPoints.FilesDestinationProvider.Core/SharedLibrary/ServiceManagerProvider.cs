@@ -1,22 +1,42 @@
 ﻿using System.Net;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-	public static class ServiceManagerProvider
+
+	public class ServiceManagerProvider : IServiceManagerProvider
 	{
-		public static TManager Create<TManager, TManagerFactory>(IConfig config, ICredentialProvider credentialProvider)
-			where TManagerFactory : IManagerFactory<TManager>, new()
+		#region Fields
+
+		private readonly IConfig _config;
+		private readonly ICredentialProvider _credentialProvider;
+
+		#endregion //Fields
+
+		#region Constructors
+
+		public ServiceManagerProvider(IConfigFactory configFactory, ICredentialProvider credentialProvider)
 		{
-			WinEDDS.Config.ProgrammaticServiceURL = config.WebApiPath;
+			_config = configFactory.Create();
+			_credentialProvider = credentialProvider;
+		}
+
+		#endregion //Constructors
+
+		#region Methods
+
+		public TManager Create<TManager, TFactory>() where TFactory : IManagerFactory<TManager>, new()
+		{
+			WinEDDS.Config.ProgrammaticServiceURL = _config.WebApiPath;
 
 			var cookieContainer = new CookieContainer();
-			var credentials = credentialProvider.Authenticate(cookieContainer);
+			var credentials = _credentialProvider.Authenticate(cookieContainer);
 
-			var searchManager = (new TManagerFactory()).Create(credentials, cookieContainer);
-
-			return searchManager;
+			return (new TFactory()).Create(credentials, cookieContainer);
 		}
+
+		#endregion //Methods
 	}
 }

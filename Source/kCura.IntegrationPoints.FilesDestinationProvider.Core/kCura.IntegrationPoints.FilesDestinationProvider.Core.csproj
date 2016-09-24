@@ -142,6 +142,7 @@
     <Compile Include="Authentication\ICredentialProvider.cs" />
     <Compile Include="Authentication\TokenCredentialProvider.cs" />
     <Compile Include="EnumHelper.cs" />
+    <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />
     <Compile Include="Logging\ExportLoggingMediator.cs" />

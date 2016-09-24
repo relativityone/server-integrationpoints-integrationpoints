@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
 using ViewDTO = kCura.IntegrationPoints.Domain.Models.ViewDTO;
@@ -17,26 +16,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 	{
 		#region Fields
 
-		private readonly IConfig _config;
-		private readonly ICredentialProvider _credentialProvider;
+		private readonly IServiceManagerProvider _serviceManagerProvider;
 
 		#endregion //Fields
 
 		#region Constructors
 
-		public ViewService(IConfig config, ICredentialProvider credentialProvider)
+		public ViewService(IServiceManagerProvider serviceManagerProvider)
 		{
-			_config = config;
-			_credentialProvider = credentialProvider;
+			_serviceManagerProvider = serviceManagerProvider;
 		}
 
 		#endregion //Constructors
 
 		#region Methods
 
-		public List<ViewDTO> GetViewsByWorkspaceAndArtifactType(int workspceId, int artifactTypeId)
+		public List<ViewDTO> GetViewsByWorkspaceAndArtifactType(int workspceId, int artifactTypeId) 
 		{
-			ISearchManager searchManager = ServiceManagerProvider.Create<ISearchManager, SearchManagerFactory>(_config, _credentialProvider);
+			ISearchManager searchManager = _serviceManagerProvider.Create<ISearchManager, SearchManagerFactory>();
 			// Third argument has to be always False in case of RIP Export
 			DataTableCollection retTables = searchManager.RetrieveViewsByContextArtifactID(workspceId, artifactTypeId, false).Tables;
 
@@ -57,7 +54,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 					Name = item.Field<string>("Name"),
 					IsAvailableInObjectTab = item.Field<bool>("AvailableInObjectTab")
 				})
-				.Where(view => view.IsAvailableInObjectTab = true)
+				.Where(view => view.IsAvailableInObjectTab)
 				.ToList();
 		}
 

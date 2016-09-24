@@ -37,6 +37,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -76,9 +77,11 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			if (container.Kernel.HasComponent(typeof (IConfig)) == false)
 			{
-				container.Register(Component.For<IConfig>().Instance(kCura.IntegrationPoints.Config.Config.Instance));
+				container.Register(Component.For<IConfig>().Instance(Config.Config.Instance));
 			}
 
+			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>().LifestyleTransient());
+			container.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
 			container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
 

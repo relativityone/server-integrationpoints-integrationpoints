@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
 
@@ -11,18 +10,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
 	public class ProductionPrecedenceService : IProductionPrecedenceService
 	{
-		private readonly IConfig _config;
-		private readonly ICredentialProvider _credentialProvider;
+		#region Fields
 
-		public ProductionPrecedenceService(IConfig config, ICredentialProvider credentialProvider)
+		private readonly IServiceManagerProvider _serviceManagerProvider;
+
+		#endregion //Fields
+
+		public ProductionPrecedenceService(IServiceManagerProvider serviceManagerProvider)
 		{
-			_config = config;
-			_credentialProvider = credentialProvider;
+			_serviceManagerProvider = serviceManagerProvider;
 		}
 
 		public IEnumerable<ProductionPrecedenceDTO> GetProductionPrecedence(int workspaceArtifactID)
 		{
-			var productionManager = ServiceManagerProvider.Create<IProductionManager, ProductionManagerFactory>(_config, _credentialProvider);
+			var productionManager = _serviceManagerProvider.Create<IProductionManager, ProductionManagerFactory>();
 
 			var dt = productionManager.RetrieveProducedByContextArtifactID(workspaceArtifactID).Tables[0];
 
