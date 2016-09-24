@@ -6,10 +6,39 @@
 
 		self.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
-		self.TypeOfExport = ko.observable(state.TypeOfExport || ExportEnums.SourceOptionsEnum.SavedSearch);
+		var sourceState = state.sourceConfiguration || {};
+		self.TypeOfExport = ko.observable(sourceState.ExportType || ExportEnums.SourceOptionsEnum.SavedSearch);
 
 		self.IsSavedSearchSelected = function () {
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.SavedSearch;
+		};
+
+		self.FolderLabelDescription = ko.observable();
+		self.IsFolderOrSubfolderSelected = function () {
+			var isFolderOrSubfolderSelected = false;
+			if (self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Folder) {
+				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.Folder].key);
+				isFolderOrSubfolderSelected = true;
+			}
+			if (self.TypeOfExport() === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
+				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.FolderSubfolder].key);
+				isFolderOrSubfolderSelected = true;
+			}
+			if (isFolderOrSubfolderSelected) {
+				self.getFolderAndSubFolders();
+			}
+			return isFolderOrSubfolderSelected;
+		};
+
+		self.getFolderAndSubFolders = function () {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("SearchFolder")
+			}).then(function (result) {
+				self.locationSelector.reload(result);
+			}).fail(function (error) {
+				root.message.error.raise("No folders were returned from the source provider.");
+			});
 		};
 
 		self.savedSearches = ko.observableArray(state.SavedSearches);
@@ -28,13 +57,31 @@
 			nonNegativeNaturalNumber: {}
 		});
 
-		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
-		self.FolderArtifactName = ko.observable(state.FolderArtifactName);
-		self.FolderLabelDescription = ko.observable();
+		self.FolderArtifactId = ko.observable(sourceState.FolderArtifactId).extend({
+			required: {
+				onlyIf: function () {
+					return self.IsFolderOrSubfolderSelected();
+				}
+			}
+		});
+		self.FolderArtifactName = ko.observable(sourceState.FolderArtifactName).extend({
+			required: {
+				onlyIf: function () {
+					return self.IsFolderOrSubfolderSelected();
+				}
+			}
+		});
+
 
 		self.availableViews = ko.observableArray(['Test']);
-		self.ViewName = ko.observable(state.ViewName);
-		self.ViewId = ko.observable(state.ViewId);
+		self.ViewName = ko.observable(sourceState.ViewName);
+		self.ViewId = ko.observable(sourceState.ViewId).extend({
+			required: {
+				onlyIf: function () {
+					return self.IsFolderOrSubfolderSelected();
+				}
+			}
+		});
 
 		self.fields = new FieldMappingViewModel();
 
@@ -48,22 +95,14 @@
 			return selectedSavedSearch;
 		};
 
+		self.getSelectedView = function (artifactId) {
+			var selectedView = ko.utils.arrayFirst(self.availableViews(), function (item) {
+				if (item.artifactId === artifactId) {
+					return item;
+				}
+			});
 
-
-		self.IsFolderOrSubfolderSelected = function () {
-			var isFolderOrSubfolderSelected = false;
-			if (self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Folder) {
-				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.Folder].key);
-				isFolderOrSubfolderSelected = true;
-			}
-			if (self.TypeOfExport() === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
-				self.FolderLabelDescription(ExportEnums.SourceOptions[ExportEnums.SourceOptionsEnum.FolderSubfolder].key);
-				isFolderOrSubfolderSelected = true;
-			}
-			if (isFolderOrSubfolderSelected) {
-				self.getFolderAndSubFolders();
-			}
-			return isFolderOrSubfolderSelected;
+			return selectedView;
 		};
 
 		self.onDOMLoaded = function () {
@@ -73,23 +112,17 @@
 			} else {
 				self.locationSelector.init(self.FolderArtifactName(), [], {
 					onNodeSelectedEventHandler: function (node) {
-						self.FolderArtifactName(node.text)
+						self.FolderArtifactName(node.text);
+						self.FolderArtifactId(node.id);
 					}
 				});
 				self.locationSelector.toggle(true);
 			}
 		};
 
-		self.getFolderAndSubFolders = function () {
-			root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("SearchFolder")
-			}).then(function (result) {
-				self.locationSelector.reload(result);
-			}).fail(function (error) {
-				root.message.error.raise("No attributes were returned from the source provider.");
-			});
-		};
+
+
+
 	};
 
 	var stepModel = function (settings) {
@@ -132,11 +165,13 @@
 				}
 			}
 
-			self.model = new viewModel($.extend({}, self.ipModel, { hasBeenRun: ip.hasBeenRun }));
+			self.model = new viewModel($.extend({}, self.ipModel, {
+				hasBeenRun: ip.hasBeenRun
+			}));
 			self.model.errors = ko.validation.group(self.model);
 
 			self.getAvailableFields = function () {
-				
+
 
 				root.data.ajax({
 					type: 'post',
@@ -164,6 +199,14 @@
 
 				if (!!selectedSavedSearch) {
 					self.model.savedSearch(selectedSavedSearch.value);
+				}
+			};
+
+			self.updateSelectedView = function () {
+				var selectedView = self.model.getSelectedView(self.ipModel.sourceConfiguration.ViewId);
+
+				if (!!selectedView) {
+					self.model.ViewId(selectedView.artifactId);
 				}
 			};
 
@@ -217,40 +260,65 @@
 				var _fields = ko.utils.arrayMap(fields, function (_item1) {
 					var _field = ko.utils.arrayFilter(self.model.fields.availableFields(), function (_item2) {
 						return (_item1.sourceField) ?
-							(_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) :
-							(_item2.fieldIdentifier === _item1.fieldIdentifier);
+                            (_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) :
+                            (_item2.fieldIdentifier === _item1.fieldIdentifier);
 					});
 					return _field[0];
 				});
 				return _fields;
 			};
 
+
+			var getViewsPromise = root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("WorkspaceView/GetViews", 10)
+			}).fail(function (error) {
+				root.message.error.raise("No views were returned from the source provider.");
+			});
+
+
 			root.data.deferred()
-				.all([savedSearchesPromise, exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise])
-				.then(function (result) {
-					self.model.savedSearches(result[0]);
-					self.updateSelectedSavedSearch();
+                .all([savedSearchesPromise, exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise, getViewsPromise])
+                .then(function (result) {
+                	self.model.savedSearches(result[0]);
+                	self.updateSelectedSavedSearch();
 
-					self.model.fields.availableFields(result[1]);
+                	self.model.fields.availableFields(result[1]);
 
-					var mappedFields = (result[3] && result[3].length) ?
-						getMappedFields(result[3]) :
-						getMappedFields(result[2]);
+                	var mappedFields = (result[3] && result[3].length) ?
+                        getMappedFields(result[3]) :
+                        getMappedFields(result[2]);
 
-					self.model.fields.selectedAvailableFields(mappedFields);
-					self.model.fields.addField();
+                	self.model.fields.selectedAvailableFields(mappedFields);
+                	self.model.fields.addField();
 
-					self.model.savedSearch.subscribe(function (selected) {
-						if (!!selected) {
-							self.ipModel.sourceConfiguration.SavedSearchArtifactId = selected;
-							self.ipModel.sourceConfiguration.ExportType = ExportEnums.SourceOptionsEnum.SavedSearch;
-							self.getAvailableFields();
-						} else {
-							self.model.fields.removeAllFields();
-							self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
-						}
-					});
-				});
+                	self.model.availableViews(result[4]);
+                	self.updateSelectedView();
+
+                	self.model.savedSearch.subscribe(function (selected) {
+                		if (!!selected) {
+                			self.ipModel.sourceConfiguration.SavedSearchArtifactId = selected;
+                			self.ipModel.sourceConfiguration.ExportType = ExportEnums.SourceOptionsEnum.SavedSearch;
+                			self.getAvailableFields();
+                		} else {
+                			self.model.fields.removeAllFields();
+                			self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
+                		}
+                	});
+
+                	self.model.ViewId.subscribe(function (selected) {
+                		if (!!selected) {
+                			self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
+                			self.ipModel.sourceConfiguration.ExportType = self.model.TypeOfExport();
+                			self.getAvailableFields();
+                		} else {
+                			self.model.fields.removeAllFields();
+                			self.ipModel.sourceConfiguration.ViewId = 0;
+                		}
+                	});
+
+
+                });
 		}
 
 		self.submit = function () {
@@ -258,12 +326,10 @@
 
 			if (self.model.errors().length === 0) {
 				// update integration point's model
-				var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
-
 				var exportType = self.model.TypeOfExport();
 				self.ipModel.sourceConfiguration.ExportType = exportType;
 				if (exportType === ExportEnums.SourceOptionsEnum.SavedSearch) {
-
+					var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
 					self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
 					self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
 					self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
@@ -273,7 +339,8 @@
 					self.ipModel.sourceConfiguration.FolderArtifactId = self.model.FolderArtifactId();
 					self.ipModel.sourceConfiguration.FolderArtifactName = self.model.FolderArtifactName();
 					self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
-					self.ipModel.sourceConfiguration.ViewId = self.model.ViewName();
+					var selectedView = self.model.getSelectedView(self.model.ViewId());
+					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
 				}
 
 				var fieldMap = [];

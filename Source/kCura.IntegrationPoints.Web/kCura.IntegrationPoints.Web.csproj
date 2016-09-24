@@ -380,9 +380,9 @@
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
+    <Content Include="Content\Images\64x64.gif" />
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
-    <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
