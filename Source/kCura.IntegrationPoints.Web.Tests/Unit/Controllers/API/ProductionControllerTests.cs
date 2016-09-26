@@ -10,16 +10,16 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 {
-	public class ProductionPrecedenceControllerTests
+	public class ProductionControllerTests
 	{
-		private ProductionPrecedenceController _controller;
-		private IProductionPrecedenceService _service;
+		private ProductionController _controller;
+		private IProductionService _service;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_service = Substitute.For<IProductionPrecedenceService>();
-			_controller = new ProductionPrecedenceController(_service);
+			_service = Substitute.For<IProductionService>();
+			_controller = new ProductionController(_service);
 			_controller.Request = new HttpRequestMessage();
 			_controller.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}
@@ -27,22 +27,22 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		[Test]
 		public void ItShouldReturnSortedProductions()
 		{
-			var production1 = new ProductionPrecedenceDTO
+			var production1 = new ProductionDTO
 			{
 				ArtifactID = "1",
 				DisplayName = "A"
 			};
-			var production2 = new ProductionPrecedenceDTO
+			var production2 = new ProductionDTO
 			{
 				ArtifactID = "2",
 				DisplayName = "B"
 			};
-			var expectedResult = new List<ProductionPrecedenceDTO> {production1, production2};
+			var expectedResult = new List<ProductionDTO> {production1, production2};
 
-			var productions = new List<ProductionPrecedenceDTO> {production2, production1};
-			_service.GetProductionPrecedence(0).ReturnsForAnyArgs(productions);
+			var productions = new List<ProductionDTO> {production2, production1};
+			_service.GetProductions(0).ReturnsForAnyArgs(productions);
 
-			var responseMessage = _controller.GetProductionPrecedence(0);
+			var responseMessage = _controller.GetProductions(0);
 			var actualResult = ExtractResponse(responseMessage);
 
 			CollectionAssert.AreEqual(expectedResult, actualResult);
@@ -51,31 +51,31 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		[Test]
 		public void ItShouldSortProductionsIgnoringCase()
 		{
-			var production1 = new ProductionPrecedenceDTO
+			var production1 = new ProductionDTO
 			{
 				ArtifactID = "1",
 				DisplayName = "abc"
 			};
-			var production2 = new ProductionPrecedenceDTO
+			var production2 = new ProductionDTO
 			{
 				ArtifactID = "2",
 				DisplayName = "Bcd"
 			};
-			var expectedResult = new List<ProductionPrecedenceDTO> { production1, production2 };
+			var expectedResult = new List<ProductionDTO> { production1, production2 };
 
-			var productions = new List<ProductionPrecedenceDTO> { production2, production1 };
-			_service.GetProductionPrecedence(0).ReturnsForAnyArgs(productions);
+			var productions = new List<ProductionDTO> { production2, production1 };
+			_service.GetProductions(0).ReturnsForAnyArgs(productions);
 
-			var responseMessage = _controller.GetProductionPrecedence(0);
+			var responseMessage = _controller.GetProductions(0);
 			var actualResult = ExtractResponse(responseMessage);
 
 			CollectionAssert.AreEqual(expectedResult, actualResult);
 		}
 
-		private IEnumerable<ProductionPrecedenceDTO> ExtractResponse(HttpResponseMessage response)
+		private IEnumerable<ProductionDTO> ExtractResponse(HttpResponseMessage response)
 		{
 			var objectContent = response.Content as ObjectContent;
-			var list = (IEnumerable<ProductionPrecedenceDTO>) objectContent?.Value;
+			var list = (IEnumerable<ProductionDTO>) objectContent?.Value;
 
 			return list;
 		}

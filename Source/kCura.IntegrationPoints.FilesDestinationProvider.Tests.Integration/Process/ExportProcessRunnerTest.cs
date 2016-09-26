@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				ImagePrecedence =
 					new[]
 					{
-						new ProductionPrecedenceDTO()
+						new ProductionDTO()
 						{
 							ArtifactID = _configSettings.ProductionArtifactId.ToString(),
 							DisplayName = "Production"

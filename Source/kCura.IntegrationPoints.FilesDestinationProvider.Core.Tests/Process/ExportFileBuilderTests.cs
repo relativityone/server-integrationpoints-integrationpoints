@@ -234,7 +234,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings.ProductionPrecedence = productionPrecedenceType;
 			_exportSettings.IncludeOriginalImages = includeOriginalImage;
-			_exportSettings.ImagePrecedence = new List<ProductionPrecedenceDTO>();
+			_exportSettings.ImagePrecedence = new List<ProductionDTO>();
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
@@ -257,14 +257,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldSetSelectedProductionPrecedence()
 		{
-			var productionPrecedenceList = new List<ProductionPrecedenceDTO>()
+			var productionPrecedenceList = new List<ProductionDTO>()
 			{
-				new ProductionPrecedenceDTO
+				new ProductionDTO
 				{
 					ArtifactID = "19",
 					DisplayName = "Prod1"
 				},
-				new ProductionPrecedenceDTO
+				new ProductionDTO
 				{
 					ArtifactID = "153",
 					DisplayName = "Prod2"

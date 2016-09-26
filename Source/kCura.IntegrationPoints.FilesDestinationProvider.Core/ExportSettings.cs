@@ -102,6 +102,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public Encoding TextFileEncodingType { get; set; }
 		public ProductionPrecedenceType ProductionPrecedence { get; set; }
 		public bool IncludeOriginalImages { get; set; }
-		public IEnumerable<ProductionPrecedenceDTO> ImagePrecedence { get; set; }
+		public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
 	}
 }

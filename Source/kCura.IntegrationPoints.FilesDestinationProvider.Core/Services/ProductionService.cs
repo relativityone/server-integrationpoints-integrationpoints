@@ -8,7 +8,7 @@ using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
-	public class ProductionPrecedenceService : IProductionPrecedenceService
+	public class ProductionService : IProductionService
 	{
 		#region Fields
 
@@ -16,20 +16,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		#endregion //Fields
 
-		public ProductionPrecedenceService(IServiceManagerProvider serviceManagerProvider)
+		public ProductionService(IServiceManagerProvider serviceManagerProvider)
 		{
 			_serviceManagerProvider = serviceManagerProvider;
 		}
 
-		public IEnumerable<ProductionPrecedenceDTO> GetProductionPrecedence(int workspaceArtifactID)
+		public IEnumerable<ProductionDTO> GetProductions(int workspaceArtifactID)
 		{
 			var productionManager = _serviceManagerProvider.Create<IProductionManager, ProductionManagerFactory>();
 
 			var dt = productionManager.RetrieveProducedByContextArtifactID(workspaceArtifactID).Tables[0];
 
-			var result = new List<ProductionPrecedenceDTO>();
+			var result = new List<ProductionDTO>();
 			foreach (DataRow row in dt.Rows)
-				result.Add(new ProductionPrecedenceDTO
+				result.Add(new ProductionDTO
 				{
 					ArtifactID = row["ArtifactID"].ToString(),
 					DisplayName = row["Name"].ToString()
