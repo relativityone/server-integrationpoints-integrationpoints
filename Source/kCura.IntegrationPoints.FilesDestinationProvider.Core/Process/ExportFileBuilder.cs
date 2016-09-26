@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.TypeOfExportedFilePath = ParseFilePath(exportSettings.FilePath);
 			exportFile.FilePrefix = exportSettings.UserPrefix;
 
+			exportFile.AppendOriginalFileName = exportSettings.AppendOriginalFileName;
 			exportFile.ExportNative = exportSettings.ExportNatives || exportSettings.IncludeNativeFilesPath;
 			exportFile.MulticodesAsNested = exportSettings.ExportMultipleChoiceFieldsAsNested;
 			exportFile.ExportFullTextAsFile = exportSettings.ExportFullTextAsFile;
@@ -70,8 +71,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					exportFile.LoadFilesPrefix = exportSettings.ViewName;
 					break;
 				case ExportSettings.ExportType.ProductionSet:
-					//TODO when exporting production set is done
+					exportFile.ArtifactID = exportSettings.ProductionId;
+					exportFile.LoadFilesPrefix = exportSettings.ProductionName;
+					exportFile.ExportNativesToFileNamedFrom = ParseNativesFilenameFromType(exportSettings.ExportNativesToFileNamedFrom);
 					break;
+				default:
+					throw new InvalidEnumArgumentException($"Unknown ExportSettings.ExportType ({exportSettings.TypeOfExport})");
 			}
 		}
 
@@ -239,6 +244,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					return ExportFile.ExportedFilePathType.Prefix;
 				default:
 					throw new InvalidEnumArgumentException($"Unknown ExportSettings.FilePathType ({filePath})");
+			}
+		}
+
+		private static ExportNativeWithFilenameFrom ParseNativesFilenameFromType(ExportSettings.NativeFilenameFromType? exportSettingsExportNativesToFileNamedFrom)
+		{
+			if (!exportSettingsExportNativesToFileNamedFrom.HasValue)
+			{
+				throw new ArgumentException("Missing ExportSettings.NativeFilenameFromType");
+			}
+			switch (exportSettingsExportNativesToFileNamedFrom)
+			{
+				case ExportSettings.NativeFilenameFromType.Identifier:
+					return ExportNativeWithFilenameFrom.Identifier;
+				case ExportSettings.NativeFilenameFromType.Production:
+					return ExportNativeWithFilenameFrom.Production;
+				default:
+					throw new InvalidEnumArgumentException($"Unknown ExportSettings.NativeFilenameFromType ({exportSettingsExportNativesToFileNamedFrom})");
 			}
 		}
 	}

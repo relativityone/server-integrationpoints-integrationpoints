@@ -60,16 +60,29 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 
 		[Test]
-		public void ItShouldReturnNullForUnknownImageDataFileFormat()
+		public void ItShouldThrowExceptionForUnknownImageDataFileFormat()
 		{
 			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
 
 			var sourceSettings = CreateSourceSettings();
 			sourceSettings.SelectedImageDataFileFormat = ((int)incorrectEnumValue).ToString();
+			
+			Assert.That(() => _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1),
+				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ImageDataFileFormat ({incorrectEnumValue})"));
+		}
+
+
+		[Test]
+		public void ItShouldReturnNullForUnknownNativeFilenameFromType()
+		{
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.NativeFilenameFromType)).Cast<ExportSettings.NativeFilenameFromType>().Max() + 1;
+
+			var sourceSettings = CreateSourceSettings();
+			sourceSettings.ExportNativesToFileNamedFrom = ((int)incorrectEnumValue).ToString();
 
 			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1);
 
-			Assert.That(exportSettings.SelectedImageDataFileFormat, Is.Null);
+			Assert.That(exportSettings.ExportNativesToFileNamedFrom, Is.Null);
 		}
 
 		[Test]
@@ -130,6 +143,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			return new ExportUsingSavedSearchSettings()
 			{
 				SelectedImageFileType = ((int)default(ExportSettings.ImageFileType)).ToString(),
+				ExportNativesToFileNamedFrom = ((int)default(ExportSettings.NativeFilenameFromType)).ToString(),
 				SelectedDataFileFormat = ((int)default(ExportSettings.DataFileFormat)).ToString(),
 				SelectedImageDataFileFormat = ((int)default(ExportSettings.ImageDataFileFormat)).ToString(),
 				FilePath = ((int)default(ExportSettings.FilePathType)).ToString(),
