@@ -13,27 +13,39 @@
 
         this.ProcessingSourceLocationList = ko.observableArray([]);
         this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
-
+        this.HasBeenRun = ko.observable(self.hasBeenRun || false);
         this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId)
             .extend({
                 required: true
             });
 
+        this.Fileshare = ko.observable(self.Fileshare).extend({
+            required: {
+                onlyIf: function () {
+                    return self.ProcessingSourceLocation();
+                }
+            }
+        });
+
+        self.locationSelector = new LocationJSTreeSelector();
+        self.locationSelector.init(self.Fileshare(), [], {
+            onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+        });
 
         $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"), function (data) {
             self.ProcessingSourceLocationList(data);
             self.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
 
             $("#processingSources").change(function (c, item) {
-                var artifacIddd = $("#processingSources option:selected").val();
-                $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacIddd))
-                    .done(function(folder) {
-                        console.log("working");
-                        console.log(folder);
+                var artifacId = $("#processingSources option:selected").val();
+                var choiceName = $("#processingSources option:selected").text();
+                this.getDirectories = $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId))
+                    .then(function (result) {
+                        self.locationSelector.reload(result);
+                        self.Fileshare(choiceName);
                     })
-                    .fail(function(error) {
-                        console.log("error");
-                        console.log(error);
+                    .fail(function (error) {
+                        root.message.error.raise("No attributes were returned from the source provider.");
                     });
             });
 

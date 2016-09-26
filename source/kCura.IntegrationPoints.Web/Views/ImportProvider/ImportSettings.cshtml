@@ -3,6 +3,9 @@
 }
 <meta name="import-base-url" content="/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" />
 <link href="~/Content/import.css" rel="stylesheet" />
+<link href="~/Content/themes/default/style.min.css" rel="stylesheet" />
+<link href="~/Content/jstree-fluid.css" rel="stylesheet" />
+<link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
 
 
 <div id="_main">
@@ -28,37 +31,36 @@
                                 </ul>
                             </div>
                         </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
                         <div class="field-row">
                             <div class="field-label required">
                                 Processing Source:
                             </div>
-                            <div class="field-value">
-                                <ul>
-                                    <li>
-                                        <div class="field-value select2-double-width">
-                                            <select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: ProcessingSourceLocationList, optionsCaption: 'Select...', value: ProcessingSourceLocation, select2: { width: '100%' }"></select>
-                                        </div>
-                                    </li>
-                                </ul>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: ProcessingSourceLocationList, optionsCaption: 'Select...', value: ProcessingSourceLocation, select2: { width: '100%' }"></select>
                             </div>
                         </div>
                         <div class="field-row">
                             <div class="field-label required">
                                 Load Data From:
                             </div>
-                            <div class="field-value">
-                                <ul>
-                                    <li>
-                                        <div class="field-value">
-                                            <select class="fluid-mock-select fluid-mock-fullwidth" id="location-select"></select>
-                                            <div id="jstree-holder-div" class="jstree-holder browse">
-                                                <div id="browser-tree" tabindex="0"></div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
+                            <div class="field-value select2-double-width">
+                                <div id="location-select" class="select2-container fluid-mock-select filter-container">
+                                    <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: Fileshare" />
+                                    <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+                                </div>
+                                <div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
+                                    <div id="browser-tree" tabindex="0"></div>
+                                </div>
                             </div>
                         </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
                         <div class="field-row">
                             <div class="field-label required">
                                 Load File:
@@ -148,11 +150,16 @@
 
 @section scripts
 {
-    <script src="~/Scripts/core/data.js"></script>
-    <script src="~/Scripts/core/utils.js"></script>
-    <script src="~/Scripts/knockout-3.4.0.js"></script>
-    <script src="~/Scripts/jstree.min.js"></script>
-    <script src="~/Scripts/Import/import-setup.js"></script>
-    <script src="~/Scripts/Import/import-provider-settings-step.js"></script>
+<script src="~/Scripts/core/data.js"></script>
+<script src="~/Scripts/core/utils.js"></script>
+<script src="~/Scripts/knockout-3.4.0.js"></script>
+<script src="~/Scripts/export/export-enums.js"></script>
+<script src="~/Scripts/jstree.min.js"></script>
+<script src="~/Scripts/export/location-jstree-selector.js"></script>
+
+
+<script src="~/Scripts/Import/import-setup.js"></script>
+<script src="~/Scripts/Import/import-provider-settings-step.js"></script>
+
 
 }
