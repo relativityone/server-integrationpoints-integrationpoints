@@ -22,7 +22,8 @@
 						width: 'auto',
 						position: 'center',
 						resizable: false,
-						draggable: false
+						draggable: false,
+						dialogClass: 'transparent'
 					});
 				}
 
