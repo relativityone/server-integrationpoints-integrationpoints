@@ -18,7 +18,7 @@ ExportEnums.ImageDataFileFormats = [
   { value: 0, key: "Opticon" },
   { value: 1, key: "IPRO" },
   { value: 2, key: "IPRO (FullText)" },
-  { value: 9, key: "No Image Load File" }
+  { value: 3, key: "No Image Load File" }
 ];
 
 ExportEnums.ImageFileTypes = [
