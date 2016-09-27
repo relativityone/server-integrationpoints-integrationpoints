@@ -250,7 +250,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (ExportFieldsService).Name,
 				typeof (ExportSettingsValidationService).Name,
 				typeof (ArtifactTreeService).Name,
-				typeof (ProductionPrecedenceService).Name,
+				typeof (ProductionService).Name,
 				typeof (CaseManagerFactory).Name,
 				typeof (StoppableExporterFactory).Name,
 				typeof (CoreExportManager).Name,

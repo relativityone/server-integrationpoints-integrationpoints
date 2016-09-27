@@ -16,8 +16,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			ExportSettings.DataFileFormat dataFileFormat;
 			EnumHelper.Parse(sourceSettings.SelectedDataFileFormat, out dataFileFormat);
 
-			ExportSettings.ImageDataFileFormat? imageDataFileFormat;
-			EnumHelper.TryParse(sourceSettings.SelectedImageDataFileFormat, out imageDataFileFormat);
+			ExportSettings.ImageDataFileFormat imageDataFileFormat;
+			EnumHelper.Parse(sourceSettings.SelectedImageDataFileFormat, out imageDataFileFormat);
 
 			ExportSettings.FilePathType filePath;
 			EnumHelper.Parse(sourceSettings.FilePath, out filePath);
@@ -27,6 +27,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			ExportSettings.ExportType exportType;
 			EnumHelper.Parse(sourceSettings.ExportType, out exportType);
+
+			ExportSettings.NativeFilenameFromType? nativeFilenameFromType;
+			EnumHelper.TryParse(sourceSettings.ExportNativesToFileNamedFrom, out nativeFilenameFromType);
 
 			var textFileEncoding = sourceSettings.TextFileEncodingType.IsNullOrEmpty() ? null : Encoding.GetEncoding(sourceSettings.TextFileEncodingType);
 
@@ -38,6 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				SavedSearchName = sourceSettings.SavedSearch,
 				ViewId = sourceSettings.ViewId,
 				ViewName = sourceSettings.ViewName,
+				FolderArtifactId = sourceSettings.FolderArtifactId,
 				ExportImages = sourceSettings.ExportImages,
 				ImageType = imageType,
 				WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
@@ -73,7 +77,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				TextFileEncodingType = textFileEncoding,
 				ProductionPrecedence = productionPrecedence,
 				IncludeOriginalImages = sourceSettings.IncludeOriginalImages,
-				ImagePrecedence = sourceSettings.ImagePrecedence
+				ImagePrecedence = sourceSettings.ImagePrecedence,
+				ExportNativesToFileNamedFrom = nativeFilenameFromType,
+				ProductionId = sourceSettings.ProductionId,
+				ProductionName = sourceSettings.ProductionName,
+				AppendOriginalFileName = sourceSettings.AppendOriginalFileName
 			};
 
 			return exportSettings;

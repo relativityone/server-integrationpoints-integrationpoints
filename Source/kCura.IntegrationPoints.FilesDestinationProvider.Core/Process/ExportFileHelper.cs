@@ -6,8 +6,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 	{
 		public static void SetDefaultValues(ExportFile expFile)
 		{
-			expFile.AppendOriginalFileName = false;
-			expFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
 			expFile.ObjectTypeName = "Document";
 			expFile.RenameFilesToIdentifier = true;
 		}

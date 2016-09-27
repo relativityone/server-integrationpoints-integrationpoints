@@ -17,7 +17,7 @@ var ImageProductionPickerViewModel = function(okCallback, data) {
 	this.loadAvailableProductions = function(selectedProductions) {
 		IP.data.ajax({
 				type: "get",
-				url: IP.utils.generateWebAPIURL("ProductionPrecedence/ProductionPrecedence"),
+				url: IP.utils.generateWebAPIURL("Production/Productions"),
 				data: {
 					sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
 				}

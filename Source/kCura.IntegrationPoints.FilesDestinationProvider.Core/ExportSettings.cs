@@ -50,13 +50,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			SavedSearch = 3
 		}
 
+		public enum NativeFilenameFromType
+		{
+			Identifier = 0,
+			Production = 1
+		}
+
 		public ExportType TypeOfExport { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public string SavedSearchName { get; set; }
 		public int FolderArtifactId { get; set; }
 		public int ViewId { get; set; }
 		public string ViewName { get; set; }
+		public int ProductionId { get; set; }
+		public string ProductionName { get; set; }
+		public NativeFilenameFromType? ExportNativesToFileNamedFrom { get; set; }
 		public int StartExportAtRecord { get; set; }
+		public bool AppendOriginalFileName { get; set; }
 		public int WorkspaceId { get; set; }
 		public string ExportFilesLocation { get; set; }
 		public List<int> SelViewFieldIds { get; set; }
@@ -92,6 +102,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public Encoding TextFileEncodingType { get; set; }
 		public ProductionPrecedenceType ProductionPrecedence { get; set; }
 		public bool IncludeOriginalImages { get; set; }
-		public IEnumerable<ProductionPrecedenceDTO> ImagePrecedence { get; set; }
+		public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
 	}
 }

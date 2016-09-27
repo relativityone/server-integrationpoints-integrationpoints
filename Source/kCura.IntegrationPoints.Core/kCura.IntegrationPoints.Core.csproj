@@ -293,7 +293,7 @@
     <Compile Include="Services\IExportSettingsValidationService.cs" />
     <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
-    <Compile Include="Services\IProductionPrecedenceService.cs" />
+    <Compile Include="Services\IProductionService.cs" />
     <Compile Include="Services\IArtifactTreeService.cs" />
     <Compile Include="Services\IViewService.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />

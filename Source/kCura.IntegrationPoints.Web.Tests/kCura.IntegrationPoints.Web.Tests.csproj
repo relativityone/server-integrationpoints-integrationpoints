@@ -216,7 +216,7 @@
     <Compile Include="Integration\Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\CastleWindsorValidationTests.cs" />
     <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
-    <Compile Include="Unit\Controllers\API\ProductionPrecedenceControllerTests.cs" />
+    <Compile Include="Unit\Controllers\API\ProductionControllerTests.cs" />
     <Compile Include="Unit\Controllers\API\WorkspaceViewControllerTests.cs" />
     <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />

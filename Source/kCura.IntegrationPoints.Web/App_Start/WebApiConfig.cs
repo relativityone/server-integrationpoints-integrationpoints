@@ -85,9 +85,9 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ProductionPrecedence",
-				routeTemplate: "{workspaceID}/api/ProductionPrecedence/ProductionPrecedence",
-				defaults: new { controller = "ProductionPrecedence", action = "GetProductionPrecedence" }
+				name: "Production",
+				routeTemplate: "{workspaceID}/api/Production/Productions",
+				defaults: new { controller = "Production", action = "GetProductions" }
 			);
 
 			config.Routes.MapHttpRoute(
