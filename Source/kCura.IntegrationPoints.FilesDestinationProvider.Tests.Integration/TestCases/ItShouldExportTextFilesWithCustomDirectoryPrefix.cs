@@ -1,8 +1,8 @@
-﻿using System.Data;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -16,18 +16,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			settings.ExportFullTextAsFile = true;
 			settings.TextFileEncodingType = Encoding.UTF8;
-			
+
 			settings.SubdirectoryTextPrefix = _PREFIX;
 
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var textFilesRootDirectory = directory.EnumerateDirectories("TEXT", SearchOption.AllDirectories).ToList();
 
 			var expectedDirectories = textFilesRootDirectory.SelectMany(x => x.EnumerateDirectories().Where(y => y.Name.StartsWith(_PREFIX)));
-			
+
 			Assert.That(expectedDirectories.Any(), $"There should be at least one folder with specified prefix {_PREFIX}");
 		}
 	}

@@ -234,6 +234,7 @@
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
+    <Compile Include="Folder.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />

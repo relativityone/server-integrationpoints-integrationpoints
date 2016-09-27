@@ -1,7 +1,7 @@
-﻿using System.Data;
-using System.IO;
+﻿using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -9,6 +9,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 {
 	internal class ItShouldExportFilePathRelativeImage : MetadataExportTestCaseBase
 	{
+		public override string MetadataFormat => "opt";
+
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;
@@ -19,12 +21,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var fileInfo = GetFileInfo(directory);
 			Assert.That(DataFileFormatHelper.LineNumberContains(1, @".\0\IMAGES\1\AMEYERS_0000757.tif", fileInfo));
 		}
-
-		public override string MetadataFormat => "opt";
 	}
 }

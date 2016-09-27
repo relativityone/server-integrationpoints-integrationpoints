@@ -1,6 +1,6 @@
-﻿using System.Data;
-using System.IO;
+﻿using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract
 {
@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abs
 	{
 		ExportSettings Prepare(ExportSettings settings);
 
-		void Verify(DirectoryInfo directory, DataTable documents, DataTable images);
+		void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData);
 	}
 }

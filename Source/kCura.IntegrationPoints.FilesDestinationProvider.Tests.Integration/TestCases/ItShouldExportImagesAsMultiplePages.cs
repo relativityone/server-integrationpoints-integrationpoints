@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -18,13 +19,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var actualFiles = directory.EnumerateDirectories("IMAGES", SearchOption.AllDirectories)
 				.SelectMany(d => d.EnumerateFiles("*", SearchOption.AllDirectories))
 				.ToList();
 
-			var expectedFiles = images
+			var expectedFiles = documentsTestData.Images
 				.AsEnumerable()
 				.GroupBy(r => r.Field<string>("DocumentIdentifier"))
 				.Select(r => new FileInfo(r.First().Field<string>("FileLocation")))

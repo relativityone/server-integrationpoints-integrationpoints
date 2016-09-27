@@ -1,56 +1,56 @@
 ﻿using System;
-using System.Data;
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-    internal class ItShouldExportDataFileAsCustom : MetadataExportTestCaseBase
-    {
-        private int _columnCount;
-        private char _columnSeparator;
-        private char _multiValueSeparator;
-        private char _nestedValueSeparator;
-        private char _newLineSeparator;
-        private char _quoteSeparator;
+	internal class ItShouldExportDataFileAsCustom : MetadataExportTestCaseBase
+	{
+		private int _columnCount;
+		private char _columnSeparator;
+		private char _multiValueSeparator;
+		private char _nestedValueSeparator;
+		private char _newLineSeparator;
+		private char _quoteSeparator;
 
-        public override ExportSettings Prepare(ExportSettings settings)
-        {
-            settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Custom;
+		public override string MetadataFormat => "txt";
 
-            settings.ColumnSeparator = _columnSeparator = Convert.ToChar(200);
-            settings.QuoteSeparator = _quoteSeparator = Convert.ToChar(201);
-            settings.NewlineSeparator = _newLineSeparator = Convert.ToChar(202);
-            settings.MultiValueSeparator = _multiValueSeparator = Convert.ToChar(203);
-            settings.NestedValueSeparator = _nestedValueSeparator = Convert.ToChar(204);
+		public override ExportSettings Prepare(ExportSettings settings)
+		{
+			settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Custom;
 
-            _columnCount = settings.SelViewFieldIds.Count;
+			settings.ColumnSeparator = _columnSeparator = Convert.ToChar(200);
+			settings.QuoteSeparator = _quoteSeparator = Convert.ToChar(201);
+			settings.NewlineSeparator = _newLineSeparator = Convert.ToChar(202);
+			settings.MultiValueSeparator = _multiValueSeparator = Convert.ToChar(203);
+			settings.NestedValueSeparator = _nestedValueSeparator = Convert.ToChar(204);
 
-            return base.Prepare(settings);
-        }
+			_columnCount = settings.SelViewFieldIds.Count;
 
-        public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
-        {
-            var fileInfo = GetFileInfo(directory);
-            var fileLines = File.ReadLines(fileInfo.FullName);
+			return base.Prepare(settings);
+		}
 
-            var firstFileLine = fileLines.First();
-            Assert.IsNotNull(firstFileLine);
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
+		{
+			var fileInfo = GetFileInfo(directory);
+			var fileLines = File.ReadLines(fileInfo.FullName);
 
-            var columns = firstFileLine.Split(_columnSeparator);
-            Assert.That(columns.Count() == _columnCount);
+			var firstFileLine = fileLines.First();
+			Assert.IsNotNull(firstFileLine);
 
-            foreach (var column in columns)
-            {
-                //we could also check other separators, but it would require additional work in set up and workspace creation
-                Assert.That(column.StartsWith(_quoteSeparator.ToString()));
-                Assert.That(column.EndsWith(_quoteSeparator.ToString()));
-            }
-        }
+			var columns = firstFileLine.Split(_columnSeparator);
+			Assert.That(columns.Count() == _columnCount);
 
-        public override string MetadataFormat => "txt";
-    }
+			foreach (var column in columns)
+			{
+				//we could also check other separators, but it would require additional work in set up and workspace creation
+				Assert.That(column.StartsWith(_quoteSeparator.ToString()));
+				Assert.That(column.EndsWith(_quoteSeparator.ToString()));
+			}
+		}
+	}
 }
