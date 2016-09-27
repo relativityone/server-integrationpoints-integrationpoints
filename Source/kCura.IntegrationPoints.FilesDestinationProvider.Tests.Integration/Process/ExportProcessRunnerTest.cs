@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
@@ -276,7 +277,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
+
 			_windsorContainer.Register(Component.For<IConfig>().Instance(configMock).LifestyleSingleton());
+
+			var configFactoryMock = Substitute.For<IConfigFactory>();
+
+			configFactoryMock.Create().Returns(configMock);
+			_windsorContainer.Register(Component.For<IConfigFactory>().Instance(configFactoryMock).LifestyleTransient());
+			_windsorContainer.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
 		}
 
 		private int CreateProduction()
