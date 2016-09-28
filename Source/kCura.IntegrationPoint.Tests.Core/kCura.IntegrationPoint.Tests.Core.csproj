@@ -271,6 +271,7 @@
     <Compile Include="TestHelpers\TestHelper.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
+    <Compile Include="View.cs" />
     <Compile Include="Workspace.cs" />
   </ItemGroup>
   <ItemGroup>

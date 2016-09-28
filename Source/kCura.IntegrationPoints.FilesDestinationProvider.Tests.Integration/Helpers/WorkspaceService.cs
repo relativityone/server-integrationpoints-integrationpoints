@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.Relativity.Client;
+using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
@@ -73,8 +75,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			return SavedSearch.Create(workspaceId, search);
 		}
 
-		internal int CreateProduction(int workspaceArtifactId, int savedSearchId, string placeHolderFileData)
+		internal int CreateProduction(int workspaceArtifactId, int savedSearchId)
 		{
+			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory,
+				@"TestData\DefaultPlaceholder.tif");
+
+			var placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
+
 			var productionId = Production.Create(workspaceArtifactId);
 
 			var placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileData);
@@ -84,6 +91,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			Production.RunAndWaitForCompletion(workspaceArtifactId, productionId);
 
 			return productionId;
+		}
+
+		internal int GetView(int workspaceId, string viewName)
+		{
+			return View.QueryView(workspaceId, viewName);
 		}
 
 		#endregion Methods
