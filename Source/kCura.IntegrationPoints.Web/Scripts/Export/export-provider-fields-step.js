@@ -13,6 +13,10 @@
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.SavedSearch;
 		};
 
+		self.IsProductionSelected = function () {
+			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
+		};
+
 		self.FolderLabelDescription = ko.observable();
 		self.IsFolderOrSubfolderSelected = function () {
 			var isFolderOrSubfolderSelected = false;
@@ -50,6 +54,26 @@
 				}
 			}
 		});
+
+		self.productionSets = ko.observableArray(state.productionSets);
+
+		self.ProductionName = ko.observable(sourceState.ProductionName);
+		self.ProductionId = ko.observable(sourceState.ProductionId).extend({
+			required: {
+				onlyIf: function () {
+					return self.IsProductionSelected();
+				}
+			}
+		});
+
+		self.getSelectedProduction = function (artifactId) {
+			var selectedProduction = ko.utils.arrayFirst(self.productionSets(), function (item) {
+				if (item.artifactID === artifactId) {
+					return item;
+				}
+			});
+			return selectedProduction;
+		};
 
 		self.startExportAtRecord = ko.observable(state.StartExportAtRecord || 1).extend({
 			required: true,
@@ -202,6 +226,14 @@
 				}
 			};
 
+			self.updateSelectedProduction = function () {
+				var selectedProduction = self.model.getSelectedProduction(self.ipModel.sourceConfiguration.ProductionId);
+
+				if (!!selectedProduction) {
+					self.model.ProductionId(selectedProduction.artifactID);
+				}
+			};
+
 			self.updateSelectedView = function () {
 				var selectedView = self.model.getSelectedView(self.ipModel.sourceConfiguration.ViewId);
 
@@ -215,6 +247,16 @@
 				url: root.utils.generateWebAPIURL('SavedSearchFinder')
 			}).fail(function (error) {
 				IP.message.error.raise("No saved searches were returned from the source provider.");
+			});
+
+			var productionSetsPromise = root.data.ajax({
+				type: "get",
+				url: IP.utils.generateWebAPIURL("Production/Productions"),
+				data: {
+					sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(function (error) {
+				IP.message.error.raise("No production sets were returned from the source provider.");
 			});
 
 			var exportableFieldsPromise = root.data.ajax({
@@ -278,7 +320,7 @@
 
 
 			root.data.deferred()
-                .all([savedSearchesPromise, exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise, getViewsPromise])
+                .all([savedSearchesPromise, exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise, getViewsPromise, productionSetsPromise])
                 .then(function (result) {
                 	self.model.savedSearches(result[0]);
                 	self.updateSelectedSavedSearch();
@@ -317,6 +359,19 @@
                 		}
                 	});
 
+                	self.model.productionSets(result[5]);
+                	self.updateSelectedProduction();
+
+                	self.model.ProductionId.subscribe(function (selected) {
+                		if (!!selected) {
+                			self.ipModel.sourceConfiguration.ProductionId = self.model.ProductionId();
+                			self.ipModel.sourceConfiguration.ExportType = self.model.TypeOfExport();
+                			self.getAvailableFields();
+                		} else {
+                			self.model.fields.removeAllFields();
+                			self.ipModel.sourceConfiguration.ProductionId = 0;
+                		}
+                	});
 
                 });
 		}
@@ -341,6 +396,11 @@
 					self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
 					var selectedView = self.model.getSelectedView(self.model.ViewId());
 					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
+				}
+				else if (exportType === ExportEnums.SourceOptionsEnum.Production) {
+					self.ipModel.sourceConfiguration.ProductionId = self.model.ProductionId();
+					var selectedProduction = self.model.getSelectedProduction(self.model.ProductionId());
+					self.ipModel.sourceConfiguration.ProductionName = selectedProduction.displayName;
 				}
 
 				var fieldMap = [];

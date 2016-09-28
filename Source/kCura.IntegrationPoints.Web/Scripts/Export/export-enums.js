@@ -62,3 +62,8 @@ ExportEnums.SourceOptionsEnum = {
 	Production: 2,
 	SavedSearch: 3
 };
+
+ExportEnums.ExportNativeWithFilenameFromTypes = [
+  { value: 0, key: "Identifier" },
+  { value: 1, key: "Begin production number" }
+];

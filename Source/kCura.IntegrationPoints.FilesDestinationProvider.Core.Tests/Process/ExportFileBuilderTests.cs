@@ -351,13 +351,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-		public void ItShouldThrowExpectionForMissingExportNativeWithFilenameFrom()
+		public void ItShouldSetUndefinedExportNativeWithFilenameFrom()
 		{
 			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
 			_exportSettings.ExportNativesToFileNamedFrom = null;
 
-			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
-				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Missing ExportSettings.NativeFilenameFromType"));
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(ExportNativeWithFilenameFrom.Select));
 		}
 
 		[Test]

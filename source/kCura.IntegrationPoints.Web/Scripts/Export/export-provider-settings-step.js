@@ -268,6 +268,18 @@
 			}
 		}
 
+		this.IsProductionExport = ko.observable(state.ExportType === ExportEnums.SourceOptionsEnum.Production);
+
+		this.AppendOriginalFileName = ko.observable(state.AppendOriginalFileName || false);
+
+		this.SelectedExportNativesWithFileNameFrom = ko.observable(state.ExportNativesToFileNamedFrom || false).extend({
+			required: {
+				onlyIf: function () {
+					return self.AppendOriginalFileName();
+				}
+			}
+		});
+
 		this.ExportImages.subscribe(self._updateImageFileFormat);
 
 		self._updateImageFileFormat();
@@ -607,8 +619,10 @@
 
 		this.getSelectedOption = function () {
 			return {
+				"AppendOriginalFileName" : self.AppendOriginalFileName(),
 				"ColumnSeparator": self.ColumnSeparator(),
 				"ExportNatives": self.ExportNatives(),
+				"ExportNativesToFileNamedFrom": self.SelectedExportNativesWithFileNameFrom(),
 				"DataFileEncodingType": self.DataFileEncodingType(),
 				"ExportFullTextAsFile": self.ExportTextFieldsAsFiles(),
 				"ExportImages": self.ExportImages(),

@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		{
 			if (!exportSettingsExportNativesToFileNamedFrom.HasValue)
 			{
-				throw new ArgumentException("Missing ExportSettings.NativeFilenameFromType");
+				return ExportNativeWithFilenameFrom.Select;
 			}
 			switch (exportSettingsExportNativesToFileNamedFrom)
 			{

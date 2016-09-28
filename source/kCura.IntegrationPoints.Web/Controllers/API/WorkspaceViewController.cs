@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			catch (Exception ex)
 			{
 				this.HandleError(workspaceId, _errorRepository, ex,
-					$"Unable to Views for {workspaceId} workspace and artifact type {artifactTypeId}. Please contact the system administrator.");
+					$"Unable to retrieve Views for {workspaceId} workspace and artifact type {artifactTypeId}. Please contact the system administrator.");
 				return Request.CreateResponse(HttpStatusCode.InternalServerError);
 			}
 		}

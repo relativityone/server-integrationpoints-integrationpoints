@@ -1,59 +1,59 @@
 ﻿<script src="~/Scripts/dragon/dragon-dialogs.js"></script>
-<link type="text/css" rel="stylesheet" href="~/Content/ui-dialog.css"/>
+<link type="text/css" rel="stylesheet" href="~/Content/ui-dialog.css" />
 
 <script id="exportProviderSettingsStep" type="text/html">
-<div id="_main">
-<div id="exportProviderConfiguration" style="min-width: 900px;">
-<div class="card">
-	<span class="label">Export Detail</span>
-	<table style="width: 100%;">
-		<tr>
-			<td style="width: 48%;">
-				<div class="field-row">
-					<div class="field-label required">
-						Export Type:
-					</div>
-					<div class="field-value">
-						<ul>
-							<li>
-								<div class="field-value">
-									<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true"/>
-									<label disabled="true">Load File</label>
+	<div id="_main">
+		<div id="exportProviderConfiguration" style="min-width: 900px;">
+			<div class="card">
+				<span class="label">Export Detail</span>
+				<table style="width: 100%;">
+					<tr>
+						<td style="width: 48%;">
+							<div class="field-row">
+								<div class="field-label required">
+									Export Type:
 								</div>
-							</li>
-							<li>
 								<div class="field-value">
-									<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages"/>
-									<label>Images</label>
+									<ul>
+										<li>
+											<div class="field-value">
+												<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true" />
+												<label disabled="true">Load File</label>
+											</div>
+										</li>
+										<li>
+											<div class="field-value">
+												<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages" />
+												<label>Images</label>
+											</div>
+										</li>
+										<li>
+											<div class="field-value">
+												<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives" />
+												<label>Natives</label>
+											</div>
+										</li>
+										<li>
+											<div class="field-value">
+												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles" />
+												<label>Text Fields As Files</label>
+											</div>
+										</li>
+									</ul>
 								</div>
-							</li>
-							<li>
-								<div class="field-value">
-									<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives"/>
-									<label>Natives</label>
+							</div>
+						</td>
+						<td style="vertical-align: top;">
+							<div class="field-row">
+								<div class="field-label">
+									Overwrite Files:
 								</div>
-							</li>
-							<li>
-								<div class="field-value">
-									<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles"/>
-									<label>Text Fields As Files</label>
+								<div class="field-value middle-vertical-align">
+									<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" class="middle-vertical-align" />
 								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</td>
-			<td style="vertical-align: top;">
-				<div class="field-row">
-					<div class="field-label">
-						Overwrite Files:
-					</div>
-					<div class="field-value middle-vertical-align">
-						<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" class="middle-vertical-align" />
-					</div>
-				</div>
-			</td>
-			</tr>
+							</div>
+						</td>
+					</tr>
 					<tr>
 						<td style="width: 48%;">
 							<div class="field-row">
@@ -71,12 +71,12 @@
 								<div class="field-value select2-double-width">
 									<div id="location-select" class="select2-container fluid-mock-select filter-container">
 										<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: Fileshare" />
-										<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>																																																					
+										<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
 									</div>
 									<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
 										<div id="browser-tree" tabindex="0"></div>
-									</div>																		
-								</div>								
+									</div>
+								</div>
 							</div>
 						</td>
 					</tr>
@@ -191,6 +191,24 @@
 							</div>
 						</td>
 						<td style="vertical-align: text-top;">
+							<div data-bind="visible: IsProductionExport()">
+								<div class="field-row">
+									<div class="field-label required">
+										Name Output Files After:
+									</div>
+									<div class="field-value">
+										<select id="exportNativeWithFilenameFromTypeSelector" data-bind="enable: !HasBeenRun(), options: ExportEnums.ExportNativeWithFilenameFromTypes, optionsCaption: 'Select...', optionsText: 'key', optionsValue: 'value', value: SelectedExportNativesWithFileNameFrom, select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label">
+										Append Original File Name:
+									</div>
+									<div class="field-value" style="vertical-align: middle;">
+										<input id="append-original-file-name-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: AppendOriginalFileName" />
+									</div>
+								</div>
+							</div>
 							<div data-bind="visible: ExportImages">
 								<div class="field-row">
 									<p>
@@ -198,7 +216,7 @@
 											IMAGE
 										</h3>
 									</p>
-								</div>								
+								</div>
 								<div class="field-row">
 									<div class="field-label required">
 										File Type:
@@ -207,7 +225,7 @@
 										<select id="imageFileTypesSelector" data-bind="enable: ExportNatives && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
 									</div>
 								</div>
-								<div class="field-row">
+								<div class="field-row" data-bind="visible: !IsProductionExport()">
 									<div class="field-label required">
 										Production Precedence:
 									</div>
@@ -215,7 +233,7 @@
 										<select id="image-production-precedence" data-bind="disable: HasBeenRun(), options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, disable: HasBeenRun(), select2: {}"></select>
 									</div>
 								</div>
-								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected()">
+								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
 									<div class="field-label required">
 										Image Productions:
 									</div>
@@ -225,9 +243,9 @@
 										<input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
 									</div>
 								</div>
-								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected()">
+								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
 									<div class="field-label">
-										Include Original Images<br/>If Not Produced:
+										Include Original Images<br />If Not Produced:
 									</div>
 									<div class="field-value" style="vertical-align: middle;">
 										<input id="image-include-original-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeOriginalImages" />
@@ -278,7 +296,7 @@
 											<optgroup data-bind="attr: {label: label}, foreach: children">
 												<option data-bind="text: displayName, value: name"></option>
 											</optgroup>
-										</select>										
+										</select>
 									</div>
 								</div>
 								<div class="field-row">
