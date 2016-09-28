@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 		private const string _SUB_FOLDER_1 = @"1";
 		private const string _SUB_FOLDER_2 = @"2";
 
-		TreeItemDTO dirTreeItem = new TreeItemDTO();
+		JsTreeItemDTO _dirJsTreeItem = new JsTreeItemDTO();
 
 		
 		[SetUp]
@@ -65,42 +65,42 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			});
 
 			//Act
-			TreeItemDTO rootDirTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
+			JsTreeItemDTO rootDirJsTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
 
 			//Assert
 
 			//Root
-			Assert.That(rootDirTreeItem, Is.Not.Null);
-			Assert.That(rootDirTreeItem.Id, Is.EqualTo(_ROOT_FOLDER));
-			Assert.That(rootDirTreeItem.Text, Is.EqualTo(_ROOT_FOLDER));
-			Assert.That(rootDirTreeItem.Children.Count, Is.EqualTo(2));
+			Assert.That(rootDirJsTreeItem, Is.Not.Null);
+			Assert.That(rootDirJsTreeItem.Id, Is.EqualTo(_ROOT_FOLDER));
+			Assert.That(rootDirJsTreeItem.Text, Is.EqualTo(_ROOT_FOLDER));
+			Assert.That(rootDirJsTreeItem.Children.Count, Is.EqualTo(2));
 
 			//Folder Root\A
-			TreeItemDTO subFolderA = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderAPath);
+			JsTreeItemDTO subFolderA = rootDirJsTreeItem.Children.FirstOrDefault(item => item.Id == subFolderAPath);
 			Assert.That(subFolderA, Is.Not.Null);
 			Assert.That(subFolderA.Text, Is.EqualTo(_SUB_FOLDER_A));
 			Assert.That(subFolderA.Children.Count, Is.EqualTo(2));
 
 			//Folder Root\A\1
-			TreeItemDTO subFolderA1 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA1Path);
+			JsTreeItemDTO subFolderA1 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA1Path);
 			Assert.That(subFolderA1, Is.Not.Null);
 			Assert.That(subFolderA1.Text, Is.EqualTo(_SUB_FOLDER_1));
 			Assert.That(subFolderA1.Children.Count, Is.EqualTo(0));
 
 			//Folder Root\A\2
-			TreeItemDTO subFolderA2 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA2Path);
+			JsTreeItemDTO subFolderA2 = subFolderA.Children.FirstOrDefault(item => item.Id == subFolderA2Path);
 			Assert.That(subFolderA2, Is.Not.Null);
 			Assert.That(subFolderA2.Text, Is.EqualTo(_SUB_FOLDER_2));
 			Assert.That(subFolderA2.Children.Count, Is.EqualTo(0));
 
 			//Folder Root\B
-			TreeItemDTO subFolderB = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
+			JsTreeItemDTO subFolderB = rootDirJsTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
 			Assert.That(subFolderB, Is.Not.Null);
 			Assert.That(subFolderB.Text, Is.EqualTo(_SUB_FOLDER_B));
 			Assert.That(subFolderB.Children.Count, Is.EqualTo(1));
 
 			//Folder Root\B\1
-			TreeItemDTO subFolderB1 = subFolderB.Children.FirstOrDefault(item => item.Id == subFolderB1Path);
+			JsTreeItemDTO subFolderB1 = subFolderB.Children.FirstOrDefault(item => item.Id == subFolderB1Path);
 			Assert.That(subFolderB1, Is.Not.Null);
 			Assert.That(subFolderB1.Text, Is.EqualTo(_SUB_FOLDER_1));
 			Assert.That(subFolderB1.Children.Count, Is.EqualTo(0));
@@ -134,16 +134,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			_directoryMock.GetDirectories(subFolderBPath).Throws<UnauthorizedAccessException>();
 
 			//Act
-			TreeItemDTO rootDirTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
+			JsTreeItemDTO rootDirJsTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
 
 			//Root
-			Assert.That(rootDirTreeItem, Is.Not.Null);
-			Assert.That(rootDirTreeItem.Id, Is.EqualTo(_ROOT_FOLDER));
-			Assert.That(rootDirTreeItem.Text, Is.EqualTo(_ROOT_FOLDER));
-			Assert.That(rootDirTreeItem.Children.Count, Is.EqualTo(1));
+			Assert.That(rootDirJsTreeItem, Is.Not.Null);
+			Assert.That(rootDirJsTreeItem.Id, Is.EqualTo(_ROOT_FOLDER));
+			Assert.That(rootDirJsTreeItem.Text, Is.EqualTo(_ROOT_FOLDER));
+			Assert.That(rootDirJsTreeItem.Children.Count, Is.EqualTo(1));
 
 			//Folder Root\A
-			TreeItemDTO subFolderB = rootDirTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
+			JsTreeItemDTO subFolderB = rootDirJsTreeItem.Children.FirstOrDefault(item => item.Id == subFolderBPath);
 			Assert.That(subFolderB, Is.Not.Null);
 			Assert.That(subFolderB.Text, Is.EqualTo(_SUB_FOLDER_B));
 			Assert.That(subFolderB.Children.Count, Is.EqualTo(0));

@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Domain.Models
 {
-	public class TreeItemWithParentIdDTO : TreeItemDTO
+	public class JsTreeItemWithParentIdDto : JsTreeItemDTO
 	{
 		public string ParentId { get; set; }
 	}

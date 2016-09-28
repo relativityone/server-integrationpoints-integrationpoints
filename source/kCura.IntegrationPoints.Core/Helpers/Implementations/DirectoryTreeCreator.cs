@@ -15,19 +15,19 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			_directory = directory;
 		}
 
-		public TreeItemDTO TraverseTree(string root)
+		public JsTreeItemDTO TraverseTree(string root)
 		{
 			ValidateFolder(root);
 
-			Stack<TreeItemDTO> directoryItemsToProcessed = new Stack<TreeItemDTO>();
+			Stack<JsTreeItemDTO> directoryItemsToProcessed = new Stack<JsTreeItemDTO>();
 
-			TreeItemDTO rootDirectoryItem = new TreeItemDTO()
+			JsTreeItemDTO rootDirectoryItem = new JsTreeItemDTO()
 			{
 				Id = root,
 				Text = root
 			};
 
-			TreeItemDTO currDirectoryItem = rootDirectoryItem;
+			JsTreeItemDTO currDirectoryItem = rootDirectoryItem;
 			directoryItemsToProcessed.Push(currDirectoryItem);
 
 			while (directoryItemsToProcessed.Count > 0)
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				// Push the subdirectories onto the stack for traversal.
 				foreach (string fullPathDir in subDirs)
 				{
-					var newDirectoryItem = new TreeItemDTO
+					var newDirectoryItem = new JsTreeItemDTO
 					{
 						Text = fullPathDir.Substring(fullPathDir.LastIndexOf('\\') + 1),
 						Id = fullPathDir
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			}
 		}
 
-		private string[] GetSubItems(TreeItemDTO dirItem)
+		private string[] GetSubItems(JsTreeItemDTO dirItem)
 		{
 			string[] subDirs = new string[0];
 			try

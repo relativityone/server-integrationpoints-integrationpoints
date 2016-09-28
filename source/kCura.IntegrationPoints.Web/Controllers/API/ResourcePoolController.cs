@@ -69,8 +69,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
 				}
-				TreeItemDTO rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
-				return Request.CreateResponse(HttpStatusCode.OK, rootFolderTreeDirectoryItem);
+				JsTreeItemDTO rootFolderJsTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
+				return Request.CreateResponse(HttpStatusCode.OK, rootFolderJsTreeDirectoryItem);
 			}
 			catch (Exception ex)
 			{
