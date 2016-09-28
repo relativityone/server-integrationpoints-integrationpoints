@@ -42,6 +42,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kcura.IntegrationPoints.Core.Tests.Integration\kcura.IntegrationPoints.Core.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
           <Platforms>
             <Platform>x64</Platform>

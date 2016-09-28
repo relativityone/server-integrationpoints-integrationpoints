@@ -156,6 +156,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Agent.Tests.Integration", "kCura.IntegrationPoints.Agent.Tests.Integration\kCura.IntegrationPoints.Agent.Tests.Integration.csproj", "{46495BAE-3C99-40F2-A10B-9B954D6D6F74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kcura.IntegrationPoints.Core.Tests.Integration", "kcura.IntegrationPoints.Core.Tests.Integration\kcura.IntegrationPoints.Core.Tests.Integration.csproj", "{8DB72A8A-8638-469E-A2AA-992A728637F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -416,11 +418,18 @@ Global
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74}.Release|Any CPU.ActiveCfg = Release|x64
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74}.Release|x64.ActiveCfg = Release|x64
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74}.Release|x64.Build.0 = Release|x64
+		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Debug|x64.ActiveCfg = Debug|x64
+		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Debug|x64.Build.0 = Debug|x64
+		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Release|Any CPU.ActiveCfg = Release|x64
+		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Release|x64.ActiveCfg = Release|x64
+		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{9F8F3789-4523-4C2F-BE74-ED7DF7A51D81} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{33333F4D-C9D1-4794-ABC1-F395DA548A50} = {E4D200F1-55C2-42C4-A54B-3AE21F0443DF}
 		{3E33DD7E-266F-48F8-86A2-3CDB836F2947} = {33333F4D-C9D1-4794-ABC1-F395DA548A50}
@@ -434,5 +443,6 @@ Global
 		{1CF9A281-4FE6-4735-A66D-71C7E415EF69} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{5E44277B-5C51-4367-874B-EFA44EB2B956} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
+		{8DB72A8A-8638-469E-A2AA-992A728637F1} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 	EndGlobalSection
 EndGlobal
