@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
+namespace kCura.IntegrationPoints.Data.Tests
 {
 	[TestFixture]
 	public class RelativityReaderBaseTests

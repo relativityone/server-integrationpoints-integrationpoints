@@ -466,7 +466,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 					ParentArtifactId = jobHistoryArtifactId,
 					JobHistory = jobHistoryArtifactId,
 					Name = Guid.NewGuid().ToString(),
-					SourceUniqueID = Convert.ToString(dataRow["Control Number"]),
+					SourceUniqueID = Convert.ToString((object) dataRow["Control Number"]),
 					ErrorType = ErrorTypeChoices.JobHistoryErrorItem,
 					ErrorStatus = errorStatus,
 					Error = "Inserted Error for testing.",
@@ -565,7 +565,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			List<int> actualJobHistoryArtifactIds = new List<int>();
 			foreach (DataRow dataRow in tempTable.Rows)
 			{
-				actualJobHistoryArtifactIds.Add(Convert.ToInt32(dataRow["ArtifactID"]));
+				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object) dataRow["ArtifactID"]));
 			}
 
 			List<int> discrepancies = expectedJobHistoryErrorArtifacts.Except(actualJobHistoryArtifactIds).ToList();

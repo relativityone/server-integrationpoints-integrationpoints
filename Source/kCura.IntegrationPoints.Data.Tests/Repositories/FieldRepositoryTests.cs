@@ -9,7 +9,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Core;
 
-namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
 	public class FieldRepositoryTests
