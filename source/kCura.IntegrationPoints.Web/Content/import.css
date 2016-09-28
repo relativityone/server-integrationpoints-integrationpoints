@@ -1,1 +1,35 @@
-﻿
+﻿#previewFile {
+    position: relative;
+    display: inline-block;
+    padding: 5px;
+    margin-top: 2px;
+    width: 68%;
+    text-align: left;
+}
+
+#previewFile-content {
+    position: absolute;
+    background-color: #2356a6;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 0px 0px;
+    z-index: 1;
+    text-align: left;
+    margin: 9px 0 0 -6px;
+    padding-top: 0px;
+}
+
+#previewFile:hover #previewFile-content {
+    width: inherit;
+}
+
+#previewFile-content > #dd-preivewFile:hover, #dd-previewErrors:hover, #dd-previewChoiceFolder:hover {
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(#007fc6, #0063ae);
+}
+
+#dd-preivewFile, #dd-previewErrors, #dd-previewChoiceFolder {
+    padding-bottom: 5px;
+    padding-left: 6px;
+}

@@ -4,6 +4,55 @@
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
 
+    //preview file btn toggle
+    var onClickPreviewFile = function () {
+        var content = windowObj.parent.$("#previewFile-content");
+        content.hide();
+        var btn = windowObj.parent.$("#previewFile");
+        btn.click(function () {
+            content.toggle();
+        });
+    }
+    //action to launch popul
+    var onPreviewFileClick = function () {
+        var preFile = windowObj.parent.$("#dd-preivewFile");
+        var preError = windowObj.parent.$("#dd-previewErrors");
+        var preChoice = windowObj.parent.$("#dd-previewChoiceFolder");
+        preFile.on("click", function () {
+            console.log("Preview File selected");
+            window.open("http://www.google.com", "_blank", "width=1370, height=795");;
+            return false;
+        });
+        preError.click(function () {
+            console.log("Preview error has been selected");
+        });
+        preChoice.click(function () {
+            console.log("Preview choice has been selected");
+        });
+    }
+    //create the btn for previewfile
+    var addPreviewFilebtn = function () {
+        var options = {
+            "dd-preivewFile": "Preview File",
+            "dd-previewErrors": "Preview Errors",
+            "dd-previewChoiceFolder": "Preview Choices & Folders"
+        }
+
+        var source = windowObj.parent.$('#progressButtons');
+        source.append('<div class="button generic positive"id="previewFile"><span>Preview File</span><i style="float: right;" class="icon-chevron-down"></i></div>');
+
+        var previewFile = windowObj.parent.$("#previewFile");
+        previewFile.append('<div id="previewFile-content"></div>');
+        var dropdown = windowObj.parent.$("#previewFile-content");
+
+        $.each(options, function (val, text) {
+            dropdown.append($('<div' + ' ' + 'id=' + val + '></div>').html(text));
+        });
+        onClickPreviewFile();
+        onPreviewFileClick();
+    };
+
+
     var viewModel = function () {
 
         var self = this;
@@ -31,6 +80,8 @@
         self.locationSelector.init(self.Fileshare(), [], {
             onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
         });
+
+
 
         $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"), function (data) {
             self.ProcessingSourceLocationList(data);
@@ -82,25 +133,27 @@
                 }
             });
 
-        ////An event raised when a user clicks the Back button.
-        //message.subscribe('back', function () {
-        //    //Execute save logic that persists the root.
-        //    this.publish('saveState', _getModel());
-        //});
+        //An event raised when a user clicks the Back button.
+        message.subscribe('back', function () {
+            //Execute save logic that persists the root.
+            this.publish('saveState', _getModel());
+            windowObj.parent.$('#previewFile').remove();
+        });
 
-        ////An event raised when the host page has loaded the current settings page.
-        //message.subscribe('load', function (model) {
-        //if (model != '') {
-        //    var sourceConfig = JSON.parse(model);
-        //    windowObj.import.StorageRoot = sourceConfig.StorageRoot;
-        //    windowObj.import.SelectedFolderPath = sourceConfig.CsvFilePath;
-        //}
-        //else {
-        //    windowObj.import.StorageRoot = "";
-        //    windowObj.import.SelectedFolderPath = "";
-        //}
-        //windowObj.import.IPFrameMessagingLoadEvent = true;
-        //});
+        //An event raised when the host page has loaded the current settings page.
+        message.subscribe('load', function (model) {
+            addPreviewFilebtn();
+            //if (model != '') {
+            //    var sourceConfig = JSON.parse(model);
+            //    windowObj.import.StorageRoot = sourceConfig.StorageRoot;
+            //    windowObj.import.SelectedFolderPath = sourceConfig.CsvFilePath;
+            //}
+            //else {
+            //    windowObj.import.StorageRoot = "";
+            //    windowObj.import.SelectedFolderPath = "";
+            //}
+            //windowObj.import.IPFrameMessagingLoadEvent = true;
+        });
     };
 
     ko.applyBindings(new viewModel());
