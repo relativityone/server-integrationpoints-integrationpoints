@@ -177,12 +177,16 @@
     <Compile Include="Abstract\IInvalidFileshareExportTestCase.cs" />
     <Compile Include="Helpers\ConfigSettings.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
+    <Compile Include="Helpers\DocumentTestDataBuilder.cs" />
     <Compile Include="Helpers\FileComparer.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
     <Compile Include="Helpers\FileToBase64Converter.cs" />
+    <Compile Include="Helpers\ImportHelper.cs" />
     <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
     <Compile Include="Helpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="Helpers\WorkspaceService.cs" />
+    <Compile Include="Model\DocumentsTestData.cs" />
+    <Compile Include="Model\FolderWithDocuments.cs" />
     <Compile Include="Process\ExportProcessRunnerTest.cs" />
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />

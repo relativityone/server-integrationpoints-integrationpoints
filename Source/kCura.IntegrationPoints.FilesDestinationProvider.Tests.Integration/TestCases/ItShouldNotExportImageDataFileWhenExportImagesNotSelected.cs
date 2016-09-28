@@ -1,13 +1,15 @@
-﻿using System.Data;
-using System.IO;
+﻿using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
 	internal class ItShouldNotExportImageDataFileWhenExportImagesNotSelected : MetadataExportTestCaseBase
-    {
+	{
+		public override string MetadataFormat => "opt";
+
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = false;
@@ -16,10 +18,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			Assert.Throws<FileNotFoundException>(() => GetFileInfo(directory));
 		}
-		public override string MetadataFormat => "opt";
 	}
 }

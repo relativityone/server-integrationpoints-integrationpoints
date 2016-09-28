@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -18,6 +19,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.Vendor.Castle.MicroKernel.Registration;
 using kCura.Vendor.Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using kCura.Vendor.Castle.Windsor;
@@ -39,8 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private ExportProcessRunner _instanceUnderTest;
 		private WorkspaceService _workspaceService;
-		private DataTable _documents;
-		private DataTable _images;
+		private DocumentsTestData _documentsTestData;
 
 		private static WindsorContainer _windsorContainer;
 
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
 			
-			_workspaceService = new WorkspaceService(_configSettings);
+			_workspaceService = new WorkspaceService(new ImportHelper(_configSettings));
 
 			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 
@@ -67,11 +68,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
 			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields, _configSettings.WorkspaceId);
-			
-			_documents = GetDocumentDataTable();
-			_images = GetImageDataTable();
 
-			_workspaceService.ImportData(_configSettings.WorkspaceId, _documents, _images);
+			_documentsTestData = DocumentTestDataBuilder.BuildTestData();
+
+			_workspaceService.ImportData(_configSettings.WorkspaceId, _documentsTestData);
 
 			_configSettings.ProductionArtifactId = CreateProduction();
 			
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_instanceUnderTest.StartWith(settings, JobExtensions.CreateJob());
 
 			// Assert
-			testCase.Verify(directory, _documents, _images);
+			testCase.Verify(directory, _documentsTestData);
 		}
 
 		[Explicit("Integration Test")]
@@ -197,42 +197,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			{
 				Utility.Directory.Instance.CreateDirectory(path);
 			}
-		}
-
-		private static DataTable GetDocumentDataTable()
-		{
-			var table = new DataTable();
-
-			// The document identifer column name must match the field name in the workspace.
-			table.Columns.Add("Control Number", typeof(string));
-			table.Columns.Add("File Name", typeof(string));
-			table.Columns.Add("Native File", typeof(string));
-			table.Columns.Add("Issue Designation", typeof(string));
-			table.Columns.Add("Has Images", typeof(bool));
-
-			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm"), "Level1\\Level2", true);
-			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf"), "Level1\\Level2", true);
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls"), "Level1\\Level2", true);
-			table.Rows.Add("AZIPPER_0011318", "AZIPPER_0011318.msg", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg"), "Level1\\Level2", false);
-
-			return table;
-		}
-
-		private static DataTable GetImageDataTable()
-		{
-			var table = new DataTable();
-
-			// The document identifer column name must match the field name in the workspace.
-			table.Columns.Add("Control Number", typeof(string));
-			table.Columns.Add("Bates Beg", typeof(string));
-			table.Columns.Add("File", typeof(string));
-
-			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0000757.tif"));
-			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0000975.tif"));
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0001185.tif"));
-			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185_001", Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\IMAGES\AMEYERS_0001185_001.tif"));
-
-			return table;
 		}
 
 		private static IEnumerable<IExportTestCase> ExportTestCaseSource()

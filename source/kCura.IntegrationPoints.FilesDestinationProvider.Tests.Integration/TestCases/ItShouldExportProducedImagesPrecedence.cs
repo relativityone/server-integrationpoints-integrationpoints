@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var defaultPlaceholderFile = new FileInfo(_defaultPlaceholderPath);
 
@@ -30,15 +31,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			var allExportedImages = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories);
 			var totalExportedImagesCount = allExportedImages.Length;
 
-			var expectedFilesWithImagesCount = images.Rows.Count;
+			var expectedFilesWithImagesCount = documentsTestData.Images.Rows.Count;
 
-			var documentsWithImages = documents.Select($"[Has Images] = '{true}'");
-			var documentsWithoutImages = documents.Select($"[Has Images] = '{false}'");
+			var documentsWithImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{true}'");
+			var documentsWithoutImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{false}'");
 			var numberofDocumentsWithoutImages = documentsWithoutImages.Length;
 
 			Assert.AreEqual(totalExportedImagesCount, numberofDocumentsWithoutImages + expectedFilesWithImagesCount);
 
-			AssertExportedImagesAreSameAsInputImages(documentsWithImages, images.Select(), allExportedImages);
+			AssertExportedImagesAreSameAsInputImages(documentsWithImages, documentsTestData.Images.Select(), allExportedImages);
 			AssertExportedFilesWithoutImagesAreSameAsPlaceholder(documentsWithoutImages, allExportedImages,
 				defaultPlaceholderFile);
 		}

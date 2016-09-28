@@ -1,27 +1,20 @@
-﻿using System.Data;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
 	/// <summary>
-	/// This is a case when we select Extracted Text field in Text Precendence list. Extract Text field is also selected in the header metadata file
-	/// As the output "Extract Text" column should appear in the metadafile
+	///     This is a case when we select Extracted Text field in Text Precendence list. Extract Text field is also selected in
+	///     the header metadata file
+	///     As the output "Extract Text" column should appear in the metadafile
 	/// </summary>
 	internal class ItShouldExportExtractedText : MetadataExportTestCaseBase
 	{
-		#region Properties
-
-		public override string MetadataFormat => "csv";
-		private readonly ConfigSettings _configSettings;
-
-		#endregion Properties
-
 		public ItShouldExportExtractedText(ConfigSettings configSettings)
 		{
 			_configSettings = configSettings;
@@ -37,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var fileInfo = GetFileInfo(directory);
 			foreach (var item in DataFileFormatHelper.GetMetadataFileColumnValues<string>(_configSettings.LongTextFieldName, fileInfo))
@@ -48,6 +41,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 				Assert.That(FileEncodingDetectionHelper.GetFileEncoding(datFileInfo.FullName), Is.EqualTo(Encoding.UTF8));
 			}
 		}
-		
+
+		#region Properties
+
+		public override string MetadataFormat => "csv";
+		private readonly ConfigSettings _configSettings;
+
+		#endregion Properties
 	}
 }

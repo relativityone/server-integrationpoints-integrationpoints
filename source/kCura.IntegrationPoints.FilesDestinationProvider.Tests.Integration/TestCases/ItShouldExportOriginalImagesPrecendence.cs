@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -19,19 +20,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var imagesDirectory = directory.GetDirectories("IMAGES", SearchOption.AllDirectories).First();
 			var exportedFiles = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories);
 			var filesCount = exportedFiles.Length;
-			var expectedFilesCount = images.Rows.Count;
+			var expectedFilesCount = documentsTestData.Images.Rows.Count;
 
 			Assert.AreEqual(filesCount, expectedFilesCount);
 
 			for (int i = 0; i < exportedFiles.Length; i++)
 			{
 				var file1 = exportedFiles[i];
-				var file2 = new FileInfo((string)images.Rows[i].ItemArray[2]);
+				var file2 = new FileInfo((string)documentsTestData.Images.Rows[i].ItemArray[2]);
 
 				Assert.IsTrue(FileComparer.Compare(file1, file2));
 			}

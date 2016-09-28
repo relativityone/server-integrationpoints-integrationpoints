@@ -2,6 +2,7 @@
 using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base
 {
@@ -18,6 +19,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return ExportSettings;
 		}
 
-		public abstract void Verify(DirectoryInfo directory, DataTable documents, DataTable images);
+		public abstract void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData);
 	}
 }
