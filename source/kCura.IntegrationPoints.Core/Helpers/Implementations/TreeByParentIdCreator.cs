@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
 	public class TreeByParentIdCreator : ITreeByParentIdCreator
 	{
-		public TreeItemDTO Create(IList<Artifact> artifacts)
+		public JsTreeItemDTO Create(IList<Artifact> artifacts)
 		{
 			var treeItemsFlat = ConvertToTreeItems(artifacts);
 			var root = FindRoot(treeItemsFlat);
@@ -17,12 +17,12 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return root;
 		}
 
-		private IList<TreeItemWithParentIdDTO> ConvertToTreeItems(IList<Artifact> artifacts)
+		private IList<JsTreeItemWithParentIdDto> ConvertToTreeItems(IList<Artifact> artifacts)
 		{
 			return artifacts.Select(x => x.ToTreeItemWithParentIdDTO()).ToList();
 		}
 
-		private TreeItemDTO FindRoot(IList<TreeItemWithParentIdDTO> treeItemsFlat)
+		private JsTreeItemDTO FindRoot(IList<JsTreeItemWithParentIdDto> treeItemsFlat)
 		{
 			var ids = treeItemsFlat.Select(x => x.Id).ToList();
 			var root = treeItemsFlat.Where(x => string.IsNullOrEmpty(x.ParentId) || !ids.Contains(x.ParentId)).ToList();
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return root[0];
 		}
 
-		private void BuildTree(IList<TreeItemWithParentIdDTO> treeItemsFlat)
+		private void BuildTree(IList<JsTreeItemWithParentIdDto> treeItemsFlat)
 		{
 			foreach (var treeItem in treeItemsFlat)
 			{

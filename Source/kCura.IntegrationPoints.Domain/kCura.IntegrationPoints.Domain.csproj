@@ -213,7 +213,8 @@
     <Compile Include="Models\ButtonStateDTO.cs" />
     <Compile Include="Models\DestinationProviderDTO.cs" />
     <Compile Include="Models\DestinationWorkspaceDTO.cs" />
-    <Compile Include="Models\TreeItemDTO.cs" />
+    <Compile Include="Models\JsTreeItemBaseDTO.cs" />
+    <Compile Include="Models\JsTreeItemDTO.cs" />
     <Compile Include="Models\ErrorDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\ExportSettingsValidationResult.cs" />
@@ -233,7 +234,7 @@
     <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
     <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />
-    <Compile Include="Models\TreeItemWithParentIdDTO.cs" />
+    <Compile Include="Models\JsTreeItemWithParentIdDto.cs" />
     <Compile Include="Models\ViewDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="ProviderManager.cs" />

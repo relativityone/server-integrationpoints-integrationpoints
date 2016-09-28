@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_treeCreator = treeCreator;
 		}
 
-		public TreeItemDTO GetArtifactTree(string artifactTypeName)
+		public JsTreeItemDTO GetArtifactTree(string artifactTypeName)
 		{
 			var artifacts = QueryArtifacts(artifactTypeName);
 			return _treeCreator.Create(artifacts);

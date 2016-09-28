@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Core.Helpers
 {
 	public interface ITreeByParentIdCreator
 	{
-		TreeItemDTO Create(IList<Artifact> artifacts);
+		JsTreeItemDTO Create(IList<Artifact> artifacts);
 	}
 }
