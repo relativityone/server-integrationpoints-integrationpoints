@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
-		public HttpResponseMessage GetProcessingSourceLocationStructure(int workspaceId, int artifactId)
+		public HttpResponseMessage GetProcessingSourceLocationStructure(int workspaceId, int artifactId, int includeFiles = 0)
 		{
 			try
 			{
@@ -68,7 +68,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
 				}
-				TreeItemDTO rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
+
+                //Passing along optional includeFiles parameter.  If not 0, the TraverseTree method will return nodes for files as well as directories.
+				TreeItemDTO rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location, includeFiles!=0);
 				return Request.CreateResponse(HttpStatusCode.OK, rootFolderTreeDirectoryItem);
 			}
 			catch (Exception ex)

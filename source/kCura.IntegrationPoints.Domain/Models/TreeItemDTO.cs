@@ -12,5 +12,6 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public string Text { get; set; }
 		public string Id { get; set; }
 		public List<TreeItemDTO> Children { get; }
+        public bool isDirectory { get; set; }
 	}
 }

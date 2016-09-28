@@ -77,8 +77,10 @@
         });
 
         self.locationSelector = new LocationJSTreeSelector();
+        //pass in the selectFilesOnly optional parameter so that location-jstree-selector will only allow us to select files
         self.locationSelector.init(self.Fileshare(), [], {
-            onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+            onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) },
+            selectFilesOnly: true
         });
 
 
@@ -90,10 +92,10 @@
             $("#processingSources").change(function (c, item) {
                 var artifacId = $("#processingSources option:selected").val();
                 var choiceName = $("#processingSources option:selected").text();
-                this.getDirectories = $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId))
+                this.getDirectories = $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId) + '?includeFiles=1')
                     .then(function (result) {
                         self.locationSelector.reload(result);
-                        self.Fileshare(choiceName);
+                        //TODO: unhide dropdown here
                     })
                     .fail(function (error) {
                         root.message.error.raise("No attributes were returned from the source provider.");
@@ -109,7 +111,7 @@
                 //LoadDataFrom: windowObj.import.SelectedFolderPath ? windowObj.import.SelectedFolderPath : "",
                 HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
                 LineNumber: $("#import-columnname-numbers").val(),
-                LoadFile: $("#import-loadFile-text").val()
+                LoadFile: self.locationSelector.SelectedNode
             };
 
             console.log(model);
@@ -128,6 +130,7 @@
                 if (parsedModel.CsvFilePath === '') {
                     IP.frameMessaging().dFrame.IP.message.error.raise('Please select a load file to continue.');
                 } else {
+                    windowObj.parent.$('#previewFile').remove();
                     //Communicate to the host page that it to continue.
                     this.publish('saveComplete', localModel);
                 }
