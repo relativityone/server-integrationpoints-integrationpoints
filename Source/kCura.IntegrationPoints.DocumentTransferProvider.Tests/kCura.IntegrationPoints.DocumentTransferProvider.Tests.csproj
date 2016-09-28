@@ -72,9 +72,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Integration\DocumentTransferProviderTests.cs" />
-    <Compile Include="Unit\DocumentTransferProviderTests.cs" />
-    <Compile Include="Unit\DocumentArtifactIdDataReaderTests.cs" />
+    <Compile Include="DocumentTransferProviderTests.cs" />
+    <Compile Include="DocumentArtifactIdDataReaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

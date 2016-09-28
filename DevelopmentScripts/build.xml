@@ -87,6 +87,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
           <Platforms>
             <Platform>x64</Platform>
