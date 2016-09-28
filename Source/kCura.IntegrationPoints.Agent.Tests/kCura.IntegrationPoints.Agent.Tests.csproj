@@ -127,7 +127,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -138,19 +140,15 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Integration\AgentConstractorTests.cs" />
-    <Compile Include="Integration\ExportServiceManagerTests.cs" />
-    <Compile Include="Integration\SendEmailManagerTests.cs" />
-    <Compile Include="Integration\TaskFactoryTestsForOtherProviders.cs" />
     <Compile Include="SetupAndTeardown.cs" />
-    <Compile Include="Unit\CastleWindsorValidatorTests.cs" />
-    <Compile Include="Unit\SendEmailManagerUnitTests.cs" />
-    <Compile Include="Unit\Tasks\ExportManagerTest.cs" />
-    <Compile Include="Unit\Tasks\ExportServiceManagerTests.cs" />
-    <Compile Include="Unit\Tasks\ITaskFactoryTests.cs" />
-    <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />
-    <Compile Include="Unit\Tasks\SyncManagerTests.cs" />
-    <Compile Include="Unit\Tasks\SyncWorkerTests.cs" />
+    <Compile Include="CastleWindsorValidatorTests.cs" />
+    <Compile Include="SendEmailManagerUnitTests.cs" />
+    <Compile Include="Tasks\ExportManagerTest.cs" />
+    <Compile Include="Tasks\ExportServiceManagerTests.cs" />
+    <Compile Include="Tasks\ITaskFactoryTests.cs" />
+    <Compile Include="Tasks\SyncCustodianManagerWorkerTests.cs" />
+    <Compile Include="Tasks\SyncManagerTests.cs" />
+    <Compile Include="Tasks\SyncWorkerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

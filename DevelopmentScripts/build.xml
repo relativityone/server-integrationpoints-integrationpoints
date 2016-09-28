@@ -17,6 +17,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Agent.Tests.Integration\kCura.IntegrationPoints.Agent.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
           <Platforms>
             <Platform>x64</Platform>

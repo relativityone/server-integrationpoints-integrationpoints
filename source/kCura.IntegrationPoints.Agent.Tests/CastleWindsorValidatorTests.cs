@@ -9,7 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.Tests.Unit
+namespace kCura.IntegrationPoints.Agent.Tests
 {
 	[TestFixture]
 	public class CastleWindsorValidatorTests : CastleWindsorValidatorBase
