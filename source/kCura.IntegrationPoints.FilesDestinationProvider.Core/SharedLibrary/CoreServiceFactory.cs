@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
+using Relativity.Core;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public IAuditManager CreateAuditManager()
 		{
-			return _serviceFactory.CreateAuditManager();
+			return new CoreAuditManager(GetBaseServiceContext());
 		}
 
 		public IExportFileDownloader CreateExportFileDownloader()
@@ -28,8 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public IExportManager CreateExportManager()
 		{
-			var baseContext = ClaimsPrincipal.Current.GetUnversionContext(_exportFile.CaseArtifactID);
-			return new CoreExportManager(baseContext);
+			return new CoreExportManager(GetBaseServiceContext());
 		}
 
 		public IFieldManager CreateFieldManager()
@@ -45,6 +45,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		public ISearchManager CreateSearchManager()
 		{
 			return _serviceFactory.CreateSearchManager();
+		}
+
+		private BaseServiceContext GetBaseServiceContext()
+		{
+			return ClaimsPrincipal.Current.GetUnversionContext(_exportFile.CaseArtifactID);
 		}
 	}
 }
