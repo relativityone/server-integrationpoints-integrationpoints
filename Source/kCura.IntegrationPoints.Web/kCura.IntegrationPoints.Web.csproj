@@ -301,14 +301,16 @@
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
+    <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
+    <Compile Include="Controllers\API\WorkspaceViewController.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
     <Compile Include="Controllers\API\FolderPathController.cs" />
     <Compile Include="Controllers\API\FtpProviderAPIController.cs" />
-    <Compile Include="Controllers\API\ProductionPrecedenceController.cs" />
+    <Compile Include="Controllers\API\ProductionController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
     <Compile Include="Controllers\API\JobController.cs" />
@@ -359,6 +361,12 @@
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.svg">
+      <Link>Content\fonts\fluid-ui.svg</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\images\64x64.gif">
+      <Link>Content\Images\64x64.gif</Link>
+    </Content>
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.svg">
       <Link>Content\fonts\legal-hold-icons.svg</Link>
     </Content>
@@ -382,7 +390,6 @@
     </Content>
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
-    <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
@@ -464,9 +471,19 @@
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.woff">
       <Link>Content\fonts\legal-hold-icons.woff</Link>
     </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.eot">
+      <Link>Content\fonts\fluid-ui.eot</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.ttf">
+      <Link>Content\fonts\fluid-ui.ttf</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.woff">
+      <Link>Content\fonts\fluid-ui.woff</Link>
+    </Content>
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
+    <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
     <Content Include="Scripts\EventHandlers\export-details-view.js" />

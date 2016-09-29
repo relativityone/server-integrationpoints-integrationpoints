@@ -98,7 +98,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
 
 			int totalCount = GetTotalExportItemsCount(sourceSettings, job);
-			if (totalCount > 0)
+
+			// This condition should be changed when we implement correct Total Items count for Production or Folders/Subfolders Export types
+			if (totalCount >= 0)
 			{
 				CreateBatchJob(job, new List<string>());
 			}

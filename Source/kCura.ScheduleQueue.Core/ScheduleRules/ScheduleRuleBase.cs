@@ -83,15 +83,15 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		///<summary>
 		///Date/Time is returned in UTC
 		///</summary>
-		protected DateTime? GetNextRunTimeByInterval(ScheduleInterval interval, ReturnerBase returner, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDayOfMonth, int? reoccur, OccuranceInMonth? occuranceInMonth)
+		protected DateTime? GetNextRunTimeByInterval(ScheduleInterval interval, EndDateHelperBase endDateHelper, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDayOfMonth, int? reoccur, OccuranceInMonth? occuranceInMonth)
 		{
 			//* Due to Daylight Saving Time (DST) all calculations are done with local date/time to insure final time corresponds to Scheduled time
 			//* However, returning value in UTC, since Method Agent framework operates in UTC.
 
-			DateTime localNow = returner.Time;
-			DateTime nextRunTimeDate = returner.StartDate.Date > localNow.Date ? returner.StartDate.Date : localNow.Date;
+			DateTime localNow = endDateHelper.Time;
+			DateTime nextRunTimeDate = endDateHelper.StartDate.Date > localNow.Date ? endDateHelper.StartDate.Date : localNow.Date;
 
-			nextRunTimeDate = nextRunTimeDate.AddTicks(returner.LocalTimeOfDayTick % TimeSpan.FromDays(1).Ticks);
+			nextRunTimeDate = nextRunTimeDate.AddTicks(endDateHelper.LocalTimeOfDayTick % TimeSpan.FromDays(1).Ticks);
 
 			switch (interval)
 			{
@@ -133,16 +133,16 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					CheckForOverride(ref setLastDayOfMonth, ref dayOfMonth, daysToRun, occuranceInMonth);
 					if ((setLastDayOfMonth.HasValue && setLastDayOfMonth.Value) || dayOfMonth.HasValue)
 					{
-						nextRunTimeDate = GetNextScheduledMonthDayByDay(nextRunTimeDate, returner.StartDate, returner.LocalTimeOfDayTick, setLastDayOfMonth, dayOfMonth, localNow, reoccur);
+						nextRunTimeDate = GetNextScheduledMonthDayByDay(nextRunTimeDate, endDateHelper.StartDate, endDateHelper.LocalTimeOfDayTick, setLastDayOfMonth, dayOfMonth, localNow, reoccur);
 					}
 					else
 					{
-						nextRunTimeDate = GetNextScheduledMonthDayByWeek(nextRunTimeDate, returner.StartDate, returner.LocalTimeOfDayTick, localNow, daysToRun, reoccur, occuranceInMonth);
+						nextRunTimeDate = GetNextScheduledMonthDayByWeek(nextRunTimeDate, endDateHelper.StartDate, endDateHelper.LocalTimeOfDayTick, localNow, daysToRun, reoccur, occuranceInMonth);
 					}
 					break;
 			}
 
-			return returner.Return(nextRunTimeDate);
+			return endDateHelper.Return(nextRunTimeDate);
 		}
 
 		public DateTime GetNextScheduledWeekDay(DaysOfWeek scheduleDayOfWeek, DateTime nextRunTimeDate, DateTime localNow, int? reoccur)
@@ -332,12 +332,12 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			return weekDays;
 		}
 
-		#region Returner
+		#region EndDateHelper
 
 		/// <summary>
 		/// An interface that compares scheduler's end date and its next runtime
 		/// </summary>
-		protected interface IEndDateReturner
+		protected interface IEndDateHelper
 		{
 			DateTime Time { get; }
 
@@ -349,11 +349,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DateTime? Return(DateTime nextRunTime);
 		}
 
-		protected abstract class ReturnerBase : IEndDateReturner
+		protected abstract class EndDateHelperBase : IEndDateHelper
 		{
 			protected readonly ITimeService _timeService;
 
-			protected ReturnerBase(ITimeService timeService)
+			protected EndDateHelperBase(ITimeService timeService)
 			{
 				_timeService = timeService;
 			}
@@ -370,9 +370,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		/// Only use to handle the v1 logic of the scheduler where it uses the client's local time to calculate the next runtime.
 		/// DO NOT USE THIS.
 		/// </summary>
-		protected class LocalEndDateReturner : ReturnerBase
+		protected class LocalEndDate : EndDateHelperBase
 		{
-			public LocalEndDateReturner(ITimeService timeService) : base(timeService)
+			public LocalEndDate(ITimeService timeService) : base(timeService)
 			{ }
 
 			public override DateTime Time
@@ -397,9 +397,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		/// <summary>
 		/// Uses this interface to compare utc end date and the next runtime, and returns next runtime if it's valid.
 		/// </summary>
-		protected class UtcEndDateReturner : ReturnerBase
+		protected class UtcEndDate : EndDateHelperBase
 		{
-			public UtcEndDateReturner(ITimeService timeService)
+			public UtcEndDate(ITimeService timeService)
 				: base(timeService)
 			{
 			}
@@ -423,6 +423,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			}
 		}
 
-		#endregion Returner
+		#endregion EndDateHelper
 	}
 }

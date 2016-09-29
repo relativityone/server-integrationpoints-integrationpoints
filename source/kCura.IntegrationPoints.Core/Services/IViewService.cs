@@ -3,8 +3,8 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public interface IProductionPrecedenceService
+	public interface IViewService
 	{
-		IEnumerable<ProductionPrecedenceDTO> GetProductionPrecedence(int workspaceArtifactID);
+		List<ViewDTO> GetViewsByWorkspaceAndArtifactType(int workspceId, int artifactTypeId);
 	}
 }

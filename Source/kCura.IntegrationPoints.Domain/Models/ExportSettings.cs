@@ -19,7 +19,11 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public int FolderArtifactId { get; set; }
 		public int ViewId { get; set; }
 		public string ViewName { set; get; }
+		public int ProductionId { get; set; }
+		public string ProductionName { get; set; }
+		public string ExportNativesToFileNamedFrom { get; set; }
 		public int StartExportAtRecord { get; set; }
+		public bool AppendOriginalFileName { get; set; }
 		public string Fileshare { get; set; }
 		public bool ExportNatives { get; set; }
 		public bool OverwriteFiles { get; set; }
@@ -52,6 +56,6 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public string TextFileEncodingType { get; set; }
 		public string ProductionPrecedence { get; set; }
 		public bool IncludeOriginalImages { get; set; }
-		public IEnumerable<ProductionPrecedenceDTO> ImagePrecedence { get; set; }
+		public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
 	}
 }

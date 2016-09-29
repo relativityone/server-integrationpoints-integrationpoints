@@ -7,14 +7,14 @@ using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 {
-	public class TreeByParentIdCreatorTests
+	public class ArtifactTreeCreatorTests
 	{
-		private TreeByParentIdCreator _treeByParentIdCreator;
+		private ArtifactTreeCreator _treeByParentIdCreator;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_treeByParentIdCreator = new TreeByParentIdCreator();
+			_treeByParentIdCreator = new ArtifactTreeCreator();
 		}
 
 		[Test]

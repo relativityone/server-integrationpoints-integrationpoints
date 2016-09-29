@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Core.Helpers
 {
 	public interface IDirectoryTreeCreator
 	{
-		TreeItemDTO TraverseTree(string root, bool includeFiles = false);
+		JsTreeItemDTO TraverseTree(string root, bool includeFiles = false);
 	}
 }

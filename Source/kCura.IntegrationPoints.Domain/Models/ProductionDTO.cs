@@ -3,7 +3,7 @@
 	/// <summary>
 	/// A data transfer object class used representing a Production. 
 	/// </summary>
-	public class ProductionPrecedenceDTO
+	public class ProductionDTO
 	{
 		/// <summary>
 		/// Gets or sets the name of the production.

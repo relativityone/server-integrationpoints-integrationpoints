@@ -47,9 +47,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				this.HandleError(workspaceId, _errorRepository, ex,
-					$"Unable to retrieve processing source location for {workspaceId} workspace. Please contact the system administrator.");
-				return Request.CreateResponse(HttpStatusCode.InternalServerError);
+				string errMsg =
+					$"Unable to retrieve processing source location for {workspaceId} workspace. Please contact system administrator.";
+				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
 			}
 		}
 
@@ -69,15 +70,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
 				}
 
-                //Passing along optional includeFiles parameter.  If not 0, the TraverseTree method will return nodes for files as well as directories.
-				TreeItemDTO rootFolderTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location, includeFiles!=0);
-				return Request.CreateResponse(HttpStatusCode.OK, rootFolderTreeDirectoryItem);
+				JsTreeItemDTO rootFolderJsTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location, includeFiles!=0);
+				return Request.CreateResponse(HttpStatusCode.OK, rootFolderJsTreeDirectoryItem);
 			}
 			catch (Exception ex)
 			{
-				this.HandleError(workspaceId, _errorRepository, ex,
-					$"Unable to retrieve folder structure for processing source location {artifactId}. Please contact the system administrator.");
-				return Request.CreateResponse(HttpStatusCode.InternalServerError);
+				string errMsg =
+					$"Unable to retrieve processing source location folder structure {artifactId} (Folder is not accessible). Please contact system administrator.";
+				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
 			}
 		}
 

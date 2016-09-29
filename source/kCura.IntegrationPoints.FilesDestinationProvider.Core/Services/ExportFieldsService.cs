@@ -1,42 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
 using Relativity;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
+
 	public class ExportFieldsService : IExportFieldsService
 	{
-		private readonly IConfig _config;
-		private readonly ICredentialProvider _credentialProvider;
+		#region Fields
 
-		private ISearchManager CreateSearchManager()
+		private readonly IServiceManagerProvider _serviceManagerProvider;
+
+		#endregion //Fields
+
+		public ExportFieldsService(IServiceManagerProvider serviceManagerProvider)
 		{
-			WinEDDS.Config.ProgrammaticServiceURL = _config.WebApiPath;
-
-			var cookieContainer = new CookieContainer();
-			var credentials = _credentialProvider.Authenticate(cookieContainer);
-
-			var searchManager = (new SearchManagerFactory()).Create(credentials, cookieContainer);
-
-			return searchManager;
-		}
-
-		public ExportFieldsService(IConfig config, ICredentialProvider credentialProvider)
-		{
-			_config = config;
-			_credentialProvider = credentialProvider;
+			_serviceManagerProvider = serviceManagerProvider;
 		}
 
 		public FieldEntry[] GetAllExportableFields(int workspaceArtifactID, int artifactTypeID)
 		{
-			ISearchManager searchManager = CreateSearchManager();
+			ISearchManager searchManager = _serviceManagerProvider.Create<ISearchManager, SearchManagerFactory>();
 
 			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, artifactTypeID)
 				.Select(x => new FieldEntry
@@ -51,7 +40,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public FieldEntry[] GetDefaultViewFields(int workspaceArtifactID, int viewArtifactID, int artifactTypeID, bool isProduction)
 		{
-			ISearchManager searchManager = CreateSearchManager();
+			ISearchManager searchManager = _serviceManagerProvider.Create<ISearchManager, SearchManagerFactory>();
 
 			IEnumerable<int> viewFieldIds = searchManager.RetrieveDefaultViewFieldIds(workspaceArtifactID, viewArtifactID, artifactTypeID, isProduction);
 
@@ -69,7 +58,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public FieldEntry[] GetAllExportableLongTextFields(int workspaceArtifactID, int artifactTypeID)
 		{
-			ISearchManager searchManager = CreateSearchManager();
+			ISearchManager searchManager = _serviceManagerProvider.Create<ISearchManager, SearchManagerFactory>();
 
 			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, artifactTypeID)
 				.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText)

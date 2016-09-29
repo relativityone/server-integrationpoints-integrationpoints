@@ -115,17 +115,23 @@ h1
 
 .loading
 {
-	background: url("./Images/loading.gif") no-repeat center;
+	background: url("./Images/64x64.gif") no-repeat center;
 	height: 80px;
 	width: 80px;
-	  left: 11px;
-  right: 208px;
-  top: 19px;
+	left: 11px;
+	right: 208px;
+	top: 19px;
 }
 
-.ui-dialog.ui-widget.ui-widget-content.ui-corner-all {
-	width: 100px;
+.transparent {	
+	background-color: transparent!important;
 }
+
+#progressIndicatorContainer {
+	height: 100px!important;
+	width: 100px!important;
+}
+
 .console
 {
 	height: 100%;

@@ -3,7 +3,7 @@
 | Documentation 	| Verify that running an Append SFTP import creates new objects, but does not update existing objects.
 | Metadata			| Authors	| Daniel Oliver
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Run Keywords	| Setup connection to the relativity database	| Open and Log in to Legal Hold
+| Suite Setup		| Run Keywords	| Setup connection to the relativity database	| Open and Log in to Workspace
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 

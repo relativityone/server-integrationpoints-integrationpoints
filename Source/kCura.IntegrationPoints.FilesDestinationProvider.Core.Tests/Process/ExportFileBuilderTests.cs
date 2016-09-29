@@ -234,7 +234,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings.ProductionPrecedence = productionPrecedenceType;
 			_exportSettings.IncludeOriginalImages = includeOriginalImage;
-			_exportSettings.ImagePrecedence = new List<ProductionPrecedenceDTO>();
+			_exportSettings.ImagePrecedence = new List<ProductionDTO>();
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
@@ -257,14 +257,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldSetSelectedProductionPrecedence()
 		{
-			var productionPrecedenceList = new List<ProductionPrecedenceDTO>()
+			var productionPrecedenceList = new List<ProductionDTO>()
 			{
-				new ProductionPrecedenceDTO
+				new ProductionDTO
 				{
 					ArtifactID = "19",
 					DisplayName = "Prod1"
 				},
-				new ProductionPrecedenceDTO
+				new ProductionDTO
 				{
 					ArtifactID = "153",
 					DisplayName = "Prod2"
@@ -321,6 +321,63 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.That(exportFile.ArtifactID, Is.EqualTo(_exportSettings.FolderArtifactId));
 			Assert.That(exportFile.ViewID, Is.EqualTo(_exportSettings.ViewId));
 			Assert.That(exportFile.LoadFilesPrefix, Is.EqualTo(_exportSettings.ViewName));
+		}
+
+		[Test]
+		public void ItShouldSetProductionSettings()
+		{
+			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
+			_exportSettings.ProductionId = 763;
+			_exportSettings.ProductionName = "production_name_965";
+			_exportSettings.ExportNativesToFileNamedFrom = ExportSettings.NativeFilenameFromType.Identifier;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(exportFile.ArtifactID, Is.EqualTo(_exportSettings.ProductionId));
+			Assert.That(exportFile.LoadFilesPrefix, Is.EqualTo(_exportSettings.ProductionName));
+		}
+
+		[Test]
+		[TestCase(ExportSettings.NativeFilenameFromType.Identifier, ExportNativeWithFilenameFrom.Identifier)]
+		[TestCase(ExportSettings.NativeFilenameFromType.Production, ExportNativeWithFilenameFrom.Production)]
+		public void ItShouldSetNativeFilenameFromAccordingly(ExportSettings.NativeFilenameFromType givenSetting, ExportNativeWithFilenameFrom expectedSetting)
+		{
+			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
+			_exportSettings.ExportNativesToFileNamedFrom = givenSetting;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(expectedSetting));
+		}
+
+		[Test]
+		public void ItShouldSetUndefinedExportNativeWithFilenameFrom()
+		{
+			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
+			_exportSettings.ExportNativesToFileNamedFrom = null;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(ExportNativeWithFilenameFrom.Select));
+		}
+
+		[Test]
+		public void ItShouldThrowExpectionForUnknownExportNativeWithFilenameFrom()
+		{
+			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
+			_exportSettings.ExportNativesToFileNamedFrom = Enum.GetValues(typeof(ExportSettings.NativeFilenameFromType)).Cast<ExportSettings.NativeFilenameFromType>().Max() + 1;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
+				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ExportSettings.NativeFilenameFromType ({_exportSettings.ExportNativesToFileNamedFrom})"));
+		}
+
+		[Test]
+		public void ItShouldThrowExpectionForUnknownExportType()
+		{
+			_exportSettings.TypeOfExport = Enum.GetValues(typeof(ExportSettings.ExportType)).Cast<ExportSettings.ExportType>().Max() + 1;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
+				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ExportSettings.ExportType ({_exportSettings.TypeOfExport})"));
 		}
 	}
 }

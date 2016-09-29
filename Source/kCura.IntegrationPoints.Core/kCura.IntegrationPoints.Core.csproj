@@ -209,11 +209,14 @@
     <Compile Include="Factories\IManagerFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
+    <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
-    <Compile Include="Helpers\Implementations\TreeByParentIdCreator.cs" />
+    <Compile Include="Helpers\Implementations\ArtifactTreeCreator.cs" />
+    <Compile Include="Helpers\Implementations\SavedSearchesTreeCreator.cs" />
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
+    <Compile Include="Helpers\ISavedSearchesTreeCreator.cs" />
     <Compile Include="Helpers\ITreeByParentIdCreator.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
@@ -293,8 +296,10 @@
     <Compile Include="Services\IExportSettingsValidationService.cs" />
     <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
-    <Compile Include="Services\IProductionPrecedenceService.cs" />
+    <Compile Include="Services\IProductionService.cs" />
     <Compile Include="Services\IArtifactTreeService.cs" />
+    <Compile Include="Services\ISavedSearchesTreeService.cs" />
+    <Compile Include="Services\IViewService.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
@@ -315,6 +320,7 @@
     <Compile Include="Services\Marshaller\SerializationHelper.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
+    <Compile Include="Services\SavedSearchesTreeService.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
     <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />

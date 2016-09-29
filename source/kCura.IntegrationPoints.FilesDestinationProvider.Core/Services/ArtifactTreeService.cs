@@ -10,15 +10,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 	public class ArtifactTreeService : IArtifactTreeService
 	{
 		private readonly IRSAPIClient _client;
-		private readonly ITreeByParentIdCreator _treeCreator;
+		private readonly IArtifactTreeCreator _treeCreator;
 
-		public ArtifactTreeService(IRSAPIClient client, ITreeByParentIdCreator treeCreator)
+		public ArtifactTreeService(IRSAPIClient client, IArtifactTreeCreator treeCreator)
 		{
 			_client = client;
 			_treeCreator = treeCreator;
 		}
 
-		public TreeItemDTO GetArtifactTree(string artifactTypeName)
+		public JsTreeItemDTO GetArtifactTree(string artifactTypeName)
 		{
 			var artifacts = QueryArtifacts(artifactTypeName);
 			return _treeCreator.Create(artifacts);

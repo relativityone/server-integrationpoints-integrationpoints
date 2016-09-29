@@ -126,6 +126,18 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "ResourcePool", action = "GetProcessingSourceLocationStructure" }
 			);
 
+            config.Routes.MapHttpRoute(
+                name: "SavedSearchesTree",
+                routeTemplate: "{workspaceID}/api/SavedSearchesTree/{workspaceArtifactId}",
+                defaults: new { controller = "SavedSearchesTree", action = "Get" }
+            );
+
+			config.Routes.MapHttpRoute(
+				name: "GetViewsByWorkspaceAndArtifactType",
+				routeTemplate: "{workspaceID}/api/WorkspaceView/GetViews/{artifactTypeId}",
+				defaults: new { controller = "WorkspaceView", action = "GetViewsByWorkspaceAndArtifactType" }
+			);
+
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",

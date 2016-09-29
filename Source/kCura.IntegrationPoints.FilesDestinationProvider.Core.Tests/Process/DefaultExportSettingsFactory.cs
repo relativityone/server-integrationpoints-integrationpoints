@@ -7,7 +7,8 @@
 			return new ExportSettings
 			{
 				SavedSearchName = string.Empty,
-				ViewName = string.Empty
+				ViewName = string.Empty,
+				ProductionName = string.Empty
 			};
 		}
 	}

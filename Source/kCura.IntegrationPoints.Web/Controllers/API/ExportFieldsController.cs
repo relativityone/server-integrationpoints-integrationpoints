@@ -70,8 +70,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			int artifactId;
 			if (exportType == ExportSettings.ExportType.ProductionSet)
 			{
-				//TODO exporting production set - set artifact id
-				artifactId = -1;
+				artifactId = settings.ProductionId;
 			}
 			else if ((exportType == ExportSettings.ExportType.Folder) || (exportType == ExportSettings.ExportType.FolderAndSubfolders))
 			{

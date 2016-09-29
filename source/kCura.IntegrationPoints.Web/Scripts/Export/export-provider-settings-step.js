@@ -18,14 +18,15 @@
 		this.ProcessingSourceLocation.isModified(false);
 
 		this.updateProcessingSourceLocation = function (value) {
+			self.Fileshare(undefined);
+			self.Fileshare.isModified(false);
+
+			if (self.locationSelector) {
+				self.locationSelector.clear();
+			}
+
 			if (!!value) {
 				self.getDirectories(value);
-			} else {
-				self.Fileshare(undefined);
-
-				if (self.locationSelector) {
-					self.locationSelector.clear();
-				}
 			}
 
 			self.toggleLocation(!!value);
@@ -64,7 +65,8 @@
 			}).then(function (result) {
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
-				root.message.error.raise("No attributes were returned from the source provider.");
+				root.message.error.raise(error);
+				self.toggleLocation(false);
 			});
 		};
 
@@ -197,7 +199,7 @@
 				function Option(displayName, name) {
 					this.displayName = ko.observable(displayName);
 					this.name = ko.observable(name);
-				};				
+				};
 
 				var favorite = [];
 				var others = [];
@@ -265,6 +267,18 @@
 				setSelectedImageDataFileFormat();
 			}
 		}
+
+		this.IsProductionExport = ko.observable(state.ExportType === ExportEnums.SourceOptionsEnum.Production);
+
+		this.AppendOriginalFileName = ko.observable(state.AppendOriginalFileName || false);
+
+		this.SelectedExportNativesWithFileNameFrom = ko.observable(state.ExportNativesToFileNamedFrom || false).extend({
+			required: {
+				onlyIf: function () {
+					return self.AppendOriginalFileName();
+				}
+			}
+		});
 
 		this.ExportImages.subscribe(self._updateImageFileFormat);
 
@@ -605,8 +619,10 @@
 
 		this.getSelectedOption = function () {
 			return {
+				"AppendOriginalFileName" : self.AppendOriginalFileName(),
 				"ColumnSeparator": self.ColumnSeparator(),
 				"ExportNatives": self.ExportNatives(),
+				"ExportNativesToFileNamedFrom": self.SelectedExportNativesWithFileNameFrom(),
 				"DataFileEncodingType": self.DataFileEncodingType(),
 				"ExportFullTextAsFile": self.ExportTextFieldsAsFiles(),
 				"ExportImages": self.ExportImages(),
@@ -676,7 +692,7 @@
 
 			var processingSourceLocationListPromise = root.data.ajax({
 				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"),
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
 				data: {
 					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
 				}
@@ -769,13 +785,13 @@
 			IP.data.ajax({
 				type: 'POST',
 				url: IP.utils.generateWebAPIURL('ExportSettingsValidation/ValidateSettings'),
-				async: false,
 				data: JSON.stringify(model)
 			}).then(function (result) {
 
 				if (!result.isValid) {
+					var formattedMessage = result.message.replace(new RegExp('\r?\n', 'g'), '.<br />');
 					window.Dragon.dialogs.showConfirmWithCancelHandler({
-						message: result.message,
+						message: formattedMessage,
 						title: 'Integration Point Validation',
 						showCancel: true,
 						width: 450,

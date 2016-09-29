@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly JobStatisticsService _jobStatisticsService;
 		private readonly ICompositeLoggingMediator _loggingMediator;
-		private readonly ISearchManagerFactory _searchManagerFactory;
+		private readonly IManagerFactory<ISearchManager> _searchManagerFactory;
 		private readonly IUserMessageNotification _userMessageNotification;
 		private readonly IUserNotification _userNotification;
 
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IUserNotification userNotification,
 			ICredentialProvider credentialProvider,
 			ICaseManagerFactory caseManagerFactory,
-			ISearchManagerFactory searchManagerFactory,
+			IManagerFactory<ISearchManager> searchManagerFactory,
 			IExporterFactory exporterFactory,
 			IExportFileBuilder exportFileBuilder,
 			JobStatisticsService jobStatisticsService

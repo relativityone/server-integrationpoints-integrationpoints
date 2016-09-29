@@ -1,8 +1,8 @@
-﻿using System.Data;
-using System.IO;
+﻿using System.IO;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NSubstitute;
 using Directory = kCura.Utility.Directory;
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return settings;
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			const string expectedMessageBeginning = "Overwrite not selected";
 			_jobHistoryErrorService.Received()

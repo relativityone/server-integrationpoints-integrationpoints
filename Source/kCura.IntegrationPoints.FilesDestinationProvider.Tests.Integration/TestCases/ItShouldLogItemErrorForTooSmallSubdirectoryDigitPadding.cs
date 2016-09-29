@@ -1,6 +1,6 @@
-﻿using System.Data;
-using System.IO;
+﻿using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			const string expectedMessageBeggining = "The selected subdirectory padding of 0 is less than the recommended subdirectory padding 1 for this export";
 			const string expectedMessageEnd = "Continue with this selection?";

@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public interface IArtifactTreeService
 	{
-		TreeItemDTO GetArtifactTree(string artifactTypeName);
+		JsTreeItemDTO GetArtifactTree(string artifactTypeName);
 	}
 }

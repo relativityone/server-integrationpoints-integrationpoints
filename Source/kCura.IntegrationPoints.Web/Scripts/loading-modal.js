@@ -12,18 +12,18 @@
 			shouldRun = true;
 			setTimeout(function () {
 				if (typeof $dialog === 'undefined') {
-					$dialog = $('<div class="loading-dialog" id="' + settings.MODAL_ID + '"></div>').appendTo('body');
-					$dialog.append('<div class="loading"></div>');
-					$dialog.append('<p>Loading...</p>');
+					$dialog = $('<div id="' + settings.MODAL_ID + '"></div>').appendTo('body');
+					$dialog.append('<div class="loading"></div>');					
 					$dialog.css({ 'overflow': 'hidden' });
 					$dialog.dialog({
 						modal: true,
 						autoOpen: false,
-						height: 125,
+						height: 'auto',
 						width: 'auto',
 						position: 'center',
 						resizable: false,
-						draggable: false
+						draggable: false,
+						dialogClass: 'transparent'
 					});
 				}
 
@@ -46,7 +46,5 @@
 			open: openModal,
 			close: closeModal
 		};
-
 	})();
 })(IP || (IP = {}), jQuery);
-

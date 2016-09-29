@@ -167,11 +167,11 @@
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
-	  <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
-	</Reference>
-	<Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+    </Reference>
+    <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -179,7 +179,7 @@
       <HintPath>..\packages\$(SystemWrapper_Wrappers)\lib\net45\SystemWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="System" />
+    <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -216,7 +216,8 @@
     <Compile Include="Integration\Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\CastleWindsorValidationTests.cs" />
     <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
-    <Compile Include="Unit\Controllers\API\ProductionPrecedenceControllerTests.cs" />
+    <Compile Include="Unit\Controllers\API\ProductionControllerTests.cs" />
+    <Compile Include="Unit\Controllers\API\WorkspaceViewControllerTests.cs" />
     <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Unit\Controllers\BaseControllerTests.cs" />

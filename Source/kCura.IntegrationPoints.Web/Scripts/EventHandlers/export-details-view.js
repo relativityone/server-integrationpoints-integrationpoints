@@ -41,6 +41,35 @@ var Model = function (dataContainer) {
 	this.name = dataContainer.name;
 	this.settings = dataContainer.settings;
 
+	this.sourceDetails = function() {
+		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.SavedSearch){
+			return "Saved search: " + self.settings.SavedSearch;
+		}
+		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.Folder){
+			return "Folder: " + self.settings.FolderFullName;
+		}
+		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.FolderSubfolder){
+			return "Folder + Subfolders: " + self.settings.FolderArtifactName;
+		}
+		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production){
+			return "Production: " + self.settings.ProductionName;
+		}
+	};
+
+	this.isProductionSet = function() {
+		return self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production;
+	};
+
+	this.textAndNativeFileNames = function() {
+		var namedAfter = "";
+		for (var i = 0; i < ExportEnums.ExportNativeWithFilenameFromTypes.length; i++) {
+			if (ExportEnums.ExportNativeWithFilenameFromTypes[i].value == self.settings.ExportNativesToFileNamedFrom) {
+				namedAfter = ExportEnums.ExportNativeWithFilenameFromTypes[i].key;
+			}
+		}
+		return "Named after: " + namedAfter + (self.settings.AppendOriginalFileName ? "; Append Original File Names" : "");
+	};
+
 	this.volumeInfo = function () {
 		return self.settings.VolumePrefix + "; " + self.settings.VolumeStartNumber + "; " + self.settings.VolumeDigitPadding + "; " + self.settings.VolumeMaxSize;
 	};

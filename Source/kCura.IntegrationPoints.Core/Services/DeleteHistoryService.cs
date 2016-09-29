@@ -39,7 +39,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				integrationPoint.JobHistory = null;
 			}
-			_deleteError.DeleteErrorAssociatedWithHistories(allJobHistory);
+
+			if (allJobHistory.Any())
+			{
+				_deleteError.DeleteErrorAssociatedWithHistories(allJobHistory);
+			}
 
 			_context.IntegrationPointLibrary.Update(result);
 

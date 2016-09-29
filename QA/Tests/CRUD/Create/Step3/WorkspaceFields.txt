@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Map Fields step of Integration Points allows RDO fields to be selected.
 | Metadata			| Authors	| Daniel Oliver
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Legal Hold
+| Suite Setup		| Open and Log in to Workspace
 | Test Setup		| Go to Step 3 of the Create Integration Point Process
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers

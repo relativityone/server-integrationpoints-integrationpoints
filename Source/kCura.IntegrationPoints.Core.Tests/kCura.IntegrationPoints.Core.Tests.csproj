@@ -230,6 +230,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
     <Compile Include="ImportTest.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
@@ -254,7 +255,8 @@
     <Compile Include="Unit\BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\Helpers\DirectoryTreeCreatorTest.cs" />
     <Compile Include="Unit\Helpers\OnClickEventConstructorTests.cs" />
-    <Compile Include="Unit\Helpers\TreeByParentIdCreatorTests.cs" />
+    <Compile Include="Unit\Helpers\ArtifactTreeCreatorTests.cs" />
+    <Compile Include="Unit\Helpers\SavedSearchesTreeCreatorTests.cs" />
     <Compile Include="Unit\JobHistoryBatchUpdateStatusTests.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />
@@ -285,6 +287,7 @@
     <Compile Include="Unit\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Unit\Services\JobHistory\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Unit\Services\JobHistory\JobHistoryServiceTest.cs" />
+    <Compile Include="Unit\Services\SavedSearchesTreeServiceTests.cs" />
     <Compile Include="Unit\Telemetry\ExportTelemetryMetricProviderTest.cs" />
     <Compile Include="Unit\Telemetry\TelemetryMangerTest.cs" />
   </ItemGroup>

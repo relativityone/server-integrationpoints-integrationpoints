@@ -1,8 +1,8 @@
-﻿using System.Data;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
@@ -28,9 +28,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			return base.Prepare(settings);
 		}
 
-		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
-			var fileCount = documents.Rows.Count;
+			var fileCount = documentsTestData.AllDocumentsDataTable.Rows.Count;
 			ValidateDirectoriesExistence("NATIVES", directory, fileCount);
 			ValidateDirectoriesExistence("IMAGES", directory, fileCount);
 			ValidateDirectoriesExistence("TEXT", directory, fileCount);

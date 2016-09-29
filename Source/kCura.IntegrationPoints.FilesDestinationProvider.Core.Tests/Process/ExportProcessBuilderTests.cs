@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 		private ExportProcessBuilder _exportProcessBuilder;
 		private ICompositeLoggingMediator _loggingMediator;
-		private ISearchManagerFactory _searchManagerFactory;
+		private IManagerFactory<ISearchManager> _searchManagerFactory;
 		private IUserMessageNotification _userMessageNotification;
 		private IUserNotification _userNotification;
 		private IConfigFactory _configFactory;
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exporterFactory = Substitute.For<IExporterFactory>();
 			_exportFileBuilder = Substitute.For<IExportFileBuilder>();
 			_loggingMediator = Substitute.For<ICompositeLoggingMediator>();
-			_searchManagerFactory = Substitute.For<ISearchManagerFactory>();
+			_searchManagerFactory = Substitute.For<IManagerFactory<ISearchManager>>();
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_userNotification = Substitute.For<IUserNotification>();
 			_configFactory = Substitute.For<IConfigFactory>();
