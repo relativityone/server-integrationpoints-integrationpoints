@@ -207,6 +207,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj">
           <Platforms>
             <Platform>x64</Platform>

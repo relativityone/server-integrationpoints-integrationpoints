@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
+namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
 	public class RelativityReaderDecoratorTests

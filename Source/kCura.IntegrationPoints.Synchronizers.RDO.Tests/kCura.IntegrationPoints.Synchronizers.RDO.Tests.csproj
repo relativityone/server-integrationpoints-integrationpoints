@@ -249,14 +249,13 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Functional\ComplexFieldsTests.cs" />
-    <Compile Include="Unit\BatchManagerTests.cs" />
-    <Compile Include="Unit\RdoSynchronizerPushTests.cs" />
-    <Compile Include="Unit\ImportServiceTests.cs" />
-    <Compile Include="Unit\ImportSettingsTests.cs" />
-    <Compile Include="Unit\RdoCustodianSynchronizerTests.cs" />
-    <Compile Include="Unit\RdoSynchronizerTests.cs" />
-    <Compile Include="Unit\RelativityReaderDecoratorTests.cs" />
+    <Compile Include="BatchManagerTests.cs" />
+    <Compile Include="RdoSynchronizerPushTests.cs" />
+    <Compile Include="ImportServiceTests.cs" />
+    <Compile Include="ImportSettingsTests.cs" />
+    <Compile Include="RdoCustodianSynchronizerTests.cs" />
+    <Compile Include="RdoSynchronizerTests.cs" />
+    <Compile Include="RelativityReaderDecoratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -290,7 +289,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
-    <None Include="Integration\RdoSynchronizerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

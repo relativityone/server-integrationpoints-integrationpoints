@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -13,7 +12,7 @@ using NUnit.Framework;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
+namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
 	public class RdoSynchronizerTests
