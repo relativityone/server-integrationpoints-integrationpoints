@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public ISearchManager CreateSearchManager()
 		{
-			return _serviceFactory.CreateSearchManager();
+			return new CoreSearchManager(GetBaseServiceContext());
 		}
 
 		private BaseServiceContext GetBaseServiceContext()
