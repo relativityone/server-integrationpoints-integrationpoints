@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Hosting;
@@ -13,7 +10,6 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Toggles;
@@ -21,7 +17,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.Toggles;
 
-namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
+namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
 	class DestinationTypeControllerTests

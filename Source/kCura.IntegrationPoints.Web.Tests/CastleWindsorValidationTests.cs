@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Web.Installers;
 using NUnit.Framework;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Tests.Unit
+namespace kCura.IntegrationPoints.Web.Tests
 {
 	[TestFixture]
 	public class CastleWindsorValidationTests : CastleWindsorValidatorBase

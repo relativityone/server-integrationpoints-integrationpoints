@@ -18,7 +18,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.Toggles;
 
-namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
+namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
 	public class SourceTypeControllerTests

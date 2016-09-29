@@ -166,6 +166,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Eve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration", "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj", "{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web.Tests.Integration", "kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj", "{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -456,6 +458,12 @@ Global
 		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Release|Any CPU.ActiveCfg = Release|x64
 		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Release|x64.ActiveCfg = Release|x64
 		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Release|x64.Build.0 = Release|x64
+		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|x64.ActiveCfg = Debug|x64
+		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|x64.Build.0 = Debug|x64
+		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Release|Any CPU.ActiveCfg = Release|x64
+		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Release|x64.ActiveCfg = Release|x64
+		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -489,5 +497,6 @@ Global
 		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{F983176A-DE11-4328-AEDA-81630DD0D587} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
+		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 	EndGlobalSection
 EndGlobal
