@@ -17,6 +17,7 @@ using OpenQA.Selenium.Chrome;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
+	[Explicit]
 	public class ViewErrors : RelativityProviderTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
