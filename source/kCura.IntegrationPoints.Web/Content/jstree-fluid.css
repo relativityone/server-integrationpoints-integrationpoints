@@ -11,30 +11,13 @@
 	overflow: auto;
 }
 
+.jstree:focus {
+	outline-style: none;
+}
+
 .jstree-children, .jstree-container-ul {
 	margin: 2px !important;
 }
-
-.jstree-default .jstree-icon:empty {
-	width: 24px;
-	height: 22px;
-	line-height: 24px;
-}
-
-.jstree-default .jstree-clicked .jstree-themeicon {
-	background-position: -129px -70px;
-}
-
-.jstree-default .jstree-themeicon-custom {
-	background-image: url('themes/default/32px.png');
-	background-position: -166px -70px;
-}
-
-.jstree-default .jstree-clicked .jstree-themeicon-custom {
-	background-image: url('themes/default/32px.png');
-	background-position: -200px -70px;
-}
-
 
 .jstree-default .jstree-clicked {
 	background: #dfebf8 !important;
@@ -98,4 +81,41 @@
 	background-color: #e8e8e8!important;
 	cursor: default!important;
 	pointer-events: none!important;
+}
+
+@font-face {
+    font-family: fluid-ui;
+    src: url(fonts/fluid-ui.eot);
+    src: url(fonts/fluid-ui.eot?#iefix) format('embedded-opentype'),
+		 url(fonts/fluid-ui.woff) format('woff'),
+		 url(fonts/fluid-ui.ttf) format('truetype'),
+		 url(fonts/fluid-ui.svg#fluid-ui) format('svg');
+}
+
+i.jstree-icon.jstree-themeicon.jstree-themeicon-custom {	
+	background-image: none;
+	color: #1e5495;
+	display: inline-block;
+	font-family: 'fluid-ui';
+	font-size: 16px!important;
+	font-style: normal!important;
+	line-height: normal;
+	vertical-align: middle;
+}
+
+.jstree-folder:before {
+    content: 'S';
+    color: #f59c1f;
+}
+
+.jstree-search:before {
+	content: 'C';
+}
+
+.jstree-folder-search:before {
+	content: 'B';
+}
+
+.jstree-search-personal:before {
+	content: 'R';
 }
