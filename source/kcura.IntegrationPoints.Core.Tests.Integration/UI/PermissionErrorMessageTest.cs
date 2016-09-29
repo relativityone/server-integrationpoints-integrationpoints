@@ -1,4 +1,7 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
@@ -8,11 +11,9 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration
+namespace kcura.IntegrationPoints.Core.Tests.Integration.UI
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
@@ -44,8 +45,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			string groupName = "Permission Group" + DateTime.Now;
 			Regex regex = new Regex("[^a-zA-Z0-9]");
 			_email = regex.Replace(DateTime.Now.ToString(), "") + "test@kcura.com";
-			_groupId = IntegrationPoint.Tests.Core.Group.CreateGroup(groupName);
-			IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
+			_groupId = kCura.IntegrationPoint.Tests.Core.Group.CreateGroup(groupName);
+			kCura.IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
 
 			UserModel user = User.CreateUser("tester", "tester", _email, new[] { _groupId });
 			_userCreated = user.ArtifactId;
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 			_webDriver.CloseSeleniumBrowser();
 			User.DeleteUser(_userCreated);
-			IntegrationPoint.Tests.Core.Group.DeleteGroup(_groupId);
+			kCura.IntegrationPoint.Tests.Core.Group.DeleteGroup(_groupId);
 		}
 
 		private static IEnumerable<object[]> PermissionCase
@@ -75,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		public void VerifyPermissionErrorMessage(bool useRelativityProvider, List<string> obj, List<string> admin, List<string> browser, List<string> tab)
 		{
 			_webDriver.SetFluidStatus(_userCreated);
-			string errorMessage = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS;
+			string errorMessage = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS;
 			string jobError = "//div[contains(.,'Failed to submit integration job. You do not have sufficient permissions. Please contact your system administrator.')]";
 			string runNowId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
 			string okPath = "//button[contains(.,'OK')]";
@@ -184,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				Obj = obj
 			};
 
-			IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, _groupId);
+			kCura.IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, _groupId);
 			Permission.SetPermissions(SourceWorkspaceArtifactId, _groupId, tempP);
 			_webDriver.SetFluidStatus(_userCreated);
 

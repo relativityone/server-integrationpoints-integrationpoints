@@ -8,8 +8,9 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
+namespace kcura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]

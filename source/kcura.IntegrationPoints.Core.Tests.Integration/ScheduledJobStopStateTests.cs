@@ -1,4 +1,6 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.Injection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -12,10 +14,8 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using NUnit.Framework;
 using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
 
-namespace kCura.IntegrationPoints.Core.Tests.Integration
+namespace kcura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
@@ -61,18 +61,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			try
 			{
 				//Arrange
-				Injection.InjectionHelper.InitializeAndEnableInjectionPoints(new List<kCura.Injection.Injection>() { cansu });
+				kCura.IntegrationPoints.Injection.InjectionHelper.InitializeAndEnableInjectionPoints(new List<kCura.Injection.Injection>() { cansu });
 
 				//IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
-				IntegrationModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", "01/01/2016", "01/01/2017", ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
+				IntegrationModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", "01/01/2016", "01/01/2017", kCura.ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
 				IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
-				Injection.InjectionHelper.WaitUntilInjectionPointIsReached("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4", DateTime.Now);
+				kCura.IntegrationPoints.Injection.InjectionHelper.WaitUntilInjectionPointIsReached("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4", DateTime.Now);
 
 				Guid batchInstance = Guid.NewGuid();
 
 				//click stop
-				Injection.InjectionHelper.RemoveInjectionFromEnvironment("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4");
+				kCura.IntegrationPoints.Injection.InjectionHelper.RemoveInjectionFromEnvironment("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4");
 
 				//Assert
 				//Verify that after job is stopped, Job exists in the queuetable (based on end date), Job.StopState is set to 0
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			}
 			finally
 			{
-				Injection.InjectionHelper.CleanupInjectionPoints(new List<kCura.Injection.InjectionPoint>() { cansu1 });
+				kCura.IntegrationPoints.Injection.InjectionHelper.CleanupInjectionPoints(new List<kCura.Injection.InjectionPoint>() { cansu1 });
 			}
 		}
 	}

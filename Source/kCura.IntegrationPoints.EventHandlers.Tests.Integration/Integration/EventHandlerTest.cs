@@ -16,7 +16,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
+namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]

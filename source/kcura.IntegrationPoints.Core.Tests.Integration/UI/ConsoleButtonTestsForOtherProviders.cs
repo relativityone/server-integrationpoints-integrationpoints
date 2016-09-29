@@ -13,10 +13,10 @@ using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using OpenQA.Selenium;
 
-namespace kCura.IntegrationPoints.Core.Tests.UI
+namespace kcura.IntegrationPoints.Core.Tests.Integration.UI
 {
 	[TestFixture]
-	[Category(IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
+	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class OtherProvidersConsoleButtonTests : OtherProvidersTemplate
 	{
 		private const int _ADMIN_USER_ID = 9;

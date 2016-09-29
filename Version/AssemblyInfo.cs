@@ -32,6 +32,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Tests")]

@@ -112,6 +112,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
           <Platforms>
             <Platform>x64</Platform>

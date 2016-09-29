@@ -1,4 +1,5 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -9,9 +10,8 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using NUnit.Framework;
 using OpenQA.Selenium;
-using System;
 
-namespace kCura.IntegrationPoints.Core.Tests.UI
+namespace kcura.IntegrationPoints.Core.Tests.Integration.UI
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
