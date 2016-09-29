@@ -360,6 +360,12 @@
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.svg">
+      <Link>Content\fonts\fluid-ui.svg</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\images\64x64.gif">
+      <Link>Content\Images\64x64.gif</Link>
+    </Content>
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.svg">
       <Link>Content\fonts\legal-hold-icons.svg</Link>
     </Content>
@@ -381,7 +387,6 @@
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
-    <Content Include="Content\Images\64x64.gif" />
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\select2-spinner.gif" />
@@ -463,6 +468,15 @@
     </Content>
     <Content Include="..\Dependencies\kCura.LegalHold.Fonts\Content\fonts\legal-hold-icons.woff">
       <Link>Content\fonts\legal-hold-icons.woff</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.eot">
+      <Link>Content\fonts\fluid-ui.eot</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.ttf">
+      <Link>Content\fonts\fluid-ui.ttf</Link>
+    </Content>
+    <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.woff">
+      <Link>Content\fonts\fluid-ui.woff</Link>
     </Content>
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />

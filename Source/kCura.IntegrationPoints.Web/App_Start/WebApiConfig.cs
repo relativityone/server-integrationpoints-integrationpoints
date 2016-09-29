@@ -84,13 +84,13 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "Job", action = "Retry" }
 			);
 
-            config.Routes.MapHttpRoute(
-                name: "Production",
-                routeTemplate: "{workspaceID}/api/Production/Productions",
-                defaults: new { controller = "Production", action = "GetProductions" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "ProductionPrecedence",
+				routeTemplate: "{workspaceID}/api/ProductionPrecedence/ProductionPrecedence",
+				defaults: new { controller = "ProductionPrecedence", action = "GetProductionPrecedence" }
+			);
 
-            config.Routes.MapHttpRoute(
+			config.Routes.MapHttpRoute(
 				name: "LongTextFields",
 				routeTemplate: "{workspaceID}/api/ExportFields/LongTextFields",
 				defaults: new { controller = "ExportFields", action = "GetExportableLongTextFields" }

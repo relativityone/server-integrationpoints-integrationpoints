@@ -57,8 +57,12 @@
 
 		self.savedSearchesTree = ko.observable();
 
+		self.isSavedSearchTreeNode = function (node) {
+			return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
+		}
+
 		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
-			if (!!value && value.icon === "jstree-search") {
+			if (self.isSavedSearchTreeNode(value)) {
 				self.savedSearch(value.id);
 			} else {
 				throw "error"; // throwing here prevents dialog from closing
@@ -346,14 +350,13 @@
 			var getSavedSearches = function (tree) {
 				var _searches = [];
 				var _iterate = function (node, depth) {
-					if (node.icon === "jstree-search") {
+					if (self.model.isSavedSearchTreeNode(node)) {
 						_searches.push({
 							value: node.id,
 							displayName: node.text
 						});
 					}
 
-					// var children = node.children;
 					for (var i = 0, len = node.children.length; i < len; i++) {
 						_iterate(node.children[i], depth + 1);
 					}
