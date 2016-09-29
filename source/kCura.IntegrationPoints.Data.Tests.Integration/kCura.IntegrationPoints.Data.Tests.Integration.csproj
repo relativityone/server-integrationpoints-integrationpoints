@@ -49,6 +49,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
