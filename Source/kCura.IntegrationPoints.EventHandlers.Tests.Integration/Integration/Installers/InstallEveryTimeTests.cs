@@ -47,7 +47,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration.In
 		}
 
 		[Test]
-		[Explicit]
 		public void Test()
 		{
 			var service = new RSAPIClient(new Uri("http://localhost/Relativity.Services"), new IntegratedAuthCredentials());

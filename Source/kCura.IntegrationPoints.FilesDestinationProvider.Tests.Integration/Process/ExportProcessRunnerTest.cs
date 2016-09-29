@@ -115,7 +115,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			}
 		}
 
-		[Explicit("Integration Test")]
 		[TestCaseSource(nameof(ExportTestCaseSource))]
 		public void RunTestCase(IExportTestCase testCase)
 		{
@@ -132,7 +131,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			testCase.Verify(directory, _configSettings.DocumentsTestData);
 		}
 
-		[Explicit("Integration Test")]
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{

@@ -33,7 +33,6 @@ namespace kcura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[Test]
-		[Explicit]
 		public void IntegrationCreateAndSavePermissions()
 		{
 			//Arrange

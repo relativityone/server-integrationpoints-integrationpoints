@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration
 	public class InstallDllTests
 	{
 		[Test]
-		[Explicit]
 		public void Test()
 		{
 			Debug.WriteLine("");
@@ -17,7 +16,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration
 		}
 
 		[Test]
-		[Explicit]
 		public void Test2()
 		{
 			Debug.WriteLine("");

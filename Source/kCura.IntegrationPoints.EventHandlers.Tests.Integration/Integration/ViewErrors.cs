@@ -16,7 +16,6 @@ using OpenQA.Selenium.Chrome;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration
 {
-	[Explicit]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ViewErrors : RelativityProviderTemplate
 	{
@@ -35,7 +34,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectDisabledViewErrorsLinkOnIntegrationPointCreation()
 		{
 			//Arrange

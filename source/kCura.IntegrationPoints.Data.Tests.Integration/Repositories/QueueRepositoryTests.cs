@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Explicit]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class QueueRepositoryTests : RelativityProviderTemplate
 	{
@@ -196,7 +195,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		[Explicit]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
