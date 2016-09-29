@@ -3,7 +3,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
 using Relativity.Core.Service;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreFieldManager : IFieldManager
 	{

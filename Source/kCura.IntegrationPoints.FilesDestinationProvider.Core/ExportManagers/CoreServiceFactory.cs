@@ -4,7 +4,7 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreServiceFactory : IServiceFactory
 	{
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public IProductionManager CreateProductionManager()
 		{
-			return _serviceFactory.CreateProductionManager();
+			return new CoreProductionManager(GetBaseServiceContext());
 		}
 
 		public ISearchManager CreateSearchManager()
