@@ -7,8 +7,8 @@
     <ProjectGuid>{8DB72A8A-8638-469E-A2AA-992A728637F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kcura.IntegrationPoints.Core.Tests.Integration</RootNamespace>
-    <AssemblyName>kcura.IntegrationPoints.Core.Tests.Integration</AssemblyName>
+    <RootNamespace>kCura.IntegrationPoints.Core.Tests.Integration</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.Core.Tests.Integration</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>

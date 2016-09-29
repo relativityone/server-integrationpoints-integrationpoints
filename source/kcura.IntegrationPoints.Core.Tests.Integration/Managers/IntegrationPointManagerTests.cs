@@ -10,7 +10,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.API;
 
-namespace kcura.IntegrationPoints.Core.Tests.Integration.Managers
+namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]

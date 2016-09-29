@@ -13,7 +13,7 @@ using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using OpenQA.Selenium;
 
-namespace kcura.IntegrationPoints.Core.Tests.Integration.UI
+namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]

@@ -11,9 +11,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
-namespace kcura.IntegrationPoints.Core.Tests.Integration.UI
+namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
