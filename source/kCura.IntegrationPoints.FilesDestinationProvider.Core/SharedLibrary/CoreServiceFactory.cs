@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public IFieldManager CreateFieldManager()
 		{
-			return _serviceFactory.CreateFieldManager();
+			return new CoreFieldManager(GetBaseServiceContext());
 		}
 
 		public IProductionManager CreateProductionManager()
