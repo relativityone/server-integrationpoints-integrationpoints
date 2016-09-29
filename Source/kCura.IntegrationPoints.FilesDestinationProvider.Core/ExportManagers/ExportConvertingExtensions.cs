@@ -1,10 +1,11 @@
 ﻿using System;
 using kCura.EDDS.WebAPI.ExportManagerBase;
 using kCura.EDDS.WebAPI.FieldManagerBase;
+using kCura.EDDS.WebAPI.ProductionManagerBase;
 using Relativity.Core;
 using Relativity.MassImport;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public static class ExportConvertingExtensions
 	{
@@ -15,6 +16,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 				ColumnNames = result.ColumnNames,
 				RowCount = result.RowCount,
 				RunId = result.RunId
+			};
+		}
+
+		public static ProductionInfo ToProductionInfo(this global::Relativity.Production.ProductionInfo info)
+		{
+			return new ProductionInfo
+			{
+				Name = info.Name,
+				BatesNumbering = info.BatesNumbering,
+				BeginBatesReflectedFieldId = info.BeginBatesReflectedFieldId,
+				DocumentsHaveRedactions = info.DocumentsHaveRedactions,
+				IncludeImageLevelNumberingForDocumentLevelNumbering = info.IncludeImageLevelNumberingForDocumentLevelNumbering,
+				UseDocumentLevelNumbering = info.UseDocumentLevelNumbering
 			};
 		}
 
