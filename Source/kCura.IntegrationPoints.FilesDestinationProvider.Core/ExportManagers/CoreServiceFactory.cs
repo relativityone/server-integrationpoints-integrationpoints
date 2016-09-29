@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
 
@@ -9,12 +10,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 	public class CoreServiceFactory : IServiceFactory
 	{
 		private readonly ExportFile _exportFile;
-		private readonly IServiceFactory _serviceFactory;
 
 		public CoreServiceFactory(ExportFile exportFile)
 		{
 			_exportFile = exportFile;
-			_serviceFactory = new WebApiServiceFactory(exportFile);
 		}
 
 		public IAuditManager CreateAuditManager()
@@ -24,7 +23,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IExportFileDownloader CreateExportFileDownloader()
 		{
-			return _serviceFactory.CreateExportFileDownloader();
+			var destinationFolderPath = $"{_exportFile.CaseInfo.DocumentPath}\\EDDS{_exportFile.CaseInfo.ArtifactID}";
+			return new FileDownloader(_exportFile.Credential, destinationFolderPath, _exportFile.CaseInfo.DownloadHandlerURL, _exportFile.CookieContainer,
+				Settings.AuthenticationToken);
 		}
 
 		public IExportManager CreateExportManager()
