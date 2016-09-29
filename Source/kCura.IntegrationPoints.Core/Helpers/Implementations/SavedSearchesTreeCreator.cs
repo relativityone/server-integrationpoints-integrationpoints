@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             }).ToDictionary(x => x.Id);
 
             // map searches to dictonary
-            Dictionary<string, JsTreeItemWithParentIdDTO> childrenLookup = children.Select(x =>
+            var childrenLookup = children.Select(x =>
             {
                 return new JsTreeItemWithParentIdDTO
                 {
@@ -42,16 +42,16 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                     Text = x.SavedSearch.Name,
                     Icon = x.Personal ? JsTreeItemIconType.SavedSearchPersonal : JsTreeItemIconType.SavedSearch
                 };
-            }).ToDictionary(x => x.ParentId);
+            }).GroupBy(x => x.ParentId).ToDictionary(x => x.Key, x => x.ToArray());
 
             // hook up children with parents
-            JsTreeItemWithParentIdDTO child;
+            JsTreeItemWithParentIdDTO[] child;
             JsTreeItemWithParentIdDTO parent;
             foreach (JsTreeItemWithParentIdDTO item in folderLookup.Values)
             {
                 if (childrenLookup.TryGetValue(item.Id, out child))
                 {
-                    item.Children.Add(child);
+                    item.Children.AddRange(child);
                 }
 
                 if (folderLookup.TryGetValue(item.ParentId, out parent))
