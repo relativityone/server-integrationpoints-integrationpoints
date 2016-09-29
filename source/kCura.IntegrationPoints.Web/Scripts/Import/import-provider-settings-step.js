@@ -61,12 +61,12 @@
         self.ImportTypeChoiceValue("document");
 
         this.ProcessingSourceLocationList = ko.observableArray([]);
-        this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
+        this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;    
         this.HasBeenRun = ko.observable(self.hasBeenRun || false);
         this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId)
             .extend({
                 required: true
-            });
+            });       
 
         this.Fileshare = ko.observable(self.Fileshare).extend({
             required: {
@@ -75,6 +75,16 @@
                 }
             }
         });
+
+        this.toggleLocation = function (enabled) {
+            var $el = $("#location-select");
+            $el.toggleClass('location-disabled', !enabled);
+            $el.children().each(function (i, e) {
+                $(e).toggleClass('location-disabled', !enabled);
+            });
+        };
+
+        self.toggleLocation(false);
 
         self.locationSelector = new LocationJSTreeSelector();
         //pass in the selectFilesOnly optional parameter so that location-jstree-selector will only allow us to select files
@@ -95,7 +105,7 @@
                 this.getDirectories = $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId) + '?includeFiles=1')
                     .then(function (result) {
                         self.locationSelector.reload(result);
-                        //TODO: unhide dropdown here
+                        self.toggleLocation(true);
                     })
                     .fail(function (error) {
                         root.message.error.raise("No attributes were returned from the source provider.");
