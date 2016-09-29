@@ -39,6 +39,7 @@
 				type: "get",
 				url: root.utils.generateWebAPIURL("SearchFolder")
 			}).then(function (result) {
+				self.foldersStructure = result;
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
 				root.message.error.raise("No folders were returned from the source provider.");
@@ -118,6 +119,20 @@
 				}
 			}
 		});
+
+		self.getFolderFullName = function(currentFolder, folderId){
+			if(currentFolder.id == folderId) {
+				return currentFolder.text;
+			} else {
+				for(var i = 0; i < currentFolder.children.length; i++){
+					var childFolderPath = self.getFolderFullName(currentFolder.children[i], folderId);
+					if(childFolderPath != ""){
+						return currentFolder.text + "/" + childFolderPath;
+					}
+				}
+			}
+			return "";
+		};
 
 		self.availableViews = ko.observableArray(['Test']);
 		self.ViewName = ko.observable(sourceState.ViewName);
@@ -436,16 +451,18 @@
 				// update integration point's model
 				var exportType = self.model.TypeOfExport();
 				self.ipModel.sourceConfiguration.ExportType = exportType;
+				self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
+
 				if (exportType === ExportEnums.SourceOptionsEnum.SavedSearch) {
 					var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
 					self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
 					self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
-					self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
 				} else if (exportType === ExportEnums.SourceOptionsEnum.Folder ||
                     exportType === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
 
 					self.ipModel.sourceConfiguration.FolderArtifactId = self.model.FolderArtifactId();
 					self.ipModel.sourceConfiguration.FolderArtifactName = self.model.FolderArtifactName();
+					self.ipModel.sourceConfiguration.FolderFullName = self.model.getFolderFullName(self.model.foldersStructure, self.model.FolderArtifactId());
 					self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
 					var selectedView = self.model.getSelectedView(self.model.ViewId());
 					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
