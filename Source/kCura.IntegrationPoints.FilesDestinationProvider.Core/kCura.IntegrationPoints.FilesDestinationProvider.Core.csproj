@@ -76,6 +76,10 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -177,6 +181,7 @@
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
     <Compile Include="SharedLibrary\CoreAuditManager.cs" />
     <Compile Include="SharedLibrary\CoreExportManager.cs" />
+    <Compile Include="SharedLibrary\CoreFieldManager.cs" />
     <Compile Include="SharedLibrary\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="SharedLibrary\ExportConvertingExtensions.cs" />
