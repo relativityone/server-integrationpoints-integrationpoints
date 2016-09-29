@@ -114,12 +114,11 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Unit\Installers\SetHasErrorsFieldTests.cs" />
-    <Compile Include="Unit\IntegrationPoints\ConsoleEventHandlerTests.cs" />
-    <Compile Include="Unit\IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
-    <Compile Include="Unit\MassOperations\MassCopyIntegrationPointHelper.cs" />
-    <Compile Include="Unit\MassOperations\IntegrationPointMassCopyTests.cs" />
-    <Compile Include="Unit\PageInteractionHelperTests.cs" />
+    <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
+    <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
+    <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
+    <Compile Include="MassOperations\MassCopyIntegrationPointHelper.cs" />
+    <Compile Include="MassOperations\IntegrationPointMassCopyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
