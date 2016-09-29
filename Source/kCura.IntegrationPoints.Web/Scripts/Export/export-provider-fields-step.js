@@ -62,13 +62,8 @@
 		}
 
 		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
-			if (self.isSavedSearchTreeNode(value)) {
-				self.savedSearch(value.id);
-			} else {
-				throw "error"; // throwing here prevents dialog from closing
-				// TODO: refactor above 'logic' 
-			}
-		});
+			self.savedSearch(value.id);
+		}, self.isSavedSearchTreeNode);
 
 		Picker.create("savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 

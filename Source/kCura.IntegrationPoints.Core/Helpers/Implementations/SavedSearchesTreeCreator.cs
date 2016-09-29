@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             }).ToDictionary(x => x.Id);
 
             // map searches to dictonary
-            var childrenLookup = children.Select(x =>
+            Dictionary<string, JsTreeItemWithParentIdDTO[]> childrenLookup = children.Select(x =>
             {
                 return new JsTreeItemWithParentIdDTO
                 {
