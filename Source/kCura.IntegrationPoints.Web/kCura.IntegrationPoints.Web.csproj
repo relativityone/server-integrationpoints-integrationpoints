@@ -300,6 +300,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
+    <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Controllers\API\WorkspaceViewController.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />

@@ -30,8 +30,7 @@
 			<div class="field-label required">Saved Search:</div>
 			<div class="field-value">
 				<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: savedSearch, disable: HasBeenRun(), select2searchable: {}"></select>
-				@*<button data-bind="click: openSavedSearchPicker, disable: HasBeenRun(), visible: false" class="actionButtonSmall">...</button>*@
-				@*TODO: review and fix picker's implementation*@
+                <button id="saved-search-selection-button" data-bind="click: openSavedSearchPicker, visible: !HasBeenRun()" class="actionButtonSmall">...</button>
 			</div>
 		</div>
 		<div class="field-row" data-bind="visible: IsProductionSelected()">

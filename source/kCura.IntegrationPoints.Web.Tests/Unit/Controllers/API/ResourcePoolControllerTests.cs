@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		public void ItShouldGetProcessingSourceLocationStructure()
 		{
 			// Arrange
-			TreeItemDTO directoryTreeItem = new TreeItemDTO()
+			JsTreeItemDTO directoryJsTreeItem = new JsTreeItemDTO()
 			{
 				Id = "A",
 				Text = "B"
@@ -100,17 +100,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			var procSourceLocations = new List<ProcessingSourceLocationDTO> { _processingSourceLocation };
 
 			_resourcePoolManagerMock.GetProcessingSourceLocation(_WORKSPACE_ID).Returns(procSourceLocations);
-			_directoryTreeCreatorMock.TraverseTree(_processingSourceLocation.Location).Returns(directoryTreeItem);
+			_directoryTreeCreatorMock.TraverseTree(_processingSourceLocation.Location).Returns(directoryJsTreeItem);
 
 			// Act
 			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetProcessingSourceLocationStructure(_WORKSPACE_ID, _PROC_SOURCE_LOC_ID);
 
 			// Assert
-			TreeItemDTO retValue;
+			JsTreeItemDTO retValue;
 			httpResponseMessage.TryGetContentValue(out retValue);
 
 			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-			Assert.That(retValue, Is.EqualTo(directoryTreeItem));
+			Assert.That(retValue, Is.EqualTo(directoryJsTreeItem));
 		}
 
 		[Test]

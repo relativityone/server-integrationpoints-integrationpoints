@@ -1,7 +1,11 @@
-﻿
-<iframe id="searchContaineriFrame" blanksrc="/Relativity/Empty.html" width="100%" height="100%" style="display:block;" scrolling="yes"
-        name="SearchFolderTreeiFrame" allowtransparency="true" valid="true"
-        data-bind="attr: {src: src}"></iframe>
-
-<button data-bind="click: ok">OK</button>
-<button data-bind="click: cancel">Cancel</button>
+﻿<div class="popupTitle" data-bind="text: PopupTitle"></div>
+<div class="card">
+	<div class="jstree-container">
+		<div id="saved-search-picker-browser-tree" tabindex="0" />
+	</div>
+</div>
+<div class="popupArtifactActionBar">
+	<button id="saved-search-picker-ok-button" class="ActionButton" data-bind="click: ok">OK</button>
+	<button id="saved-search-picker-cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
+</div>
+<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">

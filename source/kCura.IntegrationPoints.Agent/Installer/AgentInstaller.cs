@@ -255,9 +255,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				typeof (StoppableExporterFactory).Name,
 				typeof (CoreExportManager).Name,
 				typeof (CoreServiceFactory).Name,
-				typeof(CompositeLoggingMediator).Name,
-				typeof(SearchManagerFactory).Name,
+				typeof (CompositeLoggingMediator).Name,
+				typeof (SearchManagerFactory).Name,
 				typeof (ViewService).Name,
+                typeof (SavedSearchesTreeService).Name
 			});
 
 			var excludedFdpInterfaceNames = new HashSet<string>(new []

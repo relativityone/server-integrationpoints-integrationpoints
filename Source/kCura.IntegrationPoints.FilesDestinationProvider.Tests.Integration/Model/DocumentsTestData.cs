@@ -8,13 +8,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Mod
 	{
 		private DataTable _allDocumentsDataTable;
 
-		public DocumentsTestData(IEnumerable<FolderWithDocuments> documents, DataTable images)
+		public DocumentsTestData(IList<FolderWithDocuments> documents, DataTable images)
 		{
 			Documents = documents;
 			Images = images;
 		}
 
-		public IEnumerable<FolderWithDocuments> Documents { get; }
+		public IList<FolderWithDocuments> Documents { get; }
 
 		public DataTable AllDocumentsDataTable
 		{

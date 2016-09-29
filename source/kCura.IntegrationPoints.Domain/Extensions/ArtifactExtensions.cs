@@ -5,9 +5,9 @@ namespace kCura.IntegrationPoints.Domain.Extensions
 {
 	public static class ArtifactExtensions
 	{
-		public static TreeItemWithParentIdDTO ToTreeItemWithParentIdDTO(this Artifact artifact)
+		public static JsTreeItemWithParentIdDTO ToTreeItemWithParentIdDTO(this Artifact artifact)
 		{
-			return new TreeItemWithParentIdDTO
+			return new JsTreeItemWithParentIdDTO
 			{
 				Id = artifact.ArtifactID.ToString(),
 				ParentId = artifact.ParentArtifactID.ToString(),

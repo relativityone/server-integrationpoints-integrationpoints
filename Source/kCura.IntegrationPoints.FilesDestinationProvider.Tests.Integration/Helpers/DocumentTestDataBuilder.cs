@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			return new DocumentsTestData(foldersWithDocuments, images);
 		}
 
-		private static IEnumerable<FolderWithDocuments> GetFoldersWithDocuments()
+		private static IList<FolderWithDocuments> GetFoldersWithDocuments()
 		{
 			var firstFolder = new FolderWithDocuments("first", CreateDataTableForDocuments());
 			firstFolder.Documents.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm",
@@ -26,6 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf"), "Level1\\Level2", true);
 
 			firstFolderChild.ParentFolderWithDocuments = firstFolder;
+			firstFolder.ChildrenFoldersWithDocument.Add(firstFolderChild);
 
 			var secondFolder = new FolderWithDocuments("second", CreateDataTableForDocuments());
 			secondFolder.Documents.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls",

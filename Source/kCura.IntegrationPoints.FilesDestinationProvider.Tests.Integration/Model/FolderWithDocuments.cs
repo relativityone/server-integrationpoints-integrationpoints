@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model
 {
@@ -8,6 +9,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Mod
 		{
 			FolderName = folderName;
 			Documents = documents;
+			ChildrenFoldersWithDocument = new List<FolderWithDocuments>();
 		}
 
 		public string FolderName { get; }
@@ -17,5 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Mod
 		public DataTable Documents { get; }
 
 		public FolderWithDocuments ParentFolderWithDocuments { get; set; }
+
+		public IList<FolderWithDocuments> ChildrenFoldersWithDocument { get; }
 	}
 }

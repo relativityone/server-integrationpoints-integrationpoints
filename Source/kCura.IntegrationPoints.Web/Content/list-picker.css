@@ -1,16 +1,25 @@
 ﻿.ui-dialog {
-  padding: 0;
+	padding: 0;
 }
 
 .list-box option {
-  font-size: 13px;
+	font-size: 13px;
 }
 
 .popupArtifactActionBar {
-  margin: 5px 12px;
-  text-align: right;
+	margin: 5px 12px;
+	text-align: right;
 }
 
 .popupTitle {
-    border-radius: 3px 3px 0 0;
+	border-radius: 3px 3px 0 0;
+}
+
+.jstree-container {
+	background-color: #fff;
+	min-height: 350px;
+	min-width: 500px;
+	max-height: 350px;
+	max-width: 500px;
+	overflow: auto;
 }

@@ -1,33 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
-using kCura.Vendor.Castle.MicroKernel.Registration;
-using kCura.Vendor.Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using kCura.Vendor.Castle.Windsor;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
-using Relativity.API;
+using DateTime = System.DateTime;
+using Directory = kCura.Utility.Directory;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
@@ -36,12 +28,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 	{
 		#region Fields
 
-		private readonly string[] _defaultFields = new[] { "Control Number", "File Name", "Issue Designation" };
+		private readonly string[] _defaultFields = { "Control Number", "File Name", "Issue Designation" };
 		private static readonly ConfigSettings _configSettings = new ConfigSettings { WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss") };
 
 		private ExportProcessRunner _instanceUnderTest;
 		private WorkspaceService _workspaceService;
-		private DocumentsTestData _documentsTestData;
 
 		private static WindsorContainer _windsorContainer;
 
@@ -51,30 +42,33 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		public void Init()
 		{
 			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
-			
+
 			_workspaceService = new WorkspaceService(new ImportHelper(_configSettings));
 
 			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
-			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int)ArtifactType.Document);
+			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
 
 			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
 
 			_configSettings.LongTextField = fields.FirstOrDefault(x => x.DisplayName == _configSettings.LongTextFieldName);
 
-			_configSettings.AdditionalFields = (_configSettings.AdditionalFieldNames.Length > 0) ?
-				fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray() :
-				fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
+			_configSettings.AdditionalFields = _configSettings.AdditionalFieldNames.Length > 0
+				? fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray()
+				: fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
-			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields, _configSettings.WorkspaceId);
+			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields,
+				_configSettings.WorkspaceId);
 
-			_documentsTestData = DocumentTestDataBuilder.BuildTestData();
+			_configSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
-			_workspaceService.ImportData(_configSettings.WorkspaceId, _documentsTestData);
+			_workspaceService.ImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
 
-			_configSettings.ProductionArtifactId = CreateProduction();
-			
+			_configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
+
+			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId);
+
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
@@ -113,7 +107,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		[OneTimeTearDown]
 		public void CleanUp()
 		{
-			Utility.Directory.Instance.DeleteDirectoryIfExists(_configSettings.DestinationPath, true, false);
+			Directory.Instance.DeleteDirectoryIfExists(_configSettings.DestinationPath, true, false);
 
 			if (_configSettings.WorkspaceId > 0)
 			{
@@ -135,7 +129,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_instanceUnderTest.StartWith(settings, JobExtensions.CreateJob());
 
 			// Assert
-			testCase.Verify(directory, _documentsTestData);
+			testCase.Verify(directory, _configSettings.DocumentsTestData);
 		}
 
 		[Explicit("Integration Test")]
@@ -167,20 +161,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			var settings = new ExportSettings
 			{
-				ArtifactTypeId = (int)ArtifactType.Document,
+				ArtifactTypeId = (int) ArtifactType.Document,
 				TypeOfExport = ExportSettings.ExportType.SavedSearch,
 				ExportFilesLocation = Path.Combine(_configSettings.DestinationPath, DateTime.UtcNow.ToString("HHmmss_fff")),
 				WorkspaceId = _configSettings.WorkspaceId,
 				SavedSearchArtifactId = _configSettings.ExportedObjArtifactId,
 				SavedSearchName = _configSettings.SavedSearchArtifactName,
 				SelViewFieldIds = fieldIds,
-				TextPrecedenceFieldsIds = new List<int> { int.Parse(_configSettings.LongTextField.FieldIdentifier) },
+				TextPrecedenceFieldsIds = new List<int> {int.Parse(_configSettings.LongTextField.FieldIdentifier)},
 				DataFileEncoding = Encoding.Unicode,
 				VolumeMaxSize = 650,
 				ImagePrecedence =
 					new[]
 					{
-						new ProductionDTO()
+						new ProductionDTO
 						{
 							ArtifactID = _configSettings.ProductionArtifactId.ToString(),
 							DisplayName = "Production"
@@ -193,9 +187,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private static void CreateOutputFolder(string path)
 		{
-			if (!Utility.Directory.Instance.Exists(path, false))
+			if (!Directory.Instance.Exists(path, false))
 			{
-				Utility.Directory.Instance.CreateDirectory(path);
+				Directory.Instance.CreateDirectory(path);
 			}
 		}
 
@@ -213,55 +207,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private static void InitContainer()
 		{
-			if (_windsorContainer != null)
+			if (_windsorContainer == null)
 			{
-				return;
+				_windsorContainer = ContainerInstaller.CreateContainer(_configSettings);
 			}
-			_windsorContainer = new WindsorContainer();
-			_windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(_windsorContainer.Kernel));
-			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IExportTestCase>().Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute))).WithServiceAllInterfaces().AllowMultipleMatches());
-			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IInvalidFileshareExportTestCase>().Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute))).WithServiceAllInterfaces().AllowMultipleMatches());
-			
-			var exportUserNotification = Substitute.ForPartsOf<ExportUserNotification>();
-			_windsorContainer.Register(Component.For<IUserNotification, IUserMessageNotification>().Instance(exportUserNotification).LifestyleSingleton());
-
-			var apiLog = Substitute.For<IAPILog>();
-			_windsorContainer.Register(Component.For<IAPILog>().Instance(apiLog).LifestyleSingleton());
-
-			var jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
-			_windsorContainer.Register(Component.For<IJobHistoryErrorService>().Instance(jobHistoryErrorService).LifestyleSingleton());
-
-			_windsorContainer.Register(Component.For<LoggingMediatorForTestsFactory>().ImplementedBy<LoggingMediatorForTestsFactory>().LifestyleSingleton());
-			_windsorContainer.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorForTestsFactory f) => f.Create()).LifestyleSingleton());
-
-			_windsorContainer.Register(Component.For<ConfigSettings>().Instance(_configSettings).LifestyleTransient());
-			_windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
-			_windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
-			_windsorContainer.Register(Component.For<JobHistoryErrorServiceProvider>().ImplementedBy<JobHistoryErrorServiceProvider>().LifestyleTransient());
-
-			var configMock = Substitute.For<IConfig>();
-			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
-
-			_windsorContainer.Register(Component.For<IConfig>().Instance(configMock).LifestyleSingleton());
-
-			var configFactoryMock = Substitute.For<IConfigFactory>();
-
-			configFactoryMock.Create().Returns(configMock);
-			_windsorContainer.Register(Component.For<IConfigFactory>().Instance(configFactoryMock).LifestyleTransient());
-			_windsorContainer.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
-		}
-
-		private int CreateProduction()
-		{
-			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-				@"TestData\DefaultPlaceholder.tif");
-
-			var placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
-
-			var productionId =  _workspaceService.CreateProduction(_configSettings.WorkspaceId,
-				_configSettings.ExportedObjArtifactId, placeHolderFileData);
-
-			return productionId;
 		}
 
 		#endregion Methods

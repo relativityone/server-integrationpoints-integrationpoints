@@ -175,10 +175,11 @@
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
+    <Compile Include="SharedLibrary\CoreAuditManager.cs" />
     <Compile Include="SharedLibrary\CoreExportManager.cs" />
     <Compile Include="SharedLibrary\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
-    <Compile Include="SharedLibrary\InitializationResultsExtensions.cs" />
+    <Compile Include="SharedLibrary\ExportConvertingExtensions.cs" />
     <Compile Include="SharedLibrary\IPaddingValidator.cs" />
     <Compile Include="SharedLibrary\PaddingValidator.cs" />
     <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />

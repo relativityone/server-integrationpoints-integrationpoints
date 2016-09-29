@@ -232,8 +232,12 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />
+    <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
+    <Compile Include="Helpers\ArtifactTreeCreatorTests.cs" />
+    <Compile Include="Helpers\SavedSearchesTreeCreatorTests.cs" />
     <Compile Include="AgentJobManagerTest.cs" />
     <Compile Include="Agent\IntegrationPointTaskBaseTests.cs" />
     <Compile Include="BatchEmailTests.cs" />
@@ -245,7 +249,6 @@
     <Compile Include="BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
     <Compile Include="Helpers\DirectoryTreeCreatorTest.cs" />
     <Compile Include="Helpers\OnClickEventConstructorTests.cs" />
-    <Compile Include="Helpers\TreeByParentIdCreatorTests.cs" />
     <Compile Include="JobHistoryBatchUpdateStatusTests.cs" />
     <Compile Include="JobStatusUpdaterTests.cs" />
     <Compile Include="Managers\ArtifactGuidManagerTests.cs" />
