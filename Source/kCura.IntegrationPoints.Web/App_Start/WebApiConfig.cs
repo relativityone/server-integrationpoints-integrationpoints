@@ -84,13 +84,13 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "Job", action = "Retry" }
 			);
 
-			config.Routes.MapHttpRoute(
-				name: "Production",
-				routeTemplate: "{workspaceID}/api/Production/Productions",
-				defaults: new { controller = "Production", action = "GetProductions" }
-			);
+            config.Routes.MapHttpRoute(
+                name: "Production",
+                routeTemplate: "{workspaceID}/api/Production/Productions",
+                defaults: new { controller = "Production", action = "GetProductions" }
+            );
 
-			config.Routes.MapHttpRoute(
+            config.Routes.MapHttpRoute(
 				name: "LongTextFields",
 				routeTemplate: "{workspaceID}/api/ExportFields/LongTextFields",
 				defaults: new { controller = "ExportFields", action = "GetExportableLongTextFields" }
@@ -125,6 +125,12 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocationStructure/{artifactId}",
 				defaults: new { controller = "ResourcePool", action = "GetProcessingSourceLocationStructure" }
 			);
+
+            config.Routes.MapHttpRoute(
+                name: "SavedSearchesTree",
+                routeTemplate: "{workspaceID}/api/SavedSearchesTree/{workspaceArtifactId}",
+                defaults: new { controller = "SavedSearchesTree", action = "Get" }
+            );
 
 			config.Routes.MapHttpRoute(
 				name: "GetViewsByWorkspaceAndArtifactType",

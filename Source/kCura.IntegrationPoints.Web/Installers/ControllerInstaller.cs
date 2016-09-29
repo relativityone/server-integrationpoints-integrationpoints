@@ -172,6 +172,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>().LifestyleTransient());
 			container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>().LifestyleTransient());
 			container.Register(Component.For<IVolumeInfoBuilder>().ImplementedBy<VolumeInfoBuilder>().LifestyleTransient());
+            container.Register(Component.For<ISavedSearchesTreeService>().ImplementedBy<SavedSearchesTreeService>().LifestyleTransient());
 
 			#region FTP Provider
 			container.Register(Component.For<IConnectorFactory>().ImplementedBy<ConnectorFactory>().LifestyleSingleton().OnlyNewServices());
@@ -254,7 +255,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.LifeStyle.Transient);
 
 			container.Register(Component.For<IDirectoryTreeCreator>().ImplementedBy<DirectoryTreeCreator>().LifestyleTransient());
-			container.Register(Component.For<ITreeByParentIdCreator>().ImplementedBy<TreeByParentIdCreator>().LifestyleTransient());
+			container.Register(Component.For<IArtifactTreeCreator>().ImplementedBy<ArtifactTreeCreator>().LifestyleTransient());
+            container.Register(Component.For<ISavedSearchesTreeCreator>().ImplementedBy<SavedSearchesTreeCreator>());
 			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
 			container.Register(Component.For<IDirectory>().ImplementedBy<DirectoryWrap>().LifestyleTransient());
 			#endregion
