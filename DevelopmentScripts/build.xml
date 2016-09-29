@@ -243,6 +243,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.ScheduleQueue.Core.Tests.Integration\kCura.ScheduleQueue.Core.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\JsonLoader\JsonLoader.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
