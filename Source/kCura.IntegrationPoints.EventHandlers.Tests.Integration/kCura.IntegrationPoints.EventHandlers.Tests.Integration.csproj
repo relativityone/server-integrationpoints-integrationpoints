@@ -64,12 +64,12 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Integration\EventHandlerTest.cs" />
-    <Compile Include="Integration\InstallDllTests.cs" />
-    <Compile Include="Integration\Installers\InstallEveryTimeTests.cs" />
-    <Compile Include="Integration\Installers\RegisterDocumentTransferProviderTests.cs" />
-    <Compile Include="Integration\Installers\SourceProvidersMigrationEventHandlerTests.cs" />
-    <Compile Include="Integration\ViewErrors.cs" />
+    <Compile Include="EventHandlerTest.cs" />
+    <Compile Include="InstallDllTests.cs" />
+    <Compile Include="Installers\InstallEveryTimeTests.cs" />
+    <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
+    <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
+    <Compile Include="ViewErrors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

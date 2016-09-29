@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration
+namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]

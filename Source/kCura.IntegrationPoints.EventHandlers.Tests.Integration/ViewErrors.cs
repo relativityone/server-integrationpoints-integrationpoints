@@ -14,7 +14,7 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Integration
+namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ViewErrors : RelativityProviderTemplate
