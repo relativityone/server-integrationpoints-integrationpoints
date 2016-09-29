@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return subDirs;
 		}
 
-        private string[] GetSubItemsFiles(TreeItemDTO dirItem)
+        private string[] GetSubItemsFiles(JsTreeItemDTO dirItem)
         {
             string[] subFiles = new string[0];
             try
