@@ -296,6 +296,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
+    <Compile Include="Controllers\API\ImportPreviewController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
@@ -386,6 +387,14 @@
     </Content>
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
+    <Content Include="Content\Images\ImportPreview\move_first.png" />
+    <Content Include="Content\Images\ImportPreview\move_first_dis.png" />
+    <Content Include="Content\Images\ImportPreview\move_last.png" />
+    <Content Include="Content\Images\ImportPreview\move_last_dis.png" />
+    <Content Include="Content\Images\ImportPreview\move_next.png" />
+    <Content Include="Content\Images\ImportPreview\move_next_dis.png" />
+    <Content Include="Content\Images\ImportPreview\move_previous.png" />
+    <Content Include="Content\Images\ImportPreview\move_previous_dis.png" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
@@ -447,6 +456,7 @@
     <Content Include="Content\themes\default\style.css" />
     <Content Include="Content\themes\default\style.min.css" />
     <Content Include="Content\themes\default\throbber.gif" />
+    <Content Include="Content\import-preview.css" />
     <Content Include="Content\ui-dialog.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
@@ -496,6 +506,7 @@
     <Content Include="Scripts\Export\text-precedence-picker.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
+    <Content Include="Scripts\Import\import-preview.js" />
     <Content Include="Scripts\Import\import-provider-settings-step.js" />
     <Content Include="Scripts\Import\import-setup.js" />
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
@@ -708,6 +719,7 @@
     <Content Include="Views\Fileshare\ListPicker.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderSettings.cshtml" />
     <Content Include="Views\ImportProvider\ImportSettings.cshtml" />
+    <Content Include="Views\ImportProvider\ImportPreview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

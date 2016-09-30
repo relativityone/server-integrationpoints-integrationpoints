@@ -149,6 +149,12 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
 				defaults: new { id = RouteParameter.Optional }
 			);
-		}
+/*Todo: Rename action to method name once created*/
+            config.Routes.MapHttpRoute(
+                name: "ImportPreview",
+                routeTemplate: "api/ImportPreview/DummbyData",
+                defaults: new { controller = "ImportPreview", action = "DummbyData" }
+            );
+        }
 	}
 }

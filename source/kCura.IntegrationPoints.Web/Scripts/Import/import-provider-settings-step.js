@@ -13,6 +13,7 @@
             content.toggle();
         });
     }
+
     //action to launch popul
     var onPreviewFileClick = function () {
         var preFile = windowObj.parent.$("#dd-preivewFile");
@@ -20,7 +21,8 @@
         var preChoice = windowObj.parent.$("#dd-previewChoiceFolder");
         preFile.on("click", function () {
             console.log("Preview File selected");
-            window.open("http://www.google.com", "_blank", "width=1370, height=795");;
+            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");;
+            $(this).close();
             return false;
         });
         preError.click(function () {
@@ -46,12 +48,11 @@
         var dropdown = windowObj.parent.$("#previewFile-content");
 
         $.each(options, function (val, text) {
-            dropdown.append($('<div' + ' ' + 'id=' + val + '></div>').html(text));
+            dropdown.append($('<div id=' + val + '></div>').html(text));
         });
         onClickPreviewFile();
         onPreviewFileClick();
     };
-
 
     var viewModel = function () {
 
@@ -61,12 +62,12 @@
         self.ImportTypeChoiceValue("document");
 
         this.ProcessingSourceLocationList = ko.observableArray([]);
-        this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;    
+        this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
         this.HasBeenRun = ko.observable(self.hasBeenRun || false);
         this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId)
             .extend({
                 required: true
-            });       
+            });
 
         this.Fileshare = ko.observable(self.Fileshare).extend({
             required: {

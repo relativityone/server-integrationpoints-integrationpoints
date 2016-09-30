@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "~/Views/Shared/_StepLayout.cshtml";
+}
+
+<link href="~/Content/import-preview.css" rel="stylesheet" />
+
+<div class="row" id="file-inventory-table-row">
+    <div class="card">
+        <div class="aspera-card-header">
+            <p class="card-header inventory-card-header">Preview File</p>
+            <span class="pagination-controls">
+                <span class="pag-text">Items</span>
+                <input id="pag-number" value="0" />
+                <span class="pag-text" data-bind="text: PagRange"></span>
+                <span class="pag-text">in sets of </span>
+                <span class="itemCountContainer">
+                    <select id="itemsPerPageSelect">
+                        <option value="1">1</option>
+                        <option value="10">10</option>
+                        <option selected value="15">15</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                    </select>
+                </span>
+                <span class="pag-text"> per page</span>
+                <span class="pag-nav-button-holder">
+                    <span class="pag-nav-button pag-nav-first-dis" id="pag-nav-move-first"></span>
+                    <span class="pag-nav-button pag-nav-previous-dis" id="pag-nav-move-previous"></span>
+                    <span class="pag-nav-button pag-nav-next-dis" id="pag-nav-move-next"></span>
+                    <span class="pag-nav-button pag-nav-last-dis" id="pag-nav-move-last"></span>
+                </span>
+            </span>
+        </div>
+        <div id="data-table-container">
+            <div class="transfers-table">
+                <table id="csvData-table" class="table compact"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
+    <script src="~/Scripts/Import/import-preview.js"></script>
+
+}
