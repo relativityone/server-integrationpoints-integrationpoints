@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		private ResourcePoolController _subjectUnderTest;
 
 		private IResourcePoolManager _resourcePoolManagerMock;
-		private IDirectoryTreeCreator _directoryTreeCreatorMock;
+		private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
 		private IRepositoryFactory _repositoryFactoryMock;
 		private IErrorRepository _errorRepositoryMock;
 
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		public void Init()
 		{
 			_resourcePoolManagerMock = Substitute.For<IResourcePoolManager>();
-			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator>();
+			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator<JsTreeItemDTO>>();
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_errorRepositoryMock = Substitute.For<IErrorRepository>();
 
@@ -114,6 +114,30 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		}
 
 		[Test]
+		public void ItShouldGetSubItems()
+		{
+			// Arrange
+			JsTreeItemDTO directoryJsTreeItem = new JsTreeItemDTO()
+			{
+				Id = _processingSourceLocation.Location,
+				Text = _processingSourceLocation.Location
+			};
+
+			_directoryTreeCreatorMock.GetChildren(_processingSourceLocation.Location, true).Returns(new List<JsTreeItemDTO> { directoryJsTreeItem});
+
+			// Act
+			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetSubItems(_WORKSPACE_ID, true, _processingSourceLocation.Location);
+
+			// Assert
+			List<JsTreeItemDTO> retValue;
+			httpResponseMessage.TryGetContentValue(out retValue);
+
+			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+			Assert.That(retValue.Count, Is.EqualTo(1));
+			Assert.That(retValue[0], Is.EqualTo(directoryJsTreeItem));
+		}
+
+		[Test]
 		public void ItShouldHandleExceptionOnGetFolderStructure()
 		{
 			// Arrange
@@ -121,6 +145,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 
 			// Act
 			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetProcessingSourceLocationStructure(_WORKSPACE_ID, _PROC_SOURCE_LOC_ID);
+
+			// Assert
+			AssertInternalErrorCode(httpResponseMessage);
+		}
+
+		[Test]
+		public void ItShouldHandleExceptionOnGetSubItems()
+		{
+			// Arrange
+			_directoryTreeCreatorMock.GetChildren(_processingSourceLocation.Location, true).Throws<Exception>();
+
+			// Act
+			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetSubItems(_WORKSPACE_ID, true, _processingSourceLocation.Location);
 
 			// Assert
 			AssertInternalErrorCode(httpResponseMessage);

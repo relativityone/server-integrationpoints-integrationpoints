@@ -18,14 +18,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		#region Fields
 
 		private readonly IResourcePoolManager _resourcePoolManager;
-		private readonly IDirectoryTreeCreator _directoryTreeCreator;
+		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
 		private readonly IErrorRepository _errorRepository;
 
 		#endregion //Fields
 
 		#region Constructors
 
-		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IDirectoryTreeCreator directoryTreeCreator,
+		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator,
 			IRepositoryFactory repositoryFactory)
 		{
 			_resourcePoolManager = resourcePoolManager;
@@ -77,6 +77,25 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				string errMsg =
 					$"Unable to retrieve processing source location folder structure {artifactId} (Folder is not accessible). Please contact system administrator.";
+				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
+			}
+		}
+
+		[HttpPost]
+		public HttpResponseMessage GetSubItems(int workspaceId, bool isRoot, [FromBody] string path)
+		{
+			try
+			{
+				List<JsTreeItemDTO> subItems = _directoryTreeCreator.GetChildren(path, isRoot);
+				return Request.CreateResponse(HttpStatusCode.OK, subItems);
+			}
+			catch (Exception ex)
+			{
+				string errMsg =
+					string.Format($"Unable to retrieve folder structure for {0} path {path} {1}. Please contact system administrator.",
+						isRoot ? "Processing Source Location" : "",
+						isRoot ? "(Folder is not accessible)" : "");
 				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
 			}

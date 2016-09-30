@@ -1,54 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
-	public class DirectoryTreeCreator : IDirectoryTreeCreator
+	public class DirectoryTreeCreator<TTreeItem> : IDirectoryTreeCreator<TTreeItem> where TTreeItem : JsTreeItemDTO, new()
 	{
+		#region Fields
+
 		private readonly IDirectory _directory;
+
+		#endregion //Fields
+
+		#region Constructors
 
 		public DirectoryTreeCreator(IDirectory directory)
 		{
 			_directory = directory;
 		}
 
-		public JsTreeItemDTO TraverseTree(string root, bool includeFiles = false)
+		#endregion Constructors
 
+		public List<TTreeItem> GetChildren(string path , bool isRoot)
 		{
-			ValidateFolder(root);
+			if (CanAccessFolder(path, isRoot))
+			{
+				return GetSubItems(path);
+			}
+			return new List<TTreeItem>();
+		}
 
-			Stack<JsTreeItemDTO> directoryItemsToProcessed = new Stack<JsTreeItemDTO>();
+		protected virtual bool CanAccessFolder(string path, bool isRoot)
+		{
+			ValidateFolder(path, isRoot);
+			return true;
+		}
 
-			JsTreeItemDTO rootDirectoryItem = new JsTreeItemDTO()
+		public TTreeItem TraverseTree(string root, bool includeFiles = false)
+		{
+			ValidateFolder(root, true);
+
+			Stack<TTreeItem> directoryItemsToProcessed = new Stack<TTreeItem>();
+
+			TTreeItem rootDirectoryItem = new TTreeItem()
 			{
 				Id = root,
 				Text = root,
                 isDirectory = true
 			};
 
-			JsTreeItemDTO currDirectoryItem = rootDirectoryItem;
+			TTreeItem currDirectoryItem = rootDirectoryItem;
 			directoryItemsToProcessed.Push(currDirectoryItem);
 
             while (directoryItemsToProcessed.Count > 0)
             {
                 currDirectoryItem = directoryItemsToProcessed.Pop();
 
-                string[] subDirs = GetSubItems(currDirectoryItem);
-                // Push the subdirectories onto the stack for traversal.
-                foreach (string fullPathDir in subDirs)
-                {
-                    var newDirectoryItem = new JsTreeItemDTO
-                    {
-                        Text = fullPathDir.Substring(fullPathDir.LastIndexOf('\\') + 1),
-                        Id = fullPathDir,
-                        isDirectory = true
-                    };
-                    directoryItemsToProcessed.Push(newDirectoryItem);
-                    currDirectoryItem.Children.Add(newDirectoryItem);
-                }
+				List<TTreeItem> subItems = GetSubItems(currDirectoryItem);
+
+				currDirectoryItem.Children.AddRange(subItems);
+
+				// Push the subdirectories onto the stack for traversal.
+				subItems.ForEach(item => directoryItemsToProcessed.Push(item));
                 //if the optional includeFiles parameter is passed in as true, retrieve files and add to tree structure
                 if (includeFiles)
                 {
@@ -66,38 +81,64 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                     }
                 }
             }
+/*
+<<<<<<< HEAD
+=======
+				List<TTreeItem> subItems = GetSubItems(currDirectoryItem);
 
+				currDirectoryItem.Children.AddRange(subItems);
+
+				// Push the subdirectories onto the stack for traversal.
+				subItems.ForEach(item => directoryItemsToProcessed.Push(item));
+			}
+>>>>>>> develop
+*/
 			return rootDirectoryItem;
 		}
 
-		private void ValidateFolder(string root)
+		protected virtual void ValidateFolder(string path, bool isRoot)
 		{
-			if (string.IsNullOrEmpty(root))
+			if (isRoot)
 			{
-				throw new ArgumentException($"Argumenent '{nameof(root)}' should not be empty!");
-			}
-			if (!_directory.Exists(root))
-			{
-				throw new ArgumentException($"{root} folder does not exist!");
+				if (string.IsNullOrEmpty(path))
+				{
+					throw new ArgumentException($"Argumenent '{nameof(path)}' should not be empty!");
+				}
+				if (!_directory.Exists(path))
+				{
+					throw new ArgumentException($"{path} folder does not exist!");
+				}
 			}
 		}
 
-		private string[] GetSubItems(JsTreeItemDTO dirItem)
+		private List<TTreeItem> GetSubItems(TTreeItem dirItem)
+		{
+			return GetSubItems(dirItem.Id);
+		}
+
+		protected virtual List<TTreeItem> GetSubItems(string path)
 		{
 			string[] subDirs = new string[0];
 			try
 			{
-				subDirs = _directory.GetDirectories(dirItem.Id);
+				subDirs = _directory.GetDirectories(path);
 			}
 			// An UnauthorizedAccessException exception will be thrown if we do not have
 			// discovery permission on a folder.
 			catch (UnauthorizedAccessException)
 			{
 			}
-			catch (DirectoryNotFoundException)
-			{
-			}
-			return subDirs;
+			return CreateSubItems(subDirs);
+		}
+
+		protected virtual List<TTreeItem> CreateSubItems(string[] subDirs)
+		{
+			return subDirs.Select(subDir =>
+				new TTreeItem
+				{
+					Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
+					Id = subDir
+				}).ToList();
 		}
 
         private string[] GetSubItemsFiles(JsTreeItemDTO dirItem)
@@ -110,9 +151,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             // An UnauthorizedAccessException exception will be thrown if we do not have
             // discovery permission on a folder.
             catch (UnauthorizedAccessException)
-            {
-            }
-            catch (DirectoryNotFoundException)
             {
             }
             return subFiles;

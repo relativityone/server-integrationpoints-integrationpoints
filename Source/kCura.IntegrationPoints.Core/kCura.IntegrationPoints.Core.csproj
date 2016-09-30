@@ -218,6 +218,7 @@
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
     <Compile Include="Helpers\ISavedSearchesTreeCreator.cs" />
     <Compile Include="Helpers\ITreeByParentIdCreator.cs" />
+    <Compile Include="Helpers\LongPathDirectory.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />

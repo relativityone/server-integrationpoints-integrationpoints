@@ -1,9 +1,11 @@
-﻿using kCura.IntegrationPoints.Domain.Models;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Helpers
 {
-	public interface IDirectoryTreeCreator
+	public interface IDirectoryTreeCreator<T> where T : JsTreeItemBaseDTO
 	{
-		JsTreeItemDTO TraverseTree(string root, bool includeFiles = false);
+		T TraverseTree(string root, bool includeFiles = false);
+		List<T> GetChildren(string path, bool isRoot);
 	}
 }
