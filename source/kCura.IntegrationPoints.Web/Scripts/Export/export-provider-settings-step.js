@@ -163,8 +163,10 @@
 		this.ExportNatives.subscribe(function (value) {
 			if (!value) {
 				self.SelectedImageFileType(0);
+				self.IncludeNativeFilesPath(self.IncludeNativeFilesPathLastValue);
 			}
 			if (value) {
+				self.IncludeNativeFilesPathLastValue = self.IncludeNativeFilesPath();
 				self.IncludeNativeFilesPath(true);
 			}
 		});
@@ -557,6 +559,7 @@
 		});
 
 		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
+		this.IncludeNativeFilesPathLastValue = this.IncludeNativeFilesPath();
 
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
