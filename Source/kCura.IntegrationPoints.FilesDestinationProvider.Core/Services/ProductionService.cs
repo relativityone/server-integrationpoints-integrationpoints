@@ -29,11 +29,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 			var result = new List<ProductionDTO>();
 			foreach (DataRow row in dt.Rows)
+			{
 				result.Add(new ProductionDTO
 				{
 					ArtifactID = row["ArtifactID"].ToString(),
 					DisplayName = row["Name"].ToString()
 				});
+			}
 
 			return result;
 		}

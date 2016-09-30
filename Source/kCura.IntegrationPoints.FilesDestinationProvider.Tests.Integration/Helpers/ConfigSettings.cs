@@ -1,14 +1,16 @@
 ﻿using System.Configuration;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
-	internal class ConfigSettings
+	public class ConfigSettings
 	{
 		#region Fields
 
 		private const string _SAVEDSEARCH_ARTIFACT_NAME_KEY = "SavedSearchArtifactName";
+		private const string _VIEW_ARTIFACT_NAME_KEY = "ViewArtifactName";
 		private const string _ADDITIONAL_FIELD_NAMES_KEY = "AdditionalFieldNames";
 		private const string _DESTINATION_PATH_KEY = "DestinationPath";
 		private const string _WEBAPI_URL_KEY = "WebApiUrl";
@@ -24,6 +26,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		public int WorkspaceId { get; set; }
 
+		public int ViewId { get; set; }
+
 		public int ExportedObjArtifactId { get; set; }
 
 		public int ProductionArtifactId { get; set; }
@@ -36,7 +40,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		public string WorkspaceName { get; set; }
 
+		public DocumentsTestData DocumentsTestData { get; set; }
+
 		public string SavedSearchArtifactName { get; } = ConfigurationManager.AppSettings[_SAVEDSEARCH_ARTIFACT_NAME_KEY];
+
+		public string ViewName { get; } = ConfigurationManager.AppSettings[_VIEW_ARTIFACT_NAME_KEY];
 
 		public string[] AdditionalFieldNames { get; } = ConfigurationManager.AppSettings[_ADDITIONAL_FIELD_NAMES_KEY]
 			.Split(',')

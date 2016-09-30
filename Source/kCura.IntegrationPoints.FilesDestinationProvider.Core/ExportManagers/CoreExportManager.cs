@@ -6,7 +6,7 @@ using Relativity.Core;
 using Relativity.Core.Exception;
 using Permission = Relativity.Core.Permission;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreExportManager : IExportManager
 	{

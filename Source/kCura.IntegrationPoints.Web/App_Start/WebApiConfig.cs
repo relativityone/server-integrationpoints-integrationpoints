@@ -85,9 +85,9 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "Production",
-				routeTemplate: "{workspaceID}/api/Production/Productions",
-				defaults: new { controller = "Production", action = "GetProductions" }
+				name: "ProductionPrecedence",
+				routeTemplate: "{workspaceID}/api/ProductionPrecedence/ProductionPrecedence",
+				defaults: new { controller = "ProductionPrecedence", action = "GetProductionPrecedence" }
 			);
 
 			config.Routes.MapHttpRoute(
@@ -125,6 +125,12 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocationStructure/{artifactId}",
 				defaults: new { controller = "ResourcePool", action = "GetProcessingSourceLocationStructure" }
 			);
+
+            config.Routes.MapHttpRoute(
+                name: "SavedSearchesTree",
+                routeTemplate: "{workspaceID}/api/SavedSearchesTree/{workspaceArtifactId}",
+                defaults: new { controller = "SavedSearchesTree", action = "Get" }
+            );
 
 			config.Routes.MapHttpRoute(
 				name: "GetProcessingSourceLocationSubItems",

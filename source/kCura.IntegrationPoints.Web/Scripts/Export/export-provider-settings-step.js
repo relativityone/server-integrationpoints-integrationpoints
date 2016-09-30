@@ -785,7 +785,6 @@
 			IP.data.ajax({
 				type: 'POST',
 				url: IP.utils.generateWebAPIURL('ExportSettingsValidation/ValidateSettings'),
-				async: false,
 				data: JSON.stringify(model)
 			}).then(function (result) {
 

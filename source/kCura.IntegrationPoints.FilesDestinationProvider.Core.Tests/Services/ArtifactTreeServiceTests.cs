@@ -14,13 +14,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private ArtifactTreeService _artifactTreeService;
 		private IRSAPIClient _client;
 		private QueryResult _queryResult;
-		private ITreeByParentIdCreator _treeCreator;
+		private IArtifactTreeCreator _treeCreator;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_client = Substitute.For<IRSAPIClient>();
-			_treeCreator = Substitute.For<ITreeByParentIdCreator>();
+			_treeCreator = Substitute.For<IArtifactTreeCreator>();
 
 			_queryResult = new QueryResult {Success = true};
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(_queryResult);

@@ -76,6 +76,14 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -142,6 +150,7 @@
     <Compile Include="Authentication\ICredentialProvider.cs" />
     <Compile Include="Authentication\TokenCredentialProvider.cs" />
     <Compile Include="EnumHelper.cs" />
+    <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />
@@ -175,10 +184,13 @@
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\ConfigFactory.cs" />
-    <Compile Include="SharedLibrary\CoreExportManager.cs" />
-    <Compile Include="SharedLibrary\CoreServiceFactory.cs" />
+    <Compile Include="ExportManagers\CoreAuditManager.cs" />
+    <Compile Include="ExportManagers\CoreExportManager.cs" />
+    <Compile Include="ExportManagers\CoreFieldManager.cs" />
+    <Compile Include="ExportManagers\CoreProductionManager.cs" />
+    <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
-    <Compile Include="SharedLibrary\InitializationResultsExtensions.cs" />
+    <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
     <Compile Include="SharedLibrary\IPaddingValidator.cs" />
     <Compile Include="SharedLibrary\PaddingValidator.cs" />
     <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />

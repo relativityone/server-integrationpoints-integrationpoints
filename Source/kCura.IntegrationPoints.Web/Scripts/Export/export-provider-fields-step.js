@@ -39,6 +39,7 @@
 				type: "get",
 				url: root.utils.generateWebAPIURL("SearchFolder")
 			}).then(function (result) {
+				self.foldersStructure = result;
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
 				root.message.error.raise("No folders were returned from the source provider.");
@@ -54,6 +55,24 @@
 				}
 			}
 		});
+
+		self.savedSearchesTree = ko.observable();
+
+		self.isSavedSearchTreeNode = function (node) {
+			return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
+		}
+
+		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
+			self.savedSearch(value.id);
+		}, self.isSavedSearchTreeNode);
+
+		Picker.create("savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
+
+		self.openSavedSearchPicker = function () {
+			savedSearchPickerViewModel.open(self.savedSearchesTree(), self.savedSearch());
+		};
+
+		self.SelectedSource = ko.observable();
 
 		self.productionSets = ko.observableArray(state.productionSets);
 
@@ -96,6 +115,19 @@
 			}
 		});
 
+		self.getFolderFullName = function(currentFolder, folderId){
+			if(currentFolder.id == folderId) {
+				return currentFolder.text;
+			} else {
+				for(var i = 0; i < currentFolder.children.length; i++){
+					var childFolderPath = self.getFolderFullName(currentFolder.children[i], folderId);
+					if(childFolderPath != ""){
+						return currentFolder.text + "/" + childFolderPath;
+					}
+				}
+			}
+			return "";
+		};
 
 		self.availableViews = ko.observableArray(['Test']);
 		self.ViewName = ko.observable(sourceState.ViewName);
@@ -143,10 +175,6 @@
 				self.locationSelector.toggle(true);
 			}
 		};
-
-
-
-
 	};
 
 	var stepModel = function (settings) {
@@ -195,8 +223,6 @@
 			self.model.errors = ko.validation.group(self.model);
 
 			self.getAvailableFields = function () {
-
-
 				root.data.ajax({
 					type: 'post',
 					url: root.utils.generateWebAPIURL('ExportFields/Available'),
@@ -247,6 +273,20 @@
 				url: root.utils.generateWebAPIURL('SavedSearchFinder')
 			}).fail(function (error) {
 				IP.message.error.raise("No saved searches were returned from the source provider.");
+			});
+
+			var savedSearchesTreePromise = root.data.ajax({
+				type: 'get',
+				url: root.utils.generateWebAPIURL('SavedSearchesTree', self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId)
+			}).fail(function (error) {
+				IP.message.error.raise(error);
+			});
+
+			var searchFoldersPromise = root.data.ajax({
+				type: 'get',
+				url: root.utils.generateWebAPIURL('SearchFolder')
+			}).fail(function (error) {
+				IP.message.error.raise("No search folders were returned from the source provider.");
 			});
 
 			var productionSetsPromise = root.data.ajax({
@@ -310,7 +350,6 @@
 				return _fields;
 			};
 
-
 			var getViewsPromise = root.data.ajax({
 				type: "get",
 				url: root.utils.generateWebAPIURL("WorkspaceView/GetViews", 10)
@@ -318,62 +357,86 @@
 				root.message.error.raise("No views were returned from the source provider.");
 			});
 
+			var getSavedSearches = function (tree) {
+				var _searches = [];
+				var _iterate = function (node, depth) {
+					if (self.model.isSavedSearchTreeNode(node)) {
+						_searches.push({
+							value: node.id,
+							displayName: node.text
+						});
+					}
 
-			root.data.deferred()
-                .all([savedSearchesPromise, exportableFieldsPromise, availableFieldsPromise, mappedFieldsPromise, getViewsPromise, productionSetsPromise])
-                .then(function (result) {
-                	self.model.savedSearches(result[0]);
-                	self.updateSelectedSavedSearch();
+					for (var i = 0, len = node.children.length; i < len; i++) {
+						_iterate(node.children[i], depth + 1);
+					}
+				};
 
-                	self.model.fields.availableFields(result[1]);
+				_iterate(tree, 0);
 
-                	var mappedFields = (result[3] && result[3].length) ?
-                        getMappedFields(result[3]) :
-                        getMappedFields(result[2]);
+				return _searches;
+			};
 
-                	self.model.fields.selectedAvailableFields(mappedFields);
-                	self.model.fields.addField();
+			root.data.deferred().all([
+				savedSearchesTreePromise,
+				exportableFieldsPromise,
+				availableFieldsPromise,
+				mappedFieldsPromise,
+				getViewsPromise,
+				productionSetsPromise
+			]).then(function (result) {
+				self.model.savedSearchesTree(result[0]);
+				self.model.savedSearches(getSavedSearches(result[0]));
+				self.updateSelectedSavedSearch();
 
-                	self.model.availableViews(result[4]);
-                	self.updateSelectedView();
+				self.model.fields.availableFields(result[1]);
 
-                	self.model.savedSearch.subscribe(function (selected) {
-                		if (!!selected) {
-                			self.ipModel.sourceConfiguration.SavedSearchArtifactId = selected;
-                			self.ipModel.sourceConfiguration.ExportType = ExportEnums.SourceOptionsEnum.SavedSearch;
-                			self.getAvailableFields();
-                		} else {
-                			self.model.fields.removeAllFields();
-                			self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
-                		}
-                	});
+				var mappedFields = (result[3] && result[3].length) ?
+					getMappedFields(result[3]) :
+					getMappedFields(result[2]);
 
-                	self.model.ViewId.subscribe(function (selected) {
-                		if (!!selected) {
-                			self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
-                			self.ipModel.sourceConfiguration.ExportType = self.model.TypeOfExport();
-                			self.getAvailableFields();
-                		} else {
-                			self.model.fields.removeAllFields();
-                			self.ipModel.sourceConfiguration.ViewId = 0;
-                		}
-                	});
+				self.model.fields.selectedAvailableFields(mappedFields);
+				self.model.fields.addField();
 
-                	self.model.productionSets(result[5]);
-                	self.updateSelectedProduction();
+				self.model.availableViews(result[4]);
+				self.updateSelectedView();
 
-                	self.model.ProductionId.subscribe(function (selected) {
-                		if (!!selected) {
-                			self.ipModel.sourceConfiguration.ProductionId = self.model.ProductionId();
-                			self.ipModel.sourceConfiguration.ExportType = self.model.TypeOfExport();
-                			self.getAvailableFields();
-                		} else {
-                			self.model.fields.removeAllFields();
-                			self.ipModel.sourceConfiguration.ProductionId = 0;
-                		}
-                	});
+				self.model.savedSearch.subscribe(function (selected) {
+					if (!!selected) {
+						self.ipModel.sourceConfiguration.SavedSearchArtifactId = selected;
+						self.ipModel.sourceConfiguration.ExportType = ExportEnums.SourceOptionsEnum.SavedSearch;
+						self.getAvailableFields();
+					} else {
+						self.model.fields.removeAllFields();
+						self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
+					}
+				});
 
-                });
+				self.model.ViewId.subscribe(function (selected) {
+					if (!!selected) {
+						self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
+						self.ipModel.sourceConfiguration.ExportType = self.model.TypeOfExport();
+						self.getAvailableFields();
+					} else {
+						self.model.fields.removeAllFields();
+						self.ipModel.sourceConfiguration.ViewId = 0;
+					}
+				});
+
+				self.model.productionSets(result[5]);
+				self.updateSelectedProduction();
+
+				self.model.ProductionId.subscribe(function (selected) {
+					if (!!selected) {
+						self.ipModel.sourceConfiguration.ProductionId = self.model.ProductionId();
+						self.ipModel.sourceConfiguration.ExportType = self.model.TypeOfExport();
+						self.getAvailableFields();
+					} else {
+						self.model.fields.removeAllFields();
+						self.ipModel.sourceConfiguration.ProductionId = 0;
+					}
+				});
+			});
 		}
 
 		self.submit = function () {
@@ -383,16 +446,18 @@
 				// update integration point's model
 				var exportType = self.model.TypeOfExport();
 				self.ipModel.sourceConfiguration.ExportType = exportType;
+				self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
+
 				if (exportType === ExportEnums.SourceOptionsEnum.SavedSearch) {
 					var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
 					self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
 					self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
-					self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
 				} else if (exportType === ExportEnums.SourceOptionsEnum.Folder ||
                     exportType === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
 
 					self.ipModel.sourceConfiguration.FolderArtifactId = self.model.FolderArtifactId();
 					self.ipModel.sourceConfiguration.FolderArtifactName = self.model.FolderArtifactName();
+					self.ipModel.sourceConfiguration.FolderFullName = self.model.getFolderFullName(self.model.foldersStructure, self.model.FolderArtifactId());
 					self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
 					var selectedView = self.model.getSelectedView(self.model.ViewId());
 					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
@@ -434,6 +499,8 @@
 
 				self.ipModel.Map = fieldMap;
 
+				Picker.closeDialog("savedSearchPicker");
+
 				d.resolve(self.ipModel);
 			} else {
 				self.model.errors.showAllMessages();
@@ -445,6 +512,8 @@
 
 		self.back = function () {
 			var d = root.data.deferred().defer();
+
+			Picker.closeDialog("savedSearchPicker");
 
 			d.resolve(self.ipModel);
 

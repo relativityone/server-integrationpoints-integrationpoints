@@ -1,47 +1,53 @@
-﻿var SavedSearchPickerViewModel = function (okCallback) {
-    var self = this;
+﻿var SavedSearchPickerViewModel = function (okCallback, validateCallback) {
+	var self = this;
 
-    this.okCallback = okCallback;
+	self.PopupTitle = ko.observable("Select a Saved Search");
 
-    this.frame = null;
-    this.view = null;
+	self.okCallback = okCallback;
+	self.validateCallback = validateCallback;
+	self.data = {};
 
-    this.hasBeenRun = false;
+	self.view = null;
 
-    this.construct = function (view) {
-        self.view = view;
-        self.frame = window.parent.frames['SearchFolderTreeiFrame'];
-        if (!self.frame) {
-            throw 'Saved Search Picker not found';
-        }
+	this.construct = function (view) {
+		self.view = view;
+	}
 
-        var appId = IP.utils.getParameterByName('AppID', window.top);
-        this.src = "/Relativity/Controls/SearchContainer/TreeViewSelector.aspx?ArtifactID=" + appId + "&amp;AppID=" + appId;
-    }
+	this.open = function (available, selected) {
+		var $tree = $("#saved-search-picker-browser-tree");
 
-    this.open = function (currentSelection) {
-        if (!self.hasBeenRun) {
-            self.init();
-        }
-        self.view.dialog('open');
-        var currentArtifactId = currentSelection == null ? null : currentSelection.value;
-        self.selectedArtifactId = currentArtifactId;
-        self.frame.selectNodeByValue(currentArtifactId);
-    }
+		$tree.jstree("destroy");
 
-    this.ok = function () {
-        self.okCallback(self.selectedArtifactId);
-        self.view.dialog('close');
-    }
+		var _d = $.extend({ icon: "jstree-root-folder" }, available)
+		$tree.jstree({
+			core: {
+				data: _d
+			}
+		});
 
-    this.cancel = function () {
-        self.view.dialog('close');
-    }
+		self.selected = selected;
 
-    this.init = function () {
-        self.frame.OnSelectedNodeChanged = function (sender, args) {
-            self.selectedArtifactId = args.get_node().get_value();
-        };
-        self.hasBeenRun = true;
-    }
+		$tree.on("select_node.jstree", function (evt, data) {
+			self.selected = data.node;
+		});
+
+		self.view.dialog('open');
+	}
+
+	this.ok = function () {
+		var canClose = true;
+
+		if (typeof self.validateCallback === 'function') {
+			canClose = self.validateCallback(self.selected);
+		}
+
+		if (canClose) {
+			self.okCallback(self.selected);
+			self.view.dialog('close');
+		}
+	}
+
+	this.cancel = function () {
+		self.view.dialog('close');
+	}
 }
