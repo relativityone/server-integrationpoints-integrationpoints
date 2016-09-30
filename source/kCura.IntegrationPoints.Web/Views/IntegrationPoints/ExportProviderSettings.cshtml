@@ -150,7 +150,7 @@
 									Data File Encoding:
 								</div>
 								<div class="field-value">
-									<select data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+									<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
 										<optgroup data-bind="attr: {label: label}, foreach: children">
 											<option data-bind="text: displayName, value: name"></option>
 										</optgroup>
@@ -292,7 +292,7 @@
 										Text File Encoding:
 									</div>
 									<div class="field-value">
-										<select data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+										<select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
 											<optgroup data-bind="attr: {label: label}, foreach: children">
 												<option data-bind="text: displayName, value: name"></option>
 											</optgroup>
