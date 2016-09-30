@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using SystemInterface.IO;
-using SystemWrapper.IO;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -34,6 +33,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
@@ -253,10 +253,10 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.ImplementedBy<GetSourceProviderRdoByIdentifier>()
 					.LifeStyle.Transient);
 
-			container.Register(Component.For<IDirectoryTreeCreator>().ImplementedBy<DirectoryTreeCreator>().LifestyleTransient());
+			container.Register(Component.For<IDirectoryTreeCreator<JsTreeItemDTO>>().ImplementedBy<DirectoryTreeCreator<JsTreeItemDTO>>().LifestyleTransient());
 			container.Register(Component.For<ITreeByParentIdCreator>().ImplementedBy<TreeByParentIdCreator>().LifestyleTransient());
 			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
-			container.Register(Component.For<IDirectory>().ImplementedBy<DirectoryWrap>().LifestyleTransient());
+			container.Register(Component.For<IDirectory>().ImplementedBy<LongPathDirectory>().LifestyleTransient());
 			#endregion
 
 			#region Domain

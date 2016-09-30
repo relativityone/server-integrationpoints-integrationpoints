@@ -205,10 +205,6 @@
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SystemWrapper, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(SystemWrapper_Wrappers)\lib\net45\SystemWrapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />

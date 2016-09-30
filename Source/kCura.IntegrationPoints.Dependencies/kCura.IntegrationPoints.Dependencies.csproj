@@ -206,6 +206,10 @@
       <HintPath>..\packages\RelativityCore.9.4.309.5\lib\net45\kCura.kCanvas.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.LongPath, Version=1.0.8.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.LongPath.1.0.8\lib\net45\kCura.LongPath.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=3698d9cc89824494, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.309.5\lib\net45\kCura.Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>

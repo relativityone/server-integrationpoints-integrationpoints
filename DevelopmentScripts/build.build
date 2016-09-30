@@ -17,8 +17,6 @@
 	<property name="source.dependency.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.192.5\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
-	<property name="source.dependency.SystemWrapper.directory" value="${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45" />
-	<property name="source.dependency.SystemInterface.directory" value="${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45" />
 	<property name="relativityDependencyVersion" value="9.4.309.5" />
 	
 	<!-- Log properties -->
@@ -72,8 +70,6 @@
 			<arg line='/lib:"${source.packages.directory}\Owin.1.0\lib\net40"' />
 			<arg line='/lib:"${source.packages.directory}\StackExchange.Redis.1.0.328\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Thinktecture.IdentityModel.Client.4.0.1\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
@@ -89,6 +85,7 @@
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
 			
 			<!-- secondary dlls -->
+			<arg line='"${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45\SystemInterface.dll"'/>
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\FreeImageNET.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\Ionic.Zip.dll"' />
@@ -179,7 +176,7 @@
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.226\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\systemwrapper.interfaces.0.7.0.0\lib\net45"'/>
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
