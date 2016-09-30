@@ -6,12 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.ImportProvider.Helpers.Logging;
+using kCura.IntegrationPoints.ImportProvider.Parser;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider
 {
     [kCura.IntegrationPoints.Contracts.DataSourceProvider(Constants.Guids.ImportProviderEventHandler)]
     public class ImportProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
     {
+        private IFieldParserFactory _fieldParserFactory;
+        public ImportProvider(IFieldParserFactory fieldParserFactory)
+        {
+            _fieldParserFactory = fieldParserFactory;
+        }
+
         public IDataReader GetBatchableIds(FieldEntry identifier, string options)
         {
             throw new NotImplementedException();
