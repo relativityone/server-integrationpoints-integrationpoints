@@ -41,6 +41,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Data, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>

@@ -12,7 +12,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 	public class JobLogServiceTests
 	{
 		[Test]
-		[Explicit]
 		public void jobService_CreateUnscheduledJob()
 		{
 			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();
