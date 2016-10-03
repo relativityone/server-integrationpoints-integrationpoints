@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -121,7 +120,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
 
 			// TODO: we need to make IIntegrationPointsConfig a dependency or use a factory -- biedrzycki: Feb 16th, 2016
-			IIntegrationPointsConfig config = new ConfigAdapter();
+			IWebApiConfig config = new WebApiConfig();
 			return new ExtendedImportAPI(username, authToken, config.GetWebApiUrl);
 		}
 
