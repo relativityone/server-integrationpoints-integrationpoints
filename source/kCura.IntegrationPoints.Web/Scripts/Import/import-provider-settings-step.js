@@ -122,7 +122,7 @@
                 //LoadDataFrom: windowObj.import.SelectedFolderPath ? windowObj.import.SelectedFolderPath : "",
                 HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
                 LineNumber: $("#import-columnname-numbers").val(),
-                LoadFile: self.locationSelector.SelectedNode
+                LoadFile: self.Fileshare()
             };
 
             console.log(model);
