@@ -1,9 +1,10 @@
-﻿var SavedSearchPickerViewModel = function (okCallback) {
+﻿var SavedSearchPickerViewModel = function (okCallback, validateCallback) {
 	var self = this;
 
 	self.PopupTitle = ko.observable("Select a Saved Search");
 
 	self.okCallback = okCallback;
+	self.validateCallback = validateCallback;
 	self.data = {};
 
 	self.view = null;
@@ -34,14 +35,19 @@
 	}
 
 	this.ok = function () {
-		self.okCallback(self.selected);
-		self.view.dialog('close');
+		var canClose = true;
+
+		if (typeof self.validateCallback === 'function') {
+			canClose = self.validateCallback(self.selected);
+		}
+
+		if (canClose) {
+			self.okCallback(self.selected);
+			self.view.dialog('close');
+		}
 	}
 
 	this.cancel = function () {
 		self.view.dialog('close');
 	}
-
-	// this.init = function () {
-	// }
 }

@@ -47,7 +47,7 @@
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Source details:</td>
-					<td class="dynamicViewFieldValue">Saved search: <!--ko text: settings.SavedSearch--><!--/ko--></td>
+					<td class="dynamicViewFieldValue" data-bind="text: sourceDetails()"></td>
 				</tr>
 			</table>
 		</td>
@@ -90,8 +90,8 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.ExportNatives || settings.ExportImages || settings.ExportFullTextAsFile">
+	<tr data-bind="visible: settings.ExportNatives || settings.ExportImages || settings.ExportFullTextAsFile">
+		<td class="editTableColumn">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Volume:</td>
@@ -100,8 +100,8 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.ExportNatives || settings.ExportImages || settings.ExportFullTextAsFile">
+	<tr data-bind="visible: settings.ExportNatives || settings.ExportImages || settings.ExportFullTextAsFile">
+		<td class="editTableColumn">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Subdirectory:</td>
@@ -130,8 +130,18 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.ExportImages">
+	<tr data-bind="visible: isProductionSet()">
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Text and Native File Names:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: textAndNativeFileNames()"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr data-bind="visible: settings.ExportImages">
+		<td class="editTableColumn">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Image file format:</td>
@@ -140,8 +150,8 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.ExportImages">
+	<tr data-bind="visible: settings.ExportImages">
+		<td class="editTableColumn">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Image file type:</td>
@@ -150,8 +160,8 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.ExportImages">
+	<tr data-bind="visible: settings.ExportImages && !isProductionSet()">
+		<td class="editTableColumn">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Image precedence:</td>
@@ -160,8 +170,8 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.ExportFullTextAsFile">
+	<tr data-bind="visible: settings.ExportFullTextAsFile">
+		<td class="editTableColumn">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Text precedence:</td>
@@ -170,8 +180,8 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="editTableColumn" data-bind="visible: settings.ExportFullTextAsFile">
+	<tr data-bind="visible: settings.ExportFullTextAsFile">
+		<td class="editTableColumn">
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Text file encoding:</td>

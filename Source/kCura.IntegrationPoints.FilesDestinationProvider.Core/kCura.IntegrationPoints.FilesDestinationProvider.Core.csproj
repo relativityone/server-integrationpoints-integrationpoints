@@ -76,6 +76,10 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
       <Private>True</Private>
@@ -146,6 +150,7 @@
     <Compile Include="Authentication\ICredentialProvider.cs" />
     <Compile Include="Authentication\TokenCredentialProvider.cs" />
     <Compile Include="EnumHelper.cs" />
+    <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />

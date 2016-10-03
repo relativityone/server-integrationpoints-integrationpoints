@@ -39,6 +39,7 @@
 				type: "get",
 				url: root.utils.generateWebAPIURL("SearchFolder")
 			}).then(function (result) {
+				self.foldersStructure = result;
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
 				root.message.error.raise("No folders were returned from the source provider.");
@@ -57,14 +58,13 @@
 
 		self.savedSearchesTree = ko.observable();
 
+		self.isSavedSearchTreeNode = function (node) {
+			return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
+		}
+
 		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
-			if (!!value && value.icon === "jstree-search") {
-				self.savedSearch(value.id);
-			} else {
-				throw "error"; // throwing here prevents dialog from closing
-				// TODO: refactor above 'logic' 
-			}
-		});
+			self.savedSearch(value.id);
+		}, self.isSavedSearchTreeNode);
 
 		Picker.create("savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 
@@ -114,6 +114,20 @@
 				}
 			}
 		});
+
+		self.getFolderFullName = function(currentFolder, folderId){
+			if(currentFolder.id == folderId) {
+				return currentFolder.text;
+			} else {
+				for(var i = 0; i < currentFolder.children.length; i++){
+					var childFolderPath = self.getFolderFullName(currentFolder.children[i], folderId);
+					if(childFolderPath != ""){
+						return currentFolder.text + "/" + childFolderPath;
+					}
+				}
+			}
+			return "";
+		};
 
 		self.availableViews = ko.observableArray(['Test']);
 		self.ViewName = ko.observable(sourceState.ViewName);
@@ -346,14 +360,13 @@
 			var getSavedSearches = function (tree) {
 				var _searches = [];
 				var _iterate = function (node, depth) {
-					if (node.icon === "jstree-search") {
+					if (self.model.isSavedSearchTreeNode(node)) {
 						_searches.push({
 							value: node.id,
 							displayName: node.text
 						});
 					}
 
-					// var children = node.children;
 					for (var i = 0, len = node.children.length; i < len; i++) {
 						_iterate(node.children[i], depth + 1);
 					}
@@ -433,16 +446,18 @@
 				// update integration point's model
 				var exportType = self.model.TypeOfExport();
 				self.ipModel.sourceConfiguration.ExportType = exportType;
+				self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
+
 				if (exportType === ExportEnums.SourceOptionsEnum.SavedSearch) {
 					var selectedSavedSearch = self.model.getSelectedSavedSearch(self.model.savedSearch());
 					self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
 					self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
-					self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
 				} else if (exportType === ExportEnums.SourceOptionsEnum.Folder ||
                     exportType === ExportEnums.SourceOptionsEnum.FolderSubfolder) {
 
 					self.ipModel.sourceConfiguration.FolderArtifactId = self.model.FolderArtifactId();
 					self.ipModel.sourceConfiguration.FolderArtifactName = self.model.FolderArtifactName();
+					self.ipModel.sourceConfiguration.FolderFullName = self.model.getFolderFullName(self.model.foldersStructure, self.model.FolderArtifactId());
 					self.ipModel.sourceConfiguration.ViewId = self.model.ViewId();
 					var selectedView = self.model.getSelectedView(self.model.ViewId());
 					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
