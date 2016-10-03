@@ -237,7 +237,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Config.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />

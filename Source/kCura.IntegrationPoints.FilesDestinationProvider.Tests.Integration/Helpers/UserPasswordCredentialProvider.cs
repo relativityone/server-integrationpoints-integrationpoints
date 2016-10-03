@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.WinEDDS.Api;
 
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		public NetworkCredential Authenticate(CookieContainer cookieContainer)
 		{
-			return LoginHelper.LoginUsernamePassword(_configSettings.UserName, _configSettings.Password, cookieContainer);
+			return LoginHelper.LoginUsernamePassword(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, cookieContainer);
 		}
 	}
 }

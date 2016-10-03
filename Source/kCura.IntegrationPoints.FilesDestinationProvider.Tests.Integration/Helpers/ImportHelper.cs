@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			CreateFolders(workspaceArtifactId, documentsTestData);
 
 			var importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword,
-				_configSettings.WebApiUrl);
+				SharedVariables.RelativityWebApiUrl);
 
 			foreach (var folderWithDocuments in documentsTestData.Documents)
 			{
