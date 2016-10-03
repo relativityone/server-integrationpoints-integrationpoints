@@ -33,6 +33,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Email;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -79,7 +80,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
             container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
             container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_agentHelper.GetDBContext(_job.WorkspaceID))));
-            container.Register(Component.For<Job>().UsingFactoryMethod(k => _job));
+			container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
+			container.Register(Component.For<Job>().UsingFactoryMethod(k => _job));
             container.Register(
                 Component.For<GetApplicationBinaries>()
                     .ImplementedBy<GetApplicationBinaries>()

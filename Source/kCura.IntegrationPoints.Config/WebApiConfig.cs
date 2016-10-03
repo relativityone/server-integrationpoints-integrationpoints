@@ -3,9 +3,9 @@ using System.Collections;
 using System.Configuration;
 using kCura.Config;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations
+namespace kCura.IntegrationPoints.Config
 {
-	public class ConfigAdapter : IIntegrationPointsConfig
+	public class WebApiConfig : IWebApiConfig
 	{
 		public string GetWebApiUrl
 		{
