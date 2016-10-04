@@ -49,8 +49,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 
             // assert
             Assert.That(actual, Is.Not.Null);
-            var actualSearch1 = actual.Children.Where(x => x.Text.Contains("Search")).FirstOrDefault();
-            var expectedSearch1 = expected.Children.Where(x => x.Text.Contains("Search")).First();
+            var actualSearch1 = actual.Children.Where(x => x.Text.Contains("Saved Search")).FirstOrDefault();
+            var expectedSearch1 = expected.Children.Where(x => x.Text.Contains("Saved Search")).First();
             Assert.That(actualSearch1, Is.Not.Null);
             Assert.That(actualSearch1.Id, Is.EqualTo(expectedSearch1.Id));
             Assert.That(actualSearch1.Text, Is.EqualTo(expectedSearch1.Text));

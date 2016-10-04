@@ -172,13 +172,12 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public Job GetScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
-			AgentService.CreateQueueTableOnce();
+			return Execute(workspaceID, relatedObjectArtifactID, new List<string> { taskName })?.FirstOrDefault();
+		}
 
-			Job job = null;
-			DataRow row = new GetJob(QDBContext).Execute(workspaceID, relatedObjectArtifactID, taskName);
-			if (row != null) job = new Job(row);
-
-			return job;
+		public IEnumerable<Job> GetScheduledJob(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
+		{
+			return Execute(workspaceID, relatedObjectArtifactID, taskTypes);
 		}
 
 		public void UpdateStopState(IList<long> jobIds, StopState state)
@@ -233,6 +232,14 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
 			var cleanupJobQueueTable = new CleanupJobQueueTable(QDBContext);
 			cleanupJobQueueTable.Execute();
+		}
+
+		private IEnumerable<Job> Execute(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
+		{
+			AgentService.CreateQueueTableOnce();
+
+			List<DataRow> rows = new GetJob(QDBContext).Execute(workspaceID, relatedObjectArtifactID, taskTypes);
+			return rows?.Select(row => new Job(row)) ?? Enumerable.Empty<Job>();
 		}
 	}
 }
