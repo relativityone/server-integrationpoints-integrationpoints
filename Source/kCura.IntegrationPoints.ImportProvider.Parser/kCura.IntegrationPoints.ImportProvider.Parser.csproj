@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.ImportProvider.Parser</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.ImportProvider.Parser</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -143,6 +144,10 @@
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity, Version=9.4.310.7, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
@@ -174,12 +179,28 @@
     <Compile Include="Interfaces\IFieldParser.cs" />
     <Compile Include="Interfaces\IFieldParserFactory.cs" />
     <Compile Include="LoadFileFieldParser.cs" />
+    <Compile Include="Models\ImportProviderSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Helpers\kCura.IntegrationPoints.ImportProvider.Helpers.csproj">
+      <Project>{4353e00f-b152-418c-9cc7-9b444a95352e}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider.Helpers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

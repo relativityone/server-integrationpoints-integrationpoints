@@ -32,6 +32,22 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IEnumerable<FieldEntry> GetFields(string options)
         {
+            var parser = _fieldParserFactory.GetFieldParser(options);
+            var result = new List<FieldEntry>();
+            var idx = 0;
+            foreach (var fieldName in parser.GetFields())
+            {
+                result.Add(new FieldEntry
+                {
+                    DisplayName = fieldName,
+                    FieldIdentifier = fieldName,
+                    FieldType = FieldType.String,
+                    IsIdentifier = idx++ == 0
+                });
+            }
+            return result;
+
+            /*
             SeqLogger.Info("Got Options: {Options}", options);
 
             var result = new List<FieldEntry>();
@@ -46,6 +62,7 @@ namespace kCura.IntegrationPoints.ImportProvider
             SeqLogger.Info("Finished constructing result. About to return...");
 
             return result;
+            */
         }
     }
 }
