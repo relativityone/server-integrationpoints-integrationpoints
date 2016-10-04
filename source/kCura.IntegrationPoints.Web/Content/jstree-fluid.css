@@ -15,8 +15,13 @@
 	outline-style: none;
 }
 
-.jstree-children, .jstree-container-ul {
-	margin: 2px !important;
+.jstree-default .jstree-node, 
+.jstree-default .jstree-icon {
+    background-image: none;	
+}
+
+.jstree-children {
+	position: relative;
 }
 
 .jstree-default .jstree-clicked {
@@ -26,16 +31,18 @@
 	border: 1px solid #5d99df;
 }
 
-.jstree-holder .jstree-default .jstree-hovered {
-	border: 1px solid #5d99df;
+.jstree-hovered {
+	background: white!important;
+	border: 1px solid #5d99df!important;
+	border-radius: 0px!important;	
+	box-shadow: inset 0 0 0px #999!important;
 }
 
-.jstree-default .jstree-hovered {
-	background: white;
-	box-shadow: inset 0 0 0px #999;
-}
-
-.jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover, .jstree-anchor:active {
+.jstree-anchor, 
+.jstree-anchor:link, 
+.jstree-anchor:visited, 
+.jstree-anchor:hover, 
+.jstree-anchor:active {
 	text-decoration: none !important;
 	border: 1px solid transparent;
 }
@@ -92,30 +99,75 @@
 		 url(fonts/fluid-ui.svg#fluid-ui) format('svg');
 }
 
-i.jstree-icon.jstree-themeicon.jstree-themeicon-custom {	
-	background-image: none;
-	color: #1e5495;
-	display: inline-block;
+i.jstree-icon {
 	font-family: 'fluid-ui';
 	font-size: 16px!important;
-	font-style: normal!important;
-	line-height: normal;
-	vertical-align: middle;
+	font-style: normal!important;	
 }
 
-.jstree-folder:before {
+i.jstree-ocl {
+	color: #000;
+}
+
+i.jstree-themeicon.jstree-themeicon-custom {	
+	color: #1e5495;
+}
+
+.jstree-folder-root::before {
     content: 'S';
     color: #f59c1f;
 }
 
-.jstree-search:before {
+.jstree-folder::before {
+    content: 'u';
+}
+
+.jstree-search::before {
 	content: 'C';
 }
 
-.jstree-folder-search:before {
+.jstree-folder-search::before {
 	content: 'B';
 }
 
-.jstree-search-personal:before {
+.jstree-search-personal::before {
 	content: 'R';
+}
+
+li.jstree-node.jstree-closed > i.jstree-icon.jstree-ocl::after {
+	content: 'K';
+}
+
+li.jstree-node.jstree-open > i.jstree-icon.jstree-ocl::after {
+	content: 'x';
+}
+
+ul.jstree-container-ul.jstree-children::before {
+    content: '';
+    position: absolute;
+    border-top: dotted 1px;
+    width: 14px;
+    top: 12px;
+    left: 12px;
+    pointer-events: none;
+}
+
+.jstree-children ul::before {
+	content: '';
+    position: absolute;
+    border-left: dotted 1px;
+    left: 36px;    
+    top: 0px;
+    bottom: 12px;
+	pointer-events: none;
+}
+
+.jstree-children ul li:before {
+    content: '';
+    position: absolute;
+    border-bottom: dotted 1px;
+    left: 36px;
+    width: 14px;
+    margin-top: 12px;
+	pointer-events: none;
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
@@ -47,7 +48,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			TTreeItem rootDirectoryItem = new TTreeItem()
 			{
 				Id = root,
-				Text = root
+				Text = root,
+                Icon = JsTreeItemIconEnum.Root.GetDescription()
 			};
 
 			TTreeItem currDirectoryItem = rootDirectoryItem;

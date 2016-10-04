@@ -200,6 +200,7 @@
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DefaultSynchronizerFactory.cs" />
     <Compile Include="DomainHelper.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ArtifactExtensions.cs" />
     <Compile Include="IAppDomainDataMarshaller.cs" />
@@ -222,7 +223,7 @@
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\IntegrationPointDTO.cs" />
     <Compile Include="Models\JobHistoryErrorDTO.cs" />
-    <Compile Include="Models\JsTreeItemIconType.cs" />
+    <Compile Include="Models\JsTreeItemIconEnum.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
     <Compile Include="Models\OnClickEventDTO.cs" />
     <Compile Include="Models\ProcessingSourceLocationDTO.cs" />

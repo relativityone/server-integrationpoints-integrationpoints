@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
@@ -28,9 +29,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                     Id = x.SearchContainer.ArtifactID.ToString(),
                     ParentId = x.ParentContainer.ArtifactID.ToString(),
                     Text = x.SearchContainer.Name,
-                    Icon = JsTreeItemIconType.SavedSearchFolder
+                    Icon = JsTreeItemIconEnum.SavedSearchFolder.GetDescription()
                 };
-            }).ToDictionary(x => x.Id);
+            }).OrderBy(v => v.Text).ToDictionary(x => x.Id);
 
             // map searches to dictonary
             Dictionary<string, JsTreeItemWithParentIdDTO[]> childrenLookup = children.Select(x =>
@@ -40,9 +41,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                     Id = x.SavedSearch.ArtifactID.ToString(),
                     ParentId = x.ParentContainer.ArtifactID.ToString(),
                     Text = x.SavedSearch.Name,
-                    Icon = x.Personal ? JsTreeItemIconType.SavedSearchPersonal : JsTreeItemIconType.SavedSearch
+                    Icon = (x.Personal ? JsTreeItemIconEnum.SavedSearchPersonal : JsTreeItemIconEnum.SavedSearch).GetDescription()
                 };
-            }).GroupBy(x => x.ParentId).ToDictionary(x => x.Key, x => x.ToArray());
+            }).GroupBy(x => x.ParentId).ToDictionary(x => x.Key, x => x.OrderBy(v => v.Text).ToArray());
 
             // hook up children with parents
             JsTreeItemWithParentIdDTO[] child;
@@ -57,6 +58,16 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 if (folderLookup.TryGetValue(item.ParentId, out parent))
                 {
                     parent.Children.Add(item);
+                    parent.Children.Sort((x, y) =>
+                    {
+                        int sort = x.Icon.GetValue<JsTreeItemIconEnum>().CompareTo(y.Icon.GetValue<JsTreeItemIconEnum>());
+                        if (sort == 0)
+                        {
+                            sort = x.Text.CompareTo(y.Text);
+                        }
+
+                        return sort;
+                    });
                 }
             }
 
@@ -67,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             // the one and only
             JsTreeItemWithParentIdDTO root = folderLookup.Values.Where(x => x.ParentId == rootParentId.ToString()).Single();
-            root.Icon = JsTreeItemIconType.Folder;
+            root.Icon = JsTreeItemIconEnum.Root.GetDescription();
 
             return root;
         }
