@@ -750,7 +750,7 @@
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 
 				var destination = JSON.parse(self.ipModel.destination);
-				destination.Provider = "Fileshare";
+				destination.Provider = "Load File";
 				destination.DoNotUseFieldsMapCache = false;
 				self.ipModel.destination = JSON.stringify(destination);
 
