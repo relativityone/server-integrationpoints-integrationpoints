@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		public virtual void CreateOrUpdateDestinationProviders()
 		{
 			CreateOrUpdateDestinationProvider("Relativity", RDO_SYNC_TYPE_GUID);
-			CreateOrUpdateDestinationProvider("Fileshare", FILES_SYNC_TYPE_GUID);
+			CreateOrUpdateDestinationProvider("Load File", FILES_SYNC_TYPE_GUID);
 
 			//var q = new Query<Relativity.Client.DTOs.RDO>();
 			//q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, RDO_SYNC_TYPE_GUID);

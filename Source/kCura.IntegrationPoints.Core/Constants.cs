@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID;
 			public const string RELATIVITY_PROVIDER_NAME = "Relativity";
 			public const string RELATIVITY_DESTINATION_PROVIDER_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
-			public const string FILESHARE_PROVIDER_NAME = "Fileshare";
+			public const string FILESHARE_PROVIDER_NAME = "Load File";
 			public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
 			public const string RETRY_ON_STOPPED_JOB = "The transfer cannot be retried because it has been stopped.";

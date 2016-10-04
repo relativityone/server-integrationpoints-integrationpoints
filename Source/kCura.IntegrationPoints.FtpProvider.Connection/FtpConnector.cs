@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                 _streamRetryCount++;
                 if (_streamRetryCount < retryLimit)
                 {
-                    DownloadStream(remotePath, fileName, retryLimit);
+                    retVal = DownloadStream(remotePath, fileName, retryLimit);
                 }
                 else
                 {
