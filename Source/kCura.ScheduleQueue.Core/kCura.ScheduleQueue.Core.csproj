@@ -198,11 +198,11 @@
   <ItemGroup>
     <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
     <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
+    <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />
     <Content Include="Data\Resources\DeleteJob.sql" />
-    <Content Include="Data\Resources\GetJobByRelatedObjectID.sql" />
     <Content Include="Data\Resources\GetJobByID.sql" />
     <Content Include="Data\Resources\CreateScheduledJob.sql" />
     <Content Include="Data\Resources\UpdateStopState.sql" />

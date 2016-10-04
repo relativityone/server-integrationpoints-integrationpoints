@@ -23,6 +23,6 @@ WHERE
 	AND 
 			[RelatedObjectArtifactID] = @RelatedObjectArtifactID
 	AND 
-			[TaskType] = @TaskType
+			[TaskType] IN ({1})
 	AND
 			NOT [ScheduleRule] IS NULL	
