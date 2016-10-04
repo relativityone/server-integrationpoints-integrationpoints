@@ -18,9 +18,20 @@
                 "lengthChange": false,
                 "responsive": true,
                 "info": true,
-                "columns": formattedHeaders
+                "columns": formattedHeaders,
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }]
 
             });
+            //todo: find a way to insert a column for the row index on the controller or on client -side
+            csvTable.on('order.dt search.dt', function () {
+                csvTable.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
 
             csvTable.clear();
             csvTable.draw();
@@ -60,7 +71,7 @@
 
                 if (currentPage != lastPage) {
                     $("#pag-nav-move-last").attr("class", "pag-nav-button pag-nav-last");
-                }else {
+                } else {
                     $("#pag-nav-move-last").attr("class", "pag-nav-button pag-nav-last-dis");
                 };
 
@@ -76,10 +87,24 @@
                     $("#pag-nav-move-first").attr("class", "pag-nav-button pag-nav-first-dis");
                 }
             };
+            //todo: update the mesage according to same behvior in relativity
+            function updateItems() {
+                var info = csvTable.page.info();
+                var currentPage = info.page;
+                var totalPage = info.pages;
 
-            function updateItemsPerPage() {
-                console.log(csvTable.draw('page'));
+                $(".pag-items").text("- " + currentPage + "( of " + totalPage + ")");
 
+            };
+
+            function getPageNumber(itemsPerPage, totalItems, itemNumber) {
+                if (itemNumber < 0) {
+                    return 0;
+                } else if (itemNumber > (totalItems - 1)) {
+                    return Math.floor(totalItems / itemsPerPage);
+                } else {
+                    return Math.floor(itemNumber / itemsPerPage);
+                };
             };
 
             function updatePaging() {
@@ -90,9 +115,7 @@
                 updateMoveLast();
                 updateMovePrevious();
                 updateMoveNext();
-
-                updateItemsPerPage();
-
+                updateItems();
             };
 
             updatePaging();
@@ -123,8 +146,21 @@
                 var pageLength = $("#itemsPerPageSelect option:selected").val();
 
                 csvTable.page.len(pageLength).draw();
+                updatePaging();
+
             });
 
+            $("#pag-number").change(function () {
+                var input = $(this).val();
+                var info = csvTable.page.info();
+                var totalItems = info.recordsTotal;
+                var itemsPerPage = info.length;
+                var convertedInput = parseInt(input);
+                var result = getPageNumber(itemsPerPage, totalItems, convertedInput);
+
+                csvTable.page(result).draw('page');
+                updatePaging();
+            });
 
         });
 })(IP);
