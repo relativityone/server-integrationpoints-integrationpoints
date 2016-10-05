@@ -1,8 +1,8 @@
 ﻿/* Pagination*/
 
-#pag-number {
+#row-number {
     width: 30px;
-    text-align: right;
+    text-align: center;
 }
 
 .pagination-controls {

@@ -42,7 +42,7 @@
 
             csvTable.draw();
 
-            function updateMoveNext() {
+            function updateMoveNextBtn() {
                 var info = csvTable.page.info();
                 var totalPages = info.pages;
 
@@ -53,7 +53,7 @@
                 };
             };
 
-            function updateMovePrevious() {
+            function updateMovePreviousBtn() {
                 var info = csvTable.page.info();
                 var currentPage = info.page;
 
@@ -64,7 +64,7 @@
                 };
             };
 
-            function updateMoveLast() {
+            function updateMoveLastBtn() {
                 var info = csvTable.page.info();
                 var currentPage = info.page;
                 var lastPage = (info.pages - 1);
@@ -74,10 +74,9 @@
                 } else {
                     $("#pag-nav-move-last").attr("class", "pag-nav-button pag-nav-last-dis");
                 };
-
             };
 
-            function updateMoveFirst() {
+            function updateMoveFirstBtn() {
                 var info = csvTable.page.info();
                 var currentpage = info.page;
 
@@ -87,14 +86,12 @@
                     $("#pag-nav-move-first").attr("class", "pag-nav-button pag-nav-first-dis");
                 }
             };
-            //todo: update the mesage according to same behvior in relativity
-            function updateItems() {
+
+            function updateItemNumber() {
                 var info = csvTable.page.info();
-                var currentPage = info.page;
-                var totalPage = info.pages;
+                var totalItems = info.recordsTotal;
 
-                $(".pag-items").text("- " + currentPage + "( of " + totalPage + ")");
-
+                $(".pag-items").text("- " + info.end + " ( of " + totalItems + ")");
             };
 
             function getPageNumber(itemsPerPage, totalItems, itemNumber) {
@@ -107,60 +104,76 @@
                 };
             };
 
+            function updateItemUi() {
+                var rowNumber = $("#row-number");
+                var info = csvTable.page.info();
+                var totalItems = info.recordsTotal;
+
+                $(".pag-items").text("- " + info.end + " ( of " + totalItems + ")");
+
+                rowNumber.val(info.start + 1);
+            };
+
             function updatePaging() {
-                /*Todo check to see if there is a way to enable "items for page" without setting to true*/
                 $("#csvData-table_paginate").hide();
 
-                updateMoveFirst();
-                updateMoveLast();
-                updateMovePrevious();
-                updateMoveNext();
-                updateItems();
+                updateMoveFirstBtn();
+                updateMoveLastBtn();
+                updateMovePreviousBtn();
+                updateMoveNextBtn();
+                updateItemNumber();
             };
 
             updatePaging();
+            updateItemUi();
+
 
             $("#pag-nav-move-next").on("click", function () {
                 csvTable.page('next').draw('page');
-                updatePaging();
 
+                updateItemUi();
+                updatePaging();
             });
 
             $("#pag-nav-move-previous").on("click", function () {
                 csvTable.page('previous').draw('page');
                 updatePaging();
-
             });
 
             $("#pag-nav-move-first").on("click", function () {
                 csvTable.page('first').draw('page');
+
+                updateItemUi();
                 updatePaging();
             });
 
             $("#pag-nav-move-last").on("click", function () {
                 csvTable.page('last').draw('page');
+
+                updateItemUi();
                 updatePaging();
             });
 
-            $("#itemsPerPageSelect").live("click", function () {
+            $("#itemsPerPageSelect").change(function () {
                 var pageLength = $("#itemsPerPageSelect option:selected").val();
 
-                csvTable.page.len(pageLength).draw();
-                updatePaging();
+                csvTable.page.len(pageLength);
+                csvTable.page('first').draw('page');
 
+                updateItemUi();
+                updatePaging();
             });
 
-            $("#pag-number").change(function () {
-                var input = $(this).val();
+            $("#row-number").change(function () {
                 var info = csvTable.page.info();
                 var totalItems = info.recordsTotal;
                 var itemsPerPage = info.length;
-                var convertedInput = parseInt(input);
-                var result = getPageNumber(itemsPerPage, totalItems, convertedInput);
+                var convertedInput = Math.floor(parseInt($(this).val()) - 1);
 
-                csvTable.page(result).draw('page');
+                csvTable.page(getPageNumber(itemsPerPage, totalItems, convertedInput)).draw('page');
+
+                updateItemUi();
                 updatePaging();
             });
-
         });
 })(IP);
