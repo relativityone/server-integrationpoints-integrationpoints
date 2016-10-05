@@ -25,11 +25,23 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public List<TTreeItem> GetChildren(string path , bool isRoot)
 		{
-			if (CanAccessFolder(path, isRoot))
+			if (!CanAccessFolder(path, isRoot))
+				return new List<TTreeItem>();
+			var subItems = GetSubItems(path);
+			return isRoot ? GetRoot(path, subItems) : subItems;
+		}
+
+		private static List<TTreeItem> GetRoot(string path, IEnumerable<TTreeItem> subItems)
+		{
+			const string jstreeRootFolder = "jstree-root-folder";
+			var root = new TTreeItem
 			{
-				return GetSubItems(path);
-			}
-			return new List<TTreeItem>();
+				Text = path,
+				Id = path,
+				Icon = jstreeRootFolder,
+				Children = new List<JsTreeItemDTO>(subItems)
+			};
+			return new List<TTreeItem>() {root};
 		}
 
 		protected virtual bool CanAccessFolder(string path, bool isRoot)

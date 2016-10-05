@@ -17,19 +17,32 @@
 
 		this.ProcessingSourceLocation.isModified(false);
 
+		self.getSelectedProcessingSourceLocationPath = function (artifactId) {
+			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
+				if (item.artifactId === artifactId) {
+					return item;
+				}
+			});
+			return selectedPath;
+		};
+
 		this.updateProcessingSourceLocation = function (value) {
-			self.Fileshare(undefined);
-			self.Fileshare.isModified(false);
+			self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
+			if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1)//fileshare does not contain path
+			{
+				self.Fileshare(undefined);
+				self.Fileshare.isModified(false);
+			}
 
 			if (self.locationSelector) {
 				self.locationSelector.clear();
 			}
 
 			if (!!value) {
-				self.getDirectories(value);
+				self.getDirectories();
 			}
 
-			self.toggleLocation(!!value);
+			self.locationSelector.toggleLocation(!!value);
 		};
 
 		this.Fileshare = ko.observable(state.Fileshare).extend({
@@ -41,41 +54,43 @@
 		});
 
 		this.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
 			if (self.HasBeenRun()) {
-				self.toggleLocation(false);
+				self.locationSelector.toggleLocation(false);
 			} else {
 				self.locationSelector = new LocationJSTreeSelector();
 				self.locationSelector.init(self.Fileshare(), [], {
 					onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
 				});
 
-				self.toggleLocation(!!self.ProcessingSourceLocation());
+				self.locationSelector.toggleLocation(!!self.ProcessingSourceLocation());
 			}
 
 			self.ProcessingSourceLocation.isModified(false);
 		};
 
-		this.getDirectories = function (artifacId) {
-			root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId),
-				data: {
-					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+		this.getDirectories = function () {
+			var reloadTree = function (params, onSuccess, onFail) {
+				var isRoot = params.id === '#';
+				var path = params.id;
+				if (isRoot) {
+					path = self.ProcessingSourceLocationPath;
 				}
-			}).then(function (result) {
-				self.locationSelector.reload(result);
-			}).fail(function (error) {
-				root.message.error.raise(error);
-				self.toggleLocation(false);
-			});
-		};
+				console.log(path);
+				root.data.ajax({
+					type: "post",
+					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+					url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot),
+					data: { '': path }
+				}).then(function (result) {
+					onSuccess(result);
+				}).fail(function (error) {
+					onFail(error);
+				});
+			};
+			self.locationSelector.reloadWithRoot(reloadTree);
 
-		this.toggleLocation = function (enabled) {
-			var $el = $("#location-select");
-			$el.toggleClass('location-disabled', !enabled);
-			$el.children().each(function (i, e) {
-				$(e).toggleClass('location-disabled', !enabled);
-			});
+
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
@@ -127,7 +142,7 @@
 				result.push({ key: String.fromCharCode(i) + " (ASCII:" + i + ")", value: i });
 			}
 			return result;
-		} ();
+		}();
 
 		this.SelectedDataFileFormat.subscribe(function (value) {
 			//default values have been taken from RDC application
@@ -622,7 +637,7 @@
 
 		this.getSelectedOption = function () {
 			return {
-				"AppendOriginalFileName" : self.AppendOriginalFileName(),
+				"AppendOriginalFileName": self.AppendOriginalFileName(),
 				"ColumnSeparator": self.ColumnSeparator(),
 				"ExportNatives": self.ExportNatives(),
 				"ExportNativesToFileNamedFrom": self.SelectedExportNativesWithFileNameFrom(),
