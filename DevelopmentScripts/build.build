@@ -72,6 +72,7 @@
 			<arg line='/lib:"${source.packages.directory}\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Thinktecture.IdentityModel.Client.4.0.1\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCura.LongPath.1.0.8\lib\net45"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
@@ -177,6 +178,7 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.226\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\systemwrapper.interfaces.0.7.0.0\lib\net45"'/>
+			<arg line='/lib:"${source.packages.directory}\kCura.LongPath.1.0.8\lib\net45"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />

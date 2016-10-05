@@ -315,14 +315,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			};
 
 			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
-			Job jobPreDelete = _jobService.GetScheduledJob(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, TaskType.SyncManager.ToString());
+			Job jobPreDelete = _jobService.GetScheduledJobs(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, TaskType.SyncManager.ToString());
 			
 			//Act
 			deleteEventHandler.ActiveArtifact = new Artifact(integrationPointModel.ArtifactID, SourceWorkspaceArtifactId, 0, null, false, null);
 			Response eventHandlerResponse = deleteEventHandler.Execute();
 
 			//Assert
-			Job jobPostDelete = _jobService.GetScheduledJob(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, TaskType.SyncManager.ToString());
+			Job jobPostDelete = _jobService.GetScheduledJobs(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, TaskType.SyncManager.ToString());
 			Assert.IsNotNull(jobPreDelete);
 			Assert.IsNull(jobPostDelete);
 			Assert.AreEqual(true, eventHandlerResponse.Success);
