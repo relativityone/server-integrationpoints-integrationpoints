@@ -120,7 +120,7 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 			else
 			{
-				job = GetScheduledJob(workspaceID, relatedObjectArtifactID, taskType);
+				job = GetScheduledJobs(workspaceID, relatedObjectArtifactID, taskType);
 				if (job != null)
 				{
 					DeleteJob(job.JobId);
@@ -170,12 +170,12 @@ namespace kCura.ScheduleQueue.Core.Services
 			return job;
 		}
 
-		public Job GetScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskName)
+		public Job GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
 			return Execute(workspaceID, relatedObjectArtifactID, new List<string> { taskName })?.FirstOrDefault();
 		}
 
-		public IEnumerable<Job> GetScheduledJob(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
+		public IEnumerable<Job> GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
 		{
 			return Execute(workspaceID, relatedObjectArtifactID, taskTypes);
 		}

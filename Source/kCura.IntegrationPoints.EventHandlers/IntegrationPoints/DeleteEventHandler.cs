@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				int workspaceId = this.Helper.GetActiveCaseID();
 				int integrationPointId = this.ActiveArtifact.ArtifactID;
-				IEnumerable<Job> jobs = JobService.GetScheduledJob(workspaceId, integrationPointId, 
+				IEnumerable<Job> jobs = JobService.GetScheduledJobs(workspaceId, integrationPointId, 
 					TaskTypeHelper.GetManagerTypes()
 					.Select(taskType => taskType.ToString())
 					.ToList());
