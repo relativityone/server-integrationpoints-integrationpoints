@@ -685,3 +685,188 @@ table.dataTable {
         margin-top: 0.5em;
     }
 }
+
+
+
+
+
+
+/*Test*/
+
+#progress-bars-div .card-line {
+    margin-bottom: 15px;
+}
+
+#transfer-progress-bar-div .phase-label {
+    margin-bottom: 5px;
+}
+
+.progress-bar-outline {
+    width: 388px;
+    line-height: normal !important;
+    background-color: #dfdfdf;
+    border: 3px solid #dfdfdf;
+    -ms-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.display-flex {
+    display: -moz-box;
+    display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: flex;
+}
+
+.flex-container-row {
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+}
+
+.flex-container-column {
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.phase-label {
+    margin-right: 1px;
+    font-family: 'Arial Bold', 'Arial';
+    font-weight: bold;
+    font-style: normal;
+    font-size: 12px;
+    color: #555555;
+    text-align: left;
+    line-height: normal;
+    margin-bottom: 0;
+}
+
+span.progress-bar-percentage {
+    margin-left: 5px;
+    font-family: 'Arial Regular', 'Arial';
+    font-weight: bold;
+    font-size: 12px;
+    color: #555555;
+}
+
+.large-file-progress-text {
+    margin-top: 5px;
+    font-family: 'Arial Regular', 'Arial';
+    font-weight: bold;
+    font-style: normal;
+    color: #555555;
+    font-size: 12px;
+}
+
+.height-width-100 {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#active-transfer-stats {
+    padding-left: 15px;
+    float: right;
+}
+
+    #active-transfer-stats label {
+        text-align: left;
+        font-weight: normal;
+    }
+
+    #active-transfer-stats .card-value-div p {
+        border-bottom: none;
+        font-weight: bold;
+        text-align: right;
+    }
+
+    #active-transfer-stats .summary-title {
+        margin-bottom: 5px;
+        font-weight: bold;
+        display: block;
+    }
+
+.active-transfer-stats-line {
+    margin-bottom: 10px;
+}
+
+.active-transfer-stats-line {
+    margin-bottom: 10px;
+}
+
+#active-transfer-stats .summary-title {
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: block;
+}
+
+.card-line .card-label-div {
+    width: 185px;
+    -moz-min-width: 185px;
+    -ms-min-width: 185px;
+    -o-min-width: 185px;
+    -webkit-min-width: 185px;
+    min-width: 185px;
+}
+
+    .card-line .card-label-div label {
+        padding-right: 10px;
+        width: 100%;
+        text-align: right;
+    }
+
+#active-transfer-stats .card-value-div p {
+    border-bottom: none;
+    font-weight: bold;
+    text-align: right;
+}
+
+.card-line .card-value-div {
+    width: 100%;
+}
+
+    .card-line .card-value-div p {
+        margin: 0;
+        width: 100%;
+        border-bottom: 1px solid #c1c1c1;
+    }
+
+.active-transfer-stats-line {
+    margin-bottom: 10px;
+}
+
+.progress-bar-outline {
+    width: 388px;
+    line-height: normal !important;
+    background-color: #dfdfdf;
+    border: 3px solid #dfdfdf;
+    -ms-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.progress-bar-indicator {
+    height: 12px;
+}
+
+.progress-active {
+    background-color: #1b54ab;
+}
+
+.progress-complete {
+    background-color: #5dca77;
+}
+
+.progress-failed {
+    background-color: #fa4d4d;
+}
+
+#img_icon {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 14px;
+    height: 8px;
+}

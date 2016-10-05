@@ -4,10 +4,70 @@
 
 <link href="~/Content/import-preview.css" rel="stylesheet" />
 
+<div class="card" id="step-progress-container">
+    <p class="card-header">Load File Summary <i class="icon-chevron-down"></i> </p>
+
+    <div id="transfer-progress-div" class="display-flex flex-container-row">
+        <div id="active-transfer-left-container" class="display-flex flex-container-column">
+            <div id="active-transfer-outcome" class="active-transfer-left-div active-transfer-upload"></div>
+
+            <div class="import-progress-bar">
+                <b>Preparing Preview</b>
+                <div class="progress-bar-outline display-flex flex-container-column">
+                    <div class="progress-bar-indicator progress-complete" style="width: 50%"></div>
+                </div>
+            </div>
+
+        </div>
+        <div id="transfer-time-stats" class="height-width-100">
+            <div id="active-transfer-stats">
+                <div class="active-transfer-stats-line">
+                    <p class="summary-title">PROGRESS SUMMARY</p>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Status</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p class="active-transfer-status-success" style="color: #5dca77">Completed</p>
+                        </div>
+                    </div>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Time Elapsed</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p class="elapsed-time">00:02:26</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="active-transfer-stats-line">
+                    <p class="summary-title">TRANSFER BREAKDOWN</p>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Files Transferred</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p class="transferred-files">28</p>
+                        </div>
+                    </div>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Data Transferred</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p>612.4 MB</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row" id="file-inventory-table-row">
     <div class="card">
         <div class="aspera-card-header">
-            <p class="card-header inventory-card-header">Preview File</p>
+            <p class="card-header inventory-card-header">Records</p>
             <span class="pagination-controls">
                 <span class="pag-text">Items</span>
                 <input id="row-number" value="0" />
