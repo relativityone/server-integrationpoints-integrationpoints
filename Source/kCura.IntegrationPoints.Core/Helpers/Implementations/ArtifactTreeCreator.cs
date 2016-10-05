@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         {
             var treeItemsFlat = ConvertToTreeItems(nodes);
             var root = FindRoot(treeItemsFlat);
+            root.Icon = JsTreeItemIconEnum.Root.GetDescription();
 
             BuildTree(treeItemsFlat);
 

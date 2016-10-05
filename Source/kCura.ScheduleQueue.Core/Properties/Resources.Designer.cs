@@ -64,7 +64,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///   Looks up a localized string similar to /****** 
         ///Script Date:		7/25/2016
         ///Script Creator:		Sorawit Amornborvornwong
-        ///Script Description:	Adding cancel state column onto the schedule queue table.
+        ///Script Description:	Adding stop state column onto the schedule queue table.
         ///******/
         ///
         ///USE [EDDS]
@@ -81,7 +81,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///    SELECT *
         ///    FROM sys.columns 
         ///    WHERE Name      = N&apos;StopState&apos;
-        ///      AND Object_ID = Object_ [rest of string was truncated]&quot;;.
+        ///      AND Object_ID = Object_ID [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string AddStopStateColumnToQueueTable {
             get {
@@ -273,11 +273,12 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///	AND 
         ///			[RelatedObjectArtifactID] = @RelatedObjectArtifactID
         ///	AND 
-        ///			[TaskType] = @TaskTyp [rest of string was truncated]&quot;;.
+        ///			[TaskType] IN ({1})
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string GetJobByRelatedObjectID {
+        internal static string GetJobByRelatedObjectIDandTaskType {
             get {
-                return ResourceManager.GetString("GetJobByRelatedObjectID", resourceCulture);
+                return ResourceManager.GetString("GetJobByRelatedObjectIDandTaskType", resourceCulture);
             }
         }
         
@@ -377,12 +378,28 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE	
-        ///					[eddsdbo].[{0}] 
-        ///SET 
-        ///					[StopState] = @State
-        ///WHERE 
-        ///					[JobID] = @JobID.
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///
+        ///DECLARE @result int
+        ///
+        ///SELECT TOP 1 @result = [StopState]
+        ///	 FROM eddsdbo.[{0}] WITH(TABLOCK, HOLDLOCK)
+        ///	 WHERE [JobId] IN ({1})
+        ///	 AND
+        ///	   ([StopState] = 2 AND @state = 1 OR
+        ///	    [StopState] = 1 AND @state = 2)
+        ///
+        ///
+        ///IF @result = 2
+        ///  RAISERROR(&apos;ERROR : Invalid operation. Attempted to stop an unstoppable job.&apos;, 18, 1)
+        ///
+        ///IF @result = 1
+        ///  RAISERROR(&apos;ERROR : Invalid operation. Attempted to mark the stopping job as an unstoppable job.&apos;, 18, 1) 
+        ///
+        ///UPDATE
+        ///  [eddsdbo].[{0}]
+        ///SET
+        ///  [Sto [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string UpdateStopState {
             get {

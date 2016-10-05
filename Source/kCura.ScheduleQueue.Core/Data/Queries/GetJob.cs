@@ -1,50 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class GetJob
 	{
-		private IQueueDBContext qDBContext = null;
+		private readonly IQueueDBContext _qDbContext = null;
 
-		public GetJob(IQueueDBContext qDBContext)
+		public GetJob(IQueueDBContext qDbContext)
 		{
-			this.qDBContext = qDBContext;
+			this._qDbContext = qDbContext;
 		}
 
-		public DataRow Execute(long jobID)
+		public DataRow Execute(long jobId)
 		{
-			string sql = string.Format(Resources.GetJobByID, qDBContext.TableName);
+			string sql = string.Format(Resources.GetJobByID, _qDbContext.TableName);
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
-			sqlParams.Add(new SqlParameter("@JobID", jobID));
+			sqlParams.Add(new SqlParameter("@JobID", jobId));
 
-			return Execute(sql, sqlParams);
+			return ExecuteList(sql, sqlParams)?[0];
 		}
 
-		public DataRow Execute(int workspaceID, int relatedObjectArtifactID, string taskType)
+		public List<DataRow> Execute(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes)
 		{
 			//Gets only scheduled job
-			string sql = string.Format(Resources.GetJobByRelatedObjectID, qDBContext.TableName);
-			List<SqlParameter> sqlParams = new List<SqlParameter>();
-			sqlParams.Add(new SqlParameter("@WorkspaceID", workspaceID));
-			sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", relatedObjectArtifactID));
-			sqlParams.Add(new SqlParameter("@TaskType", taskType));
+			string sql = string.Format(Resources.GetJobByRelatedObjectIDandTaskType, _qDbContext.TableName, Utility.Array.StringArrayToCsvForSql(taskTypes.ToArray()));
 
-			return Execute(sql, sqlParams);
+			List<SqlParameter> sqlParams = new List<SqlParameter>
+			{
+				new SqlParameter("@WorkspaceID", workspaceId),
+				new SqlParameter("@RelatedObjectArtifactID", relatedObjectArtifactId)
+			};
+
+			return ExecuteList(sql, sqlParams);
 		}
 
-		private DataRow Execute(string sql, List<SqlParameter> sqlParams)
+		private List<DataRow> ExecuteList(string sql, List<SqlParameter> sqlParams)
 		{
-			using (DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray()))
+			using (DataTable dataTable = _qDbContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray()))
 			{
-				DataRow row = null;
-				if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
-					row = dataTable.Rows[0];
-
-				return row;
+				if (dataTable?.Rows != null && dataTable.Rows.Count > 0)
+				{
+					return dataTable.Rows.Cast<DataRow>().ToList();
+				}
+				return null;
 			}
 		}
 	}
