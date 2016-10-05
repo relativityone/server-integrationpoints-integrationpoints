@@ -1,10 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
+using System.Net;
+using System.Net.Http;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
+
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class ImportPreviewController : ApiController
     {
+        private IImportPreviewService _importPreviewService;
+        public ImportPreviewController(IImportPreviewService importPreviewService)
+        {
+            _importPreviewService = importPreviewService;
+        }
+
+        [HttpGet]
+        public IHttpActionResult PreviewFiles()
+        {
+            string loadFile = @"\\con-clar-rel02\FileShare\O365\test.txt";
+            int workspaceID = 1018974;
+            ImportPreviewTable table = _importPreviewService.PreviewLoadFile(loadFile, workspaceID);
+            return Json(table);
+        }
+
         [HttpGet]
         public IHttpActionResult DummbyData()
         {

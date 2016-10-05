@@ -155,6 +155,12 @@ namespace kCura.IntegrationPoints.Web
                 routeTemplate: "api/ImportPreview/DummbyData",
                 defaults: new { controller = "ImportPreview", action = "DummbyData" }
             );
+
+            config.Routes.MapHttpRoute(
+                name: "ImportPreviewFiles",
+                routeTemplate: "api/ImportPreview/PreviewFiles",
+                defaults: new { controller = "ImportPreview", action = "PreviewFiles" }
+            );
         }
 	}
 }
