@@ -27,8 +27,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _loadFileReader.GetColumnNames(_config);
 
             //Must advance one record to skip headers so first Read gets the first data row
-            //SeqLogger.Info("LoadFileDataReader ctor about to call AdvanceRecord... ");
-            //_loadFileReader.AdvanceRecord();
+            this.Read();
             SeqLogger.Info("LoadFileDataReader ctor done.");
         }
 
