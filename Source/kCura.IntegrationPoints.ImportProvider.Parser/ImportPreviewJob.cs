@@ -69,7 +69,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         public void StartRead()
         {
             _loadFilePreviewer.OnEvent += OnPreviewerProgress;
-
             ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile("", 0);
             ImportPreviewTable preview = new ImportPreviewTable();
             preview.Header = (arrs[0] as kCura.WinEDDS.Api.ArtifactField[]).Select(i => i.DisplayName).ToList();
@@ -79,7 +78,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 preview.Data.Add(row);
             }
             //TODO: remove, this is for thread testing purposes
-            System.Threading.Thread.Sleep(30000);
+            //System.Threading.Thread.Sleep(5000);
             IsComplete = true;
             PreviewTable = preview;
         }
@@ -88,13 +87,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         {
             if (e.Type == LoadFilePreviewer.EventType.Progress)
             {
-                TotalBytes = e.TotalBytes;
+                
             }
             else if (e.Type == LoadFilePreviewer.EventType.Complete)
             {
-                TotalBytes = e.TotalBytes;
-                IsComplete = true;
+                //TODO: uncomment, testing purposes only
+                //IsComplete = true;
             }
+            BytesRead = e.BytesRead;
+            TotalBytes = e.TotalBytes;
+            StepSize = e.StepSize;
 
         }
 
@@ -106,10 +108,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         private LoadFilePreviewer _loadFilePreviewer;
 
-        public ImportPreviewTable PreviewTable { get; set; }
+        public ImportPreviewTable PreviewTable { get; private set; }
 
-        public bool IsComplete { get; set; }
+        public bool IsComplete { get; private set; }
 
-        public long TotalBytes { get; set; }
+        public long TotalBytes { get; private set; }
+        public long BytesRead { get; private set; }
+        public long StepSize { get; private set; }
     }
 }

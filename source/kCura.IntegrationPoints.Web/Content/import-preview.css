@@ -93,12 +93,12 @@
 }
 
 /*Preview and sid navigation section*/
-.inventory-card-header {
+.preview-card-header {
     float: left;
     clear: both;
 }
 
-.inventory-card-footer {
+.preview-card-footer {
     overflow: auto;
 }
 

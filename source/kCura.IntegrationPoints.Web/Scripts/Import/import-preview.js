@@ -1,13 +1,36 @@
 ﻿var IP = IP || {};
 
 (function (root) {
+    var previewJobId = -1;
+    var intervalId = -1;
 
-    $.get(root.utils.getBaseURL() + "/api/ImportPreview/DummbyData/")
+    $.get(root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/" + $("#workspaceId").text())
+    .done(function(data){
+        previewJobId = data;
+        intervalId = setInterval(
+            function(){
+                $.get(root.utils.getBaseURL() + "/api/ImportPreview/CheckProgress/" + previewJobId)
+                .done(function (data) {
+                    //TODO: bind data to summary section here
+                    console.log(data);
+
+                    //check if the Preview is complete
+                    if (data.IsComplete) {
+                        clearInterval(intervalId);
+                        GetPreviewTableData(previewJobId);
+                    }
+
+                });
+            }
+            , 2000);
+    });
+
+    var GetPreviewTableData = function (jobId) {
+        $.get(root.utils.getBaseURL() + "/api/ImportPreview/GetImportPreviewTable/" + jobId)
         .done(function (data) {
-            // data = $.parseJSON(data);
             var formattedHeaders = [];
-            $.each(data.Headers, function (e, f) {
-                formattedHeaders.push({ "sTitle": data.Headers[e] });
+            $.each(data.Header, function (e, f) {
+                formattedHeaders.push({ "sTitle": data.Header[e] });
             });
 
             var csvTable = $("#csvData-table").DataTable({
@@ -184,4 +207,5 @@
                 updatePaging();
             });
         });
+    };
 })(IP);

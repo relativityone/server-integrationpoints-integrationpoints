@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces
         void StartPreviewJob(int jobId);
 
 
-        long CheckProgress(int jobId);
+        ImportPreviewStatus CheckProgress(int jobId);
 
 
         bool IsJobComplete(int jobId);

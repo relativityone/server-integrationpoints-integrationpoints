@@ -35,13 +35,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
         public void StartPreviewJob(int jobId)
         {
             Task.Run(()=>{
-                _loadFilePreviewers[jobId].StartRead(); //TODO: StartRead() async?
+                _loadFilePreviewers[jobId].StartRead();
             });
         }
 
-        public long CheckProgress(int jobId)
+        public ImportPreviewStatus CheckProgress(int jobId)
         {
-            return _loadFilePreviewers[jobId].TotalBytes;
+
+            ImportPreviewStatus status = new ImportPreviewStatus
+            {
+                TotalBytes = _loadFilePreviewers[jobId].TotalBytes,
+                BytesRead = _loadFilePreviewers[jobId].BytesRead,
+                IsComplete = _loadFilePreviewers[jobId].IsComplete,
+                StepSize = _loadFilePreviewers[jobId].StepSize
+            };
+
+            return status;
         }
 
         public bool IsJobComplete(int jobId)
