@@ -62,8 +62,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 colIdx++;
             }
 
-            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, false, false);
-
+            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, false, false);            
         }
 
         public void StartRead()
@@ -72,9 +71,25 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile("", 0);
             ImportPreviewTable preview = new ImportPreviewTable();
             preview.Header = (arrs[0] as kCura.WinEDDS.Api.ArtifactField[]).Select(i => i.DisplayName).ToList();
-            foreach (kCura.WinEDDS.Api.ArtifactField[] item in arrs)
+            int columnNumber = preview.Header.Count;
+            foreach (var item in arrs)
             {
-                List<string> row = item.Select(i => i.Value.ToString()).ToList();
+                List<string> row = new List<string>();
+                //check the type to see if we got back an array or an exception
+                if (item.GetType() != typeof(kCura.WinEDDS.Api.ArtifactField[]))
+                {
+                    //if the item is not an ArtifactField array, it means we have an error
+                    row = new List<string>();
+                    string errorString = ((Exception)item).Message;
+                    for (int i = 0; i < columnNumber; i++)
+                    {
+                        row.Add(errorString);
+                    }
+                }
+                else
+                {
+                    row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.Value.ToString()).ToList();
+                }
                 preview.Data.Add(row);
             }
             //TODO: remove, this is for thread testing purposes
@@ -91,8 +106,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             }
             else if (e.Type == LoadFilePreviewer.EventType.Complete)
             {
-                //TODO: uncomment, testing purposes only
-                //IsComplete = true;
+                IsComplete = true;
             }
             BytesRead = e.BytesRead;
             TotalBytes = e.TotalBytes;
