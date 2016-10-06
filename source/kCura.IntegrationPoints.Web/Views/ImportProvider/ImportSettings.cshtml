@@ -19,16 +19,8 @@
                             <div class="field-label required">
                                 Import Type:
                             </div>
-                            <div class="field-value">
-                                <ul>
-                                    <li>
-                                        <div class="field-value">
-                                            <input name="import-type" value="production" type="radio" data-bind="checked: ImportTypeChoiceValue" />Production<br />
-                                            <input name="import-type" value="document" type="radio" data-bind="checked: ImportTypeChoiceValue" />Document<br />
-                                            <input name="import-type" value="image" type="radio" data-bind="checked: ImportTypeChoiceValue" />Image<br />
-                                        </div>
-                                    </li>
-                                </ul>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="import-importType" data-bind="options:importTypes, optionsText:'name', optionsValue:'value', value:selectedImportType, optionsCaption: 'Select...' ,select2: { width: '100%' }"></select>
                             </div>
                         </div>
                     </td>
@@ -66,20 +58,7 @@
                                 Start Line:
                             </div>
                             <div class="field-value">
-                                <ul>
-                                    <li>
-                                        <div class="field-value">
-                                            <input id="import-hascolumnnames-checkbox" type="checkbox" />
-                                            <span>First line contains column names</span>
-                                            @* data-bind="disable: HasBeenRun()m checked: ExportImages"*@
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="field-value">
-                                            <input id="import-columnname-numbers" type="number" min="0" placeholder="0" />
-                                        </div>
-                                    </li>
-                                </ul>
+                                <input id="import-columnname-numbers" type="number" min="0" value="1" />
                             </div>
                         </div>
                     </td>
@@ -89,7 +68,7 @@
 
         @*Todo: Show and Hide Cards - dependent on radio buttons for Input Type*@
 
-        <div class="card" data-bind="visible: ImportTypeChoiceValue() == 'production'">
+        <div class="card" data-bind="visible: selectedImportType() == 'production'">
             <span class="label">Production</span>
             <table style="width: 100%;">
                 <tr>
@@ -103,7 +82,7 @@
             </table>
         </div>
 
-        <div class="card" data-bind="visible: ImportTypeChoiceValue() == 'document'">
+        <div class="card" data-bind="visible: selectedImportType() == 'document'">
             <span class="label">Document</span>
             <table style="width: 100%;">
                 <tr>
@@ -117,7 +96,7 @@
             </table>
         </div>
 
-        <div class="card" data-bind="visible: ImportTypeChoiceValue() == 'image'">
+        <div class="card" data-bind="visible: selectedImportType() == 'image'">
             <span class="label">Image</span>
             <table style="width: 100%;">
                 <tr>
@@ -135,17 +114,17 @@
 
 @section scripts
 {
-<script src="~/Scripts/core/data.js"></script>
-<script src="~/Scripts/core/utils.js"></script>
-<script src="~/Scripts/knockout-3.4.0.js"></script>
-<script src="~/Scripts/export/export-enums.js"></script>
-<script src="~/Scripts/jstree.min.js"></script>
-<script src="~/Scripts/export/location-jstree-selector.js"></script>
-<script src="~/Scripts/integration-point/binding.js"></script>
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
+    <script src="~/Scripts/knockout-3.4.0.js"></script>
+    <script src="~/Scripts/export/export-enums.js"></script>
+    <script src="~/Scripts/jstree.min.js"></script>
+    <script src="~/Scripts/export/location-jstree-selector.js"></script>
+    <script src="~/Scripts/integration-point/binding.js"></script>
 
 
-<script src="~/Scripts/Import/import-setup.js"></script>
-<script src="~/Scripts/Import/import-provider-settings-step.js"></script>
+    <script src="~/Scripts/Import/import-setup.js"></script>
+    <script src="~/Scripts/Import/import-provider-settings-step.js"></script>
 
 
 }

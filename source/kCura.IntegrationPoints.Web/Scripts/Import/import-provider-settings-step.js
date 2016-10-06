@@ -54,12 +54,22 @@
         onPreviewFileClick();
     };
 
-    var viewModel = function () {
-
+    var ImportTypeModel = function (data) {
         var self = this;
 
-        self.ImportTypeChoiceValue = ko.observable();
-        self.ImportTypeChoiceValue("document");
+        self.id = ko.observable(data.id);
+        self.name = ko.observable(data.name);
+        self.value = ko.observable(data.value);
+    };
+
+    var viewModel = function () {
+        var self = this;
+        self.selectedImportType = ko.observable("document");
+        self.importTypes = ko.observableArray([
+            new ImportTypeModel({ id: "1", value: "document", name: "Document Load File" }),
+            new ImportTypeModel({ id: "2", value: "image", name: "Image Load File" }),
+            new ImportTypeModel({ id: "3", value: "production", name: "Production Load File" })
+        ]);
 
         this.ProcessingSourceLocationList = ko.observableArray([]);
         this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
@@ -117,7 +127,7 @@
 
         var _getModel = function () {
             var model = {
-                InputType: $('input:radio[name=import-type]:checked').val(),
+                ImportType: $('#import-importType option:selected').val(),
                 //ProcessingSource: windowObj.import.StorageRoot ? windowObj.import.StorageRoot : "",
                 //LoadDataFrom: windowObj.import.SelectedFolderPath ? windowObj.import.SelectedFolderPath : "",
                 HasStartLine: $("#import-hascolumnnames-checkbox").attr("checked") ? true : false,
