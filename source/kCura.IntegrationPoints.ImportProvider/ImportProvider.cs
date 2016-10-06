@@ -32,18 +32,28 @@ namespace kCura.IntegrationPoints.ImportProvider
         {
             SeqLogger.Info("ImportProvider::GetData()");
 
+            var ColumnIndices = new Dictionary<string, int>();
             var Dt = new DataTable();
+            var requestedFieldList = fields.Select(x => x.DisplayName).ToList();
             foreach (var field in fields)
             {
                 SeqLogger.Info("Field: {DisplayName}, {FieldIdentifier}, {IsIdentifier}", field.DisplayName, field.FieldIdentifier, field.IsIdentifier);
+                ColumnIndices[field.DisplayName] = Int32.Parse(field.FieldIdentifier);
                 Dt.Columns.Add(field.DisplayName);
             }
 
+            //TODO: clean up, use Linq
+            var requestedFields = fields.Count();
             foreach (var entry in entryIds)
             {
                 SeqLogger.Info("Row: {RowData}", entry);
-                //var values = entry.Split(',');
-                //Dt.Rows.Add(entry.Split(','));
+                var newEntry = new string[requestedFields];
+                var data = entry.Split(',');
+                for (var i = 0; i < requestedFields; i++)
+                {
+                    newEntry[i] = data[ColumnIndices[requestedFieldList[i]]];
+                }
+                Dt.Rows.Add(newEntry);
             }
 
             return Dt.CreateDataReader();
@@ -51,6 +61,7 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IEnumerable<FieldEntry> GetFields(string options)
         {
+            SeqLogger.Info("GetFields...");
             var parser = _fieldParserFactory.GetFieldParser(options);
             var result = new List<FieldEntry>();
             var idx = 0;
@@ -59,10 +70,12 @@ namespace kCura.IntegrationPoints.ImportProvider
                 result.Add(new FieldEntry
                 {
                     DisplayName = fieldName,
-                    FieldIdentifier = fieldName,
+                    FieldIdentifier = idx.ToString(),
                     FieldType = FieldType.String,
-                    IsIdentifier = idx++ == 0
+                    IsIdentifier = idx == 0
                 });
+                SeqLogger.Info("\tAdding field {DisplayName}, {FieldIdentifer}", fieldName, idx.ToString());
+                idx++;
             }
             return result;
 
