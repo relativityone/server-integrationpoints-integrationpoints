@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 			Children = new List<JsTreeItemDTO>();
 		}
 
-		public List<JsTreeItemDTO> Children { get; }
+		public List<JsTreeItemDTO> Children { get; set; }
+
 	}
 }

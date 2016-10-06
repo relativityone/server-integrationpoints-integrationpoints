@@ -142,8 +142,8 @@
   <data name="GetJobByID" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\resources\getjobbyid.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="GetJobByRelatedObjectID" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\data\resources\getjobbyrelatedobjectid.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="GetJobByRelatedObjectIDandTaskType" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\Resources\GetJobByRelatedObjectIDandTaskType.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GetNextJob" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\resources\getnextjob.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

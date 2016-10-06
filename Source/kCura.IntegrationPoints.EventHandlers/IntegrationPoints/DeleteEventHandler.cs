@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Castle.Core.Internal;
 using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Contracts.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
@@ -41,36 +44,36 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			//Do nothing
 		}
 
-		public override EventHandler.Response Execute()
+		public override Response Execute()
 		{
-			kCura.EventHandler.Response eventResponse = new kCura.EventHandler.Response();
-			eventResponse.Success = true;
-			eventResponse.Message = String.Empty;
+			Response eventResponse = new Response
+			{
+				Success = true,
+				Message = string.Empty
+			};
 
 			try
 			{
-				int workspaceID = this.Helper.GetActiveCaseID();
-				int integrationPointID = this.ActiveArtifact.ArtifactID;
-				Job job = JobService.GetScheduledJob(workspaceID, integrationPointID, TaskType.SyncManager.ToString());
+				int workspaceId = this.Helper.GetActiveCaseID();
+				int integrationPointId = this.ActiveArtifact.ArtifactID;
+				IEnumerable<Job> jobs = JobService.GetScheduledJobs(workspaceId, integrationPointId, 
+					TaskTypeHelper.GetManagerTypes()
+					.Select(taskType => taskType.ToString())
+					.ToList());
 				
-				if (job != null)
-				{
-					this.JobService.DeleteJob(job.JobId);
-				}
+				jobs.ForEach(job => JobService.DeleteJob(job.JobId));
 			}
 			catch (Exception ex)
 			{
 				eventResponse.Success = false;
-				eventResponse.Message = String.Format("Failed to delete corresponding job. Error: {0}", ex.Message);
+				eventResponse.Message = $"Failed to delete corresponding job(s). Error: {ex.Message}";
 			}
 
 			return eventResponse;
 		}
 
-		public override EventHandler.FieldCollection RequiredFields
-		{
-			get { return new FieldCollection {new Field(Guid.Parse(IntegrationPointFieldGuids.JobHistory))}; }
-		}
+		public override FieldCollection RequiredFields => 
+			new FieldCollection {new Field(Guid.Parse(IntegrationPointFieldGuids.JobHistory))};
 
 		public override void Rollback()
 		{

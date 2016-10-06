@@ -45,9 +45,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			MockDirHierarchy();
 
 			//Act
-			List<JsTreeItemDTO> subItems = _subjectUnderTest.GetChildren(_ROOT_FOLDER, true);
+			List<JsTreeItemDTO> rootItem = _subjectUnderTest.GetChildren(_ROOT_FOLDER, true);
 
 			//Assert
+			Assert.That(rootItem.Count, Is.EqualTo(1));
+			var subItems = rootItem[0].Children;
 			Assert.That(subItems.Count, Is.EqualTo(2));
 			
 			var subFolderA = subItems[0];
@@ -130,10 +132,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_directoryMock.GetDirectories(_ROOT_FOLDER).Throws<UnauthorizedAccessException>();
 
 			//Act
-			List<JsTreeItemDTO> subItems = _subjectUnderTest.GetChildren(_ROOT_FOLDER, true);
+			List<JsTreeItemDTO> rootItem = _subjectUnderTest.GetChildren(_ROOT_FOLDER, true);
 
 			//Assert
-			Assert.That(subItems.Count, Is.EqualTo(0));
+			Assert.That(rootItem.Count,Is.EqualTo(1));
+			Assert.That(rootItem[0].Children.Count, Is.EqualTo(0));
 		}
 
 		private void MockDirHierarchy()

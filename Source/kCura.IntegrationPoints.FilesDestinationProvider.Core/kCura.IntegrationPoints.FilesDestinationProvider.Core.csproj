@@ -147,8 +147,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Authentication\ICredentialProvider.cs" />
-    <Compile Include="Authentication\TokenCredentialProvider.cs" />
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("kCura.IntegrationPoints")]
 [assembly: AssemblyDescription("kCura.IntegrationPoints")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://www.kcura.com")]
+[assembly: AssemblyCompany("kCura LLC")]
 [assembly: AssemblyProduct("kCura.IntegrationPoints")]
-[assembly: AssemblyCopyright("Copyright (c) 2015, kCura Corporation.")]
+[assembly: AssemblyCopyright("Copyright (c) 2016, kCura LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -54,6 +54,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
+// [assembly: AssemblyVersion("9.4.0.0")]
 [assembly: AssemblyVersion("9.4.0.0")]
 [assembly: AssemblyFileVersion("9.4.0.0")]

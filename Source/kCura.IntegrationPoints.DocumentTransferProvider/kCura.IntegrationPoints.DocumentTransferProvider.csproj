@@ -125,8 +125,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Adaptors\Implementations\ConfigAdapter.cs" />
-    <Compile Include="Adaptors\IIntegrationPointsConfig.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
