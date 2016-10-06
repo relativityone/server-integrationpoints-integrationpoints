@@ -15,9 +15,12 @@ namespace kCura.IntegrationPoints.ImportProvider
     public class ImportProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
     {
         private IFieldParserFactory _fieldParserFactory;
-        public ImportProvider(IFieldParserFactory fieldParserFactory)
+        private IDataReaderFactory _dataReaderFactory;
+
+        public ImportProvider(IFieldParserFactory fieldParserFactory, IDataReaderFactory dataReaderFactory)
         {
             _fieldParserFactory = fieldParserFactory;
+            _dataReaderFactory = dataReaderFactory;
         }
 
         public IDataReader GetBatchableIds(FieldEntry identifier, string options)

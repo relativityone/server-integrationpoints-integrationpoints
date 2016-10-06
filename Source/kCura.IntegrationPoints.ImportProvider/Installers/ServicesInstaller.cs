@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Installers
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>().LifestyleSingleton().OnlyNewServices());
+            container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleSingleton().OnlyNewServices());
         }
     }
 }
