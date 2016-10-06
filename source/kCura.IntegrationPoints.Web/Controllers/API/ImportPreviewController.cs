@@ -17,12 +17,28 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpGet]
-        public IHttpActionResult PreviewFiles()
+        public IHttpActionResult PreviewFiles(int workspaceId)
         {
-            string loadFile = @"\\con-clar-rel02\FileShare\O365\test.txt";
-            int workspaceID = 1018974;
-            ImportPreviewTable table = _importPreviewService.PreviewLoadFile(loadFile, workspaceID);
-            return Json(table);
+            int jobId = _importPreviewService.CreatePreviewJob(@"\\con-clar-rel02\FileShare\O365\test.txt", workspaceId);
+            _importPreviewService.StartPreviewJob(jobId);
+            return Json(jobId);
+        }
+
+        [HttpGet]
+        public IHttpActionResult CheckProgress(int jobId)
+        {
+            //TODO: CheckProgress should return domain object w/ TotalBytes and IsComplete
+            var progressData=_importPreviewService.CheckProgress(jobId);
+
+            return Json(progressData);
+        }
+
+        [HttpGet]
+        public IHttpActionResult GetImportPreviewTable(int jobId)
+        {
+            ImportPreviewTable previewTable = _importPreviewService.RetrievePreviewTable(jobId);
+
+            return Json(previewTable);
         }
 
         [HttpGet]

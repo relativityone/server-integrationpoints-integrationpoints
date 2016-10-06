@@ -176,6 +176,7 @@
     </Compile>
     <Compile Include="DataReaderFactory.cs" />
     <Compile Include="FieldParserFactory.cs" />
+    <Compile Include="ImportPreviewJob.cs" />
     <Compile Include="Interfaces\IDataReaderFactory.cs" />
     <Compile Include="Interfaces\IFieldParser.cs" />
     <Compile Include="Interfaces\IFieldParserFactory.cs" />

@@ -10,11 +10,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces
 {
     public interface IImportPreviewService
     {
-        ImportPreviewTable PreviewLoadFile(string filePath, int workspaceID);
+        int CreatePreviewJob(string loadFile, int workspaceId);
 
-        ImportPreviewTable PreviewErrors();
 
-        ImportPreviewTable PreviewChoicesFolders();
+        void StartPreviewJob(int jobId);
+
+
+        long CheckProgress(int jobId);
+
+
+        bool IsJobComplete(int jobId);
+
+
+        ImportPreviewTable RetrievePreviewTable(int jobId);
+   
 
     }
 }

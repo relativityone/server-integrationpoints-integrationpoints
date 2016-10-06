@@ -158,8 +158,20 @@ namespace kCura.IntegrationPoints.Web
 
             config.Routes.MapHttpRoute(
                 name: "ImportPreviewFiles",
-                routeTemplate: "api/ImportPreview/PreviewFiles",
+                routeTemplate: "api/ImportPreview/PreviewFiles/{workspaceId}",
                 defaults: new { controller = "ImportPreview", action = "PreviewFiles" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "ImportPreviewProgress",
+                routeTemplate: "api/ImportPreview/CheckProgress/{jobId}",
+                defaults: new { controller = "ImportPreview", action = "CheckProgress" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "ImportPreviewTable",
+                routeTemplate: "api/ImportPreview/GetImportPreviewTable/{jobId}",
+                defaults: new { controller = "ImportPreview", action = "GetImportPreviewTable" }
             );
         }
 	}
