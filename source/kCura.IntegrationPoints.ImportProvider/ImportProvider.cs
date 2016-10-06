@@ -25,12 +25,28 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IDataReader GetBatchableIds(FieldEntry identifier, string options)
         {
-            throw new NotImplementedException();
+            return _dataReaderFactory.GetDataReader(options);
         }
 
         public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
         {
-            throw new NotImplementedException();
+            SeqLogger.Info("ImportProvider::GetData()");
+
+            var Dt = new DataTable();
+            foreach (var field in fields)
+            {
+                SeqLogger.Info("Field: {DisplayName}, {FieldIdentifier}, {IsIdentifier}", field.DisplayName, field.FieldIdentifier, field.IsIdentifier);
+                Dt.Columns.Add(field.DisplayName);
+            }
+
+            foreach (var entry in entryIds)
+            {
+                SeqLogger.Info("Row: {RowData}", entry);
+                //var values = entry.Split(',');
+                //Dt.Rows.Add(entry.Split(','));
+            }
+
+            return Dt.CreateDataReader();
         }
 
         public IEnumerable<FieldEntry> GetFields(string options)

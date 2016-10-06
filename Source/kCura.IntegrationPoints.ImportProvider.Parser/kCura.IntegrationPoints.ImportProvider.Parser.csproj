@@ -152,9 +152,6 @@
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.API">
-      <HintPath>..\packages\Relativity.API.9.4.302.1\lib\net45\Relativity.API.dll</HintPath>
-    </Reference>
     <Reference Include="Relativity.Services.DataContracts">
       <HintPath>..\packages\Relativity.Services.DataContracts.9.4.302.1\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
