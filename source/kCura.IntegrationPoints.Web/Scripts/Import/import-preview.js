@@ -127,6 +127,14 @@
             updatePaging();
             updateItemUi();
 
+            $("#import-load-file-summary-toggle").on("click", function () {
+                if ($(this).attr("class") == "arrow-collapsed-summary") {
+                    $(this).attr("class", "arrow-expanded-summary");
+                } else if ($(this).attr("class") == "arrow-expanded-summary") {
+                    $(this).attr("class", "arrow-collapsed-summary");
+                }
+                $("#transfer-progress-div").toggle();
+            });
 
             $("#pag-nav-move-next").on("click", function () {
                 csvTable.page('next').draw('page');

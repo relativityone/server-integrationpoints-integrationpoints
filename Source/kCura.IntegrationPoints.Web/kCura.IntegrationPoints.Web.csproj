@@ -387,6 +387,8 @@
     </Content>
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
+    <Content Include="Content\Images\ImportPreview\arrow_collapsed.png" />
+    <Content Include="Content\Images\ImportPreview\arrow_expanded.png" />
     <Content Include="Content\Images\ImportPreview\move_first.png" />
     <Content Include="Content\Images\ImportPreview\move_first_dis.png" />
     <Content Include="Content\Images\ImportPreview\move_last.png" />

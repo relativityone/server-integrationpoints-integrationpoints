@@ -75,6 +75,23 @@
     content: url("Images/ImportPreview/move_last.png");
 }
 
+.arrow-collapsed-summary:before {
+    content: url("Images/ImportPreview/arrow_collapsed.png");
+}
+
+.arrow-expanded-summary:before {
+    content: url("Images/ImportPreview/arrow_expanded.png");
+}
+
+#import-load-file-summary-toggle {
+    cursor: pointer;
+}
+
+#import-main {
+    margin: -27px 0 25px 114px;
+    width: 2%;
+}
+
 /*Preview and sid navigation section*/
 .inventory-card-header {
     float: left;

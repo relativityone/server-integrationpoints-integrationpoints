@@ -5,8 +5,12 @@
 <link href="~/Content/import-preview.css" rel="stylesheet" />
 
 <div class="card" id="step-progress-container">
-    <p class="card-header">Load File Summary <i class="icon-chevron-down"></i> </p>
-
+    <p class="card-header">
+        <span>Load File Summary</span>
+    </p>
+    <div id="import-main">
+        <span class="arrow-collapsed-summary" id="import-load-file-summary-toggle"></span>
+    </div>
     <div id="transfer-progress-div" class="display-flex flex-container-row">
         <div id="active-transfer-left-container" class="display-flex flex-container-column">
             <div id="active-transfer-outcome" class="active-transfer-left-div active-transfer-upload"></div>
