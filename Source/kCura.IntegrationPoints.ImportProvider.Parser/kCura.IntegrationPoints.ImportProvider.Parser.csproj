@@ -179,6 +179,8 @@
     <Compile Include="Interfaces\IDataReaderFactory.cs" />
     <Compile Include="Interfaces\IFieldParser.cs" />
     <Compile Include="Interfaces\IFieldParserFactory.cs" />
+    <Compile Include="LoadFileBase.cs" />
+    <Compile Include="LoadFileDataReader.cs" />
     <Compile Include="LoadFileFieldParser.cs" />
     <Compile Include="Models\ImportProviderSettings.cs" />
     <Compile Include="Services\ImportPreviewService.cs" />

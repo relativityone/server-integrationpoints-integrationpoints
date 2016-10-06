@@ -3,15 +3,11 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class LoadFileFieldParser : IFieldParser
+    public class LoadFileFieldParser : LoadFileBase, IFieldParser
     {
-        private kCura.WinEDDS.LoadFileReader _loadFileReader;
-        private kCura.WinEDDS.LoadFile _config;
-
-        public LoadFileFieldParser(kCura.WinEDDS.LoadFile loadFile)
+        public LoadFileFieldParser(kCura.WinEDDS.LoadFile config)
+            : base(config)
         {
-            _config = loadFile;
-            _loadFileReader = new kCura.WinEDDS.LoadFileReader(_config, false);
         }
 
         public List<string> GetFields()
