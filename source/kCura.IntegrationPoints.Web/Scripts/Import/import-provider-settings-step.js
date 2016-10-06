@@ -20,8 +20,7 @@
         var preError = windowObj.parent.$("#dd-previewErrors");
         var preChoice = windowObj.parent.$("#dd-previewChoiceFolder");
         preFile.on("click", function () {
-            console.log("Preview File selected");
-            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");;
+            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/' + root.utils.getParameterByName('AppID', window.top), "_blank", "width=1370, height=795");
             $(this).close();
             return false;
         });
