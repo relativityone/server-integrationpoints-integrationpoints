@@ -34,6 +34,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         //Get a line stored for the current row, based on delimter settings in the _config
         private void readCurrentRecord()
         {
+            var artifacts = _loadFileReader.ReadArtifact();
+            var data = new string[artifacts.Count];
+            foreach (var artifact in artifacts)
+            {
+                data[artifact.ArtifactID] = artifact.ValueAsString;
+            }
+            _currentLine = string.Join(",", data);
+            SeqLogger.Info("**readCurrentRecord setting current to {Current}", _currentLine);
+            /*
             var fields = new List<string>();
             //TODO: dont assume CSV, do string join based on _config settings
             //TODO: pull the list of selected fields (either from options string, for do an RDO lookup) to only put mapped fields into the _currentLine string
@@ -41,11 +50,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             SeqLogger.Info("readCurrentRecord about to read artifacts.");
             foreach (var artifact in _loadFileReader.ReadArtifact())
             {
-                SeqLogger.Info("Artifact: {DisplayName}: {Artifact}", artifact.DisplayName, artifact.ValueAsString);
+                SeqLogger.Info("Artifact: {DisplayName}, {ArtifactId}, {ValueAsString}", artifact.DisplayName, artifact.ArtifactID, artifact.ValueAsString);
                 fields.Add(artifact.ValueAsString);
             }
             _currentLine = string.Join(",", fields);
             SeqLogger.Info("**readCurrentRecord setting current to {Current}", _currentLine);
+            */
         }
 
         //IDataReader Implementation
