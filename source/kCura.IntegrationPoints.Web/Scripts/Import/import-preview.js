@@ -3,26 +3,37 @@
 (function (root) {
     var previewJobId = -1;
     var intervalId = -1;
+    var percent = 0;
+
+    $("#tableData").hide();
 
     $.get(root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/" + $("#workspaceId").text())
-    .done(function(data){
+    .done(function (data) {
         previewJobId = data;
+        $("#progressBar").css("width", percent);
         intervalId = setInterval(
-            function(){
+            function () {
                 $.get(root.utils.getBaseURL() + "/api/ImportPreview/CheckProgress/" + previewJobId)
                 .done(function (data) {
-                    //TODO: bind data to summary section here
-                    console.log(data);
+                    var percent = (data.BytesRead / data.TotalBytes) * 100;
+                    $("#statusMessage").html("In Process");
+                    $("#progressBar").css("width", percent + "%");
+                    $("#total-bytes-read").html(data.BytesRead);
+                    $("#total-bytes").html(data.TotalBytes);
 
+                    //TODO: bind data to summary section here
+                    //console.log(data);
                     //check if the Preview is complete
                     if (data.IsComplete) {
+                        $("#statusMessage").html("Completed");
+                        $("#statusMessage").attr("class", "active-transfer-status-success");
+                        $("#progressBar").attr("class", "progress-bar-indicator progress-complete");
+                        $("#tableData").show();
                         clearInterval(intervalId);
                         GetPreviewTableData(previewJobId);
                     }
-
                 });
-            }
-            , 2000);
+            }, 2000);
     });
 
     var GetPreviewTableData = function (jobId) {
@@ -64,6 +75,14 @@
             );
 
             csvTable.draw();
+            populateTotalRecords();
+
+            function populateTotalRecords() {
+                var info = csvTable.page.info();
+                var totalRecords = $("#totalRecord");
+
+                totalRecords.text(info.recordsTotal);
+            };
 
             function updateMoveNextBtn() {
                 var info = csvTable.page.info();
@@ -206,6 +225,8 @@
                 updateItemUi();
                 updatePaging();
             });
+
+
         });
     };
 })(IP);

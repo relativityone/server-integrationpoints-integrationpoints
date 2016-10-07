@@ -887,3 +887,10 @@ span.progress-bar-percentage {
     width: 14px;
     height: 8px;
 }
+
+.active-transfer-status-success {
+    color: #5dca77;
+}
+.active-transfer-status-active {
+    color: #000000;
+}

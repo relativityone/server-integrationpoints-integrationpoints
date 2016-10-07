@@ -21,7 +21,7 @@
         var preChoice = windowObj.parent.$("#dd-previewChoiceFolder");
         preFile.on("click", function () {
             window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/' + root.utils.getParameterByName('AppID', window.top), "_blank", "width=1370, height=795");
-            $(this).close();
+            windowObj.parent.$("#dd-preivewFile").close();
             return false;
         });
         preError.click(function () {

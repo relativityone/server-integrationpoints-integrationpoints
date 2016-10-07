@@ -22,7 +22,7 @@
             <div class="import-progress-bar">
                 <b>Preparing Preview</b>
                 <div class="progress-bar-outline display-flex flex-container-column">
-                    <div class="progress-bar-indicator progress-complete" style="width: 50%"></div>
+                    <div class="progress-bar-indicator progress-active" id="progressBar" style="width: 0%"></div>
                 </div>
             </div>
 
@@ -36,9 +36,10 @@
                             <label>Status</label>
                         </div>
                         <div class="card-value-div">
-                            <p class="active-transfer-status-success" style="color: #5dca77">Completed</p>
+                            <p class="active-transfer-status-active" id="statusMessage">-</p>
                         </div>
                     </div>
+                    <br />
                     <div class="card-line display-flex flex-container-row">
                         <div class="card-label-div">
                             <label>Time Elapsed</label>
@@ -49,21 +50,49 @@
                     </div>
                 </div>
                 <div class="active-transfer-stats-line">
-                    <p class="summary-title">TRANSFER BREAKDOWN</p>
+                    <p class="summary-title">Load File Breakdown</p>
                     <div class="card-line display-flex flex-container-row">
                         <div class="card-label-div">
-                            <label>Files Transferred</label>
+                            <label>Total Records</label>
                         </div>
                         <div class="card-value-div">
-                            <p class="transferred-files">28</p>
+                            <p class="transferred-files" id="totalRecord">--</p>
                         </div>
                     </div>
+                    <br/>
                     <div class="card-line display-flex flex-container-row">
                         <div class="card-label-div">
-                            <label>Data Transferred</label>
+                            <label>Total Bytes Read</label>
                         </div>
                         <div class="card-value-div">
-                            <p>612.4 MB</p>
+                            <p id="total-bytes-read">--</p>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Total Bytes</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p id="total-bytes">--</p>
+                        </div>
+                    </div>
+                    @*<br/>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Warnings</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p>3</p>
+                        </div>
+                    </div>*@
+                    <br/>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Errors</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p id="errors-div">--</p>
                         </div>
                     </div>
                 </div>
@@ -73,7 +102,7 @@
 </div>
 
 <div class="row">
-    <div class="card">
+    <div class="card" id="tableData">
         <div>
             <p class="card-header preview-card-header">Records</p>
             <span class="pagination-controls">
