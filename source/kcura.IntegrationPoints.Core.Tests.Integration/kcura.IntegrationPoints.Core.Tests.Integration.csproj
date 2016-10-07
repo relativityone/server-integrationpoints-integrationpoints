@@ -85,7 +85,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ImportTest.cs" />
     <Compile Include="Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="ScheduledJobStopStateTests.cs" />

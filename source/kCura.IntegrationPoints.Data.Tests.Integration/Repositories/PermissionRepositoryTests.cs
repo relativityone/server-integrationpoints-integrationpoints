@@ -163,13 +163,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[TestCase(true, true)]
 		[TestCase(false, false)]
-		[Ignore("Test doesn't work and needs fix")]
-		public bool UserHasArtifactTypePermission_View(bool viewSelected)
+		public void UserHasArtifactTypePermission_View(bool viewSelected, bool expectedResult)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.ViewSelected = viewSelected;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			return _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+			var result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+
+			Assert.AreEqual(result, expectedResult);
 		}
 
 		[TestCase(true, true)]
