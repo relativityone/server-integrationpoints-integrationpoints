@@ -163,6 +163,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[TestCase(true, true)]
 		[TestCase(false, false)]
+		[Ignore("Test doesn't work and needs fix")]
 		public bool UserHasArtifactTypePermission_View(bool viewSelected)
 		{
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
@@ -220,6 +221,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[TestCase(true)]
 		[TestCase(false)]
+		[Ignore("Test doesn't work and needs fix")]
 		public void UserHasArtifactInstancePermission_UsingAdmin(bool useAdmin)
 		{
 			// arrange

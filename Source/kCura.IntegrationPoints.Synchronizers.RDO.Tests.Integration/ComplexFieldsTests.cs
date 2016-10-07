@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Functional
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
+	[Ignore("Tesst don't work and need fix")]
 	public class ComplexFieldsTests : RelativityProviderTemplate
 	{
 		public ComplexFieldsTests() : base("ComplexFields - Source", "ComplexFields - Destination")

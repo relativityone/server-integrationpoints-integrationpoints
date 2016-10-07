@@ -17,7 +17,8 @@ using OpenQA.Selenium.Chrome;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
-	[Explicit]
+	[TestFixture]
+	[Ignore("Tests need refactor")]
 	public class ViewErrors : RelativityProviderTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;
@@ -35,6 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		}
 
 		[Test]
+		[Ignore("Test needs refactor")]
 		public void ExpectDisabledViewErrorsLinkOnIntegrationPointCreation()
 		{
 			//Arrange

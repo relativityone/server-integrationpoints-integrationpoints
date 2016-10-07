@@ -15,7 +15,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
-	[Explicit("TODO : these tests need to run when the rip agents are disabled.")]
 	public class JobServiceTests
 	{
 		private const string _AGENT_TYPEID = "AgentTypeID";

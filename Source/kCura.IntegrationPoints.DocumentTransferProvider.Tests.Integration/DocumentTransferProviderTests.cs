@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 {
 	[TestFixture]
 	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
+	[Ignore("Tests need refactor")]
 	public class DocumentTransferProviderTests : RelativityProviderTemplate
 	{
 		private readonly DocumentTransferProvider _documentTransferProvider;
