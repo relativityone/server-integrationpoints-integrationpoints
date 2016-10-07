@@ -3,7 +3,7 @@
 (function (windowObj, root, ko) {
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
-
+    var ImportSettingsModel;
     //preview file btn toggle
     var onClickPreviewFile = function () {
         var content = windowObj.parent.$("#previewFile-content");
@@ -21,6 +21,9 @@
         var preChoice = windowObj.parent.$("#dd-previewChoiceFolder");
         preFile.on("click", function () {
             window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/' + root.utils.getParameterByName('AppID', window.top), "_blank", "width=1370, height=795");
+            windowObj.ImportSettings = ImportSettingsModel();
+            $.extend(windowObj.ImportSettings, { PreviewType: 'file', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
+
             windowObj.parent.$("#dd-preivewFile").close();
             return false;
         });
@@ -135,14 +138,14 @@
             };
 
             console.log(model);
-            return JSON.stringify(model);
+            return model;
         };
-
+        ImportSettingsModel = _getModel;
         //An event raised when the user has clicked the Next or Save button.
         message.subscribe('submit',
             function () {
                 //Execute save logic that persists the root.
-                var localModel = _getModel();
+                var localModel = JSON.Stringify(_getModel());
                 var parsedModel = JSON.parse(localModel);
 
                 this.publish("saveState", localModel);
@@ -159,7 +162,7 @@
         //An event raised when a user clicks the Back button.
         message.subscribe('back', function () {
             //Execute save logic that persists the root.
-            this.publish('saveState', _getModel());
+            this.publish('saveState', JSON.Stringify(_getModel()));
             windowObj.parent.$('#previewFile').remove();
         });
 

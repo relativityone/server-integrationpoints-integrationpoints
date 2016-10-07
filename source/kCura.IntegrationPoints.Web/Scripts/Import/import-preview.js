@@ -1,10 +1,11 @@
 ﻿var IP = IP || {};
 
-(function (root) {
+(function (root, opener) {
     var previewJobId = -1;
     var intervalId = -1;
     var percent = 0;
     var timerHandle;
+    var settings = opener.ImportSettings;
 
     $("#tableData").hide();
     var timerCount = 0;
@@ -22,12 +23,23 @@
     };
     timerHandle = setInterval(timerRun, 1000);
 
-    $.get(root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/" + $("#workspaceId").text())
-    .done(function (data) {
+    //take the settings we need to send to the CreatePreviewJob action
+    var previewSettingsData = {
+        WorkspaceId: settings.WorkspaceId,
+        PreviewType: settings.PreviewType,
+        FilePath: settings.LoadFile
+    };
+    root.data.ajax({
+        type: "post",
+        url: root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/",
+        data: JSON.stringify(previewSettingsData),
+        dataType: 'json'
+    })
+    .done(function(data){
         previewJobId = data;
         $("#progressBar").css("width", percent);
         intervalId = setInterval(
-            function () {
+            function(){
                 $.get(root.utils.getBaseURL() + "/api/ImportPreview/CheckProgress/" + previewJobId)
                 .done(function (data) {
                     var percent = (data.BytesRead / data.TotalBytes) * 100;
@@ -36,8 +48,6 @@
                     $("#total-bytes-read").html(data.BytesRead);
                     $("#total-bytes").html(data.TotalBytes);
 
-                    //TODO: bind data to summary section here
-                    //console.log(data);
                     //check if the Preview is complete
                     if (data.IsComplete) {
                         timerRequest = false;
@@ -245,4 +255,4 @@
 
         });
     };
-})(IP);
+})(IP,this.opener);

@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Web
 
             config.Routes.MapHttpRoute(
                 name: "ImportPreviewFiles",
-                routeTemplate: "api/ImportPreview/CreatePreviewJob/{workspaceId}",
+                routeTemplate: "api/ImportPreview/CreatePreviewJob/",
                 defaults: new { controller = "ImportPreview", action = "CreatePreviewJob" }
             );
 

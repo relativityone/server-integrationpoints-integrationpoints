@@ -16,11 +16,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             _importPreviewService = importPreviewService;
         }
 
-        [HttpGet]
-        public IHttpActionResult CreatePreviewJob(int workspaceId)
+        [HttpPost]
+        public IHttpActionResult CreatePreviewJob(ImportPreviewSettings settings)
         {
-            //TODO: pass in Load file path (and other settings)
-            int jobId = _importPreviewService.CreatePreviewJob(@"\\con-clar-rel02\FileShare\O365\test.txt", workspaceId);
+            int jobId = _importPreviewService.CreatePreviewJob(settings.FilePath, settings.WorkspaceId);
             _importPreviewService.StartPreviewJob(jobId);
             return Json(jobId);
         }
