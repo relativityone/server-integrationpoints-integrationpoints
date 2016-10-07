@@ -11,6 +11,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 	{
 		public static InitializationResults ToInitializationResults(this Export.InitializationResults result)
 		{
+			if (result == null)
+			{
+				return null;
+			}
 			return new InitializationResults
 			{
 				ColumnNames = result.ColumnNames,
@@ -21,6 +25,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public static ProductionInfo ToProductionInfo(this global::Relativity.Production.ProductionInfo info)
 		{
+			if (info == null)
+			{
+				return null;
+			}
 			return new ProductionInfo
 			{
 				Name = info.Name,
@@ -34,10 +42,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public static Field ToField(this global::Relativity.Core.DTO.Field field)
 		{
+			if (field == null)
+			{
+				return null;
+			}
 			ImportBehaviorChoice? importBehaviorChoice = null;
 			if (field.ImportBehavior.HasValue)
 			{
-				importBehaviorChoice = (ImportBehaviorChoice) Enum.Parse(typeof(ImportBehaviorChoice), field.ImportBehavior.Value.ToString(), true);
+				importBehaviorChoice = (ImportBehaviorChoice)Enum.Parse(typeof(ImportBehaviorChoice), field.ImportBehavior.Value.ToString(), true);
 			}
 
 			return new Field
@@ -105,8 +117,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 				CreatedOn = field.CreatedOn,
 				DeleteFlag = field.DeleteFlag,
 				Guids = field.Guids.ToArray(),
-				FieldType = (FieldType) Enum.Parse(typeof(FieldType), field.FieldType.ToString(), true),
-				FieldCategory = (FieldCategory) Enum.Parse(typeof(FieldCategory), field.FieldCategory.ToString(), true),
+				FieldType = (FieldType)Enum.Parse(typeof(FieldType), field.FieldType.ToString(), true),
+				FieldCategory = (FieldCategory)Enum.Parse(typeof(FieldCategory), field.FieldCategory.ToString(), true),
 				ImportBehavior = importBehaviorChoice,
 				KeyboardShortcut = field.KeyboardShortcut.ToKeyboardShortcut(),
 				ObjectsFieldArgs = field.ObjectsFieldArgs.ToObjectsFieldParameters(),
@@ -116,6 +128,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		private static RelationalFieldPane ToRelationalFieldPane(this global::Relativity.Core.DTO.RelationalFieldPane fieldPane)
 		{
+			if (fieldPane == null)
+			{
+				return null;
+			}
 			return new RelationalFieldPane
 			{
 				ColumnName = fieldPane.ColumnName,
@@ -131,6 +147,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		private static ObjectsFieldParameters ToObjectsFieldParameters(this global::Relativity.Core.DTO.Field.ObjectsFieldParameters parameters)
 		{
+			if (parameters == null)
+			{
+				return null;
+			}
 			return new ObjectsFieldParameters
 			{
 				CreateForeignKeys = parameters.CreateForeignKeys,
@@ -143,6 +163,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		private static KeyboardShortcut ToKeyboardShortcut(this global::Relativity.Core.DTO.KeyboardShortcut keyboardShortcut)
 		{
+			if (keyboardShortcut == null)
+			{
+				return null;
+			}
 			return new KeyboardShortcut
 			{
 				Id = keyboardShortcut.Id,
@@ -155,6 +179,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public static ExportStatistics ToExportStatistics(this EDDS.WebAPI.AuditManagerBase.ExportStatistics stats)
 		{
+			if (stats == null)
+			{
+				return null;
+			}
 			return new ExportStatistics
 			{
 				ExportImages = stats.ExportImages,
@@ -175,11 +203,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 				ExportedTextFileEncodingCodePage = stats.ExportedTextFileEncodingCodePage,
 				FileExportCount = stats.FileExportCount,
 				FilePathSettings = stats.FilePathSettings,
-				ImageFileType = (ImageFileExportType) Enum.Parse(typeof(ImageFileExportType), stats.ImageFileType.ToString(), true),
-				ImageLoadFileFormat = (ImageLoadFileFormatType) Enum.Parse(typeof(ImageLoadFileFormatType), stats.ImageLoadFileFormat.ToString(), true),
-				ImagesToExport = (ImagesToExportType) Enum.Parse(typeof(ImagesToExportType), stats.ImagesToExport.ToString(), true),
+				ImageFileType = (ImageFileExportType)Enum.Parse(typeof(ImageFileExportType), stats.ImageFileType.ToString(), true),
+				ImageLoadFileFormat = (ImageLoadFileFormatType)Enum.Parse(typeof(ImageLoadFileFormatType), stats.ImageLoadFileFormat.ToString(), true),
+				ImagesToExport = (ImagesToExportType)Enum.Parse(typeof(ImagesToExportType), stats.ImagesToExport.ToString(), true),
 				MetadataLoadFileEncodingCodePage = stats.MetadataLoadFileEncodingCodePage,
-				MetadataLoadFileFormat = (LoadFileFormat) Enum.Parse(typeof(LoadFileFormat), stats.MetadataLoadFileFormat.ToString(), true),
+				MetadataLoadFileFormat = (LoadFileFormat)Enum.Parse(typeof(LoadFileFormat), stats.MetadataLoadFileFormat.ToString(), true),
 				MultiValueDelimiter = stats.MultiValueDelimiter,
 				NestedValueDelimiter = stats.NestedValueDelimiter,
 				NewlineProxy = stats.NewlineProxy,
