@@ -34,9 +34,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             var webApiConfig = new WebApiConfig();
             WinEDDS.Config.WebServiceURL = webApiConfig.GetWebApiUrl;
 
-            //SeqLogger.Info("DataReaderFactory called with {Options}", options);
-            //SeqLogger.Info("Set {Url}", webApiConfig.GetWebApiUrl);
-
             var cookieContainer = new System.Net.CookieContainer();
             var credential = _credentialProvider.Authenticate(cookieContainer);
 
@@ -48,12 +45,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             loadFile.LoadNativeFiles = false;
             loadFile.CreateFolderStructure = false;
             var colIdx = 0;
-            //SeqLogger.Info("DataReaderFactory adding fields...");
             foreach (var col in fieldParser.GetFields())
             {
-                //SeqLogger.Info("Field: {FieldName}", col);
                 var fieldCat = -1;
-                //setting the first column as the identifier
+                //TODO: instead of setting the first column as the identifier, use options
                 if (colIdx == 0)
                 {
                     fieldCat = (int)RAPI.FieldCategory.Identifier;
@@ -62,9 +57,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 var newDocField = new kCura.WinEDDS.DocumentField(col, colIdx, 4, fieldCat, -1, -1, -1, false,
                     kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
 
-
                 var mapItem = new kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
-                //SeqLogger.Info("Adding Map Item {Name} with index {Index}", col, colIdx);
                 loadFile.FieldMap.Add(mapItem);
                 colIdx++;
             }

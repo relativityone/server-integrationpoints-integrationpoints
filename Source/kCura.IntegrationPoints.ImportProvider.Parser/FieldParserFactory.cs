@@ -29,9 +29,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             var webApiConfig = new WebApiConfig();
             WinEDDS.Config.WebServiceURL = webApiConfig.GetWebApiUrl;
 
-            SeqLogger.Info("FieldParserFactory called with {Options}", options);
-            SeqLogger.Info("Set {Url}", webApiConfig.GetWebApiUrl);
-
             var cookieContainer = new System.Net.CookieContainer();
             var credential = _credentialProvider.Authenticate(cookieContainer);
 

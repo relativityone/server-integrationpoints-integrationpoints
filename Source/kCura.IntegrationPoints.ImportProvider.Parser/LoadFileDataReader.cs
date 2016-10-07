@@ -17,18 +17,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         public LoadFileDataReader(kCura.WinEDDS.LoadFile config)
             : base(config)
         {
-            //SeqLogger.Info("LoadFileDataReader ctor start");
             _isClosed = false;
             _currentLine = string.Empty;
 
             //Accessing the ColumnNames is necessary to properly intialize the loadFileReader;
             //Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
-            //SeqLogger.Info("LoadFileDataReader ctor about to call GetColumnNames... ");
             _loadFileReader.GetColumnNames(_config);
 
             //TODO: check settings object to decide whether to advance one record to skip headers
             this.Read();
-            //SeqLogger.Info("LoadFileDataReader ctor done.");
         }
 
         //Get a line stored for the current row, based on delimter settings in the _config
@@ -41,28 +38,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 data[artifact.ArtifactID] = artifact.ValueAsString;
             }
             _currentLine = string.Join(",", data);
-            //SeqLogger.Info("**readCurrentRecord setting current to {Current}", _currentLine);
-            /*
-            var fields = new List<string>();
-            //TODO: dont assume CSV, do string join based on _config settings
-            //TODO: pull the list of selected fields (either from options string, for do an RDO lookup) to only put mapped fields into the _currentLine string
-
-            SeqLogger.Info("readCurrentRecord about to read artifacts.");
-            foreach (var artifact in _loadFileReader.ReadArtifact())
-            {
-                SeqLogger.Info("Artifact: {DisplayName}, {ArtifactId}, {ValueAsString}", artifact.DisplayName, artifact.ArtifactID, artifact.ValueAsString);
-                fields.Add(artifact.ValueAsString);
-            }
-            _currentLine = string.Join(",", fields);
-            SeqLogger.Info("**readCurrentRecord setting current to {Current}", _currentLine);
-            */
         }
 
         //IDataReader Implementation
 
         public void Close()
         {
-            //SeqLogger.Info("LoadFileDataReader.Close()");
             _loadFileReader.Close();
             _isClosed = true;
         }
@@ -84,22 +65,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public bool NextResult()
         {
-            throw new NotImplementedException("DataReader.NextResult() not implemented.");
+            throw new NotImplementedException();
         }
 
         public bool Read()
         {
-            //SeqLogger.Info("LoadFileDataReader.Read()");
-            //SeqLogger.Info("_loadFileReader.HasMoreRecords: {Bool}", _loadFileReader.HasMoreRecords);
-
             if (!_loadFileReader.HasMoreRecords)
             {
-                //SeqLogger.Info("LoadFileDataReader.Read() returning False");
                 return false;
             }
             else
             {
-                //SeqLogger.Info("LoadFileDataReader.Read() returning True");
                 readCurrentRecord();
                 return true;
             }
@@ -207,8 +183,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public string GetString(int i)
         {
-            SeqLogger.Info("LoadFileDataReader.GetString({i})", i);
-            SeqLogger.Info("LoadFileDataReader.GetString returning {String}", _currentLine);
             return _currentLine;
         }
 

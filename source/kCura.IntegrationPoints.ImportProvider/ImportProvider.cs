@@ -28,36 +28,23 @@ namespace kCura.IntegrationPoints.ImportProvider
             return _dataReaderFactory.GetDataReader(options);
         }
 
-        public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
+        public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> sourceFileLines, string options)
         {
-            SeqLogger.Info("ImportProvider::GetData()");
-
-            var ColumnIndices = new Dictionary<string, int>();
             var Dt = new DataTable();
-            var requestedFieldList = new List<string>();
             foreach (var field in fields)
             {
-                SeqLogger.Info("Field: {DisplayName}, {FieldIdentifier}, {IsIdentifier}", field.DisplayName, field.FieldIdentifier, field.IsIdentifier);
-                requestedFieldList.Add(field.DisplayName);
-                ColumnIndices[field.DisplayName] = Int32.Parse(field.FieldIdentifier);
-                Dt.Columns.Add(field.DisplayName);
+                Dt.Columns.Add(field.FieldIdentifier);
             }
 
-            //TODO: clean up, use Linq
-            var requestedFieldCount = fields.Count();
-            foreach (var entry in entryIds)
+            foreach (var line in sourceFileLines)
             {
-                var dt = Dt.NewRow();
-                SeqLogger.Info("Row: {RowData}", entry);
-                var newEntry = new string[requestedFieldCount];
-                var data = entry.Split(',');
-                for (var i = 0; i < requestedFieldCount; i++)
+                var lineSplit = line.Split(',');
+                var dtRow = Dt.NewRow();
+                foreach (var field in fields)
                 {
-                    dt[i] = data[ColumnIndices[requestedFieldList[i]]];
-                    SeqLogger.Info("Value {i} set to {value}", i, dt[i]);
+                    dtRow[field.FieldIdentifier] = lineSplit[Int32.Parse(field.FieldIdentifier)];
                 }
-                //SeqLogger.Info("Adding an entry: {Joined}", string.Join(",", (string[])dt.ItemArray));
-                Dt.Rows.Add(dt);
+                Dt.Rows.Add(dtRow);
             }
 
             return Dt.CreateDataReader();
@@ -65,7 +52,6 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IEnumerable<FieldEntry> GetFields(string options)
         {
-            SeqLogger.Info("GetFields...");
             var parser = _fieldParserFactory.GetFieldParser(options);
             var result = new List<FieldEntry>();
             var idx = 0;
@@ -78,27 +64,9 @@ namespace kCura.IntegrationPoints.ImportProvider
                     FieldType = FieldType.String,
                     IsIdentifier = idx == 0
                 });
-                SeqLogger.Info("\tAdding field {DisplayName}, {FieldIdentifer}", fieldName, idx.ToString());
                 idx++;
             }
             return result;
-
-            /*
-            SeqLogger.Info("Got Options: {Options}", options);
-
-            var result = new List<FieldEntry>();
-            result.Add(new FieldEntry
-            {
-                DisplayName = "JustThisOneField",
-                FieldIdentifier = "JustThisOneField",
-                FieldType = FieldType.String,
-                IsIdentifier = true
-            });
-
-            SeqLogger.Info("Finished constructing result. About to return...");
-
-            return result;
-            */
         }
     }
 }
