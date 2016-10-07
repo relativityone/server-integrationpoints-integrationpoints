@@ -17,18 +17,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         public LoadFileDataReader(kCura.WinEDDS.LoadFile config)
             : base(config)
         {
-            SeqLogger.Info("LoadFileDataReader ctor start");
+            //SeqLogger.Info("LoadFileDataReader ctor start");
             _isClosed = false;
             _currentLine = string.Empty;
 
             //Accessing the ColumnNames is necessary to properly intialize the loadFileReader;
             //Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
-            SeqLogger.Info("LoadFileDataReader ctor about to call GetColumnNames... ");
+            //SeqLogger.Info("LoadFileDataReader ctor about to call GetColumnNames... ");
             _loadFileReader.GetColumnNames(_config);
 
             //TODO: check settings object to decide whether to advance one record to skip headers
             this.Read();
-            SeqLogger.Info("LoadFileDataReader ctor done.");
+            //SeqLogger.Info("LoadFileDataReader ctor done.");
         }
 
         //Get a line stored for the current row, based on delimter settings in the _config
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 data[artifact.ArtifactID] = artifact.ValueAsString;
             }
             _currentLine = string.Join(",", data);
-            SeqLogger.Info("**readCurrentRecord setting current to {Current}", _currentLine);
+            //SeqLogger.Info("**readCurrentRecord setting current to {Current}", _currentLine);
             /*
             var fields = new List<string>();
             //TODO: dont assume CSV, do string join based on _config settings
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public void Close()
         {
-            SeqLogger.Info("LoadFileDataReader.Close()");
+            //SeqLogger.Info("LoadFileDataReader.Close()");
             _loadFileReader.Close();
             _isClosed = true;
         }
@@ -89,17 +89,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public bool Read()
         {
-            SeqLogger.Info("LoadFileDataReader.Read()");
-            SeqLogger.Info("_loadFileReader.HasMoreRecords: {Bool}", _loadFileReader.HasMoreRecords);
+            //SeqLogger.Info("LoadFileDataReader.Read()");
+            //SeqLogger.Info("_loadFileReader.HasMoreRecords: {Bool}", _loadFileReader.HasMoreRecords);
 
             if (!_loadFileReader.HasMoreRecords)
             {
-                SeqLogger.Info("LoadFileDataReader.Read() returning False");
+                //SeqLogger.Info("LoadFileDataReader.Read() returning False");
                 return false;
             }
             else
             {
-                SeqLogger.Info("LoadFileDataReader.Read() returning True");
+                //SeqLogger.Info("LoadFileDataReader.Read() returning True");
                 readCurrentRecord();
                 return true;
             }
