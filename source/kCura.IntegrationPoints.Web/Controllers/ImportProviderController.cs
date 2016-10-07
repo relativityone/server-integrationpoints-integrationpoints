@@ -9,10 +9,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
             return View();
         }
 
-        public ActionResult ImportPreview(int id)
+        public ActionResult ImportPreview()
         {
-            ViewBag.workSpaceId = id;
-
             return View();
         }
     }
