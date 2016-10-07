@@ -11,7 +11,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class RelativityApplication
 	{
-		public static void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock,
+		public static void ImportOrUpgradeRelativityApplication(int workspaceArtifactId, Guid applicationGuid, ClaimsPrincipal claimsPrincipal, string applicationRapFileName = null)
+		{
+			if (SharedVariables.UseLocalRap)
+			{
+				ImportRapFromLocalLocation(workspaceArtifactId);
+			}
+			else
+			{
+				ImportRapFromBuildPackages(workspaceArtifactId, applicationGuid, claimsPrincipal, applicationRapFileName);
+			}
+		}
+
+		private static void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock,
 			List<int> appsToOverride = null)
 		{
 			//List of application ArtifactIDs to override, if already installed
@@ -44,7 +56,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void ImportLibraryApplicationToWorkspace(int workspaceArtifactId, Guid applicationGuid)
+		private static void ImportLibraryApplicationToWorkspace(int workspaceArtifactId, Guid applicationGuid)
 		{
 			int applicationInstallId = 0;
 			using (IApplicationInstallManager proxy = Kepler.CreateProxy<IApplicationInstallManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
@@ -58,7 +70,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void ImportOrUpgradeRelativityApplication(int workspaceArtifactId, Guid applicationGuid, ClaimsPrincipal claimsPrincipal, string applicationRapFileName = null)
+		private static void ImportRapFromLocalLocation(int workspaceArtifactId)
+		{
+			string applicationFilePath = SharedVariables.RapFileLocation;
+
+			ImportApplicationToWorkspace(workspaceArtifactId, applicationFilePath, true);
+		}
+
+		private static void ImportRapFromBuildPackages(int workspaceArtifactId, Guid applicationGuid, ClaimsPrincipal claimsPrincipal, string applicationRapFileName = null)
 		{
 			string libraryApplicationVersion = ReadRelativityLibraryApplicationVersion(claimsPrincipal, applicationGuid);
 			string latestRapVersion = SharedVariables.LatestRapVersionFromBuildPackages;
@@ -73,6 +92,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						SharedVariables.ApplicationRapFileName)
 					: Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath,
 						applicationRapFileName);
+
 				ImportApplicationToWorkspace(workspaceArtifactId, applicationFilePath, true);
 			}
 			else
@@ -81,7 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static string ReadRelativityLibraryApplicationVersion(ClaimsPrincipal claimsPrincipal, Guid applicationGuid)
+		private static string ReadRelativityLibraryApplicationVersion(ClaimsPrincipal claimsPrincipal, Guid applicationGuid)
 		{
 			var libraryManager = new global::Relativity.Core.Service.LibraryApplicationManager();
 			ICoreContext baseServiceContext = GetBaseServiceContext(claimsPrincipal, -1);

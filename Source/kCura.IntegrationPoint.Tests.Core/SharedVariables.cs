@@ -65,6 +65,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string LatestRapVersionFromBuildPackages => GetLatestVersion();
 
+		public static bool UseLocalRap => bool.Parse(ConfigurationManager.AppSettings["UseLocalRAP"]);
+
 		public static string RapFileLocation => ConfigurationManager.AppSettings["LocalRAPFileLocation"];
 
 		#endregion RAP File Settings
