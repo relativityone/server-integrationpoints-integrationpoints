@@ -4,8 +4,23 @@
     var previewJobId = -1;
     var intervalId = -1;
     var percent = 0;
+    var timerHandle;
 
     $("#tableData").hide();
+    var timerCount = 0;
+    var timerRequest = true;
+
+    function timerRun() {
+        if (timerRequest) {
+            var format = (new Date).clearTime()
+                .addSeconds(timerCount++)
+                .toString('HH:mm:ss');
+            $(".elapsed-time").text(format);
+        } else {
+            clearInterval(timerHandle);
+        }
+    };
+    timerHandle = setInterval(timerRun, 1000);
 
     $.get(root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/" + $("#workspaceId").text())
     .done(function (data) {
@@ -25,6 +40,7 @@
                     //console.log(data);
                     //check if the Preview is complete
                     if (data.IsComplete) {
+                        timerRequest = false;
                         $("#statusMessage").html("Completed");
                         $("#statusMessage").attr("class", "active-transfer-status-success");
                         $("#progressBar").attr("class", "progress-bar-indicator progress-complete");
