@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             SeqLogger.Info("LoadFileDataReader ctor about to call GetColumnNames... ");
             _loadFileReader.GetColumnNames(_config);
 
-            //Must advance one record to skip headers so first Read gets the first data row
+            //TODO: check settings object to decide whether to advance one record to skip headers
             this.Read();
             SeqLogger.Info("LoadFileDataReader ctor done.");
         }
@@ -38,11 +38,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             //TODO: dont assume CSV, do string join based on _config settings
             //TODO: pull the list of selected fields (either from options string, for do an RDO lookup) to only put mapped fields into the _currentLine string
 
+            SeqLogger.Info("readCurrentRecord about to read artifacts.");
             foreach (var artifact in _loadFileReader.ReadArtifact())
             {
+                SeqLogger.Info("Artifact: {DisplayName}: {Artifact}", artifact.DisplayName, artifact.ValueAsString);
                 fields.Add(artifact.ValueAsString);
             }
             _currentLine = string.Join(",", fields);
+            SeqLogger.Info("**readCurrentRecord setting current to {Current}", _currentLine);
         }
 
         //IDataReader Implementation

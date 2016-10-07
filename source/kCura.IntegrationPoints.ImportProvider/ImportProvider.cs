@@ -34,26 +34,30 @@ namespace kCura.IntegrationPoints.ImportProvider
 
             var ColumnIndices = new Dictionary<string, int>();
             var Dt = new DataTable();
-            var requestedFieldList = fields.Select(x => x.DisplayName).ToList();
+            var requestedFieldList = new List<string>();
             foreach (var field in fields)
             {
                 SeqLogger.Info("Field: {DisplayName}, {FieldIdentifier}, {IsIdentifier}", field.DisplayName, field.FieldIdentifier, field.IsIdentifier);
+                requestedFieldList.Add(field.DisplayName);
                 ColumnIndices[field.DisplayName] = Int32.Parse(field.FieldIdentifier);
                 Dt.Columns.Add(field.DisplayName);
             }
 
             //TODO: clean up, use Linq
-            var requestedFields = fields.Count();
+            var requestedFieldCount = fields.Count();
             foreach (var entry in entryIds)
             {
+                var dt = Dt.NewRow();
                 SeqLogger.Info("Row: {RowData}", entry);
-                var newEntry = new string[requestedFields];
+                var newEntry = new string[requestedFieldCount];
                 var data = entry.Split(',');
-                for (var i = 0; i < requestedFields; i++)
+                for (var i = 0; i < requestedFieldCount; i++)
                 {
-                    newEntry[i] = data[ColumnIndices[requestedFieldList[i]]];
+                    dt[i] = data[ColumnIndices[requestedFieldList[i]]];
+                    SeqLogger.Info("Value {i} set to {value}", i, dt[i]);
                 }
-                Dt.Rows.Add(newEntry);
+                //SeqLogger.Info("Adding an entry: {Joined}", string.Join(",", (string[])dt.ItemArray));
+                Dt.Rows.Add(dt);
             }
 
             return Dt.CreateDataReader();

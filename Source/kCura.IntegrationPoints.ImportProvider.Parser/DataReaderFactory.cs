@@ -62,7 +62,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 var newDocField = new kCura.WinEDDS.DocumentField(col, colIdx, 4, fieldCat, -1, -1, -1, false,
                     kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
 
-                loadFile.FieldMap.Add(new kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx++));
+
+                var mapItem = new kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
+                SeqLogger.Info("Adding Map Item {Name} with index {Index}", col, colIdx);
+                loadFile.FieldMap.Add(mapItem);
+                colIdx++;
             }
 
 
