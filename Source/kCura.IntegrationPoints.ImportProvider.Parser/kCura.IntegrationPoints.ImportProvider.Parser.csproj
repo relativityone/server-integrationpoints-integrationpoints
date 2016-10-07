@@ -171,6 +171,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Authentication\AuthenticatedCredentialProvider.cs" />
+    <Compile Include="Authentication\Interfaces\IAuthenticatedCredentialProvider.cs" />
     <Compile Include="DataReaderFactory.cs" />
     <Compile Include="FieldParserFactory.cs" />
     <Compile Include="ImportPreviewJob.cs" />

@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Models;
+using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
 
 using kCura.IntegrationPoints.ImportProvider.Helpers.Logging;
 
@@ -12,9 +11,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     {
         //TODO: Figure out why IWebApiConfig cannot be injected
         //IWebApiConfig _webApiConfig;
-        ICredentialProvider _credentialProvider;
+        IAuthenticatedCredentialProvider _credentialProvider;
         //public FieldParserFactory(ICredentialProvider credentialProvider, IWebApiConfig webApiConfig)
-        public FieldParserFactory(ICredentialProvider credentialProvider)
+        public FieldParserFactory(IAuthenticatedCredentialProvider credentialProvider)
         {
             _credentialProvider = credentialProvider;
         }
@@ -25,15 +24,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
             var filePath = settings.LoadFile;
 
-            //Set up Config object with WebAPI link
-            var webApiConfig = new WebApiConfig();
-            WinEDDS.Config.WebServiceURL = webApiConfig.GetWebApiUrl;
-
-            var cookieContainer = new System.Net.CookieContainer();
-            var credential = _credentialProvider.Authenticate(cookieContainer);
-
             //TODO: replace hard coded workspace with value from helper
-            var factory = new kCura.WinEDDS.NativeSettingsFactory(credential, 1016969);
+            var factory = new kCura.WinEDDS.NativeSettingsFactory(_credentialProvider.GetAuthenticatedCredential(), 1016969);
             var loadFile = factory.ToLoadFile();
             loadFile.RecordDelimiter = ',';
             loadFile.FilePath = filePath;

@@ -4,27 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Config;
 using kCura.WinEDDS;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
     public class PreviewJob
     {
 
-        public PreviewJob(ICredentialProvider credentialProvider, string loadFile, int workspaceId)
+        public PreviewJob(NetworkCredential authenticatedCredential, string loadFile, int workspaceId)
         {
             IsComplete = false;
 
-            //Set up Config object with WebAPI link
-            var webApiConfig = new WebApiConfig();
-            WinEDDS.Config.WebServiceURL = webApiConfig.GetWebApiUrl;
-
-            var cookeiContainer = new System.Net.CookieContainer();
-
-            var factory = new kCura.WinEDDS.NativeSettingsFactory(credentialProvider.Authenticate(cookeiContainer), workspaceId);
+            var factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, workspaceId);
             var eddsLoadFile = factory.ToLoadFile();
 
             eddsLoadFile.RecordDelimiter = ',';

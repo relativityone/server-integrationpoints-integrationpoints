@@ -6,19 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using kCura.WinEDDS;
-using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
+using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 {
     public class ImportPreviewService : IImportPreviewService
     {
-        private ICredentialProvider _credentialProvider;
+        private IAuthenticatedCredentialProvider _credentialProvider;
         private Dictionary<int, PreviewJob> _loadFilePreviewers;
 
-        public ImportPreviewService(ICredentialProvider credentialProvider)
+        public ImportPreviewService(IAuthenticatedCredentialProvider credentialProvider)
         {
             _credentialProvider = credentialProvider;
             _loadFilePreviewers = new Dictionary<int, PreviewJob>();
@@ -27,7 +26,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
         public int CreatePreviewJob(string loadFile, int workspaceId)
         {
             int handlerNum = _loadFilePreviewers.Count + 1;
-            _loadFilePreviewers.Add(handlerNum, new PreviewJob(_credentialProvider, loadFile, workspaceId));
+            _loadFilePreviewers.Add(handlerNum, new PreviewJob(_credentialProvider.GetAuthenticatedCredential(), loadFile, workspaceId));
 
             return handlerNum;
         }
