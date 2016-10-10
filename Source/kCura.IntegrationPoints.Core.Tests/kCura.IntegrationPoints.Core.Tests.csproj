@@ -200,6 +200,8 @@
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
@@ -231,65 +233,54 @@
     </Compile>
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
-    <Compile Include="ImportTest.cs" />
-    <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
-    <Compile Include="Integration\Managers\TargetDocumentsTaggingManagerTests.cs" />
-    <Compile Include="Integration\ScheduledJobStopStateTests.cs" />
-    <Compile Include="Integration\Services\IntegrationPointServiceTestsForOtherProviders.cs" />
     <Compile Include="SetupAndTeardown.cs" />
-    <Compile Include="UI\ConsoleButtons.cs" />
-    <Compile Include="UI\ConsoleButtonTestsForOtherProviders.cs" />
-    <Compile Include="UI\PermissionErrorMessageTest.cs" />
-    <Compile Include="Integration\Services\AgentJobManagerTests.cs" />
-    <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
-    <Compile Include="UI\SchedulerUiTests.cs" />
-    <Compile Include="Unit\AgentJobManagerTest.cs" />
-    <Compile Include="Unit\Agent\IntegrationPointTaskBaseTests.cs" />
-    <Compile Include="Unit\BatchEmailTests.cs" />
-    <Compile Include="Unit\BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerFactoryTests.cs" />
-    <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
-    <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
-    <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
-    <Compile Include="Unit\Helpers\DirectoryTreeCreatorTest.cs" />
-    <Compile Include="Unit\Helpers\OnClickEventConstructorTests.cs" />
-    <Compile Include="Unit\Helpers\ArtifactTreeCreatorTests.cs" />
-    <Compile Include="Unit\Helpers\SavedSearchesTreeCreatorTests.cs" />
-    <Compile Include="Unit\JobHistoryBatchUpdateStatusTests.cs" />
-    <Compile Include="Unit\JobStatusUpdaterTests.cs" />
-    <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />
-    <Compile Include="Unit\Managers\ErrorManagerTests.cs" />
-    <Compile Include="Unit\Managers\JobStopManagerTests.cs" />
-    <Compile Include="Unit\Managers\FieldManagerTests.cs" />
-    <Compile Include="Unit\Managers\IntegrationPointManagerTests.cs" />
-    <Compile Include="Unit\Keywords\KeywordConverterTests.cs" />
-    <Compile Include="Unit\Managers\JobHistoryErrorManagerTests.cs" />
-    <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
-    <Compile Include="Unit\Managers\NullableStopJobManagerTests.cs" />
-    <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
-    <Compile Include="Unit\Managers\QueueManagerTests.cs" />
-    <Compile Include="Unit\Managers\ResourcePoolManagerTests.cs" />
-    <Compile Include="Unit\Managers\SourceJobManagerTests.cs" />
-    <Compile Include="Unit\Managers\SourceWorkspaceManagerTests.cs" />
-    <Compile Include="Unit\Managers\StateManagerTests.cs" />
-    <Compile Include="Unit\Models\StoppableJobCollectionTests.cs" />
-    <Compile Include="Unit\RdoFilterTest.cs" />
-    <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />
-    <Compile Include="Unit\Services\Export\ArgumentMatcher.cs" />
-    <Compile Include="Unit\Services\Export\DocumentTransferDataReaderTests.cs" />
-    <Compile Include="Unit\Services\Export\ExportApiHelperTests.cs" />
-    <Compile Include="Unit\Services\Export\ExportJobErrorServiceTest.cs" />
-    <Compile Include="Unit\Services\Export\InMemoryILongTextStream.cs" />
-    <Compile Include="Unit\Services\Export\LazyExceptArtifactFieldDtoTests.cs" />
-    <Compile Include="Unit\Services\Export\RelativityExporterServiceTests.cs" />
-    <Compile Include="Unit\Services\IntegrationPointServiceTests.cs" />
-    <Compile Include="Unit\Services\JobHistory\JobHistoryErrorServiceTest.cs" />
-    <Compile Include="Unit\Services\JobHistory\JobHistoryServiceTest.cs" />
-    <Compile Include="Unit\Services\SavedSearchesTreeServiceTests.cs" />
-    <Compile Include="Unit\Telemetry\ExportTelemetryMetricProviderTest.cs" />
-    <Compile Include="Unit\Telemetry\TelemetryMangerTest.cs" />
+    <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
+    <Compile Include="Helpers\ArtifactTreeCreatorTests.cs" />
+    <Compile Include="Helpers\SavedSearchesTreeCreatorTests.cs" />
+    <Compile Include="AgentJobManagerTest.cs" />
+    <Compile Include="Agent\IntegrationPointTaskBaseTests.cs" />
+    <Compile Include="BatchEmailTests.cs" />
+    <Compile Include="BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
+    <Compile Include="BatchStatusCommands\TargetDocumentsTaggingManagerFactoryTests.cs" />
+    <Compile Include="BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
+    <Compile Include="BatchStatusCommands\TempTableReaderTests.cs" />
+    <Compile Include="DeleteHistoryServiceTest.cs" />
+    <Compile Include="BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
+    <Compile Include="Helpers\DirectoryTreeCreatorTest.cs" />
+    <Compile Include="Helpers\OnClickEventConstructorTests.cs" />
+    <Compile Include="JobHistoryBatchUpdateStatusTests.cs" />
+    <Compile Include="JobStatusUpdaterTests.cs" />
+    <Compile Include="Managers\ArtifactGuidManagerTests.cs" />
+    <Compile Include="Managers\ErrorManagerTests.cs" />
+    <Compile Include="Managers\JobStopManagerTests.cs" />
+    <Compile Include="Managers\FieldManagerTests.cs" />
+    <Compile Include="Managers\IntegrationPointManagerTests.cs" />
+    <Compile Include="Keywords\KeywordConverterTests.cs" />
+    <Compile Include="Managers\JobHistoryErrorManagerTests.cs" />
+    <Compile Include="Managers\JobHistoryManagerTests.cs" />
+    <Compile Include="Managers\NullableStopJobManagerTests.cs" />
+    <Compile Include="Managers\ObjectTypeManagerTests.cs" />
+    <Compile Include="Managers\QueueManagerTests.cs" />
+    <Compile Include="Managers\ResourcePoolManagerTests.cs" />
+    <Compile Include="Managers\SourceJobManagerTests.cs" />
+    <Compile Include="Managers\SourceWorkspaceManagerTests.cs" />
+    <Compile Include="Managers\StateManagerTests.cs" />
+    <Compile Include="Models\StoppableJobCollectionTests.cs" />
+    <Compile Include="RdoFilterTest.cs" />
+    <Compile Include="Services\Domain\RelativityFeaturePathServiceTests.cs" />
+    <Compile Include="Services\Export\ArgumentMatcher.cs" />
+    <Compile Include="Services\Export\DocumentTransferDataReaderTests.cs" />
+    <Compile Include="Services\Export\ExportApiHelperTests.cs" />
+    <Compile Include="Services\Export\ExportJobErrorServiceTest.cs" />
+    <Compile Include="Services\Export\InMemoryILongTextStream.cs" />
+    <Compile Include="Services\Export\LazyExceptArtifactFieldDtoTests.cs" />
+    <Compile Include="Services\Export\RelativityExporterServiceTests.cs" />
+    <Compile Include="Services\IntegrationPointServiceTests.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryErrorServiceTest.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryServiceTest.cs" />
+    <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
+    <Compile Include="Telemetry\TelemetryMangerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -341,7 +332,6 @@
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Integration\Installers\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Choose>

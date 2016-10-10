@@ -61,8 +61,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Unit\Agent\TaskJobSubmitterTests.cs" />
-    <Compile Include="Unit\Helpers\TaskTypeHelperTests.cs" />
+    <Compile Include="Agent\TaskJobSubmitterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

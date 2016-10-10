@@ -13,10 +13,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const string _VIEW_ARTIFACT_NAME_KEY = "ViewArtifactName";
 		private const string _ADDITIONAL_FIELD_NAMES_KEY = "AdditionalFieldNames";
 		private const string _DESTINATION_PATH_KEY = "DestinationPath";
-		private const string _WEBAPI_URL_KEY = "WebApiUrl";
-
-		private const string _USERNAME_KEY = "relativityUserName";
-		private const string _PASSWORD_KEY = "relativityPassword";
 
 		private const string _LONGT_TEXT_FIELD_KEY = "LongTextFieldName";
 
@@ -54,12 +50,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		public string LongTextFieldName { get; } = ConfigurationManager.AppSettings[_LONGT_TEXT_FIELD_KEY];
 
 		public string DestinationPath { get; } = ConfigurationManager.AppSettings[_DESTINATION_PATH_KEY];
-
-		public string WebApiUrl { get; } = ConfigurationManager.AppSettings[_WEBAPI_URL_KEY];
-
-		public string UserName { get; } = ConfigurationManager.AppSettings[_USERNAME_KEY];
-
-		public string Password { get; } = ConfigurationManager.AppSettings[_PASSWORD_KEY];
 
 		#endregion //Properties
 	}
