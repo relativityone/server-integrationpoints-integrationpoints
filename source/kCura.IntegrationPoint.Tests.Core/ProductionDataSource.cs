@@ -16,7 +16,7 @@
 					  ""workspaceArtifactID"": {workspaceId},
 					  ""productionID"": {productionId},
 					  ""dataSource"": {{						
-						""ProductionType"": ""ImagesOnly"",
+						""ProductionType"": ""ImagesAndNatives"",
 						""SavedSearch"": {{
 						  ""ArtifactID"": {savedSearchId}
 						}},

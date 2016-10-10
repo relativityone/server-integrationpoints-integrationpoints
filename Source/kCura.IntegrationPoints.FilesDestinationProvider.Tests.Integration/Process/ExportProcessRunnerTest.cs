@@ -168,6 +168,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				SavedSearchArtifactId = _configSettings.ExportedObjArtifactId,
 				SavedSearchName = _configSettings.SavedSearchArtifactName,
 				SelViewFieldIds = fieldIds,
+				SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.None,
 				TextPrecedenceFieldsIds = new List<int> {int.Parse(_configSettings.LongTextField.FieldIdentifier)},
 				DataFileEncoding = Encoding.Unicode,
 				VolumeMaxSize = 650,

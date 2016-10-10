@@ -133,6 +133,7 @@
     <Compile Include="Agent\TaskParameters.cs" />
     <Compile Include="Custodian\CustodianConstants.cs" />
     <Compile Include="BatchReporter\IBatchReporter.cs" />
+    <Compile Include="Helpers\TaskTypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
