@@ -13,10 +13,10 @@ namespace kCura.IntegrationPoints.Web
 		{
 			filters.Add(new HandleErrorAttribute());
 		}
-
+		
 		public static void RegisterWebAPIFilters(HttpConfiguration config, IWindsorContainer container)
 		{
-			config.Filters.Add(container.Resolve<WebAPILoginException>());
+			config.Filters.Add(new LogApiExceptionFilterAttribute());
 			config.Services.Add(typeof(IExceptionLogger), container.Resolve<WebAPIFilterException>());
 		}
 

@@ -80,40 +80,5 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 					Arg.Is(model.ArtifactID),
 					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
-
-		[Test]
-		public void UpdateIntegrationPointThrowsError_ReturnFailedResponse()
-		{
-			const string expect = "That's a damn shame.";
-			Exception expectException = new Exception(expect);
-			_integrationPointService.SaveIntegration(Arg.Any<IntegrationModel>()).Throws(expectException);
-
-			// Act
-			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, new IntegrationModel());
-
-			Assert.IsNotNull(response);
-			String actual = response.Content.ReadAsStringAsync().Result;
-			_relativityUrlHelper.DidNotReceive().GetRelativityViewUrl(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>());
-			Assert.AreEqual($"\"{expect}\"", actual);
-			Assert.AreEqual(HttpStatusCode.PreconditionFailed, response.StatusCode);
-		}
-
-		[Test]
-		public void GetRelativityViewUrlThrowsError_ReturnFailedResponse()
-		{
-			const string expect = "That's a damn shame.";
-			Exception expectException = new Exception(expect);
-
-			_integrationPointService.SaveIntegration(Arg.Any<IntegrationModel>()).Returns(3);
-			_relativityUrlHelper.GetRelativityViewUrl(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>()).Throws(expectException);
-
-			// Act
-			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, new IntegrationModel());
-
-			Assert.IsNotNull(response);
-			String actual = response.Content.ReadAsStringAsync().Result;
-			Assert.AreEqual($"\"{expect}\"", actual);
-			Assert.AreEqual(HttpStatusCode.PreconditionFailed, response.StatusCode);
-		}
 	}
 }

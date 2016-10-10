@@ -137,31 +137,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.That(retValue[0], Is.EqualTo(directoryJsTreeItem));
 		}
 
-		[Test]
-		public void ItShouldHandleExceptionOnGetFolderStructure()
-		{
-			// Arrange
-			_resourcePoolManagerMock.GetProcessingSourceLocation(_WORKSPACE_ID).Throws<Exception>();
-
-			// Act
-			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetProcessingSourceLocationStructure(_WORKSPACE_ID, _PROC_SOURCE_LOC_ID);
-
-			// Assert
-			AssertInternalErrorCode(httpResponseMessage);
-		}
-
-		[Test]
-		public void ItShouldHandleExceptionOnGetSubItems()
-		{
-			// Arrange
-			_directoryTreeCreatorMock.GetChildren(_processingSourceLocation.Location, true).Throws<Exception>();
-
-			// Act
-			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetSubItems(_WORKSPACE_ID, true, _processingSourceLocation.Location);
-
-			// Assert
-			AssertInternalErrorCode(httpResponseMessage);
-		}
 
 		[Test]
 		public void ItShouldNotFoundProcessingSourceLocation()

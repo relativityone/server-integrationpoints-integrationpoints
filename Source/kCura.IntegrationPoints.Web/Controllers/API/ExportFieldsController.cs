@@ -7,6 +7,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Attributes;
 using Newtonsoft.Json;
 using Relativity;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
@@ -40,29 +41,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to retrieve available list of fields for the export.")]
 		public HttpResponseMessage GetAvailableFields(SourceOptions data)
 		{
-			try
+			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
+
+			ExportSettings.ExportType exportType;
+			if (!Enum.TryParse(settings.ExportType, out exportType))
 			{
-				var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
-
-				ExportSettings.ExportType exportType;
-				if (!Enum.TryParse(settings.ExportType, out exportType))
-				{
-					throw new InvalidEnumArgumentException("Invalid export type specified");
-				}
-
-				var artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
-
-				var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, (int) ArtifactType.Document,
-					exportType == ExportSettings.ExportType.ProductionSet);
-
-				return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
+				throw new InvalidEnumArgumentException("Invalid export type specified");
 			}
-			catch (Exception ex)
-			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-			}
+
+			var artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
+
+			var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, (int) ArtifactType.Document,
+				exportType == ExportSettings.ExportType.ProductionSet);
+
+			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 		}
 
 		private int RetrieveArtifactIdBasedOnExportType(ExportSettings.ExportType exportType, ExportUsingSavedSearchSettings settings)
@@ -84,18 +79,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve export long text fields.")]
 		public HttpResponseMessage GetExportableLongTextFields(int sourceWorkspaceArtifactId)
 		{
-			try
-			{
-				var fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, (int)ArtifactType.Document);
+			var fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, (int)ArtifactType.Document);
 
-				return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
-			}
-			catch (Exception ex)
-			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-			}
+			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 		}
 
 		private IOrderedEnumerable<FieldEntry> SortFields(FieldEntry[] fieldEntries)

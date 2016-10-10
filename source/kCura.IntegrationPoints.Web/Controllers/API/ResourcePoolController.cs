@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Extensions;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -55,49 +56,29 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location folder structure (Folder is not accessible).")]
 		public HttpResponseMessage GetProcessingSourceLocationStructure(int workspaceId, int artifactId)
 		{
-			try
-			{
-				List<ProcessingSourceLocationDTO> processingSourceLocations =
+			List<ProcessingSourceLocationDTO> processingSourceLocations =
 					_resourcePoolManager.GetProcessingSourceLocation(workspaceId);
 
-				ProcessingSourceLocationDTO foundProcessingSourceLocation = processingSourceLocations.FirstOrDefault(
-					processingSourceLocation => processingSourceLocation.ArtifactId == artifactId);
+			ProcessingSourceLocationDTO foundProcessingSourceLocation = processingSourceLocations.FirstOrDefault(
+				processingSourceLocation => processingSourceLocation.ArtifactId == artifactId);
 
-				if (foundProcessingSourceLocation == null)
-				{
-					return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
-				}
-				JsTreeItemDTO rootFolderJsTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
-				return Request.CreateResponse(HttpStatusCode.OK, rootFolderJsTreeDirectoryItem);
-			}
-			catch (Exception ex)
+			if (foundProcessingSourceLocation == null)
 			{
-				string errMsg =
-					$"Unable to retrieve processing source location folder structure {artifactId} (Folder is not accessible). Please contact system administrator.";
-				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
+				return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
 			}
+			JsTreeItemDTO rootFolderJsTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
+			return Request.CreateResponse(HttpStatusCode.OK, rootFolderJsTreeDirectoryItem);
 		}
 
 		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location subfolders info.")]
 		public HttpResponseMessage GetSubItems(int workspaceId, bool isRoot, [FromBody] string path)
 		{
-			try
-			{
-				List<JsTreeItemDTO> subItems = _directoryTreeCreator.GetChildren(path, isRoot);
-				return Request.CreateResponse(HttpStatusCode.OK, subItems);
-			}
-			catch (Exception ex)
-			{
-				string errMsg =
-					string.Format($"Unable to retrieve folder structure for {0} path {path} {1}. Please contact system administrator.",
-						isRoot ? "Processing Source Location" : "",
-						isRoot ? "(Folder is not accessible)" : "");
-				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
-			}
+			List<JsTreeItemDTO> subItems = _directoryTreeCreator.GetChildren(path, isRoot);
+			return Request.CreateResponse(HttpStatusCode.OK, subItems);
 		}
 
 		#endregion //Methods

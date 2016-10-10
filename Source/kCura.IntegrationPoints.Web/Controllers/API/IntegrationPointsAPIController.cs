@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.Services.Metrics;
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrive integration point data.")]
 		public HttpResponseMessage Get(int id)
 		{
 			var model = new IntegrationModel();
@@ -52,25 +54,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
 		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
 		{
-			try
+			using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 			{
-				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, 
+					Guid.Empty, model.Name, MetricTargets.APMandSUM ))
 				{
-					using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, 
-						Guid.Empty, model.Name, MetricTargets.APMandSUM ))
-					{
-						int createdId = _reader.SaveIntegration(model);
-						string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+					int createdId = _reader.SaveIntegration(model);
+					string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
 
-						return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
-					}
+					return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
 				}
-			}
-			catch (Exception exception)
-			{
-				return Request.CreateResponse(HttpStatusCode.PreconditionFailed, exception.Message);
 			}
 		}
 	}

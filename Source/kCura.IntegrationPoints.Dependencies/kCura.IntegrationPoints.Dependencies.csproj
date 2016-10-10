@@ -443,11 +443,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.309.5\lib\net45\Relativity.Logging.dll</HintPath>
+      <HintPath>..\packages\Relativity.Logging.9.4.300\lib\net45\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.309.5\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.300\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ProcessingBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
