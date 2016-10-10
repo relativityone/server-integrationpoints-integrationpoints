@@ -297,6 +297,7 @@
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
+    <Compile Include="Controllers\API\ImportProviderDocumentController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
