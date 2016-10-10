@@ -5,7 +5,7 @@
     var intervalId = -1;
     var percent = 0;
     var timerHandle;
-    var settings = opener.ImportSettings;
+    var settings = opener.RelativityImport.PreviewSettings;
 
     $("#tableData").hide();
     var timerCount = 0;
@@ -29,6 +29,7 @@
         PreviewType: settings.PreviewType,
         FilePath: settings.LoadFile
     };
+
     root.data.ajax({
         type: "post",
         url: root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/",

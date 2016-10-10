@@ -1,7 +1,6 @@
-﻿(function (windowObj) {
-    windowObj.RelativityImport = {
-        UI: {}
-    };
+﻿'use strict';
+(function (windowObj, root) {
+    windowObj.RelativityImport.UI = {};
 
     //Setup UI
 
@@ -26,7 +25,6 @@
     windowObj.RelativityImport.UI.idSelector = idSelector;
 
     var assignDropdownHandler = function () {
-        console.log('in assignDropdownHandler')
         var content = windowObj.parent.$(idSelector(BUTTON_UL));
         content.slideToggle();
         var btn = windowObj.parent.$(idSelector(CUSTOM_BUTTON));
@@ -36,26 +34,29 @@
     }
 
     var assignDropdownItemHandlers = function () {
-        console.log('in assignDropdownItemHandlers')
         var preFile = windowObj.parent.$(idSelector(PREVIEW_FILE_LI));
         var preError = windowObj.parent.$(idSelector(PREVIEW_ERROR_LI));
         var preChoice = windowObj.parent.$(idSelector(PREVIEW_CHOICE_LI));
-        preFile.on("click", function () {
-            console.log("preview file click handler");
-            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
-            windowObj.ImportSettings = ImportSettingsModel();
-            $.extend(windowObj.ImportSettings, { PreviewType: 'file', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
+        preFile.click(function () {
+            windowObj.RelativityImport.PreviewSettings = windowObj.RelativityImport.GetCurrentUiModel();
+            $.extend(windowObj.RelativityImport.PreviewSettings, { PreviewType: 'file', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
+            windowObj.parent.$(idSelector(BUTTON_UL)).slideUp();
 
-            windowObj.parent.$(idSelector(PREVIEW_FILE_LI)).close();
+            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
+
             return false;
         });
         preError.click(function () {
-            console.log("preview error click handler");
+            //TODO: refactor to be similar to preFile click handler
+
+            console.log('not implemented');
+            /*
             window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
-            windowObj.ImportSettings = ImportSettingsModel();
+            windowObj.ImportSettings = windowObj.ImportProvider.GetCurrentUiModel();
             $.extend(windowObj.ImportSettings, { PreviewType: 'errors', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
 
             windowObj.parent.$(idSelector(PREVIEW_ERROR_LI)).close();
+            */
             return false;
         });
         preChoice.click(function () {
@@ -65,14 +66,13 @@
 
     //Add dropdown to DOM, init handlers for the dropdown and each of the items added
     windowObj.RelativityImport.UI.initCustomDropdown = function () {
-        console.log('initCustomDropdown');
         var options = {};
         options[PREVIEW_FILE_LI] = "Preview File";
         options[PREVIEW_ERROR_LI] = "Preview Errors";
         options[PREVIEW_CHOICE_LI] = "Preview Choices & Folders";
 
         var source = windowObj.parent.$(idSelector(PROGRESS_BUTTONS));
-        source.append('<button class="button generic positive"id="' + CUSTOM_BUTTON + '"><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
+        source.append('<button class="button generic positive" id="' + CUSTOM_BUTTON + '"><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
 
         var previewFile = windowObj.parent.$(idSelector(CUSTOM_BUTTON));
         previewFile.append('<ul id="' + BUTTON_UL + '"></ul>');
@@ -89,4 +89,42 @@
         $(idSelector(CUSTOM_BUTTON)).remove();
     };
 
-})(this);
+    windowObj.RelativityImport.enableLocation = function (en) {
+        var $el = $("#location-select");
+        $el.toggleClass('location-disabled', !en);
+        $el.children().each(function (i, e) {
+            $(e).toggleClass('location-disabled', !en);
+        });
+    };
+
+    windowObj.RelativityImport.locationSelector = new LocationJSTreeSelector();
+
+    //Work starts here
+
+    //pass in the selectFilesOnly optional parameter so that location-jstree-selector will only allow us to select files
+    windowObj.RelativityImport.locationSelector.init(windowObj.RelativityImport.koModel.Fileshare(), [], {
+        onNodeSelectedEventHandler: function (node) { windowObj.RelativityImport.koModel.Fileshare(node.id) },
+        selectFilesOnly: true
+    });
+
+    windowObj.RelativityImport.enableLocation(false);
+
+    $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"), function (data) {
+        windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
+        windowObj.RelativityImport.koModel.ProcessingSourceLocation(windowObj.RelativityImport.koModel.ProcessingSourceLocationArtifactId);
+
+        $("#processingSources").change(function (c, item) {
+            var artifacId = $("#processingSources option:selected").val();
+            var choiceName = $("#processingSources option:selected").text();
+            $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId) + '?includeFiles=1')
+                .then(function (result) {
+                    windowObj.RelativityImport.locationSelector.reload(result);
+                    windowObj.RelativityImport.enableLocation(true);
+                })
+                .fail(function (error) {
+                    root.message.error.raise("No attributes were returned from the source provider.");
+                });
+        });
+    });
+
+})(this, IP);

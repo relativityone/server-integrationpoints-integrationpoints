@@ -492,6 +492,8 @@
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
+    <Content Include="Scripts\Import\import-init.js" />
+    <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
