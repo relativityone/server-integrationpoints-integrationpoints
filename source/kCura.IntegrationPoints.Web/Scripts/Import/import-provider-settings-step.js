@@ -32,7 +32,7 @@
             windowObj.ImportSettings = ImportSettingsModel();
             $.extend(windowObj.ImportSettings, { PreviewType: 'errors', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
 
-            windowObj.parent.$("#dd-preivewErrors").close();
+            windowObj.parent.$("#dd-previewErrors").close();
             return false;
         });
         preChoice.click(function () {
