@@ -61,6 +61,10 @@
         onPreviewFileClick();
     };
 
+    var removePreviewFilebtn = function () {
+        $("#previewFile").remove();
+    };
+
     var ImportTypeModel = function (data) {
         var self = this;
 
@@ -172,16 +176,22 @@
 
         //An event raised when the host page has loaded the current settings page.
         message.subscribe('load', function (model) {
-            addPreviewFilebtn();
-            //if (model != '') {
+
+            if (windowObj.parent.$("#previewFile").length) {
+                removePreviewFilebtn();
+            } else {
+                addPreviewFilebtn();
+            };
+
+            // if (model != '') {
             //    var sourceConfig = JSON.parse(model);
             //    windowObj.import.StorageRoot = sourceConfig.StorageRoot;
             //    windowObj.import.SelectedFolderPath = sourceConfig.CsvFilePath;
-            //}
+            // }
             //else {
             //    windowObj.import.StorageRoot = "";
             //    windowObj.import.SelectedFolderPath = "";
-            //}
+            // }
             //windowObj.import.IPFrameMessagingLoadEvent = true;
         });
     };
