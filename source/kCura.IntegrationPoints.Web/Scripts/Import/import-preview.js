@@ -79,6 +79,7 @@
                 "responsive": true,
                 "info": true,
                 "columns": formattedHeaders,
+                "pageLength":15,
                 "columnDefs": [{
                     "searchable": false,
                     "orderable": false,
@@ -252,7 +253,10 @@
                 updatePaging();
             });
 
-
+            $("#csvData-table thead").on('click', 'th', function () {
+                updateItemUi();
+                updatePaging();
+            });
         });
     };
 })(IP,this.opener);

@@ -43,7 +43,7 @@
         }
 
         var source = windowObj.parent.$('#progressButtons');
-        source.append('<div class="button generic positive"id="previewFile"><span>Preview File</span><i style="float: right;" class="icon-chevron-down"></i></div>');
+        source.append('<button class="button generic positive"id="previewFile"><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
 
         var previewFile = windowObj.parent.$("#previewFile");
         previewFile.append('<div id="previewFile-content"></div>');
@@ -142,27 +142,26 @@
         };
         ImportSettingsModel = _getModel;
         //An event raised when the user has clicked the Next or Save button.
-        message.subscribe('submit',
-            function () {
-                //Execute save logic that persists the root.
-                var localModel = JSON.Stringify(_getModel());
-                var parsedModel = JSON.parse(localModel);
+        message.subscribe('submit', function () {
+            //Execute save logic that persists the root.
+            var localModel = JSON.stringify(_getModel());
+            var parsedModel = JSON.parse(localModel);
 
-                this.publish("saveState", localModel);
+            this.publish("saveState", localModel);
 
-                if (parsedModel.CsvFilePath === '') {
-                    IP.frameMessaging().dFrame.IP.message.error.raise('Please select a load file to continue.');
-                } else {
-                    windowObj.parent.$('#previewFile').remove();
-                    //Communicate to the host page that it to continue.
-                    this.publish('saveComplete', localModel);
-                }
-            });
+            if (parsedModel.CsvFilePath === '') {
+                IP.frameMessaging().dFrame.IP.message.error.raise('Please select a load file to continue.');
+            } else {
+                //windowObj.parent.$('#previewFile').remove();
+                //Communicate to the host page that it to continue.
+                this.publish('saveComplete', localModel);
+            }
+        });
 
         //An event raised when a user clicks the Back button.
         message.subscribe('back', function () {
             //Execute save logic that persists the root.
-            this.publish('saveState', JSON.Stringify(_getModel()));
+            this.publish('saveState', JSON.stringify(_getModel()));
             windowObj.parent.$('#previewFile').remove();
         });
 
