@@ -79,33 +79,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
                 ((OkNegotiatedContentResult<List<KeyValuePair<string, object>>>)result).Content));
         }
 
-        [Test]
-        public void GetViewFields_NonJsonFormatParams_ReturnsBadRequest()
-        {
-            // Arrange
-            // Act
-            IHttpActionResult result = _instance.GetViewFields("IJEFa/23490?hackrz!");
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<BadRequestErrorMessageResult>(result);
-            Assert.AreEqual(Core.Constants.IntegrationPoints.INVALID_PARAMETERS, ((BadRequestErrorMessageResult)result).Message);
-        }
-
-        [Test]
-        public void GetViewFields_NullParams_ReturnsBadRequest()
-        {
-            // Arrange
-            // Act
-            IHttpActionResult result = _instance.GetViewFields(null);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<BadRequestErrorMessageResult>(result);
-            Assert.AreEqual(Core.Constants.IntegrationPoints.INVALID_PARAMETERS, ((BadRequestErrorMessageResult)result).Message);
-        }
-
-
         private bool ResultsMatch(List<KeyValuePair<string, object>> expected, List<KeyValuePair<string, object>> actual)
         {
             for (int i = 0; i < expected.Count; i++)

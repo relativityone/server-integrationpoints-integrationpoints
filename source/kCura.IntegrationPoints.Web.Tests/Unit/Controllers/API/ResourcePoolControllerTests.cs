@@ -23,8 +23,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 
 		private IResourcePoolManager _resourcePoolManagerMock;
 		private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
-		private IRepositoryFactory _repositoryFactoryMock;
-		private IErrorRepository _errorRepositoryMock;
 
 		private const int _WORKSPACE_ID = 1;
 		private const int _PROC_SOURCE_LOC_ID = 2;
@@ -42,13 +40,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		{
 			_resourcePoolManagerMock = Substitute.For<IResourcePoolManager>();
 			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator<JsTreeItemDTO>>();
-			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
-			_errorRepositoryMock = Substitute.For<IErrorRepository>();
 
-			_repositoryFactoryMock.GetErrorRepository().Returns(_errorRepositoryMock);
-
-			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _directoryTreeCreatorMock, 
-				_repositoryFactoryMock);
+			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _directoryTreeCreatorMock);
 
 			_subjectUnderTest.Request = new HttpRequestMessage();
 			_subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
@@ -72,19 +65,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 			Assert.That(retValue.Count, Is.EqualTo(1));
 			Assert.That(retValue[0], Is.EqualTo(_processingSourceLocation));
-		}
-
-		[Test]
-		public void ItShouldHandleExceptionOnGetProcessingSourceLocations()
-		{
-			// Arrange
-			_resourcePoolManagerMock.GetProcessingSourceLocation(_WORKSPACE_ID).Throws<Exception>();
-
-			// Act
-			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetProcessingSourceLocations(_WORKSPACE_ID);
-
-			// Assert
-			AssertInternalErrorCode(httpResponseMessage);
 		}
 
 		[Test]
@@ -151,10 +131,5 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
 		}
 
-		private void AssertInternalErrorCode(HttpResponseMessage httpResponseMessage)
-		{
-			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
-			_errorRepositoryMock.Received().Create(Arg.Any<ErrorDTO[]>());
-		}
 	}
 }

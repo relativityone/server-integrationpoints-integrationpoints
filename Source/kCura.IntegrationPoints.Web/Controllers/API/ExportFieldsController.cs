@@ -24,24 +24,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to retrieve list of exportable fields.")]
 		public HttpResponseMessage GetExportableFields(SourceOptions data)
 		{
-			try
-			{
-				var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
+			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-				var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
+			var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
 				
-				return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
-			}
-			catch (Exception ex)
-			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-			}
+			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 		}
 
 		[HttpPost]
-		[LogApiExceptionFilter(Message = "Unable to retrieve available list of fields for the export.")]
+		[LogApiExceptionFilter(Message = "Unable to retrieve list of available fields.")]
 		public HttpResponseMessage GetAvailableFields(SourceOptions data)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());

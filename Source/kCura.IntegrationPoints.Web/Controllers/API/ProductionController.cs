@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -17,18 +18,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve production list.")]
 		public HttpResponseMessage GetProductions(int sourceWorkspaceArtifactId)
 		{
-			try
-			{
-				var productions = _productionService.GetProductions(sourceWorkspaceArtifactId);
+			var productions = _productionService.GetProductions(sourceWorkspaceArtifactId);
 
-				return Request.CreateResponse(HttpStatusCode.OK, productions.OrderBy(x => x.DisplayName));
-			}
-			catch (Exception ex)
-			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-			}
+			return Request.CreateResponse(HttpStatusCode.OK, productions.OrderBy(x => x.DisplayName));
 		}
 	}
 }

@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		private List<int> _userIds;
 		private List<int> _groupIds;
 		private IHtmlSanitizerManager _htmlSanitizerManage;
-		private IRepositoryFactory _repositoryFactory;
 
 		public SavedSearchQueryTests() : base("SavedSearchQueryTests")
 		{
@@ -39,7 +38,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		{
 			base.SuiteSetup();
 			InstanceSetting.UpsertAndReturnOldValueIfExists("Relativity.Authentication", "AdminsCanSetPasswords", "True");
-			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 		}
 
 		public override void TestSetup()
@@ -193,28 +191,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		}
 
 		[Test]
-		public void Query_SavedSearchesWithController_ExpectError()
-		{
-			//Arrange
-			HttpResponseMessage httpResponseMessage;
-		
-			//Act
-			using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
-			{
-				rsapiClient.APIOptions.WorkspaceID = -999;
-				SavedSearchFinderController savedSearchFinderController = new SavedSearchFinderController(rsapiClient, _repositoryFactory, _htmlSanitizerManage) {Request = new HttpRequestMessage()};
-				savedSearchFinderController.Request.SetConfiguration(new HttpConfiguration());
-				httpResponseMessage = savedSearchFinderController.Get();
-			}
-			string content = httpResponseMessage.Content.ReadAsStringAsync().Result;
-			const string expectedResponseValue = "[]";
-
-			//Assert
-			Assert.AreEqual(HttpStatusCode.InternalServerError, httpResponseMessage.StatusCode);
-			Assert.AreEqual(expectedResponseValue, content);
-		}
-
-		[Test]
 		public void Query_SavedSearchesWithController_Success()
 		{
 			//Arrange
@@ -226,7 +202,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 			using (IRSAPIClient rsapiClient = Helper.CreateUserProxy<IRSAPIClient>())
 			{
 				rsapiClient.APIOptions.WorkspaceID = WorkspaceArtifactId;
-				SavedSearchFinderController savedSearchFinderController = new SavedSearchFinderController(rsapiClient, _repositoryFactory, _htmlSanitizerManage) { Request = new HttpRequestMessage() };
+				SavedSearchFinderController savedSearchFinderController = new SavedSearchFinderController(rsapiClient, _htmlSanitizerManage) { Request = new HttpRequestMessage() };
 				savedSearchFinderController.Request.SetConfiguration(new HttpConfiguration());
 				httpResponseMessage = savedSearchFinderController.Get();
 			}

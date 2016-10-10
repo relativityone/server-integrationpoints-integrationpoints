@@ -6,6 +6,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_integrationPointReader = integrationPointReader;
 		}
 
+		[LogApiExceptionFilter(Message = "Unable to retrieve fields mapping information.")]
 		public HttpResponseMessage Get(int id)
 		{
 			var fieldsMap = _integrationPointReader.GetFieldMap(id).ToList();

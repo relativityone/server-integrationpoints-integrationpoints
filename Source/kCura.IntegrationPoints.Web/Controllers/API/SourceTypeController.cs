@@ -7,6 +7,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve source provider list.")]
 		public HttpResponseMessage Get()
 		{
 			Dictionary<Guid, int> rdoTypesCache = _rdoQuery.GetRdoGuidToArtifactIdMap(_serviceContext.WorkspaceUserID);

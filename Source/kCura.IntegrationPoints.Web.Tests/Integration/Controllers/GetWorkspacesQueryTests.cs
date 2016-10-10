@@ -29,8 +29,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		private List<int> _workspaceIds;
 		private IHtmlSanitizerManager _htmlSanitizerManage;
 
-		private IRepositoryFactory _repositoryFactory;
-
 		public GetWorkspacesQueryTests() : base(_workspaceName)
 		{
 		}
@@ -39,7 +37,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 		{
 			base.SuiteSetup();
 			InstanceSetting.UpsertAndReturnOldValueIfExists("Relativity.Authentication", "AdminsCanSetPasswords", "True");
-			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 		}
 
 		public override void TestSetup()
@@ -176,7 +173,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 			WebClientFactory webClientFactory = new WebClientFactory(rsapiClientFactory, new[] { workspaceService });
 
 			//Act
-			WorkspaceFinderController workspaceFinderController = new WorkspaceFinderController(webClientFactory, _repositoryFactory, null) {Request = new HttpRequestMessage()};
+			WorkspaceFinderController workspaceFinderController = new WorkspaceFinderController(webClientFactory, null) {Request = new HttpRequestMessage()};
 			workspaceFinderController.Request.SetConfiguration(new HttpConfiguration());
 			HttpResponseMessage httpResponseMessage = workspaceFinderController.Get();
 
@@ -198,7 +195,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration
 			WebClientFactory webClientFactory = new WebClientFactory(rsapiClientFactory, new [] { workspaceService });
 			
 			//Act
-			WorkspaceFinderController workspaceFinderController = new WorkspaceFinderController(webClientFactory, _repositoryFactory, _htmlSanitizerManage) { Request = new HttpRequestMessage() };
+			WorkspaceFinderController workspaceFinderController = new WorkspaceFinderController(webClientFactory, _htmlSanitizerManage) { Request = new HttpRequestMessage() };
 			workspaceFinderController.Request.SetConfiguration(new HttpConfiguration());
 			HttpResponseMessage httpResponseMessage = workspaceFinderController.Get();
 			string content = httpResponseMessage.Content.ReadAsStringAsync().Result;

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Toggles;
 using Relativity.Toggles;
@@ -34,6 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve destination provider type info.")]
 		public HttpResponseMessage Get()
 		{
 			Dictionary<Guid, int> rdoTypesCache = _rdoQuery.GetRdoGuidToArtifactIdMap(_serviceContext.WorkspaceUserID);

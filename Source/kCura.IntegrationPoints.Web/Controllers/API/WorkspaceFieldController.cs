@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Web.Attributes;

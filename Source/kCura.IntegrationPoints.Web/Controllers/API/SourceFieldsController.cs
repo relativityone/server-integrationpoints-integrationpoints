@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Core.Service;
 
@@ -51,23 +52,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[Route("{workspaceID}/api/SourceFields/")]
+		[LogApiExceptionFilter(Message = "Unable to retrieve source fields.")]
 		public HttpResponseMessage Get(SourceOptions data)
 		{
-			try
-			{
-				Data.SourceProvider providerRdo = _sourceProviderIdentifier.Execute(data.Type);
-				Guid applicationGuid = new Guid(providerRdo.ApplicationIdentifier);
-				var provider = _factory.GetDataProvider(applicationGuid, data.Type, _helper);
-				List<FieldEntry> fields = provider.GetFields(data.Options.ToString()).OrderBy(x => x.DisplayName).ToList();
-				return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
-			}
-			catch (Exception exception)
-			{
-				IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-				IErrorManager errorManager = _managerFactory.CreateErrorManager(contextContainer);
-				errorManager.Create(new List<ErrorDTO>() { new ErrorDTO() { Message = exception.FlattenErrorMessages(), FullText = "Failed to get source fields", WorkspaceId = _caseService.WorkspaceID, Source = "Relativity's Integration Point Custom Page"} });
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, new List<FieldEntry>(), Configuration.Formatters.JsonFormatter);
-			}
+			Data.SourceProvider providerRdo = _sourceProviderIdentifier.Execute(data.Type);
+			Guid applicationGuid = new Guid(providerRdo.ApplicationIdentifier);
+			var provider = _factory.GetDataProvider(applicationGuid, data.Type, _helper);
+			List<FieldEntry> fields = provider.GetFields(data.Options.ToString()).OrderBy(x => x.DisplayName).ToList();
+			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 	}
 }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
-using kCura.IntegrationPoints.Web.Extensions;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -20,18 +16,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
-		private readonly IErrorRepository _errorRepository;
 
 		#endregion //Fields
 
 		#region Constructors
 
-		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator,
-			IRepositoryFactory repositoryFactory)
+		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator)
 		{
 			_resourcePoolManager = resourcePoolManager;
 			_directoryTreeCreator = directoryTreeCreator;
-			_errorRepository = repositoryFactory.GetErrorRepository();
 		}
 
 		#endregion //Constructors
@@ -39,20 +32,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		#region Methods
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location list.")]
 		public HttpResponseMessage GetProcessingSourceLocations(int workspaceId)
 		{
-			try
-			{
-				List<ProcessingSourceLocationDTO> processingSourceLocations = _resourcePoolManager.GetProcessingSourceLocation(workspaceId);
-				return Request.CreateResponse(HttpStatusCode.OK, processingSourceLocations);
-			}
-			catch (Exception ex)
-			{
-				string errMsg =
-					$"Unable to retrieve processing source location for {workspaceId} workspace. Please contact system administrator.";
-				this.HandleError(workspaceId, _errorRepository, ex, errMsg);
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, errMsg);
-			}
+			List<ProcessingSourceLocationDTO> processingSourceLocations = _resourcePoolManager.GetProcessingSourceLocation(workspaceId);
+			return Request.CreateResponse(HttpStatusCode.OK, processingSourceLocations);
 		}
 
 		[HttpGet]

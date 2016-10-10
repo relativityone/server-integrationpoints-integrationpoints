@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Security;
+using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -30,7 +31,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpPost]
-        public IHttpActionResult Encrypt([FromBody] object message)
+		[LogApiExceptionFilter(Message = "Unable to Encrypt message.")]
+		public IHttpActionResult Encrypt([FromBody] object message)
         {
             string encryptedText = string.Empty;
             if (message != null)
@@ -41,33 +43,26 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpPost]
-        public IHttpActionResult Decrypt([FromBody] string message)
+		[LogApiExceptionFilter(Message = "Unable to Decrypt message.")]
+		public IHttpActionResult Decrypt([FromBody] string message)
         {
             string decryptedText = _securityManager.Decrypt(message);
             return Ok(decryptedText);
         }
 
         [HttpPost]
-        public IHttpActionResult GetColumnList([FromBody] object data)
+		[LogApiExceptionFilter(Message = "Unable to retrieve list of fields.")]
+		public IHttpActionResult GetColumnList([FromBody] object data)
         {
-            List<FieldEntry> result = null;
-            try
-            {
-                string encryptedSettings = _securityManager.Encrypt(data.ToString());
-                IDataSourceProvider ftpProvider = _providerFactory.GetDataProvider(Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler), _helper);
-                IEnumerable<FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
-                result = fields.ToList();
-            }
-            catch (Exception ex)
-            {
-                return Content(HttpStatusCode.BadRequest, ex.Message);
-            }
-
-            return Ok(result);
+            string encryptedSettings = _securityManager.Encrypt(data.ToString());
+            IDataSourceProvider ftpProvider = _providerFactory.GetDataProvider(Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler), _helper);
+            IEnumerable<FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
+            return Ok(fields.ToList());
         }
 
         [HttpPost]
-        public HttpResponseMessage GetViewFields([FromBody] object data)
+		[LogApiExceptionFilter(Message = "Unable to decrypt ftp settings.")]
+		public HttpResponseMessage GetViewFields([FromBody] object data)
         {
             Settings settings = _settingsManager.ConvertFromEncryptedString(data.ToString());
             var model = new List<KeyValuePair<string, string>>()

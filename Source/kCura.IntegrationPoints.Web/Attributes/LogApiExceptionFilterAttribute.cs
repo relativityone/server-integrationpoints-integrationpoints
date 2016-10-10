@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 	/// This attribute can be used on top of the method to specify custom message.
 	/// "OnException" method will be always called after ExceptionLogger.Log
 	/// </summary>
+	[AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
 	public class LogApiExceptionFilterAttribute : ExceptionFilterAttribute
 	{
 		#region Fields
@@ -47,9 +48,9 @@ namespace kCura.IntegrationPoints.Web.Attributes
 				Message.IsNullOrEmpty() ? "Unexpected error occurred" : Message,
 				IsUserMessage ? " Please contact system administrator" : string.Empty);
 
-			actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, msg);
 			actionExecutedContext.Response.Content = new StringContent(msg);
-
+			
 			_apiLog.LogError(actionExecutedContext.Exception, msg);
 		}
 

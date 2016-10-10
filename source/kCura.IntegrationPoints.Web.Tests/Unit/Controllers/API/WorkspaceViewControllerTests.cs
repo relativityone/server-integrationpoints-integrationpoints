@@ -78,20 +78,5 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 			CollectionAssert.AreEquivalent(_views, retValue);
 		}
-
-		[Test]
-		public void ItShouldHandleExceptionOnGetViews()
-		{
-			// Arrange
-			_viewServiceMock.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFAC_TYPE_ID).Throws<Exception>();
-
-			// Act
-			HttpResponseMessage httpResponseMessage = _subjectUnderTest.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID,
-				_ARTIFAC_TYPE_ID);
-
-			// Assert
-			Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
-			_errorRepositoryMock.Received().Create(Arg.Any<ErrorDTO[]>());
-		}
 	}
 }
