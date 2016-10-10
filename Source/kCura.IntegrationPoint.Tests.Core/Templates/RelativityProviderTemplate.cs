@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
 	[TestFixture]
-	public class RelativityProviderTemplate : SourceProviderTemplate
+	public abstract class RelativityProviderTemplate : SourceProviderTemplate
 	{
 		private readonly string _targetWorkspaceName;
 		private readonly string _targetWorkspaceTemplate;

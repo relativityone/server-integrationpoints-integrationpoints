@@ -14,7 +14,7 @@ using Relativity;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
-	public class OtherProvidersTemplate : SourceProviderTemplate
+	public abstract class OtherProvidersTemplate : SourceProviderTemplate
 	{
 		protected SourceProvider LdapProvider;
 

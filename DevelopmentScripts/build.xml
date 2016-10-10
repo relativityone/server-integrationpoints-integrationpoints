@@ -432,18 +432,18 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
-      <allow>kCura.IntegrationPoints.Agent.Tests.Unit.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
-      <allow>kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent.TaskJobSubmitterTests.TestJobSubmitter</allow>
-      <allow>kCura.IntegrationPoints.Core.Tests.Unit.Agent.IntegrationPointTaskBaseTests.GetDestinationProvider_GoldFlow</allow>
-      <allow>kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
+      <allow>kCura.IntegrationPoints.Agent.Tests.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
+      <allow>kCura.IntegrationPoints.Core.Contracts.Tests.Agent.TaskJobSubmitterTests.TestJobSubmitter</allow>
+      <allow>kCura.IntegrationPoints.Core.Tests.Agent.IntegrationPointTaskBaseTests.GetDestinationProvider_GoldFlow</allow>
+      <allow>kCura.IntegrationPoints.Web.Tests.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
       <allow>kCura.ScheduleQueue.Core.Tests.PeriodicScheduleRuleTest.GetNextUTCRunDateTime_DailyRuleMigration_CorrectValue</allow>
-      <allow>kCura.IntegrationPoints.Data.Tests.Unit.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
-      <allow>kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers.SetHasErrorsFieldTests.ExecuteInstanced_ThrowsQueryError_Test</allow>
+      <allow>kCura.IntegrationPoints.Data.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
+      <allow>kCura.IntegrationPoints.EventHandlers.Tests.Installers.SetHasErrorsFieldTests.ExecuteInstanced_ThrowsQueryError_Test</allow>
       <allow>kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging.CompositeLoggingMediatorTests.ItShouldHandleEmptyChildrenList</allow>
       <allow>kCura.IntegrationPoints.FtpProvider.Tests.FtpProviderTests.ValidateColumns_AllMatch</allow>
-      <allow>kCura.IntegrationPoints.Data.Tests.Unit.PermissionServiceTest.UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse</allow>
-      <allow>kCura.IntegrationPoints.Agent.Tests.Unit.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
-      <allow>kCura.IntegrationPoints.Web.Tests.Unit.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
+      <allow>kCura.IntegrationPoints.Data.Tests.PermissionServiceTest.UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse</allow>
+      <allow>kCura.IntegrationPoints.Agent.Tests.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
+      <allow>kCura.IntegrationPoints.Web.Tests.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>

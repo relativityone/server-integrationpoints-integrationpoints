@@ -30,7 +30,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
 	[TestFixture]
-	public class SourceProviderTemplate : IntegrationTestBase
+	public abstract class SourceProviderTemplate : IntegrationTestBase
 	{
 		protected bool CreateAgent { get; set; } = true;
 
