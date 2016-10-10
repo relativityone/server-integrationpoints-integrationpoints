@@ -4,18 +4,21 @@
     padding: 5px;
     margin-top: 2px;
     text-align: left;
+    min-width: 112.419px;
 }
 
 #previewFile-content {
     position: absolute;
     background-color: #2356a6;
-    min-width: 1.0em;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     padding: 0px 0px;
     z-index: 1;
     text-align: left;
     margin: 9px 0 0 -6px;
     padding-top: 0px;
+    display: block;
+    width: 112.378px;
+    margin: 8px 0px 0px -10px;
 }
 
 #previewFile:hover #previewFile-content {
@@ -30,5 +33,5 @@
 
 #dd-preivewFile, #dd-previewErrors, #dd-previewChoiceFolder {
     padding-bottom: 5px;
-    padding-left: 6px;
+    padding-left: 10px;
 }

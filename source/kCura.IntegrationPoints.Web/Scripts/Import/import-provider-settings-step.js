@@ -7,10 +7,10 @@
     //preview file btn toggle
     var onClickPreviewFile = function () {
         var content = windowObj.parent.$("#previewFile-content");
-        content.hide();
+        content.slideToggle();
         var btn = windowObj.parent.$("#previewFile");
         btn.click(function () {
-            content.toggle();
+            content.slideToggle();
         });
     }
 
@@ -46,11 +46,11 @@
         source.append('<button class="button generic positive"id="previewFile"><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
 
         var previewFile = windowObj.parent.$("#previewFile");
-        previewFile.append('<div id="previewFile-content"></div>');
+        previewFile.append('<ul id="previewFile-content"></ul>');
         var dropdown = windowObj.parent.$("#previewFile-content");
 
         $.each(options, function (val, text) {
-            dropdown.append($('<div id=' + val + '></div>').html(text));
+            dropdown.append($('<li id=' + val + '></li>').html(text));
         });
         onClickPreviewFile();
         onPreviewFileClick();
