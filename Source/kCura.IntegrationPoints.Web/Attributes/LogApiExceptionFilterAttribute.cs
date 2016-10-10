@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http.Filters;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.Utility.Extensions;
-using Relativity.API;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Web.Attributes
@@ -18,7 +12,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 	/// This attribute can be used on top of the method to specify custom message.
 	/// "OnException" method will be always called after ExceptionLogger.Log
 	/// </summary>
-	[AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.All)]
 	public class LogApiExceptionFilterAttribute : ExceptionFilterAttribute
 	{
 		#region Fields
