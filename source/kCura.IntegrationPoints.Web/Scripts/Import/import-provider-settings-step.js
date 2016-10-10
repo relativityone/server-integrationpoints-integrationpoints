@@ -4,66 +4,6 @@
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
     var ImportSettingsModel;
-    //preview file btn toggle
-    var onClickPreviewFile = function () {
-        var content = windowObj.parent.$("#previewFile-content");
-        content.slideToggle();
-        var btn = windowObj.parent.$("#previewFile");
-        btn.click(function () {
-            content.slideToggle();
-        });
-    }
-
-    //action to launch popup
-    var onPreviewFileClick = function () {
-        var preFile = windowObj.parent.$("#dd-previewFile");
-        var preError = windowObj.parent.$("#dd-previewErrors");
-        var preChoice = windowObj.parent.$("#dd-previewChoiceFolder");
-        preFile.on("click", function () {
-            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
-            windowObj.ImportSettings = ImportSettingsModel();
-            $.extend(windowObj.ImportSettings, { PreviewType: 'file', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
-
-            windowObj.parent.$("#dd-previewFile").close();
-            return false;
-        });
-        preError.click(function () {
-            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
-            windowObj.ImportSettings = ImportSettingsModel();
-            $.extend(windowObj.ImportSettings, { PreviewType: 'errors', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
-
-            windowObj.parent.$("#dd-previewErrors").close();
-            return false;
-        });
-        preChoice.click(function () {
-            console.log("Preview choice has been selected");
-        });
-    }
-    //create the btn for previewfile
-    var addPreviewFilebtn = function () {
-        var options = {
-            "dd-previewFile": "Preview File",
-            "dd-previewErrors": "Preview Errors",
-            "dd-previewChoiceFolder": "Preview Choices & Folders"
-        }
-
-        var source = windowObj.parent.$('#progressButtons');
-        source.append('<button class="button generic positive"id="previewFile"><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
-
-        var previewFile = windowObj.parent.$("#previewFile");
-        previewFile.append('<ul id="previewFile-content"></ul>');
-        var dropdown = windowObj.parent.$("#previewFile-content");
-
-        $.each(options, function (val, text) {
-            dropdown.append($('<li id=' + val + '></li>').html(text));
-        });
-        onClickPreviewFile();
-        onPreviewFileClick();
-    };
-
-    var removePreviewFilebtn = function () {
-        $("#previewFile").remove();
-    };
 
     var ImportTypeModel = function (data) {
         var self = this;
@@ -171,16 +111,16 @@
         message.subscribe('back', function () {
             //Execute save logic that persists the root.
             this.publish('saveState', JSON.stringify(_getModel()));
-            windowObj.parent.$('#previewFile').remove();
+                windowObj.RelativityImport.UI.removeCustomDropdown();
         });
 
         //An event raised when the host page has loaded the current settings page.
         message.subscribe('load', function (model) {
 
-            if (windowObj.parent.$("#previewFile").length) {
-                removePreviewFilebtn();
+            if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.RelativityImport.UI.Elements.CUSTOM_BUTTON)).length) {
+                windowObj.RelativityImport.UI.removeCustomDropdown();
             } else {
-                addPreviewFilebtn();
+                windowObj.RelativityImport.UI.initCustomDropdown();
             };
 
             // if (model != '') {

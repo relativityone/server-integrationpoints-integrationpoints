@@ -1,4 +1,4 @@
-﻿#previewFile {
+﻿#importCustomButton {
     position: relative;
     display: inline-block;
     padding: 5px;
@@ -7,7 +7,7 @@
     min-width: 112.419px;
 }
 
-#previewFile-content {
+#importCustomButtonUl {
     position: absolute;
     background-color: #2356a6;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
@@ -21,17 +21,17 @@
     margin: 8px 0px 0px -10px;
 }
 
-#previewFile:hover #previewFile-content {
+#importCustomButton:hover #importCustomButtonUl {
     width: inherit;
 }
 
-#previewFile-content > #dd-preivewFile:hover, #dd-previewErrors:hover, #dd-previewChoiceFolder:hover {
+#importCustomButton > #dd-previewFile:hover, #dd-previewErrors:hover, #dd-previewChoiceFolder:hover {
     font-weight: bold;
     color: white;
     background: linear-gradient(#007fc6, #0063ae);
 }
 
-#dd-preivewFile, #dd-previewErrors, #dd-previewChoiceFolder {
+#dd-previewFile, #dd-previewErrors, #dd-previewChoiceFolder {
     padding-bottom: 5px;
     padding-left: 10px;
 }
