@@ -659,7 +659,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			catch (Exception e)
 			{
-				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_SOURCE_PROVIDER, e);				
+				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_SOURCE_PROVIDER, e);
 			}
 
 			return sourceProvider;
@@ -669,7 +669,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (!integrationPoint.DestinationProvider.HasValue)
 			{
-				throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
+				throw new Exception(Constants.IntegrationPoints.NO_DESTINATION_PROVIDER_SPECIFIED);
 			}
 
 			DestinationProvider destinationProvider = null;
@@ -679,7 +679,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			catch (Exception e)
 			{
-				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_SOURCE_PROVIDER, e);
+				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER, e);
 			}
 
 			return destinationProvider;
