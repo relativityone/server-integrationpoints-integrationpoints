@@ -23,30 +23,11 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		{
 			CreateOrUpdateDestinationProvider("Relativity", RDO_SYNC_TYPE_GUID);
 			CreateOrUpdateDestinationProvider("Load File", FILES_SYNC_TYPE_GUID);
-
-			//var q = new Query<Relativity.Client.DTOs.RDO>();
-			//q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, RDO_SYNC_TYPE_GUID);
-			//var s = _context.RsapiService.DestinationProviderLibrary.Query(q).SingleOrDefault(); //there should only be one!
-			//if (s == null)
-			//{
-			//	var rdo = new DestinationProvider();
-			//	rdo.Name = "RDO";
-			//	rdo.Identifier = RDO_SYNC_TYPE_GUID;
-			//	rdo.ApplicationIdentifier = Application.GUID;
-			//	_context.RsapiService.DestinationProviderLibrary.Create(rdo);
-			//}
-			//else
-			//{
-			//	_context.RsapiService.DestinationProviderLibrary.Update(s);
-			//	//edit
-			//}
 		}
 
 		private void CreateOrUpdateDestinationProvider(string name, string providerGuid)
 		{
-			var q = new Query<RDO>();
-			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, providerGuid);
-			var s = _context.RsapiService.DestinationProviderLibrary.Query(q).SingleOrDefault(); //there should only be one!
+			var s = GetDestinationProvider(providerGuid);
 			if (s == null)
 			{
 				var rdo = new DestinationProvider();
@@ -57,17 +38,21 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			}
 			else
 			{
+				s.Name = name;
 				_context.RsapiService.DestinationProviderLibrary.Update(s);
-				//edit
 			}
 		}
 
 		public int GetRdoSynchronizerId()
 		{
+			return GetDestinationProvider(RDO_SYNC_TYPE_GUID).ArtifactId;
+		}
+
+		private DestinationProvider GetDestinationProvider(string providerGuid)
+		{
 			var q = new Query<Relativity.Client.DTOs.RDO>();
-			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, RDO_SYNC_TYPE_GUID);
-			var s = _context.RsapiService.DestinationProviderLibrary.Query(q).Single(); //there should only be one!
-			return s.ArtifactId;
+			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, providerGuid);
+			return _context.RsapiService.DestinationProviderLibrary.Query(q).Single(); //there should only be one!
 		}
 	}
 }
