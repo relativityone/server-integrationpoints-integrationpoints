@@ -98,12 +98,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int? RetrieveField(string displayName, int fieldArtifactTypeId, int fieldTypeId)
 		{
-			string sql = @"
-				SELECT [ArtifactID]
-				FROM [eddsdbo].[Field]
-				WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId
-					AND [FieldTypeID] = @fieldTypeId
-					AND [DisplayName] = @displayName";
+			string sql = @"SELECT [ArtifactID] FROM [eddsdbo].[Field] WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId AND [FieldTypeID] = @fieldTypeId AND [DisplayName] = @displayName";
 
 			SqlParameter displayNameParameter = new SqlParameter("@displayName", SqlDbType.NVarChar) { Value = displayName };
 			SqlParameter fieldArtifactTypeIdParameter = new SqlParameter("@fieldArtifactTypeId", SqlDbType.Int) { Value = fieldArtifactTypeId };

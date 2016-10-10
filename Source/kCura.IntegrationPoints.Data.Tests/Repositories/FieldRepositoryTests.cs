@@ -134,12 +134,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 
 		#region SQL Queries
 
-		private const string _RETRIEVE_FIELD_SQL = @"
-				SELECT [ArtifactID]
-				FROM [eddsdbo].[Field]
-				WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId
-					AND [FieldTypeID] = @fieldTypeId
-					AND [DisplayName] = @displayName";
+		private const string _RETRIEVE_FIELD_SQL = @"SELECT [ArtifactID] FROM [eddsdbo].[Field] WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId AND [FieldTypeID] = @fieldTypeId AND [DisplayName] = @displayName";
 
 		#endregion
 	}
