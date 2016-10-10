@@ -15,7 +15,6 @@ using OpenQA.Selenium.Chrome;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	[Ignore("Test don't work and need fix")]
 	public class PermissionErrorMessageTest : RelativityProviderTemplate
 	{

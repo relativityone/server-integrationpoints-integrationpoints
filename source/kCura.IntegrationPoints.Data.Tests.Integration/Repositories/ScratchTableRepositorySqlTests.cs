@@ -10,7 +10,6 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class ScratchTableRepositorySqlTests : RelativityProviderTemplate
 	{
 		private IHelper _helper;

@@ -73,7 +73,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="EventHandlerTest.cs" />
-    <Compile Include="InstallDllTests.cs" />
     <Compile Include="Installers\InstallEveryTimeTests.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />

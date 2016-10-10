@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class QueueRepositoryTests : RelativityProviderTemplate
 	{
 		private readonly int _RipObjectArtifactId = 666;

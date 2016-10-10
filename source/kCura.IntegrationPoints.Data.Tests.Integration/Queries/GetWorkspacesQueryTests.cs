@@ -8,7 +8,6 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class GetWorkspacesQueryTests
 	{
 

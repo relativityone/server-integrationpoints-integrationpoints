@@ -14,13 +14,11 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
-using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	[Category(Constants.INTEGRATION_CATEGORY)]
 	public class TaskFactoryTestsForOtherProviders : OtherProvidersTemplate
 	{
 		private IJobService _jobService;

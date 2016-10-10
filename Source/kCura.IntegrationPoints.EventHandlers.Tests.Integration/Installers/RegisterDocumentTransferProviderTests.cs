@@ -7,7 +7,6 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	internal class RegisterDocumentTransferProviderTests
 	{
 		[Test]

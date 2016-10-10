@@ -13,7 +13,6 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	[Ignore("Tests don't work and need fix")]
 	public class IntegrationPointManagerTests : RelativityProviderTemplate
 	{
@@ -88,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			catch (Exception ex)
 			{
 				throw new Exception($"An error occurred while querying for Relativity Error Message: { expectedErrorMessage } for Workspace: { SourceWorkspaceArtifactId }. Exception: { ex.Message }.");
-            }
+			}
 		}
 
 		private void CreateGroupAndUser()

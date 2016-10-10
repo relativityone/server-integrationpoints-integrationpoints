@@ -8,11 +8,10 @@ using Relativity.API;
 namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
+	[Ignore("Tests don't work and need fix")]
 	public class JobLogServiceTests
 	{
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void jobService_CreateUnscheduledJob()
 		{
 			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();

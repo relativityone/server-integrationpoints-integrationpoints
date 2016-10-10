@@ -21,7 +21,6 @@ using Relativity.Services.User;
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class SavedSearchQueryTests : SourceProviderTemplate
 	{
 		private const string _CONTROLNUMBER = "Control Number";

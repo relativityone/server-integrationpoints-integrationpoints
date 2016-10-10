@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 	/// These set of tests verify that all source providers are passed in to import service properly.
 	/// </summary>
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
 	{
 		[OneTimeSetUp]

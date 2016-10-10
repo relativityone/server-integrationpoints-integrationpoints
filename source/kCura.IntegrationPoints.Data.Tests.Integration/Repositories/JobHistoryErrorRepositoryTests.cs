@@ -12,7 +12,6 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class JobHistoryErrorRepositoryTests : RelativityProviderTemplate
 	{
 		private IJobHistoryErrorRepository _instance;

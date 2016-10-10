@@ -26,7 +26,6 @@ using Relativity.Services.Search;
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class JobHistoryErrorsBatchingTests : RelativityProviderTemplate
 	{
 		private IIntegrationPointService _integrationPointService;

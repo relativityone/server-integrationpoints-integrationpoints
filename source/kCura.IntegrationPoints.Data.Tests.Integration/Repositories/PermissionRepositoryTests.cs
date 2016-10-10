@@ -16,7 +16,6 @@ using Relativity.Services.Permission;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class PermissionRepositoryTests : RelativityProviderTemplate
 	{
 		private PermissionRepository _permissionRepo;

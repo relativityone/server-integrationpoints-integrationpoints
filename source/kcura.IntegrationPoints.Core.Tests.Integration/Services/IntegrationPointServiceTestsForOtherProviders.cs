@@ -12,7 +12,6 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
-	[Category(kCura.IntegrationPoint.Tests.Core.Constants.INTEGRATION_CATEGORY)]
 	public class IntegrationPointServiceTestsForOtherProviders : OtherProvidersTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
