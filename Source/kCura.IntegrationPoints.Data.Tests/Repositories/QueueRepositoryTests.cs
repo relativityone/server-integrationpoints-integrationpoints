@@ -39,15 +39,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			//Arrange
 			int queuedOrRunningJobs = 5;
 			int scheduledRunningJobs = 2;
-			string queuedOrRunningSql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [ScheduleRuleType] is null";
-			string scheduledRunningSql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [ScheduleRuleType] is not null
-										AND [LockedByAgentID] is not null";
+			string queuedOrRunningSql = @"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is null";
+			string scheduledRunningSql = @"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is not null AND [LockedByAgentID] is not null";
 
 			IEnumerable<SqlParameter> queuedOrRunningParameters = new List<SqlParameter>
 			{
@@ -76,15 +69,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		public void GetNumberOfJobsExecutingOrInQueue_NoJobs_Zero()
 		{
 			//Arrange
-			string queuedOrRunningSql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [ScheduleRuleType] is null";
-			string scheduledRunningSql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [ScheduleRuleType] is not null
-										AND [LockedByAgentID] is not null";
+			string queuedOrRunningSql = @"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is null"; 
+			string scheduledRunningSql = @"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is not null AND [LockedByAgentID] is not null";
 
 			IEnumerable<SqlParameter> queuedOrRunningParameters = new List<SqlParameter>
 			{
@@ -115,12 +101,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		{
 			//Arrange
 			int runningJobs = 1;
-			string sql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [LockedByAgentID] is not null
-										AND [NextRunTime] <= @dateValue 
-										AND [JobID] != @jobId";
+			string sql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [LockedByAgentID] is not null AND [NextRunTime] <= @dateValue AND [JobID] != @jobId";
 
 			IEnumerable<SqlParameter> parameters = new List<SqlParameter>
 			{
@@ -144,12 +125,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		public void GetNumberOfJobsExecuting_NoJobs_Zero()
 		{
 			//Arrange
-			string sql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [LockedByAgentID] is not null
-										AND [NextRunTime] <= @dateValue 
-										AND [JobID] != @jobId";
+			string sql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [LockedByAgentID] is not null AND [NextRunTime] <= @dateValue AND [JobID] != @jobId";
 
 			IEnumerable<SqlParameter> parameters = new List<SqlParameter>
 			{
