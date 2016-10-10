@@ -104,11 +104,23 @@
             csvTable.draw();
             populateTotalRecords();
 
+            function colorErrorRows() {
+                $.each(data.ErrorRows, function (arrayIndex, rowIndex) {
+                    csvTable.row(rowIndex - 1).nodes().to$().addClass('error-row')
+                });
+            }
+
             function populateTotalRecords() {
                 var info = csvTable.page.info();
                 var totalRecords = $("#totalRecord");
 
                 totalRecords.text(info.recordsTotal);
+                if (settings.PreviewType != 'errors') {
+                    $('#errors-div').text(data.ErrorRows.length);
+                }
+                else {
+                    $('#errors-div').text(info.recordsTotal);
+                }
             };
 
             function updateMoveNextBtn() {
@@ -195,6 +207,7 @@
 
             updatePaging();
             updateItemUi();
+            colorErrorRows();            
 
             $("#import-load-file-summary-toggle").on("click", function () {
                 if ($(this).attr("class") == "arrow-collapsed-summary") {

@@ -12,9 +12,11 @@ namespace kCura.IntegrationPoints.Domain.Models
         {
             Header = new List<string>();
             Data = new List<List<string>>();
+            ErrorRows = new List<int>();
         }
 
         public List<string> Header { get; set; }
         public List<List<string>> Data { get; set; }
+        public List<int> ErrorRows { get; set; }
     }
 }

@@ -12,17 +12,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
     public class PreviewJob
     {
-
+        private bool _errorsOnly;
         public PreviewJob(NetworkCredential authenticatedCredential, ImportPreviewSettings settings)
         {
             IsComplete = false;
 
             var factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, settings.WorkspaceId);
             var eddsLoadFile = factory.ToLoadFile();
-            bool errorsOnly = false;
+            _errorsOnly = false;
             if(settings.PreviewType == "errors")
             {
-                errorsOnly = true;
+                _errorsOnly = true;
             }
             eddsLoadFile.RecordDelimiter = ',';
             eddsLoadFile.FilePath = settings.FilePath;
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 colIdx++;
             }
 
-            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, errorsOnly, false);            
+            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, _errorsOnly, false);            
         }
 
         public void StartRead()
@@ -71,9 +71,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             bool populatedHeaders = false;
 
             //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
-            preview.Header = new List<string>();
             preview.Header.Add(string.Empty);
-            int columnNumber = 1;
+            int columnNumbers = 1;
+            int dataRowIndex = 1;//this will be used to populate the list of rows with an error
             foreach (var item in arrs)
             {
                 List<string> row = new List<string>();
@@ -83,22 +83,53 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     //if the item is not an ArtifactField array, it means we have an error
                     row = new List<string>();
                     string errorString = ((Exception)item).Message;
-                    for (int i = 0; i < columnNumber; i++)
+                    for (int i = 0; i < columnNumbers; i++)
                     {
                         row.Add(errorString);
+                    }
+
+                    if (!_errorsOnly)
+                    {
+                        preview.ErrorRows.Add(dataRowIndex);
                     }
                 }
                 else
                 {
                     if (!populatedHeaders)
                     {
-                        preview.Header = (item as kCura.WinEDDS.Api.ArtifactField[]).Select(i => i.DisplayName).ToList();
-                        columnNumber = preview.Header.Count();
+                        preview.Header = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.DisplayName).ToList();
+                        columnNumbers = preview.Header.Count();
                         populatedHeaders = true;
                     }
                     row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.Value.ToString()).ToList();
+                    //check to see if any of the cells have an error so we can highlight red in UI
+                    //we won't do this if the user has requested only errors to come back
+                    if (!_errorsOnly)
+                    {
+                        foreach (string cell in row)
+                        {
+                            if (cell.StartsWith("Error: "))
+                            {
+                                preview.ErrorRows.Add(dataRowIndex);
+                                break;
+                            }
+                        }
+                    }
                 }
                 preview.Data.Add(row);
+                dataRowIndex++;
+            }
+             
+            //update any error rows that were created before we hit a row that allowed us to populate the full header list
+            if (populatedHeaders)
+            {
+                foreach(var row in preview.Data)
+                {
+                    while(row.Count < columnNumbers)
+                    {
+                        row.Add(row[0]);
+                    }
+                }
             }
 
             IsComplete = true;

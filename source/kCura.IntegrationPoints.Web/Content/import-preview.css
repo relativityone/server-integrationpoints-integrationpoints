@@ -184,6 +184,10 @@
 
 /*jQuery DataTable styling*/
 
+.error-row{
+    color:red !important;
+}
+
 /*
  * Table styles
  */
