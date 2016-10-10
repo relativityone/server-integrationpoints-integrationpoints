@@ -83,16 +83,94 @@
         </div>
 
         <div class="card" data-bind="visible: selectedImportType() == 'document'">
-            <span class="label">Document</span>
+            <span class="label">File Encoding</span>
             <table style="width: 100%;">
                 <tr>
                     <td style="width: 48%;">
                         <div class="field-row">
                             <div class="field-label required">
-                                Document Label:
+                                File Encoding:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="import-fileEncoding" data-bind="select2: { width: '100%' }"></select>
                             </div>
                         </div>
                     </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Column:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="import-column" data-bind="select2: { width: '100%' }"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Quote:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="import-quote" data-bind="select2: { width: '100%' }"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Newline:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="import-newline" data-bind="select2: { width: '100%' }"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Multi-Value:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="import-multiValue" data-bind="select2: { width: '100%' }"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Nested Value:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <select class="fluid-mock-select" id="import-nestedValue" data-bind="select2: { width: '100%' }"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%">
+                        <div class="field-row">
+                            <div class="field-label">
+                                <span>First Line Contains Column Names:</span>
+                            </div>
+                            <div class="field-value">
+                                @**Todo: add css space here to line up with the label*@
+                                <input type="radio" name="firstLineHasColNames" value="true"/> Yes<br/>
+                                <input type="radio" name="firstLineHasColNames" value="false"/> No
+                            </div>
+                        </div>
+                    </td>
+                </tr>
             </table>
         </div>
 
