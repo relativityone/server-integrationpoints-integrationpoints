@@ -114,12 +114,9 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Integration\Service\JobLogServiceTests.cs" />
-    <Compile Include="Integration\Service\JobServiceTests.cs" />
-    <Compile Include="TestDBContextHelper.cs" />
-    <Compile Include="Unit\BatchManagerBaseTests.cs" />
-    <Compile Include="Unit\PeriodicScheduleRuleTest.cs" />
-    <Compile Include="Unit\QueueTableHelperTests.cs" />
+    <Compile Include="BatchManagerBaseTests.cs" />
+    <Compile Include="PeriodicScheduleRuleTest.cs" />
+    <Compile Include="QueueTableHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<ConfigSettings>().Instance(configSettings).LifestyleTransient());
 
 			var configMock = Substitute.For<IConfig>();
-			configMock.WebApiPath.Returns(configSettings.WebApiUrl);
+			configMock.WebApiPath.Returns(SharedVariables.RelativityWebApiUrl);
 
 			windsorContainer.Register(Component.For<IConfig>().Instance(configMock).LifestyleSingleton());
 

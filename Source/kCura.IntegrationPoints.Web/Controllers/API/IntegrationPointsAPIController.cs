@@ -33,24 +33,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrive integration point data.")]
 		public HttpResponseMessage Get(int id)
 		{
-			var model = new IntegrationModel();
-			model.ArtifactID = id;
-			if (id > 0)
+			try
 			{
-				model = _reader.ReadIntegrationPoint(id);
+				var model = new IntegrationModel();
+				model.ArtifactID = id;
+				if (id > 0)
+				{
+					model = _reader.ReadIntegrationPoint(id);
+				}
+				if (model.DestinationProvider == 0)
+				{
+					model.DestinationProvider = _provider.GetRdoSynchronizerId();
+				}
+				return Request.CreateResponse(HttpStatusCode.Accepted, model);
 			}
-			if (model.DestinationProvider == 0)
+			catch (Exception exception)
 			{
-				try
-				{
-					model.DestinationProvider = _provider.GetRdoSynchronizerId(); //hard coded for your ease of use
-				}
-				catch
-				{
-					model.DestinationProvider = 0;
-				}
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);
 			}
-			return Request.CreateResponse(HttpStatusCode.Accepted, model);
 		}
 
 		[HttpPost]

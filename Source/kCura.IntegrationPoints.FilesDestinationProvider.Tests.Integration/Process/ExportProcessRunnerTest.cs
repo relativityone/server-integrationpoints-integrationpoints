@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
 			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
-
+			
 			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
 
 			_configSettings.LongTextField = fields.FirstOrDefault(x => x.DisplayName == _configSettings.LongTextFieldName);
@@ -76,7 +77,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var loggingMediator = _windsorContainer.Resolve<ICompositeLoggingMediator>();
 			var jobStats = Substitute.For<JobStatisticsService>();
 			var configMock = Substitute.For<IConfig>();
-			configMock.WebApiPath.Returns(_configSettings.WebApiUrl);
+			configMock.WebApiPath.Returns(SharedVariables.RelativityWebApiUrl);
 
 			var instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
 			instanceSettingRepository.GetConfigurationValue(Arg.Any<string>(), Arg.Any<string>()).Returns("false");
@@ -115,7 +116,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			}
 		}
 
-		[Explicit("Integration Test")]
 		[TestCaseSource(nameof(ExportTestCaseSource))]
 		public void RunTestCase(IExportTestCase testCase)
 		{
@@ -132,7 +132,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			testCase.Verify(directory, _configSettings.DocumentsTestData);
 		}
 
-		[Explicit("Integration Test")]
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
