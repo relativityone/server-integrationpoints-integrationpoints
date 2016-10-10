@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces
 {
     public interface IImportPreviewService
     {
-        int CreatePreviewJob(string loadFile, int workspaceId);
+        int CreatePreviewJob(ImportPreviewSettings settings);
 
 
         void StartPreviewJob(int jobId);

@@ -13,15 +13,19 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     public class PreviewJob
     {
 
-        public PreviewJob(NetworkCredential authenticatedCredential, string loadFile, int workspaceId)
+        public PreviewJob(NetworkCredential authenticatedCredential, ImportPreviewSettings settings)
         {
             IsComplete = false;
 
-            var factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, workspaceId);
+            var factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, settings.WorkspaceId);
             var eddsLoadFile = factory.ToLoadFile();
-
+            bool errorsOnly = false;
+            if(settings.PreviewType == "errors")
+            {
+                errorsOnly = true;
+            }
             eddsLoadFile.RecordDelimiter = ',';
-            eddsLoadFile.FilePath = loadFile;
+            eddsLoadFile.FilePath = settings.FilePath;
             eddsLoadFile.LoadNativeFiles = false;
             eddsLoadFile.CreateFolderStructure = false;
 
@@ -55,7 +59,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 colIdx++;
             }
 
-            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, false, false);            
+            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, errorsOnly, false);            
         }
 
         public void StartRead()
@@ -63,8 +67,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _loadFilePreviewer.OnEvent += OnPreviewerProgress;
             ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile("", 0);
             ImportPreviewTable preview = new ImportPreviewTable();
-            preview.Header = (arrs[0] as kCura.WinEDDS.Api.ArtifactField[]).Select(i => i.DisplayName).ToList();
-            int columnNumber = preview.Header.Count;
+
+            bool populatedHeaders = false;
+
+            //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
+            preview.Header = new List<string>();
+            preview.Header.Add(string.Empty);
+            int columnNumber = 1;
             foreach (var item in arrs)
             {
                 List<string> row = new List<string>();
@@ -81,12 +90,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 }
                 else
                 {
+                    if (!populatedHeaders)
+                    {
+                        preview.Header = (item as kCura.WinEDDS.Api.ArtifactField[]).Select(i => i.DisplayName).ToList();
+                        columnNumber = preview.Header.Count();
+                        populatedHeaders = true;
+                    }
                     row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.Value.ToString()).ToList();
                 }
                 preview.Data.Add(row);
             }
-            //TODO: remove, this is for thread testing purposes
-            //System.Threading.Thread.Sleep(5000);
+
             IsComplete = true;
             PreviewTable = preview;
         }

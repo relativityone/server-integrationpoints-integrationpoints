@@ -14,7 +14,7 @@
         });
     }
 
-    //action to launch popul
+    //action to launch popup
     var onPreviewFileClick = function () {
         var preFile = windowObj.parent.$("#dd-preivewFile");
         var preError = windowObj.parent.$("#dd-previewErrors");
@@ -28,7 +28,12 @@
             return false;
         });
         preError.click(function () {
-            console.log("Preview error has been selected");
+            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
+            windowObj.ImportSettings = ImportSettingsModel();
+            $.extend(windowObj.ImportSettings, { PreviewType: 'errors', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
+
+            windowObj.parent.$("#dd-preivewErrors").close();
+            return false;
         });
         preChoice.click(function () {
             console.log("Preview choice has been selected");

@@ -23,10 +23,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
             _loadFilePreviewers = new Dictionary<int, PreviewJob>();
         }
         
-        public int CreatePreviewJob(string loadFile, int workspaceId)
+        public int CreatePreviewJob(ImportPreviewSettings settings)
         {
             int handlerNum = _loadFilePreviewers.Count + 1;
-            _loadFilePreviewers.Add(handlerNum, new PreviewJob(_credentialProvider.GetAuthenticatedCredential(), loadFile, workspaceId));
+            _loadFilePreviewers.Add(handlerNum, new PreviewJob(_credentialProvider.GetAuthenticatedCredential(), settings));
 
             return handlerNum;
         }
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
                 return null;
             }
             ImportPreviewTable table = _loadFilePreviewers[jobId].PreviewTable;
-            if (table != null )//|| IsJobComplete(jobId))
+            if (table != null || IsJobComplete(jobId))
             {
                 //Dispose here if job is complete
                 _loadFilePreviewers[jobId].DisposePreviewJob();

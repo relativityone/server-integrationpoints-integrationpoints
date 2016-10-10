@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult CreatePreviewJob(ImportPreviewSettings settings)
         {
-            int jobId = _importPreviewService.CreatePreviewJob(settings.FilePath, settings.WorkspaceId);
+            int jobId = _importPreviewService.CreatePreviewJob(settings);
             _importPreviewService.StartPreviewJob(jobId);
             return Json(jobId);
         }
