@@ -421,15 +421,15 @@
   <TestRunner>
     <DLLs>
       <DLL type="x64">Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\bin\x64\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\kCura.IntegrationPoints.Agent.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.Core.Tests\bin\x64\kCura.IntegrationPoints.Core.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.Data.Tests\bin\x64\kCura.IntegrationPoints.Data.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\x64\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.EventHandlers.Tests\bin\x64\kCura.IntegrationPoints.EventHandlers.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\x64\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.Web.Tests\bin\x64\kCura.IntegrationPoints.Web.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.ScheduleQueue.Core.Tests\bin\x64\kCura.ScheduleQueue.Core.Tests.dll</DLL>
-      <DLL type="x64">C:\SourceCode\integrationpoints\Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\kCura.IntegrationPoints.Agent.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Core.Tests\bin\x64\kCura.IntegrationPoints.Core.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Data.Tests\bin\x64\kCura.IntegrationPoints.Data.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\x64\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.EventHandlers.Tests\bin\x64\kCura.IntegrationPoints.EventHandlers.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\x64\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Web.Tests\bin\x64\kCura.IntegrationPoints.Web.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.ScheduleQueue.Core.Tests\bin\x64\kCura.ScheduleQueue.Core.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Unit.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
