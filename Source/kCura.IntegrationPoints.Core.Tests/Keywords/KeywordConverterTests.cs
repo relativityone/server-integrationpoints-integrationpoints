@@ -27,9 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
 
 
 			//ASSERT
-			Assert.AreEqual(@"Hello, 
-Great
-World!!!", output);
+			Assert.AreEqual($@"Hello, {Environment.NewLine}Great{Environment.NewLine}World!!!", output);
 		}
 
 		[Test]
@@ -51,8 +49,7 @@ World!!!", output);
 
 
 			//ASSERT
-			Assert.AreEqual(@"Hello, 
-World!!!", output);
+			Assert.AreEqual($@"Hello, {Environment.NewLine}World!!!", output);
 		}
 
 		[Test]
@@ -100,8 +97,7 @@ World!!!", output);
 
 
 			//ASSERT
-			Assert.AreEqual(@"Hello, 
-this  World!!!", output);
+			Assert.AreEqual($@"Hello, {Environment.NewLine}this  World!!!", output);
 		}
 	}
 
