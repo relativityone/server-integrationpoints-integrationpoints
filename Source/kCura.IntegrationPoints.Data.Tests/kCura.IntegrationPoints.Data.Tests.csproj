@@ -237,34 +237,22 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Config.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
-    <Compile Include="Integration\Queries\GetSavedSearchesQueryTests..cs" />
-    <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
-    <Compile Include="Integration\RelativityRdoQueryTest.cs" />
-    <Compile Include="Integration\Repositories\DestinationWorkspaceRepositoryTests.cs" />
-    <Compile Include="Integration\Repositories\JobHistoryErrorRepositoryTests.cs" />
-    <Compile Include="Integration\Repositories\PermissionRepositoryTests.cs" />
-    <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
-    <Compile Include="Integration\Repositories\RelativityAuditRepositoryTests.cs" />
-    <Compile Include="Integration\Repositories\ScratchTableRepositorySqlTests.cs" />
-    <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
-    <Compile Include="Integration\JobHistoryErrorsBatchingTests.cs" />
-    <Compile Include="Unit\Transformer\JobHistoryErrorTransformerTests.cs" />
-    <Compile Include="Unit\Transformer\IntegrationPointTransformerTests.cs" />
-    <Compile Include="Unit\BaseRdoTests.cs" />
+    <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
+    <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
+    <Compile Include="BaseRdoTests.cs" />
     <Compile Include="MockDBContext.cs" />
-    <Compile Include="Unit\PermissionServiceTest.cs" />
-    <Compile Include="Unit\RdoGetterTest.cs" />
-    <Compile Include="Unit\RelativityReaderBaseTests.cs" />
-    <Compile Include="Unit\Repositories\FieldRepositoryTests.cs" />
-    <Compile Include="Unit\Repositories\IntegrationPointRepositoryTests.cs" />
-    <Compile Include="Unit\Repositories\JobHistoryErrorRepositoryTests.cs" />
-    <Compile Include="Unit\Repositories\PermissionRepositoryTests.cs" />
-    <Compile Include="Unit\Repositories\QueueRepositoryTests.cs" />
-    <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
-    <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
-    <Compile Include="Unit\Toggle\ExtendedRelativityToggleTests.cs" />
+    <Compile Include="PermissionServiceTest.cs" />
+    <Compile Include="RdoGetterTest.cs" />
+    <Compile Include="RelativityReaderBaseTests.cs" />
+    <Compile Include="Repositories\FieldRepositoryTests.cs" />
+    <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
+    <Compile Include="Repositories\PermissionRepositoryTests.cs" />
+    <Compile Include="Repositories\QueueRepositoryTests.cs" />
+    <Compile Include="Repositories\SqlArtifactGuidRepositoryTests.cs" />
+    <Compile Include="RSAPIServiceInstallerTests.cs" />
+    <Compile Include="Toggle\ExtendedRelativityToggleTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

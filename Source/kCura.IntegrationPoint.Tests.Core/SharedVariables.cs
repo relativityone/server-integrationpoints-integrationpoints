@@ -2,8 +2,6 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using Castle.Components.DictionaryAdapter;
-using Castle.DynamicProxy.Generators.Emitters;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -25,17 +23,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region Relativity Settings
 
-		public static string RsapiClientUri => $"http://{TargetHost}/Relativity.Services";
+		public static string ProtocolVersion => ConfigurationManager.AppSettings["ProtocolVersion"];
+
+		public static string RsapiClientUri => $"{ProtocolVersion}://{TargetHost}/Relativity.Services";
 
 		public static Uri RsapiClientServiceUri => new Uri($"{RsapiClientUri}/");
 
-		public static string RestServer => $"http://{TargetHost}/Relativity.Rest/";
+		public static string RestServer => $"{ProtocolVersion}://{TargetHost}/Relativity.Rest/";
 
 		public static Uri RestClientServiceUri => new Uri($"{RestApi}/api");
 
-		public static string RestApi => $"http://{TargetHost}/Relativity.Rest";
+		public static string RestApi => $"{ProtocolVersion}://{TargetHost}/Relativity.Rest";
 
-		public static string RelativityWebApiUrl => $"http://{TargetHost}/RelativityWebAPI/";
+		public static string RelativityWebApiUrl => $"{ProtocolVersion}://{TargetHost}/RelativityWebAPI/";
 
 		#endregion Relativity Settings
 
@@ -65,22 +65,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string LatestRapVersionFromBuildPackages => GetLatestVersion();
 
-		public static string RapFileLocation
-		{
-			get
-			{
-				string value = Environment.GetEnvironmentVariable("rapFileLocation", EnvironmentVariableTarget.Machine);
-				if (value == null)
-				{
-					value = Environment.GetEnvironmentVariable("rapFileLocation", EnvironmentVariableTarget.User);
-					if (value == null)
-					{
-						value = @"C:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap";
-					}
-				}
-				return value;
-			}
-		}
+		public static bool UseLocalRap => bool.Parse(ConfigurationManager.AppSettings["UseLocalRAP"]);
+
+		public static string RapFileLocation => ConfigurationManager.AppSettings["LocalRAPFileLocation"];
 
 		#endregion RAP File Settings
 

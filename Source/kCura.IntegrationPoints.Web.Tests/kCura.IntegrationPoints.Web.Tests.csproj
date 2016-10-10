@@ -208,22 +208,20 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\TestBase.cs" />
-    <Compile Include="Integration\Controllers\GetWorkspacesQueryTests.cs" />
-    <Compile Include="Integration\Controllers\SavedSearchQueryTests.cs" />
-    <Compile Include="Unit\CastleWindsorValidationTests.cs" />
-    <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
-    <Compile Include="Unit\Controllers\API\ProductionControllerTests.cs" />
-    <Compile Include="Unit\Controllers\API\WorkspaceViewControllerTests.cs" />
-    <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
-    <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />
-    <Compile Include="Unit\Controllers\BaseControllerTests.cs" />
-    <Compile Include="Unit\Controllers\LdapControllerTests.cs" />
-    <Compile Include="Unit\Controllers\RelativityControllerTests.cs" />
-    <Compile Include="Unit\Controllers\API\ResourcePoolControllerTests.cs" />
-    <Compile Include="Unit\Controllers\SavedSearchQueryTests.cs" />
-    <Compile Include="Unit\Controllers\SourceTypeControllerTests.cs" />
-    <Compile Include="Unit\Controllers\JobControllerTests.cs" />
-    <Compile Include="Unit\DataStructures\FolderTreeTests.cs" />
+    <Compile Include="CastleWindsorValidationTests.cs" />
+    <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
+    <Compile Include="Controllers\API\ProductionControllerTests.cs" />
+    <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />
+    <Compile Include="Controllers\DestinationTypeControllerTests.cs" />
+    <Compile Include="Controllers\FolderPathControllerTests.cs" />
+    <Compile Include="Controllers\BaseControllerTests.cs" />
+    <Compile Include="Controllers\LdapControllerTests.cs" />
+    <Compile Include="Controllers\RelativityControllerTests.cs" />
+    <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
+    <Compile Include="Controllers\SavedSearchQueryTests.cs" />
+    <Compile Include="Controllers\SourceTypeControllerTests.cs" />
+    <Compile Include="Controllers\JobControllerTests.cs" />
+    <Compile Include="DataStructures\FolderTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

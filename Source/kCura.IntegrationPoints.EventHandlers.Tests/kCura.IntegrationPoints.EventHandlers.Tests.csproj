@@ -44,7 +44,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
-	<Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Apps.Common.Data, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
     </Reference>
@@ -114,18 +114,11 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Integration\Installers\InstallEveryTimeTests.cs" />
-    <Compile Include="Integration\InstallDllTests.cs" />
-    <Compile Include="Integration\EventHandlerTest.cs" />
-    <Compile Include="Integration\Installers\RegisterDocumentTransferProviderTests.cs" />
-    <Compile Include="Integration\Installers\SourceProvidersMigrationEventHandlerTests.cs" />
-    <Compile Include="Integration\ViewErrors.cs" />
-    <Compile Include="Unit\Installers\SetHasErrorsFieldTests.cs" />
-    <Compile Include="Unit\IntegrationPoints\ConsoleEventHandlerTests.cs" />
-    <Compile Include="Unit\IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
-    <Compile Include="Unit\MassOperations\MassCopyIntegrationPointHelper.cs" />
-    <Compile Include="Unit\MassOperations\IntegrationPointMassCopyTests.cs" />
-    <Compile Include="Unit\PageInteractionHelperTests.cs" />
+    <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
+    <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
+    <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
+    <Compile Include="MassOperations\MassCopyIntegrationPointHelper.cs" />
+    <Compile Include="MassOperations\IntegrationPointMassCopyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
