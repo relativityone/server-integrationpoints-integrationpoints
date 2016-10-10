@@ -201,8 +201,10 @@
     <Compile Include="TestCases\ItShouldExportFilesStartingFromGivenRecord.cs" />
     <Compile Include="TestCases\ItShouldExportFolderAndSubfoldersWithNatives.cs" />
     <Compile Include="TestCases\ItShouldExportFolderWithNatives.cs" />
+    <Compile Include="TestCases\ItShouldExportOnlyProductionSetLoadFile.cs" />
     <Compile Include="TestCases\ItShouldExportOriginalImagesPrecendence.cs" />
     <Compile Include="TestCases\ItShouldExportProducedImagesPrecedence.cs" />
+    <Compile Include="TestCases\ItShouldExportProductionSetWithNatives.cs" />
     <Compile Include="TestCases\ItShouldIncludeNativeFilesPathWithoutExportingNatives.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
