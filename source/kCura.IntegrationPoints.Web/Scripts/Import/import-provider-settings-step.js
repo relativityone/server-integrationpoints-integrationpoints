@@ -16,7 +16,7 @@
 
     //action to launch popup
     var onPreviewFileClick = function () {
-        var preFile = windowObj.parent.$("#dd-preivewFile");
+        var preFile = windowObj.parent.$("#dd-previewFile");
         var preError = windowObj.parent.$("#dd-previewErrors");
         var preChoice = windowObj.parent.$("#dd-previewChoiceFolder");
         preFile.on("click", function () {
@@ -24,7 +24,7 @@
             windowObj.ImportSettings = ImportSettingsModel();
             $.extend(windowObj.ImportSettings, { PreviewType: 'file', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
 
-            windowObj.parent.$("#dd-preivewFile").close();
+            windowObj.parent.$("#dd-previewFile").close();
             return false;
         });
         preError.click(function () {
@@ -42,7 +42,7 @@
     //create the btn for previewfile
     var addPreviewFilebtn = function () {
         var options = {
-            "dd-preivewFile": "Preview File",
+            "dd-previewFile": "Preview File",
             "dd-previewErrors": "Preview Errors",
             "dd-previewChoiceFolder": "Preview Choices & Folders"
         }
