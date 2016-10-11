@@ -47,23 +47,7 @@
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-    </Reference>
-		<Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
-			<HintPath>..\packages\$(kCura_Config)\lib\net45\kCura.Config.dll</HintPath>
-			<Private>True</Private>
-		</Reference>
-		<Reference Include="kCura.Crypto, Culture=neutral, processorArchitecture=MSIL">
-			<HintPath>..\packages\$(kCura_Crypto)\lib\net45\kCura.Crypto.dll</HintPath>
-			<Private>True</Private>
-		</Reference>
-		<Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
-			<HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
-			<Private>True</Private>
-		</Reference>
-		<Reference Include="kCura.Utility, Culture=neutral, processorArchitecture=MSIL">
-			<HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.dll</HintPath>
-			<Private>True</Private>
-		</Reference>
+    </Reference>		
 		<Reference Include="NSubstitute">
 			<HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
 		</Reference>
