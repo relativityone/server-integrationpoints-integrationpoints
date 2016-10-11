@@ -127,4 +127,18 @@
         });
     });
 
+    //TODO: get ascii delimiters populating a dropdown
+    var asciiDelimiter = function () {
+        $.get(root.utils.getBaseURL() + "/api/ImportProviderDocument/GetAsciiDelimiters")
+            .then(function (data) {
+                console.log("GOT ASCII DELIMITERS FROM SERVER");
+                console.log(data);
+            })
+            .fail(function (error) {
+                console.log("Ascii delimter ajax failed.");
+                console.log(error);
+            });
+    };
+    asciiDelimiter();
+
 })(this, IP);

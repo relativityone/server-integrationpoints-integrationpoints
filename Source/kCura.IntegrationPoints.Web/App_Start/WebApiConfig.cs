@@ -169,8 +169,8 @@ namespace kCura.IntegrationPoints.Web
             );
 
             config.Routes.MapHttpRoute(
-                name: "ImportAscii",
-                routeTemplate: "api/ImportProviderDocument/GetAsciiDelimiters/",
+                name: "AsciiDelimiters",
+                routeTemplate: "api/ImportProviderDocument/GetAsciiDelimiters",
                 defaults: new { controller = "ImportProviderDocument", action = "GetAsciiDelimiters" }
             );
 
