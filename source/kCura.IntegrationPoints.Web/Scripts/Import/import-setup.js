@@ -127,18 +127,46 @@
         });
     });
 
-    //TODO: get ascii delimiters populating a dropdown
-    var asciiDelimiter = function () {
-        $.get(root.utils.getBaseURL() + "/api/ImportProviderDocument/GetAsciiDelimiters")
-            .then(function (data) {
-                console.log("GOT ASCII DELIMITERS FROM SERVER");
-                console.log(data);
-            })
-            .fail(function (error) {
-                console.log("Ascii delimter ajax failed.");
-                console.log(error);
-            });
+    //function AsciiDelimitersModel(data) {
+    //    var self = this;
+
+    //    self.asciiID = ko.observable(data.asciiID);
+    //};
+
+    function AsciiViewModel() {
+        var self = this;
+        self.asciiDelimiters = ko.observableArray([]);
+
+        $.ajax({
+            url: root.utils.getBaseURL() + "/api/ImportProviderDocument/GetAsciiDelimiters",
+            type: 'GET',
+            contentType: "application/json",
+            async: false,
+            success: function (data) {
+                var array = [];
+                $.each(data, function (index, value) {
+                        array.push({"asciiID": index , "asciiText": value })}
+                );
+                console.log(array[0]);
+                //self.asciiDelimiters(array);
+            }
+        });
+
     };
-    asciiDelimiter();
+    ko.applyBindings(new AsciiViewModel());
+
+    ////TODO: get ascii delimiters populating a dropdown
+    //var asciiDelimiter = function () {
+    //    $.get(root.utils.getBaseURL() + "/api/ImportProviderDocument/GetAsciiDelimiters")
+    //        .then(function (data) {
+    //            console.log("GOT ASCII DELIMITERS FROM SERVER");
+    //            console.log(data);
+    //        })
+    //        .fail(function (error) {
+    //            console.log("Ascii delimter ajax failed.");
+    //            console.log(error);
+    //        });
+    //};
+    //asciiDelimiter();
 
 })(this, IP);
