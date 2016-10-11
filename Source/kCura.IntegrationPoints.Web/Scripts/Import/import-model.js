@@ -25,15 +25,20 @@
             new ImportTypeModel({ id: "3", value: "production", name: "Production Load File" })
         ]);
 
-        this.ProcessingSourceLocationList = ko.observableArray([]);
-        this.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
-        this.HasBeenRun = ko.observable(self.hasBeenRun || false);
-        this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId)
+        self.asciiDelimiters = ko.observableArray([]);
+        self.setAsciiDelimiters = function(data) {
+            self.asciiDelimiters(data);
+        };
+
+        self.ProcessingSourceLocationList = ko.observableArray([]);
+        self.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
+        self.HasBeenRun = ko.observable(self.hasBeenRun || false);
+        self.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId)
             .extend({
                 required: true
             });
 
-        this.Fileshare = ko.observable(self.Fileshare).extend({
+        self.Fileshare = ko.observable(self.Fileshare).extend({
             required: {
                 onlyIf: function () {
                     return self.ProcessingSourceLocation();
