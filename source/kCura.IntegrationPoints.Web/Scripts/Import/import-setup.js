@@ -47,16 +47,12 @@
             return false;
         });
         preError.click(function () {
-            //TODO: refactor to be similar to preFile click handler
+            windowObj.RelativityImport.PreviewSettings = windowObj.RelativityImport.GetCurrentUiModel();
+            $.extend(windowObj.RelativityImport.PreviewSettings, { PreviewType: 'errors', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
+            windowObj.parent.$(idSelector(BUTTON_UL)).slideUp();
 
-            console.log('not implemented');
-            /*
             window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
-            windowObj.ImportSettings = windowObj.ImportProvider.GetCurrentUiModel();
-            $.extend(windowObj.ImportSettings, { PreviewType: 'errors', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
 
-            windowObj.parent.$(idSelector(PREVIEW_ERROR_LI)).close();
-            */
             return false;
         });
         preChoice.click(function () {
