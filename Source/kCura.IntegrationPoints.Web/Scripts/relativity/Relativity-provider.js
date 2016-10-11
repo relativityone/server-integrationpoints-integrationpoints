@@ -126,7 +126,7 @@
 				async: true,
 				success: function (result) {
 					ko.utils.arrayForEach(result, function (item) {
-						item.displayName = item.displayName.replace(/&amp;/g, '&');//decode ampersand
+						item.displayName = IP.utils.decode(item.displayName);
 					});
 					self.workspaces(result);
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);

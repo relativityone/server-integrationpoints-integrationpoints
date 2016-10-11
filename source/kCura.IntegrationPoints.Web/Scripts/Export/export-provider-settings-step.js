@@ -86,6 +86,7 @@
 					onSuccess(result);
 				}).fail(function (error) {
 					onFail(error);
+					IP.message.error.raise(error);
 				});
 			};
 			self.locationSelector.reloadWithRoot(reloadTree);
