@@ -430,6 +430,9 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.Web.Tests\bin\x64\kCura.IntegrationPoints.Web.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.ScheduleQueue.Core.Tests\bin\x64\kCura.ScheduleQueue.Core.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
