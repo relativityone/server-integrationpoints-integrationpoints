@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location list.")]
 		public HttpResponseMessage Get()
 		{
 			try

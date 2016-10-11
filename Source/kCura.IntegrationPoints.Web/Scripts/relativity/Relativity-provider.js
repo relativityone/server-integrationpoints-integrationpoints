@@ -125,6 +125,9 @@
 				url: IP.utils.generateWebAPIURL('WorkspaceFinder'),
 				async: true,
 				success: function (result) {
+					ko.utils.arrayForEach(result, function (item) {
+						item.displayName = IP.utils.decode(item.displayName);
+					});
 					self.workspaces(result);
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
 					self.TargetWorkspaceArtifactId.subscribe(function (value) {

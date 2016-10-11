@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	public class TestHelper : ITestHelper
 	{
 		private readonly IServicesMgr _serviceManager;
+		private readonly ILogFactory _logFactory;
 
 		public string RelativityUserName { get; set; } = SharedVariables.RelativityUserName;
 		public string RelativityPassword { get; set; } = SharedVariables.RelativityPassword;
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			PermissionManager = Substitute.For<IPermissionRepository>();
 			_serviceManager = Substitute.For<IServicesMgr>();
+			_logFactory = Substitute.For<ILogFactory>();
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.CurrentUser));
@@ -76,7 +78,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public ILogFactory GetLoggerFactory()
 		{
-			throw new NotImplementedException();
+			return _logFactory;
 		}
 
 		public string ResourceDBPrepend()

@@ -1,40 +1,27 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Web.Extensions;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-    public class SavedSearchesTreeController : ApiController
-    {
-        private readonly ISavedSearchesTreeService _savedSearchesService;
-        private readonly IErrorRepository _errorRepository;
+	public class SavedSearchesTreeController : ApiController
+	{
+		private readonly ISavedSearchesTreeService _savedSearchesService;
 
-        public SavedSearchesTreeController(ISavedSearchesTreeService savedSearchesService, WebClientFactory webClientFactory, IRepositoryFactory repositoryFactory)
-        {
-            _savedSearchesService = savedSearchesService;
-            _errorRepository = repositoryFactory.GetErrorRepository();
-        }
+		public SavedSearchesTreeController(ISavedSearchesTreeService savedSearchesService)
+		{
+			_savedSearchesService = savedSearchesService;
+		}
 
-        [HttpGet]
-        public HttpResponseMessage Get(int workspaceArtifactId)
-        {
-            try
-            {
-                var tree = _savedSearchesService.GetSavedSearchesTree(workspaceArtifactId);
-                return Request.CreateResponse(HttpStatusCode.OK, tree);
-            }
-            catch (Exception exception)
-            {
-                this.HandleError(workspaceArtifactId, _errorRepository, exception, "Unable to retrieve the saved searches. Please contact the system administrator.");
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError);
-            }
-        }
-    }
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve saved searches list.")]
+		public HttpResponseMessage Get(int workspaceArtifactId)
+		{
+			var tree = _savedSearchesService.GetSavedSearchesTree(workspaceArtifactId);
+			return Request.CreateResponse(HttpStatusCode.OK, tree);
+		}
+	}
 }

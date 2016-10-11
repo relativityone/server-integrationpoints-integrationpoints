@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.DataStructures;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -49,6 +50,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
 		public HttpResponseMessage GetFields()
 		{
 			ImportSettings settings = new ImportSettings { WebServiceURL = _config.WebApiPath };
@@ -62,6 +64,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
 		public HttpResponseMessage GetFolderCount(int integrationPointArtifactId)
 		{
 			IIntegrationPointRepository integrationPointRepository = _repositoryFactory.GetIntegrationPointRepository(_client.APIOptions.WorkspaceID);

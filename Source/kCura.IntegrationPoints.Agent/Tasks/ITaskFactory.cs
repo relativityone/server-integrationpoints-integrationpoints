@@ -1,10 +1,11 @@
-﻿using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Castle.Windsor;
-using Castle.Windsor.Installer;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
+using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -14,27 +15,16 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.MicroKernel.SubSystems.Configuration;
-using kCura.IntegrationPoints.Agent.Installer;
-using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	using kCura.IntegrationPoints.Agent;
-	using Injection;
 	public interface ITaskFactory
 	{
 		ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
@@ -45,34 +35,40 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class TaskFactory : ITaskFactory
 	{
 		private readonly IAgentHelper _helper;
-		private ISerializer _serializer;
-		private IContextContainerFactory _contextContainerFactory;
-		private ICaseServiceContext _caseServiceContext;
-		private IRSAPIClient _rsapiClient;
-		private IWorkspaceDBContext _workspaceDbContext;
-		private IEddsServiceContext _eddsServiceContext;
-		private IRepositoryFactory _repositoryFactory;
-		private IJobHistoryService _jobHistoryService;
+		private readonly IAPILog _logger;
 		private IAgentService _agentService;
+		private ICaseServiceContext _caseServiceContext;
+
+		private IWindsorContainer _container;
+		private IContextContainerFactory _contextContainerFactory;
+		private IEddsServiceContext _eddsServiceContext;
+		private IIntegrationPointService _integrationPointService;
+		private IJobHistoryService _jobHistoryService;
 		private IJobService _jobService;
 		private IManagerFactory _managerFactory;
-		private IIntegrationPointService _integrationPointService;
+		private IRepositoryFactory _repositoryFactory;
+		private IRSAPIClient _rsapiClient;
+		private ISerializer _serializer;
+		private IWorkspaceDBContext _workspaceDbContext;
 
 		public TaskFactory(IAgentHelper helper)
 		{
 			_helper = helper;
+			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
 		}
 
 		public TaskFactory(IAgentHelper helper, IWindsorContainer container) : this(helper)
 		{
-			this.Container = container;
+			Container = container;
 		}
 
 		/// <summary>
-		/// For unit tests only
+		///     For unit tests only
 		/// </summary>
-		internal TaskFactory(IAgentHelper helper, ISerializer serializer, IContextContainerFactory contextContainerFactory, ICaseServiceContext caseServiceContext, IRSAPIClient rsapiClient, IWorkspaceDBContext workspaceDbContext, IEddsServiceContext eddsServiceContext,
-			IRepositoryFactory repositoryFactory, IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory)
+		internal TaskFactory(IAgentHelper helper, ISerializer serializer, IContextContainerFactory contextContainerFactory, ICaseServiceContext caseServiceContext,
+			IRSAPIClient rsapiClient, IWorkspaceDBContext workspaceDbContext, IEddsServiceContext eddsServiceContext,
+			IRepositoryFactory repositoryFactory, IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory,
+			IAPILog apiLog)
 		{
 			_helper = helper;
 			_serializer = serializer;
@@ -86,9 +82,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_agentService = agentService;
 			_jobService = jobService;
 			_managerFactory = managerFactory;
+			_logger = apiLog;
 		}
-
-		private IWindsorContainer _container;
 
 		private IWindsorContainer Container
 		{
@@ -96,14 +91,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			set { _container = value; }
 		}
 
-		private void Install(Job job, ScheduleQueueAgentBase agentBase)
-		{
-			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
-			Container.Install(agentInstaller);
-		}
-
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
 		{
+			LogCreatingTaskInformation(job);
 			Install(job, agentBase);
 			ResolveDependencies();
 			IntegrationPoint integrationPointDto = GetIntegrationPoint(job);
@@ -148,16 +138,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						return Container.Resolve<ExportWorker>();
 
 					default:
+						LogUnknownTaskTypeError(taskType);
 						return null;
 				}
 			}
-			catch (AgentDropJobException)
+			catch (AgentDropJobException e)
 			{
 				//we catch this type of exception when an agent explicitly drops a Job, and we bubble up the exception message to the Errors tab.
+				LogAgentDropJobException(job, e);
 				throw;
 			}
 			catch (Exception e)
 			{
+				LogErrorDuringTaskCreation(e, job.TaskType, job.JobId);
 				UpdateJobHistoryOnFailure(job, integrationPointDto, e);
 				throw;
 			}
@@ -176,6 +169,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				Container = null;
 			}
+		}
+
+		private void Install(Job job, ScheduleQueueAgentBase agentBase)
+		{
+			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
+			Container.Install(agentInstaller);
 		}
 
 		private void ResolveDependencies()
@@ -213,7 +212,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
-			IIntegrationPointService integrationPointService = null;
+			IIntegrationPointService integrationPointService;
 			if (_integrationPointService == null)
 			{
 				IChoiceQuery choiceQuery = new ChoiceQuery(_rsapiClient);
@@ -233,8 +232,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (integrationPoint == null)
 			{
+				LogIntegrationPointNotFound(job);
 				throw new NullReferenceException(
-				  $"Unable to retrieve the integration point for the following job: {job.JobId}");
+					$"Unable to retrieve the integration point for the following job: {job.JobId}");
 			}
 
 			return integrationPoint;
@@ -244,13 +244,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = _jobHistoryService.CreateRdo(
-				integrationPointDto, 
+				integrationPointDto,
 				taskParameters.BatchInstance,
-				String.IsNullOrEmpty(job.ScheduleRuleType) 
-					? JobTypeChoices.JobHistoryRun : JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
+				string.IsNullOrEmpty(job.ScheduleRuleType)
+					? JobTypeChoices.JobHistoryRun
+					: JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
 
 			return jobHistory;
-	}
+		}
 
 		private void UpdateJobHistoryOnFailure(Job job, IntegrationPoint integrationPointDto, Exception e)
 		{
@@ -283,9 +284,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			string exceptionMessage = "Unable to execute Integration Point job: There is already a job currently running.";
 
 			//check if it's a scheduled job
-			if (!String.IsNullOrEmpty(job.ScheduleRuleType))
+			if (!string.IsNullOrEmpty(job.ScheduleRuleType))
 			{
-				integrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, agentBase.ScheduleRuleFactory, new TaskResult() { Status = TaskStatusEnum.None });
+				integrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, agentBase.ScheduleRuleFactory, new TaskResult {Status = TaskStatusEnum.None});
 				exceptionMessage = $@"{exceptionMessage} Job is re-scheduled for {integrationPointDto.NextScheduledRuntimeUTC}.";
 			}
 			else
@@ -293,6 +294,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistory jobHistory = GetJobHistory(job, integrationPointDto);
 				RemoveJobHistoryFromIntegrationPoint(integrationPointDto, jobHistory);
 			}
+
+			LogDroppingJob(job, integrationPointDto, exceptionMessage);
 
 			throw new AgentDropJobException(exceptionMessage);
 		}
@@ -308,5 +311,40 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryService.UpdateRdo(jobHistory);
 			_jobHistoryService.DeleteRdo(jobHistory.ArtifactId);
 		}
+
+		#region Logging
+
+		private void LogCreatingTaskInformation(Job job)
+		{
+			_logger.LogInformation("Attempting to create task {TaskType} for job {JobId}.", job.TaskType, job.JobId);
+		}
+
+		private void LogUnknownTaskTypeError(TaskType taskType)
+		{
+			_logger.LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
+		}
+
+		private void LogErrorDuringTaskCreation(Exception exception, string taskType, long jobId)
+		{
+			_logger.LogError(exception, "Error during task creation ({TaskType}) for job {JobId}", taskType, jobId);
+		}
+
+		private void LogAgentDropJobException(Job job, AgentDropJobException agentDropJobException)
+		{
+			_logger.LogError(agentDropJobException, "Agent explicitly dropped job {JobId}.", job.JobId);
+		}
+
+		private void LogIntegrationPointNotFound(Job job)
+		{
+			_logger.LogError("Unable to retrieve the integration point for the following job: {JobId}", job.JobId);
+		}
+
+		private void LogDroppingJob(Job job, IntegrationPoint integrationPointDto, string exceptionMessage)
+		{
+			_logger.LogError("{ExceptionMessage}. Job Id: {JobId}. Task type: {TaskType}. Integration Point Id: {IntegrationPointId}.", exceptionMessage, job.JobId, job.TaskType,
+				integrationPointDto.ArtifactId);
+		}
+
+		#endregion
 	}
 }

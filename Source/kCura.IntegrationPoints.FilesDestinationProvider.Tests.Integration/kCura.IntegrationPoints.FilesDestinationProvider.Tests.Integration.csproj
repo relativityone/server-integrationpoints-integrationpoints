@@ -201,8 +201,10 @@
     <Compile Include="TestCases\ItShouldExportFilesStartingFromGivenRecord.cs" />
     <Compile Include="TestCases\ItShouldExportFolderAndSubfoldersWithNatives.cs" />
     <Compile Include="TestCases\ItShouldExportFolderWithNatives.cs" />
+    <Compile Include="TestCases\ItShouldExportOnlyProductionSetLoadFile.cs" />
     <Compile Include="TestCases\ItShouldExportOriginalImagesPrecendence.cs" />
     <Compile Include="TestCases\ItShouldExportProducedImagesPrecedence.cs" />
+    <Compile Include="TestCases\ItShouldExportProductionSetWithNatives.cs" />
     <Compile Include="TestCases\ItShouldIncludeNativeFilesPathWithoutExportingNatives.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
@@ -239,6 +241,9 @@
     <Compile Include="TestCases\ItShouldExportSavedSearchMetadataOnly.cs" />
     <Compile Include="TestCases\ItShouldExportTextFilesWithCustomDirectoryPrefix.cs" />
     <Compile Include="TestCases\ItShouldExportVolumeWithCustomName.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -304,11 +309,6 @@
     <Content Include="TestData\NATIVES\AMEYERS_0000757.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">

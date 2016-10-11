@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -18,6 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		// GET api/<controller>
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve accessible RDO list.")]
 		public HttpResponseMessage Get()
 		{
 			var list = _rdoFilter.GetAllViewableRdos().Select(x => new { name = x.Name, value = x.DescriptorArtifactTypeID }).ToList();
@@ -25,6 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to object type.")]
 		public HttpResponseMessage Get(int id)
 		{
 			var list = _query.GetObjectType(id);

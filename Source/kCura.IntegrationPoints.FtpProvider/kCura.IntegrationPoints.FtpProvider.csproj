@@ -46,6 +46,10 @@
       <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+		<Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
+			<HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
     <Reference Include="Renci.SshNet, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(SSH_NET)\lib\net40\Renci.SshNet.dll</HintPath>
       <Private>True</Private>
@@ -86,9 +90,6 @@
       <Project>{f49b9ffa-f3ef-4870-9e78-fed4c72b3249}</Project>
       <Name>kCura.IntegrationPoints.FtpProvider.Parser</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

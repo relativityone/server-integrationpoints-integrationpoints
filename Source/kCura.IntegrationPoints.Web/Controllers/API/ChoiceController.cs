@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -16,6 +17,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[Route("{workspaceID}/Choice/{fieldGuid}")]
+		[LogApiExceptionFilter(Message = "Unable to retrieve choice on field.")]
 		public HttpResponseMessage Get(int workspaceID, string fieldGuid)
 		{
 			var choices = _choiceService.GetChoicesOnField(Guid.Parse(fieldGuid));

@@ -17,6 +17,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Agent.Tests.Integration\kCura.IntegrationPoints.Agent.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -33,6 +38,11 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="Source\kcura.IntegrationPoints.Core.Tests.Integration\kcura.IntegrationPoints.Core.Tests.Integration.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -57,6 +67,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Data.Tests.Integration\kCura.IntegrationPoints.Data.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -68,6 +83,11 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -88,6 +108,11 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="Source\kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -182,6 +207,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -189,6 +219,11 @@
           <Publish>default.pubxml</Publish>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="Source\kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -204,6 +239,11 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="Source\kCura.ScheduleQueue.Core.Tests.Integration\kCura.ScheduleQueue.Core.Tests.Integration.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -395,33 +435,35 @@
   </BuildHelper>
   <TestRunner>
     <DLLs>
+      <DLL type="x64">Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\bin\x64\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\kCura.IntegrationPoints.Agent.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Core.Tests\bin\x64\kCura.IntegrationPoints.Core.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Data.Tests\bin\x64\kCura.IntegrationPoints.Data.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\x64\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.EventHandlers.Tests\bin\x64\kCura.IntegrationPoints.EventHandlers.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\bin\x64\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\x64\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Web.Tests\bin\x64\kCura.IntegrationPoints.Web.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.ScheduleQueue.Core.Tests\bin\x64\kCura.ScheduleQueue.Core.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
-      <allow>kCura.IntegrationPoints.Agent.Tests.Unit.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
-      <allow>kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Agent.TaskJobSubmitterTests.TestJobSubmitter</allow>
-      <allow>kCura.IntegrationPoints.Core.Tests.Unit.Agent.IntegrationPointTaskBaseTests.GetDestinationProvider_GoldFlow</allow>
-      <allow>kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
+      <allow>kCura.IntegrationPoints.Agent.Tests.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
+      <allow>kCura.IntegrationPoints.Core.Contracts.Tests.Agent.TaskJobSubmitterTests.TestJobSubmitter</allow>
+      <allow>kCura.IntegrationPoints.Core.Tests.Agent.IntegrationPointTaskBaseTests.GetDestinationProvider_GoldFlow</allow>
+      <allow>kCura.IntegrationPoints.Web.Tests.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
       <allow>kCura.ScheduleQueue.Core.Tests.PeriodicScheduleRuleTest.GetNextUTCRunDateTime_DailyRuleMigration_CorrectValue</allow>
-      <allow>kCura.IntegrationPoints.Data.Tests.Unit.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
-      <allow>kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers.SetHasErrorsFieldTests.ExecuteInstanced_ThrowsQueryError_Test</allow>
+      <allow>kCura.IntegrationPoints.Data.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
+      <allow>kCura.IntegrationPoints.EventHandlers.Tests.Installers.SetHasErrorsFieldTests.ExecuteInstanced_ThrowsQueryError_Test</allow>
       <allow>kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging.CompositeLoggingMediatorTests.ItShouldHandleEmptyChildrenList</allow>
       <allow>kCura.IntegrationPoints.FtpProvider.Tests.FtpProviderTests.ValidateColumns_AllMatch</allow>
-      <allow>kCura.IntegrationPoints.Data.Tests.Unit.PermissionServiceTest.UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse</allow>
-      <allow>kCura.IntegrationPoints.Agent.Tests.Unit.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
-      <allow>kCura.IntegrationPoints.Web.Tests.Unit.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
+      <allow>kCura.IntegrationPoints.Data.Tests.PermissionServiceTest.UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse</allow>
+      <allow>kCura.IntegrationPoints.Agent.Tests.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
+      <allow>kCura.IntegrationPoints.Web.Tests.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
+      <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
+      <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(int32,int32)</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>

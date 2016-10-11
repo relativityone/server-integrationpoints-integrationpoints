@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using System.Web.Http;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Security;
+using kCura.IntegrationPoints.Web.Attributes;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class LdapController : ApiController
     {
         private readonly IEncryptionManager _manager;
-        public LdapController(IEncryptionManager manager)
-        {
-            _manager = manager;
-        }
+	    private readonly IHelper _helper;
+
+	    public LdapController(IEncryptionManager manager, IHelper helper)
+	    {
+		    _manager = manager;
+		    _helper = helper;
+	    }
 
         [HttpPost]
-        public IHttpActionResult Encrypt([FromBody] object message)
+		[LogApiExceptionFilter(Message = "Unable to Encrypt message data.")]
+		public IHttpActionResult Encrypt([FromBody] object message)
         {
             var decryptedText = string.Empty;
             if (message != null)
@@ -26,7 +32,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpPost]
-        public IHttpActionResult Decrypt([FromBody] string message)
+		[LogApiExceptionFilter(Message = "Unable to Decrypt message data.")]
+		public IHttpActionResult Decrypt([FromBody] string message)
         {
             var decryptedText = this.GetSettings(message);
             return Ok(decryptedText);
@@ -51,9 +58,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpPost]
-        public IHttpActionResult GetViewFields([FromBody] object data)
+		[LogApiExceptionFilter(Message = "Unable to retrieve LDAP provider settings.")]
+		public IHttpActionResult GetViewFields([FromBody] object data)
         {
-            var provider = new LDAPProvider.LDAPProvider(_manager);
+            var provider = new LDAPProvider.LDAPProvider(_manager, _helper);
             LDAPSettings settings = provider.GetSettings(data.ToString());
             var result = new List<KeyValuePair<string, string>>();
             result.Add(new KeyValuePair<string, string>("Connection Path", settings.ConnectionPath));

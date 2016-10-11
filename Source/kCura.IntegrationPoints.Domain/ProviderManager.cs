@@ -9,6 +9,7 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -115,7 +116,7 @@ namespace kCura.IntegrationPoints.Domain
 			}
 		}
 
-		private void SetUpCastleWindsor()
+		private void SetUpCastleWindsor(IHelper helper)
 		{
 			_windsorContainer = new WindsorContainer();
 			IKernel kernel = _windsorContainer.Kernel;
@@ -124,6 +125,7 @@ namespace kCura.IntegrationPoints.Domain
 				FromAssembly.InDirectory(
 					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
 					.FilterByName(this.FilterByAllowedAssemblyNames)));
+			_windsorContainer.Register(Component.For<IHelper>().UsingFactoryMethod(k => helper, true));
 		}
 
 		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
@@ -136,12 +138,13 @@ namespace kCura.IntegrationPoints.Domain
 		/// Gets the provider in the app domain from the specific identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier that represents the provider</param>
+		/// <param name="helper">IHelper required in castle windsor initialization</param>
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public IDataSourceProvider GetProvider(Guid identifier)
+		public IDataSourceProvider GetProvider(Guid identifier, IHelper helper)
 		{
 			if (_windsorContainer == null)
 			{
-				this.SetUpCastleWindsor();
+				this.SetUpCastleWindsor(helper);
 			}
 
 			if (_providerFactory == null)

@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
-			return _jobService.GetScheduledJob(workspaceID, relatedObjectArtifactID, taskName);
+			return _jobService.GetScheduledJobs(workspaceID, relatedObjectArtifactID, taskName);
 		}
 
 		public void DeleteJob(long jobID)

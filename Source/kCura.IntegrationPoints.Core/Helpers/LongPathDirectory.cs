@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Helpers
 
 		public bool Exists(string path)
 		{
-			return Directory.Exists(path); //LongPath.LongPath.DirectoryExists(path);
+			return LongPath.LongPath.DirectoryExists(path);
 		}
 
 		public IDirectorySecurity GetAccessControl(string path)
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Helpers
 
 		public string[] GetDirectories(string path)
 		{
-			return Directory.GetDirectories(path); //Directory.LongPath.LongPath.GetDirectories(path);
+			return LongPath.LongPath.GetDirectories(path);
 		}
 
 		public string[] GetDirectories(string path, string searchPattern)

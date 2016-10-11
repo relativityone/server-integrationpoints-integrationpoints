@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.Services.Metrics;
@@ -29,48 +30,43 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrive integration point data.")]
 		public HttpResponseMessage Get(int id)
-		{
-			var model = new IntegrationModel();
-			model.ArtifactID = id;
-			if (id > 0)
-			{
-				model = _reader.ReadIntegrationPoint(id);
-			}
-			if (model.DestinationProvider == 0)
-			{
-				try
-				{
-					model.DestinationProvider = _provider.GetRdoSynchronizerId(); //hard coded for your ease of use
-				}
-				catch
-				{
-					model.DestinationProvider = 0;
-				}
-			}
-			return Request.CreateResponse(HttpStatusCode.Accepted, model);
-		}
-
-		[HttpPost]
-		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
 		{
 			try
 			{
-				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+				var model = new IntegrationModel();
+				model.ArtifactID = id;
+				if (id > 0)
 				{
-					using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, 
-						Guid.Empty, model.Name, MetricTargets.APMandSUM ))
-					{
-						int createdId = _reader.SaveIntegration(model);
-						string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
-
-						return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
-					}
+					model = _reader.ReadIntegrationPoint(id);
 				}
+				if (model.DestinationProvider == 0)
+				{
+					model.DestinationProvider = _provider.GetRdoSynchronizerId();
+				}
+				return Request.CreateResponse(HttpStatusCode.Accepted, model);
 			}
 			catch (Exception exception)
 			{
-				return Request.CreateResponse(HttpStatusCode.PreconditionFailed, exception.Message);
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);
+			}
+		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
+		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
+		{
+			using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+			{
+				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, 
+					Guid.Empty, model.Name, MetricTargets.APMandSUM ))
+				{
+					int createdId = _reader.SaveIntegration(model);
+					string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+
+					return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
+				}
 			}
 		}
 	}

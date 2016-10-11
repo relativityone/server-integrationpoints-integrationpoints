@@ -135,8 +135,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 
             container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
 
-            container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient);
-
             // TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
             container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
                 () =>

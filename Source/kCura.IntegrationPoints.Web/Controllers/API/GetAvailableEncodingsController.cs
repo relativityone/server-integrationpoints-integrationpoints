@@ -4,12 +4,14 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class GetAvailableEncodingsController : ApiController
 	{
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve encoding type list.")]
 		public HttpResponseMessage Get()
 		{
 			List<AvailableEncodingInfo> encodings = new List<AvailableEncodingInfo>();

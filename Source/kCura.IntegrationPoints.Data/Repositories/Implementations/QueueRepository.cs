@@ -19,10 +19,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public int GetNumberOfJobsExecutingOrInQueue(int workspaceId, int integrationPointId)
 		{
 			//excludes scheduled jobs that are pending
-			string queuedOrRunningSql = $@"SELECT count(*) FROM [{_queueTableName}]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [ScheduleRuleType] is null";
+			string queuedOrRunningSql = $@"SELECT count(*) FROM [{_queueTableName}] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is null";
 
 			IEnumerable<SqlParameter> queuedOrRunningParameters = new List<SqlParameter>
 			{
@@ -30,11 +27,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
 			};
 
-			string scheduledRunningSql = $@"SELECT count(*) FROM [{_queueTableName}]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [ScheduleRuleType] is not null
-										AND [LockedByAgentID] is not null";
+			string scheduledRunningSql = $@"SELECT count(*) FROM [{_queueTableName}] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is not null AND [LockedByAgentID] is not null";
 
 			IEnumerable<SqlParameter> scheduledRunningParameters = new List<SqlParameter>
 			{
@@ -51,12 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int GetNumberOfJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime)
 		{
-			string sql = $@"SELECT count(*) FROM [{_queueTableName}]
-										WHERE [WorkspaceID] = @workspaceId
-										AND [RelatedObjectArtifactID] = @integrationPointId
-										AND [LockedByAgentID] is not null
-										AND [NextRunTime] <= @dateValue 
-										AND [JobID] != @jobId";
+			string sql = $@"SELECT count(*) FROM [{_queueTableName}] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [LockedByAgentID] is not null AND [NextRunTime] <= @dateValue AND [JobID] != @jobId";
 
 			IEnumerable<SqlParameter> parameters = new List<SqlParameter>
 			{

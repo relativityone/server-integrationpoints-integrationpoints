@@ -5,6 +5,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -18,17 +19,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to validate export settings.")]
 		public HttpResponseMessage ValidateSettings(int workspaceID, IntegrationModel model)
 		{
-			try
-			{
-				var validationResult = _validationService.Validate(workspaceID, model);
-				return Request.CreateResponse(HttpStatusCode.OK, validationResult);
-			}
-			catch (Exception)
-			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, "Integration Point settings: Failed to validate export settings");
-			}
+			var validationResult = _validationService.Validate(workspaceID, model);
+			return Request.CreateResponse(HttpStatusCode.OK, validationResult);
 		}
 	}
 }

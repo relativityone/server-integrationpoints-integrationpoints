@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		[HttpPost]
 		public ActionResult CheckLdap(LDAPSettings model)
 		{
-			var service = new LDAPProvider.LDAPService(model);
+			var service = new LDAPProvider.LDAPService(_apiLog, model);
 			service.InitializeConnection();
 			bool isAuthenticated = service.IsAuthenticated();
 			return isAuthenticated ? JsonNetResult(new object { }) : JsonNetResult(new { }, HttpStatusCode.BadRequest);

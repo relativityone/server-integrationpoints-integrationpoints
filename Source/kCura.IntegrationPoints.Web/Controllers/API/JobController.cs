@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		
 		// POST API/Job/Run
 		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to run the transfer job.")]
 		public HttpResponseMessage Run(Payload payload)
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
@@ -51,6 +53,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		// POST API/Job/Retry
 		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to retry run of the transfer job.")]
 		public HttpResponseMessage Retry(Payload payload)
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
