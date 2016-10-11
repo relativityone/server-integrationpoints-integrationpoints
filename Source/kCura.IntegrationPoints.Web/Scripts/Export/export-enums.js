@@ -59,7 +59,7 @@ ExportEnums.SourceOptions = [
 ExportEnums.SourceOptionsEnum = {
 	Folder: 0,
 	FolderSubfolder: 1,
-	Production: 2,
+	//OCTOBER_PRODUCTION_DISABLE//{ value: 2, key: "Production" },
 	SavedSearch: 3
 };
 
