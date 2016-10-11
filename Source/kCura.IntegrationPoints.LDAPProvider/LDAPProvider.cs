@@ -6,84 +6,139 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Security;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
-    [kCura.IntegrationPoints.Contracts.DataSourceProvider("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232")]
-    public class LDAPProvider : IDataSourceProvider
-    {
-        private readonly IEncryptionManager _encryptionManager;
+	[Contracts.DataSourceProvider("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232")]
+	public class LDAPProvider : IDataSourceProvider
+	{
+		private readonly IEncryptionManager _encryptionManager;
+		private readonly IAPILog _logger;
 
-        public LDAPProvider(IEncryptionManager encryptionManager)
-        {
-            _encryptionManager = encryptionManager;
-        }
+		public LDAPProvider(IEncryptionManager encryptionManager, IHelper helper)
+		{
+			_encryptionManager = encryptionManager;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<LDAPProvider>();
+		}
 
-        public System.Data.IDataReader GetData(IEnumerable<Contracts.Models.FieldEntry> fields, IEnumerable<string> entryIds, string options)
-        {
-            LDAPSettings settings = GetSettings(options);
-            List<string> fieldsToLoad = fields.Select(f => f.FieldIdentifier).ToList();
-            string identifier = fields.Where(f => f.IsIdentifier).Select(f => f.FieldIdentifier).First();
+		public System.Data.IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds,
+			string options)
+		{
+			LogRetrievingData(options, entryIds);
 
-            LDAPService ldapService = new LDAPService(settings, fieldsToLoad);
-            ldapService.InitializeConnection();
-            IEnumerable<SearchResult> items = ldapService.FetchItems();
-            return new LDAPServiceDataReader(ldapService, entryIds, identifier, fieldsToLoad, new LDAPDataFormatterDefault(settings));
-        }
+			LDAPSettings settings = GetSettings(options);
+			List<string> fieldsToLoad = fields.Select(f => f.FieldIdentifier).ToList();
+			string identifier = fields.Where(f => f.IsIdentifier).Select(f => f.FieldIdentifier).First();
 
-        public System.Data.IDataReader GetBatchableIds(Contracts.Models.FieldEntry identifier, string options)
-        {
-            LDAPSettings settings = GetSettings(options);
-            List<string> fieldsToLoad = new List<string>() { identifier.FieldIdentifier };
+			LDAPService ldapService = new LDAPService(_logger, settings, fieldsToLoad);
+			ldapService.InitializeConnection();
+			IEnumerable<SearchResult> items = ldapService.FetchItems();
+			return new LDAPServiceDataReader(ldapService, entryIds, identifier, fieldsToLoad,
+				new LDAPDataFormatterDefault(settings));
+		}
 
-            LDAPService ldapService = new LDAPService(settings, fieldsToLoad);
-            ldapService.InitializeConnection();
-            IEnumerable<SearchResult> items = ldapService.FetchItems();
-            return new LDAPDataReader(items, fieldsToLoad, new LDAPDataFormatterForBatchableIDs(settings));
-        }
+		public System.Data.IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		{
+			LogRetrievingBatchableIds(options, identifier);
 
-        public IEnumerable<Contracts.Models.FieldEntry> GetFields(string options)
-        {
-            LDAPSettings settings = GetSettings(options);
-            settings.PropertyNamesOnly = true;
+			LDAPSettings settings = GetSettings(options);
+			List<string> fieldsToLoad = new List<string>() {identifier.FieldIdentifier};
 
-            LDAPService ldapService = new LDAPService(settings);
-            ldapService.InitializeConnection();
-            IEnumerable<SearchResult> items = ldapService.FetchItems(settings.GetPropertiesItemSearchLimit);
-            List<string> fields = ldapService.GetAllProperties(items);
+			LDAPService ldapService = new LDAPService(_logger, settings, fieldsToLoad);
+			ldapService.InitializeConnection();
+			IEnumerable<SearchResult> items = ldapService.FetchItems();
+			return new LDAPDataReader(items, fieldsToLoad, new LDAPDataFormatterForBatchableIDs(settings));
+		}
 
-            return fields.Select(f => new FieldEntry() { DisplayName = f, FieldIdentifier = f });
-        }
+		public IEnumerable<FieldEntry> GetFields(string options)
+		{
+			LogRetrievingFields(options);
 
-        public LDAPSettings GetSettings(string options)
-        {
-            try
-            {
-                options = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(options);
-            }
-            catch (JsonReaderException) {/*Already a string this is a backwards compatibility issue*/}
+			LDAPSettings settings = GetSettings(options);
+			settings.PropertyNamesOnly = true;
 
-            options = _encryptionManager.Decrypt(options);
-            LDAPSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<LDAPSettings>(options);
+			LDAPService ldapService = new LDAPService(_logger, settings);
+			ldapService.InitializeConnection();
+			IEnumerable<SearchResult> items = ldapService.FetchItems(settings.GetPropertiesItemSearchLimit);
+			List<string> fields = ldapService.GetAllProperties(items);
 
-            if (String.IsNullOrWhiteSpace(settings.Filter)) { settings.Filter = LDAPSettings.FILTER_DEFAULT; }
+			return fields.Select(f => new FieldEntry() {DisplayName = f, FieldIdentifier = f});
+		}
 
-            if (settings.PageSize < 1) { settings.PageSize = 1000; }
+		public LDAPSettings GetSettings(string options)
+		{
+			try
+			{
+				options = JsonConvert.DeserializeObject<string>(options);
+			}
+			catch (JsonReaderException exception)
+			{
+				LogSettingsDeserializationError(exception, options);
+			}
 
-            if (settings.GetPropertiesItemSearchLimit < 1) { settings.GetPropertiesItemSearchLimit = 100; }
+			options = _encryptionManager.Decrypt(options);
+			LDAPSettings settings = JsonConvert.DeserializeObject<LDAPSettings>(options);
 
-            if (!settings.MultiValueDelimiter.HasValue || settings.MultiValueDelimiter.ToString() == string.Empty)
-            {
-                //not knowing what data can look like we will assume 
-                //blank entry (" ") is possible user entry as legit delimiter
-                settings.MultiValueDelimiter = char.Parse(LDAPSettings.MULTIVALUEDELIMITER_DEFAULT);
-            }
+			if (String.IsNullOrWhiteSpace(settings.Filter))
+			{
+				settings.Filter = LDAPSettings.FILTER_DEFAULT;
+			}
 
-            return settings;
-        }
-    }
+			if (settings.PageSize < 1)
+			{
+				settings.PageSize = 1000;
+			}
+
+			if (settings.GetPropertiesItemSearchLimit < 1)
+			{
+				settings.GetPropertiesItemSearchLimit = 100;
+			}
+
+			if (!settings.MultiValueDelimiter.HasValue || settings.MultiValueDelimiter.ToString() == string.Empty)
+			{
+				//not knowing what data can look like we will assume 
+				//blank entry (" ") is possible user entry as legit delimiter
+				LogUsageOfDefaultMultiValueDelimiter(options);
+				settings.MultiValueDelimiter = char.Parse(LDAPSettings.MULTIVALUEDELIMITER_DEFAULT);
+			}
+
+			return settings;
+		}
+
+		#region Logging
+
+		private void LogRetrievingFields(string options)
+		{
+			_logger.LogInformation("Attempting to retrieve fields in LDAP Provider with {Options}.", options);
+		}
+
+		private void LogRetrievingData(string options, IEnumerable<string> entryIds )
+		{
+			_logger.LogInformation("Attempting to retrieve data in LDAP Provider with {Options} for ids: {Ids}.", options,
+				string.Join(",", entryIds));
+		}
+
+		private void LogRetrievingBatchableIds(string options, FieldEntry entry)
+		{
+			_logger.LogInformation(
+				"Attempting to retrieve batchable ids in LDAP Provider with {Options} for field {FieldIdentifier}", options,
+				entry.FieldIdentifier);
+		}
+
+		private void LogUsageOfDefaultMultiValueDelimiter(string options)
+		{
+			_logger.LogWarning(
+				"LDAPSettings does not contain Multivalue delimiter. Using default delimiter: ({DefaultDelimiter}) for {Options}",
+				LDAPSettings.MULTIVALUEDELIMITER_DEFAULT, options);
+		}
+
+		private void LogSettingsDeserializationError(Exception ex, string options)
+		{
+			_logger.LogError(ex, "Error occured in {MethodName} while deserializing LDAP settings with {Options}.",
+				nameof(GetSettings), options);
+		}
+
+		#endregion
+	}
 }
-
-
-
-
