@@ -91,8 +91,12 @@
                             <div class="field-label required">
                                 File Encoding:
                             </div>
-                            <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-fileEncoding" data-bind="select2: { width: '100%' }"></select>
+                            <div class="field-value">
+                                <select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+                                    <optgroup data-bind="attr: {label: label}, foreach: children">
+                                        <option data-bind="text: displayName, value: name"></option>
+                                    </optgroup>
+                                </select>
                             </div>
                         </div>
                     </td>

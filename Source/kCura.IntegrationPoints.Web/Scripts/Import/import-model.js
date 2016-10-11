@@ -71,6 +71,50 @@
             }
         });
 
+        self.DataFileEncodingTypeValue = "Select...";
+
+        self.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({
+            required: true
+        });
+
+        //Populate file encoding dropdown
+        self.FileEncodingTypeList = ko.observableArray([]);
+        self._UpdateFileEncodingTypeList = function () {
+            IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+                function Group(label, children) {
+                    this.label = ko.observable(label);
+                    this.children = ko.observableArray(children);
+                };
+                function Option(displayName, name) {
+                    this.displayName = ko.observable(displayName);
+                    this.name = ko.observable(name);
+                };
+
+                var favorite = [];
+                var others = [];
+
+                for (var i = 0; i < result.length; i++) {
+                    var option = new Option(result[i].displayName, result[i].name);
+
+                    if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
+                        favorite.push(option);
+                    } else {
+                        others.push(option);
+                    }
+                }
+
+                // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
+                self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
+
+                self.DataFileEncodingType(self.DataFileEncodingTypeValue);
+                self.DataFileEncodingType.isModified(false);
+
+                self.TextFileEncodingType(self.TextFileEncodingTypeValue);
+                self.TextFileEncodingType.isModified(false);
+            });
+        }
+        self._UpdateFileEncodingTypeList();
+
     }
     windowObj.RelativityImport.koModel = new viewModel();
     ko.applyBindings(windowObj.RelativityImport.koModel);
