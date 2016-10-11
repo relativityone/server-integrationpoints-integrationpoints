@@ -10,6 +10,13 @@
     };
 
     var viewModel = function () {
+        //TODO: refactor viewmodel
+        //- make self / this usage consistent
+        //- consider making selectedImportType a computed observable that indexes into importTypes, and pulling the string from the 'value' field. would need a new variable like 'activeImportType'
+        //- assignment to  ProcessingSourceLocationArtifactId can never be true, so always defaults to 0; why is the || used?
+        //- assignment to HasBeenRun references a non-existent self.hasBeenRun; again, can never be present so always defaults to false
+        //- why are we passing self.Fileshare into the ko.observable function that defines... this.Fileshare? understand required / onlyIf; is this knockout or integration points?
+
         var self = this;
         self.selectedImportType = ko.observable("document");
         self.importTypes = ko.observableArray([
