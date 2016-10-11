@@ -25,13 +25,13 @@
     width: inherit;
 }
 
-#dd-previewErrors:hover, #dd-previewChoiceFolder:hover, #dd-previewFile:hover {
+.importPreviewDropdownItem:hover {
     font-weight: bold;
     color: white;
     background: linear-gradient(#007fc6, #0063ae);
 }
 
-#dd-previewFile, #dd-previewErrors, #dd-previewChoiceFolder {
+.importPreviewDropdownItem {
     padding-bottom: 5px;
     padding-left: 10px;
 }

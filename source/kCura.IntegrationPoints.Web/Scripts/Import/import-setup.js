@@ -87,7 +87,7 @@
         var dropdown = windowObj.parent.$(idSelector(BUTTON_UL));
 
         $.each(options, function (val, text) {
-            dropdown.append($('<li id=' + val + '></li>').html(text));
+            dropdown.append($('<li class="importPreviewDropdownItem" id=' + val + '></li>').html(text));
         });
         assignDropdownHandler();
         assignDropdownItemHandlers();
