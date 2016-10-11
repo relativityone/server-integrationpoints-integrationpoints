@@ -6,11 +6,10 @@
     var currentSettingsFromUi = function () {
         var model = {
             ImportType: $('#import-importType option:selected').val(),
-            //ProcessingSource: windowObj.import.StorageRoot ? windowObj.import.StorageRoot : "",
-            //LoadDataFrom: windowObj.import.SelectedFolderPath ? windowObj.import.SelectedFolderPath : "",
             HasStartLine: $('input:radio[name=firstLineHasColNames]:checked').val(),
             LineNumber: $("#import-columnname-numbers").val(),
-            LoadFile: windowObj.RelativityImport.koModel.Fileshare()
+            LoadFile: windowObj.RelativityImport.koModel.Fileshare(),
+            EncodingType: windowObj.RelativityImport.koModel.DataFileEncodingType()
         };
 
         console.log(model);

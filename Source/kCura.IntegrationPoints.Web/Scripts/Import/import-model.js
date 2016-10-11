@@ -108,9 +108,6 @@
 
                 self.DataFileEncodingType(self.DataFileEncodingTypeValue);
                 self.DataFileEncodingType.isModified(false);
-
-                self.TextFileEncodingType(self.TextFileEncodingTypeValue);
-                self.TextFileEncodingType.isModified(false);
             });
         }
         self._UpdateFileEncodingTypeList();
