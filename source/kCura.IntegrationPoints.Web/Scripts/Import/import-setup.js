@@ -33,6 +33,18 @@
         });
     }
 
+    var assignAsciiDropDownDefault = function (array) {
+        windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[19].asciiID);
+
+        //$("#import-column").val(array[19].asciiID);
+        //$("#import-quote").val(array[253].asciiID);
+        //$("#import-newline").val(array[173].asciiID);
+        //$("#import-multiValue").val(array[58].asciiID);
+        //$("#import-nestedValue").val(array[91].asciiID);
+
+
+    };
+
     var assignDropdownItemHandlers = function () {
         var preFile = windowObj.parent.$(idSelector(PREVIEW_FILE_LI));
         var preError = windowObj.parent.$(idSelector(PREVIEW_ERROR_LI));
@@ -133,7 +145,10 @@
             $.each(data, function (index, value) {
                 array.push({ "asciiID": index, "asciiText": value })}
             );
-            windowObj.RelativityImport.koModel.setAsciiDelimiters(array);
+//            assignAsciiDropDownDefault(array);
+            windowObj.RelativityImport.koModel.setColumnAsciiDelimiters(array);
+            assignAsciiDropDownDefault(array);
+
         }
     });
 })(this, IP);

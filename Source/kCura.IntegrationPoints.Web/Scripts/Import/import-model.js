@@ -30,6 +30,16 @@
             self.asciiDelimiters(data);
         };
 
+        self.selectedColumnAsciiDelimiter = ko.observable();
+        self.setSelectedColumnAsciiDelimiters = function (data) {
+            self.selectedColumnAsciiDelimiter(data);
+        };
+
+        self.columnAsciiDelimiters = ko.observableArray([]);
+        self.setColumnAsciiDelimiters = function (data) {
+            self.columnAsciiDelimiters(data);
+        };
+
         self.ProcessingSourceLocationList = ko.observableArray([]);
         self.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
         self.HasBeenRun = ko.observable(self.hasBeenRun || false);
