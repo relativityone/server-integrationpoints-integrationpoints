@@ -43,10 +43,18 @@
             function(){
                 $.get(root.utils.getBaseURL() + "/api/ImportPreview/CheckProgress/" + previewJobId)
                 .done(function (data) {
-                    var percent = (data.BytesRead / data.TotalBytes) * 100;
-                    $("#statusMessage").html("In Process");
+                    
+                    $("#statusMessage").html("In Process");                    
+                    //if we're only reading the first 1000 rows of a large file, bytes read comes back as -1
+                    //we can just show the progress as 100% in this case
+                    var percent;
+                    if (data.BytesRead != -1) {
+                        $("#total-bytes-read").html(data.BytesRead);
+                        percent = (data.BytesRead / data.TotalBytes) * 100;
+                    } else {
+                        percent = 100;
+                    }
                     $("#progressBar").css("width", percent + "%");
-                    $("#total-bytes-read").html(data.BytesRead);
                     $("#total-bytes").html(data.TotalBytes);
 
                     //check if the Preview is complete
@@ -56,6 +64,7 @@
                         $("#statusMessage").attr("class", "active-transfer-status-success");
                         $("#progressBar").attr("class", "progress-bar-indicator progress-complete");
                         $("#tableData").show();
+                        $("#progressBar").css("width", percent + "%");
                         clearInterval(intervalId);
                         GetPreviewTableData(previewJobId);
                     }
