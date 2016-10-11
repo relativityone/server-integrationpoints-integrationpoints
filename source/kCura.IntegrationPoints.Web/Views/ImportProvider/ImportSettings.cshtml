@@ -7,7 +7,6 @@
 <link href="~/Content/jstree-fluid.css" rel="stylesheet" />
 <link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
 
-
 <div id="_main">
     <div id="import-provider-configuration">
         <div class="card">
@@ -65,9 +64,7 @@
                 </tr>
             </table>
         </div>
-
         @*Todo: Show and Hide Cards - dependent on radio buttons for Input Type*@
-
         <div class="card" data-bind="visible: selectedImportType() == 'production'">
             <span class="label">Production</span>
             <table style="width: 100%;">
@@ -81,7 +78,6 @@
                     </td>
             </table>
         </div>
-
         <div class="card" data-bind="visible: selectedImportType() == 'document'">
             <span class="label">File Encoding</span>
             <table style="width: 100%;">
@@ -108,7 +104,7 @@
                                 Column:
                             </div>
                             <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-column" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedColumnAsciiDelimiter, select2: { width: '100%' }"></select>
+                                <select class="fluid-mock-select" id="import-column" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedColumnAsciiDelimiter, select2: {}"></select>
                             </div>
                         </div>
                     </td>
@@ -120,7 +116,7 @@
                                 Quote:
                             </div>
                             <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-quote" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedQuoteAsciiDelimiter, select2: { width: '100%' }"></select>
+                                <select class="fluid-mock-select" id="import-quote" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedQuoteAsciiDelimiter, select2: {}"></select>
                             </div>
                         </div>
                     </td>
@@ -132,7 +128,7 @@
                                 Newline:
                             </div>
                             <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-newline" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNewLineAsciiDelimiter,  select2: { width: '100%' }"></select>
+                                <select class="fluid-mock-select" id="import-newline" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNewLineAsciiDelimiter,  select2: {}"></select>
                             </div>
                         </div>
                     </td>
@@ -144,7 +140,7 @@
                                 Multi-Value:
                             </div>
                             <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-multiValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedMultiLineAsciiDelimiter, select2: { width: '100%' }"></select>
+                                <select class="fluid-mock-select" id="import-multiValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedMultiLineAsciiDelimiter, select2: {}"></select>
                             </div>
                         </div>
                     </td>
@@ -156,7 +152,7 @@
                                 Nested Value:
                             </div>
                             <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-nestedValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNestedValueAsciiDelimiter, select2: { width: '100%' }"></select>
+                                <select class="fluid-mock-select" id="import-nestedValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNestedValueAsciiDelimiter, select2: {}"></select>
                             </div>
                         </div>
                     </td>
@@ -177,7 +173,6 @@
                 </tr>
             </table>
         </div>
-
         <div class="card" data-bind="visible: selectedImportType() == 'image'">
             <span class="label">Image</span>
             <table style="width: 100%;">
@@ -194,7 +189,6 @@
     </div>
     <br />
 </div>
-
 @section scripts
 {
     <script src="~/Scripts/core/data.js"></script>
@@ -205,10 +199,8 @@
     <script src="~/Scripts/export/location-jstree-selector.js"></script>
     <script src="~/Scripts/integration-point/binding.js"></script>
 
-
     <script src="~/Scripts/Import/import-init.js"></script>
     <script src="~/Scripts/Import/import-model.js"></script>
     <script src="~/Scripts/Import/import-setup.js"></script>
     <script src="~/Scripts/Import/import-provider-settings-step.js"></script>
-
 }
