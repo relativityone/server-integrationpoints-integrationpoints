@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -18,6 +19,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 		private IPreCascadeDeleteEventHandlerValidator _preCascadeDeleteEventHandlerValidator;
 		private IRepositoryFactory _repositoryFactory;
+
+		private IWorkspaceDBContext _workspaceDbContext;
+		private DeleteHistoryErrorService _deleteHistoryErrorService;
+
+		private DeleteHistoryService _deleteHistoryService;
 
 		public PreCascadeDeleteEventHandler()
 		{
@@ -48,45 +54,43 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_repositoryFactory == null)
 				{
-					_repositoryFactory = new RepositoryFactory(this.Helper);
+					_repositoryFactory = new RepositoryFactory(Helper);
 				}
 				return _repositoryFactory;
 			}
 		}
 
-		private DeleteHistoryService deleteHistoryService;
-		private DeleteHistoryErrorService deleteHistoryErrorService;
 		public DeleteHistoryErrorService DeleteHistoryErrorService
 		{
 			get
 			{
-				return deleteHistoryErrorService ??
-							 (deleteHistoryErrorService =
-								 new DeleteHistoryErrorService(
-									 ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID)));
+				return _deleteHistoryErrorService ??
+						(_deleteHistoryErrorService =
+							new DeleteHistoryErrorService(
+								ServiceContextFactory.CreateRSAPIService(Helper, Application.ArtifactID)));
 			}
-			set { deleteHistoryErrorService = value; }
+			set { _deleteHistoryErrorService = value; }
 		}
 
 		public DeleteHistoryService DeleteHistoryService
 		{
 			get
 			{
-				return deleteHistoryService ??
-					   (deleteHistoryService =
-						   new DeleteHistoryService(
-							   ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID),
-							   DeleteHistoryErrorService));
+				return _deleteHistoryService ??
+						(_deleteHistoryService =
+							new DeleteHistoryService(
+								ServiceContextFactory.CreateRSAPIService(Helper, Application.ArtifactID),
+								DeleteHistoryErrorService));
 			}
-			set { deleteHistoryService = value; }
+			set { _deleteHistoryService = value; }
 		}
 
-		private IWorkspaceDBContext _workspaceDbContext;
+		public override FieldCollection RequiredFields => new FieldCollection();
 
 		public IWorkspaceDBContext GetWorkspaceDbContext()
 		{
 			return _workspaceDbContext ??
-				   (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
+					(_workspaceDbContext = new WorkspaceContext(Helper.GetDBContext(Helper.GetActiveCaseID())));
 		}
 
 		public override void Commit()
@@ -122,6 +126,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 			catch (Exception ex)
 			{
+				LogExecutingPreCascadeDeleteError(ex);
 				//Event completed with error. Return failure and mention of the error details.
 				eventResponse.Success = false;
 				eventResponse.Exception = new SystemException(
@@ -132,15 +137,23 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private DbDataReader GetArtifactsToBeDeleted(IWorkspaceDBContext workspaceContext, int workspaceID)
 		{
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 			IScratchTableRepository scratchTableRepository = RepositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
 			//Create a sql statement which will select the list of ArtifactIDs
 			//from the TempTableNameWithParentArtifactsToDelete scratch table.
-			string sql = string.Format("SELECT ArtifactID FROM {0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), this.TempTableNameWithParentArtifactsToDelete);
+			string sql = string.Format("SELECT ArtifactID FROM {0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), TempTableNameWithParentArtifactsToDelete);
 
 			return workspaceContext.ExecuteSqlStatementAsDbDataReader(sql);
 		}
 
-		public override FieldCollection RequiredFields => new FieldCollection();
+		#region Logging
+
+		private void LogExecutingPreCascadeDeleteError(Exception ex)
+		{
+			var logger = Helper.GetLoggerFactory().GetLogger().ForContext<PreCascadeDeleteEventHandler>();
+			logger.LogError(ex, "An error occurred while executing the Mass Delete operation.");
+		}
+
+		#endregion
 	}
 }
