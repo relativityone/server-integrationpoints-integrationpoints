@@ -86,7 +86,14 @@
     };
 
     windowObj.RelativityImport.UI.removeCustomDropdown = function () {
-        $(idSelector(CUSTOM_BUTTON)).remove();
+        console.log('removing custom dropdown');
+        console.log('selector: ')
+        console.log(idSelector(CUSTOM_BUTTON));
+
+        console.log('selector result...');
+        console.log('selector: ')
+        console.log($(idSelector(CUSTOM_BUTTON)));
+        windowObj.parent.$(idSelector(CUSTOM_BUTTON)).remove();
     };
 
     windowObj.RelativityImport.enableLocation = function (en) {

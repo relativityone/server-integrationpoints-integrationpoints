@@ -20,6 +20,7 @@
     windowObj.RelativityImport.GetCurrentUiModel = currentSettingsFromUi;
 
     //An event raised when the user has clicked the Next or Save button.
+    //Leaving the custom settings page and going to field mapping screen.
     message.subscribe('submit', function () {
         //Execute save logic that persists the root.
         var current = currentSettingsFromUi();
@@ -29,52 +30,28 @@
         this.publish('saveComplete', stringified);
 
         //TODO: validation logic here to allow moving off the settings page (e.g. check for valid load file)
-        /*
-        if (parsedModel.CsvFilePath === '') {
-            IP.frameMessaging().dFrame.IP.message.error.raise('Please select a load file to continue.');
-        } else {
-            //windowObj.parent.$('#previewFile').remove();
-            //Communicate to the host page that it to continue.
-            this.publish('saveComplete', localModel);
-        }
-        */
     });
 
     //An event raised when a user clicks the Back button.
+    //Leaving the custom settings page and going back to the first RIP screen
     message.subscribe('back', function () {
         //Execute save logic that persists the root.
-        console.log('back handler');
         var current = currentSettingsFromUi();
         var stringified = JSON.stringify(current);
         this.publish("saveState", stringified);
 
-        /*
-        this.publish('saveState', JSON.stringify(_getModel()));
-            windowObj.RelativityImport.UI.removeCustomDropdown();
-            */
+        windowObj.RelativityImport.UI.removeCustomDropdown();
     });
 
     //An event raised when the host page has loaded the current settings page.
+    //Arriving at the custom settings page; either from hitting Back from field mapping, or Next from the first RIP screen
     message.subscribe('load', function (model) {
 
-        if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.RelativityImport.UI.Elements.CUSTOM_BUTTON)).length) {
-            windowObj.RelativityImport.UI.removeCustomDropdown();
-        } else {
+        if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.RelativityImport.UI.Elements.CUSTOM_BUTTON)).length < 1) {
             windowObj.RelativityImport.UI.initCustomDropdown();
-        };
+        }
 
         //TODO: Populate UI with values from model object
-
-        // if (model != '') {
-        //    var sourceConfig = JSON.parse(model);
-        //    windowObj.import.StorageRoot = sourceConfig.StorageRoot;
-        //    windowObj.import.SelectedFolderPath = sourceConfig.CsvFilePath;
-        // }
-        //else {
-        //    windowObj.import.StorageRoot = "";
-        //    windowObj.import.SelectedFolderPath = "";
-        // }
-        //windowObj.import.IPFrameMessagingLoadEvent = true;
     });
 
 })(this, IP, ko);
