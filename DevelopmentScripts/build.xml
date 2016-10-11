@@ -447,6 +447,8 @@
       <allow>kCura.IntegrationPoints.Data.Tests.PermissionServiceTest.UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse</allow>
       <allow>kCura.IntegrationPoints.Agent.Tests.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
       <allow>kCura.IntegrationPoints.Web.Tests.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
+      <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
+      <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(int32,int32)</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
