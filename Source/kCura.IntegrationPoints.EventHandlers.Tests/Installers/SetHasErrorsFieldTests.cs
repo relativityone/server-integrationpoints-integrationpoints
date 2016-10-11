@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.EventHandlers.Installers;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 {
@@ -31,6 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 
 			_instance = new SetHasErrorsField(_integrationPointService, _jobHistoryService, _caseServiceContext);
+			_instance.Helper = Substitute.For<IEHHelper>();
 		}
 
 		[Test]
