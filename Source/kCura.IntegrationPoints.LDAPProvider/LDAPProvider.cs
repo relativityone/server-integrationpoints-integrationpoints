@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		public System.Data.IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds,
 			string options)
 		{
-			LogRetrievingData(options, entryIds);
+			LogRetrievingData(entryIds);
 
 			LDAPSettings settings = GetSettings(options);
 			List<string> fieldsToLoad = fields.Select(f => f.FieldIdentifier).ToList();
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public System.Data.IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
-			LogRetrievingBatchableIds(options, identifier);
+			LogRetrievingBatchableIds(identifier);
 
 			LDAPSettings settings = GetSettings(options);
 			List<string> fieldsToLoad = new List<string>() {identifier.FieldIdentifier};
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			LogRetrievingFields(options);
+			LogRetrievingFields();
 
 			LDAPSettings settings = GetSettings(options);
 			settings.PropertyNamesOnly = true;
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			}
 			catch (JsonReaderException exception)
 			{
-				LogSettingsDeserializationError(exception, options);
+				LogSettingsDeserializationError(exception);
 			}
 
 			options = _encryptionManager.Decrypt(options);
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			{
 				//not knowing what data can look like we will assume 
 				//blank entry (" ") is possible user entry as legit delimiter
-				LogUsageOfDefaultMultiValueDelimiter(options);
+				LogUsageOfDefaultMultiValueDelimiter();
 				settings.MultiValueDelimiter = char.Parse(LDAPSettings.MULTIVALUEDELIMITER_DEFAULT);
 			}
 
@@ -108,35 +108,32 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		#region Logging
 
-		private void LogRetrievingFields(string options)
+		private void LogRetrievingFields()
 		{
-			_logger.LogInformation("Attempting to retrieve fields in LDAP Provider with {Options}.", options);
+			_logger.LogInformation("Attempting to retrieve fields in LDAP Provider.");
 		}
 
-		private void LogRetrievingData(string options, IEnumerable<string> entryIds )
+		private void LogRetrievingData(IEnumerable<string> entryIds )
 		{
-			_logger.LogInformation("Attempting to retrieve data in LDAP Provider with {Options} for ids: {Ids}.", options,
-				string.Join(",", entryIds));
+			_logger.LogInformation("Attempting to retrieve data in LDAP Provider for ids: {Ids}.", string.Join(",", entryIds));
 		}
 
-		private void LogRetrievingBatchableIds(string options, FieldEntry entry)
+		private void LogRetrievingBatchableIds(FieldEntry entry)
 		{
-			_logger.LogInformation(
-				"Attempting to retrieve batchable ids in LDAP Provider with {Options} for field {FieldIdentifier}", options,
+			_logger.LogInformation("Attempting to retrieve batchable ids in LDAP Provider for field {FieldIdentifier}",
 				entry.FieldIdentifier);
 		}
 
-		private void LogUsageOfDefaultMultiValueDelimiter(string options)
+		private void LogUsageOfDefaultMultiValueDelimiter()
 		{
 			_logger.LogWarning(
-				"LDAPSettings does not contain Multivalue delimiter. Using default delimiter: ({DefaultDelimiter}) for {Options}",
-				LDAPSettings.MULTIVALUEDELIMITER_DEFAULT, options);
+				"LDAPSettings does not contain Multivalue delimiter. Using default delimiter: ({DefaultDelimiter})",
+				LDAPSettings.MULTIVALUEDELIMITER_DEFAULT);
 		}
 
-		private void LogSettingsDeserializationError(Exception ex, string options)
+		private void LogSettingsDeserializationError(Exception ex)
 		{
-			_logger.LogError(ex, "Error occured in {MethodName} while deserializing LDAP settings with {Options}.",
-				nameof(GetSettings), options);
+			_logger.LogError(ex, "Error occured in {MethodName} while deserializing LDAP settings.", nameof(GetSettings));
 		}
 
 		#endregion
