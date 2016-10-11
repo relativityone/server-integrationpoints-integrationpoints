@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -9,6 +7,9 @@ using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -26,7 +27,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_jobService = Substitute.For<IJobService>();
 			_serializer = Substitute.For<ISerializer>();
 			_jobManager = Substitute.For<IJobManager>();
-			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager);
+			IHelper helper = Substitute.For<IHelper>();
+			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager, helper);
 		}
 
 		[Test]

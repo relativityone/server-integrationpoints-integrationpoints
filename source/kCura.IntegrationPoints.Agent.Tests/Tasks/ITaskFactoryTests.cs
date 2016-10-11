@@ -1,28 +1,29 @@
-﻿using System;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
+﻿using Castle.Windsor;
+using global::Relativity.API;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Email;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Relativity.API;
+using System;
+using System.Collections.Generic;
+using Castle.MicroKernel.Registration;
+using kCura.IntegrationPoints.Agent.Exceptions;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Email;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -57,9 +58,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryService = Substitute.For<IJobHistoryService>(); 
 			_agentService = Substitute.For<IAgentService>(); 
 			_jobService = Substitute.For<IJobService>();
-			_managerFactory = Substitute.For<IManagerFactory>(); 
+			_managerFactory = Substitute.For<IManagerFactory>();
+			var apiLog = Substitute.For<IAPILog>();
 
-			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _rsapiClient, _workspaceDbContext, _eddsServiceContext, _repositoryFactory, _jobHistoryService, _agentService, _jobService, _managerFactory);
+			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _rsapiClient, _workspaceDbContext, _eddsServiceContext, _repositoryFactory, _jobHistoryService, _agentService, _jobService, _managerFactory, apiLog);
 		}
 
 		[Test]

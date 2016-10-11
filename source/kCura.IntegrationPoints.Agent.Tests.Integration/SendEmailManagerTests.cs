@@ -11,6 +11,8 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using System.Data;
+using Relativity.API;
+using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -39,7 +41,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			base.SuiteSetup();
 			_serializer = Container.Resolve<ISerializer>();
 			_jobManager = this.Container.Resolve<IJobManager>();
-			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager);
+			IHelper helper = Container.Resolve<IHelper>();
+			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager, helper);
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 

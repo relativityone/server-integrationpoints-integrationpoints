@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.ScheduleQueue.Core.BatchProcess;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
@@ -18,7 +20,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void Setup()
 		{
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, _JOB_DETAILS, 0, new DateTime(), 1, null, null);
-			_instance = new BatchManagerTest();
+			IHelper helper = Substitute.For<IHelper>();
+			_instance = new BatchManagerTest(helper);
 		}
 
 		[TestCase(0)]
@@ -77,6 +80,10 @@ namespace kCura.ScheduleQueue.Core.Tests
 			public override void CreateBatchJob(Job job, List<string> batchIDs)
 			{
 				BatchCount++;
+			}
+
+			public BatchManagerTest(IHelper helper) : base(helper)
+			{
 			}
 		}
 	}

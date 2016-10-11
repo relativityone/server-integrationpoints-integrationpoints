@@ -2,22 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using kCura.Apps.Common.Config.Sections;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.ScheduleQueue.Core;
-using kCura.Apps.Common.Config.Sections;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SendEmailWorker : ITask
 	{
-		private readonly ISerializer _serializer;
+		private readonly IAPILog _logger;
 		private readonly ISendable _sendable;
-		public SendEmailWorker(ISerializer serializer, ISendable sendable)
+		private readonly ISerializer _serializer;
+
+		public SendEmailWorker(ISerializer serializer, ISendable sendable, IHelper helper)
 		{
 			_serializer = serializer;
 			_sendable = sendable;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SendEmailManager>();
 		}
 
 		public void Execute(Job job)
@@ -39,13 +43,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				catch (Exception e)
 				{
+					LogSendingEmailError(job, e, email);
 					exceptions.Add(new Exception(string.Format("Failed to send message to {0}", email), e));
 				}
 			}
 			if (exceptions.Any())
 			{
+				LogErrorsDuringEmailSending(job);
 				throw new AggregateException(exceptions);
 			}
 		}
+
+		#region Logging
+
+		private void LogSendingEmailError(Job job, Exception e, string email)
+		{
+			_logger.LogError(e, "Failed to send message to {Email} for job {JobId}.", email, job.JobId);
+		}
+
+		private void LogErrorsDuringEmailSending(Job job)
+		{
+			_logger.LogError("Failed to send emails in SendEmailWorker for job {JobId}.", job.JobId);
+		}
+
+		#endregion
 	}
 }

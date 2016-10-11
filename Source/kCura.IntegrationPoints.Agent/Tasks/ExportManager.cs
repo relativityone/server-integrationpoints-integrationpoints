@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -17,30 +18,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	using Apps.Common.Utils.Serializers;
-
 	public class ExportManager : SyncManager
 	{
-		#region Fields
-
-		private readonly IRepositoryFactory _repositoryFactory;
-
-		#endregion //Private Fields
-
-		#region Properties
-
-		public override int BatchSize
-		{
-			get
-			{
-				//Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
-				//so for now we need to create only one worker job
-				return int.MaxValue;
-			}
-		}
-
-		#endregion //Properties
-
 		#region Constructors
 
 		public ExportManager(ICaseServiceContext caseServiceContext,
@@ -57,12 +36,36 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IContextContainerFactory contextContainer,
 			IEnumerable<IBatchStatus> batchStatuses,
 			IRepositoryFactory repositoryFactory)
-			: base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, contextContainer, batchStatuses)
+			: base(
+				caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService,
+				scheduleRuleFactory, managerFactory, contextContainer, batchStatuses)
 		{
 			_repositoryFactory = repositoryFactory;
+			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();
 		}
 
 		#endregion //Constructors
+
+		#region Properties
+
+		public override int BatchSize
+		{
+			get
+			{
+				//Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
+				//so for now we need to create only one worker job
+				return int.MaxValue;
+			}
+		}
+
+		#endregion //Properties
+
+		#region Fields
+
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IAPILog _logger;
+
+		#endregion //Private Fields
 
 		#region Methods
 
@@ -72,7 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 		/// <summary>
-		/// This method returns record (batch) ids that should be processed by ExportWorker class
+		///     This method returns record (batch) ids that should be processed by ExportWorker class
 		/// </summary>
 		/// <param name="job">Details of the export job</param>
 		/// <returns>List of batch ids to be processed</returns>
@@ -92,6 +95,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (integrationPoint == null)
 			{
+				LogUnableToRetrieveIntegrationPoint(job);
 				throw new Exception("Failed to retrieved corresponding Integration Point.");
 			}
 
@@ -109,15 +113,37 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, Job job)
 		{
-			ISavedSearchRepository savedSearchRepo = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID,
-				settings.SavedSearchArtifactId);
+			try
+			{
+				ISavedSearchRepository savedSearchRepo = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID,
+					settings.SavedSearchArtifactId);
 
-			int totalDocsCount = savedSearchRepo.GetTotalDocsCount();
-			int extractedIndex = Math.Min(totalDocsCount, Math.Abs(settings.StartExportAtRecord - 1));
+				int totalDocsCount = savedSearchRepo.GetTotalDocsCount();
+				int extractedIndex = Math.Min(totalDocsCount, Math.Abs(settings.StartExportAtRecord - 1));
 
-			return Math.Max(totalDocsCount - extractedIndex, 0);
+				return Math.Max(totalDocsCount - extractedIndex, 0);
+			}
+			catch (Exception ex)
+			{
+				LogRetrievingExportItemsCountError(job, ex);
+				throw;
+			}
 		}
 
 		#endregion //Methods
+
+		#region Logging
+
+		private void LogRetrievingExportItemsCountError(Job job, Exception ex)
+		{
+			_logger.LogError(ex, "Failed to retrieve total export items count for job {JobId}.", job.JobId);
+		}
+
+		private void LogUnableToRetrieveIntegrationPoint(Job job)
+		{
+			_logger.LogError("Failed to retrieved Integration Point object for job {JobId}.", job.JobId);
+		}
+
+		#endregion
 	}
 }

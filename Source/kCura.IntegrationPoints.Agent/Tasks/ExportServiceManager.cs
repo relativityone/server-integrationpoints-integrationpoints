@@ -1,5 +1,13 @@
-﻿using Castle.Core.Internal;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using Castle.Core.Internal;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
@@ -10,57 +18,52 @@ using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
-using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.DataReaderClient;
+using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core;
 using Relativity.API;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	[SynchronizedTask]
 	public class ExportServiceManager : ITask
 	{
-		private ExportJobErrorService _exportJobErrorService;
-		private Guid _identifier;
-		private List<IBatchStatus> _exportServiceJobObservers;
-		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private readonly List<IBatchStatus> _batchStatus;
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IContextContainer _contextContainer;
-		private readonly IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
 		private readonly IExporterFactory _exporterFactory;
-		private readonly IJobService _jobService;
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IManagerFactory _managerFactory;
-		private readonly IScheduleRuleFactory _scheduleRuleFactory;
-		private readonly ISourceJobManager _sourceJobManager;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
-		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
 		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IJobService _jobService;
+		private readonly IAPILog _logger;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IScheduleRuleFactory _scheduleRuleFactory;
+		private readonly ISerializer _serializer;
+		private readonly ISourceJobManager _sourceJobManager;
+		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly JobStatisticsService _statisticsService;
-		private readonly List<IBatchStatus> _batchStatus;
+		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly TaskResult _taskResult;
-		private SourceConfiguration _sourceConfiguration;
-		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
-		private int _savedSearchArtifactId;
+		private ExportJobErrorService _exportJobErrorService;
+		private List<IBatchStatus> _exportServiceJobObservers;
+		private Guid _identifier;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IJobStopManager _jobStopManager;
+		private int _savedSearchArtifactId;
+		private SourceConfiguration _sourceConfiguration;
+		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 
 		public ExportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,
@@ -73,7 +76,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IRepositoryFactory repositoryFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
-			Apps.Common.Utils.Serializers.ISerializer serializer,
+			ISerializer serializer,
 			IJobService jobService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IJobHistoryService jobHistoryService,
@@ -96,6 +99,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_statisticsService = statisticsService;
 			_synchronizerFactory = synchronizerFactory;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
 			_taskResult = new TaskResult();
 		}
 
@@ -115,7 +119,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				string userImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
-				
+
 				try
 				{
 					_jobStopManager.ThrowIfStopRequested();
@@ -133,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						lock (_jobStopManager.SyncRoot)
 						{
-							JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
+							JobHistoryDto = _jobHistoryService.GetRdo(_identifier);
 							JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 							UpdateJobStatus();
 						}
@@ -153,12 +157,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					FinalizeExportServiceObservers(job);
 				}
 			}
-			catch (OperationCanceledException)
+			catch (OperationCanceledException e)
 			{
+				LogJobStoppedException(job, e);
 				// ignore error.
 			}
 			catch (Exception ex)
 			{
+				LogExecutingTaskError(job, ex);
 				_taskResult.Status = TaskStatusEnum.Fail;
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
@@ -210,8 +216,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobStopManager?.Dispose();
 				_jobService.UpdateStopState(new List<long> {job.JobId}, StopState.Unstoppable);
 			}
-			catch
+			catch (Exception e)
 			{
+				LogSettingJobAsUnstoppableError(job, e);
 				// Do not throw exception, we will need to dispose the rest of the objects.
 			}
 		}
@@ -246,27 +253,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			// Load integrationPoint data
 			IntegrationPointDto = LoadIntegrationPointDto(job);
 			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
-			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
+			_jobHistoryErrorService.IntegrationPoint = IntegrationPointDto;
 
-			if (String.IsNullOrWhiteSpace(job.JobDetails))
+			if (string.IsNullOrWhiteSpace(job.JobDetails))
 			{
 				TaskParameters taskParameters = new TaskParameters
 				{
 					BatchInstance = Guid.NewGuid()
 				};
-				this._identifier = taskParameters.BatchInstance;
+				_identifier = taskParameters.BatchInstance;
 				job.JobDetails = _serializer.Serialize(taskParameters);
 			}
 			else
 			{
 				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-				this._identifier = taskParameters.BatchInstance;
+				_identifier = taskParameters.BatchInstance;
 			}
 
-			this.JobHistoryDto = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
+			JobHistoryDto = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto, _identifier, DateTime.UtcNow);
 
-			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
-			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
+			_jobHistoryErrorService.JobHistory = JobHistoryDto;
+			JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
@@ -280,14 +287,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			//Load Job History Errors if any
 			string uniqueJobId = GetUniqueJobId(job);
 			_jobHistoryErrorManager = _managerFactory.CreateJobHistoryErrorManager(_contextContainer, _sourceConfiguration.SourceWorkspaceArtifactId, uniqueJobId);
-			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, this.JobHistoryDto.JobType);
+			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, JobHistoryDto.JobType);
 
 			//Quick check to see if saved search is still available before using it for the job
-			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(_sourceConfiguration.SourceWorkspaceArtifactId, _sourceConfiguration.SavedSearchArtifactId);
+			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(_sourceConfiguration.SourceWorkspaceArtifactId,
+				_sourceConfiguration.SavedSearchArtifactId);
 			SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch();
 			if (savedSearch == null)
 			{
-				throw new Exception(Core.Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
+				LogSavedSearchNotFound(job, _sourceConfiguration);
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
 			}
 			_savedSearchArtifactId = _sourceConfiguration.SavedSearchArtifactId;
 
@@ -328,8 +337,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					observer.Dispose();
 				}
-				catch
+				catch (Exception e)
 				{
+					LogDisposingObserverError(job, e);
 					// trying to delete temp tables early, don't have worry about failing
 				}
 			});
@@ -345,6 +355,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				catch (Exception e)
 				{
+					LogCompletingJobError(job, e, completedItem);
 					_taskResult.Status = TaskStatusEnum.Fail;
 					_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
 				}
@@ -361,8 +372,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 					jobHistoryManager.SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, JobHistoryDto.ArtifactId);
 				}
-				catch
+				catch (Exception e)
 				{
+					LogUpdatingStoppedJobStatusError(job, e);
 					// ignore error. the status of errors will not affect the 'retry' nor the 'run' scenarios.
 				}
 			}
@@ -380,14 +392,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						_taskResult.Status = TaskStatusEnum.Success;
 					}
-					this._jobService.UpdateStopState(new List<long>() { job.JobId }, StopState.None);
-					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult);
+					_jobService.UpdateStopState(new List<long> {job.JobId}, StopState.None);
+					IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult);
 				}
-				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
+				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(IntegrationPointDto);
 			}
-			catch
+			catch (Exception e)
 			{
-				// ignored
+				LogUpdatingIntegrationPointRuntimesError(job, e);
 			}
 		}
 
@@ -402,8 +414,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId);
 				}
 			}
-			catch
+			catch (Exception e)
 			{
+				LogDeletingTempSavedSearchError(e, _sourceConfiguration);
 				// IGNORE
 			}
 		}
@@ -414,7 +427,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (_jobHistoryErrorService.JobLevelErrorOccurred)
 			{
 				JobHistoryErrorBatchUpdateManager sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory,
-						_onBehalfOfUserClaimsPrincipalFactory, _jobStopManager, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
+					_onBehalfOfUserClaimsPrincipalFactory, _jobStopManager, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
 				sourceJobHistoryErrorUpdater.OnJobComplete(job);
 			}
 		}
@@ -446,7 +459,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				if (!enumerable.IsNullOrEmpty())
 				{
 					int counter = 0;
-					string message = String.Join(Environment.NewLine,
+					string message = string.Join(Environment.NewLine,
 						enumerable.Select(exception => $"{++counter}. {exception.Message}"));
 					ex = new AggregateException(message, enumerable);
 				}
@@ -464,8 +477,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 
 			//Switch to Append/Overlay for error retries where original setting was Append Only
-			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				importSettings.OverwriteMode == OverwriteModeEnum.Append)
+			if ((_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors) &&
+				(importSettings.OverwriteMode == OverwriteModeEnum.Append))
 			{
 				importSettings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			}
@@ -480,6 +493,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IntegrationPoint integrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
 			if (integrationPoint == null)
 			{
+				LogLoadingIntegrationPointDtoError(job);
 				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
 			}
 			return integrationPoint;
@@ -487,7 +501,61 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private string GetUniqueJobId(Job job)
 		{
-			return job.JobId + "_" + this._identifier;
+			return job.JobId + "_" + _identifier;
 		}
+
+		#region Logging
+
+		private void LogJobStoppedException(Job job, OperationCanceledException e)
+		{
+			_logger.LogInformation(e, "Job {JobId} has been stopped.", job.JobId);
+		}
+
+		private void LogExecutingTaskError(Job job, Exception ex)
+		{
+			_logger.LogError(ex, "Failed to execute ExportServiceManager task for job {JobId}.", job.JobId);
+		}
+
+		private void LogSettingJobAsUnstoppableError(Job job, Exception e)
+		{
+			_logger.LogError(e, "Failed to set job state as unstoppable for job {JobId}.", job.JobId);
+		}
+
+		private void LogSavedSearchNotFound(Job job, SourceConfiguration sourceConfiguration)
+		{
+			_logger.LogError("Failed to retrieve Saved Search {SavedSearchArtifactId} for job {JobId}.", sourceConfiguration?.SavedSearchArtifactId, job.JobId);
+		}
+
+		private void LogUpdatingStoppedJobStatusError(Job job, Exception exception)
+		{
+			_logger.LogError(exception, "Failed to updated job ({JobId}) status after job has been stopped.", job.JobId);
+		}
+
+		private void LogCompletingJobError(Job job, Exception exception, IBatchStatus batchStatus)
+		{
+			_logger.LogError(exception, "Failed to complete job {JobId}. Error occured in BatchStatus {BatchStatusType}.", job.JobId, batchStatus.GetType());
+		}
+
+		private void LogDisposingObserverError(Job job, Exception e)
+		{
+			_logger.LogError(e, "Failed to dispose observer for job {JobId}.", job.JobId);
+		}
+
+		private void LogUpdatingIntegrationPointRuntimesError(Job job, Exception e)
+		{
+			_logger.LogError(e, "Failed to update Integration Point runtimes for job {JobId}.", job.JobId);
+		}
+
+		private void LogDeletingTempSavedSearchError(Exception e, SourceConfiguration sourceConfiguration)
+		{
+			_logger.LogError(e, "Failed to delete temp Saved Search {SavedSearchArtifactId}.", sourceConfiguration?.SourceWorkspaceArtifactId);
+		}
+
+		private void LogLoadingIntegrationPointDtoError(Job job)
+		{
+			_logger.LogError("Failed to retrieved corresponding Integration Point ({IntegrationPointId}) for job {JobId}.", job.RelatedObjectArtifactID, job.JobId);
+		}
+
+		#endregion
 	}
 }

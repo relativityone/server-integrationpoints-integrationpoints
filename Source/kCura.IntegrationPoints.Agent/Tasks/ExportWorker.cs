@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -10,7 +8,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -25,27 +22,31 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportWorker : SyncWorker
 	{
-		#region Fields
-
-		private readonly ExportProcessRunner _exportProcessRunner;
-
-		#endregion //Fields
-
 		#region Constructor
 
 		public ExportWorker(ICaseServiceContext caseServiceContext, IHelper helper,
 			IDataProviderFactory dataProviderFactory, ISerializer serializer,
 			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory, IJobHistoryService jobHistoryService,
 			JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IJobManager jobManager, IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService, ExportProcessRunner exportProcessRunner, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory, IJobService jobService)
+			JobStatisticsService statisticsService, ExportProcessRunner exportProcessRunner, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory,
+			IJobService jobService)
 			: base(
 				caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorServiceProvider.JobHistoryErrorService, jobManager, statuses, statisticsService, managerFactory, contextContainerFactory, jobService)
+				jobHistoryService, jobHistoryErrorServiceProvider.JobHistoryErrorService, jobManager, statuses, statisticsService, managerFactory, contextContainerFactory, jobService
+			)
 		{
 			_exportProcessRunner = exportProcessRunner;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
 		}
 
 		#endregion //Constructor
+
+		#region Fields
+
+		private readonly ExportProcessRunner _exportProcessRunner;
+		private readonly IAPILog _logger;
+
+		#endregion //Fields
 
 		#region Methods
 
@@ -62,13 +63,52 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			string destinationConfiguration, List<string> entryIDs,
 			SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
-			var sourceSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
-
-			var destinationSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
+			var sourceSettings = DeserializeSourceSettings(sourceConfiguration, job);
+			var destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
 
 			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId, job);
 		}
 
+		private ExportUsingSavedSearchSettings DeserializeSourceSettings(string sourceConfiguration, Job job)
+		{
+			try
+			{
+				return JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
+			}
+			catch (Exception e)
+			{
+				LogDeserializationOfSourceSettingsError(job, sourceConfiguration, e);
+				throw;
+			}
+		}
+
+		private ImportSettings DeserializeDestinationSettings(string destinationConfiguration, Job job)
+		{
+			try
+			{
+				return JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
+			}
+			catch (Exception e)
+			{
+				LogDeserializationOfDestinationSettingsError(job, destinationConfiguration, e);
+				throw;
+			}
+		}
+
 		#endregion //Methods
+
+		#region Logging
+
+		private void LogDeserializationOfSourceSettingsError(Job job, string sourceSettings, Exception e)
+		{
+			_logger.LogError(e, "Failed to deserialize source settings ({SourceSettings}) for job {JobId}.", sourceSettings, job.JobId);
+		}
+
+		private void LogDeserializationOfDestinationSettingsError(Job job, string destinationSettings, Exception e)
+		{
+			_logger.LogError(e, "Failed to deserialize destination settings ({DestinationSettings}) for job {JobId}.", destinationSettings, job.JobId);
+		}
+
+		#endregion
 	}
 }

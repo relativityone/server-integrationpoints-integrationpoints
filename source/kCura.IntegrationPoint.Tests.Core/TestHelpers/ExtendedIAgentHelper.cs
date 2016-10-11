@@ -6,10 +6,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	public class ExtendedIAgentHelper : IAgentHelper
 	{
 		private readonly ITestHelper _helper;
+		private readonly ILogFactory _logFactory;
 
 		public ExtendedIAgentHelper(ITestHelper helper)
 		{
 			_helper = helper;
+			_logFactory = NSubstitute.Substitute.For<ILogFactory>();
 		}
 
 		public void Dispose()
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public ILogFactory GetLoggerFactory()
 		{
-			throw new NotImplementedException();
+			return _logFactory;
 		}
 
 		public string ResourceDBPrepend()
