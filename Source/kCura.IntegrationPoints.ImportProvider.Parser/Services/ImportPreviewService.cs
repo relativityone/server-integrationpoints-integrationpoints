@@ -46,8 +46,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
                 TotalBytes = _loadFilePreviewers[jobId].TotalBytes,
                 BytesRead = _loadFilePreviewers[jobId].BytesRead,
                 IsComplete = _loadFilePreviewers[jobId].IsComplete,
-                StepSize = _loadFilePreviewers[jobId].StepSize
+                StepSize = _loadFilePreviewers[jobId].StepSize,
+                IsFailed = _loadFilePreviewers[jobId].IsFailed,
+                ErrorMessage = _loadFilePreviewers[jobId].ErrorMessage
             };
+
+            if (status.IsFailed)
+            {
+                //Dispose here if job has failed
+                _loadFilePreviewers[jobId].DisposePreviewJob();
+                _loadFilePreviewers.Remove(jobId);
+            }
 
             return status;
         }

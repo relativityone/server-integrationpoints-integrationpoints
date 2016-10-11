@@ -68,6 +68,15 @@
                         clearInterval(intervalId);
                         GetPreviewTableData(previewJobId);
                     }
+                    else if (data.IsFailed) {
+                        timerRequest = false;
+                        $("#statusMessage").html("Error");
+                        $("#statusMessage").attr("class", "active-transfer-status-failed");
+                        $("#progressBar").attr("class", "progress-bar-indicator progress-failed");
+                        $("#progressBar").css("width", "100%");
+                        clearInterval(intervalId);
+                        console.log(data.ErrorMessage);
+                    }
                 });
             }, 2000);
     });

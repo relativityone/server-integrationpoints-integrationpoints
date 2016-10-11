@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         public PreviewJob(NetworkCredential authenticatedCredential, ImportPreviewSettings settings)
         {
             IsComplete = false;
+            IsFailed = false;
 
             var factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, settings.WorkspaceId);
             var eddsLoadFile = factory.ToLoadFile();
@@ -64,76 +65,84 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public void StartRead()
         {
-            _loadFilePreviewer.OnEvent += OnPreviewerProgress;
-            ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile("", 0);
-            ImportPreviewTable preview = new ImportPreviewTable();
-
-            bool populatedHeaders = false;
-
-            //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
-            preview.Header.Add(string.Empty);
-            int columnNumbers = 1;
-            int dataRowIndex = 1;//this will be used to populate the list of rows with an error
-            foreach (var item in arrs)
+            try
             {
-                List<string> row = new List<string>();
-                //check the type to see if we got back an array or an exception
-                if (item.GetType() != typeof(kCura.WinEDDS.Api.ArtifactField[]))
-                {
-                    //if the item is not an ArtifactField array, it means we have an error
-                    row = new List<string>();
-                    string errorString = ((Exception)item).Message;
-                    for (int i = 0; i < columnNumbers; i++)
-                    {
-                        row.Add(errorString);
-                    }
+                _loadFilePreviewer.OnEvent += OnPreviewerProgress;
+                ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile("", 0);
+                ImportPreviewTable preview = new ImportPreviewTable();
 
-                    if (!_errorsOnly)
-                    {
-                        preview.ErrorRows.Add(dataRowIndex);
-                    }
-                }
-                else
+                bool populatedHeaders = false;
+
+                //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
+                preview.Header.Add(string.Empty);
+                int columnNumbers = 1;
+                int dataRowIndex = 1;//this will be used to populate the list of rows with an error
+                foreach (var item in arrs)
                 {
-                    if (!populatedHeaders)
+                    List<string> row = new List<string>();
+                    //check the type to see if we got back an array or an exception
+                    if (item.GetType() != typeof(kCura.WinEDDS.Api.ArtifactField[]))
                     {
-                        preview.Header = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.DisplayName).ToList();
-                        columnNumbers = preview.Header.Count();
-                        populatedHeaders = true;
-                    }
-                    row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.Value.ToString()).ToList();
-                    //check to see if any of the cells have an error so we can highlight red in UI
-                    //we won't do this if the user has requested only errors to come back
-                    if (!_errorsOnly)
-                    {
-                        foreach (string cell in row)
+                        //if the item is not an ArtifactField array, it means we have an error
+                        row = new List<string>();
+                        string errorString = ((Exception)item).Message;
+                        for (int i = 0; i < columnNumbers; i++)
                         {
-                            if (cell.StartsWith("Error: "))
+                            row.Add(errorString);
+                        }
+
+                        if (!_errorsOnly)
+                        {
+                            preview.ErrorRows.Add(dataRowIndex);
+                        }
+                    }
+                    else
+                    {
+                        if (!populatedHeaders)
+                        {
+                            preview.Header = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.DisplayName).ToList();
+                            columnNumbers = preview.Header.Count();
+                            populatedHeaders = true;
+                        }
+                        row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.Value.ToString()).ToList();
+                        //check to see if any of the cells have an error so we can highlight red in UI
+                        //we won't do this if the user has requested only errors to come back
+                        if (!_errorsOnly)
+                        {
+                            foreach (string cell in row)
                             {
-                                preview.ErrorRows.Add(dataRowIndex);
-                                break;
+                                if (cell.StartsWith("Error: "))
+                                {
+                                    preview.ErrorRows.Add(dataRowIndex);
+                                    break;
+                                }
                             }
                         }
                     }
+                    preview.Data.Add(row);
+                    dataRowIndex++;
                 }
-                preview.Data.Add(row);
-                dataRowIndex++;
-            }
-             
-            //update any error rows that were created before we hit a row that allowed us to populate the full header list
-            if (populatedHeaders)
-            {
-                foreach(var row in preview.Data)
+
+                //update any error rows that were created before we hit a row that allowed us to populate the full header list
+                if (populatedHeaders)
                 {
-                    while(row.Count < columnNumbers)
+                    foreach (var row in preview.Data)
                     {
-                        row.Add(row[0]);
+                        while (row.Count < columnNumbers)
+                        {
+                            row.Add(row[0]);
+                        }
                     }
                 }
-            }
 
-            IsComplete = true;
-            PreviewTable = preview;
+                IsComplete = true;
+                PreviewTable = preview;
+            }
+            catch (Exception ex)
+            {
+                IsFailed = true;
+                ErrorMessage = ex.Message;
+            }
         }
 
         private void OnPreviewerProgress(kCura.WinEDDS.LoadFilePreviewer.EventArgs e)
@@ -163,7 +172,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         public ImportPreviewTable PreviewTable { get; private set; }
 
         public bool IsComplete { get; private set; }
-
+        public bool IsFailed { get; private set; }
+        public string ErrorMessage { get; private set;}
         public long TotalBytes { get; private set; }
         public long BytesRead { get; private set; }
         public long StepSize { get; private set; }

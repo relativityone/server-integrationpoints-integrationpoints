@@ -898,3 +898,6 @@ span.progress-bar-percentage {
 .active-transfer-status-active {
     color: #000000;
 }
+.active-transfer-status-failed {
+    color: #fa4d4d;
+}
