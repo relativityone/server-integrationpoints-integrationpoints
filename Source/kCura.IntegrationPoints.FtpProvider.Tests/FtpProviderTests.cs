@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.FtpProvider.Parser;
 using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FtpProvider.Tests
 {
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         private ISettingsManager _settingsManager;
         private IParserFactory _parserFactory;
         private IDataReaderFactory _dataReaderFactory;
+	    private IHelper _helper;
         private ParserOptions _parserOptions;
 
         [SetUp]
@@ -26,6 +28,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
             _settingsManager = NSubstitute.Substitute.For<ISettingsManager>();
             _parserFactory = NSubstitute.Substitute.For<IParserFactory>();
             _dataReaderFactory = NSubstitute.Substitute.For<IDataReaderFactory>();
+	        _helper = NSubstitute.Substitute.For<IHelper>();
             _parserOptions = ParserOptions.GetDefaultParserOptions();
         }
 
@@ -43,7 +46,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
                 }
             };
 
-            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
+            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
             Assert.DoesNotThrow(() => FtpProvider.ValidateColumns(columns, settings, _parserOptions));
         }
@@ -62,7 +65,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
 
             };
 
-            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
+            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
             Assert.Throws<Exceptions.ColumnsMissmatchExcepetion>(() => FtpProvider.ValidateColumns(columns, settings, _parserOptions));
         }
@@ -82,7 +85,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
 
             };
 
-            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
+            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
             Assert.Throws<Exceptions.ColumnsMissmatchExcepetion>(() => FtpProvider.ValidateColumns(columns, settings, _parserOptions));
         }
@@ -102,7 +105,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
                 }
             };
 
-            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
+            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
             Assert.Throws<Exceptions.ColumnsMissmatchExcepetion>(() => FtpProvider.ValidateColumns(columns, settings, _parserOptions));
         }
@@ -116,7 +119,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
                 ColumnList = new List<FieldEntry>() { }
             };
 
-            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
+            FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
             Assert.Throws<Exceptions.ColumnsMissmatchExcepetion>(() => FtpProvider.ValidateColumns(columns, settings, _parserOptions));
         }
