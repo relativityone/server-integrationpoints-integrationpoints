@@ -26,7 +26,7 @@
         ]);
 
         self.asciiDelimiters = ko.observableArray([]);
-        self.setAsciiDelimiters = function(data) {
+        self.setAsciiDelimiters = function (data) {
             self.asciiDelimiters(data);
         };
 
@@ -35,9 +35,24 @@
             self.selectedColumnAsciiDelimiter(data);
         };
 
-        self.columnAsciiDelimiters = ko.observableArray([]);
-        self.setColumnAsciiDelimiters = function (data) {
-            self.columnAsciiDelimiters(data);
+        self.selectedQuoteAsciiDelimiter = ko.observable();
+        self.setSelectedQuoteAsciiDelimiters = function (data) {
+            self.selectedQuoteAsciiDelimiter(data);
+        };
+
+        self.selectedNewLineAsciiDelimiter = ko.observable();
+        self.setSelectedNewLineAsciiDelimiters = function (data) {
+            self.selectedNewLineAsciiDelimiter(data);
+        };
+
+        self.selectedMultiLineAsciiDelimiter = ko.observable();
+        self.setSelectedMultiLineAsciiDelimiters = function (data) {
+            self.selectedMultiLineAsciiDelimiter(data);
+        };
+
+        self.selectedNestedValueAsciiDelimiter = ko.observable();
+        self.setSelectedNestedValueAsciiDelimiters = function (data) {
+            self.selectedNestedValueAsciiDelimiter(data);
         };
 
         self.ProcessingSourceLocationList = ko.observableArray([]);

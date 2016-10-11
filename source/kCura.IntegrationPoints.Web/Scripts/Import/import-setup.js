@@ -35,14 +35,12 @@
 
     var assignAsciiDropDownDefault = function (array) {
         windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[19].asciiID);
+        windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(array[253].asciiID);
+        windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(array[173].asciiID);
+        windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(array[58].asciiID);
+        windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(array[91].asciiID);
 
-        //$("#import-column").val(array[19].asciiID);
-        //$("#import-quote").val(array[253].asciiID);
-        //$("#import-newline").val(array[173].asciiID);
-        //$("#import-multiValue").val(array[58].asciiID);
-        //$("#import-nestedValue").val(array[91].asciiID);
-
-
+        
     };
 
     var assignDropdownItemHandlers = function () {
@@ -145,10 +143,8 @@
             $.each(data, function (index, value) {
                 array.push({ "asciiID": index, "asciiText": value })}
             );
-//            assignAsciiDropDownDefault(array);
-            windowObj.RelativityImport.koModel.setColumnAsciiDelimiters(array);
+            windowObj.RelativityImport.koModel.setAsciiDelimiters(array);
             assignAsciiDropDownDefault(array);
-
         }
     });
 })(this, IP);
