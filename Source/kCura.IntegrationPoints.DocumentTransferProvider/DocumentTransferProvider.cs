@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -29,13 +31,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 	public class DocumentTransferProvider : IInternalDataSourceProvider, IEmailBodyData
 	{
 		private readonly IDictionary<Type, object> _dependencies = new Dictionary<Type, object>();
+		private readonly IAPILog _logger;
 
+		public DocumentTransferProvider(IHelper helper)
+		{
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DocumentTransferProvider>();
+		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			ArtifactDTO[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
-			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
+			LogRetrievingFields(options);
+			var settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			var fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
+			var fieldEntries = ParseFields(fields);
 
 			return fieldEntries;
 		}
@@ -76,10 +84,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
 			{
-				string fieldName = String.Empty;
-				int isIdentifierFieldValue = 0;
+				var fieldName = string.Empty;
+				var isIdentifierFieldValue = 0;
 
-				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
+				foreach (var field in fieldArtifact.Fields)
 				{
 					if (field.Name == Constants.Fields.Name)
 					{
@@ -93,6 +101,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 						}
 						catch
 						{
+							LogReceivingParsedFieldsError(fieldArtifacts, new Exception("Invalid cast error."));
 							// suppress error for invalid casts
 						}
 					}
@@ -113,17 +122,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				};
 			}
 		}
-
+		
 		private IImportAPI GetImportAPI()
 		{
 			const string username = "XxX_BearerTokenCredentials_XxX";
-			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
+			var authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
 
 			// TODO: we need to make IIntegrationPointsConfig a dependency or use a factory -- biedrzycki: Feb 16th, 2016
 			IWebApiConfig config = new WebApiConfig();
 			return new ExtendedImportAPI(username, authToken, config.GetWebApiUrl);
 		}
-
+		
 		/// <summary>
 		/// Gets all of the artifact ids that can be batched in reads
 		/// </summary>
@@ -132,6 +141,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader containing all of the saved search's document artifact ids</returns>
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
+			LogRetrievingBatchableIdsErrorWithDetails(options, identifier, new NotImplementedException());
 			throw new NotImplementedException();
 		}
 
@@ -145,46 +155,87 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
+			LogRetrievingDataErrorWithDetails(options, entryIds, fields, new NotImplementedException());
 			throw new NotImplementedException();
 		}
 
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{
-			DocumentTransferSettings settings = GetSettings(options);
+			LogReceivingEmailBodyData(fields, options);
+			var settings = GetSettings(options);
 
-			WorkspaceDTO sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
+			var sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
 
-			StringBuilder emailBody = new StringBuilder();
+			var emailBody = new StringBuilder();
 			if (sourceWorkspace != null)
 			{
-				emailBody.AppendLine(String.Empty);
-				emailBody.AppendFormat("Source Workspace: {0}", Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactId));
+				emailBody.AppendLine(string.Empty);
+				emailBody.Append(
+					$"Source Workspace: {Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactId)}");
 			}
 			return emailBody.ToString();
 		}
 
 		protected virtual DocumentTransferSettings GetSettings(string options)
 		{
-			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			return settings;
+			return JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 		}
 
 		protected virtual WorkspaceDTO GetWorkspace(int workspaceArtifactIds)
 		{
 			IRepositoryFactory repositoryFactory = ResolveDependencies<IRepositoryFactory>();
 			IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
-			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(workspaceArtifactIds);
-			return workspaceDto;
+			return workspaceRepository.Retrieve(workspaceArtifactIds);
 		}
-
+		
 		public void RegisterDependency<T>(T dependencies)
 		{
+			LogRegisterDependency();
 			_dependencies.Add(typeof(T), dependencies);
 		}
-
+		
 		private T ResolveDependencies<T>()
 		{
 			return (T)_dependencies[typeof(T)];
 		}
+
+		#region Logging
+
+		private void LogRegisterDependency()
+		{
+			_logger.LogInformation("Attempting to register dependency in Document Transfer Provider.");
+		}
+
+		private void LogReceivingEmailBodyData(IEnumerable<FieldEntry> fields, string options)
+		{
+			var fieldIdentifiers = fields.Select(x => x.FieldIdentifier).ToList();
+			_logger.LogInformation("Attempting to get email doby data in Document Transfer Provider (with {Options}) and fields {fields}.", options, string.Join(",", fieldIdentifiers));
+		}
+
+		private void LogRetrievingFields(string options)
+		{
+			_logger.LogInformation("Attempting to get fields in Document Transfer Provider (with {Options}).", options);
+		}
+
+		private void LogReceivingParsedFieldsError(IEnumerable<ArtifactDTO> fieldArtifacts, Exception exception)
+		{
+			var items = fieldArtifacts.Select(x => x.TextIdentifier).ToList();
+			_logger.LogError(exception, "Failed to retrieve parsed fields in Document Transfer Provider (with {fieldArtifacts}).", string.Join(",", items));
+		}
+
+		private void LogRetrievingBatchableIdsErrorWithDetails(string options, FieldEntry identifier, Exception ex)
+		{
+			_logger.LogError(ex, "Failed to retrieve batchable ids in Document Transfer Provider (with {Options}) for field {FieldIdentifier}.", 
+				options, identifier.FieldIdentifier);
+		}
+
+		private void LogRetrievingDataErrorWithDetails(string options, IEnumerable<string> entryIds, IEnumerable<FieldEntry> fields, Exception ex)
+		{
+			var fieldIdentifiers = fields.Select(x => x.FieldIdentifier).ToList();
+			_logger.LogError(ex, "Failed to retrieve data in Document Transfer Provider (with {Options}) for ids {Ids} and fields {fields}.", options,
+				string.Join(",", entryIds), string.Join(",", fieldIdentifiers));
+		}
+
+		#endregion
 	}
 }
