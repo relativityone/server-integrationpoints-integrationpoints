@@ -41,9 +41,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			LogRetrievingFields(options);
-			var settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			var fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
-			var fieldEntries = ParseFields(fields);
+			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			ArtifactDTO[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
+			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
 
 			return fieldEntries;
 		}
@@ -84,10 +84,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
 			{
-				var fieldName = string.Empty;
-				var isIdentifierFieldValue = 0;
+				string fieldName = string.Empty;
+				int isIdentifierFieldValue = 0;
 
-				foreach (var field in fieldArtifact.Fields)
+				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
 					if (field.Name == Constants.Fields.Name)
 					{
@@ -99,9 +99,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 						{
 							isIdentifierFieldValue = Convert.ToInt32(field.Value);
 						}
-						catch
+						catch(Exception ex)
 						{
-							LogReceivingParsedFieldsError(fieldArtifacts, new Exception("Invalid cast error."));
+							LogReceivingParsedFieldsError(fieldArtifacts, ex);
 							// suppress error for invalid casts
 						}
 					}
@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		private void LogReceivingEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{
 			var fieldIdentifiers = fields.Select(x => x.FieldIdentifier).ToList();
-			_logger.LogInformation("Attempting to get email doby data in Document Transfer Provider (with {Options}) and fields {fields}.", options, string.Join(",", fieldIdentifiers));
+			_logger.LogInformation("Attempting to get email body data in Document Transfer Provider (with {Options}) and fields {fields}.", options, string.Join(",", fieldIdentifiers));
 		}
 
 		private void LogRetrievingFields(string options)
@@ -217,10 +217,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			_logger.LogInformation("Attempting to get fields in Document Transfer Provider (with {Options}).", options);
 		}
 
-		private void LogReceivingParsedFieldsError(IEnumerable<ArtifactDTO> fieldArtifacts, Exception exception)
+		private void LogReceivingParsedFieldsError(IEnumerable<ArtifactDTO> fieldArtifacts, Exception ex)
 		{
 			var items = fieldArtifacts.Select(x => x.TextIdentifier).ToList();
-			_logger.LogError(exception, "Failed to retrieve parsed fields in Document Transfer Provider (with {fieldArtifacts}).", string.Join(",", items));
+			_logger.LogError(ex, "Failed to retrieve parsed fields in Document Transfer Provider (with {fieldArtifacts}).", string.Join(",", items));
 		}
 
 		private void LogRetrievingBatchableIdsErrorWithDetails(string options, FieldEntry identifier, Exception ex)
