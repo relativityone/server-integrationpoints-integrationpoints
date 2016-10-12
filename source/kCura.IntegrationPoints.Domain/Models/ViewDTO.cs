@@ -9,5 +9,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 	public class ViewDTO  : BaseDTO
 	{
 		public bool IsAvailableInObjectTab { get; set; }
+
+		public int? Order { get; set; }
 	}
 }

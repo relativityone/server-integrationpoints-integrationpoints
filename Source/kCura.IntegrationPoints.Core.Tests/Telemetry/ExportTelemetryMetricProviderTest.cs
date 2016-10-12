@@ -25,9 +25,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Telemetry
 		[SetUp]
 		public void Init()
 		{
-			_instanceToTest = new ExportTelemetryMetricProvider();
-
 			_mockHelper = Substitute.For<IHelper>();
+
+			_instanceToTest = new ExportTelemetryMetricProvider(_mockHelper);
+
 			_mockServicesMgr = Substitute.For<IServicesMgr>();
 			_mockInternalMetricsCollectionManager = Substitute.For<IInternalMetricsCollectionManager>();
 

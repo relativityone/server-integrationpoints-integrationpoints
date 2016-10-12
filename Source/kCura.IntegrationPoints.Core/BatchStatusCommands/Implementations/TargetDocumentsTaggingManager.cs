@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -10,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -20,13 +20,14 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly FieldMap[] _fields;
 		private readonly string _importConfig;
 		private readonly int _jobHistoryArtifactId;
+		private readonly IAPILog _logger;
+		private readonly ISourceJobManager _sourceJobManager;
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly IDataSynchronizer _synchronizer;
-		private readonly ISourceJobManager _sourceJobManager;
-		private SourceWorkspaceDTO _sourceWorkspaceDto;
-		private SourceJobDTO _sourceJobDto;
 		private bool _errorOccurDuringJobStart;
+		private SourceJobDTO _sourceJobDto;
+		private SourceWorkspaceDTO _sourceWorkspaceDto;
 
 		public TargetDocumentsTaggingManager(
 			IRepositoryFactory repositoryFactory,
@@ -34,11 +35,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
 			IDocumentRepository documentRepository,
+			IHelper helper,
 			FieldMap[] fields,
 			string importConfig,
 			int sourceWorkspaceArtifactId,
 			int destinationWorkspaceArtifactId,
-			int jobHistoryArtifactId, 
+			int jobHistoryArtifactId,
 			string uniqueJobId)
 		{
 			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId,
@@ -49,6 +51,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_documentRepository = documentRepository;
 			_documentRepository.WorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_fields = fields;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>();
 
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_destinationWorkspaceArtifactId = destinationWorkspaceArtifactId;
@@ -63,10 +66,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			try
 			{
 				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
-				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
+				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId,
+					_sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				LogErrorDuringJobStart(e);
 				_errorOccurDuringJobStart = true;
 				throw;
 			}
@@ -81,17 +86,17 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				{
 					FieldMap identifier = _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
 
-					DataColumn[] columns = new[]
+					DataColumn[] columns =
 					{
 						new DataColumn(identifier.SourceField.FieldIdentifier),
 						new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
-						new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD , _sourceJobDto.Name)
+						new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD, _sourceJobDto.Name)
 					};
 
 					int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);
 					using (TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId))
 					{
-						FieldMap[] fieldsToPush = { identifier };
+						FieldMap[] fieldsToPush = {identifier};
 						if (ScratchTableRepository.Count > 0)
 						{
 							_synchronizer.SyncData(reader, fieldsToPush, _importConfig);
@@ -99,10 +104,29 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					}
 				}
 			}
+			catch (Exception e)
+			{
+				LogErrorDuringJobComplete(e);
+				throw;
+			}
 			finally
 			{
 				ScratchTableRepository.Dispose();
 			}
 		}
+
+		#region Logging
+
+		private void LogErrorDuringJobStart(Exception e)
+		{
+			_logger.LogError(e, $"Error occurred during job starting in {nameof(TargetDocumentsTaggingManager)}");
+		}
+
+		private void LogErrorDuringJobComplete(Exception e)
+		{
+			_logger.LogError(e, $"Error occurred during job completion in {nameof(TargetDocumentsTaggingManager)}");
+		}
+
+		#endregion
 	}
 }

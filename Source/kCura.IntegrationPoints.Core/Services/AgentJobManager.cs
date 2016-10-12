@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Properties;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -12,15 +15,17 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly IEddsServiceContext _context;
 		private readonly IJobService _jobService;
-		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private readonly IAPILog _logger;
+		private readonly ISerializer _serializer;
 		private readonly JobTracker _tracker;
 
-		public AgentJobManager(IEddsServiceContext context, IJobService jobService, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, JobTracker tracker)
+		public AgentJobManager(IEddsServiceContext context, IJobService jobService, IHelper helper, ISerializer serializer, JobTracker tracker)
 		{
 			_context = context;
 			_jobService = jobService;
 			_serializer = serializer;
 			_tracker = tracker;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<AgentJobManager>();
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
@@ -28,7 +33,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			try
 			{
 				string serializedDetails = null;
-				if (jobDetails != null) serializedDetails = _serializer.Serialize(jobDetails);
+				if (jobDetails != null)
+				{
+					serializedDetails = _serializer.Serialize(jobDetails);
+				}
 				if (rule != null)
 				{
 					_jobService.CreateJob(workspaceId, integrationPointId, task.ToString(), rule, serializedDetails, _context.UserID, rootJobID, parentJobID);
@@ -40,18 +48,19 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			catch (AgentNotFoundException anfe)
 			{
-				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+				LogCreatingJobError(anfe, task, workspaceId, integrationPointId);
+				throw new Exception(ErrorMessages.NoAgentInstalled, anfe);
 			}
 		}
 
 		public void CreateJob<T>(Job parentJob, T jobDetails, TaskType task)
 		{
-			this.CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
+			CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 		}
 
 		public void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
 		{
-			Job job = this.CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, parentJob.SubmittedBy, GetRootJobId(parentJob), parentJob.JobId);
+			Job job = CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, parentJob.SubmittedBy, GetRootJobId(parentJob), parentJob.JobId);
 			_tracker.CreateTrackingEntry(job, batchId);
 		}
 
@@ -65,35 +74,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
 		}
 
-		public void CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null)
+		public void CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
+			long? parentJobId = null)
 		{
 			CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
-		}
-
-		private Job CreateJobInternal<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
-		{
-			try
-			{
-				string serializedDetails = null;
-				if (jobDetails != null) serializedDetails = _serializer.Serialize(jobDetails);
-				return _jobService.CreateJob(workspaceId, integrationPointId, task.ToString(), DateTime.UtcNow, serializedDetails, userId, rootJobId, parentJobID);
-			}
-			catch (AgentNotFoundException anfe)
-			{
-				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
-			}
-		}
-
-		public void CreateJob(int workspaceID, int integrationPointID, TaskType task, string serializedDetails, long? rootJobId = null, long? parentJobId = null)
-		{
-			try
-			{
-				_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobId, parentJobId);
-			}
-			catch (AgentNotFoundException anfe)
-			{
-				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
-			}
 		}
 
 		public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
@@ -109,17 +93,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			catch (AgentNotFoundException anfe)
 			{
-				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+				LogDeletingJobError(jobID, anfe);
+				throw new Exception(ErrorMessages.NoAgentInstalled, anfe);
 			}
-		}
-
-		public static long? GetRootJobId(Job parentJob)
-		{
-			long? rootJobId = parentJob.RootJobId;
-
-			if (!rootJobId.HasValue) rootJobId = parentJob.JobId;
-
-			return rootJobId;
 		}
 
 		public IDictionary<Guid, List<Job>> GetScheduledAgentJobMapedByBatchInstance(long integrationPointId)
@@ -137,11 +113,12 @@ namespace kCura.IntegrationPoints.Core.Services
 					}
 					else
 					{
-						results[parameter.BatchInstance] = new List<Job>() { job };
+						results[parameter.BatchInstance] = new List<Job> {job};
 					}
 				}
-				catch
+				catch(Exception e)
 				{
+					LogTaskParametersDeserializationError(e);
 					// in case of the serialization fails for whatever reasons.
 				}
 			}
@@ -153,6 +130,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			IDictionary<Guid, List<Job>> bacthedAgentJobs = GetScheduledAgentJobMapedByBatchInstance(integrationPointId);
 			if (!bacthedAgentJobs.ContainsKey(batchId))
 			{
+				LogFailedToFindBatchInstance(integrationPointId, batchId);
 				throw new Exception("Unable to find the batch instance id in the scheduled agent queue.");
 			}
 			return bacthedAgentJobs[batchId];
@@ -163,5 +141,73 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			_jobService.UpdateStopState(jobIds, StopState.Stopping);
 		}
+
+		private Job CreateJobInternal<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
+		{
+			try
+			{
+				string serializedDetails = null;
+				if (jobDetails != null)
+				{
+					serializedDetails = _serializer.Serialize(jobDetails);
+				}
+				return _jobService.CreateJob(workspaceId, integrationPointId, task.ToString(), DateTime.UtcNow, serializedDetails, userId, rootJobId, parentJobID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				LogCreatingJobError(anfe, task, workspaceId, integrationPointId);
+				throw new Exception(ErrorMessages.NoAgentInstalled, anfe);
+			}
+		}
+
+		public void CreateJob(int workspaceID, int integrationPointID, TaskType task, string serializedDetails, long? rootJobId = null, long? parentJobId = null)
+		{
+			try
+			{
+				_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobId, parentJobId);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				LogCreatingJobError(anfe, task, workspaceID, integrationPointID);
+				throw new Exception(ErrorMessages.NoAgentInstalled, anfe);
+			}
+		}
+
+		public static long? GetRootJobId(Job parentJob)
+		{
+			long? rootJobId = parentJob.RootJobId;
+
+			if (!rootJobId.HasValue)
+			{
+				rootJobId = parentJob.JobId;
+			}
+
+			return rootJobId;
+		}
+
+		#region Logging
+
+		private void LogCreatingJobError(AgentNotFoundException anfe, TaskType task, int workspaceId, int integrationPointId)
+		{
+			_logger.LogError(anfe, "Failed to create job of type {TaskType} for Integration Point {IntegrationPointId} in Workspace {WorkspaceId}.", task, integrationPointId,
+				workspaceId);
+		}
+
+		private void LogDeletingJobError(long jobID, AgentNotFoundException anfe)
+		{
+			_logger.LogError(anfe, "Failed to delete job {JobId}.", jobID);
+		}
+
+		private void LogTaskParametersDeserializationError(Exception e)
+		{
+			_logger.LogError(e, "Failed to deserialize TaskParameters.");
+		}
+
+		private void LogFailedToFindBatchInstance(long integrationPointId, Guid batchId)
+		{
+			_logger.LogError("Unable to find the batch instance id {BatchId} in the scheduled agent queue for Integration Point {IPId}.", batchId.ToString(), integrationPointId);
+		}
+
+		#endregion
 	}
 }

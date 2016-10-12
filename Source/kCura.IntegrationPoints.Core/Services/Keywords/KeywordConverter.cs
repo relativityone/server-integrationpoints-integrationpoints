@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
 	public class KeywordConverter
 	{
 		private readonly KeywordFactory _factory;
-		public KeywordConverter(KeywordFactory factory)
+		private readonly IAPILog _logger;
+
+		public KeywordConverter(IHelper helper, KeywordFactory factory)
 		{
 			_factory = factory;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeywordConverter>();
 		}
 
 		public string Convert(string textToConvert)
@@ -36,8 +40,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 				{
 					replacementValue = keyword.Convert();
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
+					LogConvertingError(textToConvert, e);
 					//eat
 				}
 				if (!string.IsNullOrEmpty(replacementValue))
@@ -55,7 +60,13 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 			return returnValue;
 		}
 
+		#region Logging
 
+		private void LogConvertingError(string textToConvert, Exception e)
+		{
+			_logger.LogError(e, "Error occurred during text convertion ({TextToConvert})", textToConvert);
+		}
 
+		#endregion
 	}
 }

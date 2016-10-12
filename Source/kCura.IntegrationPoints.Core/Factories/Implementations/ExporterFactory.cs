@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -19,11 +20,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	{
 		private readonly IOnBehalfOfUserClaimsPrincipalFactory _claimsPrincipalFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IHelper _helper;
 
-		public ExporterFactory(IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory, IRepositoryFactory repositoryFactory)
+		public ExporterFactory(IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory, IRepositoryFactory repositoryFactory, IHelper helper)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_repositoryFactory = repositoryFactory;
+			_helper = helper;
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
@@ -44,11 +47,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
 
 			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, sourceWorkspaceManager,
-				sourceJobManager, documentRepository, synchronizerFactory, serializer, mappedFiles, integrationPoint.SourceConfiguration,
+				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration,
 				userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_repositoryFactory, _claimsPrincipalFactory, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_repositoryFactory, _claimsPrincipalFactory, _helper, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
 			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _repositoryFactory, _claimsPrincipalFactory, jobStopManager, configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>()
@@ -67,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				onBehalfOfUser = 9;
 			}
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
-			return new RelativityExporterService(_repositoryFactory, jobStopManager, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+			return new RelativityExporterService(_repositoryFactory, jobStopManager, _helper, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
 		}
 	}
 }

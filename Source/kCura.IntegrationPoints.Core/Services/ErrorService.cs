@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -10,8 +11,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 	public class ErrorService : IErrorService
 	{
-		private readonly Data.Queries.CreateErrorRdo _createErrorRdo;
-		public ErrorService(Data.Queries.CreateErrorRdo createError)
+		private readonly CreateErrorRdo _createErrorRdo;
+
+		public ErrorService(CreateErrorRdo createError)
 		{
 			_createErrorRdo = createError;
 		}
@@ -20,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			try
 			{
-				var appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+				var appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 				var message = string.Format("(Integration Points v({0}) {1}", appVersion, error.Message);
 				_createErrorRdo.Execute(error.WorkspaceID, message, error.Exception);
 			}

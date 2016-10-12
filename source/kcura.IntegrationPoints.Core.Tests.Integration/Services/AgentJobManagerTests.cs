@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private AgentJobManager _manager;
 		private IEddsServiceContext _eddsServiceContext;
 		private IJobService _jobService;
+		private IHelper _helper;
 		private ISerializer _serializer;
 		private JobTracker _jobTracker;
 		private IWorkspaceDBContext _workspaceDbContext;
@@ -41,11 +43,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>(); ;
 			_jobService = Container.Resolve<IJobService>();
 			_serializer = Container.Resolve<ISerializer>();
+			_helper = Container.Resolve<IHelper>();
 			_workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			_jobResource = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
 			_jobTracker = new JobTracker(_jobResource);
 			_eddsServiceContext = Container.Resolve<IEddsServiceContext>();
-			_manager = new AgentJobManager(_eddsServiceContext, _jobService, _serializer, _jobTracker);
+			_manager = new AgentJobManager(_eddsServiceContext, _jobService, _helper, _serializer, _jobTracker);
 		}
 
 		public override void TestTeardown()

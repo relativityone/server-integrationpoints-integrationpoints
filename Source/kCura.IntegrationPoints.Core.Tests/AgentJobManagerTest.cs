@@ -13,6 +13,7 @@ using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private IEddsServiceContext _context;
         private IJobService _jobService;
         private ISerializer _serializer;
+	    private IHelper _helper;
         private JobTracker _jobTracker;
         private JobResourceTracker _jobResource;
         private IWorkspaceDBContext _workspaceDbContext;
@@ -42,13 +44,14 @@ namespace kCura.IntegrationPoints.Core.Tests
             _context = Substitute.For<IEddsServiceContext>();
             _context.UserID = 55555;
 
+	        _helper = Substitute.For<IHelper>();
             _jobService = Substitute.For<IJobService>();
             _serializer = NSubstitute.Substitute.For<ISerializer>();
             _workspaceDbContext = NSubstitute.Substitute.For<IWorkspaceDBContext>();
             _repositoryFactory = NSubstitute.Substitute.For<IRepositoryFactory>();
             _jobResource = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
             _jobTracker = new JobTracker(_jobResource);
-            _manager = new AgentJobManager(_context, _jobService, _serializer, _jobTracker);
+            _manager = new AgentJobManager(_context, _jobService, _helper, _serializer, _jobTracker);
         }
 
         [Test]

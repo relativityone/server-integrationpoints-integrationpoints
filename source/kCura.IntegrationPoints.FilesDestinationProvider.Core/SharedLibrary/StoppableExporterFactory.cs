@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
@@ -41,7 +42,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 				LogUsingWebApi();
 				serviceFactory = new WebApiServiceFactory(exportFile);
 			}
-			var exporter = new Exporter(exportFile, controller, serviceFactory);
+			var exporter = new Exporter(exportFile, controller, serviceFactory)
+			{
+				NameTextAndNativesAfterBegBates = exportFile.AreSettingsApplicableForProdBegBatesNameCheck()
+			};
 			return new StoppableExporter(exporter, controller, jobStopManager);
 		}
 

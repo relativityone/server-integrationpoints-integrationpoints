@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			LogStartingExport();
 			var exporter = _exportProcessBuilder.Create(settings, job);
 			exporter.ExportSearch();
+			LogFinishingExport();
 		}
 
 		public void StartWith(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId, Job job)
@@ -36,6 +37,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private void LogStartingExport()
 		{
 			_logger.LogInformation("Starting Export.");
+		}
+
+		private void LogFinishingExport()
+		{
+			_logger.LogInformation("Finishing Export.");
 		}
 
 		#endregion

@@ -2,6 +2,7 @@
 using kCura.EDDS.WebAPI.ProductionManagerBase;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
+using System.Linq;
 using ProductionManager = Relativity.Core.Service.ProductionManager;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
@@ -25,6 +26,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		public DataSet RetrieveProducedByContextArtifactID(int caseContextArtifactID)
 		{
 			return InitProductionManager(caseContextArtifactID).ExternalRetrieveProduced(_baseServiceContext, _userPermissionsMatrix);
+		}
+
+		public object[][] RetrieveBatesByProductionAndDocument(int caseContextArtifactID, int[] productionIds, int[] documentIds)
+		{
+			return global::Relativity.Core.Service.ProductionQuery.RetrieveBatesByProductionAndDocument(
+				_baseServiceContext, _userPermissionsMatrix, productionIds, documentIds)
+				.Table
+				.Select()
+				.Select( dr => global::Relativity.Export.ProductionDocumentBatesHelper.ToSerializableObjectArray(dr)).ToArray();
 		}
 
 		private ProductionManager InitProductionManager(int appArtifactId)

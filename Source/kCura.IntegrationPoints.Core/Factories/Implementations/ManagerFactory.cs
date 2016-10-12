@@ -2,16 +2,23 @@
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ManagerFactory : IManagerFactory
 	{
+		private readonly IHelper _helper;
+
+		public ManagerFactory(IHelper helper)
+		{
+			_helper = helper;
+		}
+
 		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
 		{
 			return new ArtifactGuidManager(CreateRepositoryFactory(contextContainer));
@@ -29,12 +36,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer)
 		{
-			return new JobHistoryManager(CreateRepositoryFactory(contextContainer));
+			return new JobHistoryManager(CreateRepositoryFactory(contextContainer), _helper);
 		}
 
 		public IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
-			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer), sourceWorkspaceArtifactId, uniqueJobId);
+			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer), _helper, sourceWorkspaceArtifactId, uniqueJobId);
 		}
 
 		public IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer)
@@ -46,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new QueueManager(CreateRepositoryFactory(contextContainer));
 		}
-		
+
 		public ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer)
 		{
 			return new SourceProviderManager(CreateRepositoryFactory(contextContainer));
@@ -59,10 +66,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob)
 		{
-			IJobStopManager manager = null;
+			IJobStopManager manager;
 			if (isStoppableJob)
 			{
-				manager = new JobStopManager(jobService, jobHistoryService, jobIdentifier, jobId);
+				manager = new JobStopManager(jobService, jobHistoryService, _helper, jobIdentifier, jobId);
 			}
 			else
 			{
@@ -73,8 +80,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IAuditManager CreateAuditManager(IContextContainer contextContainer, int workspaceArtifactId)
 		{
-			IRepositoryFactory  repositoryFactory = CreateRepositoryFactory(contextContainer);
-			IRelativityAuditRepository relativityAuditRepository =	repositoryFactory.GetRelativityAuditRepository(workspaceArtifactId);
+			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
+			IRelativityAuditRepository relativityAuditRepository = repositoryFactory.GetRelativityAuditRepository(workspaceArtifactId);
 			return new AuditManager(relativityAuditRepository);
 		}
 
@@ -91,6 +98,5 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		}
 
 		#endregion
-
 	}
 }

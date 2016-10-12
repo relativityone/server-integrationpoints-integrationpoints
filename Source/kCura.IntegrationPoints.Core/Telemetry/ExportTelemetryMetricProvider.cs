@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
 
 namespace kCura.IntegrationPoints.Core.Telemetry
@@ -11,6 +12,10 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 	/// </remarks>
 	internal class ExportTelemetryMetricProvider : TelemetryMetricProviderBase
 	{
+		public ExportTelemetryMetricProvider(IHelper helper) : base(helper)
+		{
+		}
+
 		public static readonly List<MetricIdentifier> ExportMetricIdentifiers = new List<MetricIdentifier>()
 		{
 			new MetricIdentifier()

@@ -14,6 +14,7 @@ using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 	{
 		private ICaseServiceContext _caseServiceContext;
 		private IWorkspaceRepository _workspaceRepository;
+		private IHelper _helper;
 
 		private JobHistoryService _instance;
 		private ISerializer _serializer;
@@ -36,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			_helper = Substitute.For<IHelper>();
 			_serializer = Substitute.For<ISerializer>();
 
 			_integrationPoint = new Data.IntegrationPoint()
@@ -54,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext, _workspaceRepository, _serializer);
+			_instance = new JobHistoryService(_caseServiceContext, _workspaceRepository, _helper, _serializer);
 		}
 
 		[Test]

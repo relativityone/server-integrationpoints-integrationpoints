@@ -1,28 +1,28 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
 	public class TargetDocumentsTaggingManagerFactory
 	{
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
-		private readonly ISourceJobManager _sourceJobManager;
-		private readonly IDocumentRepository _documentRepository;
-		private readonly ISynchronizerFactory _synchronizerFactory;
-		private readonly ISerializer _serializer;
-		private readonly FieldMap[] _fields;
-		private readonly string _sourceConfig;
 		private readonly string _destinationConfig;
+		private readonly IDocumentRepository _documentRepository;
+		private readonly FieldMap[] _fields;
+		private readonly IHelper _helper;
 		private readonly int _jobHistoryArtifactId;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly ISerializer _serializer;
+		private readonly string _sourceConfig;
+		private readonly ISourceJobManager _sourceJobManager;
+		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
+		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly string _uniqueJobId;
 
 		public TargetDocumentsTaggingManagerFactory(
@@ -31,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			ISourceJobManager sourceJobManager,
 			IDocumentRepository documentRepository,
 			ISynchronizerFactory synchronizerFactory,
+			IHelper helper,
 			ISerializer serializer,
 			FieldMap[] fields,
 			string sourceConfig,
@@ -43,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_sourceJobManager = sourceJobManager;
 			_documentRepository = documentRepository;
 			_synchronizerFactory = synchronizerFactory;
+			_helper = helper;
 			_serializer = serializer;
 			_fields = fields;
 			_sourceConfig = sourceConfig;
@@ -57,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			importSettings.FileNameColumn = null;
 			importSettings.NativeFilePathSourceFieldName = null;
 			importSettings.FolderPathSourceFieldName = null;
-			importSettings.Provider = String.Empty;
+			importSettings.Provider = string.Empty;
 			importSettings.ImportNativeFile = false;
 			_destinationConfig = _serializer.Serialize(importSettings);
 		}
@@ -73,6 +75,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_sourceWorkspaceManager,
 				_sourceJobManager,
 				_documentRepository,
+				_helper,
 				_fields.ToArray(),
 				_destinationConfig,
 				settings.SourceWorkspaceArtifactId,

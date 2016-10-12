@@ -7,9 +7,12 @@ namespace kCura.IntegrationPoints.Core
 	public class RsapiClientFactory
 	{
 		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
+
 		public RsapiClientFactory(IHelper helper)
 		{
 			_helper = helper;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiClientFactory>();
 		}
 
 		public IRSAPIClient CreateClientForWorkspace(int workspaceID, ExecutionIdentity identity = ExecutionIdentity.CurrentUser)
@@ -19,8 +22,9 @@ namespace kCura.IntegrationPoints.Core
 			{
 				client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(identity);
 			}
-			catch (NullReferenceException)
+			catch (NullReferenceException e)
 			{
+				LogCreatingRsapiClientError(e);
 				client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
 			}
 			client.APIOptions.WorkspaceID = workspaceID;
@@ -39,6 +43,14 @@ namespace kCura.IntegrationPoints.Core
 
 			return servicesMgr;
 		}
-		
+
+		#region Logging
+
+		private void LogCreatingRsapiClientError(NullReferenceException e)
+		{
+			_logger.LogError(e, "Failed to create RSAPI Client with given identity. Attempting to create RSAPI Client using System identity.");
+		}
+
+		#endregion
 	}
 }

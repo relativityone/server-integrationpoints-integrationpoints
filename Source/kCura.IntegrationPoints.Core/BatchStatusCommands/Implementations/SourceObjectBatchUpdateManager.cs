@@ -6,30 +6,34 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
 	public class SourceObjectBatchUpdateManager : IConsumeScratchTableBatchStatus
 	{
-		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
-		private readonly int _sourceWorkspaceId;
-		private readonly int _destinationWorkspaceId;
-		private readonly int _jobHistoryInstanceId;
-		private readonly IWorkspaceRepository _workspaceRepository;
 		private readonly ClaimsPrincipal _claimsPrincipal;
+		private readonly int _destinationWorkspaceId;
+		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
+		private readonly int _jobHistoryInstanceId;
+		private readonly IAPILog _logger;
+		private readonly int _sourceWorkspaceId;
+		private readonly IWorkspaceRepository _workspaceRepository;
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		public SourceObjectBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
+		public SourceObjectBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper,
 			SourceConfiguration sourceConfig, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
-			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS, uniqueJobId);
+			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS,
+				uniqueJobId);
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SourceObjectBatchUpdateManager>();
 		}
 
 		public IScratchTableRepository ScratchTableRepository { get; }
@@ -53,8 +57,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_destinationWorkspaceRdoId = destinationWorkspace.ArtifactId;
 				_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId, _jobHistoryInstanceId);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				LogErrorDuringJobStart(e);
 				_errorOccurDuringJobStart = true;
 				throw;
 			}
@@ -67,13 +72,33 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				if (!_errorOccurDuringJobStart)
 				{
 					int documentCount = ScratchTableRepository.Count;
-					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(_claimsPrincipal, documentCount, _destinationWorkspaceRdoId, _jobHistoryInstanceId, ScratchTableRepository.GetTempTableName(), _sourceWorkspaceId);
+					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(_claimsPrincipal, documentCount, _destinationWorkspaceRdoId, _jobHistoryInstanceId,
+						ScratchTableRepository.GetTempTableName(), _sourceWorkspaceId);
 				}
+			}
+			catch (Exception e)
+			{
+				LogErrorDuringJobComplete(e);
+				throw;
 			}
 			finally
 			{
 				ScratchTableRepository.Dispose();
 			}
 		}
+
+		#region Logging
+
+		private void LogErrorDuringJobStart(Exception e)
+		{
+			_logger.LogError(e, "Error occurred during job start in SourceObjectBatchUpdateManager.");
+		}
+
+		private void LogErrorDuringJobComplete(Exception e)
+		{
+			_logger.LogError(e, "Error occurred during job completion in SourceObjectBatchUpdateManager");
+		}
+
+		#endregion
 	}
 }
