@@ -1,14 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportSettingsBuilder : IExportSettingsBuilder
 	{
+		private readonly IAPILog _logger;
+
+		public ExportSettingsBuilder(IHelper helper)
+		{
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportSettingsBuilder>();
+		}
+
 		public ExportSettings Create(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId)
+		{
+			try
+			{
+				return CreateExportSettings(sourceSettings, fieldMap, artifactTypeId);
+			}
+			catch (System.Exception e)
+			{
+				LogCreatingExportSettingsError(e);
+				throw;
+			}
+		}
+
+		private static ExportSettings CreateExportSettings(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId)
 		{
 			ExportSettings.ImageFileType? imageType;
 			EnumHelper.TryParse(sourceSettings.SelectedImageFileType, out imageType);
@@ -86,5 +108,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			return exportSettings;
 		}
+
+		#region Logging
+
+		private void LogCreatingExportSettingsError(Exception e)
+		{
+			_logger.LogError(e, "Failed to build ExportSettings.");
+		}
+
+		#endregion
 	}
 }

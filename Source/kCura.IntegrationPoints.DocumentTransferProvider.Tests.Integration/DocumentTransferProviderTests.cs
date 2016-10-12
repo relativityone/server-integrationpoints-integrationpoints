@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Contracts.Models;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 {
@@ -12,7 +13,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 		private readonly DocumentTransferProvider _documentTransferProvider;
 		public DocumentTransferProviderTests() : base("DestinationWorkspaceRepositoryTests", null)
 		{	
-			_documentTransferProvider = new DocumentTransferProvider();
+			_documentTransferProvider = new DocumentTransferProvider(NSubstitute.Substitute.For<IHelper>());
 		}
 
 		[Test]

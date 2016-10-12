@@ -494,7 +494,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (integrationPoint == null)
 			{
 				LogLoadingIntegrationPointDtoError(job);
-				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
+				throw new ArgumentException("Failed to retrieve corresponding Integration Point.");
 			}
 			return integrationPoint;
 		}
@@ -528,7 +528,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogUpdatingStoppedJobStatusError(Job job, Exception exception)
 		{
-			_logger.LogError(exception, "Failed to updated job ({JobId}) status after job has been stopped.", job.JobId);
+			_logger.LogError(exception, "Failed to update job ({JobId}) status after job has been stopped.", job.JobId);
 		}
 
 		private void LogCompletingJobError(Job job, Exception exception, IBatchStatus batchStatus)
@@ -553,7 +553,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogLoadingIntegrationPointDtoError(Job job)
 		{
-			_logger.LogError("Failed to retrieved corresponding Integration Point ({IntegrationPointId}) for job {JobId}.", job.RelatedObjectArtifactID, job.JobId);
+			_logger.LogError("Failed to retrieve corresponding Integration Point ({IntegrationPointId}) for job {JobId}.", job.RelatedObjectArtifactID, job.JobId);
 		}
 
 		#endregion

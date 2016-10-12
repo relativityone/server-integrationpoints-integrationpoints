@@ -17,7 +17,7 @@
 	<property name="source.dependency.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.192.5\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
-	<property name="relativityDependencyVersion" value="9.4.309.5" />
+	<property name="relativityDependencyVersion" value="9.4.330.2" />
 	
 	<!-- Log properties -->
 	<echo message="Root: ${root}" />
@@ -125,6 +125,7 @@
 			<arg line='/log' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.API.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />

@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[SetUp]
 		public void SetUp()
 		{
-			_exportSettingsBuilder = new ExportSettingsBuilder();
+			_exportSettingsBuilder = new ExportSettingsBuilder(NSubstitute.Substitute.For<IHelper>());
 		}
 
 		[Test]

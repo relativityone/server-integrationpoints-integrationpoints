@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
 	public class LDAPService
 	{
-		private LDAPSettings _settings;
+		private readonly LDAPSettings _settings;
 		private DirectoryEntry _searchRoot;
-		private List<string> _fieldsToLoad;
+		private readonly List<string> _fieldsToLoad;
+		private readonly IAPILog _logger;
 
-		public LDAPService(LDAPSettings settings, List<string> fieldsToLoad = null)
+		public LDAPService(IAPILog logger, LDAPSettings settings, List<string> fieldsToLoad = null)
 		{
 			_settings = settings;
 			_fieldsToLoad = fieldsToLoad;
+			_logger = logger;
 		}
 
 		public void InitializeConnection()
@@ -33,8 +34,15 @@ namespace kCura.IntegrationPoints.LDAPProvider
 				object nativeObject = FetchItems(1).ToList();
 				authentic = true;
 			}
-			catch (DirectoryServicesCOMException) { }
-			catch (COMException) { }
+			catch (DirectoryServicesCOMException ex)
+			{
+				LogAuthenticationError(ex);
+			}
+			catch (COMException ex)
+			{
+				LogAuthenticationError(ex);
+			}
+
 			return authentic;
 		}
 
@@ -79,6 +87,8 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		private IEnumerable<SearchResult> FetchItems(DirectoryEntry searchRoot, string filter, int? overrideSizeLimit)
 		{
+			LogFetchingItems(searchRoot.Path, filter);
+
 			using (DirectorySearcher searcher = new DirectorySearcher(searchRoot, filter))
 			{
 				searcher.AttributeScopeQuery = _settings.AttributeScopeQuery;
@@ -122,34 +132,28 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			{
 				foreach (object property in item.Properties.PropertyNames)
 				{
-					//GetPropertyType(property.ToString(), item);
 					properties.Add(property.ToString());
 				}
 			}
-			//if (properties.Count > 0) properties.Add("path");
 
 			List<string> listProperties = properties.ToList();
 			listProperties.Sort();
 			return listProperties;
 		}
 
-		//private object GetPropertyType(string property, SearchResult item)
-		//{
-		//	DirectoryEntry de = new DirectoryEntry(item.Path, _settings.UserName, _settings.Password, _settings.AuthenticationType);
-		//	DirectoryEntry schema = de.SchemaEntry;
+#region Logging
 
-		//	foreach (DirectoryEntry myChildDirectoryEntry in schema.Children)
-		//	{
-		//		Console.WriteLine(myChildDirectoryEntry.Path);
-		//	}
+		private void LogFetchingItems(string searchPath, string filter)
+		{
+			_logger.LogInformation(
+				"Attempting to fetch items in LDAP Service. Search path: ({SearchPath}), search filter: ({Filter})", searchPath,
+				filter);
+		}
 
-		//	foreach (var prop in schema.Properties.PropertyNames)
-		//	{
-		//		string propName = prop.ToString();
-		//		var propValue = schema.Properties[propName].Value;
-		//	}
-
-		//	return null;
-		//}
+		private void LogAuthenticationError(Exception ex)
+		{
+			_logger.LogError(ex, "Error occured during LDAP Service authentication");
+		}
+#endregion
 	}
 }

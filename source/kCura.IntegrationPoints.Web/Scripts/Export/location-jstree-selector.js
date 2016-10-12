@@ -74,7 +74,12 @@ var LocationJSTreeSelector = function () {
 	self.initJsTreeWithRoot = function (ajaxCallback) {
 		$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
-
+		var extendWithDefault = function (child) {
+			$.extend(child, { children: true });
+			if (child.icon === null) {
+				$.extend(child, { icon: "jstree-folder-default" });
+			}
+		};
 
 		$(self.domSelectorSettings.browserTreeSelector).jstree({
 			'core': {
@@ -83,12 +88,12 @@ var LocationJSTreeSelector = function () {
 						$.each(returnData, function (index, value) {
 							if (value.icon && value.icon === "jstree-root-folder") {
 								$.each(value.children, function (index, child) {
-									$.extend(child, { children: true });
+									extendWithDefault(child);
 								});
 							}
 							else
 							{
-								$.extend(value, { children: true });
+								extendWithDefault(child);
 							}
 						});
 						callback.call(this, returnData);

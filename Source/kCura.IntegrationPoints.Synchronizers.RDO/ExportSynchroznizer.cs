@@ -5,13 +5,14 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ExportSynchroznizer : RdoFieldSynchronizerBase, IDataSynchronizer
     {
 	    private IFileQuery _fileQuery;
-        public ExportSynchroznizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IFileQuery fileQuery) : base(fieldQuery, factory)
+        public ExportSynchroznizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IFileQuery fileQuery, IHelper helper) : base(fieldQuery, factory, helper)
         {
             _fileQuery = fileQuery;
         }
@@ -23,19 +24,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	    public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
 	    {
 	    }
-        
-        /*
-	    public void SyncData(IEnumerable<string> entryIds, IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
-		{
-            ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-
-            var nativeFilePaths = _fileQuery.GetDocumentFiles(string.Join(",", entryIds), 0);
-
-            foreach (var path in nativeFilePaths)
-            {
-                File.Copy(path.Location, settings.Fileshare + "\\" + path.Filename);
-            }
-        }
-        */
     }
 }

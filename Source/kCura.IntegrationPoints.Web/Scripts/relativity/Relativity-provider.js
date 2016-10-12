@@ -15,7 +15,7 @@
 
 		errorContainer.appendChild(iconSpan);
 
-		$(element).parents('.field-value').eq(0).append(errorContainer);
+		$(element).parents('.editFieldValue').eq(0).append(errorContainer);
 
 		return iconSpan;
 	};
@@ -126,7 +126,7 @@
 				async: true,
 				success: function (result) {
 					ko.utils.arrayForEach(result, function (item) {
-						item.displayName = item.displayName.replace(/&amp;/g, '&');//decode ampersand
+						item.displayName = IP.utils.decode(item.displayName);
 					});
 					self.workspaces(result);
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);

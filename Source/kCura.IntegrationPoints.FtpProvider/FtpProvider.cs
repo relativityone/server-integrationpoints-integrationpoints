@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			LogRetrievingFields(options);
+			LogRetrievingFields();
 			List<FieldEntry> retVal = new List<FieldEntry>();
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
@@ -69,10 +69,10 @@ namespace kCura.IntegrationPoints.FtpProvider
 				if (ex is SftpPathNotFoundException || (ex is WebException && ex.ToString().Contains("(550) File unavailable")))
 				{
 					var message = $"Unable to access: {remoteLocation}{fileName} {ex}";
-					LogRetrievingFieldsErrorWithDetails(options, ex, message);
+					LogRetrievingFieldsErrorWithDetails(ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingFieldsError(options, ex);
+				LogRetrievingFieldsError(ex);
 				throw new Exception(ex.ToString());
 			}
 
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
-			LogRetrievingBatchableIds(identifier, options);
+			LogRetrievingBatchableIds(identifier);
 			IDataReader retVal;
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
@@ -112,10 +112,10 @@ namespace kCura.IntegrationPoints.FtpProvider
 				if (ex is SftpPathNotFoundException || (ex is WebException && ex.ToString().Contains("(550) File unavailable")))
 				{
 					var message = $"Unable to access: {remoteLocation}{fileName} {ex}";
-					LogRetrievingBatchableIdsErrorWithDetails(options, identifier, ex, message);
+					LogRetrievingBatchableIdsErrorWithDetails(identifier, ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingBatchableIdsError(options, identifier, ex);
+				LogRetrievingBatchableIdsError(identifier, ex);
 				throw new Exception(ex.ToString());
 			}
 
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			LogRetrievingData(entryIds, options);
+			LogRetrievingData(entryIds);
 			IDataReader retVal;
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
@@ -143,10 +143,10 @@ namespace kCura.IntegrationPoints.FtpProvider
 				if (ex is SftpPathNotFoundException || (ex is WebException && ex.ToString().Contains("(550) File unavailable")))
 				{
 					var message = $"Unable to access: {remoteLocation}{fileName} {ex}";
-					LogRetrievingDataErrorWithDetails(options, entryIds, ex, message);
+					LogRetrievingDataErrorWithDetails(entryIds, ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingDataError(options, entryIds, ex);
+				LogRetrievingDataError(entryIds, ex);
 				throw new Exception(ex.ToString());
 			}
 
@@ -200,50 +200,51 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		#region Logging
 
-		private void LogRetrievingFields(string options)
+		private void LogRetrievingFields()
 		{
-			_logger.LogInformation("Attempting to get fields in FTP Provider with {Options}.", options);
+			_logger.LogInformation("Attempting to get fields in FTP Provider.");
 		}
 
-		private void LogRetrievingBatchableIds(FieldEntry identifier, string options)
+		private void LogRetrievingBatchableIds(FieldEntry identifier)
 		{
-			_logger.LogInformation("Attempting to get batchable ids in FTP Provider with {Options} for field {FieldIdentifier}.", options, identifier.FieldIdentifier);
+			_logger.LogInformation("Attempting to get batchable ids in FTP Provider for field {FieldIdentifier}.", identifier.FieldIdentifier);
 		}
 
-		private void LogRetrievingData(IEnumerable<string> entryIds, string options)
+		private void LogRetrievingData(IEnumerable<string> entryIds)
 		{
-			_logger.LogInformation("Attempting to get data in FTP Provider with {Options} for ids: {Ids}.", options, string.Join(",", entryIds));
+			_logger.LogInformation("Attempting to get data in FTP Provider for ids: {Ids}.", string.Join(",", entryIds));
 		}
 
-		private void LogRetrievingFieldsError(string options, Exception ex)
+		private void LogRetrievingFieldsError(Exception ex)
 		{
-			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider (with {Options}).", options);
+			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider.");
 		}
 
-		private void LogRetrievingFieldsErrorWithDetails(string options, Exception ex, string message)
+		private void LogRetrievingFieldsErrorWithDetails(Exception ex, string message)
 		{
-			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider (with {Options}). Details: {Message}.", options, message);
+			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider. Details: {Message}.");
 		}
 
-		private void LogRetrievingBatchableIdsError(string options, FieldEntry identifier, Exception ex)
+		private void LogRetrievingBatchableIdsError(FieldEntry identifier, Exception ex)
 		{
-			_logger.LogError(ex, "Failed to retrieve batchable ids in FTP Provider (with {Options}) for field {FieldIdentifier}.", options, identifier.FieldIdentifier);
+			_logger.LogError(ex, "Failed to retrieve batchable ids in FTP Provider for field {FieldIdentifier}.", identifier.FieldIdentifier);
 		}
 
-		private void LogRetrievingBatchableIdsErrorWithDetails(string options, FieldEntry identifier, Exception ex, string message)
+		private void LogRetrievingBatchableIdsErrorWithDetails(FieldEntry identifier, Exception ex, string message)
 		{
-			_logger.LogError(ex, "Failed to retrieve batchable ids in FTP Provider (with {Options}) for field {FieldIdentifier}. Details: {Message}.", options,
+			_logger.LogError(ex,
+				"Failed to retrieve batchable ids in FTP Provider for field {FieldIdentifier}. Details: {Message}.",
 				identifier.FieldIdentifier, message);
 		}
 
-		private void LogRetrievingDataError(string options, IEnumerable<string> entryIds, Exception ex)
+		private void LogRetrievingDataError(IEnumerable<string> entryIds, Exception ex)
 		{
-			_logger.LogError(ex, "Failed to retrieve data in FTP Provider (with {Options}) for ids {Ids}.", options, string.Join(",", entryIds));
+			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for ids {Ids}.", string.Join(",", entryIds));
 		}
 
-		private void LogRetrievingDataErrorWithDetails(string options, IEnumerable<string> entryIds, Exception ex, string message)
+		private void LogRetrievingDataErrorWithDetails(IEnumerable<string> entryIds, Exception ex, string message)
 		{
-			_logger.LogError(ex, "Failed to retrieve data in FTP Provider (with {Options}) for ids {Ids}. Details: {Message}.", options,
+			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for ids {Ids}. Details: {Message}.",
 				string.Join(",", entryIds), message);
 		}
 

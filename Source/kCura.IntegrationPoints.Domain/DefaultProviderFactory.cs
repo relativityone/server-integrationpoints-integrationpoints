@@ -3,6 +3,7 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -12,14 +13,17 @@ namespace kCura.IntegrationPoints.Domain
 	internal class DefaultProviderFactory : ProviderFactoryBase
 	{
 		private readonly IWindsorContainer _windsorContainer;
+		private readonly IAPILog _logger;
 
-		/// <summary>
-        ///Initializes an new instance of the DefaultProviderFactory class.
-        /// </summary>     
+		///  <summary>
+		/// Initializes an new instance of the DefaultProviderFactory class.
+		///  </summary>
 		/// <param name="windsorContainer">The windsorContainer from which to resolve providers</param>
-        public DefaultProviderFactory(IWindsorContainer windsorContainer)
+		/// <param name="helper"></param>
+		public DefaultProviderFactory(IWindsorContainer windsorContainer, IHelper helper)
 		{
 			_windsorContainer = windsorContainer;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DefaultProviderFactory>();
 		}
 
 		/// <summary>
@@ -42,13 +46,24 @@ namespace kCura.IntegrationPoints.Domain
 
 				provider = _windsorContainer.Resolve<IDataSourceProvider>(assemblyQualifiedName);
 			} 
-			catch
+			catch(Exception ex)
 			{
-			    throw new Exception(string.Format(Contracts.Properties.Resources.CouldNotCreateProvider, providerType));
+				var message = string.Format(Contracts.Properties.Resources.CouldNotCreateProvider, providerType);
+				LogProviderCreationError(ex, message);
+			    throw new Exception(message);
 			}
 
 			// TODO: check if provider can be null -- biedrzycki: Jan 25, 2016
 			return provider;
 		}
+
+#region Logging
+
+		private void LogProviderCreationError(Exception ex, string message)
+		{
+			_logger.LogError(ex, "Could not create provider. Details: {Message}", message);
+		}
+
+#endregion
 	}
 }
