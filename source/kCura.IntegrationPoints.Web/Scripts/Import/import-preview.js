@@ -6,7 +6,7 @@
     var percent = 0;
     var timerHandle;
     var settings = opener.RelativityImportPreviewSettings;
-
+    var fieldMapping = opener.top.getCurrentIpFieldMapping();
     $("#tableData").hide();
     var timerCount = 0;
     var timerRequest = true;
@@ -27,7 +27,8 @@
     var previewSettingsData = {
         WorkspaceId: settings.WorkspaceId,
         PreviewType: settings.PreviewType,
-        FilePath: settings.LoadFile
+        FilePath: settings.LoadFile,
+        FieldMapping:$.parseJSON(fieldMapping)
     };
 
     root.data.ajax({

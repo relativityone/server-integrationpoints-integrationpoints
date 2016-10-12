@@ -11,5 +11,6 @@ namespace kCura.IntegrationPoints.Domain.Models
         public int WorkspaceId { get; set; }
         public string PreviewType { get; set; }
         public string FilePath { get; set; }
+        public List<FieldMap> FieldMapping { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Contracts;
 using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
@@ -25,7 +26,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             {
                 _errorsOnly = true;
             }
+            //delimiter settings
             eddsLoadFile.RecordDelimiter = ',';
+            //eddsLoadFile.QuoteDelimiter = '';
+            //eddsLoadFile.NewlineDelimiter = '';
+            //eddsLoadFile.MultiRecordDelimiter = '';
+            //eddsLoadFile.HierarchicalValueDelimiter = '';
+
             eddsLoadFile.FilePath = settings.FilePath;
             eddsLoadFile.LoadNativeFiles = false;
             eddsLoadFile.CreateFolderStructure = false;
@@ -36,27 +43,26 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             //set up field mapping to extract all fields with reader
             var cols = temp.GetColumnNames(eddsLoadFile);
             int colIdx = 0;
-            foreach (var col in cols)
+            foreach (string colName in cols)
             {
                 int fieldCat = -1;
-                //setting the first column as the identifier
-                if (colIdx == 0)
+                FieldMap currentField = settings.FieldMapping.Where(f => f.SourceField.DisplayName == colName).FirstOrDefault();
+                if (currentField != null)
                 {
-                    fieldCat = 2;
+                    //set as an identifier
+                    if (currentField.SourceField.IsIdentifier)
+                    {
+                        fieldCat = 2;
+                    }
+
+                    var newDocField = new kCura.WinEDDS.DocumentField(currentField.DestinationField.DisplayName, int.Parse(currentField.DestinationField.FieldIdentifier), 4, fieldCat, -1, -1, -1, false,
+                        kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
+
+                    //The column index we give here determines which column in the load file gets mapped to this Doc Field
+                    var newfieldMapItem = new kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
+
+                    eddsLoadFile.FieldMap.Add(newfieldMapItem);
                 }
-                //the fieldID here is purely and ID not an index of any kind
-                //In production, we need to basically do this (grab cols from loadFileReader, but insert the column name of the 
-                //MAPPED destination column display name rather than the column name in the load file it's self
-                //What I need, is this method to get 2 parallel arrays of the source and dest column names that are mapped
-
-                var newDocField = new kCura.WinEDDS.DocumentField(col, colIdx * 100, 4, fieldCat, -1, -1, -1, false,
-                    kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
-
-                //The column index we give here determines which column in the load file gets mapped to this Doc Field
-                var newfieldMapItem = new kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
-
-                eddsLoadFile.FieldMap.Add(newfieldMapItem);
-
                 colIdx++;
             }
 
