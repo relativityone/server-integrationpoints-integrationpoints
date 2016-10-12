@@ -22,13 +22,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         {
             //Extract file path from settings object
             var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
-            var filePath = settings.LoadFile;
 
             //TODO: replace hard coded workspace with value from helper
-            var factory = new kCura.WinEDDS.NativeSettingsFactory(_credentialProvider.GetAuthenticatedCredential(), 1016969);
+            var factory = new kCura.WinEDDS.NativeSettingsFactory(_credentialProvider.GetAuthenticatedCredential(), settings.WorkspaceId);
             var loadFile = factory.ToLoadFile();
-            loadFile.RecordDelimiter = ',';
-            loadFile.FilePath = filePath;
+
+            loadFile.RecordDelimiter = (char)settings.AsciiColumn;
+            loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
+            loadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
+            loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
+            loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
+            loadFile.FilePath = settings.LoadFile;
+
             loadFile.LoadNativeFiles = false;
             loadFile.CreateFolderStructure = false;
 

@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IEnumerable<FieldEntry> GetFields(string options)
         {
+            SeqLogger.Info("GetFields called with {Options}", options);
             var parser = _fieldParserFactory.GetFieldParser(options);
             var result = new List<FieldEntry>();
             var idx = 0;
