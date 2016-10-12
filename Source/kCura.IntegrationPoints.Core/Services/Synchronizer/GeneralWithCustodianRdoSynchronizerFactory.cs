@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
@@ -36,10 +37,11 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
             if (json.Provider != null && json.Provider.ToLower() == "relativity")
 			{ 
 				IRSAPIClient client = _container.Resolve<IRSAPIClient>();
+				IHelper helper = _container.Resolve<IHelper>();
 				client.APIOptions.WorkspaceID = json.CaseArtifactId;
 				Dictionary<string, RelativityFieldQuery> dict = new Dictionary<string, RelativityFieldQuery>
 				{
-					{"fieldQuery", new RelativityFieldQuery(client)},
+					{"fieldQuery", new RelativityFieldQuery(client, helper)},
 				};
 				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizerPush).AssemblyQualifiedName, dict);
 				RdoSynchronizerPush syncBase = (RdoSynchronizerPush) synchronizer;

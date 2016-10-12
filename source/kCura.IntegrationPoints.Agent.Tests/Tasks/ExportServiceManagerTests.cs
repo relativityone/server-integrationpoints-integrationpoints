@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)) , Arg.Is< ArgumentException>(ex => ex.Message == "Failed to retrieved corresponding Integration Point."));
+			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)) , Arg.Is< ArgumentException>(ex => ex.Message == "Failed to retrieve corresponding Integration Point."));
 			_jobService.Received().UpdateStopState(Arg.Is<List<long>>(lst => lst.Contains(_job.JobId)), StopState.Unstoppable);
 			_jobHistoryErrorService.Received().CommitErrors();
 		}

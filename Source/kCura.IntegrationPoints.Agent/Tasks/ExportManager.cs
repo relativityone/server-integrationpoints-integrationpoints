@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (integrationPoint == null)
 			{
 				LogUnableToRetrieveIntegrationPoint(job);
-				throw new Exception("Failed to retrieved corresponding Integration Point.");
+				throw new Exception("Failed to retrieve corresponding Integration Point.");
 			}
 
 			ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogUnableToRetrieveIntegrationPoint(Job job)
 		{
-			_logger.LogError("Failed to retrieved Integration Point object for job {JobId}.", job.JobId);
+			_logger.LogError("Failed to retrieve Integration Point object for job {JobId}.", job.JobId);
 		}
 
 		#endregion

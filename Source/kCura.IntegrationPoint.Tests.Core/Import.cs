@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -11,7 +12,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static void ImportNewDocuments(int workspaceId, DataTable importTable)
 		{
-			ImportApiFactory factory = new ImportApiFactory();
+			var helper = NSubstitute.Substitute.For<IHelper>();
+			ImportApiFactory factory = new ImportApiFactory(helper);
 			ImportSettings setting = new ImportSettings()
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
@@ -27,7 +29,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string settings = JsonConvert.SerializeObject(setting);
-			RdoSynchronizerPush pusher = new RdoSynchronizerPush(null, factory);
+			RdoSynchronizerPush pusher = new RdoSynchronizerPush(null, factory, helper);
 
 			FieldMap mapIdentifier = new FieldMap
 			{

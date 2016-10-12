@@ -5,6 +5,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Artifact = kCura.Relativity.Client.Artifact;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
@@ -24,7 +25,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			_relativityFieldQuery = NSubstitute.Substitute.For<IRelativityFieldQuery>();
 			_importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
 			_importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
-			_rdoSynchronizerPush = new RdoSynchronizerPush(_relativityFieldQuery, _importApiFactory);
+			var helper = Substitute.For<IHelper>();
+			_rdoSynchronizerPush = new RdoSynchronizerPush(_relativityFieldQuery, _importApiFactory, helper);
 		}
 
 		/// <summary>
