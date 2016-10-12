@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
@@ -32,6 +33,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
             loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
             loadFile.FilePath = settings.LoadFile;
+            loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
 
             loadFile.LoadNativeFiles = false;
             loadFile.CreateFolderStructure = false;
