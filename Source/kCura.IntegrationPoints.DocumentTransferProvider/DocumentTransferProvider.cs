@@ -162,9 +162,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{
 			LogReceivingEmailBodyData(fields, options);
-			var settings = GetSettings(options);
+			DocumentTransferSettings settings = GetSettings(options);
 
-			var sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
+			WorkspaceDTO sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
 
 			var emailBody = new StringBuilder();
 			if (sourceWorkspace != null)
