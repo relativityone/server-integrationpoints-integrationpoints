@@ -19,12 +19,15 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
 
 		public DefaultAgentTimeMachineProvider(Guid agentGuid)
 		{
-			kCura.Apps.Common.Config.Manager.Settings.ConfigCacheTimeout = 1;
+			Manager.Settings.ConfigCacheTimeout = 1;
 			SetKey(agentGuid);
 		}
 
 		private static IDictionary _instanceSettings;
-		protected static IDictionary InstanceSettings => _instanceSettings ?? (_instanceSettings = Manager.Instance.GetConfig(kCura.IntegrationPoints.Domain.Constants.SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION));
+
+		protected static IDictionary InstanceSettings
+			=> _instanceSettings ??
+			(_instanceSettings = Manager.Instance.GetConfig(IntegrationPoints.Domain.Constants.SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION));
 
 		private void GetTimeMachineData()
 		{

@@ -11,46 +11,63 @@ using Relativity.API;
 namespace kCura.ScheduleQueue.AgentBase
 {
 	public delegate void AgentLoggingEventHandler(LogCategory category, string message, string detailmessage);
+
 	public delegate void JobLoggingEventHandler(Job job, JobLogState state, string details = null);
+
 	public delegate void ExceptionEventHandler(Job job, Exception exception);
 
-	public abstract class ScheduleQueueAgentBase : kCura.Agent.AgentBase, ITaskFactory
+	public abstract class ScheduleQueueAgentBase : Agent.AgentBase, ITaskFactory
 	{
 		public event AgentLoggingEventHandler RaiseAgentLogEntry;
 		public event JobLoggingEventHandler RaiseJobLogEntry;
 		public event ExceptionEventHandler RaiseException;
 
 		private Guid agentGuid = Guid.Empty;
-		private IJobService jobService = null;
-		private bool errorRaised = false;
+		private IJobService jobService;
+		private bool errorRaised;
 
 		#region Constants
+
 		private const string PROCESSING_JOB_MESSAGE_TEMPLATE = "Processing Job ID : {0} : Workspace ID {1} : Job Type {2}";
 		private const string START_PROCESSING_JOB_MESSAGE_TEMPLATE = "Started : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
 		private const string FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE = "Finished : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
 		private const int MAX_MESSAGE_LENGTH = 10000;
+
 		#endregion
 
 		public ScheduleQueueAgentBase(Guid agentGuid,
-																	IDBContext dbContext = null,
-																	IAgentService agentService = null,
-																	IJobService jobService = null,
-																	IScheduleRuleFactory scheduleRuleFactory = null)
+			IDBContext dbContext = null,
+			IAgentService agentService = null,
+			IJobService jobService = null,
+			IScheduleRuleFactory scheduleRuleFactory = null)
 		{
 			this.agentGuid = agentGuid;
 			this.AgentService = agentService;
 			this.jobService = jobService;
 			this.ScheduleRuleFactory = scheduleRuleFactory;
 			this.DBContext = dbContext;
-			if (this.ScheduleRuleFactory == null) this.ScheduleRuleFactory = new DefaultScheduleRuleFactory();
+			if (this.ScheduleRuleFactory == null)
+			{
+				this.ScheduleRuleFactory = new DefaultScheduleRuleFactory();
+			}
 		}
 
 		public void Initialize()
 		{
-			//Guid agentGuid = new QueueTableHelper().GetAgentGuid();
-			if (this.DBContext == null) this.DBContext = base.Helper.GetDBContext(-1);
-			if (this.AgentService == null) this.AgentService = new AgentService(base.Helper, agentGuid);
-			if (this.jobService == null) this.jobService = new JobService(AgentService, base.Helper);
+			if (this.DBContext == null)
+			{
+				this.DBContext = base.Helper.GetDBContext(-1);
+			}
+
+			if (this.AgentService == null)
+			{
+				this.AgentService = new AgentService(base.Helper, agentGuid);
+			}
+
+			if (this.jobService == null)
+			{
+				this.jobService = new JobService(AgentService, base.Helper);
+			}
 		}
 
 		public IDBContext DBContext { get; private set; }
@@ -107,7 +124,9 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
-		protected virtual void ReleaseTask(ITask task) { }
+		protected virtual void ReleaseTask(ITask task)
+		{
+		}
 
 		private void CheckQueueTable()
 		{
@@ -120,7 +139,8 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			while (nextJob != null)
 			{
-				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
+				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID,
+					nextJob.TaskType);
 				OnRaiseAgentLogEntry(1, LogCategory.Info, agentMessage);
 
 				//TODO: 
@@ -148,7 +168,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private TaskResult ExecuteTask(Job job)
 		{
-			TaskResult result = new TaskResult() { Status = TaskStatusEnum.Success, Exceptions = null };
+			TaskResult result = new TaskResult() {Status = TaskStatusEnum.Success, Exceptions = null};
 			ITask task = null;
 			try
 			{
@@ -170,7 +190,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			catch (Exception ex)
 			{
 				result.Status = TaskStatusEnum.Fail;
-				result.Exceptions = new List<Exception>() { ex };
+				result.Exceptions = new List<Exception>() {ex};
 				OnRaiseException(job, ex);
 				OnRaiseJobLogEntry(job, JobLogState.Error, ex);
 			}
@@ -200,7 +220,8 @@ namespace kCura.ScheduleQueue.AgentBase
 			jobService.CleanupJobQueueTable();
 		}
 
-		protected virtual void OnRaiseAgentLogEntry(int level, LogCategory category, string message, string detailmessage = null)
+		protected virtual void OnRaiseAgentLogEntry(int level, LogCategory category, string message,
+			string detailmessage = null)
 		{
 			string msg = message.Substring(0, Math.Min(message.Length, MAX_MESSAGE_LENGTH));
 			switch (category)
@@ -223,7 +244,8 @@ namespace kCura.ScheduleQueue.AgentBase
 				RaiseAgentLogEntry(category, message, detailmessage);
 		}
 
-		protected virtual void OnRaiseJobLogEntry(Job job, JobLogState state, Exception exception = null, string details = null)
+		protected virtual void OnRaiseJobLogEntry(Job job, JobLogState state, Exception exception = null,
+			string details = null)
 		{
 			if (RaiseJobLogEntry != null)
 			{
@@ -241,5 +263,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			if (RaiseException != null)
 				RaiseException(job, ex);
 		}
+
 	}
 }

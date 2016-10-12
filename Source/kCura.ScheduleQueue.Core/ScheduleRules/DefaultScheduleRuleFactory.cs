@@ -9,9 +9,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		{
 			string scheduleRuleType = job.ScheduleRuleType;
 			string serializedString = job.SerializedScheduleRule;
-			IScheduleRule rule = null;
+			IScheduleRule rule;
 
-			if (string.IsNullOrEmpty(serializedString)) return null;
+			if (string.IsNullOrEmpty(serializedString))
+				return null;
 
 			ISerializer defaultSerializer = new XMLSerializerFactory();
 
@@ -19,23 +20,25 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			if (scheduleRuleType.StartsWith("kCura.ScheduleQueue.Core.ScheduleRules.PeriodicScheduleRule,",
 				StringComparison.InvariantCultureIgnoreCase))
 			{
-				rule = Deserialize<kCura.ScheduleQueue.Core.ScheduleRules.PeriodicScheduleRule>(serializedString, defaultSerializer);
-				if (rule != null) return rule;
+				rule = Deserialize<PeriodicScheduleRule>(serializedString, defaultSerializer);
+				if (rule != null)
+					return rule;
 			}
 
 			//Try reflection
 			rule = DeserializeWithNoType(job);
-			if (rule != null) return rule;
+			if (rule != null)
+				return rule;
 
 			return null;
 		}
 
 		public IScheduleRule DeserializeWithNoType(Job job)
 		{
-			IScheduleRule rule = null;
+			IScheduleRule rule;
 			try
 			{
-				rule = (IScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain, job.ScheduleRuleType, job.SerializedScheduleRule);
+				rule = (IScheduleRule) SerializerHelper.DeserializeUsingTypeName(AppDomain.CurrentDomain, job.ScheduleRuleType, job.SerializedScheduleRule);
 			}
 			catch (Exception)
 			{
@@ -46,10 +49,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		public IScheduleRule Deserialize<T>(string serializedString, ISerializer serializer)
 		{
-			IScheduleRule rule = null;
+			IScheduleRule rule;
 			try
 			{
-				rule = (IScheduleRule)serializer.Deserialize<T>(serializedString);
+				rule = (IScheduleRule) serializer.Deserialize<T>(serializedString);
 			}
 			catch (Exception)
 			{

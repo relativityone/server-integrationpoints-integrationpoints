@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
