@@ -5,7 +5,7 @@
 
     var currentSettingsFromUi = function () {
         var model = {
-            WorkspaceId: root.utils.getParameterByName('AppID', windowObj.top),
+            WorkspaceId: windowObj.RelativityImport.WorkspaceId,
             ImportType: windowObj.RelativityImport.koModel.selectedImportType(),
             HasStartLine: windowObj.RelativityImport.koModel.fileContainsColumn(),
             LineNumber: windowObj.RelativityImport.koModel.startLine(),

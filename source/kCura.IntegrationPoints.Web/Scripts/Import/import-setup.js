@@ -53,7 +53,7 @@
         var openPreviewWindow = function (previewType) {
             windowPar.RelativityImportPreviewSettings = {};
             windowPar.RelativityImportPreviewSettings = windowObj.RelativityImport.GetCurrentUiModel();
-            $.extend(windowPar.RelativityImportPreviewSettings, { PreviewType: previewType, WorkspaceId: root.utils.getParameterByName('AppID', windowTop) });
+            $.extend(windowPar.RelativityImportPreviewSettings, { PreviewType: previewType });
             windowPar.$(idSelector(BUTTON_UL)).slideUp();
 
             windowPar.open(baseUrlCache + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");

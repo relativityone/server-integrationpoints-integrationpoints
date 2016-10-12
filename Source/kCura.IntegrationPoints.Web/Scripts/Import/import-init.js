@@ -1,5 +1,6 @@
 ﻿'use strict';
-(function (windowObj) {
+(function (windowObj, root) {
     windowObj.RelativityImport = {};
     windowObj.RelativityImport.getCurrentIpFieldMapping = window.top.getCurrentIpFieldMapping;
-})(this);
+    windowObj.RelativityImport.WorkspaceId = root.utils.getParameterByName('AppID', windowObj.top);
+})(this, IP);
