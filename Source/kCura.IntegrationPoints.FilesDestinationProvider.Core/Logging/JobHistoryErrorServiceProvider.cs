@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
+﻿using kCura.IntegrationPoints.Core.Services.JobHistory;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {

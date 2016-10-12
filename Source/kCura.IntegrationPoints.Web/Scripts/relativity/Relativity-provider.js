@@ -15,7 +15,7 @@
 
 		errorContainer.appendChild(iconSpan);
 
-		$(element).parents('.field-value').eq(0).append(errorContainer);
+		$(element).parents('.editFieldValue').eq(0).append(errorContainer);
 
 		return iconSpan;
 	};
