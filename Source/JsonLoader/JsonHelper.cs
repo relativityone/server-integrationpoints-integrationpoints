@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using JsonLoader.Models;
 
 namespace JsonLoader
 {
