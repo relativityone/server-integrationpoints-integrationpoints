@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
+    <Compile Include="Extensions\ExportFileExtension.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />

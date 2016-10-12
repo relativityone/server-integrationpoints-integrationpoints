@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Castle.Core.Internal;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.WinEDDS;
 using Relativity;
 
@@ -53,7 +55,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_delimitersBuilder.SetDelimiters(exportFile, exportSettings);
 			SetImagePrecedence(exportSettings, exportFile);
 
+			// the follwoing method should relies on ImagePrecedence seetings. Is related to SavedSearch/Filders/SubFolders export type
+			SetNameTextOutupFilesSettings(exportFile);
+
 			return exportFile;
+		}
+
+		private void SetNameTextOutupFilesSettings(ExportFile exportFile)
+		{
+			if (exportFile.AreSettingsApplicableForProdBegBatesNameCheck())
+			{
+				exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production;
+			}
 		}
 
 		private static void SetExportedObjectIdAndName(ExportSettings exportSettings, ExportFile exportFile)
@@ -84,7 +97,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		{
 			var imagePrecs = new List<Pair>();
 
-			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Produced)
+			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Produced ||
+				// Case for SavedSearch/Folder/SubFolder export type to drive set of ExportNativesToFileNamedFrom form Native file name conventaion flag - REL-96747:
+				(!exportSettings.ImagePrecedence.IsNullOrEmpty() && exportSettings.TypeOfExport != ExportSettings.ExportType.ProductionSet))
 			{
 				foreach (var productionPrecedence in exportSettings.ImagePrecedence)
 				{
