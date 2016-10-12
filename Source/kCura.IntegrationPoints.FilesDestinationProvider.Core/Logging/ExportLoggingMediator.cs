@@ -74,12 +74,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void LogStatus(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogInformation("Status update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.LogVerbose("Status update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
 		}
 
 		private void LogProgress(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogInformation("Progress update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+			_apiLog.LogVerbose("Progress update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
 		}
 
 		private void LogWarning(ExportEventArgs exportEventArgs)
