@@ -65,7 +65,7 @@
             </table>
         </div>
         @*Todo: Show and Hide Cards - dependent on radio buttons for Input Type*@
-        <div class="card" data-bind="visible: selectedImportType() == 'production'">
+        <div class="card" id="card-margin-bottom" data-bind="visible: selectedImportType() == 'production'">
             <span class="label">Production</span>
             <table style="width: 100%;">
                 <tr>
@@ -78,7 +78,7 @@
                     </td>
             </table>
         </div>
-        <div class="card" data-bind="visible: selectedImportType() == 'document'">
+        <div class="card"  id="card-margin-bottom" data-bind="visible: selectedImportType() == 'document'">
             <span class="label">File Encoding</span>
             <table style="width: 100%;">
                 <tr>
@@ -173,7 +173,7 @@
                 </tr>
             </table>
         </div>
-        <div class="card" data-bind="visible: selectedImportType() == 'image'">
+        <div class="card" id="card-margin-bottom" data-bind="visible: selectedImportType() == 'image'">
             <span class="label">Image</span>
             <table style="width: 100%;">
                 <tr>
