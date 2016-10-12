@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private void LogReceivingEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{
-			var fieldIdentifiers = fields.Select(x => x.FieldIdentifier).ToList();
+			var fieldIdentifiers = fields?.Select(x => x.FieldIdentifier).ToList() ?? new List<string>();
 			_logger.LogInformation("Attempting to get email body data in Document Transfer Provider (with {Options}) and fields {fields}.", options, string.Join(",", fieldIdentifiers));
 		}
 
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private void LogReceivingParsedFieldsError(IEnumerable<ArtifactDTO> fieldArtifacts, Exception ex)
 		{
-			var items = fieldArtifacts.Select(x => x.TextIdentifier).ToList();
+			var items = fieldArtifacts?.Select(x => x.TextIdentifier).ToList() ?? new List<string>();
 			_logger.LogError(ex, "Failed to retrieve parsed fields in Document Transfer Provider (with {fieldArtifacts}).", string.Join(",", items));
 		}
 
@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private void LogRetrievingDataErrorWithDetails(string options, IEnumerable<string> entryIds, IEnumerable<FieldEntry> fields, Exception ex)
 		{
-			var fieldIdentifiers = fields.Select(x => x.FieldIdentifier).ToList();
+			var fieldIdentifiers = fields?.Select(x => x.FieldIdentifier).ToList() ?? new List<string>();
 			_logger.LogError(ex, "Failed to retrieve data in Document Transfer Provider (with {Options}) for ids {Ids} and fields {fields}.", options,
 				string.Join(",", entryIds), string.Join(",", fieldIdentifiers));
 		}
