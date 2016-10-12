@@ -5,7 +5,7 @@
     var intervalId = -1;
     var percent = 0;
     var timerHandle;
-    var settings = opener.RelativityImport.PreviewSettings;
+    var settings = opener.RelativityImportPreviewSettings;
 
     $("#tableData").hide();
     var timerCount = 0;

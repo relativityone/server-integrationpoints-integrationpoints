@@ -42,26 +42,29 @@
     };
 
     var assignDropdownItemHandlers = function () {
-        var preFile = windowObj.parent.$(idSelector(PREVIEW_FILE_LI));
-        var preError = windowObj.parent.$(idSelector(PREVIEW_ERROR_LI));
-        var preChoice = windowObj.parent.$(idSelector(PREVIEW_CHOICE_LI));
-        preFile.click(function () {
-            windowObj.RelativityImport.PreviewSettings = windowObj.RelativityImport.GetCurrentUiModel();
-            $.extend(windowObj.RelativityImport.PreviewSettings, { PreviewType: 'file', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
-            windowObj.parent.$(idSelector(BUTTON_UL)).slideUp();
+        var windowPar = windowObj.parent;
+        var windowTop = windowObj.top;
+        var baseUrlCache = root.utils.getBaseURL();
+        
+        var preFile = windowPar.$(idSelector(PREVIEW_FILE_LI));
+        var preError = windowPar.$(idSelector(PREVIEW_ERROR_LI));
+        var preChoice = windowPar.$(idSelector(PREVIEW_CHOICE_LI));
 
-            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
+        var openPreviewWindow = function (previewType) {
+            windowPar.RelativityImportPreviewSettings = {};
+            windowPar.RelativityImportPreviewSettings = windowObj.RelativityImport.GetCurrentUiModel();
+            $.extend(windowPar.RelativityImportPreviewSettings, { PreviewType: previewType, WorkspaceId: root.utils.getParameterByName('AppID', windowTop) });
+            windowPar.$(idSelector(BUTTON_UL)).slideUp();
 
+            windowPar.open(baseUrlCache + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
             return false;
+        };
+
+        preFile.click(function () {
+            return openPreviewWindow('file');
         });
         preError.click(function () {
-            windowObj.RelativityImport.PreviewSettings = windowObj.RelativityImport.GetCurrentUiModel();
-            $.extend(windowObj.RelativityImport.PreviewSettings, { PreviewType: 'errors', WorkspaceId: root.utils.getParameterByName('AppID', window.top) });
-            windowObj.parent.$(idSelector(BUTTON_UL)).slideUp();
-
-            window.open(root.utils.getBaseURL() + '/ImportProvider/ImportPreview/', "_blank", "width=1370, height=795");
-
-            return false;
+            return openPreviewWindow('errors');
         });
         preChoice.click(function () {
             console.log("Preview choice has been selected");
