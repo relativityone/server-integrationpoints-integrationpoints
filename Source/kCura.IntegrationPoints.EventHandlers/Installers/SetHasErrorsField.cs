@@ -24,113 +24,127 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
-    [Guid("5E882EE9-9E9D-4AFA-9B2C-EAC6C749A8D4")]
-    [Description("Updates the Has Errors field on existing Integration Points.")]
-    [RunOnce(true)]
-    public class SetHasErrorsField : PostInstallEventHandler
-    {
-        private IIntegrationPointService _integrationPointService;
-        private IJobHistoryService _jobHistoryService;
-        private ICaseServiceContext _caseServiceContext;
+	[Guid("5E882EE9-9E9D-4AFA-9B2C-EAC6C749A8D4")]
+	[Description("Updates the Has Errors field on existing Integration Points.")]
+	[RunOnce(true)]
+	public class SetHasErrorsField : PostInstallEventHandler
+	{
+		private ICaseServiceContext _caseServiceContext;
+		private IIntegrationPointService _integrationPointService;
+		private IJobHistoryService _jobHistoryService;
 
-        public SetHasErrorsField() { }
+		public SetHasErrorsField()
+		{
+		}
 
-        internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService, ICaseServiceContext caseServiceContext)
-        {
-            _integrationPointService = integrationPointService;
-            _jobHistoryService = jobHistoryService;
-            _caseServiceContext = caseServiceContext;
-        }
+		internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService, ICaseServiceContext caseServiceContext)
+		{
+			_integrationPointService = integrationPointService;
+			_jobHistoryService = jobHistoryService;
+			_caseServiceContext = caseServiceContext;
+		}
 
-        public override Response Execute()
-        {
-            CreateServices();
-            return ExecuteInstanced();
-        }
+		public override Response Execute()
+		{
+			CreateServices();
+			return ExecuteInstanced();
+		}
 
-        internal Response ExecuteInstanced()
-        {
-            var response = new Response
-            {
-                Message = "Updated successfully.",
-                Success = true
-            };
+		internal Response ExecuteInstanced()
+		{
+			var response = new Response
+			{
+				Message = "Updated successfully.",
+				Success = true
+			};
 
-            try
-            {
-                IList<Data.IntegrationPoint> integrationPoints = GetIntegrationPoints();
+			try
+			{
+				IList<Data.IntegrationPoint> integrationPoints = GetIntegrationPoints();
 
-                foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
-                {
-                    UpdateIntegrationPointHasErrorsField(integrationPoint);
-                }
-            }
-            catch (Exception e)
-            {
-                response.Message = $"Updating the Has Errors field on the Integration Point object failed. Exception message: {e.Message}.";
-                response.Exception = e;
-                response.Success = false;
-            }
+				foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
+				{
+					UpdateIntegrationPointHasErrorsField(integrationPoint);
+				}
+			}
+			catch (Exception e)
+			{
+				LogSettingHasErrorsFieldError(e);
+				response.Message = $"Updating the Has Errors field on the Integration Point object failed. Exception message: {e.Message}.";
+				response.Exception = e;
+				response.Success = false;
+			}
 
-            return response;
-        }
+			return response;
+		}
 
-        /// <summary>
-        /// It is best to use the Castle Windsor container here instead of manually creating the dependencies.
-        /// TODO: replace the below with the container and resolve the dependencies.
-        /// </summary>
-        private void CreateServices()
-        {
-            RsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);
-            IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID(), rsapiClientFactory);
-            ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
-            IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper);
-            IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
-            IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
-            IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
-            IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
-            IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-            IJobService jobService = new JobService(agentService, Helper);
-            IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
-            IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
-            JobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
-            JobTracker jobTracker = new JobTracker(jobResourceTracker);
-            ISerializer serializer = new JSONSerializer();
-            IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
+		/// <summary>
+		///     It is best to use the Castle Windsor container here instead of manually creating the dependencies.
+		///     TODO: replace the below with the container and resolve the dependencies.
+		/// </summary>
+		private void CreateServices()
+		{
+			RsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);
+			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID(), rsapiClientFactory);
+			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
+			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper);
+			IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
+			IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
+			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
+			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+			IJobService jobService = new JobService(agentService, Helper);
+			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
+			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
+			JobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
+			JobTracker jobTracker = new JobTracker(jobResourceTracker);
+			ISerializer serializer = new JSONSerializer();
+			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository, serializer);
-            IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-            IManagerFactory managerFactory = new ManagerFactory();
+			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
+			IManagerFactory managerFactory = new ManagerFactory();
 
-            _caseServiceContext = caseServiceContext;
-            _integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService, managerFactory);
-        }
+			_caseServiceContext = caseServiceContext;
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService,
+				managerFactory);
+		}
 
-        internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)
-        {
-            integrationPoint.HasErrors = false;
+		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)
+		{
+			integrationPoint.HasErrors = false;
 
-            if (integrationPoint.JobHistory.Length > 0)
-            {
-                IList<JobHistory> jobHistories = _jobHistoryService.GetJobHistory(integrationPoint.JobHistory);
+			if (integrationPoint.JobHistory.Length > 0)
+			{
+				IList<JobHistory> jobHistories = _jobHistoryService.GetJobHistory(integrationPoint.JobHistory);
 
-                JobHistory lastCompletedJob = jobHistories?
-                    .Where(jobHistory => jobHistory.EndTimeUTC != null)
-                    .OrderByDescending(jobHistory => jobHistory.EndTimeUTC)
-                    .FirstOrDefault();
+				JobHistory lastCompletedJob = jobHistories?
+					.Where(jobHistory => jobHistory.EndTimeUTC != null)
+					.OrderByDescending(jobHistory => jobHistory.EndTimeUTC)
+					.FirstOrDefault();
 
-                if (lastCompletedJob != null && lastCompletedJob.JobStatus.Name != JobStatusChoices.JobHistoryCompleted.Name)
-                {
-                    integrationPoint.HasErrors = true;
-                }
-            }
+				if ((lastCompletedJob != null) && (lastCompletedJob.JobStatus.Name != JobStatusChoices.JobHistoryCompleted.Name))
+				{
+					integrationPoint.HasErrors = true;
+				}
+			}
 
-            _caseServiceContext.RsapiService.IntegrationPointLibrary.Update(integrationPoint);
-        }
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(integrationPoint);
+		}
 
-        internal IList<Data.IntegrationPoint> GetIntegrationPoints()
-        {
-            IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllIntegrationPoints();
-            return integrationPoints;
-        }
-    }
+		internal IList<Data.IntegrationPoint> GetIntegrationPoints()
+		{
+			IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllIntegrationPoints();
+			return integrationPoints;
+		}
+
+		#region Logging
+
+		private void LogSettingHasErrorsFieldError(Exception e)
+		{
+			var logger = Helper.GetLoggerFactory().GetLogger().ForContext<SetHasErrorsField>();
+			logger.LogError(e, "Updating the Has Errors field on the Integration Point object failed.");
+		}
+
+		#endregion
+	}
 }

@@ -113,6 +113,10 @@ i.jstree-themeicon.jstree-themeicon-custom {
 	color: #1e5495;
 }
 
+.jstree-folder-default::before {
+    content: 'u';
+}
+
 .jstree-root-folder:before{
     content: 'S';
     color: #f59c1f;

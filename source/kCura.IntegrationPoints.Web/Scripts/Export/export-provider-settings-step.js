@@ -42,7 +42,7 @@
 				self.getDirectories();
 			}
 
-			self.locationSelector.toggleLocation(!!value);
+			self.locationSelector.toggle(!!value);
 		};
 
 		this.Fileshare = ko.observable(state.Fileshare).extend({
@@ -56,14 +56,14 @@
 		this.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
 			if (self.HasBeenRun()) {
-				self.locationSelector.toggleLocation(false);
+				self.locationSelector.toggle(false);
 			} else {
 				self.locationSelector = new LocationJSTreeSelector();
 				self.locationSelector.init(self.Fileshare(), [], {
 					onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
 				});
 
-				self.locationSelector.toggleLocation(!!self.ProcessingSourceLocation());
+				self.locationSelector.toggle(!!self.ProcessingSourceLocation());
 			}
 
 			self.ProcessingSourceLocation.isModified(false);
@@ -86,6 +86,7 @@
 					onSuccess(result);
 				}).fail(function (error) {
 					onFail(error);
+					IP.message.error.raise(error);
 				});
 			};
 			self.locationSelector.reloadWithRoot(reloadTree);
