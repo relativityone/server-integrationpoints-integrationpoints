@@ -57,7 +57,7 @@
                                 Start Line:
                             </div>
                             <div class="field-value">
-                                <input id="import-columnname-numbers" type="number" min="0" value="1" />
+                                <input id="import-columnname-numbers" type="number" min="0" value="1" data-bind="value: startLine" />
                             </div>
                         </div>
                     </td>
@@ -165,8 +165,8 @@
                             </div>
                             <div class="field-value">
                                 @**Todo: add css space here to line up with the label*@
-                                <input type="radio" name="firstLineHasColNames" value="true" /> Yes<br />
-                                <input type="radio" name="firstLineHasColNames" value="false" /> No
+                                <input type="radio" name="firstLineHasColNames" value="true" data-bind="checked: fileContainsColumn" /> Yes<br />
+                                <input type="radio" name="firstLineHasColNames" value="false" data-bind="checked: fileContainsColumn" /> No
                             </div>
                         </div>
                     </td>

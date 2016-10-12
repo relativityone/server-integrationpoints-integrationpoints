@@ -25,6 +25,10 @@
             new ImportTypeModel({ id: "3", value: "production", name: "Production Load File" })
         ]);
 
+        self.startLine = ko.observable("1");
+
+        self.fileContainsColumn = ko.observable("true");
+
         self.asciiDelimiters = ko.observableArray([]);
         self.setAsciiDelimiters = function (data) {
             self.asciiDelimiters(data);

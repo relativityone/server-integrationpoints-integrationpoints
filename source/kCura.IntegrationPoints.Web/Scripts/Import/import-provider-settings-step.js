@@ -5,11 +5,16 @@
 
     var currentSettingsFromUi = function () {
         var model = {
-            ImportType: $('#import-importType option:selected').val(),
-            HasStartLine: $('input:radio[name=firstLineHasColNames]:checked').val(),
-            LineNumber: $("#import-columnname-numbers").val(),
+            ImportType: windowObj.RelativityImport.koModel.selectedImportType(),
+            HasStartLine: windowObj.RelativityImport.koModel.fileContainsColumn(),
+            LineNumber: windowObj.RelativityImport.koModel.startLine(),
             LoadFile: windowObj.RelativityImport.koModel.Fileshare(),
-            EncodingType: windowObj.RelativityImport.koModel.DataFileEncodingType()
+            EncodingType: windowObj.RelativityImport.koModel.DataFileEncodingType(),
+            AsciiColumn: windowObj.RelativityImport.koModel.selectedColumnAsciiDelimiter(),
+            AsciiQuote: windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(),
+            AsciiNewLine: windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(),
+            AsciiMultiLine: windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(),
+            AsciiNestedValue: windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter()
         };
 
         console.log(model);

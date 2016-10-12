@@ -39,8 +39,6 @@
         windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(array[173].asciiID);
         windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(array[58].asciiID);
         windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(array[91].asciiID);
-
-        
     };
 
     var assignDropdownItemHandlers = function () {
@@ -141,7 +139,7 @@
         success: function (data) {
             var array = [];
             $.each(data, function (index, value) {
-                array.push({ "asciiID": index, "asciiText": value })}
+                array.push({ "asciiID": (index + 1), "asciiText": value })}
             );
             windowObj.RelativityImport.koModel.setAsciiDelimiters(array);
             assignAsciiDropDownDefault(array);
