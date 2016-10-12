@@ -52,9 +52,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				{
 					ArtifactId = item.Field<int>("ArtifactID"),
 					Name = item.Field<string>("Name"),
-					IsAvailableInObjectTab = item.Field<bool>("AvailableInObjectTab")
+					IsAvailableInObjectTab = item.Field<bool>("AvailableInObjectTab"),
+					Order = item.Field<int?>("Order")
 				})
 				.Where(view => view.IsAvailableInObjectTab)
+				.OrderBy(view => view.Order)
 				.ToList();
 		}
 
