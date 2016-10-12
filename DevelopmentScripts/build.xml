@@ -454,7 +454,8 @@
       <allow>kCura.IntegrationPoints.Agent.Tests.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
       <allow>kCura.IntegrationPoints.Web.Tests.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
       <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
-      <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(int32,int32)</allow>
+      <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(0,0)</allow>
+      <allow>kCura.IntegrationPoints.Services.Tests.DocumentManagerLoggingTests.ItShouldLogErrorFromGetCurrentPromotionStatusAsync</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
