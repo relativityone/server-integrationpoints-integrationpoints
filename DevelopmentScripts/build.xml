@@ -261,14 +261,6 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="Source\JsonLoaderTests\JsonLoaderTests.csproj">
-          <Platforms>
-            <Platform>AnyCPU</Platform>
-          </Platforms>
-          <IgnoreRules>
-            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
-          </IgnoreRules>
-        </Project>
         <Project path="Source\JsonWeb\JsonWeb.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
