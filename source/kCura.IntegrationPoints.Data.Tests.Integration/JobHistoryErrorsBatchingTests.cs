@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 
@@ -182,6 +183,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Arrange
 			string docPrefix = "JobLevelImport";
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
+			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			ModifySavedSearch(docPrefix, false);
 
@@ -210,7 +212,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Create Job and temp table suffix
 			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
-			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
+			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
 
 			//Create job level error
 			List<int> expectedJobHistoryErrorArtifactIds = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
@@ -244,6 +246,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string expiredDocPrefix = "ExpForItemAndJob";
 			DataTable importTable = GetImportTable(8000, 1000, docPrefix, expiredDocPrefix);
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
+			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(docPrefix, false);
@@ -274,7 +277,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
-			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
+			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
 
 			//Create item level error
 			ICollection<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
@@ -362,6 +365,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(documentPrefix, true);
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
+			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -389,7 +393,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
-			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
+			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
 
 			//Create item level error
 			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);

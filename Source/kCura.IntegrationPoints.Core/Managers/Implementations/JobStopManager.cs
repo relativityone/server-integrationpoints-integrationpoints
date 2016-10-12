@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -15,24 +16,20 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly long _jobId;
 		private readonly IJobService _jobService;
+		private readonly IAPILog _logger;
 		private readonly Timer _timerThread;
 		private readonly CancellationToken _token;
 		private bool _disposed;
 
-		/// <summary>
-		///     for testing only.
-		/// </summary>
-		internal TimerCallback Callback { get; }
-
-		public object SyncRoot { get; }
-
-		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobHistoryInstanceId, long jobId)
+		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId)
 		{
 			SyncRoot = new object();
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_jobBatchIdentifier = jobHistoryInstanceId;
 			_jobId = jobId;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStopManager>();
+
 			Callback = state =>
 			{
 				lock (SyncRoot)
@@ -45,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 							if (job.StopState.HasFlag(StopState.Stopping))
 							{
 								var jobHistory = _jobHistoryService.GetRdo(_jobBatchIdentifier);
-								if (jobHistory != null && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
+								if ((jobHistory != null) && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
 															|| jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
 								{
 									jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
@@ -54,6 +51,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 								_cancellationTokenSource.Cancel();
 								_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+								LogStoppingJob();
 								RaiseStopRequestedEvent();
 							}
 							else if (job.StopState.HasFlag(StopState.Unstoppable))
@@ -62,8 +60,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 							}
 						}
 					}
-					catch
+					catch (Exception e)
 					{
+						LogErrorDuringStopCheck(e);
 						// expect the caller to move on, timerThread will check the status again in the next iteration.
 					}
 				}
@@ -72,6 +71,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_token = _cancellationTokenSource.Token;
 			_timerThread = new Timer(Callback, null, 0, 500);
 		}
+
+		/// <summary>
+		///     for testing only.
+		/// </summary>
+		internal TimerCallback Callback { get; }
+
+		public object SyncRoot { get; }
 
 		public bool IsStopRequested()
 		{
@@ -106,5 +112,19 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			StopRequestedEvent?.Invoke(this, EventArgs.Empty);
 		}
+
+		#region Logging
+
+		private void LogErrorDuringStopCheck(Exception e)
+		{
+			_logger.LogError(e, "Error occurred during checking if job had been stopped.");
+		}
+
+		private void LogStoppingJob()
+		{
+			_logger.LogInformation("Stopping job requested received in agent. Status has been updated.");
+		}
+
+		#endregion
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Castle.Core.Internal;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -24,7 +25,11 @@ namespace kCura.IntegrationPoints.Core.Agent
 {
 	public class IntegrationPointTaskBase
 	{
+		private readonly IAPILog _logger;
 		protected readonly IHelper Helper;
+
+		private DestinationProvider _destinationProvider;
+		private SourceProvider _sourceProvider;
 		protected ISynchronizerFactory AppDomainRdoSynchronizerFactoryFactory;
 		protected ICaseServiceContext CaseServiceContext;
 		protected IContextContainerFactory ContextContainerFactory;
@@ -34,23 +39,20 @@ namespace kCura.IntegrationPoints.Core.Agent
 		protected IJobManager JobManager;
 		protected IJobService JobService;
 		protected IManagerFactory ManagerFactory;
-		protected Apps.Common.Utils.Serializers.ISerializer Serializer;
-
-		private DestinationProvider _destinationProvider;
-		private SourceProvider _sourceProvider;
+		protected ISerializer Serializer;
 
 		public IntegrationPointTaskBase(
-		  ICaseServiceContext caseServiceContext,
-		  IHelper helper,
-		  IDataProviderFactory dataProviderFactory,
-		  Apps.Common.Utils.Serializers.ISerializer serializer,
-		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-		  IJobHistoryService jobHistoryService,
-		  IJobHistoryErrorService jobHistoryErrorService,
-		  IJobManager jobManager,
-		  IManagerFactory managerFactory,
-		  IContextContainerFactory contextContainerFactory,
-		  IJobService jobService)
+			ICaseServiceContext caseServiceContext,
+			IHelper helper,
+			IDataProviderFactory dataProviderFactory,
+			ISerializer serializer,
+			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+			IJobHistoryService jobHistoryService,
+			IJobHistoryErrorService jobHistoryErrorService,
+			IJobManager jobManager,
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainerFactory,
+			IJobService jobService)
 		{
 			CaseServiceContext = caseServiceContext;
 			Helper = helper;
@@ -63,38 +65,41 @@ namespace kCura.IntegrationPoints.Core.Agent
 			ManagerFactory = managerFactory;
 			JobService = jobService;
 			ContextContainerFactory = contextContainerFactory;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointTaskBase>();
 		}
 
-		protected Data.DestinationProvider DestinationProvider
+		protected DestinationProvider DestinationProvider
 		{
 			get
 			{
-				if (this.IntegrationPoint == null)
+				if (IntegrationPoint == null)
 				{
+					LogRetrievingDestinationProviderError();
 					throw new ArgumentException("The Integration Point Rdo has not been set yet.");
 				}
 				if (_destinationProvider == null)
 				{
-					_destinationProvider = CaseServiceContext.RsapiService.DestinationProviderLibrary.Read(this.IntegrationPoint.DestinationProvider.Value);
+					_destinationProvider = CaseServiceContext.RsapiService.DestinationProviderLibrary.Read(IntegrationPoint.DestinationProvider.Value);
 				}
 				return _destinationProvider;
 			}
 		}
 
-		protected Data.IntegrationPoint IntegrationPoint { get; set; }
-		protected Data.JobHistory JobHistory { get; set; }
+		protected IntegrationPoint IntegrationPoint { get; set; }
+		protected JobHistory JobHistory { get; set; }
 
-		protected Data.SourceProvider SourceProvider
+		protected SourceProvider SourceProvider
 		{
 			get
 			{
-				if (this.IntegrationPoint == null)
+				if (IntegrationPoint == null)
 				{
+					LogRetrievingSourceProviderError();
 					throw new ArgumentException("The Integration Point Rdo has not been set yet.");
 				}
 				if (_sourceProvider == null)
 				{
-					_sourceProvider = CaseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+					_sourceProvider = CaseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPoint.SourceProvider.Value);
 				}
 				return _sourceProvider;
 			}
@@ -113,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 			var factory = AppDomainRdoSynchronizerFactoryFactory as GeneralWithCustodianRdoSynchronizerFactory;
 			if (factory != null)
 			{
-				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
+				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncCustodianManagerWorker, BatchInstance);
 				factory.SourceProvider = SourceProvider;
 			}
 			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
@@ -134,16 +139,17 @@ namespace kCura.IntegrationPoints.Core.Agent
 			{
 				emailRecipients = IntegrationPoint.EmailNotificationRecipients;
 			}
-			catch
+			catch (Exception e)
 			{
+				LogRetrievingRecipientEmailsError(e);
 				//this property might be not loaded on RDO if it's null, so suppress exception
 			}
 
 			var emailRecipientList = new List<string>();
 
-			if (!String.IsNullOrWhiteSpace(emailRecipients))
+			if (!string.IsNullOrWhiteSpace(emailRecipients))
 			{
-				emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim()).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+				emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 			}
 
 			return emailRecipientList;
@@ -170,30 +176,55 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected void SetIntegrationPoint(Job job)
 		{
-			if (this.IntegrationPoint != null)
+			if (IntegrationPoint != null)
 			{
 				return;
 			}
 
 			int integrationPointId = job.RelatedObjectArtifactID;
-			this.IntegrationPoint = CaseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
-			if (this.IntegrationPoint == null)
+			IntegrationPoint = CaseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+			if (IntegrationPoint == null)
 			{
+				LogSettingIntegrationPointError(job);
 				throw new ArgumentException("Failed to retrieve corresponding Integration Point Rdo.");
 			}
 		}
 
 		protected void SetJobHistory()
 		{
-			if (this.JobHistory != null)
+			if (JobHistory != null)
 			{
 				return;
 			}
 
 			// TODO: it is possible here that the Job Type is not Run Now - verify expected usage
-			this.JobHistory = JobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, JobTypeChoices.JobHistoryRun, DateTime.UtcNow);
-			JobHistoryErrorService.JobHistory = this.JobHistory;
-			JobHistoryErrorService.IntegrationPoint = this.IntegrationPoint;
+			JobHistory = JobHistoryService.CreateRdo(IntegrationPoint, BatchInstance, JobTypeChoices.JobHistoryRun, DateTime.UtcNow);
+			JobHistoryErrorService.JobHistory = JobHistory;
+			JobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 		}
+
+		#region Logging
+
+		private void LogRetrievingSourceProviderError()
+		{
+			_logger.LogError("Retrieving Source Provider: The Integration Point Rdo has not been set yet.");
+		}
+
+		private void LogRetrievingDestinationProviderError()
+		{
+			_logger.LogError("Retrieving Destination Provider: The Integration Point Rdo has not been set yet.");
+		}
+
+		private void LogRetrievingRecipientEmailsError(Exception e)
+		{
+			_logger.LogError(e, "Failed to retrieve recipient emails.");
+		}
+
+		private void LogSettingIntegrationPointError(Job job)
+		{
+			_logger.LogError("Failed to retrieve corresponding Integration Point Rdo for Job {JobId}.", job.JobId);
+		}
+
+		#endregion
 	}
 }

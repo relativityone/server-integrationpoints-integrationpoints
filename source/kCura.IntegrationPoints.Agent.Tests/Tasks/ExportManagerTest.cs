@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_serializerMock,
 				Substitute.For<IGuidService>(),
 				Substitute.For<IJobHistoryService>(),
-				Substitute.For<JobHistoryErrorService>(_caseServiceContextMock),
+				Substitute.For<JobHistoryErrorService>(_caseServiceContextMock, _helperMock),
 				Substitute.For<IScheduleRuleFactory>(),
 				_managerFactoryMock,
 				_contextContainerFactoryMock,

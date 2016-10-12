@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public class ConsoleEventHandler : ConsoleEventHandlerBase
 	{
-		private readonly IManagerFactory _managerFactory;
+		private IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelperClassFactory _helperClassFactory;
 		private const string _TRANSFER_OPTIONS = "Transfer Options";
@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public ConsoleEventHandler()
 		{
 			_contextContainerFactory = new ContextContainerFactory();
-			_managerFactory = new ManagerFactory();
 			_helperClassFactory = new HelperClassFactory();
 		}
 
@@ -33,6 +32,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
 			_helperClassFactory = helperClassFactory;
+		}
+
+		private IManagerFactory ManagerFactory
+		{
+			get
+			{
+				if (_managerFactory == null)
+				{
+					_managerFactory = new ManagerFactory(Helper);
+				}
+				return _managerFactory;
+			}
 		}
 
 		public override FieldCollection RequiredFields => new FieldCollection();
@@ -49,9 +60,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			};
 
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
-			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(contextContainer);
-			IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(contextContainer);
-			IStateManager stateManager = _managerFactory.CreateStateManager();
+			IIntegrationPointManager integrationPointManager = ManagerFactory.CreateIntegrationPointManager(contextContainer);
+			IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
+			IStateManager stateManager = ManagerFactory.CreateStateManager();
 
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
@@ -60,10 +71,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(Application.ArtifactID, ActiveArtifact.ArtifactID);
 			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
 
-			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, contextContainer);
+			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(ManagerFactory, contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
-			IQueueManager queueManager = _managerFactory.CreateQueueManager(contextContainer);
+			IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
 			bool hasJobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
 			if (sourceProvider == Core.Constants.SourceProvider.Relativity)

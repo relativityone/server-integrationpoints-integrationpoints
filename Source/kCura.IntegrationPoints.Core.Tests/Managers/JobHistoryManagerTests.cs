@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -37,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepo = Substitute.For<IArtifactGuidRepository>();
 			_jobHistoryErrorRepo = Substitute.For<IJobHistoryErrorRepository>();
 
-			_testInstance = new JobHistoryManager(_repositoryFactory);
+			var helper = Substitute.For<IHelper>();
+			_testInstance = new JobHistoryManager(_repositoryFactory, helper);
 			_itemLevelScratchTable = Substitute.For<IScratchTableRepository>();
 			_jobLevelScratchTable = Substitute.For<IScratchTableRepository>();
 			_jobLevelScratchTable.GetTempTableName().Returns("Job Level errors");

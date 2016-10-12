@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private IStateManager _stateManager;
 
 		public IntegrationPointDataHub() :
-			this(new ContextContainer(ConnectionHelper.Helper()), new ManagerFactory(), new HelperClassFactory())
+			this(new ContextContainer(ConnectionHelper.Helper()), new ManagerFactory(ConnectionHelper.Helper()), new HelperClassFactory())
 		{
 		}
 

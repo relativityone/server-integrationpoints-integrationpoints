@@ -10,6 +10,7 @@ using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
 		private ISourceJobManager _sourceJobManager;
 		private IDocumentRepository _documentRepo;
+		private IHelper _helper;
 		private string _importConfig;
 		private int _sourceWorkspaceArtifactId;
 		private int _destinationWorkspaceArtifactId;
@@ -50,6 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
 			_documentRepo = Substitute.For<IDocumentRepository>();
+			_helper = Substitute.For<IHelper>();
 
 			_importConfig = String.Empty;
 			_sourceWorkspaceArtifactId = 100;
@@ -82,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_repositoryFactory.GetScratchTableRepository(_sourceWorkspaceArtifactId, _scratchTableName, Arg.Any<string>()).ReturnsForAnyArgs(_scratchTableRepository);
 
 			_instance = new TargetDocumentsTaggingManager(_repositoryFactory, _synchronizer, _sourceWorkspaceManager, _sourceJobManager, 
-				_documentRepo, _fieldMaps, _importConfig, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, 
+				_documentRepo, _helper, _fieldMaps, _importConfig, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, 
 				_jobHistoryArtifactId, _uniqueJobId);
 		}
 

@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
@@ -13,10 +14,12 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		public const string FILES_SYNC_TYPE_GUID = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
 
 		private readonly ICaseServiceContext _context;
+		private readonly IAPILog _logger;
 
-		public RdoSynchronizerProvider(ICaseServiceContext context)
+		public RdoSynchronizerProvider(ICaseServiceContext context, IHelper helper)
 		{
 			_context = context;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizerProvider>();
 		}
 
 		public virtual void CreateOrUpdateDestinationProviders()
@@ -30,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			var destinationProvider = GetDestinationProvider(providerGuid);
 			if (destinationProvider == null)
 			{
+				LogCreatingProvider(name, providerGuid);
 				destinationProvider = new DestinationProvider();
 				destinationProvider.Name = name;
 				destinationProvider.Identifier = providerGuid;
@@ -38,6 +42,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			}
 			else
 			{
+				LogUpdatingProvider(name, providerGuid);
 				destinationProvider.Name = name;
 				_context.RsapiService.DestinationProviderLibrary.Update(destinationProvider);
 			}
@@ -50,6 +55,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			{
 				return destinationProvider.ArtifactId;
 			}
+			LogRetrievingDestinationProviderError();
 			throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER);
 		}
 
@@ -57,7 +63,36 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		{
 			var q = new Query<Relativity.Client.DTOs.RDO>();
 			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, providerGuid);
-			return _context.RsapiService.DestinationProviderLibrary.Query(q).SingleOrDefault(); //there should only be one!
+			var destinationProviders = _context.RsapiService.DestinationProviderLibrary.Query(q);
+			if (destinationProviders.Count > 1)
+			{
+				LogMoreThanOneProviderFoundWarning(providerGuid);
+			}
+			return destinationProviders.SingleOrDefault(); //there should only be one!
 		}
+
+		#region Logging
+
+		private void LogCreatingProvider(string name, string providerGuid)
+		{
+			_logger.LogVerbose("Creating new destination provider {ProviderName} ({ProviderGuid}).", name, providerGuid);
+		}
+
+		private void LogUpdatingProvider(string name, string providerGuid)
+		{
+			_logger.LogVerbose("Updating existing destination provider {ProviderName} ({ProviderGuid}).", name, providerGuid);
+		}
+
+		private void LogRetrievingDestinationProviderError()
+		{
+			_logger.LogError(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER);
+		}
+
+		private void LogMoreThanOneProviderFoundWarning(string providerGuid)
+		{
+			_logger.LogWarning("More than one Destination Provider with {GUID} found.", providerGuid);
+		}
+
+		#endregion
 	}
 }

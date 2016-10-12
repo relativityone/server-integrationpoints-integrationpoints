@@ -4,18 +4,22 @@ using System.Data;
 using System.Linq;
 using System.Runtime;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 using Relativity;
-using Relativity.Data;
-using System.Text.RegularExpressions;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
+using Relativity.Data;
+using ArtifactType = kCura.Relativity.Client.ArtifactType;
+using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
+using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -24,29 +28,31 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
 		private readonly IExporter _exporter;
-		private readonly IILongTextStreamFactory _longTextStreamFactory;
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
-		private readonly HashSet<int> _longTextFieldArtifactIds;
-		private readonly FieldMap[] _mappedFields;
 		private readonly IJobStopManager _jobStopManager;
+		private readonly HashSet<int> _longTextFieldArtifactIds;
+		private readonly IILongTextStreamFactory _longTextStreamFactory;
+		private readonly FieldMap[] _mappedFields;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
-		private IDataReader _reader;
+		private readonly IAPILog _logger;
 		private DataGridContext _dataGridContext;
+		private IDataReader _reader;
 		private int _retrievedDataCount;
 
 		/// <summary>
-		/// Testing only
+		///     Testing only
 		/// </summary>
 		internal RelativityExporterService(
 			IExporter exporter,
 			IILongTextStreamFactory longTextStreamFactory,
 			IJobStopManager jobStopManager,
+			IHelper helper,
 			FieldMap[] mappedFields,
 			HashSet<int> longTextField,
 			int[] avfIds)
-			: this(mappedFields, jobStopManager)
+			: this(mappedFields, jobStopManager, helper)
 		{
 			_exporter = exporter;
 			_longTextStreamFactory = longTextStreamFactory;
@@ -58,19 +64,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public RelativityExporterService(
 			IRepositoryFactory repositoryFactory,
 			IJobStopManager jobStopManager,
+			IHelper helper,
 			ClaimsPrincipal claimsPrincipal,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config,
 			int savedSearchArtifactId)
-			: this(mappedFields, jobStopManager)
+			: this(mappedFields, jobStopManager, helper)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_baseContext = claimsPrincipal.GetUnversionContext(settings.SourceWorkspaceArtifactId);
 
 			ValidateDestinationFields(claimsPrincipal, settings.TargetWorkspaceArtifactId, mappedFields);
 
-			IQueryFieldLookup fieldLookupHelper = new global::Relativity.Core.QueryFieldLookup(_baseContext, (int)Relativity.Client.ArtifactType.Document);
+			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int) ArtifactType.Document);
 
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
@@ -85,9 +92,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						_multipleObjectFieldArtifactIds.Add(artifactId);
 						IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(settings.SourceWorkspaceArtifactId);
 						ArtifactDTO identifierField = fieldRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
-						string identifierFieldName = (string)identifierField.Fields.First(field => field.Name == "Name").Value;
+						string identifierFieldName = (string) identifierField.Fields.First(field => field.Name == "Name").Value;
 						IObjectRepository objectRepository = repositoryFactory.GetObjectRepository(settings.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
-						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetResultsWithoutContextSync();
+						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] {identifierFieldName}).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, objects, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
 						break;
 
@@ -106,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						break;
 				}
 
-				if (fieldInfo.EnableDataGrid && _dataGridContext == null)
+				if (fieldInfo.EnableDataGrid && (_dataGridContext == null))
 				{
 					_dataGridContext = new DataGridContext(true);
 				}
@@ -116,89 +123,30 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			_exporter = new SavedSearchExporter
 			(
-					_baseContext,
-					new global::Relativity.Core.UserPermissionsMatrix(_baseContext),
-					global::Relativity.ArtifactType.Document,
-					IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
-					IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
-					global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+				_baseContext,
+				new UserPermissionsMatrix(_baseContext),
+				global::Relativity.ArtifactType.Document,
+				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
+				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
+				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
 			);
 
 			try
 			{
 				_exportJobInfo = _exporter.InitializeExport(savedSearchArtifactId, _avfIds, startAt);
 			}
-			catch(Exception exception)
+			catch (Exception exception)
 			{
+				LogCreatingError(exception);
 				// NOTE: If we get an exception, we cannot be exactly sure what the real error is,
 				// however, it is more than likely that you do not have Export or Saved Search permissions.
-				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT, exception);				
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT, exception);
 			}
 
 			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, settings.SourceWorkspaceArtifactId);
 		}
 
-		private void ValidateDestinationFields(ClaimsPrincipal claimsPrincipal, int destinationWorkspace, FieldMap[] mappedFields)
-		{
-			IList<string> missingFields = new List<string>();
-			BaseServiceContext destinationWorkspaceContext = claimsPrincipal.GetUnversionContext(destinationWorkspace);
-			IQueryFieldLookup fieldLookupHelper = new global::Relativity.Core.QueryFieldLookup(destinationWorkspaceContext, (int)Relativity.Client.ArtifactType.Document);
-
-			for (int index = 0; index < mappedFields.Length; index++)
-			{
-				FieldEntry fieldEntry = mappedFields[index].DestinationField;
-				if (fieldEntry != null && !String.IsNullOrEmpty(fieldEntry.FieldIdentifier))
-				{
-					int artifactId = 0;
-					if (Int32.TryParse(fieldEntry.FieldIdentifier, out artifactId))
-					{
-						try
-						{
-							ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
-							if (fieldInfo == null || String.Equals(fieldInfo.DisplayName, fieldEntry.ActualName, StringComparison.OrdinalIgnoreCase) == false)
-							{
-								missingFields.Add(fieldEntry.ActualName);
-							}
-						}
-						catch
-						{
-							missingFields.Add(fieldEntry.ActualName);
-						}
-					}
-				}
-			}
-
-			if (missingFields.Count > 0)
-			{
-				// TODO : We may want to just update the field's name instead. Sorawit - 6/24/2016.
-				throw new Exception("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
-			}
-		}
-
-		private void VerifyValidityOfTheNestedOrMultiValuesField(string fieldName, ArtifactDTO[] dtos, Regex invalidPattern)
-		{
-			List<Exception> exceptions = new List<Exception>(dtos.Length);
-			for (int index = 0; index < dtos.Length; index++)
-			{
-				ArtifactDTO dto = dtos[index];
-				string name = (string)dto.Fields[0].Value;
-				if (invalidPattern.IsMatch(name))
-				{
-					Exception exception = new Exception($"Invalid '{fieldName}' : {name}");
-					exceptions.Add(exception);
-				}
-			}
-
-			if (exceptions.Count > 0)
-			{
-				string message = $"Invalid '{fieldName}' found." +
-								 $" Please remove invalid character(s) - {IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER} or {IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
-				AggregateException exception = new AggregateException(message, exceptions);
-				throw exception;
-			}
-		}
-
-		private RelativityExporterService(FieldMap[] mappedFields, IJobStopManager jobStopManager)
+		private RelativityExporterService(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper)
 		{
 			_singleChoiceFieldsArtifactIds = new HashSet<int>();
 			_multipleObjectFieldArtifactIds = new HashSet<int>();
@@ -206,23 +154,18 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_retrievedDataCount = 0;
 			_mappedFields = mappedFields;
 			_jobStopManager = jobStopManager;
-			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
+			_fieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
 		}
 
 		public bool HasDataToRetrieve
 		{
-			get
-			{
-				return TotalRecordsFound > _retrievedDataCount && !_jobStopManager.IsStopRequested();
-			}
+			get { return (TotalRecordsFound > _retrievedDataCount) && !_jobStopManager.IsStopRequested(); }
 		}
 
 		public int TotalRecordsFound
 		{
-			get
-			{
-				return (int)_exportJobInfo.RowCount;
-			}
+			get { return (int) _exportJobInfo.RowCount; }
 		}
 
 		public IDataReader GetDataReader(IScratchTableRepository[] scratchTableRepositories)
@@ -240,12 +183,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
 			if (retrievedData != null)
 			{
-				int artifactType = (int)Relativity.Client.ArtifactType.Document;
+				int artifactType = (int) ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
 					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
 
-					object[] fieldsValue = (object[])data;
+					object[] fieldsValue = (object[]) data;
 					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
 
 					for (int index = 0; index < _avfIds.Length; index++)
@@ -266,7 +209,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							}
 							// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
 							else if (_longTextFieldArtifactIds.Contains(artifactId)
-								&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
+									&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
 							{
 								value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_longTextStreamFactory, documentArtifactId, artifactId)
 									.GetResultsWithoutContextSync();
@@ -274,6 +217,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						}
 						catch (Exception ex)
 						{
+							LogRetrievingDataError(ex);
 							exception = ex;
 						}
 
@@ -286,7 +230,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					}
 
 					// TODO: replace String.empty
-					result.Add(new ArtifactDTO(documentArtifactId, artifactType, String.Empty, fields));
+					result.Add(new ArtifactDTO(documentArtifactId, artifactType, string.Empty, fields));
 				}
 			}
 			_retrievedDataCount += result.Count;
@@ -313,5 +257,97 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
 			GC.Collect();
 		}
+
+		private void ValidateDestinationFields(ClaimsPrincipal claimsPrincipal, int destinationWorkspace, FieldMap[] mappedFields)
+		{
+			IList<string> missingFields = new List<string>();
+			BaseServiceContext destinationWorkspaceContext = claimsPrincipal.GetUnversionContext(destinationWorkspace);
+			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(destinationWorkspaceContext, (int) ArtifactType.Document);
+
+			for (int index = 0; index < mappedFields.Length; index++)
+			{
+				FieldEntry fieldEntry = mappedFields[index].DestinationField;
+				if ((fieldEntry != null) && !string.IsNullOrEmpty(fieldEntry.FieldIdentifier))
+				{
+					int artifactId = 0;
+					if (int.TryParse(fieldEntry.FieldIdentifier, out artifactId))
+					{
+						try
+						{
+							ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
+							if ((fieldInfo == null) || (string.Equals(fieldInfo.DisplayName, fieldEntry.ActualName, StringComparison.OrdinalIgnoreCase) == false))
+							{
+								missingFields.Add(fieldEntry.ActualName);
+							}
+						}
+						catch(Exception e)
+						{
+							LogFieldValidationError(e);
+							missingFields.Add(fieldEntry.ActualName);
+						}
+					}
+				}
+			}
+
+			if (missingFields.Count > 0)
+			{
+				LogInvalidFieldMappingError();
+				// TODO : We may want to just update the field's name instead. Sorawit - 6/24/2016.
+				throw new Exception("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
+			}
+		}
+
+		private void VerifyValidityOfTheNestedOrMultiValuesField(string fieldName, ArtifactDTO[] dtos, Regex invalidPattern)
+		{
+			List<Exception> exceptions = new List<Exception>(dtos.Length);
+			for (int index = 0; index < dtos.Length; index++)
+			{
+				ArtifactDTO dto = dtos[index];
+				string name = (string) dto.Fields[0].Value;
+				if (invalidPattern.IsMatch(name))
+				{
+					Exception exception = new Exception($"Invalid '{fieldName}' : {name}");
+					exceptions.Add(exception);
+				}
+			}
+
+			if (exceptions.Count > 0)
+			{
+				string message = $"Invalid '{fieldName}' found." +
+								$" Please remove invalid character(s) - {IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER} or {IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
+				LogFieldValuesValidationError(message);
+				AggregateException exception = new AggregateException(message, exceptions);
+				throw exception;
+			}
+		}
+
+		#region Logging
+
+		private void LogCreatingError(Exception exception)
+		{
+			_logger.LogError(exception, "Failed to create RelativityExporterService.");
+		}
+
+		private void LogRetrievingDataError(Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred during data retrieval.");
+		}
+
+		private void LogFieldValidationError(Exception e)
+		{
+			_logger.LogError(e, "Error occurred during destination field validation.");
+		}
+
+		private void LogInvalidFieldMappingError()
+		{
+			_logger.LogError("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
+		}
+
+		private void LogFieldValuesValidationError(string message)
+		{
+			_logger.LogError(message);
+		}
+
+		#endregion
 	}
 }

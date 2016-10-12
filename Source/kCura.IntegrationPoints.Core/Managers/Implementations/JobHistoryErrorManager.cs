@@ -6,19 +6,22 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class JobHistoryErrorManager : IJobHistoryErrorManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IAPILog _logger;
 
-		internal JobHistoryErrorManager(IRepositoryFactory repositoryFactory, int sourceWorkspaceArtifactId, string uniqueJobId)
+		internal JobHistoryErrorManager(IRepositoryFactory repositoryFactory, IHelper helper, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
 			JobHistoryErrorJobStart = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
 			JobHistoryErrorItemStart = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
 			JobHistoryErrorItemStartExcluded = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED, uniqueJobId);
 
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryErrorManager>();
 			_repositoryFactory = repositoryFactory;
 		}
 
@@ -116,6 +119,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 			catch (Exception ex)
 			{
+				LogCreatingTempTablesError(ex);
 				throw new Exception(JobHistoryErrorErrors.JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE, ex);
 			}
 		}
@@ -191,5 +195,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				JobHistoryErrorItemStartExcluded.AddArtifactIdsIntoTempTable(expiredItemLevelErrors);
 			}
 		}
+
+		#region Logging
+
+		private void LogCreatingTempTablesError(Exception ex)
+		{
+			_logger.LogError(ex, JobHistoryErrorErrors.JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE);
+		}
+
+		#endregion
 	}
 }

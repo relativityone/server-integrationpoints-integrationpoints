@@ -8,24 +8,34 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Injection;
+using kCura.Relativity.Client;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobHistoryErrorService : IJobHistoryErrorService
 	{
+		public const int ERROR_BATCH_SIZE = 500;
 		private readonly ICaseServiceContext _context;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
+		private readonly IAPILog _logger;
 		private bool _errorOccurredDuringJob;
-		public bool JobLevelErrorOccurred { get; private set; }
-		public const int ERROR_BATCH_SIZE = 500;
 
-		public JobHistoryErrorService(ICaseServiceContext context)
+		public JobHistoryErrorService(ICaseServiceContext context, IHelper helper)
 		{
 			_context = context;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryErrorService>();
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			_errorOccurredDuringJob = false;
 			JobLevelErrorOccurred = false;
 		}
+
+		internal int PendingErrorCount
+		{
+			get { return _jobHistoryErrorList.Count; }
+		}
+
+		public bool JobLevelErrorOccurred { get; private set; }
 
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
@@ -35,8 +45,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (batchReporter is IBatchReporter)
 			{
-				((IBatchReporter)batchReporter).OnJobError += new JobError(OnJobError);
-				((IBatchReporter)batchReporter).OnDocumentError += new RowError(OnRowError);
+				((IBatchReporter) batchReporter).OnJobError += OnJobError;
+				((IBatchReporter) batchReporter).OnDocumentError += OnRowError;
 			}
 		}
 
@@ -55,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 
-					if (!_errorOccurredDuringJob || JobStopManager?.IsStopRequested() == true)
+					if (!_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true))
 					{
 						IntegrationPoint.HasErrors = false;
 					}
@@ -65,12 +75,15 @@ namespace kCura.IntegrationPoints.Core.Services
 					//if failed to commit, throw all buffered errors as part of an exception
 					string allErrors = string.Empty;
 					List<string> errorList = _jobHistoryErrorList.Select(x =>
-						((x.ErrorType.Name.Equals(ErrorTypeChoices.JobHistoryErrorJob.Name))
+						x.ErrorType.Name.Equals(ErrorTypeChoices.JobHistoryErrorJob.Name)
 							? string.Format("{0} Type: {1}    Error: {2}", x.TimestampUTC, x.ErrorType.Name, x.Error)
 							: string.Format("{0} Type: {1}    Identifier: {2}    Error: {3}", x.TimestampUTC, x.ErrorType.Name,
-								x.SourceUniqueID, x.Error))).ToList();
-					allErrors = String.Join(Environment.NewLine, errorList.ToArray());
+								x.SourceUniqueID, x.Error)).ToList();
+					allErrors = string.Join(Environment.NewLine, errorList.ToArray());
 					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessages());
+
+					LogCommittingErrorsFailed(ex, allErrors);
+
 					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
@@ -81,39 +94,22 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private void OnRowError(string documentIdentifier, string errorMessage)
-		{
-			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
-			{
-				if (JobStopManager?.IsStopRequested() == true)
-				{
-					return;
-				}
-				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
-			}
-		}
-
-		private void OnJobError(Exception ex)
-		{
-			AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-		}
-
-		public void AddError(Relativity.Client.Choice errorType, Exception ex)
+		public void AddError(Choice errorType, Exception ex)
 		{
 			AddError(errorType, string.Empty, ex.Message, ex.FlattenErrorMessages());
 		}
 
-		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)
+		public void AddError(Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)
 		{
 			lock (_jobHistoryErrorList)
 			{
-				if (this.JobHistory != null && this.JobHistory.ArtifactId > 0)
+				if ((JobHistory != null) && (JobHistory.ArtifactId > 0))
 				{
 					DateTime now = DateTime.UtcNow;
 
 					JobHistoryError jobHistoryError = new JobHistoryError();
-					jobHistoryError.ParentArtifactId = this.JobHistory.ArtifactId;
-					jobHistoryError.JobHistory = this.JobHistory.ArtifactId;
+					jobHistoryError.ParentArtifactId = JobHistory.ArtifactId;
+					jobHistoryError.JobHistory = JobHistory.ArtifactId;
 					jobHistoryError.Name = Guid.NewGuid().ToString();
 					jobHistoryError.ErrorType = errorType;
 					jobHistoryError.ErrorStatus = ErrorStatusChoices.JobHistoryErrorNew;
@@ -136,11 +132,29 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				else
 				{
+					LogMissingJobHistoryError();
 					//we can't create JobHistoryError without JobHistory,
 					//in such case log error into Error Tab by throwing Exception.
-					throw new System.Exception(string.Format("Type:{0}  Id:{1}  Error:{2}", errorType.Name, documentIdentifier, errorMessage));
+					throw new Exception(string.Format("Type:{0}  Id:{1}  Error:{2}", errorType.Name, documentIdentifier, errorMessage));
 				}
 			}
+		}
+
+		private void OnRowError(string documentIdentifier, string errorMessage)
+		{
+			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
+			{
+				if (JobStopManager?.IsStopRequested() == true)
+				{
+					return;
+				}
+				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
+			}
+		}
+
+		private void OnJobError(Exception ex)
+		{
+			AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 		}
 
 		private void UpdateIntegrationPoint()
@@ -153,16 +167,31 @@ namespace kCura.IntegrationPoints.Core.Services
 					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 				}
 			}
-			catch
+			catch (Exception e)
 			{
+				_logger.LogError(e, "Failed to update Integration Point's Has Error field.");
 				//Ignore error, if we can't update the Integration Point's Has Errors Field, just continue on.
 				//The field may be out of state with the true job status, or subsequent Update calls may succeed.
 			}
 		}
 
-		internal int PendingErrorCount
+		#region Logging
+
+		private void LogCommittingErrorsFailed(Exception ex, string allErrors)
 		{
-			get { return _jobHistoryErrorList.Count; }
+			_logger.LogError(ex, "Could not commit Job History Errors. These are uncommitted errors: {Errors}.", allErrors);
 		}
+
+		private void LogMissingJobHistoryError()
+		{
+			_logger.LogError("Failed to create Job History Error: Job History doesn't exists.");
+		}
+
+		private void LogUpdatingHasErrorsFieldError(Exception e)
+		{
+			_logger.LogError(e, "Failed to update Integration Point's Has Error field.");
+		}
+
+		#endregion
 	}
 }

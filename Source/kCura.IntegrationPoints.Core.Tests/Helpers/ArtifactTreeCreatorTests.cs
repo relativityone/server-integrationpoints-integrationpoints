@@ -2,7 +2,9 @@
 using System.Linq;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.Relativity.Client;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
@@ -14,7 +16,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		[SetUp]
 		public void SetUp()
 		{
-			_treeByParentIdCreator = new ArtifactTreeCreator();
+			var helper = Substitute.For<IHelper>();
+			_treeByParentIdCreator = new ArtifactTreeCreator(helper);
 		}
 
 		[Test]

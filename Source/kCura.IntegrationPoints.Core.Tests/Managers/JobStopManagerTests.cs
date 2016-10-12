@@ -10,6 +10,7 @@ using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -29,9 +30,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistory = new JobHistory();
 			_jobService = NSubstitute.Substitute.For<IJobService>();
 			_jobHistoryService = NSubstitute.Substitute.For<IJobHistoryService>();
+			var helper = Substitute.For<IHelper>();
 			_guid = Guid.NewGuid();
 			_jobId = 123;
-			_instance = new JobStopManager(_jobService, _jobHistoryService, _guid, _jobId);
+			_instance = new JobStopManager(_jobService, _jobHistoryService, helper, _guid, _jobId);
 		}
 
 		[Test]
