@@ -27,13 +27,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 _errorsOnly = true;
             }
             //delimiter settings
-            eddsLoadFile.RecordDelimiter = ',';
-            //eddsLoadFile.QuoteDelimiter = '';
-            //eddsLoadFile.NewlineDelimiter = '';
-            //eddsLoadFile.MultiRecordDelimiter = '';
-            //eddsLoadFile.HierarchicalValueDelimiter = '';
+            eddsLoadFile.RecordDelimiter = (char)settings.AsciiColumn;
+            eddsLoadFile.QuoteDelimiter = (char)settings.AsciiQuote;
+            eddsLoadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
+            eddsLoadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
+            eddsLoadFile.HierarchicalValueDelimiter = (char)settings.AsciiNestedValue;
+            eddsLoadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
 
-            eddsLoadFile.FilePath = settings.FilePath;
+            eddsLoadFile.FilePath = settings.LoadFile;
             eddsLoadFile.LoadNativeFiles = false;
             eddsLoadFile.CreateFolderStructure = false;
 

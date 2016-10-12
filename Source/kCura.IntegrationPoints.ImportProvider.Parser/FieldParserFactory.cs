@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
             loadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
             loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
-            loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
+            loadFile.HierarchicalValueDelimiter = (char)settings.AsciiNestedValue;
             loadFile.FilePath = settings.LoadFile;
             loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
 

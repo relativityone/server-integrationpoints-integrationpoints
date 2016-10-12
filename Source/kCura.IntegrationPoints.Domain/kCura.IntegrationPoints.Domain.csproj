@@ -214,6 +214,7 @@
     <Compile Include="Models\ButtonStateDTO.cs" />
     <Compile Include="Models\DestinationProviderDTO.cs" />
     <Compile Include="Models\DestinationWorkspaceDTO.cs" />
+    <Compile Include="Models\ImportSettingsBase.cs" />
     <Compile Include="Models\ImportPreviewSettings.cs" />
     <Compile Include="Models\ImportPreviewStatus.cs" />
     <Compile Include="Models\ImportPreviewTable.cs" />

@@ -27,7 +27,13 @@
     var previewSettingsData = {
         WorkspaceId: settings.WorkspaceId,
         PreviewType: settings.PreviewType,
-        FilePath: settings.LoadFile,
+        LoadFile: settings.LoadFile,
+        EncodingType: settings.EncodingType,
+        AsciiColumn: settings.AsciiColumn,
+        AsciiQuote: settings.AsciiQuote,
+        AsciiNewLine: settings.AsciiNewLine,
+        AsciiMultiLine: settings.AsciiMultiLine,
+        AsciiNestedValue: settings.AsciiNestedValue,
         FieldMapping:$.parseJSON(fieldMapping)
     };
 

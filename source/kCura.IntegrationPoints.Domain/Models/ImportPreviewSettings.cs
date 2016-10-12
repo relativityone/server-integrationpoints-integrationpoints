@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
-    public class ImportPreviewSettings
+    public class ImportPreviewSettings : ImportSettingsBase
     {
-        public int WorkspaceId { get; set; }
         public string PreviewType { get; set; }
-        public string FilePath { get; set; }
         public List<FieldMap> FieldMapping { get; set; }
     }
 }
