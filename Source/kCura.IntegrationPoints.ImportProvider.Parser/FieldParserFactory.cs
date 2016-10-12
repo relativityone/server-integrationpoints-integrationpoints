@@ -20,10 +20,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public IFieldParser GetFieldParser(string options)
         {
-            //Extract file path from settings object
             var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
 
-            //TODO: replace hard coded workspace with value from helper
             var factory = new kCura.WinEDDS.NativeSettingsFactory(_credentialProvider.GetAuthenticatedCredential(), settings.WorkspaceId);
             var loadFile = factory.ToLoadFile();
 
