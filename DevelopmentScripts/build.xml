@@ -456,6 +456,7 @@
       <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
       <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(0,0)</allow>
       <allow>kCura.IntegrationPoints.Services.Tests.DocumentManagerLoggingTests.ItShouldLogErrorFromGetCurrentPromotionStatusAsync</allow>
+      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportServiceTests.GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult</allow>	  
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
