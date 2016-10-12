@@ -63,6 +63,14 @@
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Logging, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Dependencies\bin\x64\Relativity.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Dependencies\bin\x64\Relativity.Logging.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
