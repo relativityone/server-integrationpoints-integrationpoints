@@ -10,6 +10,7 @@ using kCura.Utility.Extensions;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
@@ -37,12 +38,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		[SetUp]
 		public void SetUp()
 		{
+			var helper = Substitute.For<IHelper>();
 			_searchManagerMock = Substitute.For<ISearchManager>();
 
 			_serviceManagerProviderMock = Substitute.For<IServiceManagerProvider>();
 			_serviceManagerProviderMock.Create<ISearchManager, SearchManagerFactory>().Returns(_searchManagerMock);
 
-			_subjectUnderTest = new ViewService(_serviceManagerProviderMock);
+			_subjectUnderTest = new ViewService(_serviceManagerProviderMock, helper);
 		}
 
 		[Test]

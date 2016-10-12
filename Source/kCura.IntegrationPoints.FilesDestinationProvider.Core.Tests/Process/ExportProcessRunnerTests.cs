@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
@@ -20,7 +20,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         {
             _exportProcessBuilder = Substitute.For<IExportProcessBuilder>();
 	        _exportSettingsBuilder = Substitute.For<IExportSettingsBuilder>();
-            _exportProcessRunner = new ExportProcessRunner(_exportProcessBuilder, _exportSettingsBuilder);
+	        var helper = Substitute.For<IHelper>();
+            _exportProcessRunner = new ExportProcessRunner(_exportProcessBuilder, _exportSettingsBuilder, helper);
         }
 
         [Test]

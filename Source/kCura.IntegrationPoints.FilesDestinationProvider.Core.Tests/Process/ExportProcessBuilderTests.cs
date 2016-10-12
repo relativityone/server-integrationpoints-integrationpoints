@@ -14,6 +14,7 @@ using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
+using Relativity.API;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
@@ -73,6 +74,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_userNotification = Substitute.For<IUserNotification>();
 			_configFactory = Substitute.For<IConfigFactory>();
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
+			var helper = Substitute.For<IHelper>();
 
 			_loggingMediator.LoggingMediators.Returns(new List<ILoggingMediator>());
 
@@ -90,6 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				_searchManagerFactory,
 				_exporterFactory,
 				_exportFileBuilder,
+				helper,
 				_jobStatisticsService
 			);
 		}

@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
@@ -11,11 +12,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 	{
 		private readonly IRSAPIClient _client;
 		private readonly IArtifactTreeCreator _treeCreator;
+		private readonly IAPILog _logger;
 
-		public ArtifactTreeService(IRSAPIClient client, IArtifactTreeCreator treeCreator)
+		public ArtifactTreeService(IRSAPIClient client, IArtifactTreeCreator treeCreator, IHelper helper)
 		{
 			_client = client;
 			_treeCreator = treeCreator;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ArtifactTreeService>();
 		}
 
 		public JsTreeItemDTO GetArtifactTree(string artifactTypeName)
@@ -31,9 +34,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			var result = _client.Query(_client.APIOptions, query);
 			if (!result.Success)
 			{
+				LogQueryingArtifactError(artifactTypeName);
 				throw new NotFoundException("Artifact query failed");
 			}
 			return result.QueryArtifacts;
 		}
+
+		#region Logging
+
+		private void LogQueryingArtifactError(string artifactTypeName)
+		{
+			_logger.LogError("Artifact query failed for {ArtifactTypeName}.", artifactTypeName);
+		}
+
+		#endregion
 	}
 }

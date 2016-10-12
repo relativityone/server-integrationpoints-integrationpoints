@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
@@ -21,11 +22,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		{
 			_client = Substitute.For<IRSAPIClient>();
 			_treeCreator = Substitute.For<IArtifactTreeCreator>();
+			var helper = Substitute.For<IHelper>();
 
 			_queryResult = new QueryResult {Success = true};
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(_queryResult);
 
-			_artifactTreeService = new ArtifactTreeService(_client, _treeCreator);
+			_artifactTreeService = new ArtifactTreeService(_client, _treeCreator, helper);
 		}
 
 		[Test]
