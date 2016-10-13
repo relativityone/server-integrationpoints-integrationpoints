@@ -32,9 +32,9 @@
             content.slideToggle();
         });
     }
-
+    /*todo change column back to 19*/
     var assignAsciiDropDownDefault = function (array) {
-        windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[19].asciiID);
+        windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[43].asciiID);
         windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(array[253].asciiID);
         windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(array[173].asciiID);
         windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(array[58].asciiID);
@@ -45,7 +45,7 @@
         var windowPar = windowObj.parent;
         var windowTop = windowObj.top;
         var baseUrlCache = root.utils.getBaseURL();
-        
+
         var preFile = windowPar.$(idSelector(PREVIEW_FILE_LI));
         var preError = windowPar.$(idSelector(PREVIEW_ERROR_LI));
         var preChoice = windowPar.$(idSelector(PREVIEW_CHOICE_LI));
@@ -157,7 +157,8 @@
         success: function (data) {
             var array = [];
             $.each(data, function (index, value) {
-                array.push({ "asciiID": (index + 1), "asciiText": value })}
+                array.push({ "asciiID": (index + 1), "asciiText": value })
+            }
             );
             windowObj.RelativityImport.koModel.setAsciiDelimiters(array);
             assignAsciiDropDownDefault(array);

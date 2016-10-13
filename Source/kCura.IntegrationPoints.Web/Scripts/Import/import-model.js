@@ -75,8 +75,6 @@
             }
         });
 
-        self.DataFileEncodingTypeValue = "Select...";
-
         self.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({
             required: true
         });
@@ -108,7 +106,9 @@
                 }
 
                 // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-                self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
+                //self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
+
+                self.FileEncodingTypeList([new Group("", [new Option("Unicode (UTF-8)", "utf-8")]), new Group("Favorite", favorite), new Group("Others", others)]);
 
                 self.DataFileEncodingType(self.DataFileEncodingTypeValue);
                 self.DataFileEncodingType.isModified(false);
