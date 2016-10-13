@@ -14,10 +14,13 @@ namespace kCura.ScheduleQueue.Core.Services
 {
 	public class JobService : IJobService
 	{
+		private readonly IAPILog _logger;
+
 		public JobService(IAgentService agentService, IHelper dbHelper)
 		{
 			this.AgentService = agentService;
 			this.QDBContext = new QueueDBContext(dbHelper, this.AgentService.QueueTable);
+			_logger = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
 		}
 
 		public IAgentService AgentService { get; private set; }
@@ -31,7 +34,8 @@ namespace kCura.ScheduleQueue.Core.Services
 		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID)
 		{
 			Job job = null;
-			DataRow row = new GetNextJob(QDBContext).Execute(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIds.ToArray());
+			DataRow row = new GetNextJob(QDBContext).Execute(agentID, AgentTypeInformation.AgentTypeID,
+				resourceGroupIds.ToArray());
 			if (row != null)
 			{
 				job = new Job(row);
@@ -66,13 +70,18 @@ namespace kCura.ScheduleQueue.Core.Services
 		public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
 		{
 			if (job == null)
-				return new FinalizeJobResult() { JobState = JobLogState.Finished };
+			{
+				return new FinalizeJobResult() {JobState = JobLogState.Finished};
+			}
+
+			LogOnFinalizeJob(job.JobId, job.JobDetails);
+
 			FinalizeJobResult result = new FinalizeJobResult();
 
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
 			if (nextUtcRunDateTime.HasValue)
 			{
-				new Data.Queries.UpdateScheduledJob(QDBContext).Execute(job.JobId, nextUtcRunDateTime.Value);
+				new UpdateScheduledJob(QDBContext).Execute(job.JobId, nextUtcRunDateTime.Value);
 				result.JobState = JobLogState.Modified;
 				result.Details = string.Format("Job is re-scheduled for {0}", nextUtcRunDateTime.ToString());
 			}
@@ -86,12 +95,14 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void UnlockJobs(int agentID)
 		{
+			LogOnUnlockJobs(agentID);
 			new UnlockScheduledJob(QDBContext).Execute(agentID);
 		}
 
 		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 			IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
 		{
+			LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, SubmittedBy);
 			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
@@ -132,6 +143,8 @@ namespace kCura.ScheduleQueue.Core.Services
 		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
 		{
+			LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, SubmittedBy);
+
 			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
@@ -156,11 +169,14 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void DeleteJob(long jobID)
 		{
+			LogOnDeleteJob(jobID);
 			new DeleteJob(QDBContext).Execute(jobID);
 		}
 
 		public Job GetJob(long jobID)
 		{
+			LogOnGetJob(jobID);
+
 			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
@@ -172,23 +188,28 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public Job GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
-			return Execute(workspaceID, relatedObjectArtifactID, new List<string> { taskName })?.FirstOrDefault();
+			LogOnGetScheduledJob(workspaceID, relatedObjectArtifactID, new List<string>() {taskName});
+			return Execute(workspaceID, relatedObjectArtifactID, new List<string> {taskName})?.FirstOrDefault();
 		}
 
 		public IEnumerable<Job> GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
 		{
+			LogOnGetScheduledJob(workspaceID, relatedObjectArtifactID, taskTypes);
 			return Execute(workspaceID, relatedObjectArtifactID, taskTypes);
 		}
 
 		public void UpdateStopState(IList<long> jobIds, StopState state)
 		{
+			LogOnUpdateJobStopState(state, jobIds);
+
 			if (jobIds.Any())
 			{
 				string query = String.Format(Resources.UpdateStopState, QDBContext.TableName, String.Join(",", jobIds.Distinct()));
-				List<SqlParameter> sqlParams = new List<SqlParameter> { new SqlParameter("@State", (int) state) };
-				int count =	QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
+				List<SqlParameter> sqlParams = new List<SqlParameter> {new SqlParameter("@State", (int) state)};
+				int count = QDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
 				if (count == 0)
 				{
+					LogOnUpdateJobStopStateError(state, jobIds);
 					throw new InvalidOperationException("Invalid operation. Job state failed to update.");
 				}
 			}
@@ -196,8 +217,10 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public IList<Job> GetJobs(long integrationPointId)
 		{
+			LogOnGetJobs(integrationPointId);
+
 			List<Job> jobs = new List<Job>();
-			string query =$@"SELECT [JobID]
+			string query = $@"SELECT [JobID]
 	  ,[RootJobID]
 	  ,[ParentJobID]
 	  ,[AgentTypeID]
@@ -230,6 +253,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void CleanupJobQueueTable()
 		{
+			LogOnCleanJobQueTable();
 			var cleanupJobQueueTable = new CleanupJobQueueTable(QDBContext);
 			cleanupJobQueueTable.Execute();
 		}
@@ -241,5 +265,74 @@ namespace kCura.ScheduleQueue.Core.Services
 			List<DataRow> rows = new GetJob(QDBContext).Execute(workspaceID, relatedObjectArtifactID, taskTypes);
 			return rows?.Select(row => new Job(row)) ?? Enumerable.Empty<Job>();
 		}
+
+		#region Logging
+
+		private void LogOnFinalizeJob(long jobJobId, string jobJobDetails)
+		{
+			_logger.LogInformation("Attempting to finalize job with ID: ({jobid}) in {TypeName}. Job details: {Jobdetails}",
+				jobJobId, nameof(JobService), jobJobDetails);
+		}
+
+		private void LogOnUnlockJobs(int agentId)
+		{
+			_logger.LogInformation("Attempting to unlock scheduled jobs for Agent with ID: ({agentId} in {TypeName})", agentId, nameof(JobService));
+		}
+
+		private void LogOnCreateJob(int workspaceID, int relatedObjectArtifactID, string taskType, string jobDetails, int submittedBy)
+		{
+			string message =
+				$"Attempting to create Job in {nameof(JobService)}.{Environment.NewLine}" +
+				$"WorkspaceId: ({workspaceID}).{Environment.NewLine}" +
+				$" RelatedObjectArtifactID: ({relatedObjectArtifactID}).{Environment.NewLine}" +
+				$" Task types: {taskType}.{Environment.NewLine}" +
+				$" Job details: ({jobDetails}).{Environment.NewLine}" +
+				$" Submitted by: {submittedBy}";
+			_logger.LogInformation(message);
+		}
+
+		private void LogOnDeleteJob(long jobId)
+		{
+			_logger.LogInformation("Attempting to delete Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
+		}
+
+		private void LogOnGetJob(long jobId)
+		{
+			_logger.LogInformation("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
+		}
+
+		private void LogOnGetScheduledJob(int workspaceId, int relatedObjectArtifactID, List<string> taskTypes)
+		{
+			_logger.LogInformation(
+				"Attempting to get scheduledJobs in {TypeName}. WorkspaceId: ({WorkspaceId}), RelatedObjectArtifactID: ({RelatedObjectArtifactID}). Task types: {TaskTypes}",
+				nameof(JobService), workspaceId, relatedObjectArtifactID, string.Join(",", taskTypes));
+		}
+
+		private void LogOnUpdateJobStopStateError(StopState state, IList<long> jobIds)
+		{
+			_logger.LogError(
+				"An error occured during update of stop states of jobs with IDs ({jobIds}) to state {state} in {TypeName}",
+				string.Join(",", jobIds), state, nameof(JobService));
+		}
+
+		private void LogOnUpdateJobStopState(StopState state, IList<long> jobIds)
+		{
+			_logger.LogInformation("Attempting to update Stop state of jobs with IDs ({jobIds}) to {state} state in {TypeName}",
+				string.Join(",", jobIds), state.ToString(), nameof(JobService));
+		}
+
+		private void LogOnGetJobs(long integrationPointId)
+		{
+			_logger.LogInformation(
+				"Attempting to retrieve jobs for Integration Point with ID: {integrationPointID} in {TypeName}", integrationPointId,
+				nameof(JobService));
+		}
+
+		private void LogOnCleanJobQueTable()
+		{
+			_logger.LogInformation("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));
+		}
+
+		#endregion
 	}
 }

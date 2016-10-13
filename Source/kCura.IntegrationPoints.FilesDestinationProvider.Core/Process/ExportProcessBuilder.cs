@@ -13,18 +13,21 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 using Relativity;
+using Relativity.API;
+using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportProcessBuilder : IExportProcessBuilder
 	{
-		private readonly IConfigFactory _configFactory;
 		private readonly ICaseManagerFactory _caseManagerFactory;
+		private readonly IConfigFactory _configFactory;
 		private readonly ICredentialProvider _credentialProvider;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly JobStatisticsService _jobStatisticsService;
+		private readonly IAPILog _logger;
 		private readonly ICompositeLoggingMediator _loggingMediator;
 		private readonly IManagerFactory<ISearchManager> _searchManagerFactory;
 		private readonly IUserMessageNotification _userMessageNotification;
@@ -40,6 +43,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IManagerFactory<ISearchManager> searchManagerFactory,
 			IExporterFactory exporterFactory,
 			IExportFileBuilder exportFileBuilder,
+			IHelper helper,
 			JobStatisticsService jobStatisticsService
 		)
 		{
@@ -53,23 +57,35 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_exporterFactory = exporterFactory;
 			_exportFileBuilder = exportFileBuilder;
 			_jobStatisticsService = jobStatisticsService;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
 		}
 
-		public SharedLibrary.IExporter Create(ExportSettings settings, Job job)
+		public IExporter Create(ExportSettings settings, Job job)
 		{
-			var exportFile = _exportFileBuilder.Create(settings);
-			PerformLogin(exportFile);
-			PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds, settings.TextPrecedenceFieldsIds);
-			var exporter = _exporterFactory.Create(exportFile);
-			AttachHandlers(exporter);
-			SubscribeToJobStatisticsEvents(job);
-			return exporter;
+			try
+			{
+				LogCreatingExporter(settings);
+				var exportFile = _exportFileBuilder.Create(settings);
+				PerformLogin(exportFile);
+				PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds, settings.TextPrecedenceFieldsIds);
+				var exporter = _exporterFactory.Create(exportFile);
+				AttachHandlers(exporter);
+				SubscribeToJobStatisticsEvents(job);
+				return exporter;
+			}
+			catch (Exception e)
+			{
+				LogCreatingExporterError(e);
+				throw;
+			}
 		}
 
 		private void PerformLogin(ExportFile exportFile)
 		{
 			IConfig config = _configFactory.Create();
 			WinEDDS.Config.ProgrammaticServiceURL = config.WebApiPath;
+
+			LogPerformingLogging(config);
 
 			var cookieContainer = new CookieContainer();
 
@@ -79,6 +95,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void PopulateExportFieldsSettings(ExportFile exportFile, List<int> selectedViewFieldIds, List<int> selectedTextPrecedence)
 		{
+			LogPopulatingFields();
 			using (var searchManager = _searchManagerFactory.Create(exportFile.Credential, exportFile.CookieContainer))
 			{
 				using (var caseManager = _caseManagerFactory.Create(exportFile.Credential, exportFile.CookieContainer))
@@ -106,15 +123,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			}
 		}
 
-		private static void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds)
+		private void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds)
 		{
 			exportFile.SelectedViewFields = FilterFields(exportFile, selectedViewFieldIds);
 
 			var fieldIdentifier = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier);
 			if (fieldIdentifier == null)
 			{
-				throw new Exception($"Cannot find field identifier in the selected field list:" +
-									$" {string.Join("", "", exportFile.SelectedViewFields.Select(field => field.DisplayName))} of {exportFile.FilePrefix}");
+				var message = $"Cannot find field identifier in the selected field list:" +
+							$" {string.Join("", "", exportFile.SelectedViewFields.Select(field => field.DisplayName))} of {exportFile.FilePrefix}";
+				LogMissingIdentifierFieldError(message);
+				throw new Exception(message);
 			}
 
 			exportFile.IdentifierColumnName = fieldIdentifier.DisplayName;
@@ -132,27 +151,71 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private static ViewFieldInfo[] FilterFields(ExportFile exportFile, List<int> fieldsIds)
 		{
 			return exportFile.AllExportableFields
-			   .Where(x => fieldsIds.Any(fieldId => fieldId == x.AvfId))
-			   .OrderBy(x =>
-			   {
-				   var index = fieldsIds.IndexOf(x.AvfId);
-				   return (index < 0) ? int.MaxValue : index;
-			   }).ToArray();
+				.Where(x => fieldsIds.Any(fieldId => fieldId == x.AvfId))
+				.OrderBy(x =>
+				{
+					var index = fieldsIds.IndexOf(x.AvfId);
+					return index < 0 ? int.MaxValue : index;
+				}).ToArray();
 		}
 
-		private void AttachHandlers(SharedLibrary.IExporter exporter)   
+		private void AttachHandlers(IExporter exporter)
 		{
+			LogAttachingEventHandlers();
 			exporter.InteractionManager = _userNotification;
 			_loggingMediator.RegisterEventHandlers(_userMessageNotification, exporter);
 		}
 
 		private void SubscribeToJobStatisticsEvents(Job job)
 		{
-			foreach (var loggingMediator in
-				_loggingMediator.LoggingMediators.Where(loggingMediator => loggingMediator.GetType().GetInterfaces().Contains(typeof(IBatchReporter))))
+			List<ILoggingMediator> loggingMediators =
+				_loggingMediator.LoggingMediators.Where(loggingMediator => loggingMediator.GetType().GetInterfaces().Contains(typeof(IBatchReporter))).ToList();
+
+			LogSubscribingToStatisticEvents(loggingMediators);
+
+			foreach (var loggingMediator in loggingMediators)
 			{
 				_jobStatisticsService.Subscribe(loggingMediator as IBatchReporter, job);
 			}
 		}
+
+		#region Logging
+
+		private void LogCreatingExporter(ExportSettings settings)
+		{
+			_logger.LogInformation("Attempting to create SharedLibrary.IExporter for exporting {ExportType}.", settings.TypeOfExport);
+		}
+
+		private void LogPerformingLogging(IConfig config)
+		{
+			_logger.LogInformation("Connecting to WebAPI in IExporter using WebAPIPath: {WebAPIPath}.", config.WebApiPath);
+		}
+
+		private void LogPopulatingFields()
+		{
+			_logger.LogVerbose("Attempting to populate export fields.");
+		}
+
+		private void LogMissingIdentifierFieldError(string message)
+		{
+			_logger.LogError(message);
+		}
+
+		private void LogAttachingEventHandlers()
+		{
+			_logger.LogVerbose("Attaching event handlers to IExporter.");
+		}
+
+		private void LogSubscribingToStatisticEvents(List<ILoggingMediator> loggingMediators)
+		{
+			_logger.LogVerbose("Subscribing {MediatorsCount} logging mediator(s) to statistic service.", loggingMediators.Count);
+		}
+
+		private void LogCreatingExporterError(Exception e)
+		{
+			_logger.LogError(e, "Failed to create Exporter.");
+		}
+
+		#endregion
 	}
 }

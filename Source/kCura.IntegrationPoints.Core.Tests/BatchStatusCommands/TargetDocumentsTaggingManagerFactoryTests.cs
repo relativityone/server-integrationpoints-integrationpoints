@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private ISourceJobManager _sourceJobManager;
 		private IDocumentRepository _documentRepository;
 		private ISynchronizerFactory _synchronizerFactory;
+		private IHelper _helper;
 		private ISerializer _serializer;
 		private FieldMap[] _fields;
 		private TargetDocumentsTaggingManagerFactory _instance;
@@ -42,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			_serializer = Substitute.For<ISerializer>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
+			_helper = Substitute.For<IHelper>();
 			_fields = new FieldMap[0];
 			_settings = new ImportSettings();
 			_serializer.Deserialize<ImportSettings>(_DEST_CONFIG).Returns(_settings);
@@ -59,6 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_sourceJobManager,
 				_documentRepository,
 				_synchronizerFactory,
+				_helper,
 				_serializer,
 				_fields,
 				_SOURCE_CONFIG,
@@ -96,6 +100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_sourceJobManager,
 				_documentRepository,
 				_synchronizerFactory,
+				_helper,
 				_serializer,
 				_fields,
 				_SOURCE_CONFIG,

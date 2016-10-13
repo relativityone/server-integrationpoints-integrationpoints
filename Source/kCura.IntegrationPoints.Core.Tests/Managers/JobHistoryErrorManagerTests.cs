@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -55,6 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryErrorItemStart = Substitute.For<IScratchTableRepository>();
 			_jobHistoryErrorItemComplete = Substitute.For<IScratchTableRepository>();
 			_jobHistoryErrorItemStartOther = Substitute.For<IScratchTableRepository>();
+			IHelper helper = Substitute.For<IHelper>();
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_workspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_repositoryFactory.GetJobHistoryRepository(_workspaceArtifactId).Returns(_jobHistoryRepository);
@@ -64,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, _itemErrorOnCompletePrefix, _uniqueJobId).Returns(_jobHistoryErrorItemComplete);
 			_repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, _itemErrorOnStartOtherPrefix, _uniqueJobId).Returns(_jobHistoryErrorItemStartOther);
 
-			_testInstance = new JobHistoryErrorManager(_repositoryFactory, _workspaceArtifactId, _uniqueJobId);
+			_testInstance = new JobHistoryErrorManager(_repositoryFactory, helper, _workspaceArtifactId, _uniqueJobId);
 
 			_job = JobExtensions.CreateJob(_workspaceArtifactId, _integrationPointArtifactId, _submittedByArtifactId);
 		}

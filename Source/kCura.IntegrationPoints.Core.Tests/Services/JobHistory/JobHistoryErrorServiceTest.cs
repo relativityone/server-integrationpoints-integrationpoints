@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private Data.JobHistory _jobHistory;
 
 		private ICaseServiceContext _caseServiceContext;
+		private IHelper _helper;
 
 		private JobHistoryErrorService _instance;
 		private IJobStopManager _stopJobManager;
@@ -30,9 +32,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_jobHistory = new Data.JobHistory { ArtifactId = 111 };
 
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
+			_helper = Substitute.For<IHelper>();
 			_stopJobManager = Substitute.For<IJobStopManager>();
 
-			_instance = new JobHistoryErrorService(_caseServiceContext)
+			_instance = new JobHistoryErrorService(_caseServiceContext, _helper)
 			{
 				IntegrationPoint = _integrationPoint,
 				JobHistory = _jobHistory,

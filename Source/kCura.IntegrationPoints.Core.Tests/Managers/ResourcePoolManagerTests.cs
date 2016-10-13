@@ -8,6 +8,7 @@ using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -15,8 +16,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	{
 		private class ResourcePoolManagerTestImpl : ResourcePoolManager
 		{
-			public ResourcePoolManagerTestImpl(IRepositoryFactory repositoryFactory, IRSAPIClient rsapiClient) 
-				: base(repositoryFactory, rsapiClient)
+			public ResourcePoolManagerTestImpl(IRepositoryFactory repositoryFactory, IRSAPIClient rsapiClient, IHelper helper) 
+				: base(repositoryFactory, rsapiClient, helper)
 			{
 			}
 
@@ -53,10 +54,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_rsApiClientMock = Substitute.For<IRSAPIClient>();
 			_resourcePoolRepositoryMock = Substitute.For<IResourcePoolRepository>();
+			var helper = Substitute.For<IHelper>();
 
 			_repositoryFactoryMock.GetResourcePoolRepository().Returns(_resourcePoolRepositoryMock);
 
-			_subjectUnderTest = new ResourcePoolManagerTestImpl(_repositoryFactoryMock, _rsApiClientMock);
+			_subjectUnderTest = new ResourcePoolManagerTestImpl(_repositoryFactoryMock, _rsApiClientMock, helper);
 		}
 
 		[Test]

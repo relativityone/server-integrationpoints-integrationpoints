@@ -7,11 +7,14 @@ namespace kCura.ScheduleQueue.Core.Logging
 {
 	public class JobLogService
 	{
-		private bool jobLogTableCreated = false;
-		private IAgentHelper helper = null;
+		private bool jobLogTableCreated;
+		private IAgentHelper helper;
+		private readonly IAPILog _logger;
+
 		public JobLogService(IAgentHelper helper)
 		{
 			this.helper = helper;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobLogService>();
 		}
 
 		public void Log(AgentTypeInformation agentTypeInfo, Job job, JobLogState state, string details = null)
@@ -23,27 +26,30 @@ namespace kCura.ScheduleQueue.Core.Logging
 				CreateLogTableOnce();
 
 				new InsertJobLogEntry(qDBContext).Execute(
-						job.JobId,
-						job.RootJobId,
-						job.ParentJobId,
-						job.TaskType,
-						(int)state,
-						job.LockedByAgentID,
-						job.WorkspaceID,
-						job.RelatedObjectArtifactID,
-						job.SubmittedBy,
-						details
+					job.JobId,
+					job.RootJobId,
+					job.ParentJobId,
+					job.TaskType,
+					(int) state,
+					job.LockedByAgentID,
+					job.WorkspaceID,
+					job.RelatedObjectArtifactID,
+					job.SubmittedBy,
+					details
 				);
 			}
 			catch (Exception ex)
 			{
 				SystemEventLoggingService.WriteErrorEvent(agentTypeInfo.Name, "Application", ex);
+				_logger.LogError(ex, "An error occured during inserting JobLogEntry in {TypeName}.{MethodName}",
+					nameof(JobLogService), nameof(Log));
 			}
 		}
 
 
-		private IQueueDBContext qDBContext = null;
+		private IQueueDBContext qDBContext;
 		private int savedWorkspaceID = int.MinValue;
+
 		private void SetLocalQDBContext(AgentTypeInformation agentInfo, Job job)
 		{
 			if (qDBContext == null

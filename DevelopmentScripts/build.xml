@@ -187,6 +187,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Services.Tests\kCura.IntegrationPoints.Services.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -448,6 +453,7 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Services.Tests\bin\x64\kCura.IntegrationPoints.Services.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
@@ -463,7 +469,9 @@
       <allow>kCura.IntegrationPoints.Agent.Tests.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
       <allow>kCura.IntegrationPoints.Web.Tests.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
       <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
-      <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(int32,int32)</allow>
+      <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(0,0)</allow>
+      <allow>kCura.IntegrationPoints.Services.Tests.DocumentManagerLoggingTests.ItShouldLogErrorFromGetCurrentPromotionStatusAsync</allow>
+      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportServiceTests.GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult</allow>	  
     </WhiteList>
   </TestRunner>
   <RAPBuilder>

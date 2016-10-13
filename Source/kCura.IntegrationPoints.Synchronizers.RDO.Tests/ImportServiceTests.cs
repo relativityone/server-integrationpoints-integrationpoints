@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
@@ -39,7 +41,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField7",GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
 
 			//ACT
 			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping, null);
@@ -79,7 +81,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
 
 
 			//ACT
@@ -118,7 +120,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
 
 
 			//ACT
@@ -147,7 +149,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
 
 
 			//ACT
@@ -176,7 +178,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 			NativeFileImportService nativeFileImportService = null;
 
-			ImportService importService = new ImportService(null, null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
 
 
 			//ACT
@@ -210,7 +212,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				ImportNativeFiles = false
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
 
 
 			//ACT
@@ -245,7 +247,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				SourceFieldName = "MyPath"
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
 
 
 			//ACT

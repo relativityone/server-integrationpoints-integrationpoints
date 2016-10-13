@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Export
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		private const string _CONTROL_NUMBER = "Control Num";
 		private const string _FILE_NAME = "FileName";
 		private IExporter _exporter;
+		private IHelper _helper;
 		private IILongTextStreamFactory _longTextFieldFactory;
 		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
 		private FieldMap[] _mappedFields;
@@ -30,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		[OneTimeSetUp]
 		public void Setup()
 		{
+			_helper = Substitute.For<IHelper>();
 			_exporter = Substitute.For<IExporter>();
 			_longTextFieldFactory = Substitute.For<IILongTextStreamFactory>();
 			_exportApiResult = new global::Relativity.Core.Export.InitializationResults()
@@ -89,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			// arrange
 			_exportApiResult.RowCount = 0;
 			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
-			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, _avfIds);
 			_jobStopManager.IsStopRequested().Returns(false);
 
 			// act
@@ -107,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			_exportApiResult.RowCount = 1;
 			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
 			_exporter.RetrieveResults(_exportApiResult.RunId, _avfIds, 1).Returns(_goldFlowRetrievableData);
-			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, _avfIds);
 			_jobStopManager.IsStopRequested().Returns(false);
 
 			// act
@@ -127,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			// arrange
 			_exportApiResult.RowCount = Int32.MaxValue;
 			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
-			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, _avfIds);
 			_jobStopManager.IsStopRequested().Returns(false);
 
 			// act
@@ -143,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			// arrange
 			_exportApiResult.RowCount = Int64.MaxValue;
 			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
-			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, _avfIds);
 			_jobStopManager.IsStopRequested().Returns(false);
 
 			// act
@@ -159,7 +162,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			// arrange
 			_exportApiResult.RowCount = Int64.MaxValue;
 			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
-			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, _avfIds);
+			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, _avfIds);
 			_jobStopManager.IsStopRequested().Returns(true);
 
 			// act
@@ -196,7 +199,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			});
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 
@@ -221,7 +224,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 			// Assert
@@ -244,7 +247,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			_exporter.RetrieveResults(_exportApiResult.RunId, avfIds, 1).Returns((object)null);
 
 			// Act
-			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _mappedFields, _longTextField, avfIds);
+			RelativityExporterService rel = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper, _mappedFields, _longTextField, avfIds);
 			ArtifactDTO[] data = rel.RetrieveData(1);
 
 			// Assert

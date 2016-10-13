@@ -453,7 +453,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogUpdatingStoppedJobStatusError(Job job, Exception exception)
 		{
-			_logger.LogError(exception, "Failed to updated job ({JobId}) status after job has been stopped.", job.JobId);
+			_logger.LogError(exception, "Failed to update job ({JobId}) status after job has been stopped.", job.JobId);
 		}
 
 		private void LogCompletingJobError(Job job, Exception exception, IBatchStatus batchStatus)

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using kCura.ScheduleQueue.Core.Properties;
 
@@ -8,7 +6,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class DeleteJob
 	{
-		private IQueueDBContext qDBContext = null;
+		private IQueueDBContext qDBContext;
 
 		public DeleteJob(IQueueDBContext qDBContext)
 		{

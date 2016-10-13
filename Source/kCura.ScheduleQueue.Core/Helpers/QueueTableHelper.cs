@@ -11,9 +11,9 @@ namespace kCura.ScheduleQueue.Core.Helpers
 	{
 		public string GetQueueTableName()
 		{
-			List<Type> agentTypes = System.AppDomain.CurrentDomain.GetAssemblies()
-											 .SelectMany(assembly => assembly.GetTypes())
-											 .Where(type => type.IsSubclassOf(Type.GetType("kCura.ScheduleQueue.AgentBase"))).ToList();
+			List<Type> agentTypes = AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(assembly => assembly.GetTypes())
+				.Where(type => type.IsSubclassOf(Type.GetType("kCura.ScheduleQueue.AgentBase"))).ToList();
 			Object[] attributeObjects = agentTypes.SelectMany(t => t.GetCustomAttributes(true)).ToArray();
 			return GetQueueTableName(attributeObjects);
 		}
@@ -21,14 +21,14 @@ namespace kCura.ScheduleQueue.Core.Helpers
 		public string GetQueueTableName(Object[] attributeObjects)
 		{
 			string tableName = string.Empty;
-			object tableAttribute = null;
+			object tableAttribute;
 
 			if (attributeObjects != null && attributeObjects.Any())
 			{
 				tableAttribute = attributeObjects.FirstOrDefault(x => x.GetType() == typeof(GuidAttribute));
 				if (tableAttribute != null)
 				{
-					tableName = ((GuidAttribute)tableAttribute).Value;
+					tableName = ((GuidAttribute) tableAttribute).Value;
 					if (!string.IsNullOrEmpty(tableName)) tableName = string.Format("ScheduleAgentQueue_{0}", tableName.ToUpper());
 				}
 			}
@@ -42,7 +42,7 @@ namespace kCura.ScheduleQueue.Core.Helpers
 			try
 			{
 				AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-				AppDomain appDomain = System.AppDomain.CurrentDomain;
+				AppDomain appDomain = AppDomain.CurrentDomain;
 				List<Type> agentTypes = appDomain.GetAssemblies()
 					.SelectMany(assembly => assembly.GetTypes()).ToList();
 				agentTypes = agentTypes.Where(type => type.IsSubclassOf(Type.GetType("kCura.ScheduleQueue.AgentBase"))).ToList();
@@ -59,7 +59,7 @@ namespace kCura.ScheduleQueue.Core.Helpers
 		{
 			Assembly assembly = null;
 
-			string[] assemblyString = args.Name.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+			string[] assemblyString = args.Name.Split(new string[] {","}, StringSplitOptions.RemoveEmptyEntries);
 			if (assemblyString.Length > 1)
 			{
 				Assembly[] loadedAssemblies = Thread.GetDomain().GetAssemblies();
@@ -74,9 +74,13 @@ namespace kCura.ScheduleQueue.Core.Helpers
 
 				if (assembly == null)
 				{
-					try { assembly = Assembly.Load(assemblyString.First()); }
+					try
+					{
+						assembly = Assembly.Load(assemblyString.First());
+					}
 					catch
-					{ }
+					{
+					}
 				}
 			}
 			return assembly;
@@ -92,7 +96,7 @@ namespace kCura.ScheduleQueue.Core.Helpers
 				tableAttribute = attributeObjects.FirstOrDefault(x => x.GetType() == typeof(GuidAttribute));
 				if (tableAttribute != null)
 				{
-					string possibleGuid = ((GuidAttribute)tableAttribute).Value;
+					string possibleGuid = ((GuidAttribute) tableAttribute).Value;
 					if (!string.IsNullOrEmpty(possibleGuid)) agentGuid = Guid.Parse(possibleGuid);
 				}
 			}

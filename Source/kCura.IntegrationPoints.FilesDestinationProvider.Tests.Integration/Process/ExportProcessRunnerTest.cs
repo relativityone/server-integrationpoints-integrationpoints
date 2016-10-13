@@ -19,6 +19,7 @@ using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
+using Relativity.API;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
@@ -72,6 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
+			var helper = _windsorContainer.Resolve<IHelper>();
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
 			var exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			var loggingMediator = _windsorContainer.Resolve<ICompositeLoggingMediator>();
@@ -95,14 +97,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerFactory(),
 				new SearchManagerFactory(),
-				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository),
+				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder()),
+				helper,
 				jobStats
 			);
 
-			var exportSettingsBuilder = new ExportSettingsBuilder();
+			var exportSettingsBuilder = new ExportSettingsBuilder(helper);
 
-			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder, exportSettingsBuilder);
+			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder, exportSettingsBuilder, helper);
 		}
 
 		[OneTimeTearDown]

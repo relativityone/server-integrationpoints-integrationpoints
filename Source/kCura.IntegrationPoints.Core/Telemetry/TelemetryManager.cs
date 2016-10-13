@@ -9,21 +9,23 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 {
 	public class TelemetryManager
 	{
-		#region Fields
-
-		private readonly IHelper _helper;
-		private readonly List<ITelemetryMetricProvider> _metricProviders = new List<ITelemetryMetricProvider>();
-
-		#endregion //Fields
-
 		#region Constructors
 
 		public TelemetryManager(IHelper helper)
 		{
 			_helper = helper;
+			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<TelemetryManager>();
 		}
 
 		#endregion //Constructors
+
+		#region Fields
+
+		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
+		private readonly List<ITelemetryMetricProvider> _metricProviders = new List<ITelemetryMetricProvider>();
+
+		#endregion //Fields
 
 		#region Methods
 
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 		{
 			if (metricProvider == null)
 			{
+				LogEmptyMetricProvider();
 				throw new ArgumentNullException(nameof(metricProvider));
 			}
 			_metricProviders.Add(metricProvider);
@@ -52,14 +55,17 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 		{
 			try
 			{
-				using (IInternalMetricsCollectionManager internalMetricsCollectionManager = _helper.GetServicesManager().CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
+				using (
+					IInternalMetricsCollectionManager internalMetricsCollectionManager =
+						_helper.GetServicesManager().CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 				{
 					List<CategoryTarget> targets = Task.Run(async () => await internalMetricsCollectionManager.GetCategoryTargetsAsync()).ConfigureAwait(false).GetAwaiter().GetResult();
 					CategoryTarget ipCategoryTarget = targets.FirstOrDefault(x => x.Category.Name == category.Name);
 
 					if (ipCategoryTarget == null)
 					{
-						throw new Exception($"Can not find category target for telemetry category ${category.Name}");
+						LogMissingCategoryTarget(category);
+						throw new Exception($"Cannot find category target for telemetry category ${category.Name}");
 					}
 					ipCategoryTarget.IsCategoryMetricTargetEnabled[CategoryMetricTarget.APM] = true;
 					ipCategoryTarget.IsCategoryMetricTargetEnabled[CategoryMetricTarget.SUM] = true;
@@ -69,6 +75,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			}
 			catch (AggregateException ex)
 			{
+				LogSettingTargetCategoryError(category);
 				throw new Exception($"Failed to set target category metrics for telemetry category {category.Name}", ex.InnerException);
 			}
 		}
@@ -96,10 +103,35 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			}
 			catch (AggregateException ex)
 			{
+				LogAddingTelemetryCategoryError(categoryName, ex);
 				throw new Exception($"Failed to add telemetry category {categoryName}", ex.InnerException);
 			}
 		}
 
 		#endregion //Methods
+
+		#region Logging
+
+		private void LogEmptyMetricProvider()
+		{
+			_logger.LogError("Metric provider cannot be null.");
+		}
+
+		private void LogSettingTargetCategoryError(Category category)
+		{
+			_logger.LogError("Failed to set target category metrics for telemetry category {CategoryName}.", category.Name);
+		}
+
+		private void LogMissingCategoryTarget(Category category)
+		{
+			_logger.LogError("Cannot find category target for telemetry category {CategoryName}", category.Name);
+		}
+
+		private void LogAddingTelemetryCategoryError(string categoryName, AggregateException ex)
+		{
+			_logger.LogError(ex, "Failed to add telemetry category {CategoryName}.", categoryName);
+		}
+
+		#endregion
 	}
 }

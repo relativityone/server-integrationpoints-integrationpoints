@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using kCura.ScheduleQueue.Core.Properties;
-using kCura.ScheduleQueue.Core.TimeMachine;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {

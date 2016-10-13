@@ -92,23 +92,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         }
 
         [Test]
-        public void ItShouldLogStatusMessageWithStatusAsInfo()
+        public void ItShouldLogStatusMessageWithStatusAsVerbose()
         {
             var exportEventArgs = CreateExportEventArgs(EventType.Status);
 
             RaiseStatusMessage(exportEventArgs);
 
-            _apiLog.Received().LogInformation(_statusMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+            _apiLog.Received().LogVerbose(_statusMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
         }
 
         [Test]
-        public void ItShouldLogStatusMessageWithProgressAsInfo()
+        public void ItShouldLogStatusMessageWithProgressAsVerbose()
         {
             var exportEventArgs = CreateExportEventArgs(EventType.Progress);
 
             RaiseStatusMessage(exportEventArgs);
 
-            _apiLog.Received().LogInformation(_progressMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+            _apiLog.Received().LogVerbose(_progressMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
         }
 
         [Test]

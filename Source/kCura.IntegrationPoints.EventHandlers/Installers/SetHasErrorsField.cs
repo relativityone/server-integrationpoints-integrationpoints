@@ -99,10 +99,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			ISerializer serializer = new JSONSerializer();
-			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository, serializer);
+			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, serializer, jobTracker);
+			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository, Helper, serializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-			IManagerFactory managerFactory = new ManagerFactory();
+			IManagerFactory managerFactory = new ManagerFactory(Helper);
 
 			_caseServiceContext = caseServiceContext;
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService,

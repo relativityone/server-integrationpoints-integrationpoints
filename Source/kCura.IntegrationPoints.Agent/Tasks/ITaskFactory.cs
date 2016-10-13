@@ -191,7 +191,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
-			_managerFactory = new ManagerFactory();
+			_managerFactory = new ManagerFactory(_helper);
 		}
 
 		private void CheckForSynchronization(Type type, Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase)
@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IChoiceQuery choiceQuery = new ChoiceQuery(_rsapiClient);
 				JobResourceTracker jobResourceTracker = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
 				JobTracker jobTracker = new JobTracker(jobResourceTracker);
-				IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _serializer, jobTracker);
+				IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _helper, _serializer, jobTracker);
 
 				integrationPointService = new IntegrationPointService(_helper, _caseServiceContext,
 					_contextContainerFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory);

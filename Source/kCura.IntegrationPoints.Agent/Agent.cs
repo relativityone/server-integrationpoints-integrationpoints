@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			if (_errorService == null)
 			{
-				_errorService = new CreateErrorRdo(EddsRsapiClient);
+				_errorService = new CreateErrorRdo(EddsRsapiClient, Helper);
 			}
 			_errorService.Execute(job, exception, _AGENT_NAME);
 		}

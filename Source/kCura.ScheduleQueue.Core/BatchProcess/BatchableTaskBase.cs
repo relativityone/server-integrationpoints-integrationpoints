@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.BatchProcess
 {

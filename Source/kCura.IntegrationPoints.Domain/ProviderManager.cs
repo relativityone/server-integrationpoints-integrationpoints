@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Domain
 				catch
 				{
 					// Handle case (in event handlers) where IProviderFactory cannot be resolved...
-					_providerFactory = new DefaultProviderFactory(_windsorContainer);	
+					_providerFactory = new DefaultProviderFactory(_windsorContainer, helper);	
 				}
 			}
 

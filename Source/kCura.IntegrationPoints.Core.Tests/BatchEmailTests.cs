@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private BatchEmail _testInstance;
 
 		private ICaseServiceContext _caseServiceContext;
-		private IHelper _helper = null;
+		private IHelper _helper;
 		private IDataProviderFactory _dataProviderFactory = null;
 		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer = null;
 		private ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory = null;
@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		[SetUp]
 		public void SetUp()
 		{
+			_helper = Substitute.For<IHelper>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_rsapiService = Substitute.For<IRSAPIService>();
 			_integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();

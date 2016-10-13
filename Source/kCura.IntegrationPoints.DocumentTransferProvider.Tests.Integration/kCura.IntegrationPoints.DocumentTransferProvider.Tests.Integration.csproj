@@ -47,11 +47,18 @@
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-    </Reference>
+    </Reference>		
+	<Reference Include="NSubstitute">
+		<HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
+	</Reference>
     <Reference Include="nunit.framework, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(NUnit)\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+	<Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
+		<HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
+		<Private>True</Private>
+	</Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +75,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
       <Project>{ca3d5b8b-b99c-4ba5-bb8b-44a0ba9aa0f7}</Project>

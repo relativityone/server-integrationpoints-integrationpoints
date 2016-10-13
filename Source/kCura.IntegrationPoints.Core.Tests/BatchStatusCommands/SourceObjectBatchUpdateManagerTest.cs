@@ -10,6 +10,7 @@ using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 	public class SourceObjectBatchUpdateManagerTest
 	{
 		private IScratchTableRepository _scratchTableRepository;
+		private IHelper _helper;
 		private IRepositoryFactory _repositoryFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
 		private ClaimsPrincipal _claimsPrincipal = null;
@@ -41,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		[SetUp]
 		public void Setup()
 		{
+			_helper = Substitute.For<IHelper>();
 			_scratchTableRepository = Substitute.For<IScratchTableRepository>();
 			_destinationWorkspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
@@ -78,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_repositoryFactory.GetScratchTableRepository(_sourceConfig.SourceWorkspaceArtifactId, _scratchTableName, Arg.Any<string>()).ReturnsForAnyArgs(_scratchTableRepository);
 			_scratchTableRepository.GetTempTableName().Returns(_scratchTableName);
 
-			_instance = new SourceObjectBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
+			_instance = new SourceObjectBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _helper, _sourceConfig,
 				_jobHistoryRdoId, _submittedBy, _uniqueJobId);
 
 			_repositoryFactory.Received().GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId);

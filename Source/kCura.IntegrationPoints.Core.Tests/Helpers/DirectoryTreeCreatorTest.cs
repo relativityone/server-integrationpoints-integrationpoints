@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		{
 			_directoryMock = Substitute.For<IDirectory>();
 
-			_subjectUnderTest = new DirectoryTreeCreator<JsTreeItemDTO>(_directoryMock);
+			_subjectUnderTest = new DirectoryTreeCreator<JsTreeItemDTO>(_directoryMock, Substitute.For<IHelper>());
 		}
 
 		[Test]
