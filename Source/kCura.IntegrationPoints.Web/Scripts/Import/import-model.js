@@ -75,6 +75,8 @@
             }
         });
 
+        self.DataFileEncodingTypeValue = "Select...";
+
         self.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({
             required: true
         });

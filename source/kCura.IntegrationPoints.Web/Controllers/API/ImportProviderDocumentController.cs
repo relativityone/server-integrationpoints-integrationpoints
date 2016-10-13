@@ -27,7 +27,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult LoadFileHeaders([FromBody] string settings)
         {
-            return Ok(settings);
+            return Ok(
+                _fieldParserFactory.GetFieldParser(settings).GetFields()
+                .Select((name, i) => new { Name = name, Index = i + 1 })
+                .OrderBy(x => x.Name)
+                .Select(x => string.Format("{0} ({1})", x.Name, x.Index)));
         }
 
     }
