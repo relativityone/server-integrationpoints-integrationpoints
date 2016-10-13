@@ -39,3 +39,18 @@
 #card-margin-bottom {
     margin: 15px 12px 20px 12px;
 }
+
+#file-column-headers {
+    position: absolute;
+    top: 248px;
+    width: 250px;
+    height: 200px;
+    font-family: 'Arial';
+    font-weight: 400;
+    font-style: normal;
+    font-size: 13px;
+    text-decoration: none;
+    color: #000000;
+    text-align: left;
+    margin: 0 0 0 200px;
+}
