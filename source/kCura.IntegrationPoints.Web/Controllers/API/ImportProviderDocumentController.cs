@@ -15,5 +15,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
             return Json(asciiTable.Select().Select(x => x[0].ToString()));
         }
+
+        [HttpPost]
+        public IHttpActionResult LoadFileHeaders([FromBody] string settings)
+        {
+            return Ok(settings);
+        }
+
     }
 }
