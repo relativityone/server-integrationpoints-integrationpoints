@@ -36,15 +36,17 @@
     padding-left: 10px;
 }
 
-#card-margin-bottom {
+#card-style {
     margin: 15px 12px 20px 12px;
 }
 
 #file-column-headers {
     position: absolute;
     top: 248px;
-    width: 250px;
-    height: 200px;
+    height: 100%;
+    width: 100%;
+    max-width: 332px;
+    max-height: 231px;
     font-family: 'Arial';
     font-weight: 400;
     font-style: normal;
@@ -53,4 +55,5 @@
     color: #000000;
     text-align: left;
     margin: 0 0 0 200px;
+    overflow-y: scroll;
 }
