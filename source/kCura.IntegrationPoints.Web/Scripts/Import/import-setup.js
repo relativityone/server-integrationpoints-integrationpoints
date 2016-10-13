@@ -68,6 +68,21 @@
         });
         preChoice.click(function () {
             console.log("Preview choice has been selected");
+
+            $.ajax({
+                url: baseUrlCache + "/api/ImportProviderDocument/LoadFileHeaders",
+                type: 'POST',
+                async: false,
+                data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel())},
+                success: function (data) {
+                    console.log('ajax success');
+                    console.log(data);
+                },
+                error: function (error) {
+                    console.log('ajax FAIL');
+                    console.log(error);
+                }
+            });
         });
     }
 
