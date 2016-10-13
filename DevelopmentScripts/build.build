@@ -236,15 +236,15 @@
 		<copy todir="${examples.directory}\MyFirstProvider\Provider">
 			<fileset basedir="${source.code.directory}\Provider">
 				<include name="**/*" />
-				<exclude name="**bin**" />
-				<exclude name="**obj**" />
+				<exclude name="**/bin/**" />
+				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
 		<copy todir="${examples.directory}\MyFirstProvider\Web">
 			<fileset basedir="${source.code.directory}\Web">
 				<include name="**/*" />
-				<exclude name="**bin**" />
-				<exclude name="**obj**" />
+				<exclude name="**/bin/**" />
+				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
 		<copy todir="${examples.directory}\MyFirstProvider">
@@ -257,15 +257,15 @@
 		<copy todir="${examples.directory}\JsonLoader\JsonLoader">
 			<fileset basedir="${source.code.directory}\JsonLoader">
 				<include name="**/*" />
-				<exclude name="**bin**" />
-				<exclude name="**obj**" />
+				<exclude name="**/bin/**" />
+				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
 		<copy todir="${examples.directory}\JsonLoader\JsonWeb">
 			<fileset basedir="${source.code.directory}\JsonWeb">
 				<include name="**/*" />
-				<exclude name="**bin**" />
-				<exclude name="**obj**" />
+				<exclude name="**/bin/**" />
+				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
 		<copy todir="${examples.directory}\JsonLoader">
