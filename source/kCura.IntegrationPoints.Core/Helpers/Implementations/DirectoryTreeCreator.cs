@@ -153,8 +153,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             }
             // An UnauthorizedAccessException exception will be thrown if we do not have
             // discovery permission on a folder.
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException e)
             {
+                LogUnauthorizedAccess(path, e);
             }
             return CreateSubItemsFiles(subFiles);
         }

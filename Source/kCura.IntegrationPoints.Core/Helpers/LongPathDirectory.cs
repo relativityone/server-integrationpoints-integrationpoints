@@ -76,8 +76,7 @@ namespace kCura.IntegrationPoints.Core.Helpers
 
 		public string[] GetFiles(string path)
 		{
-            //TODO: fix to work with long paths
-            return Directory.GetFiles(path);
+            return LongPath.LongPath.GetFiles(path);
 		}
 
 		public string[] GetFiles(string path, string searchPattern)

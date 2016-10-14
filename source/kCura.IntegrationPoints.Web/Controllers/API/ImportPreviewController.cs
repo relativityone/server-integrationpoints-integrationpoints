@@ -3,6 +3,7 @@ using System.Web.Http;
 using System.Net;
 using System.Net.Http;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
 
 
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpPost]
+        [LogApiExceptionFilter(Message = "Unable to create Preview Job")]
         public IHttpActionResult CreatePreviewJob(ImportPreviewSettings settings)
         {
             int jobId = _importPreviewService.CreatePreviewJob(settings);
@@ -25,6 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpGet]
+        [LogApiExceptionFilter(Message = "Unable to check the progress of the given Preview Job")]
         public IHttpActionResult CheckProgress(int jobId)
         {
             ImportPreviewStatus progressData =_importPreviewService.CheckProgress(jobId);
@@ -33,6 +36,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpGet]
+        [LogApiExceptionFilter(Message = "Unable to retrieve the Table for the given Preview Job")]
         public IHttpActionResult GetImportPreviewTable(int jobId)
         {
             ImportPreviewTable previewTable = _importPreviewService.RetrievePreviewTable(jobId);
