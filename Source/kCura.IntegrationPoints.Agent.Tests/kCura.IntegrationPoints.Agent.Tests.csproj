@@ -123,6 +123,10 @@
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
