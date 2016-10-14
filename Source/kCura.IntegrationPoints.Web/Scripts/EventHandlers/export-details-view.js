@@ -49,7 +49,7 @@ var Model = function (dataContainer) {
 			return "Folder: " + self.settings.FolderFullName;
 		}
 		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.FolderSubfolder){
-			return "Folder + Subfolders: " + self.settings.FolderArtifactName;
+			return "Folder + Subfolders: " + self.settings.FolderFullName;
 		}
 		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production){
 			return "Production: " + self.settings.ProductionName;
