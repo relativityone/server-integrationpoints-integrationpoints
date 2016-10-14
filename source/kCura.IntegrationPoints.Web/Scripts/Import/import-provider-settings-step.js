@@ -19,7 +19,6 @@
         };
 
         console.log(model);
-        console.log(JSON.stringify(model));
         return model;
     };
 

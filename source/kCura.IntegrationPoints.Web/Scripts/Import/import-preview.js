@@ -2,10 +2,6 @@
 
 (function (root, opener) {
 
-    //DEBUG
-    var console = opener.top.console;
-    //DEBUg
-
     var previewJobId = -1;
     var intervalId = -1;
     var percent = 0;
@@ -42,24 +38,20 @@
         FieldMapping:$.parseJSON(fieldMapping)
     };
 
-    console.log('about to call ajax');
     root.data.ajax({
         type: "post",
         url: root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/",
         data: JSON.stringify(previewSettingsData),
         dataType: 'json'
     })
-    .done(function(data){
-        console.log('preview window CreatePreviewJob ajax return');
-        console.log(data);
+    .done(function (data) {
         previewJobId = data;
         $("#progressBar").css("width", percent);
         intervalId = setInterval(
-            function(){
+            function () {
                 $.get(root.utils.getBaseURL() + "/api/ImportPreview/CheckProgress/" + previewJobId)
                 .done(function (data) {
-                    
-                    $("#statusMessage").html("In Process");                    
+                    $("#statusMessage").html("In Process");
                     //if we're only reading the first 1000 rows of a large file, bytes read comes back as -1
                     //we can just show the progress as 100% in this case
                     var percent;
@@ -94,7 +86,7 @@
                     }
                 });
             }, 2000);
-    }).fail(function (error) {console.log('fail function'); console.log(error) } );
+    });
 
     var GetPreviewTableData = function (jobId) {
         $.get(root.utils.getBaseURL() + "/api/ImportPreview/GetImportPreviewTable/" + jobId)
