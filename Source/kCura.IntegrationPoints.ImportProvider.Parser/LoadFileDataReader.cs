@@ -4,9 +4,6 @@ using System.Text;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
-
-using kCura.IntegrationPoints.ImportProvider.Helpers.Logging;
-
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
     public class LoadFileDataReader : LoadFileBase, IDataReader

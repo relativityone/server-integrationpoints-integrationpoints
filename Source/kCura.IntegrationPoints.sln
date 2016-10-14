@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web", "kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj", "{05724E56-C325-4CA2-9122-50A41411B691}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -151,8 +151,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImportProvider", "ImportProvider", "{16E36871-2EC6-48BB-ADAA-A9CD481F3337}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider", "kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj", "{835F7005-E106-4C29-AD9C-FE8BD5CF8280}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Helpers", "kCura.IntegrationPoints.ImportProvider.Helpers\kCura.IntegrationPoints.ImportProvider.Helpers.csproj", "{4353E00F-B152-418C-9CC7-9B444A95352E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Parser", "kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj", "{180650D2-1EEA-4242-949D-7BDE78EECCB4}"
 EndProject
@@ -442,14 +440,6 @@ Global
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Release|Any CPU.Build.0 = Release|Any CPU
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Release|x64.ActiveCfg = Release|x64
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Release|x64.Build.0 = Release|x64
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Debug|x64.ActiveCfg = Debug|x64
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Debug|x64.Build.0 = Debug|x64
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Release|x64.ActiveCfg = Release|x64
-		{4353E00F-B152-418C-9CC7-9B444A95352E}.Release|x64.Build.0 = Release|x64
 		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Debug|x64.ActiveCfg = Debug|x64
@@ -539,7 +529,6 @@ Global
 		{A6490515-F92D-4157-BF25-5DCC481AA14D} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{16E36871-2EC6-48BB-ADAA-A9CD481F3337} = {E4D200F1-55C2-42C4-A54B-3AE21F0443DF}
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280} = {16E36871-2EC6-48BB-ADAA-A9CD481F3337}
-		{4353E00F-B152-418C-9CC7-9B444A95352E} = {16E36871-2EC6-48BB-ADAA-A9CD481F3337}
 		{180650D2-1EEA-4242-949D-7BDE78EECCB4} = {16E36871-2EC6-48BB-ADAA-A9CD481F3337}
 		{1CF9A281-4FE6-4735-A66D-71C7E415EF69} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{5E44277B-5C51-4367-874B-EFA44EB2B956} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}

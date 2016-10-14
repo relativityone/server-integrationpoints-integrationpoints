@@ -300,11 +300,6 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="Source\kCura.IntegrationPoints.ImportProvider.Helpers\kCura.IntegrationPoints.ImportProvider.Helpers.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
         <Project path="Source\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -471,7 +466,7 @@
       <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
       <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(0,0)</allow>
       <allow>kCura.IntegrationPoints.Services.Tests.DocumentManagerLoggingTests.ItShouldLogErrorFromGetCurrentPromotionStatusAsync</allow>
-      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportServiceTests.GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult</allow>	  
+      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportServiceTests.GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
@@ -498,7 +493,6 @@
           <Assembly>lib\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
           <Assembly>lib\Renci.SshNet.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.ImportProvider.Helpers.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
         </Assemblies>
         <ResourceFiles />

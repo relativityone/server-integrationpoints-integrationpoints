@@ -1767,12 +1767,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1019558</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.ImportProvider.Helpers.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1019877</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.ImportProvider.Parser.dll</Name>

@@ -3,8 +3,6 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
 
-using kCura.IntegrationPoints.ImportProvider.Helpers.Logging;
-
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
     public class FieldParserFactory : IFieldParserFactory

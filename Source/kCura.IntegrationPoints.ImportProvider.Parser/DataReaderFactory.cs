@@ -4,8 +4,6 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
 
-using kCura.IntegrationPoints.ImportProvider.Helpers.Logging;
-
 using RAPI = Relativity;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser

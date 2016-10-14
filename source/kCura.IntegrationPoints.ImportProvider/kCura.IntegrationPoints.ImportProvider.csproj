@@ -84,10 +84,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Helpers\kCura.IntegrationPoints.ImportProvider.Helpers.csproj">
-      <Project>{4353e00f-b152-418c-9cc7-9b444a95352e}</Project>
-      <Name>kCura.IntegrationPoints.ImportProvider.Helpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
       <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
       <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
