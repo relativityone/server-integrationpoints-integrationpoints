@@ -208,6 +208,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
+    <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
     <Compile Include="Helpers\TestBase.cs" />
     <Compile Include="CastleWindsorValidationTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
