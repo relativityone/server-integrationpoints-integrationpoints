@@ -25,10 +25,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
         
         public int CreatePreviewJob(ImportPreviewSettings settings)
         {
-            int handlerNum = _loadFilePreviewers.Count + 1;
-            _loadFilePreviewers.Add(handlerNum, new PreviewJob(_credentialProvider.GetAuthenticatedCredential(), settings));
+            int jobId = _loadFilePreviewers.Count + 1;
+            _loadFilePreviewers.Add(jobId, new PreviewJob());
+            _loadFilePreviewers[jobId].Init(_credentialProvider.GetAuthenticatedCredential(), settings);
 
-            return handlerNum;
+            return jobId;
         }
 
         public void StartPreviewJob(int jobId)

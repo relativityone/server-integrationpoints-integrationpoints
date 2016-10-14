@@ -14,15 +14,19 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     public class PreviewJob
     {
         private bool _errorsOnly;
-        public PreviewJob(NetworkCredential authenticatedCredential, ImportPreviewSettings settings)
+        public PreviewJob()
         {
             IsComplete = false;
             IsFailed = false;
+            _errorsOnly = false;       
+        }
 
-            var factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, settings.WorkspaceId);
-            var eddsLoadFile = factory.ToLoadFile();
-            _errorsOnly = false;
-            if(settings.PreviewType == "errors")
+        public void Init(NetworkCredential authenticatedCredential, ImportPreviewSettings settings)
+        {
+            NativeSettingsFactory factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, settings.WorkspaceId);
+            LoadFile eddsLoadFile = factory.ToLoadFile();
+            
+            if (settings.PreviewType == "errors")
             {
                 _errorsOnly = true;
             }
@@ -39,10 +43,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             eddsLoadFile.CreateFolderStructure = false;
 
             //Create obj
-            var temp = new kCura.WinEDDS.LoadFileReader(eddsLoadFile, false);
+            LoadFileReader temp = new kCura.WinEDDS.LoadFileReader(eddsLoadFile, false);
 
             //set up field mapping to extract all fields with reader
-            var cols = temp.GetColumnNames(eddsLoadFile);
+            string[] cols = temp.GetColumnNames(eddsLoadFile);
             int colIdx = 0;
             foreach (string colName in cols)
             {
@@ -67,7 +71,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 colIdx++;
             }
 
-            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, _errorsOnly, false);            
+            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, _errorsOnly, false);
         }
 
         public void StartRead()
@@ -84,6 +88,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 preview.Header.Add(string.Empty);
                 int columnNumbers = 1;
                 int dataRowIndex = 1;//this will be used to populate the list of rows with an error
+                //using var in this foreach since we don't know the type of each item in the arraylist (can be ArtifactField[] or Exception)
                 foreach (var item in arrs)
                 {
                     List<string> row = new List<string>();
@@ -133,7 +138,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 //update any error rows that were created before we hit a row that allowed us to populate the full header list
                 if (populatedHeaders)
                 {
-                    foreach (var row in preview.Data)
+                    foreach (List<string> row in preview.Data)
                     {
                         while (row.Count < columnNumbers)
                         {
