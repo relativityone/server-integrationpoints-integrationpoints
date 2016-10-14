@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using JsonLoader.Models;
 
 namespace JsonLoader
 {
@@ -6,19 +7,19 @@ namespace JsonLoader
 	{
 		public virtual string ReadFields(string options)
 		{
-			var settings = GetSettings(options);
+			JsonSettings settings = GetSettings(options);
 			return File.ReadAllText(settings.FieldLocation);
 		}
 
 		public virtual string ReadData(string options)
 		{
-			var settings = GetSettings(options);
+			JsonSettings settings = GetSettings(options);
 			return File.ReadAllText(settings.DataLocation);
 		}
 
 		public virtual JsonSettings GetSettings(string options)
 		{
-			var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonSettings>(options);
+			JsonSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonSettings>(options);
 			return settings;
 		}
 	}

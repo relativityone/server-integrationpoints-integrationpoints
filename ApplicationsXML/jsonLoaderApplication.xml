@@ -1762,7 +1762,7 @@
     <InstallEventHandler>
       <ArtifactId>1039368</ArtifactId>
       <AssemblyArtifactId>1016610</AssemblyArtifactId>
-      <Name>JsonLoader.Installer.RunEveryTimeInstaller</Name>
+      <Name>JsonLoader.Eventhandlers.JsonProviderInstaller</Name>
       <Guid>64110733-03f8-4dac-958d-31e9dfda6071</Guid>
       <Guids>4f82cf08-a665-4b05-b656-aa8d7848cc0c</Guids>
       <ExecutionType>8</ExecutionType>
@@ -1774,7 +1774,7 @@
     <InstallEventHandler>
       <ArtifactId>1039369</ArtifactId>
       <AssemblyArtifactId>1016610</AssemblyArtifactId>
-      <Name>JsonLoader.Installer.Uninstaller</Name>
+      <Name>JsonLoader.Eventhandlers.Uninstaller</Name>
       <Guid>a4af9126-a773-4b62-b155-7b54c6bddc19</Guid>
       <Guids>c99dd8fb-7388-4728-84d8-1cf136601b4d</Guids>
       <ExecutionType>12</ExecutionType>

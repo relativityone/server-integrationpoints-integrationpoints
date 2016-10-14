@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JsonLoader.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using Newtonsoft.Json;
 
 namespace JsonLoader
 {
-	[kCura.IntegrationPoints.Contracts.DataSourceProvider(GlobalConst.JSON_SOURCE_PROVIDER_GUID)]
+	[kCura.IntegrationPoints.Contracts.DataSourceProvider(Constants.JSON_SOURCE_PROVIDER_GUID)]
 	public class JsonProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
 	{
 		private readonly JsonHelper _helper;

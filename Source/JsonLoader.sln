@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonLoader", "JsonLoader\Js
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonWeb", "JsonWeb\JsonWeb.csproj", "{284B3D17-44FE-4AFD-8083-51CE18F9FD4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonLoaderTests", "JsonLoaderTests\JsonLoaderTests.csproj", "{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,14 +31,6 @@ Global
 		{284B3D17-44FE-4AFD-8083-51CE18F9FD4B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{284B3D17-44FE-4AFD-8083-51CE18F9FD4B}.Release|x64.ActiveCfg = Release|x64
 		{284B3D17-44FE-4AFD-8083-51CE18F9FD4B}.Release|x64.Build.0 = Release|x64
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Debug|x64.Build.0 = Debug|Any CPU
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Release|x64.ActiveCfg = Release|Any CPU
-		{BF380162-7E6D-4F10-A02C-4DB3C9BBFF4C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
