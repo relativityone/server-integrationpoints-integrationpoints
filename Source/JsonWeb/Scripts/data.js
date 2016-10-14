@@ -54,15 +54,6 @@
 				}
 				return true;
 			};
-
-			//if (settings.loading.timeout > 0) {
-			//	//root.modal.open(settings.loading.timeout, (container instanceof jQuery) ? container : $(container));
-			//}
-			//settings.complete = function () {
-			//	if (root.modal && root.modal.close) {
-			//		root.modal.close();
-			//	}
-			//};
 			return data.deferred($.ajax(settings));
 		};
 

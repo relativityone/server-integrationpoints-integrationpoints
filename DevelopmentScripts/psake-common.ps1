@@ -48,7 +48,7 @@ properties {
     #nunit variables
     $NUnit = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console.exe')
     $NUnit_x86 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console-x86.exe')
-    $NUnit3 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Console', 'tools', 'nunit3-console.exe')
+    $NUnit3 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.ConsoleRunner', 'tools', 'nunit3-console.exe')
 
     #build variables
     $verbosity ="normal" 

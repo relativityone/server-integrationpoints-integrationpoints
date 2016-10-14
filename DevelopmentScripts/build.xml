@@ -261,14 +261,6 @@
             <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
           </IgnoreRules>
         </Project>
-        <Project path="Source\JsonLoaderTests\JsonLoaderTests.csproj">
-          <Platforms>
-            <Platform>AnyCPU</Platform>
-          </Platforms>
-          <IgnoreRules>
-            <IgnoreRule>CommonAssemblyInfo</IgnoreRule>
-          </IgnoreRules>
-        </Project>
         <Project path="Source\JsonWeb\JsonWeb.csproj">
           <Platforms>
             <Platform>AnyCPU</Platform>
@@ -466,7 +458,11 @@
       <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
       <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(0,0)</allow>
       <allow>kCura.IntegrationPoints.Services.Tests.DocumentManagerLoggingTests.ItShouldLogErrorFromGetCurrentPromotionStatusAsync</allow>
-      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportServiceTests.GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult</allow>
+      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportServiceTests.GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult</allow>	  
+      <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.ExportServiceManagerTests.Execute_CreateDestinationProvider_MakeSureToSetSourceProvider</allow>
+      <allow>kCura.IntegrationPoints.Data.Tests.Repositories.FieldRepositoryTests.RetrieveField_ReturnsValidArtifactId_Test</allow>
+      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportSettingsTests.ImportSettings_ImportOverlayBehavior(null,UseRelativityDefaults)</allow>
+      <allow>kCura.IntegrationPoints.Services.Tests.IntegrationPointManagerLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>

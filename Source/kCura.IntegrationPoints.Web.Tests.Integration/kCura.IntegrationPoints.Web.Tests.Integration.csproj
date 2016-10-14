@@ -73,6 +73,10 @@
       <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />

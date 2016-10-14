@@ -76,24 +76,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataObject.cs" />
+    <Compile Include="Models\DataObject.cs" />
     <Compile Include="DIProviderFactory.cs" />
-    <Compile Include="GlobalConst.cs" />
-    <Compile Include="Installer\Uninstaller.cs" />
-    <Compile Include="Installer\RunEveryTimeInstaller.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Eventhandlers\Uninstaller.cs" />
+    <Compile Include="Eventhandlers\JsonProviderInstaller.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="JsonProvider.cs" />
-    <Compile Include="JsonSettings.cs" />
+    <Compile Include="Models\JsonSettings.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartUp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="fields.json">
+    <None Include="Resources\fields.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="data.json">
+    <None Include="Resources\data.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
