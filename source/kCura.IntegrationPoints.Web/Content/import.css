@@ -40,20 +40,31 @@
     margin: 15px 12px 20px 12px;
 }
 
-#file-column-headers {
-    position: absolute;
-    top: 248px;
-    height: 100%;
+#file-column-container {
+    position: relative;
+    max-width: 900px;
+    margin: -24px 0 0 200px;
+}
+
+
+#file-column-textarea {
     width: 100%;
-    max-width: 332px;
-    max-height: 231px;
-    font-family: 'Arial';
-    font-weight: 400;
-    font-style: normal;
-    font-size: 13px;
-    text-decoration: none;
-    color: #000000;
-    text-align: left;
-    margin: 0 0 0 200px;
+    height: 100%;
+}
+
+#file-column-headers {
+    width: 100%;
+    min-height: 215px;
+    min-width: 210px;
+    outline: none;
+    resize: none;
+    border: 1px solid #000;
     overflow-y: scroll;
+}
+
+#file-column {
+    height: auto;
+    display: table;
+    width: 100%;
+    padding: 5px;
 }
