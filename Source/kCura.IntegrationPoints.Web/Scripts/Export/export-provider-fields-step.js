@@ -383,7 +383,7 @@
 				availableFieldsPromise,
 				mappedFieldsPromise,
 				getViewsPromise,
-				//OCTOBER_PRODUCTION_DISABLE//productionSetsPromise
+				productionSetsPromise
 			]).then(function (result) {
 				self.model.savedSearchesTree(result[0]);
 				self.model.savedSearches(getSavedSearches(result[0]));
@@ -423,8 +423,8 @@
 					}
 				});
 
-				//OCTOBER_PRODUCTION_DISABLE//self.model.productionSets(result[5]);
-				//OCTOBER_PRODUCTION_DISABLE//self.updateSelectedProduction();
+				self.model.productionSets(result[5]);
+				self.updateSelectedProduction();
 
 				self.model.ProductionId.subscribe(function (selected) {
 					if (!!selected) {
