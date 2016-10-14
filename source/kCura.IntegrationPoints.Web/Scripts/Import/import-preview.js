@@ -1,6 +1,11 @@
 ﻿var IP = IP || {};
 
 (function (root, opener) {
+
+    //DEBUG
+    var console = opener.top.console;
+    //DEBUg
+
     var previewJobId = -1;
     var intervalId = -1;
     var percent = 0;
@@ -37,6 +42,7 @@
         FieldMapping:$.parseJSON(fieldMapping)
     };
 
+    console.log('about to call ajax');
     root.data.ajax({
         type: "post",
         url: root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/",
@@ -44,6 +50,8 @@
         dataType: 'json'
     })
     .done(function(data){
+        console.log('preview window CreatePreviewJob ajax return');
+        console.log(data);
         previewJobId = data;
         $("#progressBar").css("width", percent);
         intervalId = setInterval(
@@ -86,7 +94,7 @@
                     }
                 });
             }, 2000);
-    });
+    }).fail(function (error) {console.log('fail function'); console.log(error) } );
 
     var GetPreviewTableData = function (jobId) {
         $.get(root.utils.getBaseURL() + "/api/ImportPreview/GetImportPreviewTable/" + jobId)

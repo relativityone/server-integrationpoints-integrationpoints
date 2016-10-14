@@ -1,40 +1,21 @@
-﻿using System.Text;
+﻿using kCura.WinEDDS;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-using kCura.IntegrationPoints.ImportProvider.Parser.Models;
-using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
     public class FieldParserFactory : IFieldParserFactory
     {
-        //TODO: Figure out why IWebApiConfig cannot be injected
-        //IWebApiConfig _webApiConfig;
-        IAuthenticatedCredentialProvider _credentialProvider;
-        //public FieldParserFactory(ICredentialProvider credentialProvider, IWebApiConfig webApiConfig)
-        public FieldParserFactory(IAuthenticatedCredentialProvider credentialProvider)
+        IWinEddsLoadFileFactory _winEddsLoadFileFactory;
+        public FieldParserFactory(IWinEddsLoadFileFactory winEddsLoadFileFactory)
         {
-            _credentialProvider = credentialProvider;
+            _winEddsLoadFileFactory = winEddsLoadFileFactory;
         }
 
         public IFieldParser GetFieldParser(string options)
         {
-            var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
-
-            var factory = new kCura.WinEDDS.NativeSettingsFactory(_credentialProvider.GetAuthenticatedCredential(), settings.WorkspaceId);
-            var loadFile = factory.ToLoadFile();
-
-            loadFile.RecordDelimiter = (char)settings.AsciiColumn;
-            loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
-            loadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
-            loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
-            loadFile.HierarchicalValueDelimiter = (char)settings.AsciiNestedValue;
-            loadFile.FilePath = settings.LoadFile;
-            loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
-
-            loadFile.LoadNativeFiles = false;
-            loadFile.CreateFolderStructure = false;
-
-            return new LoadFileFieldParser(loadFile);
+            ImportProviderSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
+            return new LoadFileFieldParser(_winEddsLoadFileFactory.GetLoadFile(settings));
         }
     }
 }

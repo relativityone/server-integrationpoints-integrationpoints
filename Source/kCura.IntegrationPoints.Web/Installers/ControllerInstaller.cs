@@ -46,8 +46,6 @@ using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
-using kCura.IntegrationPoints.ImportProvider.Parser.Authentication;
-using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
 using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -189,7 +187,6 @@ namespace kCura.IntegrationPoints.Web.Installers
             #region Import Provider
 
             container.Register(Component.For<IImportPreviewService>().ImplementedBy<ImportPreviewService>()); //todo: bp 10/7/2016 this might need to be a singleton
-            container.Register(Component.For<IAuthenticatedCredentialProvider>().ImplementedBy<AuthenticatedCredentialProvider>());
 
             #endregion
 

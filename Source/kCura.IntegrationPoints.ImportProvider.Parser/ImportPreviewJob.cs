@@ -21,32 +21,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _errorsOnly = false;       
         }
 
-        public void Init(NetworkCredential authenticatedCredential, ImportPreviewSettings settings)
+        public void Init(LoadFile loadFile, ImportPreviewSettings settings)
         {
-            NativeSettingsFactory factory = new kCura.WinEDDS.NativeSettingsFactory(authenticatedCredential, settings.WorkspaceId);
-            LoadFile eddsLoadFile = factory.ToLoadFile();
-            
             if (settings.PreviewType == "errors")
             {
                 _errorsOnly = true;
             }
-            //delimiter settings
-            eddsLoadFile.RecordDelimiter = (char)settings.AsciiColumn;
-            eddsLoadFile.QuoteDelimiter = (char)settings.AsciiQuote;
-            eddsLoadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
-            eddsLoadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
-            eddsLoadFile.HierarchicalValueDelimiter = (char)settings.AsciiNestedValue;
-            eddsLoadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
-
-            eddsLoadFile.FilePath = settings.LoadFile;
-            eddsLoadFile.LoadNativeFiles = false;
-            eddsLoadFile.CreateFolderStructure = false;
 
             //Create obj
-            LoadFileReader temp = new kCura.WinEDDS.LoadFileReader(eddsLoadFile, false);
+            LoadFileReader temp = new kCura.WinEDDS.LoadFileReader(loadFile, false);
 
             //set up field mapping to extract all fields with reader
-            string[] cols = temp.GetColumnNames(eddsLoadFile);
+            string[] cols = temp.GetColumnNames(loadFile);
             int colIdx = 0;
             foreach (string colName in cols)
             {
@@ -66,12 +52,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     //The column index we give here determines which column in the load file gets mapped to this Doc Field
                     var newfieldMapItem = new kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
 
-                    eddsLoadFile.FieldMap.Add(newfieldMapItem);
+                    loadFile.FieldMap.Add(newfieldMapItem);
                 }
                 colIdx++;
             }
 
-            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(eddsLoadFile, 0, _errorsOnly, false);
+            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(loadFile, 0, _errorsOnly, false);
         }
 
         public void StartRead()

@@ -5,8 +5,6 @@ using Castle.Windsor;
 
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-using kCura.IntegrationPoints.ImportProvider.Parser.Authentication;
-using kCura.IntegrationPoints.ImportProvider.Parser.Authentication.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Installers
 {
@@ -17,7 +15,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Installers
         {
             container.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>().LifestyleSingleton().OnlyNewServices());
             container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleSingleton().OnlyNewServices());
-            container.Register(Component.For<IAuthenticatedCredentialProvider>().ImplementedBy<AuthenticatedCredentialProvider>().LifestyleSingleton().OnlyNewServices());
+            container.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>().LifestyleSingleton().OnlyNewServices());
         }
     }
 }
