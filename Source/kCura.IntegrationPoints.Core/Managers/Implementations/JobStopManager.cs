@@ -21,6 +21,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly CancellationToken _token;
 		private bool _disposed;
 
+		/// <summary>
+		///     for testing only.
+		/// </summary>
+		internal TimerCallback Callback { get; }
+
+		public object SyncRoot { get; }
+
 		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId)
 		{
 			SyncRoot = new object();
@@ -71,13 +78,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_token = _cancellationTokenSource.Token;
 			_timerThread = new Timer(Callback, null, 0, 500);
 		}
-
-		/// <summary>
-		///     for testing only.
-		/// </summary>
-		internal TimerCallback Callback { get; }
-
-		public object SyncRoot { get; }
 
 		public bool IsStopRequested()
 		{
