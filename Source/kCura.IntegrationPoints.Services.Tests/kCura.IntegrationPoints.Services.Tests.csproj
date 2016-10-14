@@ -38,6 +38,13 @@
     <Reference Include="Relativity.Logging.Interfaces">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.IntegrationPoints">
+      <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,6 +61,7 @@
     <Compile Include="DocumentManagerLoggingTests.cs" />
     <Compile Include="IntegrationPointManagerLoggingTests.cs" />
     <Compile Include="JobHistoryManagerLoggingTests.cs" />
+    <Compile Include="ServiceTestsBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
