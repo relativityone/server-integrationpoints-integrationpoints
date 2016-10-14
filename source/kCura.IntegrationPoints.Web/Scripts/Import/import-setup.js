@@ -11,6 +11,14 @@
     var PREVIEW_FILE_LI = 'dd-previewFile';
     var PREVIEW_ERROR_LI = 'dd-previewErrors';
     var PREVIEW_CHOICE_LI = 'dd-previewChoiceFolder';
+    var FILE_ENCODING_COLUMN_COLUMN_DD = 'import-column';
+    var FILE_ENCODING_COLUMN_QUOTE_DD = 'import-quote';
+    var FILE_ENCODING_COLUMN_NEWLINE_DD = 'import-newline';
+    var FILE_ENCODING_COLUMN_MULTIVALUE_DD = 'import-multiValue';
+    var FILE_ENCODING_COLUMN_NESTEDVALUE_DD = 'import-nestedValue';
+    var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
+    var IMPORT_DETAIL_PROCESSING_SOURCE = 'processingSources';
+    var IMPORT_DETAIL_LOAD_FILE = 'location-input';
 
     windowObj.RelativityImport.UI.Elements = {
         PROGRESS_BUTTONS: PROGRESS_BUTTONS,
@@ -41,6 +49,69 @@
         windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(array[91].asciiID);
     };
 
+    var populateFileColumnHeaders = function () {
+        var baseUrlCache = root.utils.getBaseURL();
+        $.ajax({
+            url: baseUrlCache + "/api/ImportProviderDocument/LoadFileHeaders",
+            type: 'POST',
+            async: false,
+            data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel()) },
+            success: function (data) {
+                console.log('ajax success');
+                console.log(data);
+                windowObj.RelativityImport.koModel.setPopulateFileColumnHeaders(data);
+            },
+            error: function (error) {
+                console.log('ajax FAIL');
+                console.log(error);
+            }
+        });
+    };
+
+    var isEmpty = function (str) {
+        return (!str || 0 === str.length);
+    };
+
+    var fileHeaderColumn = $(idSelector(FILE_ENCODING_COLUMN_COLUMN_DD));
+    var fileHeaderQuote = $(idSelector(FILE_ENCODING_COLUMN_QUOTE_DD));
+    var fileHeaderNewLine = $(idSelector(FILE_ENCODING_COLUMN_NEWLINE_DD));
+    var fileHeaderMultiValue = $(idSelector(FILE_ENCODING_COLUMN_MULTIVALUE_DD));
+    var fileHeaderNestedValue = $(idSelector(FILE_ENCODING_COLUMN_NESTEDVALUE_DD));
+    var processingSource = $(idSelector(IMPORT_DETAIL_PROCESSING_SOURCE));
+    var dataEncoding = $(idSelector(FILE_ENCODING_DATA_SELECTOR));
+
+    dataEncoding.change(function () {
+        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+            populateFileColumnHeaders();
+        }
+    });
+
+    fileHeaderColumn.change(function () {
+        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+            populateFileColumnHeaders();
+        }
+    });
+    fileHeaderQuote.change(function () {
+        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+            populateFileColumnHeaders();
+        }
+    });
+    fileHeaderNewLine.change(function () {
+        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+            populateFileColumnHeaders();
+        }
+    });
+    fileHeaderMultiValue.change(function () {
+        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+            populateFileColumnHeaders();
+        }
+    });
+    fileHeaderNestedValue.change(function () {
+        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+            populateFileColumnHeaders();
+        }
+    });
+
     var assignDropdownItemHandlers = function () {
         var windowPar = windowObj.parent;
         var windowTop = windowObj.top;
@@ -68,21 +139,6 @@
         });
         preChoice.click(function () {
             console.log("Preview choice has been selected");
-
-            $.ajax({
-                url: baseUrlCache + "/api/ImportProviderDocument/LoadFileHeaders",
-                type: 'POST',
-                async: false,
-                data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel())},
-                success: function (data) {
-                    console.log('ajax success');
-                    console.log(data);
-                },
-                error: function (error) {
-                    console.log('ajax FAIL');
-                    console.log(error);
-                }
-            });
         });
     }
 

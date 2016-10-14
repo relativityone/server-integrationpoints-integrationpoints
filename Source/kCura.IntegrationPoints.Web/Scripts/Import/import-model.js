@@ -25,6 +25,11 @@
             new ImportTypeModel({ id: "3", value: "production", name: "Production Load File" })
         ]);
 
+        self.populateFileColumnHeaders = ko.observable();
+        self.setPopulateFileColumnHeaders = function (data) {
+            self.populateFileColumnHeaders(data);
+        };
+
         self.startLine = ko.observable("1");
 
         self.fileContainsColumn = ko.observable("true");
