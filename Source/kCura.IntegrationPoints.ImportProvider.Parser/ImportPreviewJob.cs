@@ -145,18 +145,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         private void OnPreviewerProgress(kCura.WinEDDS.LoadFilePreviewer.EventArgs e)
         {
-            if (e.Type == LoadFilePreviewer.EventType.Progress)
-            {
-                
-            }
-            else if (e.Type == LoadFilePreviewer.EventType.Complete)
+            if (e.Type == LoadFilePreviewer.EventType.Complete)
             {
                 IsComplete = true;
             }
             BytesRead = e.BytesRead;
             TotalBytes = e.TotalBytes;
             StepSize = e.StepSize;
-
         }
 
         public void DisposePreviewJob()

@@ -33,7 +33,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 
         public void StartPreviewJob(int jobId)
         {
-            Task.Run(()=>{
+            Task.Run(()=>
+            {
                 _loadFilePreviewers[jobId].StartRead();
             });
         }

@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				Id = root,
 				Text = root,
                 Icon = JsTreeItemIconEnum.Root.GetDescription(),
-                isDirectory = true
+                IsDirectory = true
 			};
 
 			TTreeItem currDirectoryItem = rootDirectoryItem;
@@ -134,11 +134,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				{
 					Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
 					Id = subDir,
-                    isDirectory = true
+                    IsDirectory = true
 				}).ToList();
 		}
 
-      //Doing the same for Files
         private List<TTreeItem> GetSubItemsFiles(TTreeItem dirItem)
         {
             return GetSubItemsFiles(dirItem.Id);
@@ -167,7 +166,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 {
                     Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
                     Id = subDir,
-                    isDirectory = false,
+                    IsDirectory = false,
                     Icon = "jstree-file"
                 }).ToList();
         }
