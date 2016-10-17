@@ -17,8 +17,6 @@
     var FILE_ENCODING_COLUMN_MULTIVALUE_DD = 'import-multiValue';
     var FILE_ENCODING_COLUMN_NESTEDVALUE_DD = 'import-nestedValue';
     var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
-    var IMPORT_DETAIL_PROCESSING_SOURCE = 'processingSources';
-    var IMPORT_DETAIL_LOAD_FILE = 'location-input';
 
     windowObj.RelativityImport.UI.Elements = {
         PROGRESS_BUTTONS: PROGRESS_BUTTONS,
@@ -32,14 +30,14 @@
     var idSelector = function (name) { return '#' + name; }
     windowObj.RelativityImport.UI.idSelector = idSelector;
 
-    var assignDropdownHandler = function () {
+    var assignDropdownHandler = function() {
         var content = windowObj.parent.$(idSelector(BUTTON_UL));
         content.slideToggle();
         var btn = windowObj.parent.$(idSelector(CUSTOM_BUTTON));
-        btn.click(function () {
+        btn.click(function() {
             content.slideToggle();
         });
-    }
+    };
     /*todo change column back to 19*/
     var assignAsciiDropDownDefault = function (array) {
         windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[43].asciiID);
@@ -68,6 +66,12 @@
         });
     };
 
+    var updateHeaders = function() {
+        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+            populateFileColumnHeaders();
+        };
+    };
+
     var isEmpty = function (str) {
         return (!str || 0 === str.length);
     };
@@ -77,39 +81,26 @@
     var fileHeaderNewLine = $(idSelector(FILE_ENCODING_COLUMN_NEWLINE_DD));
     var fileHeaderMultiValue = $(idSelector(FILE_ENCODING_COLUMN_MULTIVALUE_DD));
     var fileHeaderNestedValue = $(idSelector(FILE_ENCODING_COLUMN_NESTEDVALUE_DD));
-    var processingSource = $(idSelector(IMPORT_DETAIL_PROCESSING_SOURCE));
     var dataEncoding = $(idSelector(FILE_ENCODING_DATA_SELECTOR));
 
     dataEncoding.change(function () {
-        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
-            populateFileColumnHeaders();
-        }
+        updateHeaders();
     });
 
     fileHeaderColumn.change(function () {
-        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
-            populateFileColumnHeaders();
-        }
+        updateHeaders();
     });
     fileHeaderQuote.change(function () {
-        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
-            populateFileColumnHeaders();
-        }
+        updateHeaders();
     });
     fileHeaderNewLine.change(function () {
-        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
-            populateFileColumnHeaders();
-        }
+        updateHeaders();
     });
     fileHeaderMultiValue.change(function () {
-        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
-            populateFileColumnHeaders();
-        }
+        updateHeaders();
     });
     fileHeaderNestedValue.change(function () {
-        if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
-            populateFileColumnHeaders();
-        }
+        updateHeaders();
     });
 
     var assignDropdownItemHandlers = function () {
