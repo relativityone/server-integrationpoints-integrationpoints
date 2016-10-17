@@ -123,7 +123,7 @@
         $("#processingSources").change(function (c, item) {
             var artifacId = $("#processingSources option:selected").val();
             var choiceName = $("#processingSources option:selected").text();
-            $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId) + '?includeFiles=1')
+            $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId) + '?includeFiles=true')
                 .then(function (result) {
                     windowObj.RelativityImport.locationSelector.reload(result);
                     windowObj.RelativityImport.enableLocation(true);
