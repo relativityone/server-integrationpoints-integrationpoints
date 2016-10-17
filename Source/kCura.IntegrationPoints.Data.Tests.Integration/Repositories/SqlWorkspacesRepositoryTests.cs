@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
@@ -17,10 +13,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
     [TestFixture]
     public class SqlWorkspacesRepositoryTests
     {
-        [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.Pending, ExpectedResult = 0)]        
+        [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.Pending, ExpectedResult = 0)]
         [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.UpgradingScripts, ExpectedResult = 0)]
         [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.PendingApplicationUpgrade, ExpectedResult = 0)]
-        [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.UpgradingApplications, ExpectedResult = 0)]        
+        [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.UpgradingApplications, ExpectedResult = 0)]
         [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.Completed, ExpectedResult = 1)]
         [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.FailedScriptUpgrade, ExpectedResult = 0)]
         [TestCase(WorkspaceUpgrade.WorkspaceUpgradeStatus.FailedApplicationUpgrade, ExpectedResult = 0)]
@@ -33,14 +29,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
             var workspaceArtifactId = 1000001;
             var workspaceName = "Workspace1";
 
-            var dt = new DataTable();            
+            var dt = new DataTable();
             dt.Columns.Add("WorkspaceArtifactID");
             dt.Columns.Add("Name");
             dt.Columns.Add("Status");
 
             dt.Rows.Add(
-                workspaceArtifactId.ToString(), 
-                workspaceName, 
+                workspaceArtifactId.ToString(),
+                workspaceName,
                 ((int)status).ToString()
             );
 
@@ -61,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
             {
                 WorkspaceDTO workspace = actual.First();
                 Assert.That(workspace.ArtifactId, Is.EqualTo(workspaceArtifactId));
-                Assert.That(workspace.Name, Is.EqualTo(workspaceName));                
+                Assert.That(workspace.Name, Is.EqualTo(workspaceName));
             }
 
             return actual.Count();
