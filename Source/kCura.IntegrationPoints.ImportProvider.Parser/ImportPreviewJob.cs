@@ -8,6 +8,7 @@ using System.Net;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Contracts;
 using kCura.WinEDDS;
+using REL = Relativity;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     //set as an identifier
                     if (currentField.SourceField.IsIdentifier)
                     {
-                        fieldCat = 2;
+                        fieldCat = (int)REL.FieldCategory.Identifier;
                     }
 
                     var newDocField = new kCura.WinEDDS.DocumentField(currentField.DestinationField.DisplayName, int.Parse(currentField.DestinationField.FieldIdentifier), 4, fieldCat, -1, -1, -1, false,
