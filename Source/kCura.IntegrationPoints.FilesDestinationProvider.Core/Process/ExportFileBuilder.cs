@@ -55,22 +55,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_delimitersBuilder.SetDelimiters(exportFile, exportSettings);
 			SetImagePrecedence(exportSettings, exportFile);
 
-			// the follwoing method should relies on ImagePrecedence seetings. Is related to SavedSearch/Filders/SubFolders export type
-			SetNameTextOutupFilesSettings(exportFile);
-
 			return exportFile;
-		}
-
-		private void SetNameTextOutupFilesSettings(ExportFile exportFile)
-		{
-			if (exportFile.AreSettingsApplicableForProdBegBatesNameCheck())
-			{
-				exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production;
-			}
 		}
 
 		private static void SetExportedObjectIdAndName(ExportSettings exportSettings, ExportFile exportFile)
 		{
+			exportFile.ExportNativesToFileNamedFrom = ParseNativesFilenameFromType(exportSettings.ExportNativesToFileNamedFrom);
 			switch (exportSettings.TypeOfExport)
 			{
 				case ExportSettings.ExportType.SavedSearch:
@@ -86,7 +76,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				case ExportSettings.ExportType.ProductionSet:
 					exportFile.ArtifactID = exportSettings.ProductionId;
 					exportFile.LoadFilesPrefix = exportSettings.ProductionName;
-					exportFile.ExportNativesToFileNamedFrom = ParseNativesFilenameFromType(exportSettings.ExportNativesToFileNamedFrom);
 					break;
 				default:
 					throw new InvalidEnumArgumentException($"Unknown ExportSettings.ExportType ({exportSettings.TypeOfExport})");
@@ -96,10 +85,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private void SetImagePrecedence(ExportSettings exportSettings, ExportFile exportFile)
 		{
 			var imagePrecs = new List<Pair>();
-
-			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Produced ||
-				// Case for SavedSearch/Folder/SubFolder export type to drive set of ExportNativesToFileNamedFrom form Native file name conventaion flag - REL-96747:
-				(!exportSettings.ImagePrecedence.IsNullOrEmpty() && exportSettings.TypeOfExport != ExportSettings.ExportType.ProductionSet))
+			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Produced)
 			{
 				foreach (var productionPrecedence in exportSettings.ImagePrecedence)
 				{
@@ -266,7 +252,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		{
 			if (!exportSettingsExportNativesToFileNamedFrom.HasValue)
 			{
-				return ExportNativeWithFilenameFrom.Select;
+				// We can't return ExportNativeWithFilenameFrom.Select as this will couse issues in RDC Export code
+				return ExportNativeWithFilenameFrom.Identifier;
 			}
 			switch (exportSettingsExportNativesToFileNamedFrom)
 			{

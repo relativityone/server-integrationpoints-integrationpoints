@@ -30,11 +30,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public object[][] RetrieveBatesByProductionAndDocument(int caseContextArtifactID, int[] productionIds, int[] documentIds)
 		{
-			return global::Relativity.Core.Service.ProductionQuery.RetrieveBatesByProductionAndDocument(
+			object[][] retBegBatesInfo = global::Relativity.Core.Service.ProductionQuery.RetrieveBatesByProductionAndDocument(
 				_baseServiceContext, _userPermissionsMatrix, productionIds, documentIds)
 				.Table
 				.Select()
 				.Select( dr => global::Relativity.Export.ProductionDocumentBatesHelper.ToSerializableObjectArray(dr)).ToArray();
+
+			global::Relativity.Export.ProductionDocumentBatesHelper.CleanupSerialization(retBegBatesInfo);
+			return retBegBatesInfo;
 		}
 
 		private ProductionManager InitProductionManager(int appArtifactId)

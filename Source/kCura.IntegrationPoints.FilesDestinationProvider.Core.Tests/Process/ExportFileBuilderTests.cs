@@ -362,27 +362,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		[TestCase(null, ExportNativeWithFilenameFrom.Identifier)]
 		[TestCase(ExportSettings.NativeFilenameFromType.Identifier, ExportNativeWithFilenameFrom.Identifier)]
 		[TestCase(ExportSettings.NativeFilenameFromType.Production, ExportNativeWithFilenameFrom.Production)]
-		public void ItShouldSetNativeFilenameFromAccordingly(ExportSettings.NativeFilenameFromType givenSetting, ExportNativeWithFilenameFrom expectedSetting)
+		public void ItShouldSetNativeFilenameFromAccordingly(ExportSettings.NativeFilenameFromType? givenSetting, ExportNativeWithFilenameFrom expectedSetting)
 		{
-			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
 			_exportSettings.ExportNativesToFileNamedFrom = givenSetting;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
 			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(expectedSetting));
-		}
-
-		[Test]
-		public void ItShouldSetUndefinedExportNativeWithFilenameFrom()
-		{
-			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
-			_exportSettings.ExportNativesToFileNamedFrom = null;
-
-			var exportFile = _exportFileBuilder.Create(_exportSettings);
-
-			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(ExportNativeWithFilenameFrom.Select));
 		}
 
 		[Test]
