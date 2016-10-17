@@ -238,6 +238,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IntegrationTestAttribute.cs" />
+    <Compile Include="Repositories\SqlWorkspacesRepositoryTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="BaseRdoTests.cs" />
