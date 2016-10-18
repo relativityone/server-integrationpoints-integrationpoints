@@ -17,10 +17,10 @@ namespace kCura.IntegrationPoints.Services
 		///     and for testing
 		/// </summary>
 		/// <param name="logger"></param>
-		/// <param name="permissionRepositryFactory"></param>
-		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositryFactory)
+		/// <param name="permissionRepositoryFactory"></param>
+		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory)
 		{
-			_permissionRepositoryFactory = permissionRepositryFactory;
+			_permissionRepositoryFactory = permissionRepositoryFactory;
 			Logger = logger;
 		}
 

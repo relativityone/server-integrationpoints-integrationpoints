@@ -28,8 +28,8 @@ namespace kCura.IntegrationPoints.Services
 		///     For testing purposes only
 		/// </summary>
 		/// <param name="logger"></param>
-		/// <param name="permissionRepositryFactory"></param>
-		internal JobHistoryManager(ILog logger, IPermissionRepositoryFactory permissionRepositryFactory) : base(logger, permissionRepositryFactory)
+		/// <param name="permissionRepositoryFactory"></param>
+		internal JobHistoryManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
 		{
 		}
 
