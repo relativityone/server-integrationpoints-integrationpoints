@@ -13,6 +13,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         protected LoadFileBase(kCura.WinEDDS.LoadFile loadFile)
         {
+            Init(loadFile);
+        }
+
+        private void Init(kCura.WinEDDS.LoadFile loadFile)
+        {
             _config = loadFile;
             _loadFileReader = new kCura.WinEDDS.LoadFileReader(_config, false);
         }
