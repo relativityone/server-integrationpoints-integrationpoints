@@ -29,24 +29,24 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> sourceFileLines, string options)
         {
-            var Dt = new DataTable();
+            var dt = new DataTable();
             foreach (var field in fields)
             {
-                Dt.Columns.Add(field.FieldIdentifier);
+                dt.Columns.Add(field.FieldIdentifier);
             }
 
             foreach (var line in sourceFileLines)
             {
                 var lineSplit = line.Split(',');
-                var dtRow = Dt.NewRow();
+                var dtRow = dt.NewRow();
                 foreach (var field in fields)
                 {
                     dtRow[field.FieldIdentifier] = lineSplit[Int32.Parse(field.FieldIdentifier)];
                 }
-                Dt.Rows.Add(dtRow);
+                dt.Rows.Add(dtRow);
             }
 
-            return Dt.CreateDataReader();
+            return dt.CreateDataReader();
         }
 
         public IEnumerable<FieldEntry> GetFields(string options)
