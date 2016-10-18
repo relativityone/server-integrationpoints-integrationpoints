@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>kCura.IntegrationPoints.ImportProvider.Parser.Tests</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.ImportProvider.Parser.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\FreeImageNET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ionic.Zip, Version=1.8.4.28, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\Ionic.Zip.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.336.32\lib\net45\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Config, Version=9.4.336.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Config.9.4.336.32\lib\net45\kCura.Config.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Crypto, Version=9.4.336.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Crypto.9.4.336.32\lib\net45\kCura.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Data, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.Data.9.4.336.32\lib\net45\kCura.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Data.RowDataGateway, Version=9.4.336.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Data.RowDataGateway.9.4.336.32\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.ImageValidator, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.ImageValidator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.336.32\lib\net45\kCura.Injection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Notification, Version=9.4.336.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.336.32\lib\net45\kCura.Notification.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.OI.FileID, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.OI.FileID.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.Relativity.ImportAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI.Extension, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility, Version=9.4.336.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.336.32\lib\net45\kCura.Utility.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility.MassAssign, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCuraCore.9.4.336.32\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Windows.Forms, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.Windows.Forms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Windows.Process, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.Windows.Process.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.WinEDDS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.4.336.32, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\NSubstitute.1.10.0.0\lib\net45\NSubstitute.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity, Version=9.4.336.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.336.32\lib\net45\Relativity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ImportPreviewServiceTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
+      <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib\UnitTests"
+xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\Relativity.ImportExport.9.4.336.32\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.336.32\build\Relativity.ImportExport.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

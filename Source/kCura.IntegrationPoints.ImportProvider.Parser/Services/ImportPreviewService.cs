@@ -33,6 +33,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 
         public void StartPreviewJob(int jobId)
         {
+            if (!_loadFilePreviewers.ContainsKey(jobId))
+            {
+                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}",jobId));
+            }
+
             Task.Run(()=>
             {
                 _loadFilePreviewers[jobId].StartRead();
@@ -41,6 +46,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 
         public ImportPreviewStatus CheckProgress(int jobId)
         {
+            if (!_loadFilePreviewers.ContainsKey(jobId))
+            {
+                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
+            }
 
             ImportPreviewStatus status = new ImportPreviewStatus
             {
@@ -64,6 +73,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 
         public bool IsJobComplete(int jobId)
         {
+            if (!_loadFilePreviewers.ContainsKey(jobId))
+            {
+                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
+            }
+
             return _loadFilePreviewers[jobId].IsComplete;
         }
 
@@ -71,8 +85,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
         {
             if (!_loadFilePreviewers.ContainsKey(jobId))
             {
-                return null;
+                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
             }
+
             ImportPreviewTable table = _loadFilePreviewers[jobId].PreviewTable;
             if (table != null || IsJobComplete(jobId))
             {
@@ -84,14 +99,5 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
             return table;
         }
 
-        public ImportPreviewTable PreviewErrors()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ImportPreviewTable PreviewChoicesFolders()
-        {
-            throw new NotImplementedException();
-        }
     }    
 }
