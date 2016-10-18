@@ -9,13 +9,15 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Contracts;
 using kCura.WinEDDS;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using System.Runtime.CompilerServices;
 using REL = Relativity;
 
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.ImportProvider.Parser.Tests")]
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
     public class PreviewJob : IPreviewJob
     {
-        private bool _errorsOnly;
+        internal bool _errorsOnly;
         public PreviewJob()
         {
             IsComplete = false;
@@ -162,15 +164,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             
         }
 
-        private LoadFilePreviewer _loadFilePreviewer;
+        internal LoadFilePreviewer _loadFilePreviewer;
 
         public ImportPreviewTable PreviewTable { get; private set; }
 
-        public bool IsComplete { get; private set; }
-        public bool IsFailed { get; private set; }
-        public string ErrorMessage { get; private set;}
-        public long TotalBytes { get; private set; }
-        public long BytesRead { get; private set; }
-        public long StepSize { get; private set; }
+        public bool IsComplete { get; internal set; }
+        public bool IsFailed { get; internal set; }
+        public string ErrorMessage { get; internal set;}
+        public long TotalBytes { get; internal set; }
+        public long BytesRead { get; internal set; }
+        public long StepSize { get; internal set; }
     }
 }

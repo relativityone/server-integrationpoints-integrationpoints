@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using NSubstitute;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -14,16 +15,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
     [TestFixture, Category("ImportProvider")]
     public class ImportPreviewServiceTests
     {
-        private IWinEddsLoadFileFactory _loadFileFactory;
         private IPreviewJob _previewJob;
         private IPreviewJobFactory _previewJobFactory;
 
         [SetUp]
         public void Setup()
         {
-            _loadFileFactory = NSubstitute.Substitute.For<IWinEddsLoadFileFactory>();
-            _previewJob = NSubstitute.Substitute.For<IPreviewJob>();
-            _previewJobFactory = NSubstitute.Substitute.For<IPreviewJobFactory>();
+            _previewJob = Substitute.For<IPreviewJob>();
+            _previewJobFactory = Substitute.For<IPreviewJobFactory>();
         }
 
         [Test]
@@ -61,6 +60,28 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             int jobId = ips.CreatePreviewJob(new ImportPreviewSettings());
 
             Assert.AreEqual(1, jobId);
+        }
+
+        [Test]
+        public void CheckProgressDisposesJobIfFailed()
+        {
+            //mock ImportJob to return with IsFailed as true
+            _previewJob.IsFailed.ReturnsForAnyArgs(true);
+            _previewJobFactory.GetPreviewJob(new ImportPreviewSettings()).ReturnsForAnyArgs(_previewJob);
+            ImportPreviewService ips = new ImportPreviewService(_previewJobFactory);
+
+            //Create Preview Job
+            int jobId = ips.CreatePreviewJob(new ImportPreviewSettings());
+
+            //Assert that the ID exists and IsJobComplete will not throw
+            Assert.DoesNotThrow(() => ips.IsJobComplete(jobId));
+
+            //Check for Progress, Assert that IsFailed is false.
+            //becuase this method sees that IsFailed is true it will dispose of the job
+            Assert.IsTrue(ips.CheckProgress(jobId).IsFailed);
+
+            //Confirm that the job was disposed and no longer exists in dictionary
+            Assert.Throws<KeyNotFoundException>(() => ips.IsJobComplete(jobId));
         }
     }
 }
