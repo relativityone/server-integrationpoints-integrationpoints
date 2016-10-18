@@ -8,11 +8,12 @@ using System.Net;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Contracts;
 using kCura.WinEDDS;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using REL = Relativity;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class PreviewJob
+    public class PreviewJob : IPreviewJob
     {
         private bool _errorsOnly;
         public PreviewJob()

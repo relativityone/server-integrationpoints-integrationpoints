@@ -173,10 +173,13 @@
     </Compile>
     <Compile Include="DataReaderFactory.cs" />
     <Compile Include="FieldParserFactory.cs" />
-    <Compile Include="ImportPreviewJob.cs" />
+    <Compile Include="Interfaces\IPreviewJobFactory.cs" />
+    <Compile Include="PreviewJob.cs" />
+    <Compile Include="PreviewJobFactory.cs" />
     <Compile Include="Interfaces\IDataReaderFactory.cs" />
     <Compile Include="Interfaces\IFieldParser.cs" />
     <Compile Include="Interfaces\IFieldParserFactory.cs" />
+    <Compile Include="Interfaces\IPreviewJob.cs" />
     <Compile Include="Interfaces\IWinEddsLoadFileFactory.cs" />
     <Compile Include="LoadFileBase.cs" />
     <Compile Include="LoadFileDataReader.cs" />

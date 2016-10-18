@@ -14,19 +14,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 {
     public class ImportPreviewService : IImportPreviewService
     {
-        private Dictionary<int, PreviewJob> _loadFilePreviewers;
-        IWinEddsLoadFileFactory _winEddsLoadFileFactory;
-        public ImportPreviewService(IWinEddsLoadFileFactory winEddsLoadFileFactory)
+        private Dictionary<int, IPreviewJob> _loadFilePreviewers;
+        IPreviewJobFactory _previewJobFactory;
+        public ImportPreviewService(IPreviewJobFactory previewJobFactory)
         {
-            _winEddsLoadFileFactory = winEddsLoadFileFactory;
-            _loadFilePreviewers = new Dictionary<int, PreviewJob>();
+            _previewJobFactory = previewJobFactory;
+            _loadFilePreviewers = new Dictionary<int, IPreviewJob>();
         }
         
         public int CreatePreviewJob(ImportPreviewSettings settings)
         {
             int jobId = _loadFilePreviewers.Count + 1;
-            _loadFilePreviewers.Add(jobId, new PreviewJob());
-            _loadFilePreviewers[jobId].Init(_winEddsLoadFileFactory.GetLoadFile(settings), settings);
+            _loadFilePreviewers.Add(jobId, _previewJobFactory.GetPreviewJob(settings));
 
             return jobId;
         }

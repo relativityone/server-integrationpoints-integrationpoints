@@ -15,17 +15,21 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
     public class ImportPreviewServiceTests
     {
         private IWinEddsLoadFileFactory _loadFileFactory;
+        private IPreviewJob _previewJob;
+        private IPreviewJobFactory _previewJobFactory;
 
         [SetUp]
         public void Setup()
         {
             _loadFileFactory = NSubstitute.Substitute.For<IWinEddsLoadFileFactory>();
+            _previewJob = NSubstitute.Substitute.For<IPreviewJob>();
+            _previewJobFactory = NSubstitute.Substitute.For<IPreviewJobFactory>();
         }
 
         [Test]
         public void StartPreviewThrowsWhenNoJob()
         {
-            ImportPreviewService ips = new ImportPreviewService(_loadFileFactory);
+            ImportPreviewService ips = new ImportPreviewService(_previewJobFactory);
             int badJobId = 1000;
 
             Assert.Throws<KeyNotFoundException>(() => ips.StartPreviewJob(badJobId));
@@ -34,7 +38,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void RetrieveTableThrowsWhenNoJob()
         {
-            ImportPreviewService ips = new ImportPreviewService(_loadFileFactory);
+            ImportPreviewService ips = new ImportPreviewService(_previewJobFactory);
             int badJobId = 1000;
 
             Assert.Throws<KeyNotFoundException>(() => ips.RetrievePreviewTable(badJobId));
@@ -43,11 +47,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void CheckProgressThrowsWhenNoJob()
         {
-            ImportPreviewService ips = new ImportPreviewService(_loadFileFactory);
+            ImportPreviewService ips = new ImportPreviewService(_previewJobFactory);
             int badJobId = 1000;
 
             Assert.Throws<KeyNotFoundException>(() => ips.CheckProgress(badJobId));
         }
 
+        [Test]
+        public void CreateJobServiceReturnsJobId()
+        {
+            ImportPreviewService ips = new ImportPreviewService(_previewJobFactory);
+            
+            int jobId = ips.CreatePreviewJob(new ImportPreviewSettings());
+
+            Assert.AreEqual(1, jobId);
+        }
     }
 }
