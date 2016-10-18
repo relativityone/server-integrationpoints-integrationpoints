@@ -89,7 +89,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Controllers\GetWorkspacesQueryTests.cs" />
     <Compile Include="Controllers\SavedSearchQueryTests.cs" />
   </ItemGroup>
   <ItemGroup>

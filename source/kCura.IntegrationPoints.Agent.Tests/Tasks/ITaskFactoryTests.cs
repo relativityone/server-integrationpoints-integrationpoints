@@ -14,7 +14,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core;
@@ -49,19 +48,21 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			_helper = Substitute.For<IAgentHelper>();
 			_serializer = Substitute.For<ISerializer>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>(); 
-			_caseServiceContext = Substitute.For<ICaseServiceContext>(); 
-			_rsapiClient = Substitute.For<IRSAPIClient>(); 
-			_workspaceDbContext = Substitute.For<IWorkspaceDBContext>(); 
-			_eddsServiceContext = Substitute.For<IEddsServiceContext>(); 
-			_repositoryFactory = Substitute.For<IRepositoryFactory>(); 
-			_jobHistoryService = Substitute.For<IJobHistoryService>(); 
-			_agentService = Substitute.For<IAgentService>(); 
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			_caseServiceContext = Substitute.For<ICaseServiceContext>();
+			_rsapiClient = Substitute.For<IRSAPIClient>();
+			_workspaceDbContext = Substitute.For<IWorkspaceDBContext>();
+			_eddsServiceContext = Substitute.For<IEddsServiceContext>();
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			_agentService = Substitute.For<IAgentService>();
 			_jobService = Substitute.For<IJobService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			var apiLog = Substitute.For<IAPILog>();
 
-			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _rsapiClient, _workspaceDbContext, _eddsServiceContext, _repositoryFactory, _jobHistoryService, _agentService, _jobService, _managerFactory, apiLog);
+			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _rsapiClient,
+				_workspaceDbContext, _eddsServiceContext, _repositoryFactory, _jobHistoryService, _agentService, _jobService,
+				_managerFactory, apiLog);
 		}
 
 		[Test]
@@ -75,12 +76,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
 			_managerFactory.CreateQueueManager(contextContainer).Returns(queueManager);
-			
+
 			Job job = JobExtensions.CreateJob();
 			DateTime now = DateTime.UtcNow;
 			job.NextRunTime = now;
 
-			queueManager.HasJobsExecuting(job.WorkspaceID, job.RelatedObjectArtifactID, job.JobId, job.NextRunTime).Returns(expectedHasJobsExecuting);
+			queueManager.HasJobsExecuting(job.WorkspaceID, job.RelatedObjectArtifactID, job.JobId, job.NextRunTime)
+				.Returns(expectedHasJobsExecuting);
 
 			//Act
 			bool hasJobsExecuting = _instance.HasOtherJobsExecuting(job);
@@ -109,7 +111,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				$"Unable to execute Integration Point job: There is already a job currently running. Job is re-scheduled for {nextRunTime}.";
 
 			//Act
-			Assert.Throws<AgentDropJobException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent), exceptionMessage);
+			Assert.Throws<AgentDropJobException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent),
+				exceptionMessage);
 
 			//Assert
 			_jobService.Received(1).GetJobNextUtcRunDateTime(job, Arg.Any<IScheduleRuleFactory>(), Arg.Any<TaskResult>());
@@ -134,17 +137,21 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			Data.IntegrationPoint integrationPointDto = new Data.IntegrationPoint();
 			integrationPointDto.JobHistory = new[] {1, 2, 3};
-			_jobHistoryService.CreateRdo(integrationPointDto, taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(jobHistory);
+			_jobHistoryService.CreateRdo(integrationPointDto, taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun,
+				Arg.Any<DateTime>()).Returns(jobHistory);
 
 			//Act
-			Assert.Throws<AgentDropJobException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent), exceptionMessage);
+			Assert.Throws<AgentDropJobException>(() => _instance.DropJobAndThrowException(job, integrationPointDto, agent),
+				exceptionMessage);
 
 			//Assert
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(integrationPointDto);
 			_jobHistoryService.Received(1).DeleteRdo(jobHistory.ArtifactId);
 			_serializer.Received(1).Deserialize<TaskParameters>(job.JobDetails);
 			_jobHistoryService.Received(1).UpdateRdo(jobHistory);
-			_jobHistoryService.Received(1).CreateRdo(Arg.Any<Data.IntegrationPoint>(), taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>());
+			_jobHistoryService.Received(1)
+				.CreateRdo(Arg.Any<Data.IntegrationPoint>(), taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun,
+					Arg.Any<DateTime>());
 
 			int[] expectedJobHistoryArray = new[] {1, 3};
 			Assert.AreEqual(expectedJobHistoryArray, integrationPointDto.JobHistory);
@@ -171,7 +178,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IJobHistoryErrorService jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
 			TaskParameters paramerters = new TaskParameters();
-			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234 };
+			JobHistory jobHistory = new JobHistory() {ArtifactId = 1234};
 
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
@@ -186,7 +193,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(rsapiClient);
 			relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
 			serializer.Deserialize<TaskParameters>(Arg.Any<String>()).Returns(paramerters);
-			jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(jobHistory);
+			jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun,
+				Arg.Any<DateTime>()).Returns(jobHistory);
 
 			integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
 
@@ -196,7 +204,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Assert.Throws<Exception>(() => taskFactory.CreateTask(tempJob, agentBase), errorMessage);
 
 			// assert
-			jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, Arg.Any<Exception>());	
+			jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, Arg.Any<Exception>());
 			jobHistoryErrorService.Received(1).CommitErrors();
 			jobHistoryService.UpdateRdo(Arg.Is<JobHistory>(
 				x => x.ArtifactId == jobHistory.ArtifactId && x.JobStatus == JobStatusChoices.JobHistoryErrorJobFailed));
@@ -205,7 +213,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		[Test]
 		public void CreateTask_AllTaskTypesAreResolvable()
 		{
-			foreach (TaskType taskType in Enum.GetValues(typeof (TaskType)))
+			foreach (TaskType taskType in Enum.GetValues(typeof(TaskType)))
 			{
 				// Arrange
 				IAgentHelper helper = Substitute.For<IAgentHelper>();
@@ -244,7 +252,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 		public class TestAgentBase : ScheduleQueueAgentBase
 		{
-			public TestAgentBase(Guid agentGuid, IDBContext dbContext = null, IAgentService agentService = null, IJobService jobService = null, IScheduleRuleFactory scheduleRuleFactory = null)
+			public TestAgentBase(Guid agentGuid, IDBContext dbContext = null, IAgentService agentService = null,
+				IJobService jobService = null, IScheduleRuleFactory scheduleRuleFactory = null)
 				: base(agentGuid, dbContext, agentService, jobService, scheduleRuleFactory)
 			{
 			}

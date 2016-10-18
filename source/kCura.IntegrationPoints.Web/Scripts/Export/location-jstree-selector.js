@@ -97,7 +97,7 @@ var LocationJSTreeSelector = function () {
 							}
 							else
 							{
-								extendWithDefault(child);
+								extendWithDefault(value);
 							}
 						});
 						callback.call(this, returnData);

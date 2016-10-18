@@ -186,5 +186,11 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// </summary>
 		/// <returns>A class implementing the IRdoRepository interface.</returns>
 		IRdoRepository GetRdoRepository(int workspaceArtifactId);
+
+        /// <summary>
+        /// Returns a class implementing the IWorkspacesRepository interface.
+        /// </summary>
+        /// <returns>Returns a class implementing the IWorkspacesRepository interface.</returns>
+        IWorkspacesRepository GetWorkspacesRepository();
 	}
 }
