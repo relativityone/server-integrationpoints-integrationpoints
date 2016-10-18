@@ -67,14 +67,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public bool Read()
         {
-            if (!_loadFileReader.HasMoreRecords)
-            {
-                return false;
-            }
-            else
+            if (_loadFileReader.HasMoreRecords)
             {
                 readCurrentRecord();
                 return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
