@@ -42,7 +42,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 colIdx++;
             }
 
-            return new LoadFileDataReader(loadFile);
+            LoadFileDataReader rv = new LoadFileDataReader(loadFile);
+            rv.Init(); //Init performs unsafe operations, so they could not be performed in the constructor.
+            return rv;
         }
     }
 }

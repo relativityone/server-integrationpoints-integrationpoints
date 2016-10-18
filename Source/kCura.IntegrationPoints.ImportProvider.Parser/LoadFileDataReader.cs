@@ -16,10 +16,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         {
             _isClosed = false;
             _currentLine = string.Empty;
-            Init(config);
         }
 
-        private void Init(kCura.WinEDDS.LoadFile config)
+        public void Init()
         {
             //Accessing the ColumnNames is necessary to properly intialize the loadFileReader;
             //Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
