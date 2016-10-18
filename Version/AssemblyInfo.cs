@@ -36,6 +36,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Services.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.SourceProviderInstaller")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO.Tests")]

@@ -64,10 +64,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging">
-	  <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.dll</HintPath>
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-	  <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -83,6 +83,8 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\IntegrationPointExtensions.cs" />
+    <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
+    <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />

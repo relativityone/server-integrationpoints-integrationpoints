@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent
 		private CreateErrorRdo _errorService;
 
 		private IRSAPIClient EddsRsapiClient => _eddsRsapiClient ??
-		                                        (_eddsRsapiClient = new RsapiClientFactory(Helper).CreateClientForWorkspace(-1, ExecutionIdentity.System));
+												(_eddsRsapiClient = new RsapiClientFactory(Helper).CreateClientForWorkspace(-1, ExecutionIdentity.System));
 
 		private ITaskFactory TaskFactory => _taskFactory ?? (_taskFactory = new TaskFactory(Helper));
 
@@ -39,7 +39,8 @@ namespace kCura.IntegrationPoints.Agent
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
 #if TIME_MACHINE
-			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+			AgentTimeMachineProvider.Current =
+				new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 #endif
 		}
 
@@ -71,6 +72,8 @@ namespace kCura.IntegrationPoints.Agent
 			jobLogService.Log(AgentService.AgentTypeInformation, job, state, details);
 		}
 
-		public void Dispose() { }
+		public void Dispose()
+		{
+		}
 	}
 }

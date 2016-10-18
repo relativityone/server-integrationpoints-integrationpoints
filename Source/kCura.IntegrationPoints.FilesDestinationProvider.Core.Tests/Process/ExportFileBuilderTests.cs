@@ -23,30 +23,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-		[TestCase(ExportSettings.ExportType.SavedSearch, true, ExportNativeWithFilenameFrom.Production)]
-		[TestCase(ExportSettings.ExportType.SavedSearch, false, ExportNativeWithFilenameFrom.Identifier)]
-		[TestCase(ExportSettings.ExportType.Folder, true, ExportNativeWithFilenameFrom.Production)]
-		[TestCase(ExportSettings.ExportType.Folder, false, ExportNativeWithFilenameFrom.Identifier)]
-		[TestCase(ExportSettings.ExportType.FolderAndSubfolders, true, ExportNativeWithFilenameFrom.Production)]
-		[TestCase(ExportSettings.ExportType.FolderAndSubfolders, false, ExportNativeWithFilenameFrom.Identifier)]
-		public void ItShouldSetNameTextAndNativesAfterBegBatesFlag(ExportSettings.ExportType exportType, bool isImagePrecAvailable, 
-			ExportNativeWithFilenameFrom exportNativeWithFilenameFrom)
-		{
-			_exportSettings.TypeOfExport = exportType;
-			_exportSettings.ImagePrecedence = isImagePrecAvailable
-				? new[] {new ProductionDTO()
-				{
-					ArtifactID = "1",
-					DisplayName = "Test"
-				} }
-				: Enumerable.Empty<ProductionDTO>();
-
-			var exportFile = _exportFileBuilder.Create(_exportSettings);
-
-			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(exportNativeWithFilenameFrom));
-		}
-
-		[Test]
 		[TestCase(ExportSettings.ImageFileType.SinglePage, ExportFile.ImageType.SinglePage)]
 		[TestCase(ExportSettings.ImageFileType.MultiPage, ExportFile.ImageType.MultiPageTiff)]
 		[TestCase(ExportSettings.ImageFileType.Pdf, ExportFile.ImageType.Pdf)]
@@ -362,27 +338,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		[TestCase(null, ExportNativeWithFilenameFrom.Identifier)]
 		[TestCase(ExportSettings.NativeFilenameFromType.Identifier, ExportNativeWithFilenameFrom.Identifier)]
 		[TestCase(ExportSettings.NativeFilenameFromType.Production, ExportNativeWithFilenameFrom.Production)]
-		public void ItShouldSetNativeFilenameFromAccordingly(ExportSettings.NativeFilenameFromType givenSetting, ExportNativeWithFilenameFrom expectedSetting)
+		public void ItShouldSetNativeFilenameFromAccordingly(ExportSettings.NativeFilenameFromType? givenSetting, ExportNativeWithFilenameFrom expectedSetting)
 		{
-			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
 			_exportSettings.ExportNativesToFileNamedFrom = givenSetting;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
 			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(expectedSetting));
-		}
-
-		[Test]
-		public void ItShouldSetUndefinedExportNativeWithFilenameFrom()
-		{
-			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
-			_exportSettings.ExportNativesToFileNamedFrom = null;
-
-			var exportFile = _exportFileBuilder.Create(_exportSettings);
-
-			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(ExportNativeWithFilenameFrom.Select));
 		}
 
 		[Test]

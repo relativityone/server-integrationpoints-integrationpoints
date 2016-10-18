@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private void LogUnauthorizedAccess(string path, UnauthorizedAccessException e)
 		{
-			_logger.LogError(e, "Unauthorized access to folder ({Path}) during directory discovery.", path);
+			_logger.LogWarning(e, "Unauthorized access to folder ({Path}) during directory discovery.", path);
 		}
 
 		#endregion

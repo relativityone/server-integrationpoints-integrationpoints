@@ -27,11 +27,13 @@
 		};
 
 		this.updateProcessingSourceLocation = function (value) {
-			self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
-			if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1)//fileshare does not contain path
-			{
-				self.Fileshare(undefined);
-				self.Fileshare.isModified(false);
+			if (value != undefined) {
+				self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
+				if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
+				{
+					self.Fileshare(undefined);
+					self.Fileshare.isModified(false);
+				}
 			}
 
 			if (self.locationSelector) {
@@ -71,12 +73,13 @@
 
 		this.getDirectories = function () {
 			var reloadTree = function (params, onSuccess, onFail) {
+				var $locationErrorContainer = $("#processingLocationErrorContainer");
 				var isRoot = params.id === '#';
 				var path = params.id;
 				if (isRoot) {
 					path = self.ProcessingSourceLocationPath;
 				}
-				console.log(path);
+				IP.message.error.clear($locationErrorContainer);
 				root.data.ajax({
 					type: "post",
 					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -86,7 +89,7 @@
 					onSuccess(result);
 				}).fail(function (error) {
 					onFail(error);
-					IP.message.error.raise(error);
+					IP.message.error.raise(error, $locationErrorContainer);
 				});
 			};
 			self.locationSelector.reloadWithRoot(reloadTree);

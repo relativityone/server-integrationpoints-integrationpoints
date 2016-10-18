@@ -56,6 +56,10 @@
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>    
     <Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
@@ -88,6 +92,14 @@
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\Relativity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Core, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>    
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -111,6 +123,7 @@
     <Compile Include="Repositories\RelativityAuditRepositoryTests.cs" />
     <Compile Include="Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Repositories\ScratchTableRepositoryTests.cs" />
+    <Compile Include="Repositories\SqlWorkspacesRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">

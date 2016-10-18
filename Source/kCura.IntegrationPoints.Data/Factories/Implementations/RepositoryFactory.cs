@@ -224,9 +224,15 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return rdoRepository;
 		}
 
-		#region Helper Methods
+        public IWorkspacesRepository GetWorkspacesRepository()
+        {
+            IWorkspacesRepository repository = new SqlWorkspacesRepository(GetBaseContextForWorkspace(-1));
+            return repository;
+        }
 
-		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
+        #region Helper Methods
+
+        private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
 		{
 			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int)artifactType);
 			return adaptor;
@@ -273,9 +279,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return contextContainer;
 		}
 
-		#endregion Helper Methods
+        #endregion Helper Methods
 
-		private class ContextContainer
+        private class ContextContainer
 		{
 			public BaseServiceContext BaseServiceContext { get; set; }
 			public BaseContext BaseContext { get; set; }
