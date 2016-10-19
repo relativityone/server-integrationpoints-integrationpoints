@@ -54,6 +54,7 @@
 
         if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.RelativityImport.UI.Elements.CUSTOM_BUTTON)).length < 1) {
             windowObj.RelativityImport.UI.initCustomDropdown();
+            windowObj.RelativityImport.UI.addSiteCss();
         }
 
         //TODO: Populate UI with values from model object

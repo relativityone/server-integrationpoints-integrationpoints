@@ -17,6 +17,7 @@
     var FILE_ENCODING_COLUMN_MULTIVALUE_DD = 'import-multiValue';
     var FILE_ENCODING_COLUMN_NESTEDVALUE_DD = 'import-nestedValue';
     var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
+    var CONFIGURATION_FRAME = 'configurationFrame';
 
     windowObj.RelativityImport.UI.Elements = {
         PROGRESS_BUTTONS: PROGRESS_BUTTONS,
@@ -24,7 +25,8 @@
         BUTTON_UL: BUTTON_UL,
         PREVIEW_FILE_LI: PREVIEW_FILE_LI,
         PREVIEW_ERROR_LI: PREVIEW_ERROR_LI,
-        PREVIEW_CHOICE_LI: PREVIEW_CHOICE_LI
+        PREVIEW_CHOICE_LI: PREVIEW_CHOICE_LI,
+        CONFIGURATION_FRAME: CONFIGURATION_FRAME
     }
 
     var idSelector = function (name) { return '#' + name; }
@@ -157,6 +159,11 @@
     windowObj.RelativityImport.UI.removeCustomDropdown = function () {
         var windowPar = windowObj.parent;
         windowPar.$(idSelector(CUSTOM_BUTTON)).remove();
+    };
+
+    windowObj.RelativityImport.UI.addSiteCss = function() {
+        var windowPar = windowObj.parent;
+        windowPar.$(idSelector(CONFIGURATION_FRAME)).css({ "min-width": '900px' });
     };
 
     windowObj.RelativityImport.enableLocation = function (en) {
