@@ -57,12 +57,9 @@
             async: false,
             data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel()) },
             success: function (data) {
-                console.log('ajax success');
-                console.log(data);
                 windowObj.RelativityImport.koModel.setPopulateFileColumnHeaders(data);
             },
             error: function (error) {
-                console.log('ajax FAIL');
                 console.log(error);
             }
         });
