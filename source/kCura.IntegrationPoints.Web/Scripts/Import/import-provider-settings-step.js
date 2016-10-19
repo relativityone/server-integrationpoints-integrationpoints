@@ -17,13 +17,14 @@
             AsciiMultiLine: windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(),
             AsciiNestedValue: windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(),
             ProcessingSourceLocation: windowObj.RelativityImport.koModel.ProcessingSourceLocation()
-    };
+        };
 
         console.log(model);
         return model;
     };
 
     windowObj.RelativityImport.GetCurrentUiModel = currentSettingsFromUi;
+
 
     //An event raised when the user has clicked the Next or Save button.
     //Leaving the custom settings page and going to field mapping screen.
@@ -52,11 +53,16 @@
     //An event raised when the host page has loaded the current settings page.
     //Arriving at the custom settings page; either from hitting Back from field mapping, or Next from the first RIP screen
     message.subscribe('load', function (model) {
+        if (!!model) {
+            windowObj.RelativityImport.GetCachedUiModel = JSON.parse(model);
+        };
+
+        // adding horizontal scroll
+        windowObj.RelativityImport.UI.addSiteCss();
 
         if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.RelativityImport.UI.Elements.CUSTOM_BUTTON)).length < 1) {
             windowObj.RelativityImport.UI.initCustomDropdown();
-            windowObj.RelativityImport.UI.addSiteCss();
-        }
+        };
 
         //TODO: Populate UI with values from model object
     });

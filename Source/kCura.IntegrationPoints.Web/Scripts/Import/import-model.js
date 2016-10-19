@@ -61,12 +61,8 @@
         };
 
         self.ProcessingSourceLocationList = ko.observableArray([]);
-        self.ProcessingSourceLocationArtifactId = 0;
         self.HasBeenRun = ko.observable(false);
-        self.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId)
-            .extend({
-                required: true
-            });
+        self.ProcessingSourceLocation = ko.observable();
 
         self.Fileshare = ko.observable(self.Fileshare).extend({
             required: {

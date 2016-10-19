@@ -185,7 +185,11 @@
 
     $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"), function (data) {
         windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
-        windowObj.RelativityImport.koModel.ProcessingSourceLocation(windowObj.RelativityImport.koModel.ProcessingSourceLocationArtifactId);
+
+        if (windowObj.RelativityImport.GetCachedUiModel) {
+            var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
+            windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
+        };
 
         $("#processingSources").change(function (c, item) {
             var artifacId = $("#processingSources option:selected").val();
