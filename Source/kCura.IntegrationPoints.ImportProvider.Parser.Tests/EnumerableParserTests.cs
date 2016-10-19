@@ -15,38 +15,64 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
     [TestFixture]
     public class EnumerableParserTests
     {
-        public static IEnumerable<string> GetBasicCsvTestData()
+        private static int MAX_ROWS = 5;
+        private static int MAX_COLS = 5;
+
+        private static IEnumerable<string> BasicTestDataHelper(char delimiter, int rows, int columns)
         {
             List<string> rv = new List<string>();
-            rv.Add("field-0,field-1,field-2,field-3");
-            rv.Add("r1-f0,r1-f1,r1-f2,r1-f3");
-            rv.Add("r2-f0,r2-f1,r2-f2,r2-f3");
-            rv.Add("r3-f0,r3-f1,r3-f2,r3-f3");
+            rv.Add(string.Join(delimiter.ToString(), Enumerable.Range(0, columns).Select((i) => string.Format("field-{0}", i))));
+            foreach (int row in Enumerable.Range(0, rows))
+            {
+                rv.Add(string.Join(delimiter.ToString(), Enumerable.Range(0, columns).Select((i) => string.Format("r{0}v{1}", row, i))));
+            }
             return rv;
         }
 
-        [Test]
-        public void ParsesBasicCsv()
+        private void BasicParsingHelper(char delimiter)
         {
-            IEnumerable<string> td = GetBasicCsvTestData();
-            IEnumerator<string> tdEnum = td.GetEnumerator();
-            tdEnum.MoveNext();
+            string[] separator = new string[] { delimiter.ToString() };
+            Random randGen = new Random();
+            int rows = randGen.Next(MAX_ROWS);
+            int cols = randGen.Next(MAX_COLS);
+            IEnumerable<string> testData = BasicTestDataHelper(delimiter, rows, cols);
 
-            EnumerableParser ep = new EnumerableParser(GetBasicCsvTestData(), ',');
+            EnumerableParser ep = new EnumerableParser(testData, delimiter);
 
-            foreach (string[] current in ep)
+            IEnumerator<string> testDataEnum = testData.GetEnumerator();
+            testDataEnum.MoveNext();
+
+            foreach (string[] currentEpOutput in ep)
             {
-                string currentTestData = tdEnum.Current;
-                tdEnum.MoveNext();
+                string currentTestData = testDataEnum.Current;
+                testDataEnum.MoveNext();
 
-                string[] splitted = currentTestData.Split(',');
-                Assert.AreEqual(current.Length, 4);
+                var splitted = currentTestData.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                Assert.AreEqual(currentEpOutput.Length, splitted.Length);
                 var tdIdx = 0;
-                foreach(var epColumn in current)
+                foreach(var epColumn in currentEpOutput)
                 {
                     Assert.AreEqual(epColumn, splitted[tdIdx++]);
                 }
             }
+        }
+
+        [Test]
+        public void ParsesBasicCsvData()
+        {
+            BasicParsingHelper(',');
+        }
+
+        [Test]
+        public void ParsesBasicPipeData()
+        {
+            BasicParsingHelper('|');
+        }
+
+        [Test]
+        public void ParsesUnprintableDelimiterData()
+        {
+            BasicParsingHelper((char)(new Random()).Next(1, 32));
         }
     }
 }
