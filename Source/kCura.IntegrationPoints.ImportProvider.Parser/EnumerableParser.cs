@@ -35,13 +35,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     {
         private IEnumerable<string> _sourceFileLines;
         private IEnumerator<string> _sourceFileEnumerator;
-        private char _columnDelimiter;
+        private string[] _columnDelimiter;
         private string[] _current;
         private bool _hasNext;
 
         public EnumerableParserEnumerator(IEnumerable<string> sourceFileLines, char columnDelimiter)
         {
-            _columnDelimiter = columnDelimiter;
+            _columnDelimiter = new string[] { columnDelimiter.ToString() };
             _sourceFileLines = sourceFileLines;
             _hasNext = true;
             ResetEnumerator();
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             bool rv = _hasNext;
             if (rv)
             {
-                _current = _sourceFileEnumerator.Current.Split(_columnDelimiter);
+                _current = _sourceFileEnumerator.Current.Split(_columnDelimiter, System.StringSplitOptions.RemoveEmptyEntries);
                 _hasNext = _sourceFileEnumerator.MoveNext();
             }
             return rv;
