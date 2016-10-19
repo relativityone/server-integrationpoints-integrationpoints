@@ -15,11 +15,13 @@ namespace kCura.IntegrationPoints.ImportProvider
     {
         private IFieldParserFactory _fieldParserFactory;
         private IDataReaderFactory _dataReaderFactory;
+        private IEnumerableParserFactory _enumerableParserFactory;
 
-        public ImportProvider(IFieldParserFactory fieldParserFactory, IDataReaderFactory dataReaderFactory)
+        public ImportProvider(IFieldParserFactory fieldParserFactory, IDataReaderFactory dataReaderFactory, IEnumerableParserFactory enumerableParserFactory)
         {
             _fieldParserFactory = fieldParserFactory;
             _dataReaderFactory = dataReaderFactory;
+            _enumerableParserFactory = enumerableParserFactory;
         }
 
         public IDataReader GetBatchableIds(FieldEntry identifier, string options)
@@ -29,19 +31,20 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> sourceFileLines, string options)
         {
-            var dt = new DataTable();
-            foreach (var field in fields)
+            IEnumerable<string[]> enumerableParser = _enumerableParserFactory.GetEnumerableParser(sourceFileLines, options);
+
+            DataTable dt = new DataTable();
+            foreach (FieldEntry field in fields)
             {
                 dt.Columns.Add(field.FieldIdentifier);
             }
 
-            foreach (var line in sourceFileLines)
+            foreach (string[] sourceRow in enumerableParser)
             {
-                var lineSplit = line.Split(',');
-                var dtRow = dt.NewRow();
-                foreach (var field in fields)
+                DataRow dtRow = dt.NewRow();
+                foreach (FieldEntry field in fields)
                 {
-                    dtRow[field.FieldIdentifier] = lineSplit[Int32.Parse(field.FieldIdentifier)];
+                    dtRow[field.FieldIdentifier] = sourceRow[Int32.Parse(field.FieldIdentifier)];
                 }
                 dt.Rows.Add(dtRow);
             }

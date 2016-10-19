@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Installers
         {
             container.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>().LifestyleSingleton().OnlyNewServices());
             container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleSingleton().OnlyNewServices());
+            container.Register(Component.For<IEnumerableParserFactory>().ImplementedBy<EnumerableParserFactory>().LifestyleSingleton().OnlyNewServices());
             container.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>().LifestyleSingleton().OnlyNewServices());
         }
     }
