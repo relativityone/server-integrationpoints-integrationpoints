@@ -31,8 +31,8 @@ namespace kCura.IntegrationPoints.Services
 		///     For testing purposes only
 		/// </summary>
 		/// <param name="logger"></param>
-		/// <param name="permissionRepositryFactory"></param>
-		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositryFactory) : base(logger, permissionRepositryFactory)
+		/// <param name="permissionRepositoryFactory"></param>
+		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
 		{
 		}
 

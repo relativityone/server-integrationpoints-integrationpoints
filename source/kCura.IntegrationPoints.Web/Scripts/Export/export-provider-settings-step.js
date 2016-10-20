@@ -27,11 +27,13 @@
 		};
 
 		this.updateProcessingSourceLocation = function (value) {
-			self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
-			if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1)//fileshare does not contain path
-			{
-				self.Fileshare(undefined);
-				self.Fileshare.isModified(false);
+			if (value != undefined) {
+				self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
+				if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
+				{
+					self.Fileshare(undefined);
+					self.Fileshare.isModified(false);
+				}
 			}
 
 			if (self.locationSelector) {
