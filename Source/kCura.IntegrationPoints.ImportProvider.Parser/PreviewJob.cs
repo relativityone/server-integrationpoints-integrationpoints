@@ -60,19 +60,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 colIdx++;
             }
 
-            _loadFilePreviewer = new kCura.WinEDDS.LoadFilePreviewer(loadFile, 0, _errorsOnly, false);
+            _loadFilePreviewer = new LoadFilePreviewerWrapper(loadFile, 0, _errorsOnly, false);
         }
 
         public void StartRead()
         {
             try
             {
-                _loadFilePreviewer.OnEvent += OnPreviewerProgress;
-                ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile("", 0);
+                _loadFilePreviewer.OnEventAdd(OnPreviewerProgress);
+                ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile();
                 ImportPreviewTable preview = new ImportPreviewTable();
 
                 bool populatedHeaders = false;
-
+                //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
+                preview.Header.Add(string.Empty);
                 int columnNumbers = 1;
                 int dataRowIndex = 1;//this will be used to populate the list of rows with an error
                 //using var in this foreach since we don't know the type of each item in the arraylist (can be ArtifactField[] or Exception)
@@ -99,8 +100,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     {
                         if (!populatedHeaders)
                         {
-                            //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
-                            preview.Header.Add(string.Empty);
+                            preview.Header.Clear();                          
                             preview.Header.AddRange(((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.DisplayName).ToList());
                             columnNumbers = preview.Header.Count();
                             populatedHeaders = true;
@@ -159,11 +159,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public void DisposePreviewJob()
         {
-            _loadFilePreviewer.OnEvent -= OnPreviewerProgress;
-            
+            _loadFilePreviewer.OnEventRemove(OnPreviewerProgress);            
         }
 
-        internal LoadFilePreviewer _loadFilePreviewer;
+        internal ILoadFilePreviewer _loadFilePreviewer;
 
         public ImportPreviewTable PreviewTable { get; private set; }
 
