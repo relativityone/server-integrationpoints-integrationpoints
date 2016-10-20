@@ -163,6 +163,7 @@
     </Compile>
     <Compile Include="EnumerableParserTests.cs" />
     <Compile Include="ImportPreviewServiceTests.cs" />
+    <Compile Include="PreviewJobTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
