@@ -190,11 +190,13 @@
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
+    <Compile Include="Repositories\IDocumentTotalsRepository.cs" />
     <Compile Include="Repositories\IErrorRepository.cs" />
     <Compile Include="Repositories\IInstanceSettingRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\DestinationProviderRepository.cs" />
+    <Compile Include="Repositories\Implementations\DocumentTotalsRepository.cs" />
     <Compile Include="Repositories\Implementations\InstanceSettingRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />

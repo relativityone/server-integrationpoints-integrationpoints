@@ -14,18 +14,25 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly IExportSettingsBuilder _exportSettingsBuilder;
 		private readonly IPaddingValidator _paddingValidator;
+		private readonly IExportInitProcessService _exportInitProcessService;
 
-		public ExportSettingsValidationService(IExportSettingsBuilder exportSettingsBuilder, IExportFileBuilder exportFileBuilder, IPaddingValidator paddingValidator)
+		public ExportSettingsValidationService(IExportSettingsBuilder exportSettingsBuilder, IExportFileBuilder exportFileBuilder, IPaddingValidator paddingValidator,
+			IExportInitProcessService exportInitProcessService)
 		{
 			_exportSettingsBuilder = exportSettingsBuilder;
 			_exportFileBuilder = exportFileBuilder;
 			_paddingValidator = paddingValidator;
+			_exportInitProcessService = exportInitProcessService;
 		}
 
 		public ExportSettingsValidationResult Validate(int workspaceID, IntegrationModel model)
 		{
-			var exportFile = BuildExportFile(model);
-			return _paddingValidator.Validate(workspaceID, exportFile);
+			ExportFile exportFile = BuildExportFile(model);
+
+			int totalDocsCount = _exportInitProcessService.CalculateDocumentCountToTransfer(
+				JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(model.SourceConfiguration));
+
+			return _paddingValidator.Validate(workspaceID, exportFile, totalDocsCount);
 		}
 
 		private ExportFile BuildExportFile(IntegrationModel model)

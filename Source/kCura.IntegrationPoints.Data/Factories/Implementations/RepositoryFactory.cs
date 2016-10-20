@@ -224,12 +224,17 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return rdoRepository;
 		}
 
-        public IWorkspacesRepository GetWorkspacesRepository()
+		public IDocumentTotalsRepository GetDocumentTotalsRepository(int workspaceArtifactId)
+		{
+			return new DocumentTotalsRepository(_helper, workspaceArtifactId);
+		}
+
+		public IWorkspacesRepository GetWorkspacesRepository()
         {
             IWorkspacesRepository repository = new SqlWorkspacesRepository(GetBaseContextForWorkspace(-1));
             return repository;
         }
-
+		
         #region Helper Methods
 
         private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)

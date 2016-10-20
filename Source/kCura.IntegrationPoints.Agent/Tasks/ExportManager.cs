@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -20,31 +19,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportManager : SyncManager
 	{
-		#region Constructors
+		#region Fields
 
-		public ExportManager(ICaseServiceContext caseServiceContext,
-			IDataProviderFactory providerFactory,
-			IJobManager jobManager,
-			IJobService jobService,
-			IHelper helper,
-			IIntegrationPointService integrationPointService,
-			ISerializer serializer, IGuidService guidService,
-			IJobHistoryService jobHistoryService,
-			JobHistoryErrorService jobHistoryErrorService,
-			IScheduleRuleFactory scheduleRuleFactory,
-			IManagerFactory managerFactory,
-			IContextContainerFactory contextContainer,
-			IEnumerable<IBatchStatus> batchStatuses,
-			IRepositoryFactory repositoryFactory)
-			: base(
-				caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService,
-				scheduleRuleFactory, managerFactory, contextContainer, batchStatuses)
-		{
-			_repositoryFactory = repositoryFactory;
-			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();
-		}
+		private readonly IExportInitProcessService _exportInitProcessService;
+		private readonly IAPILog _logger;
 
-		#endregion //Constructors
+		#endregion //Private Fields
 
 		#region Properties
 
@@ -60,12 +40,31 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		#endregion //Properties
 
-		#region Fields
+		#region Constructors
 
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IAPILog _logger;
+		public ExportManager(ICaseServiceContext caseServiceContext,
+			IDataProviderFactory providerFactory,
+			IJobManager jobManager,
+			IJobService jobService,
+			IHelper helper,
+			IIntegrationPointService integrationPointService,
+			ISerializer serializer, IGuidService guidService,
+			IJobHistoryService jobHistoryService,
+			JobHistoryErrorService jobHistoryErrorService,
+			IScheduleRuleFactory scheduleRuleFactory,
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainer,
+			IEnumerable<IBatchStatus> batchStatuses,
+			IExportInitProcessService exportInitProcessService)
+			: base(
+				caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService,
+				scheduleRuleFactory, managerFactory, contextContainer, batchStatuses)
+		{
+			_exportInitProcessService = exportInitProcessService;
+			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();
+		}
 
-		#endregion //Private Fields
+		#endregion //Constructors
 
 		#region Methods
 
@@ -115,13 +114,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				ISavedSearchRepository savedSearchRepo = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID,
-					settings.SavedSearchArtifactId);
-
-				int totalDocsCount = savedSearchRepo.GetTotalDocsCount();
-				int extractedIndex = Math.Min(totalDocsCount, Math.Abs(settings.StartExportAtRecord - 1));
-
-				return Math.Max(totalDocsCount - extractedIndex, 0);
+				return _exportInitProcessService.CalculateDocumentCountToTransfer(settings);
 			}
 			catch (Exception ex)
 			{

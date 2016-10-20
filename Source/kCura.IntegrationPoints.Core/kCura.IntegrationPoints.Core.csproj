@@ -82,14 +82,14 @@
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.WinEDDS, Culture=neutral, processorArchitecture=AMD64">
-		<HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
-		<Private>True</Private>
-	</Reference>
-	<Reference Include="kCura.LongPath, Culture=neutral, processorArchitecture=AMD64">
-		<HintPath>..\packages\$(kCura_LongPath)\lib\net45\kCura.LongPath.dll</HintPath>
-		<Private>True</Private>
-	</Reference>
+    <Reference Include="kCura.WinEDDS, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.LongPath, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_LongPath)\lib\net45\kCura.LongPath.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
       <Private>True</Private>
@@ -304,6 +304,7 @@
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
     <Compile Include="Services\IExportFieldsService.cs" />
+    <Compile Include="Services\IExportProcessService.cs" />
     <Compile Include="Services\IExportSettingsValidationService.cs" />
     <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />

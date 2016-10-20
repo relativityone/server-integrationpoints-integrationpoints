@@ -128,15 +128,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.SelectedViewFields = FilterFields(exportFile, selectedViewFieldIds);
 
 			var fieldIdentifier = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier);
-			if (fieldIdentifier == null)
+			if (fieldIdentifier != null)
 			{
-				var message = $"Cannot find field identifier in the selected field list:" +
-							$" {string.Join("", "", exportFile.SelectedViewFields.Select(field => field.DisplayName))} of {exportFile.FilePrefix}";
-				LogMissingIdentifierFieldError(message);
-				throw new Exception(message);
+				exportFile.IdentifierColumnName = fieldIdentifier.DisplayName;
 			}
-
-			exportFile.IdentifierColumnName = fieldIdentifier.DisplayName;
 		}
 
 		private static void PopulateTextPrecedenceFields(ExportFile exportFile, List<int> selectedTextPrecedence)
