@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Data;
-using System.Text;
-using System.Collections.Generic;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -10,12 +8,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     {
         private bool _isClosed;
         private string _currentLine;
+        private string _delimiterString;
 
         public LoadFileDataReader(kCura.WinEDDS.LoadFile config)
             : base(config)
         {
             _isClosed = false;
             _currentLine = string.Empty;
+            _delimiterString = _config.RecordDelimiter.ToString();
         }
 
         public void Init()
@@ -31,13 +31,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         //Get a line stored for the current row, based on delimter settings in the _config
         private void readCurrentRecord()
         {
-            var artifacts = _loadFileReader.ReadArtifact();
-            var data = new string[artifacts.Count];
-            foreach (var artifact in artifacts)
+            ArtifactFieldCollection artifacts = _loadFileReader.ReadArtifact();
+            string[] data = new string[artifacts.Count];
+            foreach (ArtifactField artifact in artifacts)
             {
                 data[artifact.ArtifactID] = artifact.ValueAsString;
             }
-            _currentLine = string.Join(",", data);
+            _currentLine = string.Join(_delimiterString, data);
         }
 
         //IDataReader Implementation
