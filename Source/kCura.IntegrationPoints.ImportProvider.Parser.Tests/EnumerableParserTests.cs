@@ -47,12 +47,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                 string currentTestData = testDataEnum.Current;
                 testDataEnum.MoveNext();
 
-                var splitted = currentTestData.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                Assert.AreEqual(currentEpOutput.Length, splitted.Length);
-                var tdIdx = 0;
-                foreach(var epColumn in currentEpOutput)
+                string[] tdCols = currentTestData.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                Assert.AreEqual(currentEpOutput.Length, tdCols.Length);
+                int tdIdx = 0;
+                foreach(string epColumn in currentEpOutput)
                 {
-                    Assert.AreEqual(epColumn, splitted[tdIdx++]);
+                    Assert.AreEqual(epColumn, tdCols[tdIdx++]);
                 }
             }
         }
