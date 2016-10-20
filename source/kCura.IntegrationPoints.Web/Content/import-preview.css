@@ -1,5 +1,4 @@
 ﻿/* Pagination*/
-
 #row-number {
     width: 30px;
     text-align: center;
@@ -181,11 +180,9 @@
     margin-bottom: 5px;
 }
 
-
 /*jQuery DataTable styling*/
-
-.error-row{
-    color:red !important;
+.error-row {
+    color: red !important;
 }
 
 /*
@@ -707,13 +704,7 @@ table.dataTable {
     }
 }
 
-
-
-
-
-
-/*Test*/
-
+/*Progress Bar*/
 #progress-bars-div .card-line {
     margin-bottom: 15px;
 }
@@ -895,9 +886,11 @@ span.progress-bar-percentage {
 .active-transfer-status-success {
     color: #5dca77;
 }
+
 .active-transfer-status-active {
     color: #000000;
 }
+
 .active-transfer-status-failed {
     color: #fa4d4d;
 }
