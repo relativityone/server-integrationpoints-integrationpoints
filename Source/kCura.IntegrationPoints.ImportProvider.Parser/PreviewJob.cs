@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Contracts;
 using kCura.WinEDDS;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using System.Runtime.CompilerServices;
-using REL = Relativity;
 
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.ImportProvider.Parser.Tests")]
 namespace kCura.IntegrationPoints.ImportProvider.Parser
@@ -47,7 +46,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     //set as an identifier
                     if (currentField.SourceField.IsIdentifier)
                     {
-                        fieldCat = (int)REL.FieldCategory.Identifier;
+                        fieldCat = (int)global::Relativity.FieldCategory.Identifier;
                     }
 
                     var newDocField = new kCura.WinEDDS.DocumentField(currentField.DestinationField.DisplayName, int.Parse(currentField.DestinationField.FieldIdentifier), 4, fieldCat, -1, -1, -1, false,
