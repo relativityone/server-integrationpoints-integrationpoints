@@ -74,8 +74,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
                 bool populatedHeaders = false;
 
-                //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
-                preview.Header.Add(string.Empty);
                 int columnNumbers = 1;
                 int dataRowIndex = 1;//this will be used to populate the list of rows with an error
                 //using var in this foreach since we don't know the type of each item in the arraylist (can be ArtifactField[] or Exception)
@@ -102,7 +100,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     {
                         if (!populatedHeaders)
                         {
-                            preview.Header = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.DisplayName).ToList();
+                            //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
+                            preview.Header.Add(string.Empty);
+                            preview.Header.AddRange(((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.DisplayName).ToList());
                             columnNumbers = preview.Header.Count();
                             populatedHeaders = true;
                         }

@@ -41,7 +41,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         {
             //Create a dummy Table
             ImportPreviewTable previewTable = new ImportPreviewTable();
-            previewTable.Header = new List<string> { "a", "b", "c", "d" };
+            previewTable.Header.Clear();
+            previewTable.Header.AddRange(new List<string> { "a", "b", "c", "d" });
             List<string> row;
 
             for(int i = 0; i < 5; i++)
