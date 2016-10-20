@@ -54,10 +54,10 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IEnumerable<FieldEntry> GetFields(string options)
         {
-            var parser = _fieldParserFactory.GetFieldParser(options);
-            var result = new List<FieldEntry>();
-            var idx = 0;
-            foreach (var fieldName in parser.GetFields())
+            IFieldParser parser = _fieldParserFactory.GetFieldParser(options);
+            List<FieldEntry> result = new List<FieldEntry>();
+            int idx = 0;
+            foreach (string fieldName in parser.GetFields())
             {
                 result.Add(new FieldEntry
                 {
