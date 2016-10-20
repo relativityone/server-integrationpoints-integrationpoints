@@ -102,6 +102,32 @@
         updateHeaders();
     });
 
+    var populateCachedState = function() {
+        var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
+        var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
+        var importType = windowObj.RelativityImport.GetCachedUiModel.ImportType;
+        var lineNumber = windowObj.RelativityImport.GetCachedUiModel.LineNumber;
+        var encodingType = windowObj.RelativityImport.GetCachedUiModel.EncodingType;
+        var asciiColumn = windowObj.RelativityImport.GetCachedUiModel.AsciiColumn;
+        var asciiQuote = windowObj.RelativityImport.GetCachedUiModel.AsciiQuote;
+        var asciiNewLine = windowObj.RelativityImport.GetCachedUiModel.AsciiNewLine;
+        var asciiMultiLine = windowObj.RelativityImport.GetCachedUiModel.AsciiMultiLine;
+        var asciiNestedValue = windowObj.RelativityImport.GetCachedUiModel.AsciiNestedValue;
+        var hasColumnName = windowObj.RelativityImport.GetCachedUiModel.HasColumnName;
+
+        windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
+        windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
+        windowObj.RelativityImport.koModel.selectedImportType(importType);
+        windowObj.RelativityImport.koModel.startLine(lineNumber);
+        windowObj.RelativityImport.koModel.DataFileEncodingType(encodingType);
+        windowObj.RelativityImport.koModel.selectedColumnAsciiDelimiter(asciiColumn);
+        windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(asciiQuote);
+        windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(asciiNewLine);
+        windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(asciiMultiLine);
+        windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(asciiNestedValue);
+        windowObj.RelativityImport.koModel.fileContainsColumn(hasColumnName);
+    };
+
     var assignDropdownItemHandlers = function () {
         var windowPar = windowObj.parent;
         var windowTop = windowObj.top;
@@ -187,8 +213,7 @@
         windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
 
         if (windowObj.RelativityImport.GetCachedUiModel) {
-            var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
-            windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
+            populateCachedState();
         };
 
         $("#processingSources").change(function (c, item) {

@@ -7,7 +7,7 @@
         var model = {
             WorkspaceId: windowObj.RelativityImport.WorkspaceId,
             ImportType: windowObj.RelativityImport.koModel.selectedImportType(),
-            HasStartLine: windowObj.RelativityImport.koModel.fileContainsColumn(),
+            HasColumnName: windowObj.RelativityImport.koModel.fileContainsColumn(),
             LineNumber: windowObj.RelativityImport.koModel.startLine(),
             LoadFile: windowObj.RelativityImport.koModel.Fileshare(),
             EncodingType: windowObj.RelativityImport.koModel.DataFileEncodingType(),
