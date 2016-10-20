@@ -32,11 +32,11 @@
     var idSelector = function (name) { return '#' + name; }
     windowObj.RelativityImport.UI.idSelector = idSelector;
 
-    var assignDropdownHandler = function() {
+    var assignDropdownHandler = function () {
         var content = windowObj.parent.$(idSelector(BUTTON_UL));
         content.slideToggle();
         var btn = windowObj.parent.$(idSelector(CUSTOM_BUTTON));
-        btn.click(function() {
+        btn.click(function () {
             content.slideToggle();
         });
     };
@@ -49,25 +49,21 @@
         windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(array[91].asciiID);
     };
 
-    var populateFileColumnHeaders = function () {
-        var baseUrlCache = root.utils.getBaseURL();
-        $.ajax({
-            url: baseUrlCache + "/api/ImportProviderDocument/LoadFileHeaders",
-            type: 'POST',
-            async: false,
-            data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel()) },
-            success: function (data) {
-                windowObj.RelativityImport.koModel.setPopulateFileColumnHeaders(data);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    };
-
-    var updateHeaders = function() {
+    var updateHeaders = function () {
         if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
-            populateFileColumnHeaders();
+            var baseUrlCache = root.utils.getBaseURL();
+            $.ajax({
+                url: baseUrlCache + "/api/ImportProviderDocument/LoadFileHeaders",
+                type: 'POST',
+                async: false,
+                data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel()) },
+                success: function (data) {
+                    windowObj.RelativityImport.koModel.setPopulateFileColumnHeaders(data);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
         };
     };
 
@@ -102,7 +98,7 @@
         updateHeaders();
     });
 
-    var populateCachedState = function() {
+    var populateCachedState = function () {
         var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
         var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
         var importType = windowObj.RelativityImport.GetCachedUiModel.ImportType;
@@ -126,6 +122,26 @@
         windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(asciiMultiLine);
         windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(asciiNestedValue);
         windowObj.RelativityImport.koModel.fileContainsColumn(hasColumnName);
+    };
+
+    windowObj.RelativityImport.checkValueForImportType = function () {
+        var chosenType = windowObj.RelativityImport.koModel.selectedImportType();
+        if (chosenType === 'image') {
+            windowObj.RelativityImport.disablePreviewButton(false);
+        } else if (chosenType === 'production') {
+            windowObj.RelativityImport.disablePreviewButton(false);
+        } else {
+            windowObj.RelativityImport.disablePreviewButton(true);
+        };
+    };
+
+    windowObj.RelativityImport.koModel.selectedImportType.subscribe(function () {
+        windowObj.RelativityImport.checkValueForImportType();
+    });
+
+    windowObj.RelativityImport.disablePreviewButton = function (bool) {
+        var windowPar = windowObj.parent;
+        windowPar.$(idSelector(CUSTOM_BUTTON)).prop('disabled', bool);
     };
 
     var assignDropdownItemHandlers = function () {
@@ -166,7 +182,7 @@
         options[PREVIEW_CHOICE_LI] = "Preview Choices & Folders";
 
         var source = windowObj.parent.$(idSelector(PROGRESS_BUTTONS));
-        source.append('<button class="button generic positive" id="' + CUSTOM_BUTTON + '"><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
+        source.append('<button class="button generic positive" id="' + CUSTOM_BUTTON + '" disabled><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
 
         var previewFile = windowObj.parent.$(idSelector(CUSTOM_BUTTON));
         previewFile.append('<ul id="' + BUTTON_UL + '"></ul>');
@@ -184,7 +200,7 @@
         windowPar.$(idSelector(CUSTOM_BUTTON)).remove();
     };
 
-    windowObj.RelativityImport.UI.addSiteCss = function() {
+    windowObj.RelativityImport.UI.addSiteCss = function () {
         var windowPar = windowObj.parent;
         windowPar.$(idSelector(CONFIGURATION_FRAME)).css({ "min-width": '900px' });
     };
@@ -214,6 +230,7 @@
 
         if (windowObj.RelativityImport.GetCachedUiModel) {
             populateCachedState();
+            windowObj.RelativityImport.checkValueForImportType();
         };
 
         $("#processingSources").change(function (c, item) {

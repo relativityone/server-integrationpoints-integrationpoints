@@ -36,6 +36,7 @@
         this.publish("saveState", stringified);
         this.publish('saveComplete', stringified);
 
+        windowObj.RelativityImport.disablePreviewButton(false);
         //TODO: validation logic here to allow moving off the settings page (e.g. check for valid load file)
     });
 
