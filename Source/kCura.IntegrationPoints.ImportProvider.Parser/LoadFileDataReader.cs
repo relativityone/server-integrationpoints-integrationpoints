@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         }
 
         //Get a line stored for the current row, based on delimter settings in the _config
-        private void readCurrentRecord()
+        private void ReadCurrentRecord()
         {
             ArtifactFieldCollection artifacts = _loadFileReader.ReadArtifact();
             string[] data = new string[artifacts.Count];
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         {
             if (_loadFileReader.HasMoreRecords)
             {
-                readCurrentRecord();
+                ReadCurrentRecord();
                 return true;
             }
             else
