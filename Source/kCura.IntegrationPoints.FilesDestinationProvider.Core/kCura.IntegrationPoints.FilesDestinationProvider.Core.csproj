@@ -169,6 +169,7 @@
     <Compile Include="Process\ExportProcessBuilder.cs" />
     <Compile Include="Process\ExportProcessRunner.cs" />
     <Compile Include="Process\ExportSettingsBuilder.cs" />
+    <Compile Include="Services\ExportInitProcessService.cs" />
     <Compile Include="Services\ExportSettingsValidationService.cs" />
     <Compile Include="Process\IDelimitersBuilder.cs" />
     <Compile Include="Process\IExportFileBuilder.cs" />

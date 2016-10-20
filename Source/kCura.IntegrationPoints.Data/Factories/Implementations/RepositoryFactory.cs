@@ -224,6 +224,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return rdoRepository;
 		}
 
+		public IDocumentTotalsRepository GetDocumentTotalsRepository(int workspaceArtifactId)
+		{
+			return new DocumentTotalsRepository(_helper, workspaceArtifactId);
+		}
+
 		#region Helper Methods
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)

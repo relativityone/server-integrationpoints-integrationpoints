@@ -12,8 +12,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -35,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IHelper _helperMock;
 		private IManagerFactory _managerFactoryMock;
 		private ISerializer _serializerMock;
-		private IRepositoryFactory _repositoryFactoryMock;
+		private IExportInitProcessService _exportInitProcessService;
 
 		private readonly Job _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, 7, TaskType.ExportWorker,
 				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
@@ -51,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_helperMock = Substitute.For<IHelper>();
 			_managerFactoryMock = Substitute.For<IManagerFactory>();
 			_serializerMock = Substitute.For<ISerializer>();
-			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
+			_exportInitProcessService = Substitute.For<IExportInitProcessService>();
 
 			_instanceToTest = new ExportManager(Substitute.For<ICaseServiceContext>(),
 				Substitute.For<IDataProviderFactory>(),
@@ -67,43 +65,38 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_managerFactoryMock,
 				_contextContainerFactoryMock,
 				new List<IBatchStatus>(),
-				_repositoryFactoryMock);
+				_exportInitProcessService);
 		}
 
-		[Test]
-		[TestCase(0, 10, -20)]
-		[TestCase(901, 1000, 100)]
-		public void ItShouldReturnTotalExportDocsCount(int expectedExportTotalDocsCount, int totalSavedSearchCount, int startIndex)
+		[TestCase(10)]
+		[TestCase(0)]
+		public void ItShouldReturnTotalExportDocsCount(int totalSavedSearchCount)
 		{
 			// Arrange
 			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO {SourceConfiguration = "Source Configuration"};
 			ExportUsingSavedSearchSettings sourceConfiguration = new ExportUsingSavedSearchSettings()
 			{
 				SavedSearchArtifactId = 1,
-				StartExportAtRecord = startIndex
 			};
 
 			IContextContainer contextContainerMock = Substitute.For<IContextContainer>();
 			IIntegrationPointManager integrationPointManagerMock = Substitute.For<IIntegrationPointManager>();
-			ISavedSearchRepository savedSearchRepositoryMock = Substitute.For<ISavedSearchRepository>();
 
 			integrationPointManagerMock.Read(_job.WorkspaceID, _job.RelatedObjectArtifactID).Returns(integrationPointDto);
-			savedSearchRepositoryMock.GetTotalDocsCount().Returns(totalSavedSearchCount);
+			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration).Returns(totalSavedSearchCount);
 
 			_contextContainerFactoryMock.CreateContextContainer(_helperMock).Returns(contextContainerMock);
 			_managerFactoryMock.CreateIntegrationPointManager(contextContainerMock).Returns(integrationPointManagerMock);
 			_serializerMock.Deserialize<ExportUsingSavedSearchSettings>(integrationPointDto.SourceConfiguration)
 				.Returns(sourceConfiguration);
-			_repositoryFactoryMock.GetSavedSearchRepository(_job.WorkspaceID, sourceConfiguration.SavedSearchArtifactId)
-				.Returns(savedSearchRepositoryMock);
 
 			// Act
 			int retTotalCount = _instanceToTest.BatchTask(_job, null);
 
 			// Assert
-			Assert.That(retTotalCount, Is.EqualTo(expectedExportTotalDocsCount));
+			Assert.That(retTotalCount, Is.EqualTo(totalSavedSearchCount));
 
-			if (expectedExportTotalDocsCount > 0)
+			if (totalSavedSearchCount > 0)
 			{
 				_jobManagerMock.Received().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.ExportWorker, Arg.Any<string>());
 				Assert.That(_instanceToTest.BatchJobCount, Is.EqualTo(1));
