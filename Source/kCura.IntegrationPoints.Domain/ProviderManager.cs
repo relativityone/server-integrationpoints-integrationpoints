@@ -27,7 +27,8 @@ namespace kCura.IntegrationPoints.Domain
 			"kCura.IntegrationPoints.Contracts",
 			"kCura.IntegrationPoints.Core",
 			"kCura.IntegrationPoints.Data",
-			"kCura.IntegrationPoints.FtpProvider"
+			"kCura.IntegrationPoints.FtpProvider",
+			"kCura.IntegrationPoints.ImportProvider"
 		};
 
 		private IProviderFactory _providerFactory;

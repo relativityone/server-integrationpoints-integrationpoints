@@ -1,0 +1,30 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.SourceProviderInstaller;
+
+namespace kCura.IntegrationPoints.EventHandlers.Installers
+{
+    [kCura.EventHandler.CustomAttributes.Description("Register the RIP Import Provider")]
+    [kCura.EventHandler.CustomAttributes.RunOnce(false)]
+    [Guid("01E26CBC-98CA-48A6-942E-FD546E2D5F7E")]
+    public class RegisterImportProvider : IntegrationPointSourceProviderInstaller
+    {
+        public override IDictionary<Guid, SourceProvider> GetSourceProviders()
+        {
+            return new Dictionary<Guid, SourceProvider>()
+            {
+                {
+                    new Guid("548F0873-8E5E-4DA6-9F27-5F9CDA764636"),
+                    new SourceProvider()
+                    {
+                        Name = "Load File",
+                        Url = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/ImportProvider/ImportSettings"
+                        //TODO: add api controller to view the source configuration data
+                        //ViewDataUrl = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/FtpProviderAPI/view"
+                    }
+                }
+            };
+        }
+    }
+}

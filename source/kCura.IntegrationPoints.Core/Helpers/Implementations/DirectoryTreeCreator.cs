@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return isRoot ? GetRoot(path, subItems) : subItems;
 		}
 
-		public TTreeItem TraverseTree(string root)
+		public TTreeItem TraverseTree(string root, bool includeFiles = false)
 		{
 			ValidateFolder(root, true);
 
@@ -40,15 +40,16 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			{
 				Id = root,
 				Text = root,
-				Icon = JsTreeItemIconEnum.Root.GetDescription()
+                Icon = JsTreeItemIconEnum.Root.GetDescription(),
+                IsDirectory = true
 			};
 
 			TTreeItem currDirectoryItem = rootDirectoryItem;
 			directoryItemsToProcessed.Push(currDirectoryItem);
 
-			while (directoryItemsToProcessed.Count > 0)
-			{
-				currDirectoryItem = directoryItemsToProcessed.Pop();
+            while (directoryItemsToProcessed.Count > 0)
+            {
+                currDirectoryItem = directoryItemsToProcessed.Pop();
 
 				List<TTreeItem> subItems = GetSubItems(currDirectoryItem);
 
@@ -56,7 +57,16 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 				// Push the subdirectories onto the stack for traversal.
 				subItems.ForEach(item => directoryItemsToProcessed.Push(item));
-			}
+                
+                //TODO (b.p., a.a.): refactor (post merge with develop) so we are not repeating code when including files.
+                //if the optional includeFiles parameter is passed in as true, retrieve files and add to tree structure
+                if (includeFiles)
+                {
+                    List<TTreeItem> subItemsFiles = GetSubItemsFiles(currDirectoryItem);
+
+                    currDirectoryItem.Children.AddRange(subItemsFiles);
+                }
+            }
 			return rootDirectoryItem;
 		}
 
@@ -123,9 +133,43 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				new TTreeItem
 				{
 					Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
-					Id = subDir
+					Id = subDir,
+                    IsDirectory = true
 				}).ToList();
 		}
+
+        private List<TTreeItem> GetSubItemsFiles(TTreeItem dirItem)
+        {
+            return GetSubItemsFiles(dirItem.Id);
+        }
+
+        protected virtual List<TTreeItem> GetSubItemsFiles(string path)
+        {
+            string[] subFiles = new string[0];
+            try
+            {
+                subFiles = _directory.GetFiles(path);
+            }
+            // An UnauthorizedAccessException exception will be thrown if we do not have
+            // discovery permission on a folder.
+            catch (UnauthorizedAccessException e)
+            {
+                LogUnauthorizedAccess(path, e);
+            }
+            return CreateSubItemsFiles(subFiles);
+        }
+
+        protected virtual List<TTreeItem> CreateSubItemsFiles(string[] subDirs)
+        {
+            return subDirs.Select(subDir =>
+                new TTreeItem
+                {
+                    Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
+                    Id = subDir,
+                    IsDirectory = false,
+                    Icon = "jstree-file"
+                }).ToList();
+        }
 
 		#region Fields
 

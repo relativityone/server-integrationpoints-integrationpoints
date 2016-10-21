@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Helpers
 
 		public string[] GetFiles(string path)
 		{
-			throw new NotImplementedException();
+            return LongPath.LongPath.GetFiles(path);
 		}
 
 		public string[] GetFiles(string path, string searchPattern)

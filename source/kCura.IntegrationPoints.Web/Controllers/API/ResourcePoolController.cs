@@ -41,10 +41,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location folder structure (Folder is not accessible).")]
-		public HttpResponseMessage GetProcessingSourceLocationStructure(int workspaceId, int artifactId)
+		public HttpResponseMessage GetProcessingSourceLocationStructure(int workspaceId, int artifactId, bool includeFiles = false)
 		{
-			List<ProcessingSourceLocationDTO> processingSourceLocations =
-					_resourcePoolManager.GetProcessingSourceLocation(workspaceId);
+            List<ProcessingSourceLocationDTO> processingSourceLocations =
+                _resourcePoolManager.GetProcessingSourceLocation(workspaceId);
 
 			ProcessingSourceLocationDTO foundProcessingSourceLocation = processingSourceLocations.FirstOrDefault(
 				processingSourceLocation => processingSourceLocation.ArtifactId == artifactId);
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
 			}
-			JsTreeItemDTO rootFolderJsTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location);
+			JsTreeItemDTO rootFolderJsTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location, includeFiles);
 			return Request.CreateResponse(HttpStatusCode.OK, rootFolderJsTreeDirectoryItem);
 		}
 

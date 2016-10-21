@@ -144,11 +144,35 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "WorkspaceView", action = "GetViewsByWorkspaceAndArtifactType" }
 			);
 
-			config.Routes.MapHttpRoute(
-				name: "DefaultApi",
-				routeTemplate: "{workspaceID}/api/{controller}/{id}",
-				defaults: new { id = RouteParameter.Optional }
-			);
-		}
+            config.Routes.MapHttpRoute(
+                name: "ImportPreviewFiles",
+                routeTemplate: "api/ImportPreview/CreatePreviewJob/",
+                defaults: new { controller = "ImportPreview", action = "CreatePreviewJob" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "ImportPreviewProgress",
+                routeTemplate: "api/ImportPreview/CheckProgress/{jobId}",
+                defaults: new { controller = "ImportPreview", action = "CheckProgress" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "ImportPreviewTable",
+                routeTemplate: "api/ImportPreview/GetImportPreviewTable/{jobId}",
+                defaults: new { controller = "ImportPreview", action = "GetImportPreviewTable" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "AsciiDelimiters",
+                routeTemplate: "api/ImportProviderDocument/GetAsciiDelimiters",
+                defaults: new { controller = "ImportProviderDocument", action = "GetAsciiDelimiters" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "{workspaceID}/api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+        }
 	}
 }

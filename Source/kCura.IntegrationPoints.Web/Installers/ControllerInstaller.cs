@@ -44,6 +44,10 @@ using kCura.IntegrationPoints.FtpProvider.Connection;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
+using kCura.IntegrationPoints.ImportProvider.Parser;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using kCura.IntegrationPoints.ImportProvider.Parser.Services;
+using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
 using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -180,6 +184,14 @@ namespace kCura.IntegrationPoints.Web.Installers
             container.Register(
                 Component.For<ISettingsManager>().ImplementedBy<SettingsManager>().LifestyleTransient().OnlyNewServices());
             container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
+
+            #endregion
+
+            #region Import Provider
+
+            container.Register(Component.For<IImportPreviewService>().ImplementedBy<ImportPreviewService>()); //todo: bp 10/7/2016 this might need to be a singleton
+            container.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>());
+            container.Register(Component.For<IPreviewJobFactory>().ImplementedBy<PreviewJobFactory>());
 
             #endregion
 

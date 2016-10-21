@@ -751,6 +751,12 @@ self.settings.templateID = "step4";
 	});
 	root.points.steps.push(step);
 
+    //Added to make field mapping logic available to Import provider settings page
+	window.top.getCurrentIpFieldMapping = function () {
+	    step.back();
+	    return step.returnModel.map;
+	}
+
 })(IP, ko);
 
 
