@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"Job History";
 		public const string JobHistoryError = @"Job History Error";
 		public const string DestinationWorkspace = @"Destination Workspace";
-		public const string MassCopyIntegrationPoint = @"Mass Copy Integration Point";
 		}
 
 	public partial class ObjectTypeGuids
@@ -51,7 +50,6 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9";
 		public const string JobHistoryError = @"17e7912d-4f57-4890-9a37-abc2b8a37bdb";
 		public const string DestinationWorkspace = @"3f45e490-b4cf-4c7d-8bb6-9ca891c0c198";
-		public const string MassCopyIntegrationPoint = @"ac2de4ab-a0c6-4730-9f06-b57d83f4c09f";
 		}
 
 	#region "Field Constants"
@@ -240,22 +238,6 @@ namespace kCura.IntegrationPoints.Data
 		public const string Name = @"155649c0-db15-4ee7-b449-bfdf2a54b7b5";
 	}
 
-
-
-	public partial class MassCopyIntegrationPointFields : BaseFields
-	{
-		public const string IntegrationPoint = @"IntegrationPoint";
-		public const string Name = @"Name";
-	}
-
-	public partial class MassCopyIntegrationPointFieldGuids 
-	{
-		public const string IntegrationPoint = @"3a030fa2-6e21-41a2-8961-459b8e65eacc";
-		public const string Name = @"00cc5ba1-0eb9-404b-9aa6-bf4100ac0373";
-	}
-
-
-
 	#endregion
 
 	#region "Choice Constants"
@@ -369,16 +351,6 @@ namespace kCura.IntegrationPoints.Data
 	public partial class DestinationWorkspaceLayouts
 	{
 		public const string DestinationWorkspaceLayout = @"Destination Workspace Layout";
-	}
-
-	public partial class MassCopyIntegrationPointLayoutGuids
-	{
-		public const string MassCopyIntegrationPointLayout = @"2dacf013-128f-486f-913c-cca64ab9954e";
-	}
-
-	public partial class MassCopyIntegrationPointLayouts
-	{
-		public const string MassCopyIntegrationPointLayout = @"Mass Copy Integration Point Layout";
 	}
 
 	#endregion
@@ -500,14 +472,6 @@ namespace kCura.IntegrationPoints.Data
 	public partial class DestinationWorkspaceViews
 	{
 		public const string AllDestinationWorkspaces = @"All Destination Workspaces";
-	}
-
-	public partial class MassCopyIntegrationPointViewGuids
-	{
-	}
-
-	public partial class MassCopyIntegrationPointViews
-	{
 	}
 
 	#endregion									
