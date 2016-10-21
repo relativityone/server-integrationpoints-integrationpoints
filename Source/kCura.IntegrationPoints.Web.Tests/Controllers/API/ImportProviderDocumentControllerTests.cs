@@ -7,7 +7,7 @@ using System.Web.Http.Hosting;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -16,11 +16,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
     public class ImportProviderDocumentControllerTests
     {
         private ImportProviderDocumentController _controller;
+        private IFieldParserFactory _fieldParserFactory;
 
         [SetUp]
         public void SetUp()
         {
-            _controller = new ImportProviderDocumentController();
+            _fieldParserFactory = Substitute.For<IFieldParserFactory>();
+            _controller = new ImportProviderDocumentController(_fieldParserFactory);
         }
 
         [Test]
