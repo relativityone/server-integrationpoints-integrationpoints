@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
-using Choice = kCura.Relativity.Client.Choice;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
@@ -36,8 +36,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//ARRANGE
 			Choice[] choices = new Choice[]
 			{
-				new Choice(){ArtifactGuids = new List<Guid>(){guidChoice1}, Name = "AAA"},
-				new Choice(){ArtifactGuids = new List<Guid>(){guidChoice2}, Name= "bbb" }
+				new Choice(){Guids = new List<Guid>(){guidChoice1}, Name = "AAA"},
+				new Choice(){Guids= new List<Guid>(){guidChoice2}, Name= "bbb" }
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public void ConvertValue_SingleChoiceFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
-			Choice myChoice = new Choice() { ArtifactGuids = new List<Guid>() { guidChoice1 }, Name = "AAA" };
+			Choice myChoice = new Choice() { Guids = new List<Guid>() { guidChoice1 }, Name = "AAA" };
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
 
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public void ConvertForGet_SingleChoiceFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
-			Choice myChoice = new Choice() { ArtifactID = 111, Name = "AAA" };
+			Choice myChoice = new Choice(111) { Name = "AAA" };
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
 
@@ -130,8 +130,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 
 			//ASSERT 
-			Assert.IsTrue(returnValue is kCura.Relativity.Client.Choice);
-			var returnedChoice = (kCura.Relativity.Client.Choice)returnValue;
+			Assert.IsTrue(returnValue is kCura.Relativity.Client.DTOs.Choice);
+			var returnedChoice = (kCura.Relativity.Client.DTOs.Choice)returnValue;
 			Assert.AreEqual(111, returnedChoice.ArtifactID);
 			Assert.AreEqual("AAA", returnedChoice.Name);
 		}

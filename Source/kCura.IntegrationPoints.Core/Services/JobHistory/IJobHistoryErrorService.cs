@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		void SubscribeToBatchReporterEvents(object batchReporter);
 		void CommitErrors();
-        void AddError(Relativity.Client.Choice errorType, Exception ex);
-        void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace);
+        void AddError(Relativity.Client.DTOs.Choice errorType, Exception ex);
+        void AddError(Relativity.Client.DTOs.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace);
     }
 }

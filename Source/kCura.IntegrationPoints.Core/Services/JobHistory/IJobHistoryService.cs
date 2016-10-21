@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// <param name="jobType">The job type.</param>
 		/// <param name="startTimeUtc">The job start time in UTC zone.</param>
 		/// <returns>The job history object of the integration point.</returns>
-		Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, Relativity.Client.Choice jobType, DateTime? startTimeUtc);
+		Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, Relativity.Client.DTOs.Choice jobType, DateTime? startTimeUtc);
 
 		/// <summary>
 		/// Retrieves a list of job history objects given the job history artifact ids.

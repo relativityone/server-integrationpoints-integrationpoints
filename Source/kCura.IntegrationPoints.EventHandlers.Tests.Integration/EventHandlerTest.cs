@@ -386,7 +386,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			};
 		}
 
-		private void CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Relativity.Client.Choice errorStatus, Relativity.Client.Choice errorType)
+		private void CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus, Relativity.Client.DTOs.Choice errorType)
 		{
 			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
 			JobHistoryError jobHistoryError = new JobHistoryError

@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -194,8 +194,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
 			{
 				ArtifactId = 6587693,
 				Error = "Just your friendly neighborhood error",
-				ErrorStatus = new Choice(errorStatusChoiceId, ""),
-				ErrorType = new Choice(errorTypeChoiceId, ""),
+				ErrorStatus = new Choice(errorStatusChoiceId) {Name=""},
+				ErrorType = new Choice(errorTypeChoiceId) {Name=""},
 				JobHistory = 1041673,
 				Name = name,
 				SourceUniqueID = "jimCarrey",

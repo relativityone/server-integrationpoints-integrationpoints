@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
 		}
 
-		private void ValidateJobHistory(Data.JobHistory jobHistory, Relativity.Client.Choice jobType)
+		private void ValidateJobHistory(Data.JobHistory jobHistory, Relativity.Client.DTOs.Choice jobType)
 		{
 			Assert.IsNotNull(jobHistory);
 			Assert.AreEqual(_jobHistoryArtifactId, jobHistory.ArtifactId);

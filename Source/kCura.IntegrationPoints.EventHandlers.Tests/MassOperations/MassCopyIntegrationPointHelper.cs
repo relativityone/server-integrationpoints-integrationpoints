@@ -1,6 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 		public static Data.IntegrationPoint CreateExampleIntegrationPoint()
 		{
 			return CreateIntegrationPoint(true, "example_name", 99, "example_destination_configuration", "example_source_configuration", "example_field_mappings",
-				"example_email_notification", 55, new Choice(Guid.Empty, "Append Only"));
+				"example_email_notification", 55, new Choice(Guid.Empty) {Name = "Append Only"});
 		}
 
 		public static void MockIntegrationPointName(Data.IntegrationPoint integrationPoint, string name)

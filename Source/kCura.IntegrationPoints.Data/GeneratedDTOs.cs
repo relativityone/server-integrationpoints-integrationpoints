@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;  
 using System.Text;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Attributes;
 
 namespace kCura.IntegrationPoints.Data
@@ -902,6 +902,58 @@ namespace kCura.IntegrationPoints.Data
 				if (!(_objectMetadata == null))
 					return _objectMetadata;
 				_objectMetadata = GetObjectMetadata(typeof(DestinationWorkspace));
+				return _objectMetadata;
+			}
+		}
+	}
+ 
+	[DynamicObject(ObjectTypes.MassCopyIntegrationPoint, ObjectTypes.IntegrationPoint, "", ObjectTypeGuids.MassCopyIntegrationPoint)]
+	public partial class MassCopyIntegrationPoint : BaseRdo
+	{
+		public const int NameFieldLength = 255;
+		[DynamicField(MassCopyIntegrationPointFields.Name, MassCopyIntegrationPointFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
+		public string Name
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(MassCopyIntegrationPointFieldGuids.Name));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(MassCopyIntegrationPointFieldGuids.Name), value);
+			}
+		}
+		[DynamicField(MassCopyIntegrationPointFields.IntegrationPoint, MassCopyIntegrationPointFieldGuids.IntegrationPoint, FieldTypes.SingleObject)]
+		public int? IntegrationPoint
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(MassCopyIntegrationPointFieldGuids.IntegrationPoint));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(MassCopyIntegrationPointFieldGuids.IntegrationPoint), value);
+			}
+		}
+		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
+		{
+			get
+			{
+				if (!(_fieldMetadata == null))
+					return _fieldMetadata;
+				_fieldMetadata = GetFieldMetadata(typeof(MassCopyIntegrationPoint));
+				return _fieldMetadata;
+			}
+		}
+		private static DynamicObjectAttribute _objectMetadata;
+		public override DynamicObjectAttribute ObjectMetadata
+		{
+			get
+			{
+				if (!(_objectMetadata == null))
+					return _objectMetadata;
+				_objectMetadata = GetObjectMetadata(typeof(MassCopyIntegrationPoint));
 				return _objectMetadata;
 			}
 		}

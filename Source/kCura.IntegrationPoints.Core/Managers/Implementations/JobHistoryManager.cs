@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
 			IDictionary<Guid, int[]> stoppableJobStatusDictionary = jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId);
-			Guid pendingGuid = JobStatusChoices.JobHistoryPending.ArtifactGuids.First();
-			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First();
+			Guid pendingGuid = JobStatusChoices.JobHistoryPending.Guids.First();
+			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.Guids.First();
 
 			int[] pendingJobArtifactIds;
 			int[] processingJobArtifactIds;
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			int objectTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
 			int errorStatusChoiceArtifactId =
-				artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids)[ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids[0]];
+				artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids)[ErrorStatusChoices.JobHistoryErrorExpired.Guids[0]];
 
 			SetErrorStatuses(workspaceArtifactId, jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			SetErrorStatuses(workspaceArtifactId, jobHistoryArtifactId, objectTypeId, errorStatusChoiceArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job);

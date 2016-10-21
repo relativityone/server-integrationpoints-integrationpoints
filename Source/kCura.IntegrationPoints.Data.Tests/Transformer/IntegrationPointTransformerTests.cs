@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
 				LogErrors = true,
 				Name = name,
 				NextScheduledRuntimeUTC = DateTime.UtcNow.AddDays(1),
-				OverwriteFields = new Choice(overwriteFieldsChoiceId, ""),
+				OverwriteFields = new Choice(overwriteFieldsChoiceId) {Name=""},
 				ScheduleRule = "My schedule rule",
 				SourceConfiguration = "My source configuration",
 				SourceProvider = 123123,
