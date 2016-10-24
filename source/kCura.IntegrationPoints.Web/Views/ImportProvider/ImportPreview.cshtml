@@ -1,0 +1,145 @@
+﻿@{
+    Layout = "~/Views/Shared/_StepLayout.cshtml";
+}
+
+<link href="~/Content/import-preview.css" rel="stylesheet" />
+
+<div class="card" id="step-progress-container">
+    <p class="card-header">
+        <span>Load File Summary</span>
+    </p>
+    <div id="import-main">
+        <span class="arrow-collapsed-summary" id="import-load-file-summary-toggle"></span>
+    </div>
+    <div id="transfer-progress-div" class="display-flex flex-container-row">
+        <div id="active-transfer-left-container" class="display-flex flex-container-column">
+            <div id="active-transfer-outcome" class="active-transfer-left-div active-transfer-upload"></div>
+
+            <div class="import-progress-bar">
+                <b>Preparing Preview</b>
+                <div class="progress-bar-outline display-flex flex-container-column">
+                    <div class="progress-bar-indicator progress-active" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+        </div>
+        <div id="transfer-time-stats" class="height-width-100">
+            <div id="active-transfer-stats">
+                <div class="active-transfer-stats-line">
+                    <p class="summary-title">PROGRESS SUMMARY</p>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Status</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p class="active-transfer-status-active" id="statusMessage">-</p>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Time Elapsed</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p class="elapsed-time">00:00:00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="active-transfer-stats-line">
+                    <p class="summary-title">Load File Breakdown</p>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Total Records</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p class="transferred-files" id="totalRecord">--</p>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Total Bytes Read</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p id="total-bytes-read">--</p>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Total Bytes</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p id="total-bytes">--</p>
+                        </div>
+                    </div>
+                    @*<br/>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Warnings</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p>3</p>
+                        </div>
+                    </div>*@
+                    <br/>
+                    <div class="card-line display-flex flex-container-row">
+                        <div class="card-label-div">
+                            <label>Errors</label>
+                        </div>
+                        <div class="card-value-div">
+                            <p id="errors-div">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card" id="tableData">
+        <div>
+            <p class="card-header preview-card-header">Records</p>
+            <span class="pagination-controls">
+                <span class="pag-text">Items</span>
+                <input id="row-number" value="0" />
+                <span class="pag-items">-</span>
+                <span class="itemCountContainer">
+                    <select id="itemsPerPageSelect">
+                        <option value="10">10</option>
+                        <option selected value="15">15</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                    </select>
+                </span>
+                <span class="pag-text"> per page</span>
+                <span class="pag-nav-button-holder">
+                    <span class="pag-nav-button pag-nav-first-dis" id="pag-nav-move-first"></span>
+                    <span class="pag-nav-button pag-nav-previous-dis" id="pag-nav-move-previous"></span>
+                    <span class="pag-nav-button pag-nav-next-dis" id="pag-nav-move-next"></span>
+                    <span class="pag-nav-button pag-nav-last-dis" id="pag-nav-move-last"></span>
+                </span>
+            </span>
+        </div>
+        <div id="data-table-container">
+            <div class="transfers-table">
+                <table id="csvData-table" class="table compact"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
+    <script src="~/Scripts/Import/import-preview.js"></script>
+
+}

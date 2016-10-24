@@ -24,7 +24,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private const string _SUB_FOLDER_1 = @"1";
 		private const string _SUB_FOLDER_2 = @"2";
 
-		private readonly string _subFolderAPath = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A);
+        private const string _SUB_FILE_1 = @"FILE1.txt";
+        private const string _SUB_FILE_2 = @"FILE2.txt";
+
+        private readonly string _subFolderAPath = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A);
 		private readonly string _subFolderA1Path = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A, _SUB_FOLDER_1);
 		private readonly string _subFolderA2Path = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A, _SUB_FOLDER_2);
 
@@ -140,6 +143,38 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			Assert.That(rootItem[0].Children.Count, Is.EqualTo(0));
 		}
 
+        [Test]
+        public void ItShouldReturnDirectoryTreeStructureFiles()
+        {
+            //Arrange
+            MockDirHierarchy();
+
+            //Act
+            JsTreeItemDTO rootDirJsTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER, true);
+
+            //Assert
+
+            //Root
+            Assert.That(rootDirJsTreeItem, Is.Not.Null);
+            Assert.That(rootDirJsTreeItem.Id, Is.EqualTo(_ROOT_FOLDER));
+            Assert.That(rootDirJsTreeItem.Text, Is.EqualTo(_ROOT_FOLDER));
+            Assert.That(rootDirJsTreeItem.Children.Count, Is.EqualTo(2));
+
+            //Folder Root\B
+            JsTreeItemDTO subFolderB = rootDirJsTreeItem.Children.FirstOrDefault(item => item.Id == _subFolderBPath);
+            Assert.That(subFolderB, Is.Not.Null);
+            Assert.That(subFolderB.Text, Is.EqualTo(_SUB_FOLDER_B));
+            Assert.That(subFolderB.Children.Count, Is.EqualTo(3)); //Should have 3 children since we have 2 files under Sub Folder B
+            Assert.That(subFolderB.Children.Where(i => i.IsDirectory == false).Count, Is.EqualTo(2));//2 of these children are not Folders
+
+
+            //Folder Root\B\1
+            JsTreeItemDTO subFolderB1 = subFolderB.Children.FirstOrDefault(item => item.Id == _subFolderB1Path);
+            Assert.That(subFolderB1, Is.Not.Null);
+            Assert.That(subFolderB1.Text, Is.EqualTo(_SUB_FOLDER_1));
+            Assert.That(subFolderB1.Children.Count, Is.EqualTo(0));
+        }
+
 		private void MockDirHierarchy()
 		{
 			_directoryMock.Exists(_ROOT_FOLDER).Returns(true);
@@ -160,7 +195,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			{
 				_subFolderB1Path
 			});
-		}
+
+            _directoryMock.GetFiles(_subFolderBPath).Returns(new[]
+            {
+                _SUB_FILE_1,
+                _SUB_FILE_1
+            });
+        }
 
 	}
 }

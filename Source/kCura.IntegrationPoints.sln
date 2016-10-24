@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web", "kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj", "{05724E56-C325-4CA2-9122-50A41411B691}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -148,6 +148,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Ser
 		{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA} = {B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImportProvider", "ImportProvider", "{16E36871-2EC6-48BB-ADAA-A9CD481F3337}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider", "kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj", "{835F7005-E106-4C29-AD9C-FE8BD5CF8280}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Parser", "kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj", "{180650D2-1EEA-4242-949D-7BDE78EECCB4}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit", "Unit", "{1CF9A281-4FE6-4735-A66D-71C7E415EF69}"
@@ -171,6 +177,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core.Tests.Integration", "kCura.ScheduleQueue.Core.Tests.Integration\kCura.ScheduleQueue.Core.Tests.Integration.csproj", "{88D683E8-3E9F-403D-86EF-AD4982A02B92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services.Tests", "kCura.IntegrationPoints.Services.Tests\kCura.IntegrationPoints.Services.Tests.csproj", "{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Parser.Tests", "kCura.IntegrationPoints.ImportProvider.Parser.Tests\kCura.IntegrationPoints.ImportProvider.Parser.Tests.csproj", "{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Tests", "kCura.IntegrationPoints.ImportProvider.Tests\kCura.IntegrationPoints.ImportProvider.Tests.csproj", "{F556FF4E-5F7D-46D6-A343-A21ED5169F44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -426,6 +436,18 @@ Global
 		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Any CPU.ActiveCfg = Release|x64
 		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.ActiveCfg = Release|x64
 		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.Build.0 = Release|x64
+		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Debug|x64.ActiveCfg = Debug|x64
+		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Debug|x64.Build.0 = Debug|x64
+		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Release|x64.ActiveCfg = Release|x64
+		{835F7005-E106-4C29-AD9C-FE8BD5CF8280}.Release|x64.Build.0 = Release|x64
+		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Debug|x64.ActiveCfg = Debug|x64
+		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Debug|x64.Build.0 = Debug|x64
+		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Release|x64.ActiveCfg = Release|x64
+		{180650D2-1EEA-4242-949D-7BDE78EECCB4}.Release|x64.Build.0 = Release|x64
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74}.Debug|x64.ActiveCfg = Debug|x64
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74}.Debug|x64.Build.0 = Debug|x64
@@ -480,6 +502,18 @@ Global
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}.Release|Any CPU.ActiveCfg = Release|x64
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}.Release|x64.ActiveCfg = Release|x64
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}.Release|x64.Build.0 = Release|x64
+		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}.Debug|x64.ActiveCfg = Debug|x64
+		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}.Debug|x64.Build.0 = Debug|x64
+		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}.Release|x64.ActiveCfg = Release|x64
+		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}.Release|x64.Build.0 = Release|x64
+		{F556FF4E-5F7D-46D6-A343-A21ED5169F44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F556FF4E-5F7D-46D6-A343-A21ED5169F44}.Debug|x64.ActiveCfg = Debug|x64
+		{F556FF4E-5F7D-46D6-A343-A21ED5169F44}.Debug|x64.Build.0 = Debug|x64
+		{F556FF4E-5F7D-46D6-A343-A21ED5169F44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F556FF4E-5F7D-46D6-A343-A21ED5169F44}.Release|x64.ActiveCfg = Release|x64
+		{F556FF4E-5F7D-46D6-A343-A21ED5169F44}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -505,6 +539,9 @@ Global
 		{8A61BE46-3C1D-4D31-91F0-2731A01860FC} = {33333F4D-C9D1-4794-ABC1-F395DA548A50}
 		{F5EDCEF8-3F00-47DC-B711-DA6B8E21C987} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{A6490515-F92D-4157-BF25-5DCC481AA14D} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
+		{16E36871-2EC6-48BB-ADAA-A9CD481F3337} = {E4D200F1-55C2-42C4-A54B-3AE21F0443DF}
+		{835F7005-E106-4C29-AD9C-FE8BD5CF8280} = {16E36871-2EC6-48BB-ADAA-A9CD481F3337}
+		{180650D2-1EEA-4242-949D-7BDE78EECCB4} = {16E36871-2EC6-48BB-ADAA-A9CD481F3337}
 		{1CF9A281-4FE6-4735-A66D-71C7E415EF69} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{5E44277B-5C51-4367-874B-EFA44EB2B956} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
@@ -516,5 +553,7 @@ Global
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{88D683E8-3E9F-403D-86EF-AD4982A02B92} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
+		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
+		{F556FF4E-5F7D-46D6-A343-A21ED5169F44} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 	EndGlobalSection
 EndGlobal

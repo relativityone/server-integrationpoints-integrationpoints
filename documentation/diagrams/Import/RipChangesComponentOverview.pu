@@ -1,0 +1,35 @@
+@startuml
+title Relativity Import: RIP Changes - Component Overview
+component "Custom Provider" as CustomProvider
+component "Export Provider" as ExportProvider
+component "Relativity Import Provider" as RelativityImportProvider #LightGreen
+package "Integration Points" as IntegrationPoints {
+	component "ImageImportWorker" as ImageImportWorker #LightGreen
+	component "ExportWorker" as ExportWorker
+	component "SyncCustodianManagerWorker" as SyncCustodianManagerWorker
+ 
+	component "ImageImportSynchronizer" as ImageImportSynchronizer #LightGreen
+	component "ExportSynchronizer" as ExportSynchronizer
+	component "RdoSynchronizerBase" as RdoSynchronizerBase
+}
+RelativityImportProvider --> SyncCustodianManagerWorker : Document\nImport
+RelativityImportProvider --> ImageImportWorker : Image and Production\nImport
+ExportProvider --> ExportWorker
+CustomProvider --> SyncCustodianManagerWorker
+ImageImportWorker --> ImageImportSynchronizer
+ExportWorker --> ExportSynchronizer
+SyncCustodianManagerWorker --> RdoSynchronizerBase
+package "Import API" as ImportAPI {
+	interface "NewImageImportJob\nNewProductionImportJob" as OtherWinEDDS
+	interface "NewNativeDocumentImportJob\nNewObjectImportJob" as CurrentWinEDDS
+}
+RdoSynchronizerBase --> CurrentWinEDDS
+ImageImportSynchronizer --> OtherWinEDDS
+package "WinEDDS" as WinEDDS {
+    component "BulkImageFileImporter" as BulkImageFileImporter
+    component "BulkLoadFileImporter" as BulkLoadFileImporter
+}
+CurrentWinEDDS --> BulkLoadFileImporter
+OtherWinEDDS --> BulkImageFileImporter
+'Interfaces
+@enduml

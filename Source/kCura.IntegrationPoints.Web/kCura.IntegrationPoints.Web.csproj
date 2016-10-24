@@ -305,6 +305,9 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
+    <Compile Include="Controllers\API\ImportPreviewController.cs" />
+    <Compile Include="Controllers\API\ImportProviderDocumentController.cs" />
+    <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Controllers\API\WorkspaceViewController.cs" />
@@ -359,6 +362,7 @@
     <Compile Include="SignalRHubs\IntegrationPointDataHub.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Toggles\ShowFileShareDataProviderToggle.cs" />
+    <Compile Include="Toggles\ShowFileShareImportProviderToggle.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />
@@ -394,10 +398,21 @@
     </Content>
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
+    <Content Include="Content\Images\ImportPreview\arrow_collapsed.png" />
+    <Content Include="Content\Images\ImportPreview\arrow_expanded.png" />
+    <Content Include="Content\Images\ImportPreview\move_first.png" />
+    <Content Include="Content\Images\ImportPreview\move_first_dis.png" />
+    <Content Include="Content\Images\ImportPreview\move_last.png" />
+    <Content Include="Content\Images\ImportPreview\move_last_dis.png" />
+    <Content Include="Content\Images\ImportPreview\move_next.png" />
+    <Content Include="Content\Images\ImportPreview\move_next_dis.png" />
+    <Content Include="Content\Images\ImportPreview\move_previous.png" />
+    <Content Include="Content\Images\ImportPreview\move_previous_dis.png" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
     <Content Include="Content\Images\sprite.png" />
+    <Content Include="Content\import.css" />
     <Content Include="Content\Images\ui-bg_flat_100_666666_40x100.png" />
     <Content Include="Content\integration-points-view.css" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
@@ -454,6 +469,7 @@
     <Content Include="Content\themes\default\style.css" />
     <Content Include="Content\themes\default\style.min.css" />
     <Content Include="Content\themes\default\throbber.gif" />
+    <Content Include="Content\import-preview.css" />
     <Content Include="Content\ui-dialog.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
@@ -486,6 +502,8 @@
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
+    <Content Include="Scripts\Import\import-init.js" />
+    <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
@@ -503,6 +521,9 @@
     <Content Include="Scripts\Export\text-precedence-picker.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
+    <Content Include="Scripts\Import\import-preview.js" />
+    <Content Include="Scripts\Import\import-provider-settings-step.js" />
+    <Content Include="Scripts\Import\import-setup.js" />
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.9.1.js" />
@@ -712,6 +733,8 @@
     <Content Include="Views\Fileshare\SavedSearchPicker.cshtml" />
     <Content Include="Views\Fileshare\ListPicker.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderSettings.cshtml" />
+    <Content Include="Views\ImportProvider\ImportSettings.cshtml" />
+    <Content Include="Views\ImportProvider\ImportPreview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -765,6 +788,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj">
       <Project>{8a61be46-3c1d-4d31-91f0-2731a01860fc}</Project>
       <Name>kCura.IntegrationPoints.FtpProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
+      <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>

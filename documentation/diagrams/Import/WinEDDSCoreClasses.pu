@@ -1,0 +1,35 @@
+@startuml
+title WinEDDS Core Classes
+package kCura.Utility {
+    component DelimitedFileImporter
+    component RobustIOReporter
+}
+'Internal linkages for kCura.Utility
+RobustIOReporter <|-- DelimitedFileImporter
+package kCura.WinEDDS.Importers {
+    component LoadFileReader
+    component LoadFileBase
+    component LoadFilePreProcessor
+    component LoadFilePreviewer
+    component OpticonFileReader
+    component ImageFilePreviewer
+    component BulkImageFileImporter
+    component BulkLoadFileImporter
+    component LoadFile
+    component ImageLoadFile
+}
+'inter-package links
+DelimitedFileImporter <|-- LoadFileReader
+DelimitedFileImporter <|-- OpticonFileReader
+DelimitedFileImporter <|-- ImageFilePreviewer
+RobustIOReporter <|-- LoadFileBase
+RobustIOReporter <|-- BulkImageFileImporter
+LoadFileBase <|-- LoadFilePreviewer
+LoadFileBase <|-- BulkLoadFileImporter
+OpticonFileReader *-- ImageLoadFile : "contains"
+LoadFileReader *-- LoadFile : "contains"
+LoadFileReader <|-- LoadFilePreProcessor
+'
+LoadFileBase *-- LoadFileReader : "contains"
+BulkImageFileImporter *-- OpticonFileReader : "contains"
+@enduml

@@ -9,6 +9,9 @@ using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
+using kCura.IntegrationPoints.Web.Toggles;
+using Relativity.Toggles;
+using kCura.IntegrationPoints.ImportProvider;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -17,14 +20,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly ISourceTypeFactory _factory;
 		private readonly ICaseServiceContext _serviceContext;
 		private readonly IObjectTypeQuery _rdoQuery;
+        private readonly IToggleProvider _toggleProvider;
 
-		public SourceTypeController(ISourceTypeFactory factory,
+        public SourceTypeController(ISourceTypeFactory factory,
+            IToggleProvider toggleProvider,
 			ICaseServiceContext serviceContext,
 			RSAPIRdoQuery objectTypeQuery)
 		{
 			_factory = factory;
 			_rdoQuery = objectTypeQuery;
 			_serviceContext = serviceContext;
+            _toggleProvider = toggleProvider;
 		}
 
 		[HttpGet]
@@ -41,7 +47,21 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				Config = new SourceProviderConfigModel(x.Config, rdoTypesCache)
 			}).ToList();
 
-			return Request.CreateResponse(HttpStatusCode.OK, list);
+            // TODO: Remove the toggle once the Import provider is ready
+            bool isShowImportProviderToggleEnabled = _toggleProvider.IsEnabled<ShowFileShareImportProviderToggle>();//TODO toggle
+            if (!isShowImportProviderToggleEnabled)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (list.ElementAt(i).value.ToUpper() == "548F0873-8E5E-4DA6-9F27-5F9CDA764636")//TODO GUID Import provider
+                    {
+                        list.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 	}
 }

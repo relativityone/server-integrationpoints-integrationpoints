@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using kCura.EDDS.WebAPI.ExportManagerBase;
 using kCura.WinEDDS.Service.Export;
 using Relativity;
@@ -33,8 +34,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			char multiValueDelimiter, char nestedValueDelimiter, int[] textPrecedenceAvfIds, int productionId)
 		{
 			var export = CreateExport(appID, artifactTypeID, textPrecedenceAvfIds);
-			return export.RetrieveResultsBlockForProduction(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
+			var result = export.RetrieveResultsBlockForProduction(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
 				nestedValueDelimiter, productionId);
+			return RehydrateStringsIfNeeded(result);
 		}
 
 		public InitializationResults InitializeFolderExport(int appID, int viewArtifactID, int parentArtifactID, bool includeSubFolders, int[] avfIds, int startAtRecord,
@@ -60,6 +62,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		{
 			_baseServiceContext.AppArtifactID = appID;
 			return PermissionsHelper.HasAdminOperationPermission(_baseServiceContext, Permission.AllowDesktopClientExport);
+		}
+
+		private object[] RehydrateStringsIfNeeded(object[] toScrub)
+		{
+			if (toScrub != null)
+			{
+				foreach (object[] row in toScrub)
+				{
+					if (row != null)
+					{
+						for (int i = 0; i < row.Length; i++)
+						{
+							if (row[i] is byte[])
+							{
+								row[i] = Encoding.Unicode.GetString((byte[]) row[i]);
+							}
+						}
+					}
+				}
+			}
+			return toScrub;
 		}
 
 		private void CheckExportPermissions(Export export)

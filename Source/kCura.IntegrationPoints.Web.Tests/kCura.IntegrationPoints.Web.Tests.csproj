@@ -207,6 +207,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
+    <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
     <Compile Include="Helpers\TestBase.cs" />
     <Compile Include="CastleWindsorValidationTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
@@ -255,6 +257,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
       <Project>{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
+      <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
