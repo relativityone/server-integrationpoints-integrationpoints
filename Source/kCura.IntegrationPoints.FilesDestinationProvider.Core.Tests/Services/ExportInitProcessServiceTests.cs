@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private const int _VIEW_ID = 2;
 		private const int _FOLDER_ID = 3;
 		private const int _SAVED_SEARCH_ID = 4;
+		private const int _PROD_SET_ID = 5;
 
 		private const int _EXPECTED_DOC_COUNT = 10;
 
@@ -35,6 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 				SourceWorkspaceArtifactId = _WKSP_ID,
 				SavedSearchArtifactId = _SAVED_SEARCH_ID,
 				FolderArtifactId = _FOLDER_ID,
+				ProductionId = _PROD_SET_ID,
 				ViewId = _VIEW_ID,
 				StartExportAtRecord = 1
 			};
@@ -69,6 +71,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 
 			// Assert
 			_documentTotalsRepository.Received().GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID);
+			Assert.That(returnedValue, Is.EqualTo(_EXPECTED_DOC_COUNT));
+		}
+
+		[Test]
+		public void ItShouldReturnCorrectProductionDocCountNumber()
+		{
+			// Arrange
+			_exportSettings.ExportType = ExportSettings.ExportType.ProductionSet.ToString();
+
+			_documentTotalsRepository.GetProductionDocsCount(_PROD_SET_ID).Returns(_EXPECTED_DOC_COUNT);
+
+			// Act
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings);
+
+			// Assert
+			_documentTotalsRepository.Received().GetProductionDocsCount(_PROD_SET_ID);
 			Assert.That(returnedValue, Is.EqualTo(_EXPECTED_DOC_COUNT));
 		}
 
