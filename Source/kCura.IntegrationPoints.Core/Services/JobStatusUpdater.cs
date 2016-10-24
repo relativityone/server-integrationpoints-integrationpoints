@@ -17,13 +17,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobHistoryService = jobHistoryService;
 		}
 
-		public Relativity.Client.Choice GenerateStatus(Guid batchId)
+		public Relativity.Client.DTOs.Choice GenerateStatus(Guid batchId)
 		{
 			Data.JobHistory result = _jobHistoryService.GetRdo(batchId);
 			return GenerateStatus(result);
 		}
 
-		public Relativity.Client.Choice GenerateStatus(Data.JobHistory jobHistory)
+		public Relativity.Client.DTOs.Choice GenerateStatus(Data.JobHistory jobHistory)
 		{
 			if (jobHistory == null)
 			{

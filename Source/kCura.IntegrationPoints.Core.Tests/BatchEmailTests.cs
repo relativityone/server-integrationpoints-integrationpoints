@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		};
 
 		[TestCaseSource(nameof(GenerateEmailSource))]
-		public void GenerateEmail(Choice jobStatus, string expectedSubject, string expectedBody)
+		public void GenerateEmail(Relativity.Client.DTOs.Choice jobStatus, string expectedSubject, string expectedBody)
 		{
 			// ACT
 			EmailMessage message = _testInstance.GenerateEmail(jobStatus);

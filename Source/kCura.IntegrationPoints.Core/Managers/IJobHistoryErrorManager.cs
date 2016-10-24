@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="job">Job object representing the currently running job</param>
 		/// <param name="jobType">Job Type of the currently running job</param>
 		/// <returns>An UpdateStatusType that houses the job type and error types to make error status changes with</returns>
-		JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType);
+		JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.DTOs.Choice jobType);
 
 		/// <summary>
 		/// Creates a saved search to temporarily be used for retry error jobs.

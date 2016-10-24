@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;  
 using System.Text;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Attributes;
 
 namespace kCura.IntegrationPoints.Data
@@ -906,5 +906,4 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 	}
-
 }

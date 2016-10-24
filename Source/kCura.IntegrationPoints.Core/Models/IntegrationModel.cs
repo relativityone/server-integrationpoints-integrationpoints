@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			{
 				throw new Exception("Cannot find choice by the name " + this.SelectedOverwrite);
 			}
-			point.OverwriteFields = new Choice(choice.ArtifactID, choice.Name);
+			point.OverwriteFields = new Relativity.Client.DTOs.Choice(choice.ArtifactID) {Name = choice.Name};
 			point.SourceConfiguration = this.SourceConfiguration;
 			point.SourceProvider = null;
 			point.SourceProvider = this.SourceProvider;

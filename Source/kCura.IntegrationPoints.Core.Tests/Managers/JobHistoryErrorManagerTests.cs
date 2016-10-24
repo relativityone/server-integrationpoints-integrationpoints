@@ -320,7 +320,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				new ArtifactDTO(documentId2, artifactTypeId, controlNumber2, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchRepository.RetrieveNextDocuments().Returns(artifactDtos, new ArtifactDTO[0]);
+			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtos, x => new ArtifactDTO[0]);
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_workspaceArtifactId).Returns(_jobHistoryErrorRepository);
 

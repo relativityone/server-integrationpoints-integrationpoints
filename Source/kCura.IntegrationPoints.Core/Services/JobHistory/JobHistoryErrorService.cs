@@ -8,7 +8,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Injection;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services

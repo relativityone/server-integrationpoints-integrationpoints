@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories

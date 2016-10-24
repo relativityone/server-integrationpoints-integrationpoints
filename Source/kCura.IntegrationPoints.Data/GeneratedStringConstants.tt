@@ -17,7 +17,7 @@ var tabTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 string nameSpaceName = "kCura.IntegrationPoints.Data"; 
 #>
 using System;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 namespace <#=nameSpaceName#>
 {
  

@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 namespace kCura.IntegrationPoints.Data
 {
  
@@ -238,49 +238,47 @@ namespace kCura.IntegrationPoints.Data
 		public const string Name = @"155649c0-db15-4ee7-b449-bfdf2a54b7b5";
 	}
 
-
-
 	#endregion
 
 	#region "Choice Constants"
 
 	public partial class OverwriteFieldsChoices
 	{
-		public static Choice IntegrationPointAppendOnly = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8"), @"Append Only");
-		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd"), @"Append/Overlay");
-		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515"), @"Overlay Only");
+		public static Choice IntegrationPointAppendOnly = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8")) {Name= @"Append Only"};
+		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd")) {Name= @"Append/Overlay"};
+		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515")) {Name= @"Overlay Only"};
 	}
 
 	public partial class JobStatusChoices
 	{
-		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96"), @"Pending");
-		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54"), @"Processing");
-		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c"), @"Completed");
-		public static Choice JobHistoryCompletedWithErrors = new Choice(Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37"), @"Completed with errors");
-		public static Choice JobHistoryErrorJobFailed = new Choice(Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63"), @"Error - job failed");
-		public static Choice JobHistoryStopping = new Choice(Guid.Parse("97c1410d-864d-4811-857b-952464872baa"), @"Stopping");
-		public static Choice JobHistoryStopped = new Choice(Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3"), @"Stopped");
+		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96")) {Name= @"Pending"};
+		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54")) {Name= @"Processing"};
+		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c")) {Name= @"Completed"};
+		public static Choice JobHistoryCompletedWithErrors = new Choice(Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37")) {Name= @"Completed with errors"};
+		public static Choice JobHistoryErrorJobFailed = new Choice(Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63")) {Name= @"Error - job failed"};
+		public static Choice JobHistoryStopping = new Choice(Guid.Parse("97c1410d-864d-4811-857b-952464872baa")) {Name= @"Stopping"};
+		public static Choice JobHistoryStopped = new Choice(Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3")) {Name= @"Stopped"};
 	}
 
 	public partial class JobTypeChoices
 	{
-		public static Choice JobHistoryRun = new Choice(Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20"), @"Run");
-		public static Choice JobHistoryScheduledRun = new Choice(Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d"), @"Scheduled Run");
-		public static Choice JobHistoryRetryErrors = new Choice(Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f"), @"Retry Errors");
+		public static Choice JobHistoryRun = new Choice(Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20")) {Name= @"Run"};
+		public static Choice JobHistoryScheduledRun = new Choice(Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d")) {Name= @"Scheduled Run"};
+		public static Choice JobHistoryRetryErrors = new Choice(Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f")) {Name= @"Retry Errors"};
 	}
 
 	public partial class ErrorTypeChoices
 	{
-		public static Choice JobHistoryErrorItem = new Choice(Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b"), @"Item");
-		public static Choice JobHistoryErrorJob = new Choice(Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b"), @"Job");
+		public static Choice JobHistoryErrorItem = new Choice(Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b")) {Name= @"Item"};
+		public static Choice JobHistoryErrorJob = new Choice(Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b")) {Name= @"Job"};
 	}
 
 	public partial class ErrorStatusChoices
 	{
-		public static Choice JobHistoryErrorNew = new Choice(Guid.Parse("f881b199-8a67-4d49-b1c1-f9e68658fb5a"), @"New");
-		public static Choice JobHistoryErrorExpired = new Choice(Guid.Parse("af01a8fa-b419-49b1-bd71-25296e221e57"), @"Expired");
-		public static Choice JobHistoryErrorInProgress = new Choice(Guid.Parse("e5ebd98c-c976-4fa2-936f-434e265ea0aa"), @"In Progress");
-		public static Choice JobHistoryErrorRetried = new Choice(Guid.Parse("7d3d393d-384f-434e-9776-f9966550d29a"), @"Retried");
+		public static Choice JobHistoryErrorNew = new Choice(Guid.Parse("f881b199-8a67-4d49-b1c1-f9e68658fb5a")) {Name= @"New"};
+		public static Choice JobHistoryErrorExpired = new Choice(Guid.Parse("af01a8fa-b419-49b1-bd71-25296e221e57")) {Name= @"Expired"};
+		public static Choice JobHistoryErrorInProgress = new Choice(Guid.Parse("e5ebd98c-c976-4fa2-936f-434e265ea0aa")) {Name= @"In Progress"};
+		public static Choice JobHistoryErrorRetried = new Choice(Guid.Parse("7d3d393d-384f-434e-9776-f9966550d29a")) {Name= @"Retried"};
 	}
 
 	#endregion								

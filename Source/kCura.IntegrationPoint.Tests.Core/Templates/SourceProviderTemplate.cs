@@ -198,7 +198,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Agent.UpdateAgent(agent);
 		}
 
-		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.Choice jobTypeChoice, Relativity.Client.Choice jobStatusChoice = null, bool jobEnded = false)
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
@@ -222,7 +222,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return jobHistory;
 		}
 
-		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Relativity.Client.Choice errorStatus, Relativity.Client.Choice type)
+		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus, Relativity.Client.DTOs.Choice type)
 		{
 			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
 			JobHistoryError jobHistoryError = new JobHistoryError
