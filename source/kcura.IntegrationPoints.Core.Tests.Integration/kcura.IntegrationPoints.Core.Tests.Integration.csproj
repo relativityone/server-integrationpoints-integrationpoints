@@ -65,6 +65,14 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -76,7 +84,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -68,6 +68,10 @@
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Utility.MassAssign, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NSubstitute, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
@@ -99,7 +103,15 @@
     <Reference Include="Relativity.Core, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
-    </Reference>    
+    </Reference>
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>   
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference> 
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
