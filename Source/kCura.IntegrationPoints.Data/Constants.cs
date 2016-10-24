@@ -84,4 +84,9 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE = "Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
 	}
+
+	public static class ProductionConsts
+	{
+		public static readonly Guid ProductionInformationTypeGuid = new Guid("11F4D584-C2A7-4E13-8458-D2C031FA40B6");
+	}
 }

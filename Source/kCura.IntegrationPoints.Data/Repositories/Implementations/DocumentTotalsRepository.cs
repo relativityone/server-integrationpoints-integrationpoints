@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DocumentTotalsRepository>();
 			_workspaceArtifactId = workspaceArtifactId;
+			
 		}
 
 		#endregion //Constructors
@@ -51,11 +52,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 
 		public int GetProductionDocsCount(int productionSetId)
-		{//TODO
-			throw new NotImplementedException();
+		{
+			var query = new Query<RDO>
+			{
+				ArtifactTypeGuid = ProductionConsts.ProductionInformationTypeGuid,
+				Condition = new ObjectCondition("ProductionSet", ObjectConditionEnum.EqualTo, productionSetId),
+				Fields = FieldValue.NoFields
+			};
+			return QueryForTotals(query, "Failed to retrieve total export items count for production set: {productionSetId}.", productionSetId);
 		}
 
-		private int QueryForTotals(Query<Relativity.Client.DTOs.Document> query, string errMsgTemplate, params object[] parmeters)
+		private int QueryForTotals<T>(Query<T> query, string errMsgTemplate, params object[] parmeters)
+			where T : Relativity.Client.DTOs.Artifact, new()
 		{
 			try
 			{
@@ -63,7 +71,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-					return rsapiClient.Repositories.Document.Query(query).TotalCount;
+					if (typeof(T) == typeof(Relativity.Client.DTOs.Document))
+					{
+						return rsapiClient.Repositories.Document.Query(query as Query<Relativity.Client.DTOs.Document>).TotalCount;
+					}
+					return rsapiClient.Repositories.RDO.Query(query as Query<RDO>).TotalCount;
 				}
 			}
 			catch (Exception ex)

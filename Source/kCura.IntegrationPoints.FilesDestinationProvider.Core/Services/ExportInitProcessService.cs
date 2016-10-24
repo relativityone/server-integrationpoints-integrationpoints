@@ -43,6 +43,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				case ExportSettings.ExportType.FolderAndSubfolders:
 					return documentTotalsRepository.GetFolderTotalDocsCount(exportSettings.FolderArtifactId,
 						exportSettings.ViewId, exportType == ExportSettings.ExportType.FolderAndSubfolders);
+				case ExportSettings.ExportType.ProductionSet:
+					return documentTotalsRepository.GetProductionDocsCount(exportSettings.ProductionId);
 				default:
 					return documentTotalsRepository.GetSavedSearchTotalDocsCount(exportSettings.SavedSearchArtifactId);
 			}
