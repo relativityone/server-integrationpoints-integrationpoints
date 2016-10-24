@@ -11,19 +11,20 @@
 
     var viewModel = function () {
         //TODO: refactor viewmodel
-        //- make self / this usage consistent
-        //- consider making selectedImportType a computed observable that indexes into importTypes, and pulling the string from the 'value' field. would need a new variable like 'activeImportType'
-        //- assignment to  ProcessingSourceLocationArtifactId can never be true, so always defaults to 0; why is the || used?
-        //- assignment to HasBeenRun references a non-existent self.hasBeenRun; again, can never be present so always defaults to false
         //- why are we passing self.Fileshare into the ko.observable function that defines... this.Fileshare? understand required / onlyIf; is this knockout or integration points?
 
         var self = this;
         self.selectedImportType = ko.observable("document");
         self.importTypes = ko.observableArray([
-            new ImportTypeModel({ id: "1", value: "document", name: "Document Load File" }),
-            new ImportTypeModel({ id: "2", value: "image", name: "Image Load File" }),
-            new ImportTypeModel({ id: "3", value: "production", name: "Production Load File" })
+            new ImportTypeModel({ value: "document", name: "Document Load File" }),
+            new ImportTypeModel({ value: "image", name: "Image Load File" }),
+            new ImportTypeModel({ value: "production", name: "Production Load File" })
         ]);
+
+        self.populateFileColumnHeaders = ko.observable();
+        self.setPopulateFileColumnHeaders = function (data) {
+            self.populateFileColumnHeaders(data);
+        };
 
         self.startLine = ko.observable("1");
 
@@ -60,12 +61,8 @@
         };
 
         self.ProcessingSourceLocationList = ko.observableArray([]);
-        self.ProcessingSourceLocationArtifactId = this.ProcessingSourceLocation || 0;
-        self.HasBeenRun = ko.observable(self.hasBeenRun || false);
-        self.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId)
-            .extend({
-                required: true
-            });
+        self.HasBeenRun = ko.observable(false);
+        self.ProcessingSourceLocation = ko.observable();
 
         self.Fileshare = ko.observable(self.Fileshare).extend({
             required: {
@@ -108,7 +105,9 @@
                 }
 
                 // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-                self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
+                //self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
+
+                self.FileEncodingTypeList([new Group("", [new Option("Unicode (UTF-8)", "utf-8")]), new Group("Favorite", favorite), new Group("Others", others)]);
 
                 self.DataFileEncodingType(self.DataFileEncodingTypeValue);
                 self.DataFileEncodingType.isModified(false);

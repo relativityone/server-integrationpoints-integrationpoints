@@ -7,7 +7,7 @@ using System.Web.Http.Hosting;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -15,12 +15,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
     public class ImportProviderDocumentControllerTests
     {
+        private int MAX_FIELDS = 100;
+        private const string FIELD_NAME_BASE = "col-";
+
         private ImportProviderDocumentController _controller;
+        private IFieldParserFactory _fieldParserFactory;
+        private IFieldParser _fieldParser;
 
         [SetUp]
         public void SetUp()
         {
-            _controller = new ImportProviderDocumentController();
+            _fieldParser = Substitute.For<IFieldParser>();
+            _fieldParserFactory = Substitute.For<IFieldParserFactory>();
+            _controller = new ImportProviderDocumentController(_fieldParserFactory);
         }
 
         [Test]
@@ -36,10 +43,50 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             
         }
 
+        [Test]
+        public void ItShouldReturnLoadFileHeaders()
+        {
+            List<string> testHeaders = TestHeaders(new System.Random().Next(MAX_FIELDS));
+            List<string> sortedHeaders = new List<string>(testHeaders);
+            sortedHeaders.Sort();
+
+            _fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
+            _fieldParser.GetFields().Returns(testHeaders);
+
+
+            string actionResult = ExtractStringResponse(_controller.LoadFileHeaders(""));
+            string[] splittedResult = actionResult.Split(new char[] { (char)13, (char)10 }, System.StringSplitOptions.RemoveEmptyEntries);
+
+            IEnumerator<string> tdEnum = sortedHeaders.GetEnumerator();
+            tdEnum.MoveNext();
+            int idx = 0;
+            foreach (string currentResult in splittedResult)
+            {
+                Assert.AreEqual(currentResult, string.Format("{0} ({1})", tdEnum.Current, testHeaders.IndexOf(tdEnum.Current) + 1));
+
+                tdEnum.MoveNext();
+                idx++;
+            }
+        }
+
         private IEnumerable<string> ExtractListResponse(IHttpActionResult response)
         {
             JsonResult<IEnumerable<string>> result = response as JsonResult<IEnumerable<string>>;
             return result.Content;
+        }
+
+        private string ExtractStringResponse(IHttpActionResult response)
+        {
+            return (response as OkNegotiatedContentResult<string>).Content;
+        }
+
+        private List<string> TestHeaders(int fieldCount)
+        {
+            return
+                Enumerable
+                .Range(0, fieldCount)
+                .Select(x => string.Format(FIELD_NAME_BASE + "{0}", x))
+                .ToList();
         }
     }
 }

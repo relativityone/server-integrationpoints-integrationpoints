@@ -8,7 +8,7 @@
 <link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
 
 <div id="_main">
-    <div id="import-provider-configuration">
+    <div id="import-provider-configuration" style="min-width: 900px;">
         <div class="card">
             <span class="label">Import Detail</span>
             <table style="width: 100%;">
@@ -22,10 +22,6 @@
                                 <select class="fluid-mock-select" id="import-importType" data-bind="options:importTypes, optionsText:'name', optionsValue:'value', value:selectedImportType, optionsCaption: 'Select...' ,select2: { width: '100%' }"></select>
                             </div>
                         </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%;">
                         <div class="field-row">
                             <div class="field-label required">
                                 Processing Source:
@@ -48,10 +44,6 @@
                                 </div>
                             </div>
                         </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%;">
                         <div class="field-row">
                             <div class="field-label required">
                                 Start Line:
@@ -64,116 +56,113 @@
                 </tr>
             </table>
         </div>
-        @*Todo: Show and Hide Cards - dependent on radio buttons for Input Type*@
-        <div class="card" id="card-margin-bottom" data-bind="visible: selectedImportType() == 'production'">
+
+        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 'production'">
             <span class="label">Production</span>
             <table style="width: 100%;">
-                <tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label required">
-                                Production Label:
+                <tbody>
+                    <tr>
+                        <td style="width: 48%;">
+                            <div class="field-row">
+                                <div class="field-label required">
+                                    Production Label:
+                                </div>
                             </div>
-                        </div>
-                    </td>
+                        </td>
+                    </tr>
             </table>
         </div>
-        <div class="card"  id="card-margin-bottom" data-bind="visible: selectedImportType() == 'document'">
+        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 'document'">
             <span class="label">File Encoding</span>
             <table style="width: 100%;">
-                <tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label required">
-                                File Encoding:
+                <tbody>
+                    <tr>
+                        <td style="vertical-align: text-top; width: 48%;">
+                            <div class="field-row">
+                                <div class="field-label required">
+                                    File Encoding:
+                                </div>
+                                <div class="field-value">
+                                    <select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+                                        <optgroup data-bind="attr: {label: label}, foreach: children">
+                                            <option data-bind="text: displayName, value: name"></option>
+                                        </optgroup>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="field-value">
-                                <select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
-                                    <optgroup data-bind="attr: {label: label}, foreach: children">
-                                        <option data-bind="text: displayName, value: name"></option>
-                                    </optgroup>
-                                </select>
+                            <div class="field-row">
+                                <div class="field-label required">
+                                    Column:
+                                </div>
+                                <div class="field-value">
+                                    <select class="fluid-mock-select select2-double-width" id="import-column" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedColumnAsciiDelimiter, select2: {}"></select>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label required">
-                                Column:
+                            <div class="field-row">
+                                <div class="field-label required">
+                                    Quote:
+                                </div>
+                                <div class="field-value">
+                                    <select class="fluid-mock-select select2-double-width" id="import-quote" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedQuoteAsciiDelimiter, select2: {}"></select>
+                                </div>
                             </div>
-                            <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-column" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedColumnAsciiDelimiter, select2: {}"></select>
+                            <div class="field-row">
+                                <div class="field-label required">
+                                    Newline:
+                                </div>
+                                <div class="field-value">
+                                    <select class="fluid-mock-select select2-double-width" id="import-newline" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNewLineAsciiDelimiter,  select2: {}"></select>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label required">
-                                Quote:
+                            <div class="field-row">
+                                <div class="field-label required">
+                                    Multi-Value:
+                                </div>
+                                <div class="field-value">
+                                    <select class="fluid-mock-select select2-double-width" id="import-multiValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedMultiLineAsciiDelimiter, select2: {}"></select>
+                                </div>
                             </div>
-                            <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-quote" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedQuoteAsciiDelimiter, select2: {}"></select>
+                            <div class="field-row">
+                                <div class="field-label required">
+                                    Nested Value:
+                                </div>
+                                <div class="field-value">
+                                    <select class="fluid-mock-select select2-double-width" id="import-nestedValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNestedValueAsciiDelimiter, select2: {}"></select>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label required">
-                                Newline:
+                            <div class="field-row">
+                                <div class="field-label">
+                                    <span>First Line Contains Column Names:</span>
+                                </div>
+                                <div class="field-value">
+                                    <input type="radio" name="firstLineHasColNames" value="true" data-bind="checked: fileContainsColumn" /> Yes<br />
+                                    <input type="radio" name="firstLineHasColNames" value="false" data-bind="checked: fileContainsColumn" /> No
+                                </div>
                             </div>
-                            <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-newline" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNewLineAsciiDelimiter,  select2: {}"></select>
+                        </td>
+                        <td style="vertical-align: text-top;">
+                            <div class="field-row">
+                                <div class="field-label">
+                                    File Column Headers:
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label required">
-                                Multi-Value:
+                            <div class="field-row">
+                                <div class="field-value middle-vertical-align">
+                                    <div id="file-column-container">
+                                        <div id="file-column">
+                                            <div id="file-column-textarea">
+                                                <textarea readonly id="file-column-headers" data-bind="textInput: populateFileColumnHeaders"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-multiValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedMultiLineAsciiDelimiter, select2: {}"></select>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label required">
-                                Nested Value:
-                            </div>
-                            <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-nestedValue" data-bind="options: asciiDelimiters, optionsText: 'asciiText', optionsValue: 'asciiID', value: selectedNestedValueAsciiDelimiter, select2: {}"></select>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 48%">
-                        <div class="field-row">
-                            <div class="field-label">
-                                <span>First Line Contains Column Names:</span>
-                            </div>
-                            <div class="field-value">
-                                @**Todo: add css space here to line up with the label*@
-                                <input type="radio" name="firstLineHasColNames" value="true" data-bind="checked: fileContainsColumn" /> Yes<br />
-                                <input type="radio" name="firstLineHasColNames" value="false" data-bind="checked: fileContainsColumn" /> No
-                            </div>
-                        </div>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
-        <div class="card" id="card-margin-bottom" data-bind="visible: selectedImportType() == 'image'">
+        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 'image'">
             <span class="label">Image</span>
             <table style="width: 100%;">
                 <tr>
@@ -184,6 +173,7 @@
                             </div>
                         </div>
                     </td>
+                </tr>
             </table>
         </div>
     </div>

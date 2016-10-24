@@ -192,6 +192,7 @@ namespace kCura.IntegrationPoints.Web.Installers
             container.Register(Component.For<IImportPreviewService>().ImplementedBy<ImportPreviewService>()); //todo: bp 10/7/2016 this might need to be a singleton
             container.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>());
             container.Register(Component.For<IPreviewJobFactory>().ImplementedBy<PreviewJobFactory>());
+            container.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>());
 
             #endregion
 
