@@ -74,8 +74,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			int[] processingJobHistoryIds = {323, 9893};
 			IDictionary<Guid, int[]> artifactIdsByStatus = new Dictionary<Guid, int[]>()
 			{
-				{JobStatusChoices.JobHistoryPending.ArtifactGuids.First(), pendingJobHistoryIds},
-				{JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First(), processingJobHistoryIds},
+				{JobStatusChoices.JobHistoryPending.Guids.First(), pendingJobHistoryIds},
+				{JobStatusChoices.JobHistoryProcessing.Guids.First(), processingJobHistoryIds},
 			};
 
 			_jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId).Returns(artifactIdsByStatus);
@@ -121,13 +121,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			int[] itemLevelErrors = new[] {2, 3, 4};
 			Dictionary<Guid, int> guids = new Dictionary<Guid, int>()
 			{
-				{ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids[0], errorChoiceArtifactId}
+				{ErrorStatusChoices.JobHistoryErrorExpired.Guids[0], errorChoiceArtifactId}
 			};
 			_repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepo);
 			_repositoryFactory.GetArtifactGuidRepository(_WORKSPACE_ID).Returns(_artifactGuidRepo);
 
 			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(Arg.Is<Guid>(guid => guid.Equals(new Guid(ObjectTypeGuids.JobHistoryError)))).Returns(jobHistoryTypeId);
-			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids).Returns(guids);
+			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids).Returns(guids);
 
 			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrors);
 			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new int[] { });
@@ -152,13 +152,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			int[] itemLevelErrors = new[] { 2, 3, 4 };
 			Dictionary<Guid, int> guids = new Dictionary<Guid, int>()
 			{
-				{ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids[0], errorChoiceArtifactId}
+				{ErrorStatusChoices.JobHistoryErrorExpired.Guids[0], errorChoiceArtifactId}
 			};
 			_repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepo);
 			_repositoryFactory.GetArtifactGuidRepository(_WORKSPACE_ID).Returns(_artifactGuidRepo);
 
 			_objectTypeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(Arg.Is<Guid>(guid => guid.Equals(new Guid(ObjectTypeGuids.JobHistoryError)))).Returns(jobHistoryTypeId);
-			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids).Returns(guids);
+			_artifactGuidRepo.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids).Returns(guids);
 
 			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrors);
 			_jobHistoryErrorRepo.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new int[] { });

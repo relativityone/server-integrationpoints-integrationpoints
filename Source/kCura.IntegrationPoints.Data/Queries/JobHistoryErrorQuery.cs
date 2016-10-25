@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 			if (historyError == null)
 			{
 				var choiceJobItemCondition = new SingleChoiceCondition(Guid.Parse(JobHistoryErrorFieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese,
-				ErrorTypeChoices.JobHistoryErrorItem.ArtifactGuids);
+				ErrorTypeChoices.JobHistoryErrorItem.Guids);
 				query.Condition = new CompositeCondition(choiceJobItemCondition, CompositeConditionEnum.And, historyCondition);
 				historyError = _service.JobHistoryErrorLibrary.Query(query, 1).FirstOrDefault();
 			}
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 
 			var historyCondition = new ObjectCondition(Guid.Parse(JobHistoryErrorFieldGuids.JobHistory), ObjectConditionEnum.EqualTo, jobHistoryId);
 			var choiceJobErrorCondition = new SingleChoiceCondition(Guid.Parse(JobHistoryErrorFieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese,
-				ErrorTypeChoices.JobHistoryErrorJob.ArtifactGuids);
+				ErrorTypeChoices.JobHistoryErrorJob.Guids);
 			query.Condition = new CompositeCondition(choiceJobErrorCondition, CompositeConditionEnum.And, historyCondition);
 			JobHistoryError historyError = _service.JobHistoryErrorLibrary.Query(query, 1).FirstOrDefault();
 			return historyError;

@@ -76,12 +76,12 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceId).Returns(_jobHistoryErrorRepository);
 			_repositoryFactory.GetArtifactGuidRepository(_sourceWorkspaceId).Returns(_artifactGuidRepository);
-			_artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids)
-				.Returns(new Dictionary<Guid, int>() {{ ErrorStatusChoices.JobHistoryErrorExpired.ArtifactGuids[0], _errorStatusExpiredChoiceArtifactId } });
-			_artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorInProgress.ArtifactGuids)
-				.Returns(new Dictionary<Guid, int>() { { ErrorStatusChoices.JobHistoryErrorInProgress.ArtifactGuids[0], _errorStatusInProgressChoiceArtifactId } });
-			_artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorRetried.ArtifactGuids)
-				.Returns(new Dictionary<Guid, int>() { { ErrorStatusChoices.JobHistoryErrorRetried.ArtifactGuids[0], _errorStatusRetriedChoiceArtifactId } });
+			_artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorExpired.Guids)
+				.Returns(new Dictionary<Guid, int>() {{ ErrorStatusChoices.JobHistoryErrorExpired.Guids[0], _errorStatusExpiredChoiceArtifactId } });
+			_artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorInProgress.Guids)
+				.Returns(new Dictionary<Guid, int>() { { ErrorStatusChoices.JobHistoryErrorInProgress.Guids[0], _errorStatusInProgressChoiceArtifactId } });
+			_artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorRetried.Guids)
+				.Returns(new Dictionary<Guid, int>() { { ErrorStatusChoices.JobHistoryErrorRetried.Guids[0], _errorStatusRetriedChoiceArtifactId } });
 
 			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
 		}

@@ -169,6 +169,12 @@ namespace kCura.IntegrationPoints.Web
             );
 
             config.Routes.MapHttpRoute(
+                name: "LoadFileHeaders",
+                routeTemplate: "api/ImportProviderDocument/LoadFileHeaders",
+                defaults: new { controller = "ImportProviderDocument", action = "LoadFileHeaders" }
+            );
+            
+            config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "{workspaceID}/api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }

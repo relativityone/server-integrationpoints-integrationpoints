@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.MassOperations;
-using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 			const string sourceConfiguration = "expected_source_configuration";
 			const string fieldMappings = "expected_field_mappings";
 			const string emailNotificationRecipients = "expected_email_notification";
-			var overwriteFields = new Choice(Guid.Empty, "Append/Overwrite");
+			var overwriteFields = new Choice(Guid.Empty) {Name = "Append/Overwrite"};
 
 			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateIntegrationPoint(logErrors, "name", destinationProvider, destinationConfiguration, sourceConfiguration, fieldMappings,
 				emailNotificationRecipients, sourceProvider, overwriteFields);

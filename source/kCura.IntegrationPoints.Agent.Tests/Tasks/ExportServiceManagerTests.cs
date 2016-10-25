@@ -32,6 +32,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {

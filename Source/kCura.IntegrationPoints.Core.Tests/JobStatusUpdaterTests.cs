@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			JobHistory jobHistory = new JobHistory() {JobStatus = JobStatusChoices.JobHistoryStopping};
 
 			// ACT
-			Relativity.Client.Choice status = _instance.GenerateStatus(jobHistory);
+			Relativity.Client.DTOs.Choice status = _instance.GenerateStatus(jobHistory);
 
 			// ASSERT
 			Assert.IsTrue(status.EqualsToChoice(JobStatusChoices.JobHistoryStopped));

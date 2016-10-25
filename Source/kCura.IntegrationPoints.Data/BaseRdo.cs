@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Artifact = kCura.Relativity.Client.DTOs.Artifact;
-using Choice = kCura.Relativity.Client.Choice;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data
 					var choice = value as Relativity.Client.DTOs.Choice;
 					if (choice != null)
 					{
-						return new Choice(choice.ArtifactID, choice.Name);
+						return new Choice(choice.ArtifactID) {Name = choice.Name};
 					}
 					return value;
 				default:
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Data
 					{
 						foreach (var choice in choices)
 						{
-							var choiceDto = new Relativity.Client.DTOs.Choice(choice.ArtifactGuids.First()) { Name = choice.Name };
+							var choiceDto = new Relativity.Client.DTOs.Choice(choice.Guids.First()) { Name = choice.Name };
 							multiChoices.Add(choiceDto);
 						}
 						newValue = multiChoices;
@@ -117,13 +117,13 @@ namespace kCura.IntegrationPoints.Data
 					{
 						singleChoice = (Choice)value;
 
-						if (!singleChoice.ArtifactGuids.Any() && singleChoice.ArtifactID > 0)
+						if (!singleChoice.Guids.Any() && singleChoice.ArtifactID > 0)
 						{
 							newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactID) {Name = singleChoice.Name};
 						}
-						else if (singleChoice.ArtifactGuids.Any())
+						else if (singleChoice.Guids.Any())
 						{
-							newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactGuids.First()) {Name = singleChoice.Name};
+							newValue = new Relativity.Client.DTOs.Choice(singleChoice.Guids.First()) {Name = singleChoice.Name};
 						}
 						else
 						{

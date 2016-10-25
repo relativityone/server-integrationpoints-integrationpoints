@@ -72,8 +72,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId)
 		{
 			var integrationPointCondition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>() { integrationPointArtifactId });
-			Guid pendingGuid = JobStatusChoices.JobHistoryPending.ArtifactGuids.First();
-			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.ArtifactGuids.First();
+			Guid pendingGuid = JobStatusChoices.JobHistoryPending.Guids.First();
+			Guid processingGuid = JobStatusChoices.JobHistoryProcessing.Guids.First();
 			var stoppableCondition = new SingleChoiceCondition(new Guid(JobHistoryFieldGuids.JobStatus), SingleChoiceConditionEnum.AnyOfThese, new[] { pendingGuid, processingGuid });
 
 			var query = new Query<RDO>

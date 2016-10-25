@@ -1,4 +1,4 @@
-﻿using kCura.Relativity.Client;
+﻿using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.Extensions
 {
