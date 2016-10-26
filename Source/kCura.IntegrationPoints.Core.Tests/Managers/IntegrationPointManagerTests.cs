@@ -335,6 +335,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 					.Returns(new SourceProviderDTO() { Identifier = _otherProviderGuid });
 			}
 
+			var destinationProvider = new DestinationProviderDTO()
+			{
+				Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
+			};
+			_destinationProviderRepository.Read(_DESTINATION_PROVIDER_ID).Returns(destinationProvider);
+
 			// ACT
 			PermissionCheckDTO result = _testInstance.UserHasPermissionToSaveIntegrationPoint(_SOURCE_WORKSPACE_ID, integrationPointDto, sourceProviderIsProvided ? Constants.SourceProvider.Other : (Constants.SourceProvider?)null);
 
@@ -513,6 +519,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				_destinationProviderRepository.Read(Arg.Is(_DESTINATION_PROVIDER_ID))
 					.Returns(new DestinationProviderDTO() { Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID) });
 			}
+
+			var destinationProvider = new DestinationProviderDTO()
+			{
+				Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
+			};
+			_destinationProviderRepository.Read(_DESTINATION_PROVIDER_ID).Returns(destinationProvider);
 
 			// ACT
 			PermissionCheckDTO result = _testInstance.UserHasPermissionToSaveIntegrationPoint(_SOURCE_WORKSPACE_ID, integrationPointDto, sourceProviderIsProvided ? Constants.SourceProvider.Relativity : (Constants.SourceProvider?)null);
@@ -694,6 +706,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 					.Returns(new SourceProviderDTO() {Identifier = _otherProviderGuid});
 			}
 
+			var destinationProvider = new DestinationProviderDTO()
+			{
+				Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
+			};
+			_destinationProviderRepository.Read(_DESTINATION_PROVIDER_ID).Returns(destinationProvider);
+
 			// ACT
 			PermissionCheckDTO result = _testInstance.UserHasPermissionToRunJob(_SOURCE_WORKSPACE_ID, integrationPointDto, sourceProviderIsProvided ? Constants.SourceProvider.Other : (Constants.SourceProvider?) null);
 
@@ -771,7 +789,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				Arg.Is(_ARTIFACT_TYPE_ID),
 				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
 			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
-			_destinationProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_DESTINATION_PROVIDER_ID));
+			_destinationProviderRepository.Received(sourceProviderIsProvided ? 1 : 2).Read(Arg.Is(_DESTINATION_PROVIDER_ID));
 		}
 
 		private void UserHasPermissionToRunJob_RelativityProvider_GoldFlow(
@@ -834,6 +852,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				_destinationProviderRepository.Read(Arg.Is(_DESTINATION_PROVIDER_ID))
 					.Returns(new DestinationProviderDTO() { Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID) });
 			}
+
+			var destinationProvider = new DestinationProviderDTO()
+			{
+				Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
+			};
+			_destinationProviderRepository.Read(_DESTINATION_PROVIDER_ID).Returns(destinationProvider);
 
 			// ACT
 			PermissionCheckDTO result = _testInstance.UserHasPermissionToRunJob(_SOURCE_WORKSPACE_ID, integrationPointDto, sourceProviderIsProvided ? Constants.SourceProvider.Relativity : (Constants.SourceProvider?)null);
@@ -944,7 +968,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_sourcePermissionRepository.Received(1).UserCanEditDocuments();
 			_savedSearchRepository.Received(1).RetrieveSavedSearch();
 			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
-			_destinationProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_DESTINATION_PROVIDER_ID));
+			_destinationProviderRepository.Received(sourceProviderIsProvided ? 1 : 2).Read(Arg.Is(_DESTINATION_PROVIDER_ID));
 		}
 
 		[TestCase(true, true)]

@@ -72,14 +72,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool UserHasArtifactInstancePermission(Guid artifactTypeGuid, int artifactId, ArtifactPermission artifactPermission)
 		{
-			return UserHasArtifactInstancePermissions(artifactTypeGuid, artifactId, new[] { artifactPermission });
+			return UserHasArtifactInstancePermissions(new ArtifactTypeIdentifier(artifactTypeGuid), artifactId, new[] { artifactPermission });
 		}
 
-		private bool UserHasArtifactInstancePermissions(Guid artifactTypeGuid, int artifactId, IEnumerable<ArtifactPermission> artifactPermissions)
+		public bool UserHasArtifactInstancePermission(int artifactTypeId, int artifactId, ArtifactPermission artifactPermission)
+		{
+			return UserHasArtifactInstancePermissions(new ArtifactTypeIdentifier(artifactTypeId), artifactId, new[] { artifactPermission });
+		}
+
+		private bool UserHasArtifactInstancePermissions(ArtifactTypeIdentifier artifactTypeIdentifier, int artifactId, IEnumerable<ArtifactPermission> artifactPermissions)
 		{
 			List<PermissionRef> permissionRefs = artifactPermissions.Select(x => new PermissionRef()
 			{
-				ArtifactType = new ArtifactTypeIdentifier(artifactTypeGuid),
+				ArtifactType = artifactTypeIdentifier,
 				PermissionType = this.ArtifactPermissionToPermissinType(x)
 			}).ToList();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Castle.Core.Internal;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.WinEDDS;
 using Relativity;

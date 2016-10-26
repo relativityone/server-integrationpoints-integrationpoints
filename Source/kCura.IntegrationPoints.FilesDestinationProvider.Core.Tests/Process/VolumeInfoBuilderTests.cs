@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
 using NUnit.Framework;
 
