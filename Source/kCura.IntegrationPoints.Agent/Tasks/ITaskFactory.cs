@@ -10,13 +10,16 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -174,6 +177,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
 			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
+			_container.Install(new ServicesInstaller());
+			//_container.Install(new FtpProviderInstaller());
+			_container.Install(new KeywordInstaller());
+			_container.Install(new QueryInstallers());
+			_container.Install(new ExportInstaller());
 			Container.Install(agentInstaller);
 		}
 

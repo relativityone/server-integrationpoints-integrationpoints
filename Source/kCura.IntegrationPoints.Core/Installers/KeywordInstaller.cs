@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Core.Services.Keywords;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
-	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
+	//[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class KeywordInstaller : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)

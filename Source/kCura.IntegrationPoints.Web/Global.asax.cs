@@ -1,22 +1,24 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
-using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
 using kCura.IntegrationPoints.Web.Installers;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Relativity.API;
 using Relativity.CustomPages;
+using FtpProviderInstaller = kCura.IntegrationPoints.FtpProvider.Installers.ServicesInstaller;
+using CoreInstaller = kCura.IntegrationPoints.Core.Installers.ServicesInstaller;
+using KeywordInstaller = kCura.IntegrationPoints.Core.Installers.KeywordInstaller;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -60,7 +62,13 @@ namespace kCura.IntegrationPoints.Web
 			_container = new WindsorContainer();
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
+			_container.Install(new CoreInstaller());
+			_container.Install(new FtpProviderInstaller());
+			_container.Install(new KeywordInstaller());
+			_container.Install(new QueryInstallers());
+			_container.Install(new ExportInstaller());
 			_container.Install(new ControllerInstaller());
+
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}
