@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
 	public interface IPaddingValidator
 	{

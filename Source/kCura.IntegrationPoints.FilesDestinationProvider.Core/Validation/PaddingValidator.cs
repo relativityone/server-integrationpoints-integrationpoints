@@ -1,10 +1,9 @@
 ﻿using System;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters.Validator;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
 	public class PaddingValidator : IPaddingValidator
 	{
