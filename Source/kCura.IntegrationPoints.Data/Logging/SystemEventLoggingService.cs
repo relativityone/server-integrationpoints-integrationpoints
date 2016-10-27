@@ -3,9 +3,9 @@ using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Data.Logging
 {
-	public class SystemEventLoggingService
+	public class SystemEventLoggingService : ISystemEventLoggingService
 	{
-		public static void WriteErrorEvent(string source, string logName, Exception ex)
+		public void WriteErrorEvent(string source, string logName, Exception ex)
 		{
 			if (!System.Diagnostics.EventLog.SourceExists(source))
 				System.Diagnostics.EventLog.CreateEventSource(source, logName);

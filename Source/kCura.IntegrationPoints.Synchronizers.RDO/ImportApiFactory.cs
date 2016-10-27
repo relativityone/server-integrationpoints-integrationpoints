@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (ex.Message.Equals("Login failed."))
 				{
 					LogLoginFailed(ex, settings.WebServiceURL);
-					SystemEventLoggingService.WriteErrorEvent("Relativity Integration Points", "GetImportAPI", ex);
+					(new SystemEventLoggingService()).WriteErrorEvent("Relativity Integration Points", "GetImportAPI", ex);
 					throw new AuthenticationException(ErrorMessages.Login_Failed, ex);
 				}
 				//LoggedException.PreserveStack(ex);
