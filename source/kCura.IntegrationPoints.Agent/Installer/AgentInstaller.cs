@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<SendEmailManager>().ImplementedBy<SendEmailManager>().LifeStyle.Transient);
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifeStyle.Transient);
-			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifeStyle.Transient);
+			//container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifeStyle.Transient);
 
 			container.Register(Component.For<ExportManager>().ImplementedBy<ExportManager>().LifeStyle.Transient);
 			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>()

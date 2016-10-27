@@ -173,6 +173,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
 			container.Register(Component.For<IDirectory>().ImplementedBy<LongPathDirectory>().LifestyleTransient());
 			container.Register(Component.For<IInstanceSettingRepository>().ImplementedBy<InstanceSettingRepository>().LifestyleTransient());
+
+			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifeStyle.Transient);
 		}
 	}
 }

@@ -177,11 +177,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
 			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
-			_container.Install(new ServicesInstaller());
-			//_container.Install(new FtpProviderInstaller());
-			_container.Install(new KeywordInstaller());
-			_container.Install(new QueryInstallers());
-			_container.Install(new ExportInstaller());
+			var keywordInstaller = new KeywordInstaller();
+			var windsorInstaller = new QueryInstallers();
+			var exportInstaller = new ExportInstaller();
+			var servicesInstaller = new ServicesInstaller();
+			Container.Install(servicesInstaller);
+			Container.Install(keywordInstaller);
+			Container.Install(windsorInstaller);
+			Container.Install(exportInstaller);
 			Container.Install(agentInstaller);
 		}
 

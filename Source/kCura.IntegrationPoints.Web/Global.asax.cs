@@ -63,11 +63,11 @@ namespace kCura.IntegrationPoints.Web
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
 			_container.Install(new CoreInstaller());
+			_container.Install(new ControllerInstaller());
 			_container.Install(new FtpProviderInstaller());
 			_container.Install(new KeywordInstaller());
 			_container.Install(new QueryInstallers());
 			_container.Install(new ExportInstaller());
-			_container.Install(new ControllerInstaller());
 
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
