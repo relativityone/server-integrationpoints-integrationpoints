@@ -58,11 +58,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
+			_container = new WindsorContainer();
 		}
 
 		public TaskFactory(IAgentHelper helper, IWindsorContainer container) : this(helper)
 		{
-			Container = container;
+			_container = container;
 		}
 
 		/// <summary>
@@ -88,12 +89,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger = apiLog;
 		}
 
-		private IWindsorContainer Container
-		{
-			get { return _container ?? (_container = new WindsorContainer()); }
-			set { _container = value; }
-		}
-
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
 		{
 			LogCreatingTaskInformation(job);
@@ -105,40 +100,39 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				TaskType taskType;
 				Enum.TryParse(job.TaskType, true, out taskType);
 
-				//InjectionManager.Instance.Evaluate("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4");
 				switch (taskType)
 				{
 					case TaskType.SyncManager:
 						CheckForSynchronization(typeof(SyncManager), job, integrationPointDto, agentBase);
-						return Container.Resolve<SyncManager>();
+						return _container.Resolve<SyncManager>();
 
 					case TaskType.SyncWorker:
 						CheckForSynchronization(typeof(SyncWorker), job, integrationPointDto, agentBase);
-						return Container.Resolve<SyncWorker>();
+						return _container.Resolve<SyncWorker>();
 
 					case TaskType.SyncCustodianManagerWorker:
 						CheckForSynchronization(typeof(SyncCustodianManagerWorker), job, integrationPointDto, agentBase);
-						return Container.Resolve<SyncCustodianManagerWorker>();
+						return _container.Resolve<SyncCustodianManagerWorker>();
 
 					case TaskType.SendEmailManager:
 						CheckForSynchronization(typeof(SendEmailManager), job, integrationPointDto, agentBase);
-						return Container.Resolve<SendEmailManager>();
+						return _container.Resolve<SendEmailManager>();
 
 					case TaskType.SendEmailWorker:
 						CheckForSynchronization(typeof(SendEmailWorker), job, integrationPointDto, agentBase);
-						return Container.Resolve<SendEmailWorker>();
+						return _container.Resolve<SendEmailWorker>();
 
 					case TaskType.ExportService:
 						CheckForSynchronization(typeof(ExportServiceManager), job, integrationPointDto, agentBase);
-						return Container.Resolve<ExportServiceManager>();
+						return _container.Resolve<ExportServiceManager>();
 
 					case TaskType.ExportManager:
 						CheckForSynchronization(typeof(ExportManager), job, integrationPointDto, agentBase);
-						return Container.Resolve<ExportManager>();
+						return _container.Resolve<ExportManager>();
 
 					case TaskType.ExportWorker:
 						CheckForSynchronization(typeof(ExportWorker), job, integrationPointDto, agentBase);
-						return Container.Resolve<ExportWorker>();
+						return _container.Resolve<ExportWorker>();
 
 					default:
 						LogUnknownTaskTypeError(taskType);
@@ -165,12 +159,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				if (task != null)
 				{
-					Container.Release(task);
+					_container.Release(task);
 				}
 			}
 			finally
 			{
-				Container = null;
+				_container = null;
 			}
 		}
 
@@ -181,24 +175,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			var windsorInstaller = new QueryInstallers();
 			var exportInstaller = new ExportInstaller();
 			var servicesInstaller = new ServicesInstaller();
-			Container.Install(servicesInstaller);
-			Container.Install(keywordInstaller);
-			Container.Install(windsorInstaller);
-			Container.Install(exportInstaller);
-			Container.Install(agentInstaller);
+			_container.Install(servicesInstaller);
+			_container.Install(keywordInstaller);
+			_container.Install(windsorInstaller);
+			_container.Install(exportInstaller);
+			_container.Install(agentInstaller);
 		}
 
 		private void ResolveDependencies()
 		{
-			_serializer = Container.Resolve<ISerializer>();
-			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
-			_rsapiClient = Container.Resolve<IRSAPIClient>();
-			_workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
-			_eddsServiceContext = Container.Resolve<IEddsServiceContext>();
-			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
-			_integrationPointService = Container.Resolve<IIntegrationPointService>();
+			_serializer = _container.Resolve<ISerializer>();
+			_caseServiceContext = _container.Resolve<ICaseServiceContext>();
+			_rsapiClient = _container.Resolve<IRSAPIClient>();
+			_workspaceDbContext = _container.Resolve<IWorkspaceDBContext>();
+			_eddsServiceContext = _container.Resolve<IEddsServiceContext>();
+			_repositoryFactory = _container.Resolve<IRepositoryFactory>();
+			_jobHistoryService = _container.Resolve<IJobHistoryService>();
+			_contextContainerFactory = _container.Resolve<IContextContainerFactory>();
+			_integrationPointService = _container.Resolve<IIntegrationPointService>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
@@ -268,7 +262,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			JobHistory jobHistory = GetJobHistory(job, integrationPointDto);
 
-			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
+			IJobHistoryErrorService jobHistoryErrorService = _container.Resolve<IJobHistoryErrorService>();
 			jobHistoryErrorService.IntegrationPoint = integrationPointDto;
 			jobHistoryErrorService.JobHistory = jobHistory;
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
