@@ -282,6 +282,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.True(productionPrecedenceList.All(x => exportFile.ImagePrecedence.Any(y => y.Display == x.DisplayName && y.Value == x.ArtifactID)));
 		}
 
+		[Test(Description = "For Production export we have to set Production Precedence as Production Set artifact id")]
+		public void ItShouldSeProductionPrecedenceForProductionExportType()
+		{
+			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
+			_exportSettings.ProductionId = 12345;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(exportFile.ImagePrecedence.Count, Is.EqualTo(1));
+			Assert.That(exportFile.ImagePrecedence.First().Value, Is.EqualTo(_exportSettings.ProductionId.ToString()));
+		}
+
 		[Test]
 		public void ItShouldSetExportNativesWhenIncludingNativeFilesPath()
 		{
