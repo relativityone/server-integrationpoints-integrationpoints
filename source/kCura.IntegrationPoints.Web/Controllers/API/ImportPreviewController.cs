@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to create Preview Job")]
-        public IHttpActionResult CreatePreviewJob(ImportPreviewSettings settings)
+        public IHttpActionResult CreatePreviewJob([FromBody] ImportPreviewSettings settings)
         {
             int jobId = _importPreviewService.CreatePreviewJob(settings);
             _importPreviewService.StartPreviewJob(jobId);
@@ -50,6 +50,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
 
             return Json(previewTable);
-        }       
+        }
     }
 }

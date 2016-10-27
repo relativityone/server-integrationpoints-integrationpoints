@@ -146,34 +146,34 @@ namespace kCura.IntegrationPoints.Web
 
             config.Routes.MapHttpRoute(
                 name: "ImportPreviewFiles",
-                routeTemplate: "api/ImportPreview/CreatePreviewJob/",
+                routeTemplate: "{workspaceID}/api/ImportPreview/CreatePreviewJob/",
                 defaults: new { controller = "ImportPreview", action = "CreatePreviewJob" }
             );
 
             config.Routes.MapHttpRoute(
                 name: "ImportPreviewProgress",
-                routeTemplate: "api/ImportPreview/CheckProgress/{jobId}",
+                routeTemplate: "{workspaceID}/api/ImportPreview/CheckProgress/{jobId}",
                 defaults: new { controller = "ImportPreview", action = "CheckProgress" }
             );
 
             config.Routes.MapHttpRoute(
                 name: "ImportPreviewTable",
-                routeTemplate: "api/ImportPreview/GetImportPreviewTable/{jobId}",
+                routeTemplate: "{workspaceID}/api/ImportPreview/GetImportPreviewTable/{jobId}",
                 defaults: new { controller = "ImportPreview", action = "GetImportPreviewTable" }
             );
 
             config.Routes.MapHttpRoute(
                 name: "AsciiDelimiters",
-                routeTemplate: "api/ImportProviderDocument/GetAsciiDelimiters",
+                routeTemplate: "{workspaceID}/api/ImportProviderDocument/GetAsciiDelimiters",
                 defaults: new { controller = "ImportProviderDocument", action = "GetAsciiDelimiters" }
             );
 
             config.Routes.MapHttpRoute(
                 name: "LoadFileHeaders",
-                routeTemplate: "api/ImportProviderDocument/LoadFileHeaders",
+                routeTemplate: "{workspaceID}/api/ImportProviderDocument/LoadFileHeaders",
                 defaults: new { controller = "ImportProviderDocument", action = "LoadFileHeaders" }
             );
-            
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "{workspaceID}/api/{controller}/{id}",
