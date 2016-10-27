@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -30,19 +31,34 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			ISourceProviderRepository sourceProviderRepository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
 			SourceProviderDTO sourceProviderDto = sourceProviderRepository.Read(integrationPointDto.SourceProvider.Value);
-
-			IDestinationProviderRepository destinationProviderRepository = _repositoryFactory.GetDestinationProviderRepository(workspaceArtifactId);
-			DestinationProviderDTO destinationProviderDto = destinationProviderRepository.Read(integrationPointDto.DestinationProvider.Value);
-
+			
 			var sourceProvider = Constants.SourceProvider.Other;
 
+			var destinationProvider = GetDestinationProvider(workspaceArtifactId, integrationPointDto);
+
 			if ((sourceProviderDto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)) &&
-				(destinationProviderDto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)))
+				(destinationProvider == Constants.DestinationProvider.Relativity))
 			{
 				sourceProvider = Constants.SourceProvider.Relativity;
 			}
 
 			return sourceProvider;
+		}
+
+		private Constants.DestinationProvider GetDestinationProvider(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		{
+			IDestinationProviderRepository destinationProviderRepository = _repositoryFactory.GetDestinationProviderRepository(workspaceArtifactId);
+			DestinationProviderDTO destinationProviderDto = destinationProviderRepository.Read(integrationPointDto.DestinationProvider.Value);
+
+			if (destinationProviderDto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
+			{
+				return Constants.DestinationProvider.Relativity;
+			}
+			if (destinationProviderDto.Identifier == new Guid(Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID))
+			{
+				return Constants.DestinationProvider.LoadFile;
+			}
+			return Constants.DestinationProvider.Other;
 		}
 
 		public PermissionCheckDTO UserHasPermissionToViewErrors(int workspaceArtifactId)
@@ -145,6 +161,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			bool exportPermission = false;
 			bool sourceDocumentEditPermissions = false;
 
+			var destinationProvider = GetDestinationProvider(workspaceArtifactId, integrationPointDto);
+
 			if (!sourceProvider.HasValue)
 			{
 				sourceProvider = GetSourceProvider(workspaceArtifactId, integrationPointDto);
@@ -187,6 +205,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			var errorMessages = new List<string>();
+
+			if (destinationProvider == Constants.DestinationProvider.LoadFile)
+			{
+				var loadFilePermissionErrors = CheckLoadFilePermission(workspaceArtifactId, integrationPointDto);
+				errorMessages.AddRange(loadFilePermissionErrors);
+			}
 
 			if (!sourceWorkspacePermission)
 			{
@@ -272,6 +296,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			};
 
 			return permissionCheck;
+		}
+		private List<string> CheckLoadFilePermission(int workspaceId, IntegrationPointDTO integrationPointDTO)
+		{
+			var exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(integrationPointDTO.SourceConfiguration);
+			Models.ExportSettings.ExportType exportType;
+			if (!Enum.TryParse(exportSettings.ExportType, out exportType))
+			{
+				throw new ArgumentException("Failed to retrieve ExportType from export settings.");
+			}
+			var permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceId);
+			var result = new List<string>();
+			if ((exportType == Models.ExportSettings.ExportType.Folder) || (exportType == Models.ExportSettings.ExportType.FolderAndSubfolders))
+			{
+				var hasFolderPermission = permissionRepository.UserHasArtifactInstancePermission((int)ArtifactType.Folder, exportSettings.FolderArtifactId, ArtifactPermission.View);
+				if (!hasFolderPermission)
+				{
+					result.Add(Constants.IntegrationPoints.PermissionErrors.EXPORT_FOLDER_NO_VIEW);
+				}
+			}
+			else if (exportType == Models.ExportSettings.ExportType.ProductionSet)
+			{
+				var hasProductionPermission = permissionRepository.UserHasArtifactInstancePermission((int)ArtifactType.Production, exportSettings.ProductionId, ArtifactPermission.View);
+				if (!hasProductionPermission)
+				{
+					result.Add(Constants.IntegrationPoints.PermissionErrors.EXPORT_PRODUCTION_NO_VIEW);
+				}
+			}
+			//Saved search is validated in general permission check in IntegrationPointManager
+			return result;
 		}
 
 		public PermissionCheckDTO UserHasPermissionToStopJob(int workspaceArtifactId, int integrationPointArtifactId)

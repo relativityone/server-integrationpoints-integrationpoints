@@ -22,7 +22,7 @@ using Relativity;
 using Relativity.API;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
-using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
+using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
