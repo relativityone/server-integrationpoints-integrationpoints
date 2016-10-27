@@ -35,7 +35,7 @@
         AsciiNewLine: settings.AsciiNewLine,
         AsciiMultiLine: settings.AsciiMultiLine,
         AsciiNestedValue: settings.AsciiNestedValue,
-        FieldMapping:$.parseJSON(fieldMapping)
+        FieldMapping: $.parseJSON(fieldMapping)
     };
 
     root.data.ajax({
@@ -57,11 +57,12 @@
                     var percent;
                     if (data.BytesRead != -1) {
                         $("#total-bytes-read").html(data.BytesRead);
-                        percent = (data.BytesRead / data.TotalBytes) * 100;
+                        percent = (Math.floor((data.BytesRead / data.TotalBytes) * 100 )+ "%");
                     } else {
-                        percent = 100;
+                        percent = "100%";
                     }
-                    $("#progressBar").css("width", percent + "%");
+                    $("#progressBar").css("width", percent);
+                    $("#previewFilePercent").html(percent);
                     $("#total-bytes").html(data.TotalBytes);
 
                     //check if the Preview is complete
@@ -105,7 +106,7 @@
                 "responsive": true,
                 "info": true,
                 "columns": formattedHeaders,
-                "pageLength":15,
+                "pageLength": 15,
                 "columnDefs": [{
                     "searchable": false,
                     "orderable": false,
@@ -231,9 +232,17 @@
                 updateItemNumber();
             };
 
+            function closeWindow() {
+                $(".preview-file-closeBtn").click(function () {
+                    console.log("closed");
+                    window.close();
+                });
+            };
+
             updatePaging();
             updateItemUi();
-            colorErrorRows();            
+            colorErrorRows();
+            closeWindow();
 
             $("#import-load-file-summary-toggle").on("click", function () {
                 if ($(this).attr("class") == "arrow-collapsed-summary") {
@@ -241,7 +250,7 @@
                 } else if ($(this).attr("class") == "arrow-expanded-summary") {
                     $(this).attr("class", "arrow-collapsed-summary");
                 }
-                $("#transfer-progress-div").toggle();
+                $("#preview-file-table").toggle();
             });
 
             $("#pag-nav-move-next").on("click", function () {
@@ -298,4 +307,4 @@
             });
         });
     };
-})(IP,this.opener);
+})(IP, this.opener);
