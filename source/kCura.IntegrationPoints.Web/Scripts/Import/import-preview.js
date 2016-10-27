@@ -1,12 +1,13 @@
 ﻿var IP = IP || {};
 
-(function (root, opener) {
 
+(function (root, opener) {
     var previewJobId = -1;
     var intervalId = -1;
     var percent = 0;
     var timerHandle;
     var settings = opener.RelativityImportPreviewSettings;
+    var workspaceId = ("/" + opener.RelativityImportPreviewSettings.WorkspaceId);
     var fieldMapping = opener.top.getCurrentIpFieldMapping();
     $("#tableData").hide();
     var timerCount = 0;
@@ -35,13 +36,13 @@
         AsciiNewLine: settings.AsciiNewLine,
         AsciiMultiLine: settings.AsciiMultiLine,
         AsciiNestedValue: settings.AsciiNestedValue,
-        FieldMapping: $.parseJSON(fieldMapping)
+        FieldMapping:$.parseJSON(fieldMapping)
     };
 
     root.data.ajax({
         type: "post",
-        url: root.utils.getBaseURL() + "/api/ImportPreview/CreatePreviewJob/",
-        data: JSON.stringify(previewSettingsData),
+        url: root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CreatePreviewJob",
+        data: JSON.stringify(previewSettingsData) ,
         dataType: 'json'
     })
     .done(function (data) {
@@ -49,7 +50,7 @@
         $("#progressBar").css("width", percent);
         intervalId = setInterval(
             function () {
-                $.get(root.utils.getBaseURL() + "/api/ImportPreview/CheckProgress/" + previewJobId)
+                $.get(root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CheckProgress/" + previewJobId)
                 .done(function (data) {
                     $("#statusMessage").html("In Process");
                     //if we're only reading the first 1000 rows of a large file, bytes read comes back as -1
@@ -90,7 +91,7 @@
     });
 
     var GetPreviewTableData = function (jobId) {
-        $.get(root.utils.getBaseURL() + "/api/ImportPreview/GetImportPreviewTable/" + jobId)
+        $.get(root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/GetImportPreviewTable/" + jobId)
         .done(function (data) {
             var formattedHeaders = [];
             $.each(data.Header, function (e, f) {

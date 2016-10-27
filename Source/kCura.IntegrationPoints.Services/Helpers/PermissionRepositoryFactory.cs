@@ -1,8 +1,9 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Services.Interfaces.Private.Helpers
+namespace kCura.IntegrationPoints.Services.Helpers
 {
 	public class PermissionRepositoryFactory : IPermissionRepositoryFactory
 	{
