@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -57,13 +56,12 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 			container.Kernel.AddFacility<TypedFactoryFacility>();
 
-			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true));
-			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _agentHelper, true));
-			container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _agentHelper, true));
-			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DependsOn(Dependency.OnValue<int>(_job.WorkspaceID)));
-			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_agentHelper.GetDBContext(_job.WorkspaceID))));
-			container.Register(Component.For<Job>().UsingFactoryMethod(k => _job));
-			container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DependsOn(Property.ForKey("eddsDBcontext").Eq(_agentHelper.GetDBContext(-1))).LifestyleTransient());
+			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true).LifestyleTransient());
+			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
+			container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
+			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DependsOn(Dependency.OnValue<int>(_job.WorkspaceID)).LifestyleTransient());
+			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_agentHelper.GetDBContext(_job.WorkspaceID))).LifestyleTransient());
+			container.Register(Component.For<Job>().UsingFactoryMethod(k => _job).LifestyleTransient());
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k => k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(_job.WorkspaceID, ExecutionIdentity.System)));
 			container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(container.Resolve<IHelper>(), _job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<IRelativityConfigurationFactory>().ImplementedBy<RelativityConfigurationFactory>().LifestyleSingleton());
@@ -80,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ExportManager>().ImplementedBy<ExportManager>().LifestyleTransient());
 			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>().DependsOn(Dependency.OnComponent<ISynchronizerFactory, ExportDestinationSynchronizerFactory>()).LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorServiceProvider>().ImplementedBy<JobHistoryErrorServiceProvider>().LifeStyle.BoundTo<ExportWorker>());
-			container.Register(Component.For<IManagerFactory<ISearchManager>>().ImplementedBy<SearchManagerFactory>());
+			container.Register(Component.For<IManagerFactory<ISearchManager>>().ImplementedBy<SearchManagerFactory>().LifestyleSingleton());
 		}
 	}
 }

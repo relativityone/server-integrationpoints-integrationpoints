@@ -10,16 +10,13 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -170,16 +167,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
-			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
-			var keywordInstaller = new KeywordInstaller();
-			var windsorInstaller = new QueryInstallers();
-			var exportInstaller = new ExportInstaller();
-			var servicesInstaller = new ServicesInstaller();
-			_container.Install(servicesInstaller);
-			_container.Install(keywordInstaller);
-			_container.Install(windsorInstaller);
-			_container.Install(exportInstaller);
-			_container.Install(agentInstaller);
+			_container.Install(new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory));
+			_container.Install(new Core.Installers.ServicesInstaller());
+			_container.Install(new Core.Installers.KeywordInstaller());
+			_container.Install(new Data.Installers.QueryInstallers());
+			_container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());
 		}
 
 		private void ResolveDependencies()

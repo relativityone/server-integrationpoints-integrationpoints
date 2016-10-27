@@ -1,5 +1,4 @@
-﻿using System;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.FtpProvider.Connection;
@@ -11,7 +10,6 @@ using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.FtpProvider.Installers
 {
-	//[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
     public class ServicesInstaller : IWindsorInstaller
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
