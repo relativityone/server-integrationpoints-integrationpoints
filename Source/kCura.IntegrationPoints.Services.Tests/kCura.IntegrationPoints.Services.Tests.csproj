@@ -42,6 +42,10 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.IntegrationPoints">
       <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
     </Reference>
@@ -58,10 +62,10 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DocumentManagerLoggingTests.cs" />
-    <Compile Include="IntegrationPointManagerLoggingTests.cs" />
-    <Compile Include="JobHistoryManagerLoggingTests.cs" />
-    <Compile Include="ServiceTestsBase.cs" />
+    <Compile Include="KeplerServiceTests.cs" />
+    <Compile Include="Repositories\DocumentRepositoryLoggingTests.cs" />
+    <Compile Include="IntegrationPointRepositoryLoggingTests.cs" />
+    <Compile Include="Repositories\JobHistoryRepositoryLoggingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
