@@ -89,10 +89,15 @@ var LocationJSTreeSelector = function () {
 			'core': {
 				'data': function (obj, callback) {
 					var ajaxSuccess = function (returnData) {
-						$.each(returnData, function (index, value) {
+					    $.each(returnData, function (index, value) {					        
 							if (value.icon && value.icon === "jstree-root-folder") {
-								$.each(value.children, function (index, child) {
-									extendWithDefault(child);
+							    $.each(value.children, function (index, child) {
+							        if (child.isDirectory == false) {
+                                        //make sure that files don't have the expand button
+							            child.children = false;
+							        } else {
+							            extendWithDefault(child);
+							        }
 								});
 							}
 							else
