@@ -19,6 +19,8 @@
     var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
     var CONFIGURATION_FRAME = 'configurationFrame';
 
+    var workspaceId = ("/" + windowObj.RelativityImport.WorkspaceId);
+
     windowObj.RelativityImport.UI.Elements = {
         PROGRESS_BUTTONS: PROGRESS_BUTTONS,
         CUSTOM_BUTTON: CUSTOM_BUTTON,
@@ -53,7 +55,7 @@
         if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
             var baseUrlCache = root.utils.getBaseURL();
             $.ajax({
-                url: baseUrlCache + "/api/ImportProviderDocument/LoadFileHeaders",
+                url: baseUrlCache + workspaceId + "/api/ImportProviderDocument/LoadFileHeaders",
                 type: 'POST',
                 async: false,
                 data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel()) },
@@ -248,7 +250,7 @@
     });
 
     $.ajax({
-        url: root.utils.getBaseURL() + "/api/ImportProviderDocument/GetAsciiDelimiters",
+        url: root.utils.getBaseURL() + workspaceId + "/api/ImportProviderDocument/GetAsciiDelimiters",
         type: 'GET',
         contentType: "application/json",
         async: false,

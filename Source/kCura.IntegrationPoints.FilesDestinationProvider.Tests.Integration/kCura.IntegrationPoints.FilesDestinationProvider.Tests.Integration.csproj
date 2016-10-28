@@ -147,7 +147,7 @@
     <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
-    </Reference>    
+    </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
@@ -204,6 +204,7 @@
     <Compile Include="TestCases\ItShouldExportOnlyProductionSetLoadFile.cs" />
     <Compile Include="TestCases\ItShouldExportOriginalImagesPrecendence.cs" />
     <Compile Include="TestCases\ItShouldExportProducedImagesPrecedence.cs" />
+    <Compile Include="TestCases\ItShouldExportProductionSetWithImages.cs" />
     <Compile Include="TestCases\ItShouldExportProductionSetWithNatives.cs" />
     <Compile Include="TestCases\ItShouldIncludeNativeFilesPathWithoutExportingNatives.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
@@ -244,6 +245,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app-dev-box.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

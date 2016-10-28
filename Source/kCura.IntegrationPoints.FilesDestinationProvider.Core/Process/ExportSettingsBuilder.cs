@@ -5,6 +5,7 @@ using System.Text;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {

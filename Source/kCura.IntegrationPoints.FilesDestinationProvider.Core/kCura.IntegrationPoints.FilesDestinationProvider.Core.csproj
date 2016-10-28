@@ -154,7 +154,6 @@
     <Compile Include="Installer\ExportInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />
     <Compile Include="Logging\ExportLoggingMediator.cs" />
-    <Compile Include="ExportSettings.cs" />
     <Compile Include="Logging\ICompositeLoggingMediator.cs" />
     <Compile Include="Logging\ILoggingMediator.cs" />
     <Compile Include="Logging\IUserMessageNotification.cs" />

@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID;
 			public const string RELATIVITY_PROVIDER_NAME = "Relativity";
 			public const string RELATIVITY_DESTINATION_PROVIDER_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+			public const string LOAD_FILE_DESTINATION_PROVIDER_GUID = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
 			public const string FILESHARE_PROVIDER_NAME = "Load File";
 			public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
@@ -78,6 +79,8 @@ namespace kCura.IntegrationPoints.Core
 				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE = "User does not have permissions to save an Integration Point.";
 				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX = "User does not have the following permissions required to save an Integration Point:";
 				public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
+				public const string EXPORT_PRODUCTION_NO_VIEW = "User does not have permission to view selected Production.";
+				public const string EXPORT_FOLDER_NO_VIEW = "User does not have permission to view selected Folder.";
 			}
 
 			public class Telemetry
@@ -105,6 +108,13 @@ namespace kCura.IntegrationPoints.Core
 		{
 			Other = 0,
 			Relativity = 1
+		}
+
+		public enum DestinationProvider
+		{
+			Other = 0,
+			Relativity = 1,
+			LoadFile = 2
 		}
 	}
 }

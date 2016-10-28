@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
+using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
@@ -280,6 +281,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.That(productionPrecedenceList.Count, Is.EqualTo(exportFile.ImagePrecedence.Length));
 
 			Assert.True(productionPrecedenceList.All(x => exportFile.ImagePrecedence.Any(y => y.Display == x.DisplayName && y.Value == x.ArtifactID)));
+		}
+
+		[Test(Description = "For Production export we have to set Production Precedence as Production Set artifact id")]
+		public void ItShouldSetProductionPrecedenceForProductionExportType()
+		{
+			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
+			_exportSettings.ProductionId = 12345;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.That(exportFile.ImagePrecedence.Count, Is.EqualTo(1));
+			Assert.That(exportFile.ImagePrecedence.First().Value, Is.EqualTo(_exportSettings.ProductionId.ToString()));
 		}
 
 		[Test]

@@ -31,5 +31,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				return Request.CreateResponse(HttpStatusCode.InternalServerError, "Failed to retrieve search folders structure");
 			}
 		}
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve folders from destination workspace.")]
+		public HttpResponseMessage Get(int destinationWorkspaceId)
+		{
+			try
+			{
+				var folderTree = _artifactTreeService.GetArtifactTreeWithWorkspaceSet(ArtifactTypeNames.Folder, destinationWorkspaceId);
+				return Request.CreateResponse(HttpStatusCode.OK, folderTree);
+			}
+			catch (Exception)
+			{
+				return Request.CreateResponse(HttpStatusCode.InternalServerError, "Failed to retrieve search folders structure");
+			}
+		}
 	}
 }

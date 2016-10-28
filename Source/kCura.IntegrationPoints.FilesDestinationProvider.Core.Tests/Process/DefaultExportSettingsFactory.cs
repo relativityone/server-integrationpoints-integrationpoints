@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
+﻿using kCura.IntegrationPoints.Core.Models;
+
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
 	internal class DefaultExportSettingsFactory
 	{

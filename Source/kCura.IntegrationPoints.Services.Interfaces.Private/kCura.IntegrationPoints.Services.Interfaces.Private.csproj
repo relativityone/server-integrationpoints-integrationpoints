@@ -82,15 +82,15 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Exceptions\InsufficientPermissionException.cs" />
+    <Compile Include="Exceptions\InternalServerErrorException.cs" />
     <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
-    <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
     <Compile Include="IIntegrationPointsModule.cs" />
     <Compile Include="IKeplerService.cs" />
-    <Compile Include="KeplerServiceBase.cs" />
     <Compile Include="Models\DestinationConfiguration.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />

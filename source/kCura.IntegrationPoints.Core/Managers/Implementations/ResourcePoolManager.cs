@@ -12,24 +12,24 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class ResourcePoolManager : IResourcePoolManager
 	{
+		#region Fields
+
+		private readonly IResourcePoolRepository _resourcePoolRepository;
+		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
+
+		#endregion //Fields
+
 		#region Constructors
 
-		public ResourcePoolManager(IRepositoryFactory repositoryFactory, IRSAPIClient rsapiClient, IHelper helper)
+		public ResourcePoolManager(IRepositoryFactory repositoryFactory, IHelper helper)
 		{
-			_rsapiClient = rsapiClient;
+			_helper = helper;
 			_resourcePoolRepository = repositoryFactory.GetResourcePoolRepository();
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ResourcePoolManager>();
 		}
 
 		#endregion //Constructors
-
-		#region Fields
-
-		private readonly IResourcePoolRepository _resourcePoolRepository;
-		private readonly IRSAPIClient _rsapiClient;
-		private readonly IAPILog _logger;
-
-		#endregion //Fields
 
 		#region Methods
 
@@ -52,8 +52,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		/// </summary>
 		protected virtual Workspace GetWorkspace(int workspaceId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = -1;
-			return _rsapiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
+			using (IRSAPIClient rsApiClient =_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			{
+				rsApiClient.APIOptions.WorkspaceID = -1;
+				return rsApiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
+			}
 		}
 
 		#endregion //Methods
