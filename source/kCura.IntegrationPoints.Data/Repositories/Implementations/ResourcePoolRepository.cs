@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocationsByResourcePool(int resourcePoolId)
 		{
 			using (IResourcePoolManagerSvc resourcePoolManagerSvcProxy =
-					_helper.GetServicesManager().CreateProxy<IResourcePoolManagerSvc>(ExecutionIdentity.CurrentUser))
+					_helper.GetServicesManager().CreateProxy<IResourcePoolManagerSvc>(ExecutionIdentity.System))
 			{
 				var choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(
 					new ResourcePoolRef(resourcePoolId)).ConfigureAwait(false).GetAwaiter().GetResult();

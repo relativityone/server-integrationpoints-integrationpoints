@@ -16,8 +16,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	{
 		private class ResourcePoolManagerTestImpl : ResourcePoolManager
 		{
-			public ResourcePoolManagerTestImpl(IRepositoryFactory repositoryFactory, IRSAPIClient rsapiClient, IHelper helper) 
-				: base(repositoryFactory, rsapiClient, helper)
+			public ResourcePoolManagerTestImpl(IRepositoryFactory repositoryFactory, IHelper helper) 
+				: base(repositoryFactory, helper)
 			{
 			}
 
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			_repositoryFactoryMock.GetResourcePoolRepository().Returns(_resourcePoolRepositoryMock);
 
-			_subjectUnderTest = new ResourcePoolManagerTestImpl(_repositoryFactoryMock, _rsApiClientMock, helper);
+			_subjectUnderTest = new ResourcePoolManagerTestImpl(_repositoryFactoryMock, helper);
 		}
 
 		[Test]

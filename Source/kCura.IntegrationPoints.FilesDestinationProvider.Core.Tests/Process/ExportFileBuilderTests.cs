@@ -283,7 +283,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test(Description = "For Production export we have to set Production Precedence as Production Set artifact id")]
-		public void ItShouldSeProductionPrecedenceForProductionExportType()
+		public void ItShouldSetProductionPrecedenceForProductionExportType()
 		{
 			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
 			_exportSettings.ProductionId = 12345;
