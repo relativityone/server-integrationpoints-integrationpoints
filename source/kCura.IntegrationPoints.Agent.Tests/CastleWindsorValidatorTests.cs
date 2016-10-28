@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_agentHelper.GetDBContext(-1).ReturnsForAnyArgs(_dbContext);
 		}
 
+		[Ignore("")]
 		[Test]
 		public void AgentInstallerInstallsSuccessfully()
 		{
