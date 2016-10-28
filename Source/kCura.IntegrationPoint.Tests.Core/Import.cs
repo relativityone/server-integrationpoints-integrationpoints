@@ -1,9 +1,11 @@
 ﻿using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
+using NSubstitute;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -13,7 +15,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static void ImportNewDocuments(int workspaceId, DataTable importTable)
 		{
 			var helper = NSubstitute.Substitute.For<IHelper>();
-			ImportApiFactory factory = new ImportApiFactory(helper);
+			ISystemEventLoggingService systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
+			ImportApiFactory factory = new ImportApiFactory(helper, systemEventLoggingService);
 			ImportSettings setting = new ImportSettings()
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,

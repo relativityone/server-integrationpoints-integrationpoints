@@ -61,6 +61,7 @@ using Relativity.CustomPages;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Data.Logging;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -334,6 +335,7 @@ namespace kCura.IntegrationPoints.Web.Installers
             #region Synchronizer
 
             container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
+            container.Register(Component.For<ISystemEventLoggingService>().ImplementedBy<SystemEventLoggingService>().LifeStyle.Transient);
             container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 
             #endregion
