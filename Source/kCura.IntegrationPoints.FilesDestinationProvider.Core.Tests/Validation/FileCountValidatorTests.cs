@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var result = _fileCountValidator.Validate(0);
 
 			Assert.That(result.IsValid, Is.False);
-			Assert.That(result.Message, Is.EqualTo("...."));
+			Assert.That(result.Message, Is.EqualTo("There are no items to export. Verify your source location."));
 		}
 
 		[Test]
