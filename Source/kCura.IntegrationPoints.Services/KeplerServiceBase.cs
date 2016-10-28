@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.Logging;
 
@@ -9,6 +11,8 @@ namespace kCura.IntegrationPoints.Services
 	public abstract class KeplerServiceBase : IKeplerService
 	{
 		private const string _NO_ACCESS_EXCEPTION_MESSAGE = "You do not have permission to access this service.";
+		private const string _ERROR_OCCURRED_DURING_REQUEST = "Error occurred during request processing. Please contact your administrator.";
+		private const string _PERMISSIONS_ERROR = "Failed to validate permissions for Integration Points Kepler Service. Denying access.";
 
 		private readonly IPermissionRepositoryFactory _permissionRepositoryFactory;
 
@@ -48,9 +52,48 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				Logger.LogError(e, "Failed to validate permissions for Integration Points Kepler Service. Denying access.");
+				Logger.LogError(e, _PERMISSIONS_ERROR);
 			}
-			throw new Exception(_NO_ACCESS_EXCEPTION_MESSAGE);
+			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
+		}
+
+		protected Task<T> Execute<T>(Func<Task<T>> a, int workspaceId)
+		{
+			CheckPermissions(workspaceId);
+			try
+			{
+				return Task.Run(a);
+			}
+			catch (Exception e)
+			{
+				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
+			}
+		}
+
+		protected Task<T> Execute<T>(Func<T> a, int workspaceId)
+		{
+			CheckPermissions(workspaceId);
+			try
+			{
+				return Task.Run(a);
+			}
+			catch (Exception e)
+			{
+				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
+			}
+		}
+
+		protected Task Execute(Func<Task> a, int workspaceId)
+		{
+			CheckPermissions(workspaceId);
+			try
+			{
+				return Task.Run(a);
+			}
+			catch (Exception e)
+			{
+				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
+			}
 		}
 	}
 }

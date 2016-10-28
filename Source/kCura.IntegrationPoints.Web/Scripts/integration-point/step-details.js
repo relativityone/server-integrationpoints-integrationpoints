@@ -495,18 +495,13 @@ var IP = IP || {};
 						return true;
 					}
 					if (value) {
-						var comp = value.split('/');
-						if (comp.length > 3) {
+						var date = Date.parseExact(value, "M/dd/yyyy");
+						if (date == null) {
 							return false;
 						}
-
-						var m = parseInt(comp[0], 10);
-						var d = parseInt(comp[1], 10);
-						var y = parseInt(comp[2], 10);
-						var date = new Date(y, m - 1, d);
-						// check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date and year to check if it is the same
-						if (date.getFullYear() == y && date.getMonth() + 1 == m && date.getDate() == d) {
-							// used to make sure the user doesn't chose a date older than today 
+						var currentDate = new Date();
+						currentDate.setHours(0, 0, 0, 0);
+						if (date.compareTo(currentDate) >= 0) {
 							return true;
 						}
 					}
@@ -532,17 +527,31 @@ var IP = IP || {};
 				message: 'The field End Date must be a date.'
 			}
 		}).extend({
-			validation: {
+			validation: [{
 				validator: function (value) {
-					if (value && self.startDate() && (new Date(value).compareTo(new Date(self.startDate())) < 0 || value.split('/').length > 3)) {
-
-						return false;
+					if (value) {
+						var date = Date.parseExact(value, "M/dd/yyyy");
+						if (date == null) {
+							return false;
+						}
 					}
 
 					return true;
 				},
+				message: 'Please enter a valid date.'
+			}, {
+				validator: function (value) {
+					if (!value) {
+						return true;
+					}
+					var date = new Date(value);
+					if (self.startDate() && self.startDate.isValid() && date.compareTo(new Date(self.startDate())) < 0) {
+						return false;
+					}
+					return true;
+				},
 				message: 'The start date must come before the end date.'
-			}
+			}]
 		});
 
 		this.scheduledTime = ko.observable(options.scheduledTime).extend({

@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process

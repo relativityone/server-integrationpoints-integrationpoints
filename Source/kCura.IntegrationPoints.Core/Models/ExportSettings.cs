@@ -2,7 +2,7 @@
 using System.Text;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
+namespace kCura.IntegrationPoints.Core.Models
 {
 	public struct ExportSettings
 	{

@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract
 {
