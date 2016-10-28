@@ -167,11 +167,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
-			_container.Install(new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory));
-			_container.Install(new Core.Installers.ServicesInstaller());
-			_container.Install(new Core.Installers.KeywordInstaller());
 			_container.Install(new Data.Installers.QueryInstallers());
+			_container.Install(new Core.Installers.KeywordInstaller());
+			_container.Install(new Core.Installers.ServicesInstaller());
 			_container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());
+			_container.Install(new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory));
 		}
 
 		private void ResolveDependencies()

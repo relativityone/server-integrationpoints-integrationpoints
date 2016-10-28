@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
+using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
@@ -19,9 +22,9 @@ namespace kCura.IntegrationPoints.Web
 	// Note: For instructions on enabling IIS6 or IIS7 classic mode, 
 	// visit http://go.microsoft.com/?LinkId=9394801
 
-	public class MvcApplication : System.Web.HttpApplication
+	public class MvcApplication : HttpApplication
 	{
-		public static IWindsorContainer _container;
+		private IWindsorContainer _container;
 
 		protected void Application_Start()
 		{
@@ -56,13 +59,8 @@ namespace kCura.IntegrationPoints.Web
 			_container = new WindsorContainer();
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-			_container.Install(new Core.Installers.ServicesInstaller());
-			_container.Install(new Web.Installers.ControllerInstaller());
-			_container.Install(new FtpProvider.Installers.ServicesInstaller());
-			_container.Install(new Core.Installers.KeywordInstaller());
-			_container.Install(new Data.Installers.QueryInstallers());
-			_container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());
-			_container.Install(new ImportProvider.Installers.ServicesInstaller());
+
+			_container.Install(FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory, "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
 
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));

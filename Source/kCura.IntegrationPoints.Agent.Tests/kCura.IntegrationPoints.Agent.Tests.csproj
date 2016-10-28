@@ -142,7 +142,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="SetupAndTeardown.cs" />
-    <Compile Include="CastleWindsorValidatorTests.cs" />
     <Compile Include="SendEmailManagerUnitTests.cs" />
     <Compile Include="Tasks\ExportManagerTest.cs" />
     <Compile Include="Tasks\ExportServiceManagerTests.cs" />

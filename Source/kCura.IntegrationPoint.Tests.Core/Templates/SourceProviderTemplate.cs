@@ -106,8 +106,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					IHelper helper = k.Resolve<IHelper>();
 					return new TestServiceContextHelper(helper, WorkspaceArtifactId);
 				}));
-			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
-			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceContext>()
@@ -123,12 +121,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				})
 				.LifeStyle.Transient);
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
-			Container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
-			
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
-			Container.Register(Component.For<JobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifestyleTransient());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };

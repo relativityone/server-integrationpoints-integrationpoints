@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod((k) => k.Resolve<WebClientFactory>().CreateServicesMgr()).LifestyleTransient());
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 			container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifestyleTransient());
+			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService()).LifestyleTransient());
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
 			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(

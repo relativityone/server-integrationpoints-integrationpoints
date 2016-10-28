@@ -65,6 +65,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k => k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(_job.WorkspaceID, ExecutionIdentity.System)));
 			container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(container.Resolve<IHelper>(), _job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<IRelativityConfigurationFactory>().ImplementedBy<RelativityConfigurationFactory>().LifestyleSingleton());
+			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) => k.Resolve<RsapiClientFactory>().CreateDbContext(_job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<ISendable>().ImplementedBy<SMTP>().DependsOn(Dependency.OnValue<EmailConfiguration>(container.Resolve<IRelativityConfigurationFactory>().GetConfiguration())));
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
