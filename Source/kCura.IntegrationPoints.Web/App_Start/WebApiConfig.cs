@@ -126,11 +126,11 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "ResourcePool", action = "GetProcessingSourceLocationStructure" }
 			);
 
-            config.Routes.MapHttpRoute(
-                name: "SavedSearchesTree",
-                routeTemplate: "{workspaceID}/api/SavedSearchesTree/{workspaceArtifactId}",
-                defaults: new { controller = "SavedSearchesTree", action = "Get" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "SavedSearchesTree",
+				routeTemplate: "{workspaceID}/api/SavedSearchesTree/{workspaceArtifactId}",
+				defaults: new { controller = "SavedSearchesTree", action = "Get" }
+			);
 
 			config.Routes.MapHttpRoute(
 				name: "GetProcessingSourceLocationSubItems",
@@ -144,41 +144,47 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "WorkspaceView", action = "GetViewsByWorkspaceAndArtifactType" }
 			);
 
-            config.Routes.MapHttpRoute(
-                name: "ImportPreviewFiles",
-                routeTemplate: "{workspaceID}/api/ImportPreview/CreatePreviewJob/",
-                defaults: new { controller = "ImportPreview", action = "CreatePreviewJob" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "ImportPreviewFiles",
+				routeTemplate: "{workspaceID}/api/ImportPreview/CreatePreviewJob/",
+				defaults: new { controller = "ImportPreview", action = "CreatePreviewJob" }
+			);
 
-            config.Routes.MapHttpRoute(
-                name: "ImportPreviewProgress",
-                routeTemplate: "{workspaceID}/api/ImportPreview/CheckProgress/{jobId}",
-                defaults: new { controller = "ImportPreview", action = "CheckProgress" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "ImportPreviewProgress",
+				routeTemplate: "{workspaceID}/api/ImportPreview/CheckProgress/{jobId}",
+				defaults: new { controller = "ImportPreview", action = "CheckProgress" }
+			);
 
-            config.Routes.MapHttpRoute(
-                name: "ImportPreviewTable",
-                routeTemplate: "{workspaceID}/api/ImportPreview/GetImportPreviewTable/{jobId}",
-                defaults: new { controller = "ImportPreview", action = "GetImportPreviewTable" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "ImportPreviewTable",
+				routeTemplate: "{workspaceID}/api/ImportPreview/GetImportPreviewTable/{jobId}",
+				defaults: new { controller = "ImportPreview", action = "GetImportPreviewTable" }
+			);
 
-            config.Routes.MapHttpRoute(
-                name: "AsciiDelimiters",
-                routeTemplate: "{workspaceID}/api/ImportProviderDocument/GetAsciiDelimiters",
-                defaults: new { controller = "ImportProviderDocument", action = "GetAsciiDelimiters" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "AsciiDelimiters",
+				routeTemplate: "{workspaceID}/api/ImportProviderDocument/GetAsciiDelimiters",
+				defaults: new { controller = "ImportProviderDocument", action = "GetAsciiDelimiters" }
+			);
 
-            config.Routes.MapHttpRoute(
-                name: "LoadFileHeaders",
-                routeTemplate: "{workspaceID}/api/ImportProviderDocument/LoadFileHeaders",
-                defaults: new { controller = "ImportProviderDocument", action = "LoadFileHeaders" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "LoadFileHeaders",
+				routeTemplate: "{workspaceID}/api/ImportProviderDocument/LoadFileHeaders",
+				defaults: new { controller = "ImportProviderDocument", action = "LoadFileHeaders" }
+			);
 
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "{workspaceID}/api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-        }
+			config.Routes.MapHttpRoute(
+				name: "SearchFolder",
+				routeTemplate: "{workspaceID}/api/SearchFolder/{destinationWorkspaceId}",
+				defaults: new {controller = "SearchFolder", action = "Get"}
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "DefaultApi",
+				routeTemplate: "{workspaceID}/api/{controller}/{id}",
+				defaults: new { id = RouteParameter.Optional }
+			);
+		}
 	}
 }
