@@ -10,7 +10,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Newtonsoft.Json;
 using Relativity;
-using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
+using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {

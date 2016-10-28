@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Castle.Core.Internal;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.WinEDDS;
 using Relativity;
@@ -84,21 +86,37 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void SetImagePrecedence(ExportSettings exportSettings, ExportFile exportFile)
 		{
-			var imagePrecs = new List<Pair>();
+			switch (exportFile.TypeOfExport)
+			{
+				case ExportFile.ExportType.Production:
+					exportFile.ImagePrecedence = GetProductionImagePrecedenceList(exportSettings, exportFile).ToArray();
+					break;
+				default:
+					exportFile.ImagePrecedence = GetDeafultImagePrecedenceList(exportSettings, exportFile).ToArray();
+					break;
+			}
+		}
+
+		private IEnumerable<Pair> GetDeafultImagePrecedenceList(ExportSettings exportSettings, ExportFile exportFile)
+		{
 			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Produced)
 			{
 				foreach (var productionPrecedence in exportSettings.ImagePrecedence)
 				{
-					imagePrecs.Add(new Pair(productionPrecedence.ArtifactID, productionPrecedence.DisplayName));
+					yield return new Pair(productionPrecedence.ArtifactID, productionPrecedence.DisplayName);
 				}
 			}
 			if ((exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Original) || exportSettings.IncludeOriginalImages)
 			{
-				imagePrecs.Add(new Pair(ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT, ORIGINAL_PRODUCTION_PRECEDENCE_TEXT));
+				yield return new Pair(ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT, ORIGINAL_PRODUCTION_PRECEDENCE_TEXT);
 			}
-
-			exportFile.ImagePrecedence = imagePrecs.ToArray();
 		}
+
+		private IEnumerable<Pair> GetProductionImagePrecedenceList(ExportSettings exportSettings, ExportFile exportFile)
+		{
+			yield return new Pair(exportFile.ArtifactID.ToString(), string.Empty);
+		}
+
 
 		private static void SetStartDocumentNumber(ExportSettings exportSettings, ExportFile exportFile)
 		{
