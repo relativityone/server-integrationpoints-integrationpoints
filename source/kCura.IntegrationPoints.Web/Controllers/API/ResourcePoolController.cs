@@ -59,9 +59,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location subfolders info.")]
-		public HttpResponseMessage GetSubItems(int workspaceId, bool isRoot, [FromBody] string path)
+		public HttpResponseMessage GetSubItems(int workspaceId, bool isRoot, [FromBody] string path, bool includeFiles = false)
 		{
-			List<JsTreeItemDTO> subItems = _directoryTreeCreator.GetChildren(path, isRoot);
+			List<JsTreeItemDTO> subItems = _directoryTreeCreator.GetChildren(path, isRoot, includeFiles);
 			return Request.CreateResponse(HttpStatusCode.OK, subItems);
 		}
 

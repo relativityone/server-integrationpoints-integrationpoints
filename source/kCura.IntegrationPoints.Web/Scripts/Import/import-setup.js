@@ -239,7 +239,7 @@
             root.data.ajax({
                 type: "post",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot),
+                url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot) + '?includeFiles=true',
                 data: { '': path }
             }).then(function (result) {
                 onSuccess(result);
