@@ -6,9 +6,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 	{
 		private const string _FILE_COUNT_WARNING = "There are no items to export. Verify your source location.";
 
-		public ExportSettingsValidationResult Validate(int totalDocCount)
+		public ValidationResult Validate(int totalDocCount)
 		{
-			var result = new ExportSettingsValidationResult {IsValid = totalDocCount > 0};
+			var result = new ValidationResult {IsValid = totalDocCount > 0};
 			if (!result.IsValid)
 			{
 				result.Message = _FILE_COUNT_WARNING;

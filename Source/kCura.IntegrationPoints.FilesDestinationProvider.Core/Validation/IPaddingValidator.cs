@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
 	public interface IPaddingValidator
 	{
-		ExportSettingsValidationResult Validate(int workspaceId, ExportFile exportFile, int totalDocCount);
+		ValidationResult Validate(int workspaceId, ExportFile exportFile, int totalDocCount);
 	}
 }

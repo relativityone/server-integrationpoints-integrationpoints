@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_fileCountValidator = fileCountValidator;
 		}
 
-		public ExportSettingsValidationResult Validate(int workspaceID, IntegrationModel model)
+		public ValidationResult Validate(int workspaceID, IntegrationModel model)
 		{
 			ExportFile exportFile = BuildExportFile(model);
 

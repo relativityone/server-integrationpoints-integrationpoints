@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			string expectedMessage = "expected_message";
 
 			_exportInitProcessService.CalculateDocumentCountToTransfer(Arg.Any<ExportUsingSavedSearchSettings>()).Returns(0);
-			_fileCountValidator.Validate(0).Returns(new ExportSettingsValidationResult
+			_fileCountValidator.Validate(0).Returns(new ValidationResult
 			{
 				IsValid = false,
 				Message = expectedMessage
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		[Test]
 		public void ItShouldNotRunPaddingValidationAfterFileCountValidationFailed()
 		{
-			_fileCountValidator.Validate(Arg.Any<int>()).Returns(new ExportSettingsValidationResult
+			_fileCountValidator.Validate(Arg.Any<int>()).Returns(new ValidationResult
 			{
 				IsValid = false
 			});
@@ -74,12 +74,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		{
 			string expectedMessage = "expected_message";
 
-			_fileCountValidator.Validate(Arg.Any<int>()).Returns(new ExportSettingsValidationResult
+			_fileCountValidator.Validate(Arg.Any<int>()).Returns(new ValidationResult
 			{
 				IsValid = true
 			});
 
-			_paddingValidator.Validate(Arg.Any<int>(), Arg.Any<ExportFile>(), Arg.Any<int>()).Returns(new ExportSettingsValidationResult
+			_paddingValidator.Validate(Arg.Any<int>(), Arg.Any<ExportFile>(), Arg.Any<int>()).Returns(new ValidationResult
 			{
 				IsValid = false,
 				Message = expectedMessage
@@ -94,12 +94,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		[Test]
 		public void ItShouldReturnSuccessForValidParameters()
 		{
-			_fileCountValidator.Validate(Arg.Any<int>()).Returns(new ExportSettingsValidationResult
+			_fileCountValidator.Validate(Arg.Any<int>()).Returns(new ValidationResult
 			{
 				IsValid = true
 			});
 
-			_paddingValidator.Validate(Arg.Any<int>(), Arg.Any<ExportFile>(), Arg.Any<int>()).Returns(new ExportSettingsValidationResult
+			_paddingValidator.Validate(Arg.Any<int>(), Arg.Any<ExportFile>(), Arg.Any<int>()).Returns(new ValidationResult
 			{
 				IsValid = true
 			});
