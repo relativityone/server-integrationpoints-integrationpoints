@@ -62,6 +62,7 @@
 		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
 		var destination = JSON.parse(destinationJson);
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
+		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
 		destination.Provider = "relativity";
 		destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
 		destinationJson = JSON.stringify(destination);
@@ -78,6 +79,7 @@
 	message.subscribe('load', function (m) {
 		var _bind = function (m) {
 			viewModel = new Model(m);
+			viewModel.onDOMLoaded();
 			ko.applyBindings(viewModel, document.getElementById('relativityProviderConfiguration'));
 		}
 		// expect model to be serialized to string
@@ -100,8 +102,44 @@
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.savedSearches = ko.observableArray(state.savedSearches);
 		self.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
-		this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
-		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
+		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
+		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
+		self.DestinationFolder = ko.observable(state.DestinationFolder);
+		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
+		self.FolderArtifactName = ko.observable(state.FolderArtifactName);
+
+		self.TargetWorkspaceArtifactId.subscribe(function (value) {
+			if (value != undefined) {
+				self.getFolderAndSubFolders(value);
+			}
+		});
+
+		self.getFolderAndSubFolders = function (destinationWorkspaceId) {
+			IP.data.ajax({
+				type: "get",
+				url: IP.utils.generateWebAPIURL("SearchFolder", destinationWorkspaceId)
+			}).then(function (result) {
+				self.foldersStructure = result;
+				self.locationSelector.reload(result);
+			}).fail(function (error) {
+				root.message.error.raise("No folders were returned from the source provider.");
+			});
+		};
+
+		self.onDOMLoaded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			// if (self.HasBeenRun()) {
+			// 	self.locationSelector.toggle(false);
+			// } else {
+			self.locationSelector.init(self.FolderArtifactName(), [], {
+				onNodeSelectedEventHandler: function (node) {
+					self.FolderArtifactName(node.text);
+					self.FolderArtifactId(node.id);
+				}
+			});
+			self.locationSelector.toggle(true);
+			// }
+		};
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
 		if (self.savedSearches.length === 0) {
 			IP.data.ajax({
@@ -209,7 +247,9 @@
 			return {
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
-				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId()
+				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
+				"FolderArtifactId": self.FolderArtifactId(),
+				"FolderArtifactName": self.FolderArtifactName()
 			}
 		}
 	}

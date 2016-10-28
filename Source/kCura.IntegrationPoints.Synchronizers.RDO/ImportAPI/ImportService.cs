@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.ArtifactTypeId = Settings.ArtifactTypeId;
 			importJob.Settings.AuditLevel = Settings.AuditLevel;
 			importJob.Settings.CaseArtifactId = Settings.CaseArtifactId;
-			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactId();
+			importJob.Settings.DestinationFolderArtifactID =  GetDestinationFolderArtifactId(Settings.DestinationFolderArtifactId);
 			importJob.Settings.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter;
 			importJob.Settings.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository;
 			importJob.Settings.DisableControlNumberCompatibilityMode = Settings.DisableControlNumberCompatibilityMode;
@@ -372,10 +372,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 		}
 
-		private int GetDestinationFolderArtifactId()
+		private int GetDestinationFolderArtifactId(int folderArtifactId)
 		{
-			int destinationFolderArtifactId = 0;
-			if (CurrentWorkspace != null)
+			int destinationFolderArtifactId = folderArtifactId;
+			if (CurrentWorkspace != null && destinationFolderArtifactId == 0)
 			{
 				if (Settings.ArtifactTypeId == (int) ArtifactType.Document)
 				{

@@ -23,8 +23,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public JsTreeItemDTO GetArtifactTree(string artifactTypeName)
 		{
+			
 			var artifacts = QueryArtifacts(artifactTypeName);
 			return _treeCreator.Create(artifacts);
+		}
+
+		public JsTreeItemDTO GetArtifactTreeWithWorkspaceSet(string artifactTypeName,int workspaceId)
+		{
+			SetQueryWorkspaceId(workspaceId);
+			return GetArtifactTree(artifactTypeName);
 		}
 
 		private List<Artifact> QueryArtifacts(string artifactTypeName)
@@ -38,6 +45,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				throw new NotFoundException("Artifact query failed");
 			}
 			return result.QueryArtifacts;
+		}
+
+		private void SetQueryWorkspaceId(int workspaceId)
+		{
+			_client.APIOptions.WorkspaceID = workspaceId;
 		}
 
 		#region Logging

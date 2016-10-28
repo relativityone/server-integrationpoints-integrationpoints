@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private IRSAPIClient _client;
 		private QueryResult _queryResult;
 		private IArtifactTreeCreator _treeCreator;
+		private APIOptions _apiOptions;
 
 		[SetUp]
 		public void SetUp()
@@ -23,9 +24,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_client = Substitute.For<IRSAPIClient>();
 			_treeCreator = Substitute.For<IArtifactTreeCreator>();
 			var helper = Substitute.For<IHelper>();
+			_apiOptions = Substitute.For<APIOptions>();
 
 			_queryResult = new QueryResult {Success = true};
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(_queryResult);
+			_client.APIOptions.Returns(_apiOptions);
 
 			_artifactTreeService = new ArtifactTreeService(_client, _treeCreator, helper);
 		}
@@ -38,6 +41,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_artifactTreeService.GetArtifactTree(artifactTypeName);
 
 			_client.Received().Query(Arg.Any<APIOptions>(), Arg.Is<Query>(x => x.ArtifactTypeName.Equals(artifactTypeName)));
+			
+		}
+
+		[Test]
+		public void ItShouldQueryForGivenArtifactTypeAndWorkspaceId()
+		{
+			const string artifactTypeName = "artifact_type";
+			const int destinationWorkspaceId = 1024178;
+
+			_artifactTreeService.GetArtifactTreeWithWorkspaceSet(artifactTypeName,destinationWorkspaceId);
+
+			_client.Received().Query(Arg.Any<APIOptions>(), Arg.Is<Query>(x => x.ArtifactTypeName.Equals(artifactTypeName)));
+
+			Assert.That(_apiOptions.WorkspaceID, Is.EqualTo(destinationWorkspaceId));
 		}
 
 		[Test]
