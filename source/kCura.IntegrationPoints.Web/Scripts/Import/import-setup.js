@@ -18,6 +18,7 @@
     var FILE_ENCODING_COLUMN_NESTEDVALUE_DD = 'import-nestedValue';
     var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
     var CONFIGURATION_FRAME = 'configurationFrame';
+    var JSTREE_HOLDER_DIV = 'jstree-holder-div';
 
     var workspaceId = ("/" + windowObj.RelativityImport.WorkspaceId);
 
@@ -57,7 +58,6 @@
             $.ajax({
                 url: baseUrlCache + workspaceId + "/api/ImportProviderDocument/LoadFileHeaders",
                 type: 'POST',
-                async: false,
                 data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel()) },
                 success: function (data) {
                     windowObj.RelativityImport.koModel.setPopulateFileColumnHeaders(data);
@@ -205,6 +205,8 @@
     windowObj.RelativityImport.UI.addSiteCss = function () {
         var windowPar = windowObj.parent;
         windowPar.$(idSelector(CONFIGURATION_FRAME)).css({ "min-width": '900px' });
+        $(idSelector(JSTREE_HOLDER_DIV)).css({ 'min-height': '50%' });
+        $(idSelector(JSTREE_HOLDER_DIV)).height('auto');
     };
 
     windowObj.RelativityImport.enableLocation = function (en) {
@@ -276,7 +278,6 @@
         url: root.utils.getBaseURL() + workspaceId + "/api/ImportProviderDocument/GetAsciiDelimiters",
         type: 'GET',
         contentType: "application/json",
-        async: false,
         success: function (data) {
             var array = [];
             $.each(data, function (index, value) {
