@@ -490,7 +490,23 @@ ko.validation.insertValidationMessage = function (element) {
 			IP.workspaceFieldsControls.moveTop(this.sourceMapped, this.selectedMappedSource());
 		};
 		this.moveMappedSourceBottom = function () {
-			IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
+		    IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
+		};
+
+	    //todo: auto map function should hook up to a button here?
+		this.AutoFieldMap = function () {
+		    var sourceFieldToAdd = ko.observableArray([]);
+		    var wspaceFieldToAdd = ko.observableArray([]);
+		    for (var i = 0; i < this.sourceField().length; i++) {
+		        for (var j = 0; j < this.workspaceFields().length; j++) {
+		            if (this.sourceField()[i].name == this.workspaceFields()[j].name) {
+		                sourceFieldToAdd.push(this.sourceField()[i]);
+		                wspaceFieldToAdd.push(this.workspaceFields()[j])
+		            }
+		        }
+		    }
+		    IP.workspaceFieldsControls.add(this.sourceField, sourceFieldToAdd, this.sourceMapped);
+		    IP.workspaceFieldsControls.add(this.workspaceFields, wspaceFieldToAdd, this.mappedWorkspace);
 		};
 
 	};// end of the viewmodel
