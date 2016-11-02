@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.Toggle;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Toggle;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
