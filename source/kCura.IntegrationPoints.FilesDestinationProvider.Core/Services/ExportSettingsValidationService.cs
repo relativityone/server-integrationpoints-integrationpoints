@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.WinEDDS;
 using Newtonsoft.Json;
 
@@ -12,25 +12,33 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 	public class ExportSettingsValidationService : IExportSettingsValidationService
 	{
 		private readonly IExportFileBuilder _exportFileBuilder;
-		private readonly IExportSettingsBuilder _exportSettingsBuilder;
-		private readonly IPaddingValidator _paddingValidator;
 		private readonly IExportInitProcessService _exportInitProcessService;
+		private readonly IExportSettingsBuilder _exportSettingsBuilder;
+		private readonly IFileCountValidator _fileCountValidator;
+		private readonly IPaddingValidator _paddingValidator;
 
 		public ExportSettingsValidationService(IExportSettingsBuilder exportSettingsBuilder, IExportFileBuilder exportFileBuilder, IPaddingValidator paddingValidator,
-			IExportInitProcessService exportInitProcessService)
+			IExportInitProcessService exportInitProcessService, IFileCountValidator fileCountValidator)
 		{
 			_exportSettingsBuilder = exportSettingsBuilder;
 			_exportFileBuilder = exportFileBuilder;
 			_paddingValidator = paddingValidator;
 			_exportInitProcessService = exportInitProcessService;
+			_fileCountValidator = fileCountValidator;
 		}
 
-		public ExportSettingsValidationResult Validate(int workspaceID, IntegrationModel model)
+		public ValidationResult Validate(int workspaceID, IntegrationModel model)
 		{
 			ExportFile exportFile = BuildExportFile(model);
 
 			int totalDocsCount = _exportInitProcessService.CalculateDocumentCountToTransfer(
 				JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(model.SourceConfiguration));
+
+			var fileCountValidationResult = _fileCountValidator.Validate(totalDocsCount);
+			if (!fileCountValidationResult.IsValid)
+			{
+				return fileCountValidationResult;
+			}
 
 			return _paddingValidator.Validate(workspaceID, exportFile, totalDocsCount);
 		}

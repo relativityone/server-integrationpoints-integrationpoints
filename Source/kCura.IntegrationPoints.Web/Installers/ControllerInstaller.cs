@@ -61,6 +61,7 @@ using Relativity.CustomPages;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -172,6 +173,7 @@ namespace kCura.IntegrationPoints.Web.Installers
             container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
             container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
             container.Register(Component.For<IPaddingValidator>().ImplementedBy<PaddingValidator>().LifestyleTransient());
+            container.Register(Component.For<IFileCountValidator>().ImplementedBy<FileCountValidator>().LifestyleTransient());
             container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>().LifestyleTransient());
             container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>().LifestyleTransient());
             container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>().LifestyleTransient());

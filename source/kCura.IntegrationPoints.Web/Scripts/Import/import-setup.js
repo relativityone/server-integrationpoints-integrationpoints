@@ -18,6 +18,7 @@
     var FILE_ENCODING_COLUMN_NESTEDVALUE_DD = 'import-nestedValue';
     var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
     var CONFIGURATION_FRAME = 'configurationFrame';
+    var JSTREE_HOLDER_DIV = 'jstree-holder-div';
 
     var workspaceId = ("/" + windowObj.RelativityImport.WorkspaceId);
 
@@ -57,7 +58,6 @@
             $.ajax({
                 url: baseUrlCache + workspaceId + "/api/ImportProviderDocument/LoadFileHeaders",
                 type: 'POST',
-                async: false,
                 data: { '': JSON.stringify(windowObj.RelativityImport.GetCurrentUiModel()) },
                 success: function (data) {
                     windowObj.RelativityImport.koModel.setPopulateFileColumnHeaders(data);
@@ -205,6 +205,8 @@
     windowObj.RelativityImport.UI.addSiteCss = function () {
         var windowPar = windowObj.parent;
         windowPar.$(idSelector(CONFIGURATION_FRAME)).css({ "min-width": '900px' });
+        $(idSelector(JSTREE_HOLDER_DIV)).css({ 'min-height': '50%' });
+        $(idSelector(JSTREE_HOLDER_DIV)).height('auto');
     };
 
     windowObj.RelativityImport.enableLocation = function (en) {
@@ -227,25 +229,48 @@
 
     windowObj.RelativityImport.enableLocation(false);
 
-    $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure"), function (data) {
-        windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
+    windowObj.RelativityImport.getDirectories = function () {
+        var reloadTree = function (params, onSuccess, onFail) {
+            //var $locationErrorContainer = $("#processingLocationErrorContainer");
+            var isRoot = params.id === '#';
+            var path = params.id;
+            if (isRoot) {
+                path = windowObj.RelativityImport.koModel.ProcessingSourceLocationPath;
+            }
+            //IP.message.error.clear($locationErrorContainer);
+            root.data.ajax({
+                type: "post",
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot) + '?includeFiles=true',
+                data: { '': path }
+            }).then(function (result) {
+                onSuccess(result);
+                windowObj.RelativityImport.enableLocation(true);
+            }).fail(function (error) {
+                onFail(error);
+                // IP.message.error.raise(error, $locationErrorContainer);
+            });
+        };
+        windowObj.RelativityImport.locationSelector.reloadWithRoot(reloadTree);
+    };
 
+    root.data.ajax({
+        type: "get",
+        url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
+        data: {
+            sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+        }
+    }).done(function (data) {
+        windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
         if (windowObj.RelativityImport.GetCachedUiModel) {
             populateCachedState();
             windowObj.RelativityImport.checkValueForImportType();
         };
 
         $("#processingSources").change(function (c, item) {
-            var artifacId = $("#processingSources option:selected").val();
-            var choiceName = $("#processingSources option:selected").text();
-            $.get(root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationStructure", artifacId) + '?includeFiles=true')
-                .then(function (result) {
-                    windowObj.RelativityImport.locationSelector.reload(result);
-                    windowObj.RelativityImport.enableLocation(true);
-                })
-                .fail(function (error) {
-                    root.message.error.raise("No attributes were returned from the source provider.");
-                });
+            windowObj.RelativityImport.koModel.ProcessingSourceLocationPath = windowObj.RelativityImport.koModel.GetSelectedProcessingSourceLocationPath(windowObj.RelativityImport.koModel.ProcessingSourceLocation()).location;
+            windowObj.RelativityImport.getDirectories();
+            windowObj.RelativityImport.enableLocation(true);
         });
     });
 
@@ -253,7 +278,6 @@
         url: root.utils.getBaseURL() + workspaceId + "/api/ImportProviderDocument/GetAsciiDelimiters",
         type: 'GET',
         contentType: "application/json",
-        async: false,
         success: function (data) {
             var array = [];
             $.each(data, function (index, value) {

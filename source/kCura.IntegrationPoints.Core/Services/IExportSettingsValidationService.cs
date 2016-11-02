@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public interface IExportSettingsValidationService
 	{
-		ExportSettingsValidationResult Validate(int workspaceID, IntegrationModel model);
+		ValidationResult Validate(int workspaceID, IntegrationModel model);
 	}
 }
