@@ -1,14 +1,13 @@
 ﻿using System;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters.Validator;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
 	public class PaddingValidator : IPaddingValidator
 	{
-		public ExportSettingsValidationResult Validate(int workspaceId, ExportFile exportFile, int totalDocCount)
+		public ValidationResult Validate(int workspaceId, ExportFile exportFile, int totalDocCount)
 		{
 			//Logic extracted from SharedLibrary
 			var currentVolumeNumber = exportFile.VolumeInfo.VolumeStartNumber;
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			var warningValidator = new PaddingWarningValidator();
 			var isValid = warningValidator.IsValid(exportFile, volumeLabelPaddingWidth, subdirectoryLabelPaddingWidth);
 
-			return new ExportSettingsValidationResult
+			return new ValidationResult
 			{
 				IsValid = isValid,
 				Message = warningValidator.ErrorMessages
