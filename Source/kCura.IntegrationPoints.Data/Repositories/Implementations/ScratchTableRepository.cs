@@ -22,23 +22,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private readonly string _tableSuffix;
         private readonly int _workspaceId;
         private IDataReader _reader;
-        private string _database;
         private string _tempTableName;
         private string _docIdentifierFieldName;
 	    private int _count;
-		private readonly bool _isAOAGEnabled;
 
-	    public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider,
-		    IDocumentRepository documentRepository,
+	    public ScratchTableRepository(IHelper helper, IDocumentRepository documentRepository,
 		    IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId) :
 			    this(helper.GetDBContext(workspaceId), documentRepository, fieldRepository,
-				    tablePrefix, tableSuffix, workspaceId, toggleProvider.IsAOAGFeatureEnabled())
+				    tablePrefix, tableSuffix, workspaceId)
 	    {
 			
 		}
 
 	    private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldRepository fieldRepository, 
-			string tablePrefix, string tableSuffix, int workspaceId, bool isAOAGEnabled)
+			string tablePrefix, string tableSuffix, int workspaceId)
 	    {
 			_caseContext = caseContext;
 			_documentRepository = documentRepository;
@@ -47,7 +44,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_tableSuffix = tableSuffix;
 			_workspaceId = workspaceId;
 			IgnoreErrorDocuments = false;
-			_isAOAGEnabled = isAOAGEnabled;
 		}
 
 		public bool IgnoreErrorDocuments { get; set; }
@@ -73,7 +69,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string documentList = "(" + String.Join(",", docIds) + ")";
 
 			string fullTableName = GetTempTableName();
-            string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] in {1}", fullTableName, documentList, FullDatabaseFormat);
+            string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] in {1}", fullTableName, documentList, GetResourceDBPrepend());
 
             _caseContext.ExecuteNonQuerySQLStatement(sql);
         }
@@ -84,8 +80,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             {
                 string fullTableName = GetTempTableName();
 
-                var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-											SELECT [ArtifactID] FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+                var sql = String.Format(@"IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+											SELECT [ArtifactID] FROM {1}[{0}]", fullTableName, GetResourceDBPrepend());
 
                 _reader = _caseContext.ExecuteSQLStatementAsReader(sql);
             }
@@ -116,17 +112,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_count += artifactIds.Count;
 
 				string fullTableName = GetTempTableName();
-			
-				string database = _isAOAGEnabled ? _caseContext.Database : "EDDSRESOURCE";
 
-				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, database);
+				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, _caseContext.Database);
 				string connectionString = $"data source={connectionData.Server};initial catalog={connectionData.Database};persist security info=False;user id={connectionData.Username};password={connectionData.Password}; workstation id=localhost;packet size=4096;connect timeout=30;";
 				Context context = new Context(connectionString);
 			
-				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
-												CREATE TABLE {2}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+												CREATE TABLE {1}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+											END", fullTableName, GetResourceDBPrepend());
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
 
 				using (DataTable artifactIdTable = new DataTable())
@@ -139,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 					SqlBulkCopyParameters bulkParameters = new SqlBulkCopyParameters
 					{
-						DestinationTableName = $"{FullDatabaseFormat}[{fullTableName}]"
+						DestinationTableName = $"{GetResourceDBPrepend()}[{fullTableName}]"
 					};
 					context.ExecuteBulkCopy(artifactIdTable, bulkParameters);
 				}
@@ -148,11 +142,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 	    public IScratchTableRepository CopyTempTable(string newTempTablePrefix)
 	    {
-		    ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, newTempTablePrefix, _tableSuffix, _workspaceId, _isAOAGEnabled);
+		    ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, newTempTablePrefix, _tableSuffix, _workspaceId);
 		    string sourceTableName = GetTempTableName();
 		    string newTableName = copiedScratchTableRepository.GetTempTableName();
 
-			string sql = String.Format(@"SELECT * INTO {2}[{0}] FROM {2}[{1}]", newTableName, sourceTableName, FullDatabaseFormat);
+			string sql = String.Format(@"SELECT * INTO {2}[{0}] FROM {2}[{1}]", newTableName, sourceTableName, GetResourceDBPrepend());
 			
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 
@@ -164,38 +158,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public void DeleteTable()
         {
             string fullTableName = GetTempTableName();
-            string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
-										DROP TABLE {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+            string sql = String.Format(@"IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+										DROP TABLE {1}[{0}]", fullTableName, GetResourceDBPrepend());
 
             _caseContext.ExecuteNonQuerySQLStatement(sql);
         }
 
-        private string TargetDatabaseFormat
-        {
-            get
-            {
-                if (_database == null)
-                {
-                    _database = _isAOAGEnabled ? String.Empty : "[EDDSRESOURCE].";
-                }
-                return _database;
-            }
-        }
-
-        private string FullDatabaseFormat
-        {
-            get { return TargetDatabaseFormat == String.Empty ? "[Resource]." : "[EDDSRESOURCE].eddsdbo."; }
-        }
-
-        public string GetTempTableName()
+	    public string GetTempTableName()
         {
             if (_tempTableName == null)
             {
-                string prepend = String.Empty;
-                if (_isAOAGEnabled)
-                {
-                    prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
-                }
+                string prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
                 _tempTableName = $"{prepend}{_tablePrefix}_{_tableSuffix}";
                 if (_tempTableName.Length > 128)
                 {

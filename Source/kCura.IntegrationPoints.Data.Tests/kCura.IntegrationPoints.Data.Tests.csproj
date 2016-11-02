@@ -232,6 +232,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Toggle\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
@@ -252,7 +253,6 @@
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="RSAPIServiceInstallerTests.cs" />
-    <Compile Include="Toggle\ExtendedRelativityToggleTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
+		//[Ignore("Test doesn't work and needs fix")]
 		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
@@ -541,7 +541,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private DataTable GetTempTable(string tempTableName)
 		{
-			string query = $"SELECT [ArtifactID] FROM [EDDSResource].[eddsdbo].[{ tempTableName }]";
+			string query = $"SELECT [ArtifactID] FROM [Resource].[{ tempTableName }]";
 			try
 			{
 				DataTable tempTable = CaseContext.SqlContext.ExecuteSqlStatementAsDataTable(query);

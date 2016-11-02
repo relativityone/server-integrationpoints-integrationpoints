@@ -21,31 +21,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 	public class RepositoryFactory : MarshalByRefObject, IRepositoryFactory
 	{
 		private readonly IHelper _helper;
-		private readonly Lazy<IExtendedRelativityToggle> _toggleProvider;
 
 		public RepositoryFactory(IHelper helper)
 		{
 			_helper = helper;
-			_toggleProvider = new Lazy<IExtendedRelativityToggle>(() =>
-			{
-				var sqlToggleProvider = new SqlServerToggleProvider(
-				() =>
-				{
-					SqlConnection connection = _helper.GetDBContext(-1).GetConnection(true);
-
-					return connection;
-				},
-				async () =>
-				{
-					Task<SqlConnection> task = Task.Run(() =>
-					{
-						SqlConnection connection = _helper.GetDBContext(-1).GetConnection(true);
-						return connection;
-					});
-					return await task;
-				});
-				return new ExtendedRelativityToggle(sqlToggleProvider);
-			});
 		}
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
@@ -142,7 +121,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
 		{
-			return new ScratchTableRepository(_helper, _toggleProvider.Value, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), tablePrefix, tableSuffix, workspaceArtifactId);
+			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), tablePrefix, tableSuffix, workspaceArtifactId);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
