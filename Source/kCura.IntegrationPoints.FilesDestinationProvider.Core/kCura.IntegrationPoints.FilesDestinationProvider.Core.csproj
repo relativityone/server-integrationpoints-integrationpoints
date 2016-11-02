@@ -190,8 +190,10 @@
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
-    <Compile Include="SharedLibrary\IPaddingValidator.cs" />
-    <Compile Include="SharedLibrary\PaddingValidator.cs" />
+    <Compile Include="Validation\FileCountValidator.cs" />
+    <Compile Include="Validation\IFileCountValidator.cs" />
+    <Compile Include="Validation\IPaddingValidator.cs" />
+    <Compile Include="Validation\PaddingValidator.cs" />
     <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />

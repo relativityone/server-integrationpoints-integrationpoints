@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
 			container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
 			container.Register(Component.For<IPaddingValidator>().ImplementedBy<PaddingValidator>().LifestyleTransient());
+			container.Register(Component.For<IFileCountValidator>().ImplementedBy<FileCountValidator>().LifestyleTransient());
 		}
 	}
 }

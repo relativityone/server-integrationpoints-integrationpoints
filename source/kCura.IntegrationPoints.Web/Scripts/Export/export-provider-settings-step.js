@@ -27,23 +27,19 @@
 		};
 
 		this.updateProcessingSourceLocation = function (value) {
-			if (value != undefined) {
-				self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
-				if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
-				{
-					self.Fileshare(undefined);
-					self.Fileshare.isModified(false);
-				}
+			self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
+			if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
+			{
+				self.Fileshare(undefined);
+				self.Fileshare.isModified(false);
 			}
 
 			if (self.locationSelector) {
 				self.locationSelector.clear();
 			}
 
-			if (!!value) {
-				self.getDirectories();
-			}
-
+			self.getDirectories();
+			
 			self.locationSelector.toggle(!!value);
 		};
 
@@ -92,9 +88,9 @@
 					IP.message.error.raise(error, $locationErrorContainer);
 				});
 			};
-			self.locationSelector.reloadWithRoot(reloadTree);
-
-
+			if (self.locationSelector) {
+				self.locationSelector.reloadWithRoot(reloadTree);
+			}
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
@@ -735,7 +731,9 @@
 						}
 
 						self.model.ProcessingSourceLocation.subscribe(function (value) {
-							self.model.updateProcessingSourceLocation(value);
+							if (value != undefined) {
+								self.model.updateProcessingSourceLocation(value);
+							}
 						});
 					}
 				});

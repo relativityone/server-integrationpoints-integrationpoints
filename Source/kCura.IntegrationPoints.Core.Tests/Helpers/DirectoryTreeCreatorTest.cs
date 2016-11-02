@@ -67,7 +67,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			Assert.That(subFolderB.Id, Is.EqualTo(_subFolderBPath));
 		}
 
-		[Test]
+        [Test]
+        public void ItShouldReturnSubDirectoriesFiles()
+        {
+            //Arrange
+            MockDirHierarchy();
+
+            //Act
+            List<JsTreeItemDTO> subItems = _subjectUnderTest.GetChildren(_subFolderBPath, false, true);
+
+            //Assert
+            Assert.That(subItems.Count, Is.EqualTo(3)); //should have 3 subItems total
+            Assert.That(subItems.Where(i => i.IsDirectory == false).Count, Is.EqualTo(2));//2 of these subItems are not Folders
+        }
+
+        [Test]
 		public void ItShouldReturnDirectoryTreeStruct()
 		{
 			//Arrange
