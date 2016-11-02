@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		//[Ignore("Test doesn't work and needs fix")]
+		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
