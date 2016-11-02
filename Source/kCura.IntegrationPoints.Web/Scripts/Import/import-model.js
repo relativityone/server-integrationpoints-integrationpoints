@@ -72,6 +72,15 @@
             }
         });
 
+        self.GetSelectedProcessingSourceLocationPath = function (artifactId) {
+            var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
+                if (item.artifactId === artifactId) {
+                    return item;
+                }
+            });
+            return selectedPath;
+        };
+
         self.DataFileEncodingTypeValue = "Select...";
 
         self.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({

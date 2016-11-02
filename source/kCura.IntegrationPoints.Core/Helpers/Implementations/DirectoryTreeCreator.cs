@@ -20,13 +20,17 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		#endregion Constructors
 
-		public List<TTreeItem> GetChildren(string path, bool isRoot)
+		public List<TTreeItem> GetChildren(string path, bool isRoot, bool includeFiles = false)
 		{
 			if (!CanAccessFolder(path, isRoot))
 			{
 				return new List<TTreeItem>();
 			}
 			var subItems = GetSubItems(path);
+            if (includeFiles)
+            {
+                subItems.AddRange(GetSubItemsFiles(path));
+            }
 			return isRoot ? GetRoot(path, subItems) : subItems;
 		}
 
@@ -58,8 +62,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				// Push the subdirectories onto the stack for traversal.
 				subItems.ForEach(item => directoryItemsToProcessed.Push(item));
                 
-                //TODO (b.p., a.a.): refactor (post merge with develop) so we are not repeating code when including files.
-                //if the optional includeFiles parameter is passed in as true, retrieve files and add to tree structure
                 if (includeFiles)
                 {
                     List<TTreeItem> subItemsFiles = GetSubItemsFiles(currDirectoryItem);
@@ -78,6 +80,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				Text = path,
 				Id = path,
 				Icon = jstreeRootFolder,
+                IsDirectory = true,
 				Children = new List<JsTreeItemDTO>(subItems)
 			};
 			return new List<TTreeItem> {root};
