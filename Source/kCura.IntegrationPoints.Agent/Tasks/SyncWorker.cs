@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -135,7 +136,82 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
+            ///////
+            ///////
+            ///////
+
+            //Log all relevant contents of inputs to Syncworker.ExecuteImport
+
+            _logger.LogInformation("=== Logging all inputs to SyncWorker.ExecuteImport(...) ===");
+
+            _logger.LogInformation("IEnumerable<FieldMap> fieldMap contents...");
+            foreach (FieldMap cur in fieldMap)
+            {
+                _logger.LogInformation(
+                    "FieldMap Item: Type={FieldMapType}; Source Identifier={SourceFieldIdentifier}, Source DisplayName={SourceDisplayName}; Dest Identifier={DestFieldIdentifier}, Dest DisplayName={DestDisplayName}",
+                    cur.FieldMapType, cur.SourceField.FieldIdentifier, cur.SourceField.DisplayName, cur.DestinationField.FieldIdentifier, cur.DestinationField.DisplayName);
+            }
+
+            _logger.LogInformation("string sourceConfiguration={SourceConfiguration}", sourceConfiguration);
+            _logger.LogInformation("string destinationConfiguration={DestinationConfiguration}", destinationConfiguration);
+
+            _logger.LogInformation("List<string> entryIDs...");
+            foreach (string cur in entryIDs)
+            {
+                _logger.LogInformation("Entry = {EntryIds}", cur);
+            }
+
+            //Test out the import data reader by getting all data
+
+            using (IDataReader importDataReader = new ImportDataReader(
+                    fieldMaps,
+                    sourceProvider,
+                    sourceFields,
+                    entryIDs,
+                    sourceConfiguration,
+                    Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
+            {
+                //Log columns as reported by IDataReader
+                _logger.LogInformation("Field Count={FieldCount}", importDataReader.FieldCount);
+
+                _logger.LogInformation("Column Names as reported by IDataReader importDataReader.GetName....");
+                for (int i = 0; i < importDataReader.FieldCount; i++)
+                {
+                    _logger.LogInformation("Column name={ColumnName}", importDataReader.GetName(i));
+                }
+
+                _logger.LogInformation("Column Names as reported by IDataReader.GetSchemaTable....");
+                DataTable schemaTable = importDataReader.GetSchemaTable();
+                for (int i = 0; i < schemaTable.Columns.Count; i++)
+                {
+                    _logger.LogInformation("Column name={ColumnName}", schemaTable.Columns[i].ColumnName);
+                }
+
+                _logger.LogInformation("=== Data from IDataReader ===");
+                while (importDataReader.Read())
+                {
+                    _logger.LogInformation("= New Row =");
+                    for (int i = 0; i < importDataReader.FieldCount; i++)
+                    {
+                        _logger.LogInformation("Column Name={ColumnName} Index={idx} data={GetStringResult}", importDataReader.GetName(i), i, importDataReader.GetString(i));
+                    }
+                }
+            }
+
+
+            ///////
+            ///////
+            ///////
+
+            //Disable actual import while debugging
+            /*
+			using (IDataReader importDataReader = new ImportDataReader(
+                    fieldMaps,
+                    sourceProvider,
+                    sourceFields,
+                    entryIDs,
+                    sourceConfiguration,
+                    Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
 			{
 				IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
 				if (dataSynchronizer is RdoSynchronizerBase)
@@ -147,12 +223,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				SetupSubscriptions(dataSynchronizer, job);
 
-				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-
 				JobStopManager?.ThrowIfStopRequested();
 
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+				dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
+
+				//IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, importDataReader);
+
+				//JobStopManager?.ThrowIfStopRequested();
+
+				//dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
 			}
+            */
 		}
 
 		protected virtual void ExecuteTask(Job job)
