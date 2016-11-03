@@ -136,9 +136,10 @@ namespace kCura.IntegrationPoints.Web.Installers
                     .LifeStyle.Transient);
 
             container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
+			container.Register(Component.For<IFileCountValidator>().ImplementedBy<FileCountValidator>().LifestyleTransient());
 
-            // TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
-            container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
+			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
+			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
                 () =>
                 {
                     SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
