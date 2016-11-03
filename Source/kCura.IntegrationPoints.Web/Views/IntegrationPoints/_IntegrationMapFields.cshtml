@@ -1,13 +1,13 @@
 ﻿<script id="step3" type="text/html">
-	<div class="card" id="fieldMappings">
-		<div>
-			<span class="label title">Field Mappings</span>
-			<span style="visibility: hidden;" id="forceRedraw"></span>
-			<div class="map-field-title">
-				<label class="list-title leftSide-field">Destination</label>
-				<label class="list-title rightSide-field">Source</label>
-
-			</div>
+    <div class="card" id="fieldMappings">
+    <div>
+        <span class="label title">Field Mappings</span>
+        <span style="visibility: hidden;" id="forceRedraw"></span>
+        <div class="map-field-title">
+            <label class="list-title leftSide-field">Destination</label>
+             <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: AutoFieldMap">Map Fields</button>
+            <label class="list-title rightSide-field">Source</label>
+        </div>
 			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
 			<div class="table" id="mapFields">
 				<div class="cell">
