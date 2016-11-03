@@ -189,7 +189,7 @@
         options[PREVIEW_CHOICE_LI] = "Preview Choices & Folders";
 
         var source = windowObj.parent.$(idSelector(PROGRESS_BUTTONS));
-        source.append('<button class="button generic positive" id="' + CUSTOM_BUTTON + '" disabled><i class="icon-chevron-down" style="float: right;"></i><span style="position: fixed;">Preview File</span></button>');
+        source.append('<button class="button generic positive" id="' + CUSTOM_BUTTON + '" disabled><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
 
         var previewFile = windowObj.parent.$(idSelector(CUSTOM_BUTTON));
         previewFile.append('<ul id="' + BUTTON_UL + '"></ul>');

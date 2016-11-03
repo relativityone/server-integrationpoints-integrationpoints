@@ -1,7 +1,8 @@
 ﻿var IP = IP || {};
 
-
 (function (root, opener) {
+    var idSelector = function (name) { return '#' + name; }
+    var classSelector = function (name) { return '.' + name; }
     var previewJobId = -1;
     var intervalId = -1;
     var percent = 0;
@@ -9,16 +10,55 @@
     var settings = opener.RelativityImportPreviewSettings;
     var workspaceId = ("/" + opener.RelativityImportPreviewSettings.WorkspaceId);
     var fieldMapping = opener.top.getCurrentIpFieldMapping();
-    $("#tableData").hide();
+    showTableData(false);
     var timerCount = 0;
     var timerRequest = true;
+
+    //Element names
+    var TABLE_DATA = 'tableData';
+    var ELAPSED_TIME = 'elapsed-time';
+    var PROGRESS_BAR = 'progressBar';
+    var STATUS_MESSAGE = 'statusMessage';
+    var TOTAL_BYTE_READ = 'total-bytes-read';
+    var TOTAL_RECORD = 'totalRecord';
+    var ERRORS_DIV = 'errors-div';
+    var PAG_NEXT = 'pag-nav-move-next';
+    var PAG_PREVIOUS = 'pag-nav-move-previous';
+    var PAG_LAST = 'pag-nav-move-last';
+    var PAG_FIRST = 'pag-nav-move-first';
+    var PAG_ITEMS = 'pag-items';
+    var ROW_NUMBER = 'row-number';
+    var CSV_DATA_TABLE_PAGINATE = 'csvData-table_paginate';
+    var IMPORT_LOAD_FILE_TOGGLE = 'import-load-file-summary-toggle';
+    var TRANSFER_PROGRESS = 'transfer-progress-div';
+    var ITEMS_PER_PAGE_SELECT = 'itemsPerPageSelect';
+    var CSV_TABLE = 'csvData-table';
+    var TOTAL_BYTES = 'total-bytes';
+    var PAG_NAV_BTN = ' pag-nav-button ';
+    var BTN_DISABLE = ' btn-disable ';
+    var BTN_ACTIVE = ' btn-active ';
+    var MOVE_NEXT = ' icon-move-next ';
+    var MOVE_PREVIOUS = 'icon-move-previous';
+    var MOVE_LAST = 'icon-move-last';
+    var MOVE_FIRST = 'icon-move-first';
+    var ARROW_COLLAPSED = 'arrow-collapsed-summary';
+    var ARROW_EXPANDED = 'arrow-expanded-summary';
+    var PREVIEW_FILE_PERCENT = 'previewFilePercent';
+    var CLOSE_BTN = 'preview-file-closeBtn';
+
+
+    function showTableData(bool) {
+        var $el = $(idSelector(TABLE_DATA));
+
+        (bool) ? $el.show() : $el.hide();
+    };
 
     function timerRun() {
         if (timerRequest) {
             var format = (new Date).clearTime()
                 .addSeconds(timerCount++)
                 .toString('HH:mm:ss');
-            $(".elapsed-time").text(format);
+            $(classSelector(ELAPSED_TIME)).text(format);
         } else {
             clearInterval(timerHandle);
         }
@@ -36,53 +76,68 @@
         AsciiNewLine: settings.AsciiNewLine,
         AsciiMultiLine: settings.AsciiMultiLine,
         AsciiNestedValue: settings.AsciiNestedValue,
-        FieldMapping:$.parseJSON(fieldMapping)
+        FieldMapping: $.parseJSON(fieldMapping)
     };
 
     root.data.ajax({
         type: "post",
         url: root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CreatePreviewJob",
-        data: JSON.stringify(previewSettingsData) ,
+        data: JSON.stringify(previewSettingsData),
         dataType: 'json'
     })
     .done(function (data) {
         previewJobId = data;
-        $("#progressBar").css("width", percent);
+        $(idSelector(PROGRESS_BAR)).css("width", percent);
         intervalId = setInterval(
             function () {
                 $.get(root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CheckProgress/" + previewJobId)
                 .done(function (data) {
-                    $("#statusMessage").html("In Process");
+                    var statusMsg = $(idSelector(STATUS_MESSAGE));
+                    var progBar = $(idSelector(PROGRESS_BAR));
+                    var totalByte = $(idSelector(TOTAL_BYTES));
+                    var preFilePercent = $(idSelector(PREVIEW_FILE_PERCENT));
+
+                    statusMsg.html("In Process");
                     //if we're only reading the first 1000 rows of a large file, bytes read comes back as -1
                     //we can just show the progress as 100% in this case
                     var percent;
+
                     if (data.BytesRead != -1) {
                         $("#total-bytes-read").html(data.BytesRead);
-                        percent = (Math.floor((data.BytesRead / data.TotalBytes) * 100 )+ "%");
+                        percent = (Math.floor((data.BytesRead / data.TotalBytes) * 100) + "%");
                     } else {
                         percent = "100%";
                     }
-                    $("#progressBar").css("width", percent);
-                    $("#previewFilePercent").html(percent);
-                    $("#total-bytes").html(data.TotalBytes);
+                    progBar.css("width", percent);
+                    preFilePercent.html(percent);
+                    totalByte.html(data.TotalBytes);
+
+                    if (data.BytesRead != -1) {
+                        $(idSelector(TOTAL_BYTE_READ)).html(data.BytesRead);
+                        percent = (data.BytesRead / data.TotalBytes) * 100;
+                    } else {
+                        percent = 100;
+                    }
+                    progBar.css("width", percent + "%");
+                    totalByte.html(data.TotalBytes);
 
                     //check if the Preview is complete
                     if (data.IsComplete) {
                         timerRequest = false;
-                        $("#statusMessage").html("Completed");
-                        $("#statusMessage").attr("class", "active-transfer-status-success");
-                        $("#progressBar").attr("class", "progress-bar-indicator progress-complete");
-                        $("#tableData").show();
-                        $("#progressBar").css("width", percent + "%");
+                        statusMsg.html("Completed");
+                        statusMsg.attr("class", "active-transfer-status-success");
+                        progBar.attr("class", "progress-bar-indicator progress-complete");
+                        showTableData(true);
+                        progBar.css("width", percent + "%");
                         clearInterval(intervalId);
                         GetPreviewTableData(previewJobId);
                     }
                     else if (data.IsFailed) {
                         timerRequest = false;
-                        $("#statusMessage").html("Error");
-                        $("#statusMessage").attr("class", "active-transfer-status-failed");
-                        $("#progressBar").attr("class", "progress-bar-indicator progress-failed");
-                        $("#progressBar").css("width", "100%");
+                        statusMsg.html("Error");
+                        statusMsg.attr("class", "active-transfer-status-failed");
+                        progBar.attr("class", "progress-bar-indicator progress-failed");
+                        progBar.css("width", "100%");
                         clearInterval(intervalId);
                         console.log(data.ErrorMessage);
                     }
@@ -98,7 +153,7 @@
                 formattedHeaders.push({ "sTitle": data.Header[e] });
             });
 
-            var csvTable = $("#csvData-table").DataTable({
+            var csvTable = $(idSelector(CSV_TABLE)).DataTable({
                 "bFilter": false,
                 "bInfo": false,
                 "destroy": false,
@@ -115,7 +170,6 @@
                 }]
 
             });
-            //todo: find a way to insert a column for the row index on the controller or on client -side
             csvTable.on('order.dt search.dt', function () {
                 csvTable.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
                     cell.innerHTML = i + 1;
@@ -134,42 +188,45 @@
 
             function colorErrorRows() {
                 $.each(data.ErrorRows, function (arrayIndex, rowIndex) {
-                    csvTable.row(rowIndex - 1).nodes().to$().addClass('error-row')
+                    csvTable.row(rowIndex - 1).nodes().to$().addClass('error-row');
                 });
             }
 
             function populateTotalRecords() {
                 var info = csvTable.page.info();
-                var totalRecords = $("#totalRecord");
+                var totalRecords = $(idSelector(TOTAL_RECORD));
+                var $el = $(idSelector(ERRORS_DIV));
 
                 totalRecords.text(info.recordsTotal);
-                if (settings.PreviewType != 'errors') {
-                    $('#errors-div').text(data.ErrorRows.length);
-                }
-                else {
-                    $('#errors-div').text(info.recordsTotal);
-                }
+
+                (settings.PreviewType != 'errors') ? $el.text(data.ErrorRows.length) : $el.text(info.recordsTotal);
             };
 
             function updateMoveNextBtn() {
                 var info = csvTable.page.info();
                 var totalPages = info.pages;
+                var $el = $(idSelector(PAG_NEXT));
+                var active = PAG_NAV_BTN.concat(MOVE_NEXT, BTN_ACTIVE);
+                var disable = PAG_NAV_BTN.concat(MOVE_NEXT, BTN_DISABLE);
 
                 if (info.end == info.recordsDisplay) {
-                    $("#pag-nav-move-next").attr("class", "pag-nav-button pag-nav-next-dis");
+                    $el.attr("class", disable);
                 } else if (info.recordsTotal <= (info.length * totalPages)) {
-                    $("#pag-nav-move-next").attr("class", "pag-nav-button pag-nav-next");
+                    $el.attr("class", active);
                 };
             };
 
             function updateMovePreviousBtn() {
                 var info = csvTable.page.info();
                 var currentPage = info.page;
+                var $el = $(idSelector(PAG_PREVIOUS));
+                var active = PAG_NAV_BTN.concat(MOVE_PREVIOUS, BTN_ACTIVE);
+                var disable = PAG_NAV_BTN.concat(MOVE_PREVIOUS, BTN_DISABLE);
 
                 if (currentPage > 0) {
-                    $("#pag-nav-move-previous").attr("class", "pag-nav-button pag-nav-previous");
+                    $el.attr("class", active);
                 } else if (currentPage == 0) {
-                    $("#pag-nav-move-previous").attr("class", "pag-nav-button pag-nav-previous-dis");
+                    $el.attr("class", disable);
                 };
             };
 
@@ -177,30 +234,28 @@
                 var info = csvTable.page.info();
                 var currentPage = info.page;
                 var lastPage = (info.pages - 1);
+                var $el = $(idSelector(PAG_LAST));
+                var active = PAG_NAV_BTN.concat(MOVE_LAST, BTN_ACTIVE);
+                var disable = PAG_NAV_BTN.concat(MOVE_LAST, BTN_DISABLE);
 
-                if (currentPage != lastPage) {
-                    $("#pag-nav-move-last").attr("class", "pag-nav-button pag-nav-last");
-                } else {
-                    $("#pag-nav-move-last").attr("class", "pag-nav-button pag-nav-last-dis");
-                };
+                (currentPage != lastPage) ? $el.attr("class", active) : $el.attr("class", disable);
             };
 
             function updateMoveFirstBtn() {
                 var info = csvTable.page.info();
                 var currentpage = info.page;
+                var $el = $(idSelector(PAG_FIRST));
+                var active = PAG_NAV_BTN.concat(MOVE_FIRST, BTN_ACTIVE);
+                var disable = PAG_NAV_BTN.concat(MOVE_FIRST, BTN_DISABLE);
 
-                if (currentpage != 0) {
-                    $("#pag-nav-move-first").attr("class", "pag-nav-button pag-nav-first");
-                } else {
-                    $("#pag-nav-move-first").attr("class", "pag-nav-button pag-nav-first-dis");
-                }
+                (currentpage != 0) ? $el.attr("class", active) : $el.attr("class", disable);
             };
 
             function updateItemNumber() {
                 var info = csvTable.page.info();
                 var totalItems = info.recordsTotal;
 
-                $(".pag-items").text("- " + info.end + " ( of " + totalItems + ")");
+                $(classSelector(PAG_ITEMS)).text("- " + info.end + " ( of " + totalItems + ")");
             };
 
             function getPageNumber(itemsPerPage, totalItems, itemNumber) {
@@ -214,17 +269,17 @@
             };
 
             function updateItemUi() {
-                var rowNumber = $("#row-number");
+                var rowNumber = $(idSelector(ROW_NUMBER));
                 var info = csvTable.page.info();
                 var totalItems = info.recordsTotal;
 
-                $(".pag-items").text("- " + info.end + " ( of " + totalItems + ")");
+                $(classSelector(PAG_ITEMS)).text("- " + info.end + " ( of " + totalItems + ")");
 
                 rowNumber.val(info.start + 1);
             };
 
             function updatePaging() {
-                $("#csvData-table_paginate").hide();
+                $(idSelector(CSV_DATA_TABLE_PAGINATE)).hide();
 
                 updateMoveFirstBtn();
                 updateMoveLastBtn();
@@ -234,8 +289,7 @@
             };
 
             function closeWindow() {
-                $(".preview-file-closeBtn").click(function () {
-                    console.log("closed");
+                $(classSelector(CLOSE_BTN)).click(function () {
                     window.close();
                 });
             };
@@ -245,59 +299,56 @@
             colorErrorRows();
             closeWindow();
 
-            $("#import-load-file-summary-toggle").on("click", function () {
-                if ($(this).attr("class") == "arrow-collapsed-summary") {
-                    $(this).attr("class", "arrow-expanded-summary");
-                } else if ($(this).attr("class") == "arrow-expanded-summary") {
-                    $(this).attr("class", "arrow-collapsed-summary");
+            $(idSelector(IMPORT_LOAD_FILE_TOGGLE)).on("click", function () {
+                if ($(this).attr("class") == ARROW_COLLAPSED) {
+
+                    $(this).attr("class", ARROW_EXPANDED);
+                } else if ($(this).attr("class") == ARROW_EXPANDED) {
+                    $(this).attr("class", ARROW_COLLAPSED);
                 }
-                $("#preview-file-table").toggle();
+
+                $(idSelector(TRANSFER_PROGRESS)).toggle();
             });
 
-            $("#pag-nav-move-next").on("click", function () {
+            $(idSelector(PAG_NEXT)).on("click", function () {
                 csvTable.page('next').draw('page');
-
                 updateItemUi();
                 updatePaging();
             });
 
-            $("#pag-nav-move-previous").on("click", function () {
+            $(idSelector(PAG_PREVIOUS)).on("click", function () {
                 csvTable.page('previous').draw('page');
                 updatePaging();
             });
 
-            $("#pag-nav-move-first").on("click", function () {
+            $(idSelector(PAG_FIRST)).on("click", function () {
                 csvTable.page('first').draw('page');
-
                 updateItemUi();
                 updatePaging();
             });
 
-            $("#pag-nav-move-last").on("click", function () {
+            $(idSelector(PAG_LAST)).on("click", function () {
                 csvTable.page('last').draw('page');
-
                 updateItemUi();
                 updatePaging();
             });
 
-            $("#itemsPerPageSelect").change(function () {
-                var pageLength = $("#itemsPerPageSelect option:selected").val();
+            $(idSelector(ITEMS_PER_PAGE_SELECT)).change(function () {
+                var pageLength = $(this).val();
 
                 csvTable.page.len(pageLength);
                 csvTable.page('first').draw('page');
-
                 updateItemUi();
                 updatePaging();
             });
 
-            $("#row-number").change(function () {
+            $(idSelector(ROW_NUMBER)).change(function () {
                 var info = csvTable.page.info();
                 var totalItems = info.recordsTotal;
                 var itemsPerPage = info.length;
                 var convertedInput = Math.floor(parseInt($(this).val()) - 1);
 
                 csvTable.page(getPageNumber(itemsPerPage, totalItems, convertedInput)).draw('page');
-
                 updateItemUi();
                 updatePaging();
             });
