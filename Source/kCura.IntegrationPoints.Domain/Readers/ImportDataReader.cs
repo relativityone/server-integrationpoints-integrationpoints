@@ -80,17 +80,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 					FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
 					FieldType = FieldType.String
 				});
-                
-                //additional field added for this test, in case the code consuming the reader is looking for rel_folder_path_001,
-                //this is indicated by the Job History Error stack trace starting with "Column 'rel_folder_path_001' does not belong to table ."
-
-				fields.Add(new FieldEntry()
-				{
-					DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
-					FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME.ToLower(),
-					FieldType = FieldType.String
-				});
-
 			}
 
 			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
