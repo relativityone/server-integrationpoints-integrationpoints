@@ -21,22 +21,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ArtifactTreeService>();
 		}
 
-		public JsTreeItemDTO GetArtifactTree(string artifactTypeName)
-		{
-			
-			var artifacts = QueryArtifacts(artifactTypeName);
-			return _treeCreator.Create(artifacts);
-		}
-
-		public JsTreeItemDTO GetArtifactTreeWithWorkspaceSet(string artifactTypeName,int workspaceId)
+		public JsTreeItemDTO GetArtifactTreeWithWorkspaceSet(string artifactTypeName, int workspaceId = 0)
 		{
 			SetQueryWorkspaceId(workspaceId);
 			return GetArtifactTree(artifactTypeName);
 		}
 
+		private JsTreeItemDTO GetArtifactTree(string artifactTypeName)
+		{
+
+			var artifacts = QueryArtifacts(artifactTypeName);
+			return _treeCreator.Create(artifacts);
+		}
+
 		private List<Artifact> QueryArtifacts(string artifactTypeName)
 		{
-			var query = new Query {ArtifactTypeName = artifactTypeName};
+			var query = new Query { ArtifactTypeName = artifactTypeName };
 
 			var result = _client.Query(_client.APIOptions, query);
 			if (!result.Success)
@@ -49,7 +49,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		private void SetQueryWorkspaceId(int workspaceId)
 		{
-			_client.APIOptions.WorkspaceID = workspaceId;
+			var isWorkspaceIdNotDefault = workspaceId != 0;
+			if (isWorkspaceIdNotDefault)
+				_client.APIOptions.WorkspaceID = workspaceId;
 		}
 
 		#region Logging

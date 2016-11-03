@@ -176,8 +176,8 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "SearchFolder",
-				routeTemplate: "{workspaceID}/api/SearchFolder/{destinationWorkspaceId}",
-				defaults: new {controller = "SearchFolder", action = "Get"}
+				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
+				defaults: new {controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }
 			);
 
 			config.Routes.MapHttpRoute(
