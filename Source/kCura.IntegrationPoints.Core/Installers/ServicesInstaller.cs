@@ -30,8 +30,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
