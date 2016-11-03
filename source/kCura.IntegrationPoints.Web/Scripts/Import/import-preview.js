@@ -10,12 +10,11 @@
     var settings = opener.RelativityImportPreviewSettings;
     var workspaceId = ("/" + opener.RelativityImportPreviewSettings.WorkspaceId);
     var fieldMapping = opener.top.getCurrentIpFieldMapping();
-    showTableData(false);
     var timerCount = 0;
     var timerRequest = true;
 
     //Element names
-    var TABLE_DATA = 'tableData';
+    var ROW = 'row';
     var ELAPSED_TIME = 'elapsed-time';
     var PROGRESS_BAR = 'progressBar';
     var STATUS_MESSAGE = 'statusMessage';
@@ -47,10 +46,10 @@
     var CLOSE_BTN = 'preview-file-closeBtn';
 
 
-    function showTableData(bool) {
-        var $el = $(idSelector(TABLE_DATA));
+    function showTableData() {
+        var $el = $(classSelector(ROW));
 
-        (bool) ? $el.show() : $el.hide();
+        $el.show();
     };
 
     function timerRun() {
@@ -127,7 +126,7 @@
                         statusMsg.html("Completed");
                         statusMsg.attr("class", "active-transfer-status-success");
                         progBar.attr("class", "progress-bar-indicator progress-complete");
-                        showTableData(true);
+                        showTableData();
                         progBar.css("width", percent + "%");
                         clearInterval(intervalId);
                         GetPreviewTableData(previewJobId);
