@@ -18,6 +18,7 @@ using Relativity.Core.Service;
 using Relativity.CustomPages;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
+using kCura.IntegrationPoints.Data.Logging;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {

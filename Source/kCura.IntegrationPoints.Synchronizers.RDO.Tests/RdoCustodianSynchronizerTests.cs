@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
+using kCura.IntegrationPoints.Data.Logging;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			}
 
 			import.GetWorkspaceFields(Arg.Any<int>(), Arg.Any<int>()).Returns(list);
-			var mock = NSubstitute.Substitute.For<ImportApiFactory>(Substitute.For<IHelper>());
+			var mock = NSubstitute.Substitute.For<ImportApiFactory>(Substitute.For<IHelper>(), Substitute.For<ISystemEventLoggingService>());
 			mock.GetImportAPI(Arg.Any<ImportSettings>()).Returns(import);
 			return mock;
 		}

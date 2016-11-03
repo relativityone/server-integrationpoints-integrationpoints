@@ -475,6 +475,7 @@
       <allow>kCura.IntegrationPoints.Data.Tests.Repositories.FieldRepositoryTests.RetrieveField_ReturnsValidArtifactId_Test</allow>
       <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportSettingsTests.ImportSettings_ImportOverlayBehavior(null,UseRelativityDefaults)</allow>
       <allow>kCura.IntegrationPoints.Services.Tests.IntegrationPointManagerLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
+      <allow>kCura.IntegrationPoints.Services.Tests.IntegrationPointRepositoryLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>

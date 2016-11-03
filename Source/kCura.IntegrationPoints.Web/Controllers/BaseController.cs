@@ -12,22 +12,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		public Core.Services.ErrorService CreateError { get; set; }
 
 		public GridModelFactory ModelFactory { get; set; }
-
-		protected void LogException(Exception e, string controller = null, string action = null)
-		{
-			if (string.IsNullOrEmpty(controller))
-			{
-				controller = base.RouteData.Values["controller"] as string;
-			}
-			if (string.IsNullOrEmpty(action))
-			{
-				action = base.RouteData.Values["action"] as string;
-			}
-			var message = string.Format("{0}/{1}", controller, action);
-			var errorModel = new Core.Models.ErrorModel(SessionService.WorkspaceID, message, e);
-			CreateError.Log(errorModel);
-		}
-
+		
 		protected ActionResult RedirectToBase(string url)
 		{
 			//:( we have to do this since we are in an iframe :(
