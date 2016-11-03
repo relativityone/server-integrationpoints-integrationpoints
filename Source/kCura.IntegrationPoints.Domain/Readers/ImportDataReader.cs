@@ -88,32 +88,26 @@ namespace kCura.IntegrationPoints.Domain.Readers
         //Adapted from DocumentTransferDataReader.cs
 		public object GetValue(int i)
 		{
-            _logger.LogInformation("ENTER GetValue({i}), calling GetName...", i);
 			string fieldIdentifier = GetName(i);
-            _logger.LogInformation("GetValue: GetValue({i}), got back Name={Name})", i, fieldIdentifier);
 
 			int fieldArtifactId = -1;
 			bool success = Int32.TryParse(fieldIdentifier, out fieldArtifactId);
 
 			if (success)
 			{
-                _logger.LogInformation("GetValue: GetValue({i}): GetName returned {Name}, calling _sourceDataReader.GetValue({FieldArtifactId}); GetValue returning {Value}", i, fieldIdentifier, fieldArtifactId, _sourceDataReader.GetValue(fieldArtifactId));
                 return _sourceDataReader.GetValue(i);
 			}
 			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
-                _logger.LogInformation("GetValue: GetValue({i}): GetName returned SPECIAL FIELD: {Name}, calling _sourceDataReader.GetValue({FieldArtifactId}); GetValue returning {Value}", i, fieldIdentifier, _folderPathFieldSourceArtifactId, _sourceDataReader.GetValue(_folderPathFieldSourceArtifactId));
                 return _sourceDataReader.GetValue(_folderPathFieldSourceArtifactId);
 			}
             //Attempt to return based on a lookup of rel_folder_path_001
             else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME.ToLower())
             {
-                _logger.LogInformation("GetValue: GetValue({i}): GetName returned SPECIAL FIELD: {Name}, calling _sourceDataReader.GetValue({FieldArtifactId}); GetValue returning {Value}", i, fieldIdentifier, _folderPathFieldSourceArtifactId, _sourceDataReader.GetValue(_folderPathFieldSourceArtifactId));
                 return _sourceDataReader.GetValue(_folderPathFieldSourceArtifactId);
             }
 			else
 			{
-                _logger.LogInformation("GetValue: GetValue({i}): GetName returned: {Name}, GetValue THROWING", i, fieldIdentifier);
                 throw new InvalidOperationException(string.Format("Data requested for column that does not exist: Index={0}", i));
 			}
 		}
@@ -226,18 +220,13 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public string GetName(int i)
 		{
-            _logger.LogInformation("ENTER GetName({i}):", i);
-            _logger.LogInformation("GetName: returning {Name}", _schemaTable.Columns[i].ColumnName);
-
 			return _schemaTable.Columns[i].ColumnName;
 		}
 
 		public int GetOrdinal(string name)
 		{
-            _logger.LogInformation("ENTER GetOrdinal({Name})", name);
 			if (!KnownOrdinalDictionary.ContainsKey(name))
 			{
-                _logger.LogInformation("GetOrdinal: KnownOrdinalDictionary does not contain key={Name}... adding key", name);
 				DataColumn column = _schemaTable.Columns[name];
 				if (column == null)
 				{
@@ -247,7 +236,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 				int ordinal = _schemaTable.Columns[name].Ordinal;
 				KnownOrdinalDictionary[name] = ordinal;
 			}
-            _logger.LogInformation("GetOrdinal: Returning {i})", KnownOrdinalDictionary[name]);
 			return KnownOrdinalDictionary[name];
 		}
 
@@ -306,7 +294,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public bool Read()
 		{
-            // if the reader is closed, go no further
             if (_isClosed)
             {
                 return false;
