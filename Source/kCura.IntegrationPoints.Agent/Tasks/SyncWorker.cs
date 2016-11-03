@@ -142,7 +142,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             //Log all relevant contents of inputs to Syncworker.ExecuteImport
 
+            _logger.LogInformation("\n===================== SECTION ===================\n");
+
             _logger.LogInformation("=== Logging all inputs to SyncWorker.ExecuteImport(...) ===");
+
 
             _logger.LogInformation("IEnumerable<FieldMap> fieldMap contents...");
             foreach (FieldMap cur in fieldMap)
@@ -152,8 +155,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     cur.FieldMapType, cur.SourceField.FieldIdentifier, cur.SourceField.DisplayName, cur.DestinationField.FieldIdentifier, cur.DestinationField.DisplayName);
             }
 
+            _logger.LogInformation("\n===================== SECTION ===================\n");
+
             _logger.LogInformation("string sourceConfiguration={SourceConfiguration}", sourceConfiguration);
             _logger.LogInformation("string destinationConfiguration={DestinationConfiguration}", destinationConfiguration);
+
+            _logger.LogInformation("\n===================== SECTION ===================\n");
 
             _logger.LogInformation("List<string> entryIDs...");
             foreach (string cur in entryIDs)
@@ -172,7 +179,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
             {
                 //Log columns as reported by IDataReader
+
+
+                _logger.LogInformation("\n===================== SECTION ===================\n");
+
                 _logger.LogInformation("Field Count={FieldCount}", importDataReader.FieldCount);
+
+                _logger.LogInformation("\n===================== SECTION ===================\n");
 
                 _logger.LogInformation("Column Names as reported by IDataReader importDataReader.GetName....");
                 for (int i = 0; i < importDataReader.FieldCount; i++)
@@ -180,12 +193,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     _logger.LogInformation("Column name={ColumnName}", importDataReader.GetName(i));
                 }
 
+                _logger.LogInformation("\n===================== SECTION ===================\n");
+
                 _logger.LogInformation("Column Names as reported by IDataReader.GetSchemaTable....");
                 DataTable schemaTable = importDataReader.GetSchemaTable();
                 for (int i = 0; i < schemaTable.Columns.Count; i++)
                 {
                     _logger.LogInformation("Column name={ColumnName}", schemaTable.Columns[i].ColumnName);
                 }
+
+                _logger.LogInformation("\n===================== SECTION ===================\n");
 
                 _logger.LogInformation("=== Data from IDataReader ===");
                 while (importDataReader.Read())
