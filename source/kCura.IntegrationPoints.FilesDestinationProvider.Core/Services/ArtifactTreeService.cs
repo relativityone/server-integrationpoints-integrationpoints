@@ -23,14 +23,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public JsTreeItemDTO GetArtifactTreeWithWorkspaceSet(string artifactTypeName, int workspaceId = 0)
 		{
-			SetQueryWorkspaceId(workspaceId);
+			SetQueryWorkspaceIdIfNotDefault(workspaceId);
 			return GetArtifactTree(artifactTypeName);
 		}
 
 		private JsTreeItemDTO GetArtifactTree(string artifactTypeName)
 		{
 
-			var artifacts = QueryArtifacts(artifactTypeName);
+			List<Artifact> artifacts = QueryArtifacts(artifactTypeName);
 			return _treeCreator.Create(artifacts);
 		}
 
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 		{
 			var query = new Query { ArtifactTypeName = artifactTypeName };
 
-			var result = _client.Query(_client.APIOptions, query);
+			QueryResult result = _client.Query(_client.APIOptions, query);
 			if (!result.Success)
 			{
 				LogQueryingArtifactError(artifactTypeName);
@@ -47,10 +47,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			return result.QueryArtifacts;
 		}
 
-		private void SetQueryWorkspaceId(int workspaceId)
+		private void SetQueryWorkspaceIdIfNotDefault(int workspaceId)
 		{
-			var isWorkspaceIdNotDefault = workspaceId != 0;
-			if (isWorkspaceIdNotDefault)
+			if (workspaceId != 0)
 				_client.APIOptions.WorkspaceID = workspaceId;
 		}
 

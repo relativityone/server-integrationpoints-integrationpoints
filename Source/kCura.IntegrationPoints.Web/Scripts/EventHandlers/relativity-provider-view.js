@@ -11,7 +11,7 @@
         
 		var selectedMessage = "";
 		if (overwriteOption === "Append Only") {
-			if (IP.fieldName.length !== 0) {
+			if (!!IP.fieldName && IP.fieldName.length !== 0) {
 				selectedMessage = appendWithFolderPathMessage + IP.fieldName + " field.";
 			} else {
 				selectedMessage = appendMessage;
