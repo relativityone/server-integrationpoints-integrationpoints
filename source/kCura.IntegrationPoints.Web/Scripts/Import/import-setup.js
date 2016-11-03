@@ -19,6 +19,10 @@
     var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
     var CONFIGURATION_FRAME = 'configurationFrame';
     var JSTREE_HOLDER_DIV = 'jstree-holder-div';
+    var PROCESSING_SOURCE_DROP_DOWN = 'processingSources';
+    var BODY_CONTAINER = 'bodyContainer';
+    var MODAL_OVERLAY = 'ui-widget-overlay';
+    var MODAL_GRPHIC = 'import-load';
 
     var workspaceId = ("/" + windowObj.RelativityImport.WorkspaceId);
 
@@ -33,6 +37,7 @@
     }
 
     var idSelector = function (name) { return '#' + name; }
+    var classSelector = function (name) { return '.' + name; }
     windowObj.RelativityImport.UI.idSelector = idSelector;
 
     var assignDropdownHandler = function () {
@@ -184,7 +189,7 @@
         options[PREVIEW_CHOICE_LI] = "Preview Choices & Folders";
 
         var source = windowObj.parent.$(idSelector(PROGRESS_BUTTONS));
-        source.append('<button class="button generic positive" id="' + CUSTOM_BUTTON + '" disabled><i class="icon-chevron-down" style="float: right;"></i>Preview File</button>');
+        source.append('<button class="button generic positive" id="' + CUSTOM_BUTTON + '" disabled><i class="icon-chevron-down" style="float: right;"></i><span style="position: fixed;">Preview File</span></button>');
 
         var previewFile = windowObj.parent.$(idSelector(CUSTOM_BUTTON));
         previewFile.append('<ul id="' + BUTTON_UL + '"></ul>');
@@ -217,9 +222,20 @@
         });
     };
 
-    windowObj.RelativityImport.locationSelector = new LocationJSTreeSelector();
+    windowObj.RelativityImport.enableLoadModal = function (bool) {
+        var $el = windowObj.parent.$(idSelector(BODY_CONTAINER));
+        var overlay =
+            "<div class='" + MODAL_OVERLAY + "'></div>";
 
-    //Work starts here
+        if (bool) {
+            $el.after(overlay); windowObj.parent.$(classSelector(MODAL_OVERLAY)).after("<div class='" + MODAL_GRPHIC + "'></div>");
+        } else {
+            windowObj.parent.$(classSelector(MODAL_OVERLAY)).remove();
+            windowObj.parent.$(classSelector(MODAL_GRPHIC)).remove();
+        };
+    };
+
+    windowObj.RelativityImport.locationSelector = new LocationJSTreeSelector();
 
     //pass in the selectFilesOnly optional parameter so that location-jstree-selector will only allow us to select files
     windowObj.RelativityImport.locationSelector.init(windowObj.RelativityImport.koModel.Fileshare(), [], {
@@ -231,14 +247,12 @@
 
     windowObj.RelativityImport.getDirectories = function () {
         var reloadTree = function (params, onSuccess, onFail) {
-            //var $locationErrorContainer = $("#processingLocationErrorContainer");
             var isRoot = params.id === '#';
             var path = params.id;
             if (isRoot) {
                 path = windowObj.RelativityImport.koModel.ProcessingSourceLocationPath;
             }
-            //IP.message.error.clear($locationErrorContainer);
-            root.data.ajax({
+            $.ajax({
                 type: "post",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot) + '?includeFiles=true',
@@ -248,30 +262,35 @@
                 windowObj.RelativityImport.enableLocation(true);
             }).fail(function (error) {
                 onFail(error);
-                // IP.message.error.raise(error, $locationErrorContainer);
+                IP.frameMessaging().dFrame.IP.message.error.raise("Failed to load Directories for the selected Source Location.");
             });
         };
         windowObj.RelativityImport.locationSelector.reloadWithRoot(reloadTree);
     };
 
-    root.data.ajax({
+    windowObj.RelativityImport.enableLoadModal(true);
+    $.ajax({
         type: "get",
         url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
         data: {
             sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
         }
     }).done(function (data) {
+        windowObj.RelativityImport.enableLoadModal(false);
         windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
         if (windowObj.RelativityImport.GetCachedUiModel) {
             populateCachedState();
             windowObj.RelativityImport.checkValueForImportType();
         };
 
-        $("#processingSources").change(function (c, item) {
+        $(idSelector(PROCESSING_SOURCE_DROP_DOWN)).change(function (c, item) {
             windowObj.RelativityImport.koModel.ProcessingSourceLocationPath = windowObj.RelativityImport.koModel.GetSelectedProcessingSourceLocationPath(windowObj.RelativityImport.koModel.ProcessingSourceLocation()).location;
             windowObj.RelativityImport.getDirectories();
             windowObj.RelativityImport.enableLocation(true);
         });
+    }).fail(function () {
+        windowObj.RelativityImport.enableLoadModal(false);
+        IP.frameMessaging().dFrame.IP.message.error.raise("Failed to load Processing Source Locations.");
     });
 
     $.ajax({
