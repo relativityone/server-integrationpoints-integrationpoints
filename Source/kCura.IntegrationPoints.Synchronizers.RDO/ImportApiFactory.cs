@@ -12,12 +12,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportApiFactory : IImportApiFactory
 	{
+		private readonly ISystemEventLoggingService _systemEventLoggingService;
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
 		private readonly IAPILog _logger;
 
-		public ImportApiFactory(IHelper helper)
+		public ImportApiFactory(IHelper helper, ISystemEventLoggingService systemEventLoggingService)
 		{
+			_systemEventLoggingService = systemEventLoggingService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportApiFactory>();
 		}
 
@@ -52,7 +54,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (ex.Message.Equals("Login failed."))
 				{
 					LogLoginFailed(ex, settings.WebServiceURL);
-					SystemEventLoggingService.WriteErrorEvent("Relativity Integration Points", "GetImportAPI", ex);
+					_systemEventLoggingService.WriteErrorEvent("Relativity Integration Points", "GetImportAPI", ex);
 					throw new AuthenticationException(ErrorMessages.Login_Failed, ex);
 				}
 				//LoggedException.PreserveStack(ex);

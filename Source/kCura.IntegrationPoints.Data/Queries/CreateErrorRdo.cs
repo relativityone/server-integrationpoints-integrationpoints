@@ -1,13 +1,14 @@
 ﻿using System;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
 	public class CreateErrorRdo
 	{
-		private readonly IRSAPIClient _client;
 		public const int MAX_ERROR_LEN = 2000;
-		private const string TRUNCATED_TEMPLATE = "(Truncated) {0}";
+		private const string _TRUNCATED_TEMPLATE = "(Truncated) {0}";
+		private readonly IRSAPIClient _client;
 
 		public CreateErrorRdo(IRSAPIClient client)
 		{
@@ -21,16 +22,15 @@ namespace kCura.IntegrationPoints.Data.Queries
 
 		public virtual void Execute(int workspaceId, string source, string errorMessage, string stackTrace)
 		{
-			var errDto = new kCura.Relativity.Client.DTOs.Error();
-			var truncatedLength = MAX_ERROR_LEN - TRUNCATED_TEMPLATE.Length;
-			errDto.Message = errorMessage.Length < MAX_ERROR_LEN ? errorMessage : string.Format(TRUNCATED_TEMPLATE, errorMessage.Substring(0, truncatedLength));
+			var errDto = new Error();
+			var truncatedLength = MAX_ERROR_LEN - _TRUNCATED_TEMPLATE.Length;
+			errDto.Message = errorMessage.Length < MAX_ERROR_LEN ? errorMessage : string.Format(_TRUNCATED_TEMPLATE, errorMessage.Substring(0, truncatedLength));
 			errDto.FullError = stackTrace;
-			errDto.Server = System.Environment.MachineName;
+			errDto.Server = Environment.MachineName;
 			errDto.Source = source;
 			errDto.SendNotification = false;
-			errDto.Workspace = new kCura.Relativity.Client.DTOs.Workspace(workspaceId);
+			errDto.Workspace = new Workspace(workspaceId);
 			_client.Repositories.Error.Create(errDto);
 		}
-
 	}
 }

@@ -207,6 +207,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Attributes\WebAPIFilterExceptionTests.cs" />
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
     <Compile Include="Helpers\TestBase.cs" />
@@ -216,7 +217,6 @@
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />
     <Compile Include="Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Controllers\FolderPathControllerTests.cs" />
-    <Compile Include="Controllers\BaseControllerTests.cs" />
     <Compile Include="Controllers\LdapControllerTests.cs" />
     <Compile Include="Controllers\RelativityControllerTests.cs" />
     <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
