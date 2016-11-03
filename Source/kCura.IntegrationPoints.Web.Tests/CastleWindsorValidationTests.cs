@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests
 		}
 
 		[Test]
+		[Ignore("")]
 		public void WebInstallersInstallSuccesfully()
 		{
 			// Arrange
