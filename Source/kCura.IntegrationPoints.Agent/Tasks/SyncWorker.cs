@@ -220,8 +220,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             ///////
             ///////
 
-            //Disable actual import while debugging
-            /*
 			using (IDataReader importDataReader = new ImportDataReader(
                     fieldMaps,
                     sourceProvider,
@@ -250,7 +248,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				//dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
 			}
-            */
 		}
 
 		protected virtual void ExecuteTask(Job job)
