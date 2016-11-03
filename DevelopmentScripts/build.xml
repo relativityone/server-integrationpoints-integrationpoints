@@ -3,9 +3,7 @@
     <Projects>
       <Build>
         <Project path="Source\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj">
           <Platforms>
@@ -13,14 +11,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Agent.Tests.Integration\kCura.IntegrationPoints.Agent.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
           <Platforms>
@@ -38,14 +32,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kcura.IntegrationPoints.Core.Tests.Integration\kcura.IntegrationPoints.Core.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
           <Platforms>
@@ -53,9 +43,7 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Core.Contracts.Tests\kCura.IntegrationPoints.Core.Contracts.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
           <Platforms>
@@ -63,14 +51,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Data.Tests\kCura.IntegrationPoints.Data.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Data.Tests.Integration\kCura.IntegrationPoints.Data.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
           <Platforms>
@@ -83,14 +67,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
           <Platforms>
@@ -108,14 +88,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
           <Platforms>
@@ -123,14 +99,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj">
           <Platforms>
@@ -138,9 +110,7 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FtpProvider.Tests\kCura.IntegrationPoints.FtpProvider.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FtpProvider.Connection\kCura.IntegrationPoints.FtpProvider.Connection.csproj">
           <Platforms>
@@ -153,9 +123,7 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FtpProvider.Parser\kCura.IntegrationPoints.FtpProvider.Parser.csproj">
           <Platforms>
@@ -163,9 +131,7 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
           <Platforms>
@@ -188,9 +154,7 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Services.Tests\kCura.IntegrationPoints.Services.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
           <Platforms>
@@ -208,14 +172,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj">
           <Platforms>
@@ -224,14 +184,10 @@
           <Publish>default.pubxml</Publish>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj">
           <Platforms>
@@ -244,14 +200,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.ScheduleQueue.Core.Tests.Integration\kCura.ScheduleQueue.Core.Tests.Integration.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\JsonLoader\JsonLoader.csproj">
           <Platforms>
@@ -298,14 +250,10 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\kCura.IntegrationPoints.ImportProvider.Parser.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
         <Project path="Source\kCura.IntegrationPoints.ImportProvider.Tests\kCura.IntegrationPoints.ImportProvider.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
+          <Platforms />
         </Project>
       </Build>
       <Ignore>

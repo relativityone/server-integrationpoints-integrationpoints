@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
         private bool _isClosed;
         private IDataReader _sourceDataReader;
         private DataTable _schemaTable;
-        private int _folderPathFieldSourceArtifactId;
+        private int _folderPathFieldSourceColumnId;
 		private Dictionary<string, int> KnownOrdinalDictionary;
 
         public ImportDataReader(
@@ -36,10 +36,20 @@ namespace kCura.IntegrationPoints.Domain.Readers
             KnownOrdinalDictionary = new Dictionary<string, int>();
 
 
-			FieldMap folderPathInformationField = fieldMaps.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
+            _logger.LogInformation("ImportDataReader constructor: My Schema Table Columns: {Joined}", string.Join("|", from c in _schemaTable.Columns.Cast<DataColumn>() select c.ColumnName));
+            _logger.LogInformation("ImportDataReader constructor: Source ...Columns");
+            _logger.LogInformation("Source Data Reader Field Count {FieldCount}", _sourceDataReader.FieldCount);
+
+            for (int i = 0; i < _sourceDataReader.FieldCount; i++)
+            {
+                _logger.LogInformation("Source Column Index={i} name={ColumnName}", i, _sourceDataReader.GetName(i));
+            }
+
+            FieldMap folderPathInformationField = fieldMaps.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)
 			{
-				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
+                _folderPathFieldSourceColumnId = _sourceDataReader.GetOrdinal(folderPathInformationField.SourceField.FieldIdentifier);
+                _logger.LogInformation("ImportDataReader constructor: assigned _folderPathFieldSourceColumnId == {id}", _folderPathFieldSourceColumnId);
 			}
         }
 
@@ -89,25 +99,26 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		public object GetValue(int i)
 		{
 			string fieldIdentifier = GetName(i);
+            _logger.LogInformation("GetValue({i}) called GetName(): fieldIdentifier={fieldIdentifier}", i, fieldIdentifier);
 
 			int fieldArtifactId = -1;
 			bool success = Int32.TryParse(fieldIdentifier, out fieldArtifactId);
 
 			if (success)
 			{
-                return _sourceDataReader.GetValue(i);
+                var rv = _sourceDataReader.GetValue(i);
+                _logger.LogInformation("GetValue({i}) returning {rv}", i, rv);
+                return rv;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
-                return _sourceDataReader.GetValue(_folderPathFieldSourceArtifactId);
+                var rv = _sourceDataReader.GetValue(_folderPathFieldSourceColumnId);
+                _logger.LogInformation("GetValue({i}) returning {rv}", i, rv);
+                return rv;
 			}
-            //Attempt to return based on a lookup of rel_folder_path_001
-            else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME.ToLower())
-            {
-                return _sourceDataReader.GetValue(_folderPathFieldSourceArtifactId);
-            }
 			else
 			{
+                _logger.LogInformation("GetValue({i}) is throwing an exception: Data requested for column that does not exist");
                 throw new InvalidOperationException(string.Format("Data requested for column that does not exist: Index={0}", i));
 			}
 		}
@@ -220,7 +231,9 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public string GetName(int i)
 		{
-			return _schemaTable.Columns[i].ColumnName;
+            var rv =_schemaTable.Columns[i].ColumnName;
+            _logger.LogInformation("GetName({i}) returning {rv}", i, rv);
+            return rv;
 		}
 
 		public int GetOrdinal(string name)
@@ -236,6 +249,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 				int ordinal = _schemaTable.Columns[name].Ordinal;
 				KnownOrdinalDictionary[name] = ordinal;
 			}
+            _logger.LogInformation("GetOrdinal({name}) returning {rv}", name, KnownOrdinalDictionary[name]);
 			return KnownOrdinalDictionary[name];
 		}
 
