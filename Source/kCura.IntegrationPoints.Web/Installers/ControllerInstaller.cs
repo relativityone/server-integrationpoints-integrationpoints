@@ -62,6 +62,7 @@ using Relativity.Toggles;
 using Relativity.Toggles.Providers;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
+using kCura.IntegrationPoints.Data.Logging;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -173,7 +174,6 @@ namespace kCura.IntegrationPoints.Web.Installers
             container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
             container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
             container.Register(Component.For<IPaddingValidator>().ImplementedBy<PaddingValidator>().LifestyleTransient());
-            container.Register(Component.For<IFileCountValidator>().ImplementedBy<FileCountValidator>().LifestyleTransient());
             container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>().LifestyleTransient());
             container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>().LifestyleTransient());
             container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>().LifestyleTransient());
@@ -336,6 +336,7 @@ namespace kCura.IntegrationPoints.Web.Installers
             #region Synchronizer
 
             container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
+            container.Register(Component.For<ISystemEventLoggingService>().ImplementedBy<SystemEventLoggingService>().LifeStyle.Transient);
             container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 
             #endregion

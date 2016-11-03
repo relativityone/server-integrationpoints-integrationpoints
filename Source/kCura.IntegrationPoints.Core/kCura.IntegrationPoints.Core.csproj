@@ -304,6 +304,7 @@
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
+    <Compile Include="Services\IErrorService.cs" />
     <Compile Include="Services\IExportFieldsService.cs" />
     <Compile Include="Services\IExportProcessService.cs" />
     <Compile Include="Services\IExportSettingsValidationService.cs" />
