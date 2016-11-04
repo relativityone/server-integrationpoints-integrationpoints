@@ -224,7 +224,6 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="AuditHelper.cs" />
-    <Compile Include="CastleWindsorValidatorBase.cs" />
     <Compile Include="Choice.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
     <Compile Include="Constants.cs" />

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		  kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 		  IJobHistoryService jobHistoryService,
-		  JobHistoryErrorService jobHistoryErrorService,
+		  IJobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
 		  IManagerFactory managerFactory,
 		  IContextContainerFactory contextContainerFactory,

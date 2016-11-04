@@ -6,9 +6,9 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class TaskParameterHelper
 	{
-		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly IGuidService _guidService;
-		public TaskParameterHelper(kCura.Apps.Common.Utils.Serializers.ISerializer serializer, IGuidService guidService)
+		public TaskParameterHelper(Apps.Common.Utils.Serializers.ISerializer serializer, IGuidService guidService)
 		{
 			_serializer = serializer;
 			_guidService = guidService;
