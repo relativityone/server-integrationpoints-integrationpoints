@@ -122,7 +122,7 @@
 				self.foldersStructure = result;
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
-				root.message.error.raise("No folders were returned from the source provider.");
+				IP.frameMessaging().dFrame.IP.message.error.raise(error);
 			});
 		};
 
