@@ -32,46 +32,15 @@
 .pag-nav-button {
     padding: 0;
     margin: 0 0 0 2px;
+    font-size: 16px !important;
 }
 
-.pag-nav-button-enabled {
-    cursor: pointer;
+.btn-disable {
+    color: #c1c1c1;
 }
 
-    .pag-nav-button-enabled:active {
-        background: #ffffff;
-    }
-
-.pag-nav-first-dis:before {
-    content: url("Images/ImportPreview/move_first_dis.png");
-}
-
-.pag-nav-previous-dis:before {
-    content: url("Images/ImportPreview/move_previous_dis.png");
-}
-
-.pag-nav-next-dis:before {
-    content: url("Images/ImportPreview/move_next_dis.png");
-}
-
-.pag-nav-last-dis:before {
-    content: url("Images/ImportPreview/move_last_dis.png");
-}
-
-.pag-nav-first:before {
-    content: url("Images/ImportPreview/move_first.png");
-}
-
-.pag-nav-previous:before {
-    content: url("Images/ImportPreview/move_previous.png");
-}
-
-.pag-nav-next:before {
-    content: url("Images/ImportPreview/move_next.png");
-}
-
-.pag-nav-last:before {
-    content: url("Images/ImportPreview/move_last.png");
+.btn-active {
+    color: #1b5495;
 }
 
 .arrow-collapsed-summary:before {
