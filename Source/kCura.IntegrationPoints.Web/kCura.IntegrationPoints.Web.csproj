@@ -401,14 +401,6 @@
     <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\ImportPreview\arrow_collapsed.png" />
     <Content Include="Content\Images\ImportPreview\arrow_expanded.png" />
-    <Content Include="Content\Images\ImportPreview\move_first.png" />
-    <Content Include="Content\Images\ImportPreview\move_first_dis.png" />
-    <Content Include="Content\Images\ImportPreview\move_last.png" />
-    <Content Include="Content\Images\ImportPreview\move_last_dis.png" />
-    <Content Include="Content\Images\ImportPreview\move_next.png" />
-    <Content Include="Content\Images\ImportPreview\move_next_dis.png" />
-    <Content Include="Content\Images\ImportPreview\move_previous.png" />
-    <Content Include="Content\Images\ImportPreview\move_previous_dis.png" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
