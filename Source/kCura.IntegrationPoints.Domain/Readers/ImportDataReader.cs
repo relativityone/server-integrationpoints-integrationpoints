@@ -165,81 +165,81 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public bool IsClosed { get { return _isClosed; } }
 
-		public virtual int RecordsAffected
+		public int RecordsAffected
 		{
 			// this feature if wanted can be easily added just was not at this point because we are not supporting batching at this point
 			get { return -1; }
 		}
 
-		public virtual bool GetBoolean(int i)
+		public bool GetBoolean(int i)
 		{
 			return Convert.ToBoolean(GetValue(i));
 		}
 
-		public virtual byte GetByte(int i)
+		public byte GetByte(int i)
 		{
 			return Convert.ToByte(GetValue(i));
 		}
 
-		public virtual long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
+		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
 		{
 			// We do not need this at this point
 			throw new System.NotImplementedException();
 		}
 
-		public virtual char GetChar(int i)
+		public char GetChar(int i)
 		{
 			return Convert.ToChar(GetValue(i));
 		}
 
-		public virtual long GetChars(int i, long fieldoffset, char[] buffer, int bufferOffset, int length)
+		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferOffset, int length)
 		{
 			// We do not need this at this point
 			throw new System.NotImplementedException();
 		}
 
-		public virtual IDataReader GetData(int i)
+		public IDataReader GetData(int i)
 		{
 			// This is used to expose nested tables and other hierarchical data but currently this is not desired
 			throw new System.NotImplementedException();
 		}
 
-		public virtual DateTime GetDateTime(int i)
+		public DateTime GetDateTime(int i)
 		{
 			return Convert.ToDateTime(GetValue(i));
 		}
 
-		public virtual decimal GetDecimal(int i)
+		public decimal GetDecimal(int i)
 		{
 			return Convert.ToDecimal(GetValue(i));
 		}
 
-		public virtual double GetDouble(int i)
+		public double GetDouble(int i)
 		{
 			return Convert.ToDouble(GetValue(i));
 		}
 
-		public virtual float GetFloat(int i)
+		public float GetFloat(int i)
 		{
 			return Convert.ToSingle(GetValue(i));
 		}
 
-		public virtual Guid GetGuid(int i)
+		public Guid GetGuid(int i)
 		{
 			return Guid.Parse(GetString(i));
 		}
 
-		public virtual short GetInt16(int i)
+		public short GetInt16(int i)
 		{
 			return Convert.ToInt16(GetValue(i));
 		}
 
-		public virtual int GetInt32(int i)
+		public int GetInt32(int i)
 		{
 			return Convert.ToInt32(GetValue(i));
 		}
 
-		public virtual long GetInt64(int i)
+		public long GetInt64(int i)
 		{
 			return Convert.ToInt64(GetValue(i));
 		}
@@ -268,22 +268,22 @@ namespace kCura.IntegrationPoints.Domain.Readers
 			return KnownOrdinalDictionary[name];
 		}
 
-		public virtual DataTable GetSchemaTable()
+		public DataTable GetSchemaTable()
 		{
 			return _schemaTable;
 		}
 
-		public virtual string GetString(int i)
+		public string GetString(int i)
 		{
 			return Convert.ToString(GetValue(i));
 		}
 
-		public virtual int GetValues(object[] values)
+		public int GetValues(object[] values)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public virtual bool IsDBNull(int i)
+		public bool IsDBNull(int i)
 		{
 			return (GetValue(i) is System.DBNull);
 		}
