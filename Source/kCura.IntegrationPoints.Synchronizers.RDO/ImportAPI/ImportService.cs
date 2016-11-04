@@ -374,19 +374,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private int GetDestinationFolderArtifactId(int folderArtifactId)
 		{
-			int destinationFolderArtifactId = folderArtifactId;
-			if (CurrentWorkspace != null && destinationFolderArtifactId == 0)
+			if (CurrentWorkspace != null && folderArtifactId == 0)
 			{
-				if (Settings.ArtifactTypeId == (int) ArtifactType.Document)
-				{
-					destinationFolderArtifactId = CurrentWorkspace.RootFolderID;
-				}
-				else
-				{
-					destinationFolderArtifactId = CurrentWorkspace.RootArtifactID;
-				}
+				folderArtifactId = Settings.ArtifactTypeId == (int) ArtifactType.Document ? CurrentWorkspace.RootFolderID : CurrentWorkspace.RootArtifactID;
 			}
-			return destinationFolderArtifactId;
+			return folderArtifactId;
 		}
 
 		#region Logging

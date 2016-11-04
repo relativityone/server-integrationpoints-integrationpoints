@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		{
 			const string artifactTypeName = "artifact_type";
 
-			_artifactTreeService.GetArtifactTree(artifactTypeName);
+			_artifactTreeService.GetArtifactTreeWithWorkspaceSet(artifactTypeName);
 
 			_client.Received().Query(Arg.Any<APIOptions>(), Arg.Is<Query>(x => x.ArtifactTypeName.Equals(artifactTypeName)));
 			
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		{
 			_queryResult.Success = false;
 
-			Assert.That(() => _artifactTreeService.GetArtifactTree("type"),
+			Assert.That(() => _artifactTreeService.GetArtifactTreeWithWorkspaceSet("type"),
 				Throws.Exception
 					.TypeOf<NotFoundException>());
 		}
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 
 			_queryResult.QueryArtifacts.AddRange(new List<Artifact> {artifact2, artifact1});
 
-			_artifactTreeService.GetArtifactTree("artifact_type");
+			_artifactTreeService.GetArtifactTreeWithWorkspaceSet("artifact_type");
 
 			_treeCreator.Received().Create(Arg.Is<IList<Artifact>>(x => x.SequenceEqual(new List<Artifact> {artifact2, artifact1})));
 		}
