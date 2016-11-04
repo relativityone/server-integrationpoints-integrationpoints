@@ -155,11 +155,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     cur.FieldMapType, cur.SourceField.FieldIdentifier, cur.SourceField.DisplayName, cur.DestinationField.FieldIdentifier, cur.DestinationField.DisplayName);
             }
 
+            /*
             _logger.LogInformation("\n===================== SECTION ===================\n");
 
             _logger.LogInformation("string sourceConfiguration={SourceConfiguration}", sourceConfiguration);
             _logger.LogInformation("string destinationConfiguration={DestinationConfiguration}", destinationConfiguration);
+            */
 
+            /*
             _logger.LogInformation("\n===================== SECTION ===================\n");
 
             _logger.LogInformation("List<string> entryIDs...");
@@ -167,6 +170,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 _logger.LogInformation("Entry = {EntryIds}", cur);
             }
+            */
 
             //Test out the import data reader by getting all data
 

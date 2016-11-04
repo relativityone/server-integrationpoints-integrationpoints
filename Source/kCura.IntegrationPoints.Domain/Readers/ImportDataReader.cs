@@ -60,7 +60,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 			// disable native file location for this test
 
-            /*
 			fields.Add(new FieldEntry()
 			{
 				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
@@ -73,7 +72,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD,
 				FieldType = FieldType.String
 			});
-            */
 
 			// in case we found folder path info
 			FieldMap folderPathInformationField = mappingFields.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
@@ -113,12 +111,29 @@ namespace kCura.IntegrationPoints.Domain.Readers
 			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
                 var rv = _sourceDataReader.GetValue(_folderPathFieldSourceColumnId);
-                _logger.LogInformation("GetValue({i}) returning {rv}", i, rv);
+                _logger.LogInformation("GetValue({i}) returning special value for SPECIAL_FOLDERPATH_FIELD: {rv}", i, rv);
                 return rv;
 			}
+
+
+            //DUMMY RETURNS
+			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
+			{
+                var rv = "SPECIAL_NATIVE_FILE_LOCATION_FIELD: Dummy Value";
+                _logger.LogInformation("GetValue({i}) returning special value for SPECIAL_NATIVE_FILE_LOCATION_FIELD: {rv}", i, rv);
+                return rv;
+			}
+			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD)
+			{
+                var rv = "SPECIAL_FILE_NAME_FIELD: Dummy Value";
+                _logger.LogInformation("GetValue({i}) returning special value for SPECIAL_FILE_NAME_FIELD: {rv}", i, rv);
+                return rv;
+			}
+
+
 			else
 			{
-                _logger.LogInformation("GetValue({i}) is throwing an exception: Data requested for column that does not exist");
+                _logger.LogInformation("GetValue({i}) is throwing an exception: Data requested for column that does not exist", i);
                 throw new InvalidOperationException(string.Format("Data requested for column that does not exist: Index={0}", i));
 			}
 		}
