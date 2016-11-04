@@ -1,16 +1,18 @@
-﻿using System;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
-	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class ExportInstaller : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
@@ -31,7 +33,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerFactory>());
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<StoppableExporterFactory>());
 
-			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>());
+			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>().LifestyleSingleton());
+
+			container.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
+
+			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
+			container.Register(Component.For<IViewService>().ImplementedBy<ViewService>().LifestyleTransient());
+			container.Register(Component.For<IExportInitProcessService>().ImplementedBy<ExportInitProcessService>().LifestyleTransient());
+			container.Register(Component.For<IProductionService>().ImplementedBy<ProductionService>().LifestyleTransient());
+			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
+			container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
+			container.Register(Component.For<IPaddingValidator>().ImplementedBy<PaddingValidator>().LifestyleTransient());
+			container.Register(Component.For<IFileCountValidator>().ImplementedBy<FileCountValidator>().LifestyleTransient());
 		}
 	}
 }
