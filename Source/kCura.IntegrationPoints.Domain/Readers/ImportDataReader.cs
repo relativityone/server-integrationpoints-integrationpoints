@@ -16,9 +16,9 @@ namespace kCura.IntegrationPoints.Domain.Readers
         private IAPILog _logger;
         private bool _isClosed;
         private IDataReader _sourceDataReader;
+        private Dictionary<string, int> _nameToOrdinalMap; //map publicly available column names ==> source data reader ordinals
+        private Dictionary<int, int> _ordinalMap; //map publicly available ordinals ==> source data reader ordinals
         private DataTable _schemaTable;
-        private int _folderPathFieldSourceColumnId;
-		private Dictionary<string, int> KnownOrdinalDictionary;
 
         public ImportDataReader(
             FieldMap[] fieldMaps,
@@ -31,137 +31,129 @@ namespace kCura.IntegrationPoints.Domain.Readers
             _logger = logger;
             _isClosed = false;
             _sourceDataReader = sourceProvider.GetData(sourceFields, entryIds, sourceConfiguration);
+            _nameToOrdinalMap = new Dictionary<string, int>();
+            _ordinalMap = new Dictionary<int, int>();
             _schemaTable = new DataTable();
-            _schemaTable.Columns.AddRange(GenerateDataColumnsFromFieldEntries(fieldMaps));
-            KnownOrdinalDictionary = new Dictionary<string, int>();
+            Setup(fieldMaps);
+        }
 
-
-            _logger.LogInformation("ImportDataReader constructor: My Schema Table Columns: {Joined}", string.Join("|", from c in _schemaTable.Columns.Cast<DataColumn>() select c.ColumnName));
-            _logger.LogInformation("ImportDataReader constructor: Source ...Columns");
-            _logger.LogInformation("Source Data Reader Field Count {FieldCount}", _sourceDataReader.FieldCount);
-
-            for (int i = 0; i < _sourceDataReader.FieldCount; i++)
+        private void Setup(FieldMap[] fieldMaps)
+        {
+            int curColIdx = 0;
+            foreach (FieldMap cur in fieldMaps)
             {
-                _logger.LogInformation("Source Column Index={i} name={ColumnName}", i, _sourceDataReader.GetName(i));
+                string curColName = string.Empty;
+
+                //special cases
+                if (cur.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+                {
+                    //1. Add the special folderpath field Guid as a column
+                    curColName = kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD;
+                    _schemaTable.Columns.Add(curColName);
+
+                    //2. Get the ordinal of the underlying source data reader column containing this info
+                    int srcColIdx = _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier);
+
+                    //3. Set up the maps
+                    _ordinalMap[curColIdx] = srcColIdx;
+                    _nameToOrdinalMap[curColName] = srcColIdx;
+
+                    curColIdx++;
+
+                    //4. Check whether this field is also mapped to a document field; if so, it needs a column as well
+                    if (cur.DestinationField.FieldIdentifier != null)
+                    {
+                        //Get the underlying source name and add as a column
+                        curColName = cur.SourceField.FieldIdentifier;
+                        _schemaTable.Columns.Add(curColName);
+
+                        //Set up the maps
+                        _ordinalMap[curColIdx] = srcColIdx;
+                        _nameToOrdinalMap[curColName] = srcColIdx;
+
+                        curColIdx++;
+                    }
+                }
+                //TODO: implement Native docs support
+                // else if (cur.FieldMapType == FieldMapTypeEnum.NativeFilePath)
+
+                //general case
+                else
+                {
+                    curColName = cur.SourceField.FieldIdentifier;
+                    _schemaTable.Columns.Add(curColName);
+
+                    int srcColIdx = _sourceDataReader.GetOrdinal(curColName);
+
+                    _ordinalMap[curColIdx] = srcColIdx;
+                    _nameToOrdinalMap[curColName] = srcColIdx;
+
+                    curColIdx++;
+                }
             }
 
-            FieldMap folderPathInformationField = fieldMaps.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
-			if (folderPathInformationField != null)
-			{
-                _folderPathFieldSourceColumnId = _sourceDataReader.GetOrdinal(folderPathInformationField.SourceField.FieldIdentifier);
-                _logger.LogInformation("ImportDataReader constructor: assigned _folderPathFieldSourceColumnId == {id}", _folderPathFieldSourceColumnId);
-			}
+            //Logging!
+            _logger.LogInformation("\n===================== SECTION ===================\n");
+            _logger.LogInformation("Schema table columns: {Joined}", string.Join("|", from c in _schemaTable.Columns.Cast<DataColumn>() select c.ColumnName));
+
+            _logger.LogInformation("\n===================== SECTION ===================\n");
+            _logger.LogInformation("_nameToOrdinalMap contents...");
+            foreach (string key in _nameToOrdinalMap.Keys)
+            {
+                _logger.LogInformation(string.Format("{0}: {1}", key, _nameToOrdinalMap[key]));
+            }
+
+            _logger.LogInformation("\n===================== SECTION ===================\n");
+            _logger.LogInformation("_ordinalMap contents...");
+            foreach (int key in _ordinalMap.Keys)
+            {
+                _logger.LogInformation(string.Format("{0}: {1}", key, _ordinalMap[key]));
+            }
         }
 
-        //Adapted from DocumentTransferDataReader.cs
-		private static DataColumn[] GenerateDataColumnsFromFieldEntries(FieldMap[] mappingFields)
-		{
-			List<FieldEntry> fields = mappingFields.Select(field => field.SourceField).ToList();
-
-			// disable native file location for this test
-
-			fields.Add(new FieldEntry()
-			{
-				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
-				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
-				FieldType = FieldType.String
-			});
-			fields.Add(new FieldEntry
-			{
-				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
-				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD,
-				FieldType = FieldType.String
-			});
-
-			// in case we found folder path info
-			FieldMap folderPathInformationField = mappingFields.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
-			if (folderPathInformationField != null)
-			{
-				if (folderPathInformationField.DestinationField.FieldIdentifier == null)
-				{
-					fields.Remove(folderPathInformationField.SourceField);
-				}
-
-				fields.Add(new FieldEntry()
-				{
-					DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
-					FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
-					FieldType = FieldType.String
-				});
-			}
-
-			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
-		}
-
-        //Adapted from DocumentTransferDataReader.cs
 		public object GetValue(int i)
 		{
-			string fieldIdentifier = GetName(i);
-            _logger.LogInformation("GetValue({i}) called GetName(): fieldIdentifier={fieldIdentifier}", i, fieldIdentifier);
-
-			int fieldArtifactId = -1;
-			bool success = Int32.TryParse(fieldIdentifier, out fieldArtifactId);
-
-			if (success)
-			{
-                var rv = _sourceDataReader.GetValue(i);
-                _logger.LogInformation("GetValue({i}) returning {rv}", i, rv);
-                return rv;
-			}
-			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
-			{
-                var rv = _sourceDataReader.GetValue(_folderPathFieldSourceColumnId);
-                _logger.LogInformation("GetValue({i}) returning special value for SPECIAL_FOLDERPATH_FIELD: {rv}", i, rv);
-                return rv;
-			}
-
-
-            //DUMMY RETURNS
-			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
-			{
-                var rv = "SPECIAL_NATIVE_FILE_LOCATION_FIELD: Dummy Value";
-                _logger.LogInformation("GetValue({i}) returning special value for SPECIAL_NATIVE_FILE_LOCATION_FIELD: {rv}", i, rv);
-                return rv;
-			}
-			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD)
-			{
-                var rv = "SPECIAL_FILE_NAME_FIELD: Dummy Value";
-                _logger.LogInformation("GetValue({i}) returning special value for SPECIAL_FILE_NAME_FIELD: {rv}", i, rv);
-                return rv;
-			}
-
-
-			else
-			{
-                _logger.LogInformation("GetValue({i}) is throwing an exception: Data requested for column that does not exist", i);
-                throw new InvalidOperationException(string.Format("Data requested for column that does not exist: Index={0}", i));
-			}
+            _logger.LogInformation(string.Format("GetValue({0}) returning {1}", i, _sourceDataReader.GetValue(_ordinalMap[i])));
+            return _sourceDataReader.GetValue(_ordinalMap[i]);
 		}
 
-        //IDataReader / IDataRecord Implementation adapted from RelativityReaderBase
-
-        public void Close()
-        {
-            _sourceDataReader.Close();
-            _isClosed = true;
-        }
-
-		public object this[string name]
+		public int GetOrdinal(string name)
 		{
-			get { return GetValue(GetOrdinal(name)); }
+            _logger.LogInformation(string.Format("GetOrdinal({0}) returning {1}", name, _nameToOrdinalMap[name]));
+            return _nameToOrdinalMap[name];
 		}
 
-		public object this[int i] { get { return GetValue(i); } }
+		public string GetName(int i)
+		{
+            _logger.LogInformation(string.Format("GetName({0}) returning {1}", i, _schemaTable.Columns[i].ColumnName));
+            return _schemaTable.Columns[i].ColumnName;
+		}
 
-        public int Depth
-        {
-            get { return 0; }
-        }
+        /// <summary>
+        /// ///////////////////////////////////////////////////////////////////////////////
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+
+		public string GetString(int i)
+		{
+			return Convert.ToString(GetValue(i));
+		}
+
+		public DataTable GetSchemaTable()
+		{
+            return _schemaTable;
+		}
 
 		public int FieldCount
 		{
 			get { return _schemaTable.Columns.Count; }
 		}
+
+        public int Depth
+        {
+            get { return 0; }
+        }
 
 		public bool IsClosed { get { return _isClosed; } }
 
@@ -244,40 +236,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 			return Convert.ToInt64(GetValue(i));
 		}
 
-		public string GetName(int i)
-		{
-            var rv =_schemaTable.Columns[i].ColumnName;
-            _logger.LogInformation("GetName({i}) returning {rv}", i, rv);
-            return rv;
-		}
-
-		public int GetOrdinal(string name)
-		{
-			if (!KnownOrdinalDictionary.ContainsKey(name))
-			{
-				DataColumn column = _schemaTable.Columns[name];
-				if (column == null)
-				{
-					throw new IndexOutOfRangeException(String.Format("'{0}' is not a valid column", name));
-				}
-
-				int ordinal = _schemaTable.Columns[name].Ordinal;
-				KnownOrdinalDictionary[name] = ordinal;
-			}
-            _logger.LogInformation("GetOrdinal({name}) returning {rv}", name, KnownOrdinalDictionary[name]);
-			return KnownOrdinalDictionary[name];
-		}
-
-		public DataTable GetSchemaTable()
-		{
-			return _schemaTable;
-		}
-
-		public string GetString(int i)
-		{
-			return Convert.ToString(GetValue(i));
-		}
-
 		public int GetValues(object[] values)
 		{
 			throw new System.NotImplementedException();
@@ -316,6 +274,12 @@ namespace kCura.IntegrationPoints.Domain.Readers
 			}
 		}
 
+        public void Close()
+        {
+            _sourceDataReader.Close();
+            _isClosed = true;
+        }
+
 		protected void FetchDataToRead()
 		{
             _sourceDataReader.Read();
@@ -332,6 +296,13 @@ namespace kCura.IntegrationPoints.Domain.Readers
                 return _sourceDataReader.Read();
             }
 		}
+
+		public object this[string name]
+		{
+			get { return GetValue(GetOrdinal(name)); }
+		}
+
+		public object this[int i] { get { return GetValue(i); } }
 
 		public string GetDataTypeName(int i)
 		{
