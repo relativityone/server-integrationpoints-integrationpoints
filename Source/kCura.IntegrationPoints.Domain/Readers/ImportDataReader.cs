@@ -91,41 +91,20 @@ namespace kCura.IntegrationPoints.Domain.Readers
                     curColIdx++;
                 }
             }
-
-            //Logging!
-            _logger.LogInformation("\n===================== SECTION ===================\n");
-            _logger.LogInformation("Schema table columns: {Joined}", string.Join("|", from c in _schemaTable.Columns.Cast<DataColumn>() select c.ColumnName));
-
-            _logger.LogInformation("\n===================== SECTION ===================\n");
-            _logger.LogInformation("_nameToOrdinalMap contents...");
-            foreach (string key in _nameToOrdinalMap.Keys)
-            {
-                _logger.LogInformation(string.Format("{0}: {1}", key, _nameToOrdinalMap[key]));
-            }
-
-            _logger.LogInformation("\n===================== SECTION ===================\n");
-            _logger.LogInformation("_ordinalMap contents...");
-            foreach (int key in _ordinalMap.Keys)
-            {
-                _logger.LogInformation(string.Format("{0}: {1}", key, _ordinalMap[key]));
-            }
         }
 
 		public object GetValue(int i)
 		{
-            _logger.LogInformation(string.Format("GetValue({0}) returning {1}", i, _sourceDataReader.GetValue(_ordinalMap[i])));
             return _sourceDataReader.GetValue(_ordinalMap[i]);
 		}
 
 		public int GetOrdinal(string name)
 		{
-            _logger.LogInformation(string.Format("GetOrdinal({0}) returning {1}", name, _nameToOrdinalMap[name]));
             return _nameToOrdinalMap[name];
 		}
 
 		public string GetName(int i)
 		{
-            _logger.LogInformation(string.Format("GetName({0}) returning {1}", i, _schemaTable.Columns[i].ColumnName));
             return _schemaTable.Columns[i].ColumnName;
 		}
 
