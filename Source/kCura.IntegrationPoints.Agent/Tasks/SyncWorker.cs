@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -224,34 +225,52 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             ///////
             ///////
 
-			using (IDataReader importDataReader = new ImportDataReader(
-                    fieldMaps,
-                    sourceProvider,
-                    sourceFields,
-                    entryIDs,
-                    sourceConfiguration,
-                    Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
-			{
-				IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-				if (dataSynchronizer is RdoSynchronizerBase)
-				{
-					ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
-					settings.OnBehalfOfUserId = job.SubmittedBy;
-					destinationConfiguration = Serializer.Serialize(settings);
-				}
+            if (SourceProvider.Identifier == global::kCura.IntegrationPoints.Core.Services.SourceTypes.LdapSourceTypeCreator.LDAP_SOURCE_TYPE_GUID)
+            {
+                using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
+                {
+                    IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+                    if (dataSynchronizer is RdoSynchronizerBase)
+                    {
+                        ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
+                        settings.OnBehalfOfUserId = job.SubmittedBy;
+                        destinationConfiguration = Serializer.Serialize(settings);
+                    }
 
-				SetupSubscriptions(dataSynchronizer, job);
+                    SetupSubscriptions(dataSynchronizer, job);
 
-				JobStopManager?.ThrowIfStopRequested();
+                    IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
 
-				dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
+                    JobStopManager?.ThrowIfStopRequested();
 
-				//IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, importDataReader);
+                    dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+                }
+            }
+            else
+            {
+                using (IDataReader importDataReader = new ImportDataReader(
+                        fieldMaps,
+                        sourceProvider,
+                        sourceFields,
+                        entryIDs,
+                        sourceConfiguration,
+                        Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
+                {
+                    IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+                    if (dataSynchronizer is RdoSynchronizerBase)
+                    {
+                        ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
+                        settings.OnBehalfOfUserId = job.SubmittedBy;
+                        destinationConfiguration = Serializer.Serialize(settings);
+                    }
 
-				//JobStopManager?.ThrowIfStopRequested();
+                    SetupSubscriptions(dataSynchronizer, job);
 
-				//dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
-			}
+                    JobStopManager?.ThrowIfStopRequested();
+
+                    dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
+                }
+            }
 		}
 
 		protected virtual void ExecuteTask(Job job)
