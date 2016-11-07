@@ -525,7 +525,6 @@ ko.validation.insertValidationMessage = function (element) {
 		    var wspaceFieldToAdd = ko.observableArray([]);
 		    for (var i = 0; i < this.sourceField().length; i++) {
 		        for (var j = 0; j < this.workspaceFields().length; j++) {
-		            console.log(this.workspaceFields()[j]);
 		            if (this.sourceField()[i].name == this.workspaceFields()[j].name) {
 		                sourceFieldToAdd.push(this.sourceField()[i]);
 		                wspaceFieldToAdd.push(this.workspaceFields()[j])
