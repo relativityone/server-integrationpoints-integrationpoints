@@ -277,6 +277,9 @@ ko.validation.insertValidationMessage = function (element) {
 		if (artifactTypeId == 10) {
 			self.isDocument("true");
 		}
+
+		this.isLDAPProvider = ko.observable(root.points.steps.steps[1].model.source.selectedType == '5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232');
+
 		this.selectedIdentifier = ko.observable().extend({
 			required: {
 				onlyIf: function () {
