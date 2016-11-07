@@ -74,8 +74,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
                         curColIdx++;
                     }
                 }
-                //TODO: implement Native docs support
-                // else if (cur.FieldMapType == FieldMapTypeEnum.NativeFilePath)
 
                 //general case
                 else
@@ -107,12 +105,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		{
             return _schemaTable.Columns[i].ColumnName;
 		}
-
-        /// <summary>
-        /// ///////////////////////////////////////////////////////////////////////////////
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
 
 		public string GetString(int i)
 		{
