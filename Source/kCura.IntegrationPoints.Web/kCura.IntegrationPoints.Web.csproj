@@ -64,11 +64,11 @@
       <HintPath>..\packages\$(kCura_Crypto)\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.Logging, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Logging, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Logging)\lib\net45\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.Logging.Interfaces, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Logging.Interfaces, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Logging_Interfaces)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -305,6 +305,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
+    <Compile Include="Controllers\API\FieldCatalogController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />

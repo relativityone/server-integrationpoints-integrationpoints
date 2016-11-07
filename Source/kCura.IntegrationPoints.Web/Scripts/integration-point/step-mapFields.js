@@ -493,13 +493,44 @@ ko.validation.insertValidationMessage = function (element) {
 		    IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
 		};
 
-	    //todo: auto map function should hook up to a button here?
-		this.AutoFieldMap = function () {
+		this.autoFieldMap = function () {
+		    var catalogFieldAvailable = false;
+		    var workspaceArtifactID = IP.utils.getParameterByName('AppID', window.top);
+		    var catalogField = {};
+
+		    var isCatalogFieldMatch = function (fieldArtifactId, fieldName) {
+		        for(var x=0;x<catalogField.length;x++){
+		            if(catalogField[x].identifier == fieldArtifactId && 
+                        catalogField[x].friendlyName == fieldName) {
+		                return true;
+		            }
+		        }
+
+		        return false;
+		    };
+
+		    $.ajax({
+		        url: IP.utils.generateWebAPIURL('FieldCatalog', workspaceArtifactID),
+		        type: 'GET',
+		        success: function (data) {
+		            catalogField = data;
+		            catalogFieldAvailable = true;
+		        },
+		        error: function (error) {
+		            console.log(error);
+		        }
+		    })
+
 		    var sourceFieldToAdd = ko.observableArray([]);
 		    var wspaceFieldToAdd = ko.observableArray([]);
 		    for (var i = 0; i < this.sourceField().length; i++) {
 		        for (var j = 0; j < this.workspaceFields().length; j++) {
+		            console.log(this.workspaceFields()[j]);
 		            if (this.sourceField()[i].name == this.workspaceFields()[j].name) {
+		                sourceFieldToAdd.push(this.sourceField()[i]);
+		                wspaceFieldToAdd.push(this.workspaceFields()[j])
+		            }
+		            else if (catalogFieldAvailable && isCatalogFieldMatch(this.workspaceFields()[j].artifactId, this.sourceField()[i].name)) {
 		                sourceFieldToAdd.push(this.sourceField()[i]);
 		                wspaceFieldToAdd.push(this.workspaceFields()[j])
 		            }
