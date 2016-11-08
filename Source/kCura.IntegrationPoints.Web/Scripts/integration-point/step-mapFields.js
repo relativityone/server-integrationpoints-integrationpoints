@@ -498,13 +498,9 @@ ko.validation.insertValidationMessage = function (element) {
 		    var catalogField = {};
 		    var viewModelReference = this;
 
-		    var isCatalogFieldMatch = function (fieldArtifactId, fieldName) {
+		    var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
 		        for (var x = 0; x < catalogField.length; x++) {
-		            console.log('cf.id = ' + catalogField[x].identifier);
-		            console.log('source field art = ' + fieldArtifactId);
-		            console.log('cf.friendlyName = ' + catalogField[x].friendlyName);
-		            console.log('source field name = ' + fieldName);
-		            if(catalogField[x].identifier == fieldArtifactId && 
+		            if (catalogField[x].fieldArtifactId == wsFieldArtifactId &&
                         catalogField[x].friendlyName == fieldName) {
 		                return true;
 		            }
@@ -521,7 +517,7 @@ ko.validation.insertValidationMessage = function (element) {
 		                    sourceFieldToAdd.push(viewModelReference.sourceField()[i]);
 		                    wspaceFieldToAdd.push(viewModelReference.workspaceFields()[j])
 		                }
-		                else if (useCatalogField && isCatalogFieldMatch(viewModelReference.workspaceFields()[j].artifactId, viewModelReference.sourceField()[i].name)) {
+		                else if (useCatalogField && isCatalogFieldMatch(viewModelReference.workspaceFields()[j].identifer, viewModelReference.sourceField()[i].name)) {
 		                    sourceFieldToAdd.push(viewModelReference.sourceField()[i]);
 		                    wspaceFieldToAdd.push(viewModelReference.workspaceFields()[j])
 		                }
