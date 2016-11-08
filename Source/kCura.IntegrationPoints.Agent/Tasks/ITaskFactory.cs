@@ -102,7 +102,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				TaskType taskType;
 				Enum.TryParse(job.TaskType, true, out taskType);
 
-				//InjectionManager.Instance.Evaluate("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4");
 				switch (taskType)
 				{
 					case TaskType.SyncManager:
@@ -173,8 +172,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
-			var agentInstaller = new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory);
-			Container.Install(agentInstaller);
+			Container.Install(new Data.Installers.QueryInstallers());
+			Container.Install(new Core.Installers.KeywordInstaller());
+			Container.Install(new Core.Installers.ServicesInstaller());
+			Container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());
+			Container.Install(new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory));
 		}
 
 		private void ResolveDependencies()

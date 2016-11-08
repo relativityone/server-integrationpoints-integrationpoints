@@ -39,7 +39,7 @@
 			}
 
 			self.getDirectories();
-			
+
 			self.locationSelector.toggle(!!value);
 		};
 
@@ -305,6 +305,17 @@
 			required: {
 				onlyIf: function () {
 					return self.ExportImages();
+				}
+			}
+		});
+
+		this.ProductionPrecedence.subscribe(function (value) {
+			if (!self.IsProductionExport()) {
+				if (value === ExportEnums.ProductionPrecedenceTypeEnum.Produced) {
+					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.BeginProductionNumber)
+				}
+				else {
+					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.Identifier)
 				}
 			}
 		});

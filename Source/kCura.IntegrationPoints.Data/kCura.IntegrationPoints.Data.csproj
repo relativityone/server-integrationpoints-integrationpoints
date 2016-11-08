@@ -179,6 +179,7 @@
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
     <Compile Include="IResourceDbProvider.cs" />
+    <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Repositories\Implementations\SqlWorkspacesRepository.cs" />
     <Compile Include="Repositories\IWorkspacesRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
@@ -394,9 +395,7 @@
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Toggle\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"

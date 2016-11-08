@@ -37,7 +37,7 @@
 		self.getFolderAndSubFolders = function () {
 			root.data.ajax({
 				type: "get",
-				url: root.utils.generateWebAPIURL("SearchFolder")
+				url: root.utils.generateWebAPIURL("SearchFolder/GetFolders")
 			}).then(function (result) {
 				self.foldersStructure = result;
 				self.locationSelector.reload(result);
@@ -281,13 +281,7 @@
 			}).fail(function (error) {
 				IP.message.error.raise(error);
 			});
-
-			var searchFoldersPromise = root.data.ajax({
-				type: 'get',
-				url: root.utils.generateWebAPIURL('SearchFolder')
-			}).fail(function (error) {
-				IP.message.error.raise("No search folders were returned from the source provider.");
-			});
+			
 
 			var productionSetsPromise = root.data.ajax({
 				type: "get",

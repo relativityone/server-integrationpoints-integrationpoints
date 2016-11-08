@@ -21,24 +21,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ArtifactTreeService>();
 		}
 
-		public JsTreeItemDTO GetArtifactTree(string artifactTypeName)
+		public JsTreeItemDTO GetArtifactTreeWithWorkspaceSet(string artifactTypeName, int workspaceId = 0)
 		{
-			
-			var artifacts = QueryArtifacts(artifactTypeName);
-			return _treeCreator.Create(artifacts);
+			SetQueryWorkspaceIdIfNotDefault(workspaceId);
+			return GetArtifactTree(artifactTypeName);
 		}
 
-		public JsTreeItemDTO GetArtifactTreeWithWorkspaceSet(string artifactTypeName,int workspaceId)
+		private JsTreeItemDTO GetArtifactTree(string artifactTypeName)
 		{
-			SetQueryWorkspaceId(workspaceId);
-			return GetArtifactTree(artifactTypeName);
+
+			List<Artifact> artifacts = QueryArtifacts(artifactTypeName);
+			return _treeCreator.Create(artifacts);
 		}
 
 		private List<Artifact> QueryArtifacts(string artifactTypeName)
 		{
-			var query = new Query {ArtifactTypeName = artifactTypeName};
+			var query = new Query { ArtifactTypeName = artifactTypeName };
 
-			var result = _client.Query(_client.APIOptions, query);
+			QueryResult result = _client.Query(_client.APIOptions, query);
 			if (!result.Success)
 			{
 				LogQueryingArtifactError(artifactTypeName);
@@ -47,9 +47,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			return result.QueryArtifacts;
 		}
 
-		private void SetQueryWorkspaceId(int workspaceId)
+		private void SetQueryWorkspaceIdIfNotDefault(int workspaceId)
 		{
-			_client.APIOptions.WorkspaceID = workspaceId;
+			if (workspaceId != 0)
+				_client.APIOptions.WorkspaceID = workspaceId;
 		}
 
 		#region Logging

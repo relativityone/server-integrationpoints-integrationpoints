@@ -109,7 +109,7 @@
 		self.FolderArtifactName = ko.observable(state.FolderArtifactName);
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
-			if (value != undefined) {
+			if (value !== undefined) {
 				self.getFolderAndSubFolders(value);
 			}
 		});
@@ -117,20 +117,17 @@
 		self.getFolderAndSubFolders = function (destinationWorkspaceId) {
 			IP.data.ajax({
 				type: "get",
-				url: IP.utils.generateWebAPIURL("SearchFolder", destinationWorkspaceId)
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId)
 			}).then(function (result) {
 				self.foldersStructure = result;
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
-				root.message.error.raise("No folders were returned from the source provider.");
+				IP.frameMessaging().dFrame.IP.message.error.raise(error);
 			});
 		};
 
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
-			// if (self.HasBeenRun()) {
-			// 	self.locationSelector.toggle(false);
-			// } else {
 			self.locationSelector.init(self.FolderArtifactName(), [], {
 				onNodeSelectedEventHandler: function (node) {
 					self.FolderArtifactName(node.text);
@@ -138,8 +135,8 @@
 				}
 			});
 			self.locationSelector.toggle(true);
-			// }
 		};
+
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
 		if (self.savedSearches.length === 0) {
 			IP.data.ajax({

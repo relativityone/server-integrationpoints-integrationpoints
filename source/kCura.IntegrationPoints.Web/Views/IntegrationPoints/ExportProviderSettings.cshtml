@@ -89,109 +89,123 @@
 				<table style="width: 100%;">
 					<tr>
 						<td style="vertical-align: text-top; width: 48%;">
-							<div class="field-row">
-								<div class="field-label required">
-									Image File Format:
-								</div>
-								<div class="field-value">
-									<select id="imageDataFileFormatSelector" data-bind="options: ImageFileFormatList, optionsText: 'key', optionsValue: 'value', value: SelectedImageDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Data File Format:
-								</div>
-								<div class="field-value">
-									<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
-								</div>
-							</div>
-							<div class="field-row" data-bind="visible: isCustom">
-								<div class="field-label">
-									Column:
-								</div>
-								<div class="field-value">
-									<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator, select2: {}"></select>
-								</div>
-							</div>
-							<div class="field-row" data-bind="visible: isCustom">
-								<div class="field-label">
-									Quote:
-								</div>
-								<div class="field-value">
-									<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator, select2: {}"></select>
-								</div>
-							</div>
-							<div class="field-row" data-bind="visible: isCustom">
-								<div class="field-label">
-									Newline:
-								</div>
-								<div class="field-value">
-									<select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator, select2: {}"></select>
-								</div>
-							</div>
-							<div class="field-row" data-bind="visible: isCustom">
-								<div class="field-label">
-									Multi-Value:
-								</div>
-								<div class="field-value">
-									<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator, select2: {}"></select>
-								</div>
-							</div>
-							<div class="field-row" data-bind="visible: isCustom">
-								<div class="field-label">
-									Nested Value:
-								</div>
-								<div class="field-value">
-									<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator, select2: {}"></select>
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Data File Encoding:
-								</div>
-								<div class="field-value">
-									<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
-										<optgroup data-bind="attr: {label: label}, foreach: children">
-											<option data-bind="text: displayName, value: name"></option>
-										</optgroup>
-									</select>
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									File Path:
-								</div>
-								<div class="field-value">
-									<ul data-bind="foreach: ExportEnums.FilePathType">
-										<li>
-											<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
-											<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
-											<!-- ko if: value==2 -->
-											<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
-											<!-- /ko -->
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label">
-									Include Native Files Path:
-								</div>
-								<div class="field-value middle-vertical-align">
-									<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun() || ExportNatives(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label">
-									Export Multiple Choice<br />Fields As Nested:
-								</div>
-								<div class="field-value middle-vertical-align">
-									<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" class="middle-vertical-align" />
-								</div>
-							</div>
-						</td>
-						<td style="vertical-align: text-top;">
 							<div>
+								<div class="field-row">
+									<p>
+										<h3 style="margin-left: 30px">
+											LOAD FILE OPTIONS
+										</h3>
+									</p>
+								</div>
+								<div class="field-row">
+									<div class="field-label required">
+										Image File Format:
+									</div>
+									<div class="field-value">
+										<select id="imageDataFileFormatSelector" data-bind="options: ImageFileFormatList, optionsText: 'key', optionsValue: 'value', value: SelectedImageDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label required">
+										Data File Format:
+									</div>
+									<div class="field-value">
+										<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row" data-bind="visible: isCustom">
+									<div class="field-label">
+										Column:
+									</div>
+									<div class="field-value">
+										<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator, select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row" data-bind="visible: isCustom">
+									<div class="field-label">
+										Quote:
+									</div>
+									<div class="field-value">
+										<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator, select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row" data-bind="visible: isCustom">
+									<div class="field-label">
+										Newline:
+									</div>
+									<div class="field-value">
+										<select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator, select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row" data-bind="visible: isCustom">
+									<div class="field-label">
+										Multi-Value:
+									</div>
+									<div class="field-value">
+										<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator, select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row" data-bind="visible: isCustom">
+									<div class="field-label">
+										Nested Value:
+									</div>
+									<div class="field-value">
+										<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator, select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label required">
+										Data File Encoding:
+									</div>
+									<div class="field-value">
+										<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+											<optgroup data-bind="attr: {label: label}, foreach: children">
+												<option data-bind="text: displayName, value: name"></option>
+											</optgroup>
+										</select>
+									</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label required">
+										File Path:
+									</div>
+									<div class="field-value">
+										<ul data-bind="foreach: ExportEnums.FilePathType">
+											<li>
+												<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
+												<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
+												<!-- ko if: value==2 -->
+												<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
+												<!-- /ko -->
+											</li>
+										</ul>
+									</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label">
+										Include Native Files Path:
+									</div>
+									<div class="field-value middle-vertical-align">
+										<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun() || ExportNatives(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
+									</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label">
+										Export Multiple Choice<br />Fields As Nested:
+									</div>
+									<div class="field-value middle-vertical-align">
+										<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" class="middle-vertical-align" />
+									</div>
+								</div>
+							</div>
+							<div>
+								<div class="field-row">
+									<p>
+										<h3 style="margin-left: 30px">
+											FILE NAMING OPTIONS
+										</h3>
+									</p>
+								</div>
 								<div class="field-row">
 									<div class="field-label required">
 										Name Output Files After:
@@ -209,6 +223,8 @@
 									</div>
 								</div>
 							</div>
+						</td>
+						<td style="vertical-align: text-top;">
 							<div data-bind="visible: ExportImages">
 								<div class="field-row">
 									<p>
