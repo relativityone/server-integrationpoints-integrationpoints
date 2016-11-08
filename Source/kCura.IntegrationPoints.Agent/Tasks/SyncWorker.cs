@@ -136,51 +136,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-            if (SourceProvider.Identifier == global::kCura.IntegrationPoints.Core.Services.SourceTypes.LdapSourceTypeCreator.LDAP_SOURCE_TYPE_GUID)
+            using (IDataReader importDataReader = new ImportDataReader(
+                    fieldMaps,
+                    sourceProvider,
+                    sourceFields,
+                    entryIDs,
+                    sourceConfiguration,
+                    Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
             {
-                using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
+                IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+                if (dataSynchronizer is RdoSynchronizerBase)
                 {
-                    IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-                    if (dataSynchronizer is RdoSynchronizerBase)
-                    {
-                        ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
-                        settings.OnBehalfOfUserId = job.SubmittedBy;
-                        destinationConfiguration = Serializer.Serialize(settings);
-                    }
-
-                    SetupSubscriptions(dataSynchronizer, job);
-
-                    IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-
-                    JobStopManager?.ThrowIfStopRequested();
-
-                    dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+                    ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
+                    settings.OnBehalfOfUserId = job.SubmittedBy;
+                    destinationConfiguration = Serializer.Serialize(settings);
                 }
-            }
-            else
-            {
-                using (IDataReader importDataReader = new ImportDataReader(
-                        fieldMaps,
-                        sourceProvider,
-                        sourceFields,
-                        entryIDs,
-                        sourceConfiguration,
-                        Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
-                {
-                    IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-                    if (dataSynchronizer is RdoSynchronizerBase)
-                    {
-                        ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
-                        settings.OnBehalfOfUserId = job.SubmittedBy;
-                        destinationConfiguration = Serializer.Serialize(settings);
-                    }
 
-                    SetupSubscriptions(dataSynchronizer, job);
+                SetupSubscriptions(dataSynchronizer, job);
 
-                    JobStopManager?.ThrowIfStopRequested();
+                JobStopManager?.ThrowIfStopRequested();
 
-                    dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
-                }
+                dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
             }
 		}
 
