@@ -1,5 +1,5 @@
 ﻿using Castle.Windsor;
-using global::Relativity.API;
+using Relativity.API;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -14,6 +14,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core;
@@ -136,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(taskParameters);
 
 			Data.IntegrationPoint integrationPointDto = new Data.IntegrationPoint();
-			integrationPointDto.JobHistory = new[] {1, 2, 3};
+			integrationPointDto.JobHistory = new[] { 1, 2, 3 };
 			_jobHistoryService.CreateRdo(integrationPointDto, taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun,
 				Arg.Any<DateTime>()).Returns(jobHistory);
 
@@ -153,7 +154,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.CreateRdo(Arg.Any<Data.IntegrationPoint>(), taskParameters.BatchInstance, JobTypeChoices.JobHistoryRun,
 					Arg.Any<DateTime>());
 
-			int[] expectedJobHistoryArray = new[] {1, 3};
+			int[] expectedJobHistoryArray = new[] { 1, 3 };
 			Assert.AreEqual(expectedJobHistoryArray, integrationPointDto.JobHistory);
 		}
 
@@ -178,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IJobHistoryErrorService jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
 			TaskParameters paramerters = new TaskParameters();
-			JobHistory jobHistory = new JobHistory() {ArtifactId = 1234};
+			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234 };
 
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
@@ -211,42 +212,49 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		public void CreateTask_AllTaskTypesAreResolvable()
+		[TestCaseSource(nameof(CreateTask_CaseData))]
+		public void CreateTask_AllTaskTypesAreResolvable(TaskType taskType)
 		{
-			foreach (TaskType taskType in Enum.GetValues(typeof(TaskType)))
+			// Arrange
+			IAgentHelper helper = Substitute.For<IAgentHelper>();
+			IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
+			IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
+			IRelativityConfigurationFactory relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
+
+			IWindsorContainer windsorContainer = new WindsorContainer();
+			windsorContainer.Register(Component.For<IIntegrationPointService>().Instance(integrationPointService));
+			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(relativityConfigurationFactory));
+
+			var taskFactory = new TaskFactory(helper, windsorContainer);
+			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+			rsapiClient.APIOptions = new APIOptions(40234);
+			helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(rsapiClient);
+			relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
+
+			int relatedId = 453245;
+			int jobId = 342343;
+
+			integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
+
+			Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
+			try
 			{
-				// Arrange
-				IAgentHelper helper = Substitute.For<IAgentHelper>();
-				IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
-				IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
-				IRelativityConfigurationFactory relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
+				// Act / Assert
+				taskFactory.CreateTask(job, agentBase);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
+			}
+		}
 
-				IWindsorContainer windsorContainer = new WindsorContainer();
-				windsorContainer.Register(Component.For<IIntegrationPointService>().Instance(integrationPointService));
-				windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(relativityConfigurationFactory));
-
-				var taskFactory = new TaskFactory(helper, windsorContainer);
-				ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
-
-				rsapiClient.APIOptions = new APIOptions(40234);
-				helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(rsapiClient);
-				relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
-
-				int relatedId = 453245;
-				int jobId = 342343;
-
-				integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
-
-				Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
-				try
-				{
-					// Act / Assert
-					taskFactory.CreateTask(job, agentBase);
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
-				}
+		private static IEnumerable<TestCaseData> CreateTask_CaseData()
+		{
+			foreach (var taskType in Enum.GetValues(typeof(TaskType)))
+			{
+				TestCaseData testCaseData = new TestCaseData(taskType) { TestName = taskType.ToString() };
+				yield return testCaseData;
 			}
 		}
 
