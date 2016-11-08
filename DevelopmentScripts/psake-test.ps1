@@ -31,9 +31,9 @@ task test -depends get_testrunner, get_nunit, test_initalize {
         & $testrunner_exe @(('/source:' + $root), 
                             ('/tests:' + $inputfile), 
                             ('/out:' + $testlog_directory), 
-                            ('/nunit3:' + $NUnit3),
+                            ('/nunit3:' + $NUnit3))
                             
                             #This is temporary change and needs to be removed
-                            ('/timeout: 2'))
+                            #('/timeout: 2'))
     }
 }

@@ -454,27 +454,6 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
-      <allow>kCura.IntegrationPoints.Agent.Tests.SendEmailManagerUnitTests.CreateBatchJob_GoldFlow(System.Collections.Generic.List`1[System.String])</allow>
-      <allow>kCura.IntegrationPoints.Core.Contracts.Tests.Agent.TaskJobSubmitterTests.TestJobSubmitter</allow>
-      <allow>kCura.IntegrationPoints.Core.Tests.Agent.IntegrationPointTaskBaseTests.GetDestinationProvider_GoldFlow</allow>
-      <allow>kCura.IntegrationPoints.Web.Tests.Controllers.API.IntegrationPointsAPIControllerTests.GetRelativityViewUrlThrowsError_ReturnFailedResponse</allow>
-      <allow>kCura.ScheduleQueue.Core.Tests.PeriodicScheduleRuleTest.GetNextUTCRunDateTime_DailyRuleMigration_CorrectValue</allow>
-      <allow>kCura.IntegrationPoints.Data.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
-      <allow>kCura.IntegrationPoints.EventHandlers.Tests.Installers.SetHasErrorsFieldTests.ExecuteInstanced_ThrowsQueryError_Test</allow>
-      <allow>kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging.CompositeLoggingMediatorTests.ItShouldHandleEmptyChildrenList</allow>
-      <allow>kCura.IntegrationPoints.FtpProvider.Tests.FtpProviderTests.ValidateColumns_AllMatch</allow>
-      <allow>kCura.IntegrationPoints.Data.Tests.PermissionServiceTest.UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse</allow>
-      <allow>kCura.IntegrationPoints.Agent.Tests.CastleWindsorValidatorTests.AgentInstallerInstallsSuccessfully</allow>
-      <allow>kCura.IntegrationPoints.Web.Tests.CastleWindsorValidationTests.WebInstallersInstallSuccesfully</allow>
-      <allow>kCura.IntegrationPoints.DocumentTransferProvider.Tests.DocumentArtifactIdDataReaderTests.Close_ReaderIsClosed</allow>
-      <allow>kCura.ScheduleQueue.Core.Tests.BatchManagerBaseTests.BatchTask_CorrectBatching(0,0)</allow>
-      <allow>kCura.IntegrationPoints.Services.Tests.DocumentManagerLoggingTests.ItShouldLogErrorFromGetCurrentPromotionStatusAsync</allow>
-      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportServiceTests.GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult</allow>
-      <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.ExportServiceManagerTests.Execute_CreateDestinationProvider_MakeSureToSetSourceProvider</allow>
-      <allow>kCura.IntegrationPoints.Data.Tests.Repositories.FieldRepositoryTests.RetrieveField_ReturnsValidArtifactId_Test</allow>
-      <allow>kCura.IntegrationPoints.Synchronizers.RDO.Tests.ImportSettingsTests.ImportSettings_ImportOverlayBehavior(null,UseRelativityDefaults)</allow>
-      <allow>kCura.IntegrationPoints.Services.Tests.IntegrationPointManagerLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
-      <allow>kCura.IntegrationPoints.Services.Tests.IntegrationPointRepositoryLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
