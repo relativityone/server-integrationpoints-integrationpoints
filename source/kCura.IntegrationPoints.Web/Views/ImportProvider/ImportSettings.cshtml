@@ -28,6 +28,9 @@
                             </div>
                             <div class="field-value select2-double-width">
                                 <select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: ProcessingSourceLocationList, optionsCaption: 'Select...', value: ProcessingSourceLocation, select2: { width: '100%' }"></select>
+                                <div class="import-validation-errors-container">
+                                    <span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: ProcessingSourceLocation"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="field-row">
@@ -39,8 +42,13 @@
                                     <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: Fileshare" />
                                     <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
                                 </div>
-                                <div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
-                                    <div id="browser-tree" tabindex="0"></div>
+                                <div>
+                                    <div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
+                                        <div id="browser-tree" tabindex="0"></div>
+                                    </div>
+                                    <div class="import-validation-errors-container" id="loadData" style="display: none">
+                                        <span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: Fileshare"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -88,6 +96,9 @@
                                             <option data-bind="text: displayName, value: name"></option>
                                         </optgroup>
                                     </select>
+                                    <div class="import-validation-errors-container">
+                                        <span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: DataFileEncodingType"></span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="field-row">
@@ -184,6 +195,7 @@
     <script src="~/Scripts/core/data.js"></script>
     <script src="~/Scripts/core/utils.js"></script>
     <script src="~/Scripts/knockout-3.4.0.js"></script>
+    <script src="~/Scripts/knockout.validation.js"></script>
     <script src="~/Scripts/export/export-enums.js"></script>
     <script src="~/Scripts/jstree.min.js"></script>
     <script src="~/Scripts/export/location-jstree-selector.js"></script>

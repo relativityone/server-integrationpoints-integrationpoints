@@ -220,6 +220,9 @@
         $el.children().each(function (i, e) {
             $(e).toggleClass('location-disabled', !en);
         });
+        if (en) {
+            $('#loadData').show();
+        };
     };
 
     windowObj.RelativityImport.enableLoadModal = function (bool) {
