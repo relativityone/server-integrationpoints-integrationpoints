@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -53,7 +55,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsMatchingBatchSize()
 		{
 			string docPrefix = "EqualBatchDoc";
@@ -62,7 +63,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsUnderBatchSize()
 		{
 			string docPrefix = "LessThanBatchDoc";
@@ -71,7 +71,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsOverBatchSize()
 		{
 			string docPrefix = "MoreThanBatchDoc";
@@ -177,7 +176,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
@@ -238,7 +236,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectJobandItemLevelJobHistoryErrorsUpdatedWhenBatching()
 		{
 			//Arrange
@@ -541,7 +538,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private DataTable GetTempTable(string tempTableName)
 		{
-			string query = $"SELECT [ArtifactID] FROM [Resource].[{ tempTableName }]";
+			string query = $"SELECT [ArtifactID] FROM { ClaimsPrincipal.Current.ResourceDBPrepend(SourceWorkspaceArtifactId) }.[{ tempTableName }]";
 			try
 			{
 				DataTable tempTable = CaseContext.SqlContext.ExecuteSqlStatementAsDataTable(query);

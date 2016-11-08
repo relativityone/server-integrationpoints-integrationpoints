@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
 		{
-			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), tablePrefix, tableSuffix, workspaceArtifactId);
+			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)

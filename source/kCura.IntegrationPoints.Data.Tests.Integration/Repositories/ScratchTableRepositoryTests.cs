@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private ICaseServiceContext _caseServiceContext;
 		private IDocumentRepository _documentRepository;
 		private IFieldRepository _fieldRepository;
+		private IResourceDbProvider _resourceDbProvider;
 		private ScratchTableRepository _currentScratchTableRepository;
 		private const string _DOC_IDENTIFIER = "SCRATCH_";
 
@@ -34,6 +35,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
+			_resourceDbProvider = new ResourceDbProvider();
 		}
 
 		public override void TestTeardown()
@@ -54,12 +56,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
-			string tableName = $"Resource_{tablePrefix}_{tableSuffix}";
+			string tableName = $"{tablePrefix}_{tableSuffix}";
 			DataTable tempTable = GetTempTable(tableName);
 
 			//ASSERT
@@ -77,13 +79,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
 
-			string tableName = $"Resource_{tablePrefix}_{tableSuffix}";
+			string tableName = $"{tablePrefix}_{tableSuffix}";
 			int docArtifactIdToRemove = controlNumbersByDocumentIds.Keys.ElementAt(2);
 
 			if (numDocsWithErrors == 1)
@@ -110,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
@@ -136,7 +138,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
@@ -162,9 +164,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
-			string tableName = $"Resource_{tablePrefix}_{tableSuffix}";
+			string tableName = $"{tablePrefix}_{tableSuffix}";
 
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
@@ -176,7 +178,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		private DataTable GetTempTable(string tempTableName)
 		{
-			string query = $"SELECT [ArtifactID] FROM [Resource].[{ tempTableName }]";
+			string query = $"SELECT [ArtifactID] FROM {_resourceDbProvider.GetResourceDbPrepend(SourceWorkspaceArtifactId)}.[{ tempTableName }]";
 			try
 			{
 				DataTable tempTable = _caseServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(query);
@@ -238,12 +240,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		private void VerifyErroredDocumentRemoval(string tableName, int erroredDocumentArtifactId, int expectedNewCount)
 		{
-			string targetDatabaseFormat = "[Resource].";
+			string targetDatabaseFormat = _resourceDbProvider.GetResourceDbPrepend(SourceWorkspaceArtifactId);
 
 			if (expectedNewCount != 0)
 			{
 				string getErroredDocumentQuery =
-				$"SELECT COUNT(*) FROM {targetDatabaseFormat}[{tableName}] WHERE [ArtifactID] = {erroredDocumentArtifactId}";
+				$"SELECT COUNT(*) FROM {targetDatabaseFormat}.[{tableName}] WHERE [ArtifactID] = {erroredDocumentArtifactId}";
 
 				bool entryExists = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<bool>(getErroredDocumentQuery);
 				if (entryExists)
@@ -253,7 +255,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				}
 			}
 
-			string scratchTableCountQuery = $"SELECT COUNT(*) FROM {targetDatabaseFormat}[{tableName}]";
+			string scratchTableCountQuery = $"SELECT COUNT(*) FROM {targetDatabaseFormat}.[{tableName}]";
 			int entryCount = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<int>(scratchTableCountQuery);
 
 			if (entryCount != expectedNewCount)
