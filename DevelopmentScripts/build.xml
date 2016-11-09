@@ -455,6 +455,7 @@
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
+      <allow>kCura.IntegrationPoints.Services.Tests.IntegrationPointRepositoryLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
