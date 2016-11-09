@@ -1,6 +1,22 @@
 ﻿'use strict';
 (function (windowObj, root, ko) {
 
+    ko.validation.rules.pattern.message = 'Invalid.';
+    ko.validation.registerExtenders();
+
+    ko.validation.configure({
+        insertMessages: false,
+    }, true);
+
+    ko.extenders.deferValidation = function (target, option) {
+        if (option) {
+            target.subscribe(function () {
+                target.isModified(false);
+            });
+        }
+        return target;
+    };
+
     var ImportTypeModel = function (data) {
         var self = this;
 
@@ -60,16 +76,20 @@
             self.selectedNestedValueAsciiDelimiter(data);
         };
 
-        self.ProcessingSourceLocationList = ko.observableArray([]);
-        self.HasBeenRun = ko.observable(false);
-        self.ProcessingSourceLocation = ko.observable();
+        self.ProcessingSourceLocationArtifactId = 0;
 
-        self.Fileshare = ko.observable(self.Fileshare).extend({
-            required: {
-                onlyIf: function () {
-                    return self.ProcessingSourceLocation();
-                }
-            }
+        self.ProcessingSourceLocationList = ko.observableArray([]);
+
+        self.HasBeenRun = ko.observable(false);
+
+        self.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
+            required: true,
+            deferValidation: true
+        });
+
+        self.Fileshare = ko.observable().extend({
+            required: true,
+            deferValidation: true
         });
 
         self.GetSelectedProcessingSourceLocationPath = function (artifactId) {
@@ -126,6 +146,7 @@
 
     }
     windowObj.RelativityImport.koModel = new viewModel();
+    windowObj.RelativityImport.koErrors = ko.validation.group(windowObj.RelativityImport.koModel);
     ko.applyBindings(windowObj.RelativityImport.koModel);
 
 })(this, IP, ko);

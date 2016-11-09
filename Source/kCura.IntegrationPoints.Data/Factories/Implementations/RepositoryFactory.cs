@@ -2,7 +2,6 @@
 using System.Data.SqlClient;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;

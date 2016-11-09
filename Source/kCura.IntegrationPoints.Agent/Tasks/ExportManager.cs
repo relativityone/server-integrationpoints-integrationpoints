@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IIntegrationPointService integrationPointService,
 			ISerializer serializer, IGuidService guidService,
 			IJobHistoryService jobHistoryService,
-			JobHistoryErrorService jobHistoryErrorService,
+			IJobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainer,
