@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
+using Relativity.API;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
-			return await Execute(() => _jobHistoryRepository.GetJobHistory(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			return await Execute(() => _jobHistoryRepository.GetJobHistoryWithStatusCompleted(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 	}
 }

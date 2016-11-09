@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -18,12 +19,73 @@ namespace kCura.IntegrationPoints.Services.Repositories
 		private const string _DESCENDING_SORT = "DESC";
 		private const string _RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 		private const string _NO_ACCESS_EXCEPTION_MESSAGE = "You do not have permission to access this service.";
+		private const string _JOB_HISTORY_OBJECT_TYPE = "08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9";
 
 		private readonly ILog _logger;
+		private readonly IServiceHelper _helper;
 
 		public JobHistoryRepository(ILog logger)
 		{
 			_logger = logger;
+			_helper = global::Relativity.API.Services.Helper;
+		}
+		public JobHistorySummaryModel GetJobHistoryWithStatusCompleted(JobHistoryRequest request)
+		{
+			try
+			{
+				// Determine if the user first has access to workspaces and object type
+				IAuthenticationMgr authenticationManager = _helper.GetAuthenticationManager();
+				var userArtifactId = authenticationManager.UserInfo.ArtifactID;
+				var jobHistorySummary = new JobHistorySummaryModel();
+
+				FieldValueList<Workspace> workspaces = GetWorkspacesUserHasPermissionToView(userArtifactId);
+				if (!workspaces.Any())
+				{
+					return jobHistorySummary;
+				}
+
+				IList<JobHistoryModel> jobHistories = new List<JobHistoryModel>(request.PageSize);
+				IRSAPIService service = new RSAPIService(_helper, request.WorkspaceArtifactId);
+
+				var queryResult = service.JobHistoryLibrary
+					.Query(new Query<RDO>() { ArtifactTypeGuid = new Guid(_JOB_HISTORY_OBJECT_TYPE), Fields = FieldValue.AllFields })
+					.Where(s => s.JobStatus.Name == "Completed" || s.JobStatus.Name == "Completed With Errors").ToList();
+
+				var totalAvailable = 0;
+				var totalDocuments = 0;
+
+				foreach (var res in queryResult)
+				{
+					var userHasPermission = DoesUserHavePermissionToThisDestinationWorkspace(workspaces, res.DestinationWorkspace);
+					if (!userHasPermission)
+					{
+						continue;
+					}
+
+					var jobHistory = new JobHistoryModel
+					{
+						ItemsTransferred = res.ItemsTransferred ?? 0,
+						EndTimeUtc = res.EndTimeUTC.GetValueOrDefault(),
+						DestinationWorkspace = res.DestinationWorkspace
+					};
+					jobHistories.Add(jobHistory);
+
+					totalDocuments += res.ItemsTransferred ?? 0;
+					totalAvailable++;
+				}
+
+
+				jobHistorySummary.Data = jobHistories.ToArray();
+				jobHistorySummary.TotalAvailable = totalAvailable;
+				jobHistorySummary.TotalDocumentsPushed = totalDocuments;
+
+				return jobHistorySummary;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "{0}.{1}", nameof(JobHistoryManager), nameof(GetJobHistoryWithStatusCompleted));
+				throw;
+			}
 		}
 
 		public JobHistorySummaryModel GetJobHistory(JobHistoryRequest request)
@@ -31,13 +93,13 @@ namespace kCura.IntegrationPoints.Services.Repositories
 			try
 			{
 				// Determine if the user first has access to workspaces and object type
-				IAuthenticationMgr authenticationManager = global::Relativity.API.Services.Helper.GetAuthenticationManager();
+				IAuthenticationMgr authenticationManager = _helper.GetAuthenticationManager();
 				int userArtifactId = authenticationManager.UserInfo.ArtifactID;
 				int workspaceUserArtifactId = GetWorkspaceUserArtifactId(request.WorkspaceArtifactId, userArtifactId);
 
 				var jobHistorySummary = new JobHistorySummaryModel();
 
-				IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(request.WorkspaceArtifactId);
+				IDBContext workspaceContext = _helper.GetDBContext(request.WorkspaceArtifactId);
 
 				int jobHistoryArtifactTypeId = GetJobHistoryArtifactTypeId(workspaceContext);
 				if (jobHistoryArtifactTypeId == 0)
@@ -287,7 +349,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 
 			return sortColumn;
 		}
-
+		
 		#region SQL Queries
 
 		private const string _INTEGRATION_POINT_JOB_HISTORY_RELATIONAL_TABLE_INFORMATION_SQL = @"

@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Services.Repositories;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
