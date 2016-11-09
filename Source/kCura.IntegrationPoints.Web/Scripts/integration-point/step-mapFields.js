@@ -458,6 +458,23 @@ ko.validation.insertValidationMessage = function (element) {
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
+
+		var CatalogField = {};
+
+		this.GetCatalogFieldMappings = function () {
+		    var vmReference = this;
+		    $.ajax({
+		        url: IP.utils.generateWebAPIURL('FieldCatalog', IP.utils.getParameterByName('AppID', window.top)),
+		        type: 'GET',
+		        success: function (data) {
+		            self.CatalogField = data;
+		        },
+		        error: function (error) {
+		            console.log(error);
+		        }
+		    });
+		};
+
 		/********** Submit Validation**********/
 		this.submit = function () {
 			this.showErrors(true);
@@ -493,52 +510,36 @@ ko.validation.insertValidationMessage = function (element) {
 		    IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
 		};
 
-		this.autoFieldMap = function () {
-		    var workspaceArtifactID = IP.utils.getParameterByName('AppID', window.top);
-		    var catalogField = {};
-		    var viewModelReference = this;
+	    /********** AutoMap Controls  **********/
+		this.GetCatalogFieldMappings();
 
+		this.autoFieldMap = function () {
 		    var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
-		        for (var x = 0; x < catalogField.length; x++) {
-		            if (catalogField[x].fieldArtifactId == wsFieldArtifactId &&
-                        catalogField[x].friendlyName == fieldName) {
+		        for (var x = 0; x < self.CatalogField.length; x++) {
+		            if (self.CatalogField[x].fieldArtifactId == wsFieldArtifactId &&
+                        self.CatalogField[x].friendlyName == fieldName) {
 		                return true;
 		            }
 		        }
 		        return false;
 		    };
 
-		    var determineMappings = function (useCatalogField) {
-		        var sourceFieldToAdd = ko.observableArray([]);
-		        var wspaceFieldToAdd = ko.observableArray([]);
-		        for (var i = 0; i < viewModelReference.sourceField().length; i++) {
-		            for (var j = 0; j < viewModelReference.workspaceFields().length; j++) {
-		                if (viewModelReference.sourceField()[i].name == viewModelReference.workspaceFields()[j].name) {
-		                    sourceFieldToAdd.push(viewModelReference.sourceField()[i]);
-		                    wspaceFieldToAdd.push(viewModelReference.workspaceFields()[j])
-		                }
-		                else if (useCatalogField && isCatalogFieldMatch(viewModelReference.workspaceFields()[j].identifer, viewModelReference.sourceField()[i].name)) {
-		                    sourceFieldToAdd.push(viewModelReference.sourceField()[i]);
-		                    wspaceFieldToAdd.push(viewModelReference.workspaceFields()[j])
-		                }
+		    var sourceFieldToAdd = ko.observableArray([]);
+		    var wspaceFieldToAdd = ko.observableArray([]);
+		    for (var i = 0; i < self.sourceField().length; i++) {
+		        for (var j = 0; j < self.workspaceFields().length; j++) {
+		            if (self.sourceField()[i].name == self.workspaceFields()[j].name) {
+		                sourceFieldToAdd.push(self.sourceField()[i]);
+		                wspaceFieldToAdd.push(self.workspaceFields()[j])
+		            }
+		            else if (isCatalogFieldMatch(self.workspaceFields()[j].identifer, self.sourceField()[i].name)) {
+		                sourceFieldToAdd.push(self.sourceField()[i]);
+		                wspaceFieldToAdd.push(self.workspaceFields()[j])
 		            }
 		        }
-		        IP.workspaceFieldsControls.add(viewModelReference.sourceField, sourceFieldToAdd, viewModelReference.sourceMapped);
-		        IP.workspaceFieldsControls.add(viewModelReference.workspaceFields, wspaceFieldToAdd, viewModelReference.mappedWorkspace);
-		    };
-
-		    $.ajax({
-		        url: IP.utils.generateWebAPIURL('FieldCatalog', workspaceArtifactID),
-		        type: 'GET',
-		        success: function (data) {
-		            catalogField = data;
-		            determineMappings(true);
-		        },
-		        error: function (error) {
-		            console.log(error);
-		            determineMappings(false);
-		        }
-		    });
+		    }
+		    IP.workspaceFieldsControls.add(self.sourceField, sourceFieldToAdd, self.sourceMapped);
+		    IP.workspaceFieldsControls.add(self.workspaceFields, wspaceFieldToAdd, self.mappedWorkspace);
 		};
 
 	};// end of the viewmodel
