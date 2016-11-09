@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
-			return await Execute(() => _jobHistoryRepository.GetJobHistoryWithStatusCompleted(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			return await Execute(() => _jobHistoryRepository.GetJobHistory(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 	}
 }
