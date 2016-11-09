@@ -11,7 +11,6 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Web.Installers;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -23,15 +22,15 @@ namespace kCura.IntegrationPoints.Web
 	// Note: For instructions on enabling IIS6 or IIS7 classic mode, 
 	// visit http://go.microsoft.com/?LinkId=9394801
 
-	public class MvcApplication : System.Web.HttpApplication
+	public class MvcApplication : HttpApplication
 	{
-		public static IWindsorContainer _container;
+		private IWindsorContainer _container;
 
 		protected void Application_Start()
 		{
 			AreaRegistration.RegisterAllAreas();
 
-			kCura.Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
+			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
@@ -60,7 +59,9 @@ namespace kCura.IntegrationPoints.Web
 			_container = new WindsorContainer();
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-			_container.Install(new ControllerInstaller());
+
+			_container.Install(FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory, "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
+
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}

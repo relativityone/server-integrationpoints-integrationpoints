@@ -207,16 +207,15 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Attributes\WebAPIFilterExceptionTests.cs" />
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
     <Compile Include="Helpers\TestBase.cs" />
-    <Compile Include="CastleWindsorValidationTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />
     <Compile Include="Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Controllers\FolderPathControllerTests.cs" />
-    <Compile Include="Controllers\BaseControllerTests.cs" />
     <Compile Include="Controllers\LdapControllerTests.cs" />
     <Compile Include="Controllers\RelativityControllerTests.cs" />
     <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
@@ -258,9 +257,17 @@
       <Project>{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj">
+      <Project>{8a61be46-3c1d-4d31-91f0-2731a01860fc}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
       <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
       <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj">
+      <Project>{835f7005-e106-4c29-ad9c-fe8bd5cf8280}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>

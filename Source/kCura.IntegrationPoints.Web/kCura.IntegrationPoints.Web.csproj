@@ -312,6 +312,7 @@
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Controllers\API\WorkspaceViewController.cs" />
+    <Compile Include="ErrorFactory.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />
@@ -401,14 +402,6 @@
     <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\ImportPreview\arrow_collapsed.png" />
     <Content Include="Content\Images\ImportPreview\arrow_expanded.png" />
-    <Content Include="Content\Images\ImportPreview\move_first.png" />
-    <Content Include="Content\Images\ImportPreview\move_first_dis.png" />
-    <Content Include="Content\Images\ImportPreview\move_last.png" />
-    <Content Include="Content\Images\ImportPreview\move_last_dis.png" />
-    <Content Include="Content\Images\ImportPreview\move_next.png" />
-    <Content Include="Content\Images\ImportPreview\move_next_dis.png" />
-    <Content Include="Content\Images\ImportPreview\move_previous.png" />
-    <Content Include="Content\Images\ImportPreview\move_previous_dis.png" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
@@ -793,6 +786,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
       <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
       <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj">
+      <Project>{835F7005-E106-4C29-AD9C-FE8BD5CF8280}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>

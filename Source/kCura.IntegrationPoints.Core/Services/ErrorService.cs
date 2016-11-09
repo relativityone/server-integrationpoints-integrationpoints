@@ -4,11 +4,6 @@ using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public interface IErrorService
-	{
-		void Log(ErrorModel error);
-	}
-
 	public class ErrorService : IErrorService
 	{
 		private readonly CreateErrorRdo _createErrorRdo;
@@ -20,16 +15,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public virtual void Log(ErrorModel error)
 		{
-			try
-			{
-				var appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-				var message = string.Format("(Integration Points v({0}) {1}", appVersion, error.Message);
-				_createErrorRdo.Execute(error.WorkspaceID, message, error.Exception);
-			}
-			catch
-			{
-				//Eat me
-			}
+			var appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			var message = $"(Integration Points v({appVersion}) {error.Message}";
+			_createErrorRdo.Execute(error.WorkspaceID, message, error.Exception);
 		}
 	}
 }

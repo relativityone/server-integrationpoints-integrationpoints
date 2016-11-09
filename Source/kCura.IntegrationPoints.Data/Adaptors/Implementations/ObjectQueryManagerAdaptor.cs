@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
 using Query = Relativity.Services.ObjectQuery.Query;

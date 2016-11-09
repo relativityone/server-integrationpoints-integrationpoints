@@ -7,11 +7,11 @@
 		var appendWithFolderPathMessage = "You may be creating folders in the destination workspace using the ";
 		var expiredErrorsMessage = " Any existing errors will be marked as expired.";
 		var proceedWarningMessage = " Would you still like to proceed?";
-         var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
-        
+		var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+
 		var selectedMessage = "";
 		if (overwriteOption === "Append Only") {
-			if (IP.fieldName.length !== 0) {
+			if (!!IP.fieldName && IP.fieldName.length !== 0) {
 				selectedMessage = appendWithFolderPathMessage + IP.fieldName + " field.";
 			} else {
 				selectedMessage = appendMessage;
@@ -23,7 +23,7 @@
 		}
 		if (IP.isFileshareProvider) {
 			selectedMessage = "Documents will be exported to your selected destination. If you chose to schedule your job, export will begin at the selected time.";
-        }
+		}
 		var consoleContainer = $(".ConsoleControl");
 		var hasErrors = $(consoleContainer.find(":contains('Retry Errors')")).hasClass("consoleButtonEnabled");
 		if (hasErrors) {
@@ -31,7 +31,7 @@
 		}
 		selectedMessage += proceedWarningMessage;
 
-		if (root.errorMessage.length !== 0) {
+		if (!!root.errorMessage && root.errorMessage.length !== 0) {
 			IP.message.error.raise(root.errorMessage, $(".cardContainer"));
 			return;
 		}
@@ -41,7 +41,7 @@
 			showCancel: true,
 			width: 450,
 			success: function (calls) {
-                calls.close();var ajax = IP.data.ajax({
+				calls.close(); var ajax = IP.data.ajax({
 					type: 'post',
 					url: root.utils.generateWebAPIURL('Job'),
 					data: JSON.stringify({
@@ -252,9 +252,9 @@ $(function () {
 });
 
 $(function () {
-    if (IP.isFileshareProvider) {
-        return;
-    }
+	if (IP.isFileshareProvider) {
+		return;
+	}
 
 	var _getAppPath = function () {
 		var newPath = window.location.pathname.split('/')[1];

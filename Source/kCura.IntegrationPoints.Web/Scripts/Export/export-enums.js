@@ -8,10 +8,10 @@ ExportEnums.DataFileFormats = [
 ];
 
 ExportEnums.DataFileFormatEnum = {
-    Concordance: 0,
-    HTML: 1,
-    CSV: 2,
-    Custom: 3
+	Concordance: 0,
+	HTML: 1,
+	CSV: 2,
+	Custom: 3
 };
 
 ExportEnums.ImageDataFileFormats = [
@@ -34,9 +34,9 @@ ExportEnums.FilePathType = [
 ];
 
 ExportEnums.FilePathTypeEnum = {
-    Relative: 0,
-    Absolute: 1,
-    UserPrefix: 2
+	Relative: 0,
+	Absolute: 1,
+	UserPrefix: 2
 };
 
 ExportEnums.ProductionPrecedenceType = [
@@ -61,6 +61,11 @@ ExportEnums.SourceOptionsEnum = {
 	FolderSubfolder: 1,
 	Production: 2,
 	SavedSearch: 3
+};
+
+ExportEnums.ExportNativeWithFilenameFromTypesEnum = {
+	Identifier: 0,
+	BeginProductionNumber: 1
 };
 
 ExportEnums.ExportNativeWithFilenameFromTypes = [

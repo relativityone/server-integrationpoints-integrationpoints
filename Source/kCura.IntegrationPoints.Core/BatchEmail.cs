@@ -23,10 +23,10 @@ namespace kCura.IntegrationPoints.Core
 		public BatchEmail(ICaseServiceContext caseServiceContext,
 		  IHelper helper,
 		  IDataProviderFactory dataProviderFactory,
-		  kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+		  Apps.Common.Utils.Serializers.ISerializer serializer,
 		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 		  IJobHistoryService jobHistoryService,
-		  JobHistoryErrorService jobHistoryErrorService,
+		  IJobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
 		  IJobStatusUpdater jobStatusUpdater,
 		  KeywordConverter converter,
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core
 			if (emails!= null && emails.Any())
 			{
 				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-				kCura.Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
+				Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
 				EmailMessage message = GenerateEmail(choice);
 
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core
 			}
 		}
 
-		public EmailMessage GenerateEmail(kCura.Relativity.Client.DTOs.Choice choice)
+		public EmailMessage GenerateEmail(Relativity.Client.DTOs.Choice choice)
 		{
 			EmailMessage message = new EmailMessage();
 

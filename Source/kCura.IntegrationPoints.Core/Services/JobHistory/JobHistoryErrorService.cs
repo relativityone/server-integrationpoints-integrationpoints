@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		public JobHistoryErrorService(ICaseServiceContext context, IHelper helper)
 		{
 			_context = context;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryErrorService>();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>();
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			_errorOccurredDuringJob = false;
 			JobLevelErrorOccurred = false;
