@@ -514,6 +514,10 @@ ko.validation.insertValidationMessage = function (element) {
 		this.GetCatalogFieldMappings();
 
 		this.autoFieldMap = function () {
+		    //Remove current mappings first
+		    self.addAlltoSourceField();
+		    self.addAlltoWorkspaceField();
+
 		    var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
 		        for (var x = 0; x < self.CatalogField.length; x++) {
 		            if (self.CatalogField[x].fieldArtifactId == wsFieldArtifactId &&
