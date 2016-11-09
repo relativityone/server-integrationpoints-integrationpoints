@@ -454,6 +454,7 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
+      <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
     </WhiteList>
   </TestRunner>
   <RAPBuilder>
