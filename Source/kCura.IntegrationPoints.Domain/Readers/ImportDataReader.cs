@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public int GetOrdinal(string name)
 		{
-            return _nameToOrdinalMap[name];
+            return _schemaTable.Columns[name].Ordinal;
 		}
 
 		public string GetName(int i)
