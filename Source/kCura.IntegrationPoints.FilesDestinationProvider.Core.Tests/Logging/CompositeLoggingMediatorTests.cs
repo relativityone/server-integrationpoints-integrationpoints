@@ -16,9 +16,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         public void SetUp()
         {
             _compositeLoggingMediator = new CompositeLoggingMediator();
-            _exporterStatusNotification = Substitute.For<ICoreExporterStatusNotification>();
-            _userMessageNotification = Substitute.For<IUserMessageNotification>();
-        }
+			_exporterStatusNotification = Substitute.For<ICoreExporterStatusNotification>();
+			_userMessageNotification = Substitute.For<IUserMessageNotification>();
+		}
 
         [Test]
         public void ItShouldRegisterAllChildren()
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         }
 
         [Test]
-        public void ItShouldHandleEmptyChildrenList()
+        public void ZItShouldHandleEmptyChildrenList()
         {
             _compositeLoggingMediator.RegisterEventHandlers(_userMessageNotification, _exporterStatusNotification);
             Assert.Pass();
