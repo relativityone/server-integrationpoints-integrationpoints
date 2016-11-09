@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.Keywords;
 using NUnit.Framework;
 using Relativity.API;
@@ -7,12 +8,12 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Keywords
 {
 	[TestFixture]
-	public class KeywordConverterTests
+	public class KeywordConverterTests : TestBase
 	{
 		private IHelper _helper;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_helper = NSubstitute.Substitute.For<IHelper>();
 		}

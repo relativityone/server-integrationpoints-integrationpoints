@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;
@@ -6,14 +7,15 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-    public class CompositeLoggingMediatorTests
+	[TestFixture]
+    public class CompositeLoggingMediatorTests : TestBase
     {
         private CompositeLoggingMediator _compositeLoggingMediator;
         private ICoreExporterStatusNotification _exporterStatusNotification;
         private IUserMessageNotification _userMessageNotification;
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
             _compositeLoggingMediator = new CompositeLoggingMediator();
 			_exporterStatusNotification = Substitute.For<ICoreExporterStatusNotification>();

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Models;
@@ -20,7 +21,8 @@ using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	public class ExportProcessBuilderTests
+	[TestFixture]
+	public class ExportProcessBuilderTests : TestBase
 	{
 		private class BatchReporterMock : IBatchReporter, ILoggingMediator
 		{
@@ -63,7 +65,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		#region SetUp
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
 			_credentialProvider = Substitute.For<ICredentialProvider>();

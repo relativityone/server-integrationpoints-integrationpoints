@@ -1,4 +1,5 @@
 ﻿using System.Web.Http.Results;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
@@ -9,8 +10,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	
 	[TestFixture(Description = "These tests are meant to mimic the way the ajax request will behave on the client side.")]
-	public class LdapControllerTests
+	public class LdapControllerTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void Decrypt_stringJustJSON_returnsJSONString()
 		{
@@ -33,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public void Decrypt_stringEncrypted_returnsDecryptedString()
 		{
 			//ARRANGE
-			var manager = NSubstitute.Substitute.For<IEncryptionManager>();
+			var manager = Substitute.For<IEncryptionManager>();
 			var message = "{\"a\":\"Asdf\"}";
 			manager.Decrypt(Arg.Any<string>()).Returns(message);
 			var encryptedMessage = "\"zQ/bTBWY00FKnJih9VYK/DYGiHbKukxj4jAPuDO3v4H+W/Oc+Doh8vQZGpkwB8StnOVz9XXJ4Mp/OazQ4zA07b0wVpYKh6/zcljWcAPK8C9fgI9bP0+Ec95W0BqC32YXd8qaXfLqZQ73mp2VdlnMu4WYJFJunW/d+uJoNuOaCr7KyvgTlqlBs4EST51MOi4PzsXyzzbF2RWg2MKSnMvBYPEcLaj01akIKAPQWB2vjXraeTSh1P7ixKAKZAsQnKUBXdWalv/LZiJDQMkRvE1/lkjHt1txzjQd15nzTXn8WRbXASnSrZ5ROfxRdof8+QdK\"";
@@ -49,6 +56,5 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(message, value);
 
 		}
-
 	}
 }

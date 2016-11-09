@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -17,7 +18,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -25,11 +25,12 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
 	[TestFixture]
-	public class IntegrationPointServiceTests
+	public class IntegrationPointServiceTests : TestBase
 	{
 		private readonly int _sourceWorkspaceArtifactId = 789;
 		private readonly int _targetWorkspaceArtifactId = 9954;
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private Data.JobHistory _previousJobHistory;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
 			_caseServiceManager = Substitute.For<ICaseServiceContext>();

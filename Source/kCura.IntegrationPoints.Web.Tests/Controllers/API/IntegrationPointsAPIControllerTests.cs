@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
@@ -15,7 +16,7 @@ using Relativity.Telemetry.Services.Metrics;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
 	[TestFixture]
-	public class IntegrationPointsAPIControllerTests
+	public class IntegrationPointsAPIControllerTests : TestBase
 	{
 		private IntegrationPointsAPIController _instance;
 		private IIntegrationPointService _integrationPointService;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private const int _WORKSPACE_ID = 23432;
 
 		[SetUp]
-		public void OneTimeSetUp()
+		public override void SetUp()
 		{
 			_relativityUrlHelper = Substitute.For<IRelativityUrlHelper>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();

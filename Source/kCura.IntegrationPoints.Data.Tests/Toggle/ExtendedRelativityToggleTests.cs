@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Config;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data.Toggle;
 using NSubstitute;
 using NUnit.Framework;
@@ -7,13 +8,13 @@ using Relativity.Toggles;
 namespace kCura.IntegrationPoints.Data.Tests.Toggle
 {
 	[TestFixture]
-	public class ExtendedRelativityToggleTests
+	public class ExtendedRelativityToggleTests : TestBase
 	{
 		private ExtendedRelativityToggle _toggle;
 		private IToggleProvider _baseToggle;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_baseToggle = NSubstitute.Substitute.For<IToggleProvider>();
 			_toggle = new ExtendedRelativityToggle(_baseToggle) {Configuration = NSubstitute.Substitute.For<IConfig>()};

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using NSubstitute;
@@ -10,8 +11,14 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class ImportServiceTests
+	public class ImportServiceTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void GenerateImportFields_Pass()
 		{
@@ -61,6 +68,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		#region ValidateAllMappedFieldsAreInWorkspace
+
 		[Test]
 		public void ValidateAllMappedFieldsAreInWorkspace_AllFieldsMatch()
 		{
@@ -157,9 +165,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 13, 14, 15"));
 		}
+
 		#endregion
 
 		#region GenerateImportFields
+
 		[Test]
 		public void GenerateImportFields_NativeFileImportServiceIsNull_CorrectResult()
 		{
@@ -260,8 +270,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.AreEqual(true, result["F4"]);
 			Assert.AreEqual("\\\\Server1\\path1\\file1", result[nativeFileImportService.DestinationFieldName]);
 		}
-		#endregion
 
+		#endregion
 
 		private Field GetFieldObject(int artifactID, string name, Guid? guid = null)
 		{

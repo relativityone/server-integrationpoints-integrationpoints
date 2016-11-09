@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Services.Repositories;
 using NSubstitute;
 using NUnit.Framework;
@@ -6,13 +7,14 @@ using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
-	public class JobHistoryRepositoryLoggingTests
+	[TestFixture]
+	public class JobHistoryRepositoryLoggingTests : TestBase
 	{
 		private IJobHistoryRepository _jobHistoryRepository;
 		private ILog _logger;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_logger = Substitute.For<ILog>();
 			_jobHistoryRepository = new JobHistoryRepository(_logger);

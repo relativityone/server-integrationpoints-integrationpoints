@@ -3,14 +3,21 @@ using System.Linq;
 using Castle.Core;
 using Castle.MicroKernel;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Installers;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
 	[TestFixture]
-	public class RSAPIServiceInstallerTests
+	public class RSAPIServiceInstallerTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void MakesureRSAPIServiceIsGettingInstalledWithLifestyleTransient()
 		{
@@ -27,7 +34,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			Assert.IsTrue(handlers.All(x => x.ComponentModel.LifestyleType == LifestyleType.Transient), "RSAPI Service needs to be a transient lifestyle");
 
 		}
-		
+
 		private IHandler[] GetAllHandlers(IWindsorContainer container)
 		{
 			return GetHandlersFor(typeof(object), container);
@@ -37,6 +44,5 @@ namespace kCura.IntegrationPoints.Data.Tests
 		{
 			return container.Kernel.GetAssignableHandlers(type);
 		}
-
 	}
 }

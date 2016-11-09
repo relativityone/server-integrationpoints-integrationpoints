@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Web.Tests.Helpers;
+using kCura.IntegrationPoints.Data.Tests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
-	public class QueueRepositoryTests
+	[TestFixture]
+	public class QueueRepositoryTests : TestBase
 	{
 		private IQueueRepository _instance;
 		private IHelper _helper;
@@ -22,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private long _jobId = 4141;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_dbContext = Substitute.For<IDBContext>();
 			_helper = Substitute.For<IHelper>();
@@ -53,16 +55,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = _integrationPointId},
 			};
 		
-			_dbContext.ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(queuedOrRunningParameters, y))).Returns(queuedOrRunningJobs);
-			_dbContext.ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(scheduledRunningParameters, y))).Returns(scheduledRunningJobs);
+			_dbContext.ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(queuedOrRunningParameters, y))).Returns(queuedOrRunningJobs);
+			_dbContext.ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(scheduledRunningParameters, y))).Returns(scheduledRunningJobs);
 
 			//Act
 			int numJobs = _instance.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 
 			//Assert
 			Assert.IsTrue(numJobs == queuedOrRunningJobs + scheduledRunningJobs);
-			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(queuedOrRunningParameters, y)));
-			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(scheduledRunningParameters, y)));
+			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(queuedOrRunningParameters, y)));
+			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(scheduledRunningParameters, y)));
 		}
 
 		[Test]
@@ -84,16 +86,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = _integrationPointId},
 			};
 
-			_dbContext.ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(queuedOrRunningParameters, y))).Returns(0);
-			_dbContext.ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(scheduledRunningParameters, y))).Returns(0);
+			_dbContext.ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(queuedOrRunningParameters, y))).Returns(0);
+			_dbContext.ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(scheduledRunningParameters, y))).Returns(0);
 
 			//Act
 			int numJobs = _instance.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 
 			//Assert
 			Assert.IsTrue(numJobs == 0);
-			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(queuedOrRunningParameters, y)));
-			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(scheduledRunningParameters, y)));
+			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(queuedOrRunningParameters, y)));
+			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(scheduledRunningParameters, y)));
 		}
 
 		[Test]
@@ -111,14 +113,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				new SqlParameter("@jobId", SqlDbType.BigInt) {Value = _jobId}
 			};
 
-			_dbContext.ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(parameters, y))).Returns(runningJobs);
+			_dbContext.ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(parameters, y))).Returns(runningJobs);
 
 			//Act
 			int numJobs = _instance.GetNumberOfJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime);
 
 			//Assert
 			Assert.IsTrue(numJobs == runningJobs);
-			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(parameters, y)));
+			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(parameters, y)));
 		}
 
 		[Test]
@@ -135,14 +137,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				new SqlParameter("@jobId", SqlDbType.BigInt) {Value = _jobId}
 			};
 
-			_dbContext.ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(parameters, y))).Returns(0);
+			_dbContext.ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(parameters, y))).Returns(0);
 
 			//Act
 			int numJobs = _instance.GetNumberOfJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime);
 
 			//Assert
 			Assert.IsTrue(numJobs == 0);
-			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => TestBase.MatchesSqlParameters(parameters, y)));
+			_dbContext.Received(1).ExecuteSqlStatementAsScalar<int>(sql, Arg.Is<IEnumerable<SqlParameter>>(y => MatchHelper.MatchesSqlParameters(parameters, y)));
 		}
 	}
 }

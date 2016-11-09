@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Services.Repositories;
 using NSubstitute;
 using NUnit.Framework;
@@ -8,10 +9,10 @@ using Relativity.Logging;
 namespace kCura.IntegrationPoints.Services.Tests
 {
 	[TestFixture]
-	public class IntegrationPointRepositoryLoggingTests
+	public class IntegrationPointRepositoryLoggingTests : TestBase
 	{
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_logger = Substitute.For<ILog>();
 			_integrationPointRepository = new IntegrationPointRepository(_logger);

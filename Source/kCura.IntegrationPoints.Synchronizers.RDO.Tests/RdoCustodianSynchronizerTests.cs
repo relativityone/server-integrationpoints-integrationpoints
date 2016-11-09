@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.Relativity.Client;
@@ -13,7 +14,7 @@ using Artifact = kCura.Relativity.Client.Artifact;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class RdoCustodianSynchronizerTests
+	public class RdoCustodianSynchronizerTests : TestBase
 	{
 
 		#region GetFields
@@ -40,9 +41,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		[OneTimeSetUp]
-		public void Setup()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
+
 			_settings = JsonConvert.SerializeObject(new ImportSettings());
+		}
+
+		[SetUp]
+		public override void SetUp()
+		{
+			
 		}
 
 		[Test]

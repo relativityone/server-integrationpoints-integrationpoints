@@ -9,12 +9,13 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
 	[TestFixture]
-	public class SendEmailManagerUnitTests
+	public class SendEmailManagerUnitTests : TestBase
 	{
 		private ISerializer _serializer;
 		private IJobManager _jobManager;
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private IJobService _jobService;
 
 		[SetUp]
-		public void TestSetup()
+		public override void SetUp()
 		{
 			_jobService = Substitute.For<IJobService>();
 			_serializer = Substitute.For<ISerializer>();

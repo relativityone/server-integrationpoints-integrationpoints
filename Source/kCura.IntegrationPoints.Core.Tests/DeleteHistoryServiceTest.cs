@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
@@ -9,8 +10,14 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests
 {
 	[TestFixture]
-	public class DeleteHistoryServiceTest
+	public class DeleteHistoryServiceTest : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void DeleteHistoriesAssociatedWithIPs_IntegrationPoint_SetJobHistoryNull()
 		{

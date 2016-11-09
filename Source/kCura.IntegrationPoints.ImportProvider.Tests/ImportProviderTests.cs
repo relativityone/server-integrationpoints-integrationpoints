@@ -2,21 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
-
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.ImportProvider;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests
 {
     [TestFixture]
-    public class ImportProviderTests
+    public class ImportProviderTests : TestBase
     {
         private int MAX_COLS = 100;
         private int MAX_ROWS = 20;
@@ -27,7 +23,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
         private IEnumerableParserFactory _enumerableParserFactory;
 
         [SetUp]
-        public void Setup()
+        public override void SetUp()
         {
             _fieldParser = Substitute.For<IFieldParser>();
             _fieldParserFactory = Substitute.For<IFieldParserFactory>();;

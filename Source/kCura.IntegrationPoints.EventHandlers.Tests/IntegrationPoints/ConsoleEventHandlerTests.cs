@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.EventHandler;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -13,7 +14,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 {
 	[TestFixture]
-	public class ConsoleEventHandlerTests
+	public class ConsoleEventHandlerTests : TestBase
 	{
 		private const int _ARTIFACT_ID = 100300;
 		private const int _APPLICATION_ID = 100101;
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		private ConsoleEventHandler _instance;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_integrationPointManager = Substitute.For<IIntegrationPointManager>();

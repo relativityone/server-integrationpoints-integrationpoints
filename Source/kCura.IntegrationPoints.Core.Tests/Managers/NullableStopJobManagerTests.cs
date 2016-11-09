@@ -1,15 +1,16 @@
-﻿using kCura.IntegrationPoints.Core.Managers.Implementations;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class NullableStopJobManagerTests
+	public class NullableStopJobManagerTests : TestBase
 	{
 		private NullableStopJobManager _instance;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_instance = new NullableStopJobManager();
 		}

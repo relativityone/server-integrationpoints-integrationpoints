@@ -1,12 +1,19 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 {
 	[TestFixture]
-	public class LazyExceptArtifactFieldDtoTests
+	public class LazyExceptArtifactFieldDtoTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void DtoContainsException()
 		{

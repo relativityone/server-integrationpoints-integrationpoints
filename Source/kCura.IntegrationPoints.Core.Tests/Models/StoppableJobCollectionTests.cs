@@ -1,11 +1,18 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Models;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Models
 {
 	[TestFixture]
-	public class StoppableJobCollectionTests
+	public class StoppableJobCollectionTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void HasStoppableJobs_NullProperties_ReturnsFalse()
 		{

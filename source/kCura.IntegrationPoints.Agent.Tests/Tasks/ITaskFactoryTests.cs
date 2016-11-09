@@ -16,6 +16,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
@@ -28,7 +29,7 @@ using kCura.Relativity.Client;
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
 	[TestFixture]
-	public class ITaskFactoryTests
+	public class ITaskFactoryTests : TestBase
 	{
 		private IAgentHelper _helper;
 		private ISerializer _serializer;
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private TaskFactory _instance;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_helper = Substitute.For<IAgentHelper>();
 			_serializer = Substitute.For<ISerializer>();
