@@ -20,12 +20,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		#region GetFields
 
 		private string _settings;
+		private IRSAPIClient _rsapiClient;
+		private IHelper _helper;
+		private RelativityFieldQuery _fieldQuery;
+
 
 		public static ImportApiFactory GetMockAPI(RelativityFieldQuery query)
 		{
-			var import = NSubstitute.Substitute.For<Relativity.ImportAPI.IExtendedImportAPI>();
+			var import = Substitute.For<Relativity.ImportAPI.IExtendedImportAPI>();
 			var result = query.GetFieldsForRdo(0);
-			var list = new List<kCura.Relativity.ImportAPI.Data.Field>();
+			var list = new List<Relativity.ImportAPI.Data.Field>();
 			var mi = typeof(Relativity.ImportAPI.Data.Field).GetProperty("ArtifactID").GetSetMethod(true);
 			foreach (var r in result)
 			{
@@ -35,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			}
 
 			import.GetWorkspaceFields(Arg.Any<int>(), Arg.Any<int>()).Returns(list);
-			var mock = NSubstitute.Substitute.For<ImportApiFactory>(Substitute.For<IHelper>(), Substitute.For<ISystemEventLoggingService>());
+			var mock = Substitute.For<ImportApiFactory>(Substitute.For<IHelper>(), Substitute.For<ISystemEventLoggingService>());
 			mock.GetImportAPI(Arg.Any<ImportSettings>()).Returns(import);
 			return mock;
 		}
@@ -51,14 +55,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		[SetUp]
 		public override void SetUp()
 		{
-			
+			_rsapiClient = Substitute.For<IRSAPIClient>();
+			_helper = Substitute.For<IHelper>();
+			_fieldQuery = Substitute.For<RelativityFieldQuery>(_rsapiClient, _helper);
 		}
 
 		[Test]
 		public void GetFields_FieldsContainsFirstName_MakesFieldRequired()
 		{
 			//ARRANGE
-			var fieldQuery = NSubstitute.Substitute.For<RelativityFieldQuery>(NSubstitute.Substitute.For<IRSAPIClient>(), Substitute.For<IHelper>());
 			var artifacts = new List<Artifact>();
 			artifacts.Add(new Artifact
 			{
@@ -74,10 +79,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				Name = "Test1"
 			});
 
-			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
+			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery), Substitute.For<IHelper>()));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _helper));
 			var fields = sync.GetFields(_settings);
 
 
@@ -91,7 +96,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetFields_FieldsContainsLastName_MakesFieldRequired()
 		{
 			//ARRANGE
-			var fieldQuery = NSubstitute.Substitute.For<RelativityFieldQuery>(NSubstitute.Substitute.For<IRSAPIClient>(), Substitute.For<IHelper>());
 			var artifacts = new List<Artifact>();
 			artifacts.Add(new Artifact
 			{
@@ -107,10 +111,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				Name = "Test1"
 			});
 
-			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
+			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery), Substitute.For<IHelper>()));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _helper));
 			var fields = sync.GetFields(_settings);
 
 
@@ -123,7 +127,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetFields_FieldsContainsUniqueID_OnlyUniqueIDSetForIdentifier()
 		{
 			//ARRANGE
-			var fieldQuery = NSubstitute.Substitute.For<RelativityFieldQuery>(NSubstitute.Substitute.For<IRSAPIClient>(), Substitute.For<IHelper>());
 			var artifacts = new List<Artifact>();
 			artifacts.Add(new Artifact
 			{
@@ -139,10 +142,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				Name = "Test1"
 			});
 
-			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
+			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery), Substitute.For<IHelper>()));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _helper));
 			var fields = sync.GetFields(_settings).ToList();
 
 
