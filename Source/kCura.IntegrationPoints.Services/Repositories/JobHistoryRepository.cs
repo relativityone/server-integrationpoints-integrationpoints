@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -43,7 +44,9 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				var queryResult = service.JobHistoryLibrary
 					.Query(new Query<RDO>() { ArtifactTypeGuid = new Guid(_JOB_HISTORY_OBJECT_TYPE_GUID), Fields = FieldValue.AllFields })
 					.Where(s => string.Equals(s.JobStatus.Name, "Completed", StringComparison.InvariantCultureIgnoreCase) 
-					|| string.Equals(s.JobStatus.Name,"Completed With Errors", StringComparison.InvariantCultureIgnoreCase)).ToList();
+					            || string.Equals(s.JobStatus.Name,"Completed With Errors", StringComparison.InvariantCultureIgnoreCase));
+				
+				queryResult = SortJobHistories(request, queryResult);
 
 				var totalAvailable = 0;
 				var totalDocuments = 0;
@@ -59,7 +62,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 					var jobHistory = new JobHistoryModel
 					{
 						ItemsTransferred = res.ItemsTransferred ?? 0,
-						EndTimeUtc = res.EndTimeUTC.GetValueOrDefault(),
+						EndTimeUTC = res.EndTimeUTC.GetValueOrDefault(),
 						DestinationWorkspace = res.DestinationWorkspace
 					};
 					jobHistories.Add(jobHistory);
@@ -67,7 +70,6 @@ namespace kCura.IntegrationPoints.Services.Repositories
 					totalDocuments += res.ItemsTransferred ?? 0;
 					totalAvailable++;
 				}
-
 
 				jobHistorySummary.Data = jobHistories.ToArray();
 				jobHistorySummary.TotalAvailable = totalAvailable;
@@ -80,6 +82,27 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				_logger.LogError(ex, "{0}.{1}", nameof(JobHistoryManager), nameof(GetJobHistory));
 				throw;
 			}
+		}
+		
+		private IEnumerable<JobHistory> SortJobHistories(JobHistoryRequest request, IEnumerable<JobHistory> queryResult)
+		{
+			bool sortDescending = request.SortDescending ?? false;
+			string sortColumn = GetSortColumn(request.SortColumnName);
+
+			queryResult = sortDescending
+				? queryResult.OrderByDescending(x => x.GetType().GetProperty(sortColumn).GetValue(x, null))
+				: queryResult.OrderBy(x => x.GetType().GetProperty(sortColumn).GetValue(x, null));
+
+			return queryResult;
+		}
+		
+		private string GetSortColumn(string sortColumnName)
+		{
+			string sortColumn = string.IsNullOrEmpty(sortColumnName)
+				? nameof(JobHistoryModel.DestinationWorkspace)
+				: sortColumnName;
+
+			return sortColumn;
 		}
 
 		private FieldValueList<Workspace> GetWorkspacesUserHasPermissionToView(int userArtifactId)
