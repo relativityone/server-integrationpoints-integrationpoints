@@ -152,7 +152,7 @@
 					self.FolderArtifactName(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
 				}
 			});
-			self.locationSelector.toggle(true);
+			self.locationSelector.toggle(!self.disable);
 		};
 
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
