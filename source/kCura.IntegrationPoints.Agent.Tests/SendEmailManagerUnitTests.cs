@@ -21,6 +21,9 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private IJobManager _jobManager;
 		private SendEmailManager _sendEmailManager;
 		private IJobService _jobService;
+		private EmailMessage _emailMessage;
+		private string _serializedEmailMessage;
+
 
 		[SetUp]
 		public override void SetUp()
@@ -29,7 +32,15 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_serializer = Substitute.For<ISerializer>();
 			_jobManager = Substitute.For<IJobManager>();
 			IHelper helper = Substitute.For<IHelper>();
-			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager, helper);
+			_sendEmailManager = new SendEmailManager(_serializer, _jobManager, helper);
+
+			_emailMessage = new EmailMessage()
+			{
+				Subject = "email test",
+				MessageBody = "hello."
+			};
+
+			_serializedEmailMessage = JsonConvert.SerializeObject(_emailMessage);
 		}
 
 		[Test]
@@ -49,20 +60,14 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		public void CreateBatchJob_GoldFlow(List<string> list)
 		{
 			// arrange
-			EmailMessage emailMessage = new EmailMessage()
-			{
-				Subject = "email test",
-				MessageBody = "hello."
-			};
-
-			Job job = JobExtensions.CreateJob(1, 1, JsonConvert.SerializeObject(emailMessage));
+			Job job = JobExtensions.CreateJob(1, 1, _serializedEmailMessage);
 			_serializer.Deserialize<EmailMessage>(job.JobDetails).Returns(JsonConvert.DeserializeObject<EmailMessage>(job.JobDetails));
 
 			// act
 			_sendEmailManager.CreateBatchJob(job, list);
 
 			// assert
-			this._jobManager.Received(1).CreateJob(job, Arg.Is<EmailMessage>(email => email.Emails.SequenceEqual(list) && email.Subject.Equals(emailMessage.Subject) && email.MessageBody.Equals(emailMessage.MessageBody)), TaskType.SendEmailWorker);
+			this._jobManager.Received(1).CreateJob(job, Arg.Is<EmailMessage>(email => email.Emails.SequenceEqual(list) && email.Subject.Equals(_emailMessage.Subject) && email.MessageBody.Equals(_emailMessage.MessageBody)), TaskType.SendEmailWorker);
 		}
 	}
 }
