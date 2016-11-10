@@ -7,64 +7,61 @@ using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Toggle;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-    public class ScratchTableRepository : IScratchTableRepository
-    {
-        private readonly IDBContext _caseContext;
+	public class ScratchTableRepository : IScratchTableRepository
+	{
+		private readonly IDBContext _caseContext;
 		private readonly IDocumentRepository _documentRepository;
-        private readonly IFieldRepository _fieldRepository;
-        private readonly string _tablePrefix;
-        private readonly string _tableSuffix;
-        private readonly int _workspaceId;
-        private IDataReader _reader;
-        private string _database;
-        private string _tempTableName;
-        private string _docIdentifierFieldName;
-	    private int _count;
-		private readonly bool _isAOAGEnabled;
+		private readonly IFieldRepository _fieldRepository;
+		private readonly IResourceDbProvider _resourceDbProvider;
+		private readonly string _tablePrefix;
+		private readonly string _tableSuffix;
+		private readonly int _workspaceId;
+		private IDataReader _reader;
+		private string _tempTableName;
+		private string _docIdentifierFieldName;
+		private int _count;
 
-	    public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider,
-		    IDocumentRepository documentRepository,
-		    IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId) :
-			    this(helper.GetDBContext(workspaceId), documentRepository, fieldRepository,
-				    tablePrefix, tableSuffix, workspaceId, toggleProvider.IsAOAGFeatureEnabled())
-	    {
-			
+		public ScratchTableRepository(IHelper helper, IDocumentRepository documentRepository,
+			IFieldRepository fieldRepository, IResourceDbProvider resourceDbProvider, string tablePrefix, string tableSuffix, int workspaceId) :
+				this(helper.GetDBContext(workspaceId), documentRepository, fieldRepository, resourceDbProvider,
+					tablePrefix, tableSuffix, workspaceId)
+		{
+
 		}
 
-	    private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldRepository fieldRepository, 
-			string tablePrefix, string tableSuffix, int workspaceId, bool isAOAGEnabled)
-	    {
+		private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldRepository fieldRepository, IResourceDbProvider resourceDbProvider,
+			string tablePrefix, string tableSuffix, int workspaceId)
+		{
 			_caseContext = caseContext;
 			_documentRepository = documentRepository;
 			_fieldRepository = fieldRepository;
+			_resourceDbProvider = resourceDbProvider;
 			_tablePrefix = tablePrefix;
 			_tableSuffix = tableSuffix;
 			_workspaceId = workspaceId;
 			IgnoreErrorDocuments = false;
-			_isAOAGEnabled = isAOAGEnabled;
 		}
 
 		public bool IgnoreErrorDocuments { get; set; }
 
 		public int Count
-        {
-            get
-            {
-                return _count;
-            }
-        }
+		{
+			get
+			{
+				return _count;
+			}
+		}
 
-        public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
-        {
-            _count -= docIdentifiers.Count;
+		public void RemoveErrorDocuments(ICollection<string> docIdentifiers)
+		{
+			_count -= docIdentifiers.Count;
 
-            ICollection<int> docIds = GetErroredDocumentId(docIdentifiers);
+			ICollection<int> docIds = GetErroredDocumentId(docIdentifiers);
 
 			if (docIds.Count == 0)
 			{
@@ -73,60 +70,57 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string documentList = "(" + String.Join(",", docIds) + ")";
 
 			string fullTableName = GetTempTableName();
-            string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] in {1}", fullTableName, documentList, FullDatabaseFormat);
+			string sql = String.Format(@"DELETE FROM {2}.[{0}] WHERE [ArtifactID] in {1}", fullTableName, documentList, GetResourceDBPrepend());
 
-            _caseContext.ExecuteNonQuerySQLStatement(sql);
-        }
+			_caseContext.ExecuteNonQuerySQLStatement(sql);
+		}
 
-        public IDataReader GetDocumentIdsDataReaderFromTable()
-        {
-            if (_reader == null)
-            {
-                string fullTableName = GetTempTableName();
+		public IDataReader GetDocumentIdsDataReaderFromTable()
+		{
+			if (_reader == null)
+			{
+				string fullTableName = GetTempTableName();
 
-                var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-											SELECT [ArtifactID] FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+				var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}') SELECT [ArtifactID] FROM {2}.[{0}]", fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
 
-                _reader = _caseContext.ExecuteSQLStatementAsReader(sql);
-            }
-            return _reader;
-        }
+				_reader = _caseContext.ExecuteSQLStatementAsReader(sql);
+			}
+			return _reader;
+		}
 
-        public void Dispose()
-        {
-            try
-            {
-                if (_reader != null)
-                {
-                    _reader.Close();
-                    _reader = null;
-                }
-                DeleteTable();
-            }
-            catch (Exception)
-            {
-                // trying to delete temp tables early, don't have worry about failing
-            }
-        }
+		public void Dispose()
+		{
+			try
+			{
+				if (_reader != null)
+				{
+					_reader.Close();
+					_reader = null;
+				}
+				DeleteTable();
+			}
+			catch (Exception)
+			{
+				// trying to delete temp tables early, don't have worry about failing
+			}
+		}
 
-        public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
-        {
-            if (!artifactIds.IsNullOrEmpty())
+		public void AddArtifactIdsIntoTempTable(ICollection<int> artifactIds)
+		{
+			if (!artifactIds.IsNullOrEmpty())
 			{
 				_count += artifactIds.Count;
 
 				string fullTableName = GetTempTableName();
-			
-				string database = _isAOAGEnabled ? _caseContext.Database : "EDDSRESOURCE";
 
-				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, database);
+				ConnectionData connectionData = ConnectionData.GetConnectionDataWithCurrentCredentials(_caseContext.ServerName, GetSchemalessResourceDataBasePrepend());
 				string connectionString = $"data source={connectionData.Server};initial catalog={connectionData.Database};persist security info=False;user id={connectionData.Username};password={connectionData.Password}; workstation id=localhost;packet size=4096;connect timeout=30;";
 				Context context = new Context(connectionString);
-			
-				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+
+				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
-												CREATE TABLE {2}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+												CREATE TABLE {2}.[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+											END", fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
 
 				using (DataTable artifactIdTable = new DataTable())
@@ -139,159 +133,137 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 					SqlBulkCopyParameters bulkParameters = new SqlBulkCopyParameters
 					{
-						DestinationTableName = $"{FullDatabaseFormat}[{fullTableName}]"
+						DestinationTableName = $"{GetResourceDBPrepend()}.[{fullTableName}]"
 					};
 					context.ExecuteBulkCopy(artifactIdTable, bulkParameters);
 				}
 			}
-        }
+		}
 
-	    public IScratchTableRepository CopyTempTable(string newTempTablePrefix)
-	    {
-		    ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, newTempTablePrefix, _tableSuffix, _workspaceId, _isAOAGEnabled);
-		    string sourceTableName = GetTempTableName();
-		    string newTableName = copiedScratchTableRepository.GetTempTableName();
+		public IScratchTableRepository CopyTempTable(string newTempTablePrefix)
+		{
+			ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, _resourceDbProvider, newTempTablePrefix, _tableSuffix, _workspaceId);
+			string sourceTableName = GetTempTableName();
+			string newTableName = copiedScratchTableRepository.GetTempTableName();
 
-			string sql = String.Format(@"SELECT * INTO {2}[{0}] FROM {2}[{1}]", newTableName, sourceTableName, FullDatabaseFormat);
-			
+			string sql = String.Format(@"SELECT * INTO {2}.[{0}] FROM {2}.[{1}]", newTableName, sourceTableName, GetResourceDBPrepend());
+
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 
-		    copiedScratchTableRepository._count = _count;
+			copiedScratchTableRepository._count = _count;
 
-		    return copiedScratchTableRepository;
-	    }
+			return copiedScratchTableRepository;
+		}
 
-        public void DeleteTable()
-        {
-            string fullTableName = GetTempTableName();
-            string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
-										DROP TABLE {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+		public void DeleteTable()
+		{
+			string fullTableName = GetTempTableName();
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}') DROP TABLE {2}.[{0}]", 
+				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
 
-            _caseContext.ExecuteNonQuerySQLStatement(sql);
-        }
+			_caseContext.ExecuteNonQuerySQLStatement(sql);
+		}
 
-        private string TargetDatabaseFormat
-        {
-            get
-            {
-                if (_database == null)
-                {
-                    _database = _isAOAGEnabled ? String.Empty : "[EDDSRESOURCE].";
-                }
-                return _database;
-            }
-        }
+		public string GetTempTableName()
+		{
+			if (_tempTableName == null)
+			{
+				_tempTableName = $"{_tablePrefix}_{_tableSuffix}";
+				if (_tempTableName.Length > 128)
+				{
+					throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contact the system administrator.");
+				}
+			}
+			return _tempTableName;
+		}
 
-        private string FullDatabaseFormat
-        {
-            get { return TargetDatabaseFormat == String.Empty ? "[Resource]." : "[EDDSRESOURCE].eddsdbo."; }
-        }
+		public string GetSchemalessResourceDataBasePrepend()
+		{
+			return _resourceDbProvider.GetSchemalessResourceDataBasePrepend(_workspaceId);
+		}
 
-        public string GetTempTableName()
-        {
-            if (_tempTableName == null)
-            {
-                string prepend = String.Empty;
-                if (_isAOAGEnabled)
-                {
-                    prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
-                }
-                _tempTableName = $"{prepend}{_tablePrefix}_{_tableSuffix}";
-                if (_tempTableName.Length > 128)
-                {
-                    throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contact the system administrator.");
-                }
-            }
-            return _tempTableName;
-        }
+		public string GetResourceDBPrepend()
+		{
+			return _resourceDbProvider.GetResourceDbPrepend(_workspaceId);
+		}
 
-        public string GetSchemalessResourceDataBasePrepend()
-        {
-            return ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId);
-        }
+		private ICollection<int> GetErroredDocumentId(ICollection<string> docIdentifiers)
+		{
+			if (String.IsNullOrEmpty(_docIdentifierFieldName))
+			{
+				_docIdentifierFieldName = GetDocumentIdentifierField();
+			}
 
-        public string GetResourceDBPrepend()
-        {
-            return ClaimsPrincipal.Current.ResourceDBPrepend(_workspaceId);
-        }
+			ICollection<int> documentIds = QueryForDocumentArtifactId(docIdentifiers);
+			return documentIds;
+		}
 
-        private ICollection<int> GetErroredDocumentId(ICollection<string> docIdentifiers)
-        {
-            if (String.IsNullOrEmpty(_docIdentifierFieldName))
-            {
-                _docIdentifierFieldName = GetDocumentIdentifierField();
-            }
+		internal string GetDocumentIdentifierField()
+		{
+			ArtifactDTO[] fieldArtifacts = _fieldRepository.RetrieveFieldsAsync(
+				10,
+				new HashSet<string>(new[]
+				{
+					Fields.Name,
+					Fields.IsIdentifier
+				})).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            ICollection<int> documentIds = QueryForDocumentArtifactId(docIdentifiers);
-            return documentIds;
-        }
+			string fieldName = String.Empty;
+			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
+			{
+				int isIdentifierFieldValue = 0;
+				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
+				{
+					if (field.Name == Fields.Name)
+					{
+						fieldName = field.Value.ToString();
+					}
+					if (field.Name == Fields.IsIdentifier)
+					{
+						try
+						{
+							isIdentifierFieldValue = Convert.ToInt32(field.Value);
+						}
+						catch
+						{
+							// suppress error for invalid casts
+						}
+					}
+				}
+				if (isIdentifierFieldValue == 1)
+				{
+					break;
+				}
+			}
+			return fieldName;
+		}
 
-        internal string GetDocumentIdentifierField()
-        {
-            ArtifactDTO[] fieldArtifacts = _fieldRepository.RetrieveFieldsAsync(
-                10,
-                new HashSet<string>(new[]
-                {
-                    Fields.Name,
-                    Fields.IsIdentifier
-                })).ConfigureAwait(false).GetAwaiter().GetResult();
+		internal List<int> QueryForDocumentArtifactId(ICollection<string> docIdentifiers)
+		{
+			ArtifactDTO[] documents;
+			string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
+			try
+			{
+				Task<ArtifactDTO[]> documentResult = _documentRepository.RetrieveDocumentsAsync(_docIdentifierFieldName, docIdentifiers);
+				documents = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(queryFailureMessage, ex);
+			}
 
-            string fieldName = String.Empty;
-            foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
-            {
-                int isIdentifierFieldValue = 0;
-                foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
-                {
-                    if (field.Name == Fields.Name)
-                    {
-                        fieldName = field.Value.ToString();
-                    }
-                    if (field.Name == Fields.IsIdentifier)
-                    {
-                        try
-                        {
-                            isIdentifierFieldValue = Convert.ToInt32(field.Value);
-                        }
-                        catch
-                        {
-                            // suppress error for invalid casts
-                        }
-                    }
-                }
-                if (isIdentifierFieldValue == 1)
-                {
-                    break;
-                }
-            }
-            return fieldName;
-        }
+			if (documents == null)
+			{
+				throw new Exception(queryFailureMessage);
+			}
 
-        internal List<int> QueryForDocumentArtifactId(ICollection<string> docIdentifiers)
-        {
-            ArtifactDTO[] documents;
-            string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
-            try
-            {
-                Task<ArtifactDTO[]> documentResult = _documentRepository.RetrieveDocumentsAsync(_docIdentifierFieldName, docIdentifiers);
-                documents = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(queryFailureMessage, ex);
-            }
+			return documents.Select(x => x.ArtifactId).ToList();
+		}
 
-            if (documents == null)
-            {
-                throw new Exception(queryFailureMessage);
-            }
-
-            return documents.Select(x => x.ArtifactId).ToList();
-        }
-
-        internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
-        {
-            internal static string Name = "Name";
-            internal static string IsIdentifier = "Is Identifier";
-        }
-    }
+		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
+		{
+			internal static string Name = "Name";
+			internal static string IsIdentifier = "Is Identifier";
+		}
+	}
 }

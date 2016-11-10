@@ -438,8 +438,8 @@
       <HintPath>..\packages\RelativityCore.9.4.353.4\lib\net45\Relativity.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.226, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.1.0.1.226\lib\net45\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.192, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.192\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">

@@ -285,6 +285,23 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IF NOT EXISTS (SELECT * FROM [eddsdbo].[TOGGLE] WHERE [Name] = &apos;kCura.IntegrationPoints.Web.Toggles.ShowFileShareDataProviderToggle&apos;)
+        ///BEGIN
+        ///	INSERT INTO [eddsdbo].[Toggle] VALUES (&apos;kCura.IntegrationPoints.Web.Toggles.ShowFileShareDataProviderToggle&apos;, 1)
+        ///END
+        ///ELSE
+        ///BEGIN
+        ///	UPDATE [eddsdbo].[Toggle] SET IsEnabled = 1
+        ///	WHERE [Name] = &apos;kCura.IntegrationPoints.Web.Toggles.ShowFileShareDataProviderToggle&apos;
+        ///END.
+        /// </summary>
+        internal static string SetExportProviderToogle {
+            get {
+                return ResourceManager.GetString("SetExportProviderToogle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UPDATE {0}.[{1}]
         ///	SET
         ///		[TotalRecords] = @total,
