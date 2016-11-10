@@ -654,6 +654,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// arrange
 			_sourceProvider.Identifier = "some thing else";
+			_destinationProvider.Identifier = "bla bla";
 
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
