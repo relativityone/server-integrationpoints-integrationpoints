@@ -38,8 +38,6 @@ namespace kCura.IntegrationPoints.Services
 					IServiceHelper helper = k.Resolve<IServiceHelper>();
 					return new ServiceContextHelperForKelperService(helper, _caseArtifactId);
 				}));
-			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
-			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
 			container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceContext>()

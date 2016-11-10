@@ -179,6 +179,7 @@
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
+    <Compile Include="Migrations\Migration.cs" />
     <Compile Include="Repositories\Implementations\SqlWorkspacesRepository.cs" />
     <Compile Include="Repositories\IWorkspacesRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
@@ -378,6 +379,7 @@
     <Content Include="Resources\GetObjectTypes.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
+    <Content Include="Resources\SetExportProviderToogle.sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
   <ItemGroup>

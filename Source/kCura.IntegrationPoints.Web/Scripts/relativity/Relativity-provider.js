@@ -119,6 +119,10 @@
 				type: "get",
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId)
 			}).then(function (result) {
+				if (!!self.FolderArtifactName() && self.FolderArtifactName().indexOf(result.text) === -1) {
+					self.FolderArtifactId("");
+					self.FolderArtifactName("");
+				}
 				self.foldersStructure = result;
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
@@ -126,12 +130,26 @@
 			});
 		};
 
+		self.getFolderFullName = function (currentFolder, folderId) {
+			if (currentFolder.id === folderId) {
+				return currentFolder.text;
+			} else {
+				for (var i = 0; i < currentFolder.children.length; i++) {
+					var childFolderPath = self.getFolderFullName(currentFolder.children[i], folderId);
+					if (childFolderPath !== "") {
+						return currentFolder.text + "/" + childFolderPath;
+					}
+				}
+			}
+			return "";
+		};
+
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.FolderArtifactName(), [], {
 				onNodeSelectedEventHandler: function (node) {
-					self.FolderArtifactName(node.text);
 					self.FolderArtifactId(node.id);
+					self.FolderArtifactName(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
 				}
 			});
 			self.locationSelector.toggle(true);
