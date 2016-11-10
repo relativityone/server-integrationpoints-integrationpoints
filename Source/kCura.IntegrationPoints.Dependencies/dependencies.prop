@@ -34,7 +34,7 @@
 		<Owin>Owin.1.0</Owin>
 		<Relativity_Logging>Relativity.Logging.9.4.300</Relativity_Logging>
 		<Relativity_Logging_Interfaces>Relativity.Logging.Interfaces.9.4.300</Relativity_Logging_Interfaces>
-		<Relativity_Kepler>Relativity.Kepler.1.0.1.226</Relativity_Kepler>
+		<Relativity_Kepler>Relativity.Kepler.1.0.1.192</Relativity_Kepler>
 		<Relativity_Kepler_Client>Relativity.Kepler.Client.1.0.1.192</Relativity_Kepler_Client>
 		<Relativity_SecretCatalog>Relativity.SecretCatalog.1.0.16</Relativity_SecretCatalog>
 		<Relativity_SecretCatalog_AzureKeyVault>Relativity.SecretCatalog.AzureKeyVault.1.0.16</Relativity_SecretCatalog_AzureKeyVault>

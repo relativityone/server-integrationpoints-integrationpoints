@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Data.Extensions
             }
             catch (Exception exception)
             {
-                throw new Exception("Unable to determine scratch table's perpend. The integration Point may be out of date.", exception);
+                throw new Exception("Unable to determine scratch table's prepend. The integration Point may be out of date.", exception);
             }
             return prepend;
         }
