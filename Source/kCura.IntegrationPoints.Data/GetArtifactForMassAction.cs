@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Data
         {
             IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
             //create a sql statement which will select the list of ArtifactIDs from the TempTableNameWithParentArtifactsToDelete scratch table
-            //Note: we are linking to the EDDSResource database that is on the same database server as the workspace this action is being performed on
             string sql = string.Format("SELECT [ArtifactID] FROM {0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), tempTableName);
             //get the artifact ids from the table and convert to a generic list of Int32
             return workspaceContext.ExecuteSqlStatementAsDataTable(sql).Rows.Cast<System.Data.DataRow>().Select(dr => Convert.ToInt32(dr["ArtifactID"])).ToList();
