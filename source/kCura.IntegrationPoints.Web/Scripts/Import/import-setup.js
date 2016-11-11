@@ -212,6 +212,7 @@
         windowPar.$(idSelector(CONFIGURATION_FRAME)).css({ "min-width": '900px' });
         $(idSelector(JSTREE_HOLDER_DIV)).css({ 'min-height': '50%' });
         $(idSelector(JSTREE_HOLDER_DIV)).height('auto');
+        $('body').addClass('import-body-style');
     };
 
     windowObj.RelativityImport.enableLocation = function (en) {
@@ -263,6 +264,7 @@
             }).then(function (result) {
                 onSuccess(result);
                 windowObj.RelativityImport.enableLocation(true);
+                IP.frameMessaging().dFrame.IP.message.error.clear();
             }).fail(function (error) {
                 onFail(error);
                 IP.frameMessaging().dFrame.IP.message.error.raise("Failed to load Directories for the selected Source Location.");
@@ -279,6 +281,7 @@
             sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
         }
     }).done(function (data) {
+        IP.frameMessaging().dFrame.IP.message.error.clear();
         windowObj.RelativityImport.enableLoadModal(false);
         windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
         if (windowObj.RelativityImport.GetCachedUiModel) {
