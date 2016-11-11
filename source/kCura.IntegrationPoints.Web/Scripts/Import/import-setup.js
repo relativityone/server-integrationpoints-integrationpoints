@@ -105,6 +105,10 @@
         updateHeaders();
     });
 
+    windowObj.RelativityImport.closePreviewBtn = function () {
+        windowObj.parent.$(idSelector(BUTTON_UL)).hide();
+    };
+
     var populateCachedState = function () {
         var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
         var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
@@ -264,10 +268,9 @@
             }).then(function (result) {
                 onSuccess(result);
                 windowObj.RelativityImport.enableLocation(true);
-                IP.frameMessaging().dFrame.IP.message.error.clear();
             }).fail(function (error) {
                 onFail(error);
-                IP.frameMessaging().dFrame.IP.message.error.raise("Failed to load Directories for the selected Source Location.");
+                IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve directories and subfolders info. Please contact system administrator");
             });
         };
         windowObj.RelativityImport.locationSelector.reloadWithRoot(reloadTree);
@@ -281,7 +284,6 @@
             sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
         }
     }).done(function (data) {
-        IP.frameMessaging().dFrame.IP.message.error.clear();
         windowObj.RelativityImport.enableLoadModal(false);
         windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
         if (windowObj.RelativityImport.GetCachedUiModel) {
@@ -296,7 +298,7 @@
         });
     }).fail(function () {
         windowObj.RelativityImport.enableLoadModal(false);
-        IP.frameMessaging().dFrame.IP.message.error.raise("Failed to load Processing Source Locations.");
+        IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve processing source locations. Please contact system administrator");
     });
 
     $.ajax({
