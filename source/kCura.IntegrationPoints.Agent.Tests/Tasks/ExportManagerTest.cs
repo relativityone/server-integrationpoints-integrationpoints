@@ -97,11 +97,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// Assert
 			Assert.That(retTotalCount, Is.EqualTo(totalSavedSearchCount));
 
-			if (totalSavedSearchCount > 0)
-			{
-				_jobManagerMock.Received().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.ExportWorker, Arg.Any<string>());
-				Assert.That(_instanceToTest.BatchJobCount, Is.EqualTo(1));
-			}
+			_jobManagerMock.Received(totalSavedSearchCount > 0 ? 1 : 0).CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.ExportWorker, Arg.Any<string>());
+			Assert.That(_instanceToTest.BatchJobCount, Is.EqualTo(totalSavedSearchCount > 0 ? 1 : 0));
 		}
 
 		[Test]

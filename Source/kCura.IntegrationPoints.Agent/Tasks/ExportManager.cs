@@ -102,8 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			int totalCount = GetTotalExportItemsCount(sourceSettings, job);
 
-			// This condition should be changed when we implement correct Total Items count for Production or Folders/Subfolders Export types
-			if (totalCount >= 0)
+			if (totalCount > 0)
 			{
 				CreateBatchJob(job, new List<string>());
 			}

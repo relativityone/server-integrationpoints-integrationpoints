@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Services
 	{
 		public int ItemsTransferred { get; set; }
 
-		public DateTime EndTimeUtc { get; set; }
+		public DateTime EndTimeUTC { get; set; }
 
 		public string DestinationWorkspace { get; set; }
 	}

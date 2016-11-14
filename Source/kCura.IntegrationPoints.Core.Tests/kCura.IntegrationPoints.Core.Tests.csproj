@@ -233,6 +233,7 @@
     </Compile>
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
+    <Compile Include="Managers\WorkspaceManagerTests.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />

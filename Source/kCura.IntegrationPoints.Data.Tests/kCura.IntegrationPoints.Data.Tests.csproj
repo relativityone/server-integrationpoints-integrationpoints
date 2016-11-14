@@ -252,7 +252,6 @@
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="RSAPIServiceInstallerTests.cs" />
-    <Compile Include="Toggle\ExtendedRelativityToggleTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

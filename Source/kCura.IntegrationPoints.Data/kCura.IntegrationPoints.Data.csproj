@@ -178,7 +178,9 @@
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
+    <Compile Include="Migrations\Migration.cs" />
     <Compile Include="Repositories\Implementations\SqlWorkspacesRepository.cs" />
     <Compile Include="Repositories\IWorkspacesRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
@@ -290,6 +292,7 @@
     <Compile Include="RelativityRdoQuery.cs" />
     <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\IWorkspaceRepository.cs" />
+    <Compile Include="ResourceDbProvider.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -312,7 +315,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="SqlObjectTypeQuery.cs" />
-    <Compile Include="Toggle\ExtendedRelativityToggle.cs" />
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
     <Compile Include="Transformers\IntegrationPointTransformer.cs" />
@@ -378,6 +380,7 @@
     <Content Include="Resources\GetObjectTypes.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
+    <Content Include="Resources\SetExportProviderToogle.sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
   <ItemGroup>
