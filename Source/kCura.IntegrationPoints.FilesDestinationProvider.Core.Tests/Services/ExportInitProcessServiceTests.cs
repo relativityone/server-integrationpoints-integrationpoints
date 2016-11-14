@@ -1,6 +1,6 @@
 ﻿
-using System;
 using System.ComponentModel;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -12,7 +12,8 @@ using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	class ExportInitProcessServiceTests
+	[TestFixture]
+	internal class ExportInitProcessServiceTests : TestBase
 	{
 		private ExportInitProcessService _subjectUnderTests;
 		private IHelper _helperMock;
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private const int _EXPECTED_DOC_COUNT = 10;
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_exportSettings = new ExportUsingSavedSearchSettings
 			{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain;
 using NSubstitute;
 using NUnit.Framework;
@@ -7,8 +8,13 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 {
 	[TestFixture]
-	public class RelativityFeaturePathServiceTests
+	public class RelativityFeaturePathServiceTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
 
 		[Test]
 		public void GetFeaturePathsValue_Relativity91AndPrior_CorrectValues()

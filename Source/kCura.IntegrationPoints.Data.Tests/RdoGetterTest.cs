@@ -1,19 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	public class RdoGetterTest
+	[TestFixture]
+	public class RdoGetterTest : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void RelativityRdoQueryReturnsData()
 		{
-			var client = NSubstitute.Substitute.For<IRSAPIClient>();
-			var rdoMock = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
+			var client = Substitute.For<IRSAPIClient>();
+			var rdoMock = Substitute.For<RSAPIRdoQuery>(client);
 
 			var testRdoQuery = new RdoGetter(rdoMock); 
 
@@ -30,8 +38,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[Test]
 		public void RelativityRdoQueryThrowsException()
 		{
-			var client = NSubstitute.Substitute.For<IRSAPIClient>();
-			var rdoMock = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
+			var client = Substitute.For<IRSAPIClient>();
+			var rdoMock = Substitute.For<RSAPIRdoQuery>(client);
 			
 			var testRdoQuery = new RdoGetter(rdoMock);
 

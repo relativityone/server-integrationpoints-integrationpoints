@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -16,7 +17,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class JobHistoryErrorManagerTests
+	public class JobHistoryErrorManagerTests : TestBase
 	{
 		private IJobHistoryErrorManager _testInstance;
 		private IRepositoryFactory _repositoryFactory;
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private readonly ICollection<int> _sampleItemErrors = new Collection<int>() { 4598733, 4598734 };
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();

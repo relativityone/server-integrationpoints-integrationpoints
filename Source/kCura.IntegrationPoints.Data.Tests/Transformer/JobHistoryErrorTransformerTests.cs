@@ -1,32 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests.Transformer
 {
 	[TestFixture]
-	public class JobHistoryErrorTransformerTests
+	public class JobHistoryErrorTransformerTests : TestBase
 	{
-	    private IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> _testInstance;
-        private IRepositoryFactory _repositoryFactory;
-	    private IArtifactGuidRepository _artifactGuidRepository;
+		private IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> _testInstance;
+		private IRepositoryFactory _repositoryFactory;
+		private IArtifactGuidRepository _artifactGuidRepository;
 
-        private const int _workspaceArtifactId = 1687354;
-	    private const int _errorStatusNewChoiceId = 4687356;
+		private const int _workspaceArtifactId = 1687354;
+		private const int _errorStatusNewChoiceId = 4687356;
 		private const int _errorStatusExpiredChoiceId = 7638354;
 		private const int _errorStatusInProgressChoiceId = 6981326;
 		private const int _errorStatusRetriedChoiceId = 8665454;
 		private const int _errorTypeJobChoiceId = 8796347;
 		private const int _errorTypeItemChoiceId = 7138574;
 		private const int _jobHistoryArtifactId = 1018479;
-        private static readonly Guid _errorStatusNewChoiceGuid = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
+		private static readonly Guid _errorStatusNewChoiceGuid = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
 		private static readonly Guid _errorStatusInProgressChoiceGuid = new Guid("E5EBD98C-C976-4FA2-936F-434E265EA0AA");
 		private static readonly Guid _errorStatusExpiredChoiceGuid = new Guid("AF01A8FA-B419-49B1-BD71-25296E221E57");
 		private static readonly Guid _errorStatusRetriedChoiceGuid = new Guid("7D3D393D-384F-434E-9776-F9966550D29A");
@@ -34,24 +35,33 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
 		private static readonly Guid _errorTypeItemChoiceGuid = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
 
 		[OneTimeSetUp]
-		public void SetUp()
-        {
-            _repositoryFactory = Substitute.For<IRepositoryFactory>();
-            _artifactGuidRepository = Substitute.For<IArtifactGuidRepository>();
+		public override void FixtureSetUp()
+		{
+			base.FixtureSetUp();
+
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_artifactGuidRepository = Substitute.For<IArtifactGuidRepository>();
 			_repositoryFactory.GetArtifactGuidRepository(_workspaceArtifactId).Returns(_artifactGuidRepository);
 			_testInstance = new JobHistoryErrorTransformer(_repositoryFactory, _workspaceArtifactId);
-        }
+		}
 
-        [Test]
-        public void ConvertToDtoTest()
-        {
+		[SetUp]
+		public override void SetUp()
+		{
+
+		}
+
+
+		[Test]
+		public void ConvertToDtoTest()
+		{
 			// ARRANGE
 			string expectedName = "My Job History Error";
 			JobHistoryError expectedJobHistoryError = CreateMockedJobHistoryError(expectedName);
 
-            var errorStatuschoiceDictionary = new Dictionary<int, Guid> {{ _errorStatusNewChoiceId, _errorStatusNewChoiceGuid } };
-            _artifactGuidRepository.GetGuidsForArtifactIds(Arg.Is<List<int>>(list => list.Count == 1 && list[0] == _errorStatusNewChoiceId))
-                .Returns(errorStatuschoiceDictionary);
+			var errorStatuschoiceDictionary = new Dictionary<int, Guid> { { _errorStatusNewChoiceId, _errorStatusNewChoiceGuid } };
+			_artifactGuidRepository.GetGuidsForArtifactIds(Arg.Is<List<int>>(list => list.Count == 1 && list[0] == _errorStatusNewChoiceId))
+				.Returns(errorStatuschoiceDictionary);
 			var errorTypechoiceDictionary = new Dictionary<int, Guid> { { _errorTypeJobChoiceId, _errorTypeJobChoiceGuid } };
 			_artifactGuidRepository.GetGuidsForArtifactIds(Arg.Is<List<int>>(list => list.Count == 1 && list[0] == _errorTypeJobChoiceId))
 				.Returns(errorTypechoiceDictionary);
@@ -59,27 +69,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
 			// ACT
 			JobHistoryErrorDTO resultDto = _testInstance.ConvertToDto(expectedJobHistoryError);
 
-            // ASSERT
-            Assert.IsNotNull(resultDto);
-            Assert.AreEqual(expectedJobHistoryError.ArtifactId, resultDto.ArtifactId);
-            Assert.AreEqual(expectedJobHistoryError.Error, resultDto.Error);
-            Assert.AreEqual(JobHistoryErrorDTO.Choices.ErrorStatus.Values.New, resultDto.ErrorStatus);
-            Assert.AreEqual(JobHistoryErrorDTO.Choices.ErrorType.Values.Job, resultDto.ErrorType);
-            Assert.AreEqual(expectedJobHistoryError.JobHistory, resultDto.JobHistory);
-            Assert.AreEqual(expectedJobHistoryError.Name, resultDto.Name);
-            Assert.AreEqual(expectedJobHistoryError.SourceUniqueID, resultDto.SourceUniqueID);
-            Assert.AreEqual(expectedJobHistoryError.StackTrace, resultDto.StackTrace);
-            Assert.AreEqual(expectedJobHistoryError.TimestampUTC, resultDto.TimestampUTC);
-        }
+			// ASSERT
+			Assert.IsNotNull(resultDto);
+			Assert.AreEqual(expectedJobHistoryError.ArtifactId, resultDto.ArtifactId);
+			Assert.AreEqual(expectedJobHistoryError.Error, resultDto.Error);
+			Assert.AreEqual(JobHistoryErrorDTO.Choices.ErrorStatus.Values.New, resultDto.ErrorStatus);
+			Assert.AreEqual(JobHistoryErrorDTO.Choices.ErrorType.Values.Job, resultDto.ErrorType);
+			Assert.AreEqual(expectedJobHistoryError.JobHistory, resultDto.JobHistory);
+			Assert.AreEqual(expectedJobHistoryError.Name, resultDto.Name);
+			Assert.AreEqual(expectedJobHistoryError.SourceUniqueID, resultDto.SourceUniqueID);
+			Assert.AreEqual(expectedJobHistoryError.StackTrace, resultDto.StackTrace);
+			Assert.AreEqual(expectedJobHistoryError.TimestampUTC, resultDto.TimestampUTC);
+		}
 
-	    [Test]
-	    public void ConvertMultipleToDtoTest()
-	    {
-            // ARRANGE
-            string expectedName1 = "My Job History Error 1";
-            string expectedName2 = "My Job History Error  2";
+		[Test]
+		public void ConvertMultipleToDtoTest()
+		{
+			// ARRANGE
+			string expectedName1 = "My Job History Error 1";
+			string expectedName2 = "My Job History Error  2";
 
-            JobHistoryError expectedJobHistoryError1 = CreateMockedJobHistoryError(expectedName1, _errorTypeJobChoiceId, _errorStatusNewChoiceId);
+			JobHistoryError expectedJobHistoryError1 = CreateMockedJobHistoryError(expectedName1, _errorTypeJobChoiceId, _errorStatusNewChoiceId);
 			JobHistoryError expectedJobHistoryError2 = CreateMockedJobHistoryError(expectedName2, _errorTypeItemChoiceId, _errorStatusExpiredChoiceId);
 
 			var errorStatusChoiceDictionary1 = new Dictionary<int, Guid> { { _errorStatusNewChoiceId, _errorStatusNewChoiceGuid } };
@@ -96,14 +106,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
 				.Returns(errorTypeChoiceDictionary2);
 
 			// ACT
-			List<JobHistoryErrorDTO> resultDtos = _testInstance.ConvertToDto(new [] { expectedJobHistoryError1, expectedJobHistoryError2 });
+			List<JobHistoryErrorDTO> resultDtos = _testInstance.ConvertToDto(new[] { expectedJobHistoryError1, expectedJobHistoryError2 });
 
-            // ASSERT
-            Assert.IsNotNull(resultDtos);
-            Assert.AreEqual(2, resultDtos.Count);
-            //  This test only concentrates on multiple conversion, thus only few fields are tested
-            Assert.AreEqual(expectedName1, resultDtos[0].Name);
-            Assert.AreEqual(expectedName2, resultDtos[1].Name);
+			// ASSERT
+			Assert.IsNotNull(resultDtos);
+			Assert.AreEqual(2, resultDtos.Count);
+			//  This test only concentrates on multiple conversion, thus only few fields are tested
+			Assert.AreEqual(expectedName1, resultDtos[0].Name);
+			Assert.AreEqual(expectedName2, resultDtos[1].Name);
 			Assert.AreEqual(JobHistoryErrorDTO.Choices.ErrorStatus.Values.New, resultDtos[0].ErrorStatus);
 			Assert.AreEqual(JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired, resultDtos[1].ErrorStatus);
 			Assert.AreEqual(JobHistoryErrorDTO.Choices.ErrorType.Values.Job, resultDtos[0].ErrorType);
@@ -194,8 +204,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Transformer
 			{
 				ArtifactId = 6587693,
 				Error = "Just your friendly neighborhood error",
-				ErrorStatus = new Choice(errorStatusChoiceId) {Name=""},
-				ErrorType = new Choice(errorTypeChoiceId) {Name=""},
+				ErrorStatus = new Choice(errorStatusChoiceId) { Name = "" },
+				ErrorType = new Choice(errorTypeChoiceId) { Name = "" },
 				JobHistory = 1041673,
 				Name = name,
 				SourceUniqueID = "jimCarrey",

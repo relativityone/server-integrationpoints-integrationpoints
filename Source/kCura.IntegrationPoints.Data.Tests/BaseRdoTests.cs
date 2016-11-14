@@ -2,15 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
-	public class BaseRdoTests
+	[TestFixture]
+	public class BaseRdoTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		private Guid guidChoice1 = Guid.Parse("E68EF4BE-EB69-4CB6-94FC-D205F2096411");
+
 		private Guid guidChoice2 = Guid.Parse("5F8731F3-C899-4419-BA0F-7E05E4F739DF");
 
 		[Test]
@@ -104,6 +113,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 		// ConvertForGet
 
+
 		[Test]
 		public void ConvertForGet_MultipleChoiceFieldValueNull_CorrectValue()
 		{
@@ -156,6 +166,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//ASSERT 
 			Assert.IsTrue(returnValue is System.Int32[]);
 		}
+
 		[Test]
 		public void ConvertForGet_MultipleObjectFieldValueEmptyArray_CorrectValue()
 		{
@@ -175,6 +186,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//ASSERT 
 			Assert.IsTrue(returnValue is System.Int32[]);
 		}
+
 		[Test]
 		public void ConvertForGet_MultipleObjectFieldValueFieldValueList_CorrectValue()
 		{

@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Web.DataStructures;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.DataStructures
 {
-	public class FolderTreeTests
+	public class FolderTreeTests : TestBase
 	{
 		private FolderTree _folderTree = new FolderTree();
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_folderTree = new FolderTree();
 		}

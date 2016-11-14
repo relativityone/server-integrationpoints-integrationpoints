@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NUnit.Framework;
@@ -7,11 +8,21 @@ using NUnit.Framework;
 namespace kCura.ScheduleQueue.Core.Tests
 {
 	[TestFixture]
-	internal class PeriodicScheduleRuleTest
+	internal class PeriodicScheduleRuleTest : TestBase
 	{
+		#region SearchMonthForForwardOccuranceOfDay
+
 		private const string dailyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Daily</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
+
 		private const string weeklyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun>Monday Friday</DaysToRun><EndDate i:nil=""true""/><Interval>Weekly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
+
 		private const string monthlyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth>15</DayOfMonth><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Monthly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
+
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
 
 		[Test]
 		[Explicit]
@@ -527,8 +538,6 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual(expectedTime, result);
 		}
 
-		#region SearchMonthForForwardOccuranceOfDay
-
 		[Test]
 		public void SearchMonthForForwardOccuranceOfDay_FirstMonday_CorrectValue()
 		{
@@ -606,9 +615,9 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual(expectedTime, result);
 		}
 
-		#endregion SearchMonthForForwardOccuranceOfDay
-
 		#region SearchMonthForLastOccuranceOfDay
+
+		#endregion SearchMonthForForwardOccuranceOfDay
 
 		[Test]
 		public void SearchMonthForLastOccuranceOfDay_LastMonday_CorrectValue()
@@ -654,9 +663,9 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual(expectedTime, result);
 		}
 
-		#endregion SearchMonthForLastOccuranceOfDay
-
 		#region ForwardValidOccurance
+
+		#endregion SearchMonthForLastOccuranceOfDay
 
 		[Test]
 		public void ForwardValidOccurance_CorrectValue()
@@ -667,9 +676,9 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.AreEqual((int)OccuranceInMonth.Fourth, (int)ForwardValidOccurance.Fourth);
 		}
 
-		#endregion ForwardValidOccurance
-
 		#region ForwardValidOccurance
+
+		#endregion ForwardValidOccurance
 
 		[Test]
 		public void DaysOfWeekMap_CorrectValue()
@@ -731,6 +740,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		}
 
 		//server ahead
+
 		[TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, null, null, null, null)]
 		[TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "9/15/2016", null, "10/15/2016", null, null, null, null)]
 		[TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "11/15/2016", null, "11/15/2016", null, null, null, null)]

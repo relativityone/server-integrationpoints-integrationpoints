@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -11,7 +12,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class SourceWorkspaceManagerTests
+	public class SourceWorkspaceManagerTests : TestBase
 	{
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 8675309;
 		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 2025862;
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private SourceWorkspaceManager _instance;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 

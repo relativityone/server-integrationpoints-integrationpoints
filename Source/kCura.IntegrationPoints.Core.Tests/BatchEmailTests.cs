@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -9,7 +10,6 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -18,14 +18,14 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests
 {
 	[TestFixture]
-	public class BatchEmailTests
+	public class BatchEmailTests : TestBase
 	{
 		private BatchEmail _testInstance;
 
 		private ICaseServiceContext _caseServiceContext;
 		private IHelper _helper;
 		private IDataProviderFactory _dataProviderFactory = null;
-		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer = null;
+		private Apps.Common.Utils.Serializers.ISerializer _serializer = null;
 		private ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory = null;
 		private IJobHistoryService _jobHistoryService = null;
 		private JobHistoryErrorService _jobHistoryErrorService = null;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private const int _INTEGRATION_POINT_ID = 1337;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
