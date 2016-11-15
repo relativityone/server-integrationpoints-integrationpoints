@@ -1,81 +1,93 @@
 def passed = false
 	try {
 
-		stage 'Checkout Integration Points'
-		dir('C:/SourceCode') {
+		stage('Checkout Integration Points') {
+			
+			dir('C:/SourceCode') {
 
-			checkout([$class : 'GitSCM',
-					branches : [[name : '*/develop']],
-					doGenerateSubmoduleConfigurations : false,
-					extensions :
-					[[$class : 'CleanBeforeCheckout'],
-						[$class : 'RelativeTargetDirectory',
-							relativeTargetDir : 'integrationpoints']],
-					submoduleCfg : [],
-					userRemoteConfigs :
-					[[credentialsId : 'TalosCI (bitbucket)',
-							refspec : '+refs/heads/develop:refs/remotes/origin/develop',
-							url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
+				checkout([$class : 'GitSCM',
+						branches : [[name : '*/develop']],
+						doGenerateSubmoduleConfigurations : false,
+						extensions :
+						[[$class : 'CleanBeforeCheckout'],
+							[$class : 'RelativeTargetDirectory',
+								relativeTargetDir : 'integrationpoints']],
+						submoduleCfg : [],
+						userRemoteConfigs :
+						[[credentialsId : 'TalosCI (bitbucket)',
+								refspec : '+refs/heads/develop:refs/remotes/origin/develop',
+								url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
+			}		
 		}
 
-		stage 'Build'
-		dir('C:/SourceCode/integrationpoints') {
-			bat 'powershell.exe "./build.ps1 release"'
+		stage('Build') {
+			
+			dir('C:/SourceCode/integrationpoints') {
+				bat 'powershell.exe "./build.ps1 release"'
+			}			
 		}
 
-		stage 'Unit Test'
-		dir('C:/SourceCode/integrationpoints') {
-			bat 'powershell.exe "./build.ps1 -test -skip"'
+		stage('Unit Tests') {
+			
+			dir('C:/SourceCode/integrationpoints') {
+				bat 'powershell.exe "./build.ps1 -test -skip"'
+			}			
 		}
 
-		stage 'Integration Test'
-		dir('C:/SourceCode/integrationpoints') {
+		stage('Integration Tests') {
+			
+			dir('C:/SourceCode/integrationpoints') {
 
-			bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll --test=kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunTestCase,kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunInvalidFileshareTestCase --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
+				bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll --test=kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunTestCase,kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunInvalidFileshareTestCase --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
 
-			step([$class : 'XUnitBuilder',
-					testTimeMargin : '3000',
-					thresholdMode : 1,
-					thresholds :
-					[[$class : 'FailedThreshold',
-							failureNewThreshold : '',
-							failureThreshold : '',
-							unstableNewThreshold : '',
-							unstableThreshold : ''],
-						[$class : 'SkippedThreshold',
-							failureNewThreshold : '',
-							failureThreshold : '',
-							unstableNewThreshold : '',
-							unstableThreshold : '']],
-					tools :
-					[[$class : 'NUnitJunitHudsonTestType',
-							deleteOutputFiles : true,
-							failIfNotNew : true,
-							pattern : 'nunit-result.xml',
-							skipNoTestFiles : false,
-							stopProcessingIfError : true]]])
+				step([$class : 'XUnitBuilder',
+						testTimeMargin : '3000',
+						thresholdMode : 1,
+						thresholds :
+						[[$class : 'FailedThreshold',
+								failureNewThreshold : '',
+								failureThreshold : '',
+								unstableNewThreshold : '',
+								unstableThreshold : ''],
+							[$class : 'SkippedThreshold',
+								failureNewThreshold : '',
+								failureThreshold : '',
+								unstableNewThreshold : '',
+								unstableThreshold : '']],
+						tools :
+						[[$class : 'NUnitJunitHudsonTestType',
+								deleteOutputFiles : true,
+								failIfNotNew : true,
+								pattern : 'nunit-result.xml',
+								skipNoTestFiles : false,
+								stopProcessingIfError : true]]])
+			}
 		}
 
-		stage 'Checkout Automation'
-		dir('C:/SourceCode') {
+		stage('Checkout Automation') {
 
-			checkout([$class : 'GitSCM',
-					branches : [[name : '*/develop']],
-					doGenerateSubmoduleConfigurations : false,
-					extensions :
-					[[$class : 'CleanBeforeCheckout'],
-						[$class : 'RelativeTargetDirectory',
-							relativeTargetDir : 'automation']],
-					submoduleCfg : [],
-					userRemoteConfigs :
-					[[credentialsId : 'TalosCI (bitbucket)',
-							refspec : '+refs/heads/develop:refs/remotes/origin/develop',
-							url : 'ssh://git@git.kcura.com:7999/aut/automation.git']]])
+			dir('C:/SourceCode') {
+
+				checkout([$class : 'GitSCM',
+						branches : [[name : '*/develop']],
+						doGenerateSubmoduleConfigurations : false,
+						extensions :
+						[[$class : 'CleanBeforeCheckout'],
+							[$class : 'RelativeTargetDirectory',
+								relativeTargetDir : 'automation']],
+						submoduleCfg : [],
+						userRemoteConfigs :
+						[[credentialsId : 'TalosCI (bitbucket)',
+								refspec : '+refs/heads/develop:refs/remotes/origin/develop',
+								url : 'ssh://git@git.kcura.com:7999/aut/automation.git']]])
+			}					
 		}
 
-		stage 'Functional Tests'
-		dir('C:/SourceCode/automation/') {
-			bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "C:\\SourceCode\\automation\\Config\\pl1.cfg" -s "Tests.Relativity.Applications.RelativityIntegrationPoints.FilesDestinationProvider" "C:\\SourceCode\\automation"'
+		stage('Functional Tests') {
+
+			dir('C:/SourceCode/automation/') {
+				bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "C:\\SourceCode\\automation\\Config\\pl1.cfg" -s "Tests.Relativity.Applications.RelativityIntegrationPoints.FilesDestinationProvider" "C:\\SourceCode\\automation"'
+			}			
 		}
 
 		step([$class : 'RobotPublisher',
