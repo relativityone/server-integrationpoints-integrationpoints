@@ -138,7 +138,7 @@
             <div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
                 <div class="field-label required ">Folder Path Information:</div>
                 <div class="field-value ">
-                    <select id="folderPath" data-bind="options: folderPathOptions,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'displayName', optionsCaption: 'Select...' ,select2: {}"></select>
+                    <select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
                 </div>
             </div>
 		</div>

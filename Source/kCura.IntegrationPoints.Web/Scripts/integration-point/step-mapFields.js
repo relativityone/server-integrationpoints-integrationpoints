@@ -246,7 +246,7 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 		}
 
-		this.folderPathOptions = ko.observableArray([]);
+		this.FolderPathImportProvider = ko.observableArray([]);
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
 		{
@@ -386,7 +386,10 @@ ko.validation.insertValidationMessage = function (element) {
 						mapping = result[2];
 
 				self.nativeFilePathOption(sourceFields);
-				self.folderPathOptions(sourceFields);
+				self.FolderPathImportProvider(sourceFields);
+
+			    // Setting the cached value for Non-Relativity Providers
+				self.FolderPathSourceField(model.FolderPathSourceField);
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
@@ -682,9 +685,9 @@ self.settings.templateID = "step4";
 							}
 						}
 
-						var sourceFields = this.model.folderPathOptions();
+						var sourceFields = this.model.FolderPathImportProvider();
 						for (var k = 0; k < sourceFields.length; k++) {
-						    if (sourceFields[k].displayName === this.model.FolderPathSourceField()) {
+						    if (sourceFields[k].fieldIdentifier === this.model.FolderPathSourceField()) {
 						        folderPathField = sourceFields[k];
 						        break;
 						    }
