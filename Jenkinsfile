@@ -17,8 +17,7 @@ def passed = false
 							submoduleCfg : [],
 							userRemoteConfigs :
 							[[credentialsId : 'TalosCI (bitbucket)',
-									refspec : '+refs/heads/develop:refs/remotes/origin/develop',
-									url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
+								url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
 				}		
 			}
 
@@ -72,7 +71,8 @@ def passed = false
 				dir('C:/SourceCode') {
 
 					checkout([$class : 'GitSCM',
-							branches : [[name : env.BRANCH_NAME]],
+							branches: [[name: '*///develop']],
+			/*
 							doGenerateSubmoduleConfigurations : false,
 							extensions :
 							[[$class : 'CleanBeforeCheckout'],
