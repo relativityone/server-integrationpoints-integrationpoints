@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
@@ -16,7 +17,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class JobHistoryManagerTests
+	public class JobHistoryManagerTests : TestBase
 	{
 		private IJobHistoryManager _testInstance;
 		private IRepositoryFactory _repositoryFactory;
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const int _WORKSPACE_ID = 100532;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();

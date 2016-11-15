@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Results;
-using System.Web.Http.Hosting;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using NSubstitute;
@@ -13,80 +10,81 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-    public class ImportProviderDocumentControllerTests
-    {
-        private int MAX_FIELDS = 100;
-        private const string FIELD_NAME_BASE = "col-";
+	[TestFixture]
+	public class ImportProviderDocumentControllerTests : TestBase
+	{
+		private int MAX_FIELDS = 100;
+		private const string FIELD_NAME_BASE = "col-";
 
-        private ImportProviderDocumentController _controller;
-        private IFieldParserFactory _fieldParserFactory;
-        private IFieldParser _fieldParser;
+		private ImportProviderDocumentController _controller;
+		private IFieldParserFactory _fieldParserFactory;
+		private IFieldParser _fieldParser;
 
-        [SetUp]
-        public void SetUp()
-        {
-            _fieldParser = Substitute.For<IFieldParser>();
-            _fieldParserFactory = Substitute.For<IFieldParserFactory>();
-            _controller = new ImportProviderDocumentController(_fieldParserFactory);
-        }
+		[SetUp]
+		public override void SetUp()
+		{
+			_fieldParser = Substitute.For<IFieldParser>();
+			_fieldParserFactory = Substitute.For<IFieldParserFactory>();
+			_controller = new ImportProviderDocumentController(_fieldParserFactory);
+		}
 
-        [Test]
-        public void ItShouldReturnAsciiDelimiterList()
-        {
-            //retrieve the ascii list in the format we expect
-            IEnumerable<string> expectedResult= WinEDDS.Utility.BuildProxyCharacterDatatable().Select().Select(x => x[0].ToString());
+		[Test]
+		public void ItShouldReturnAsciiDelimiterList()
+		{
+			//retrieve the ascii list in the format we expect
+			IEnumerable<string> expectedResult = WinEDDS.Utility.BuildProxyCharacterDatatable().Select().Select(x => x[0].ToString());
 
-            IHttpActionResult response = _controller.GetAsciiDelimiters();
-            IEnumerable<string> actualResult = ExtractListResponse(response);
+			IHttpActionResult response = _controller.GetAsciiDelimiters();
+			IEnumerable<string> actualResult = ExtractListResponse(response);
 
-            CollectionAssert.AreEqual(expectedResult, actualResult);
-            
-        }
+			CollectionAssert.AreEqual(expectedResult, actualResult);
 
-        [Test]
-        public void ItShouldReturnLoadFileHeaders()
-        {
-            List<string> testHeaders = TestHeaders(new System.Random().Next(MAX_FIELDS));
-            List<string> sortedHeaders = new List<string>(testHeaders);
-            sortedHeaders.Sort();
+		}
 
-            _fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
-            _fieldParser.GetFields().Returns(testHeaders);
+		[Test]
+		public void ItShouldReturnLoadFileHeaders()
+		{
+			List<string> testHeaders = TestHeaders(new System.Random().Next(MAX_FIELDS));
+			List<string> sortedHeaders = new List<string>(testHeaders);
+			sortedHeaders.Sort();
+
+			_fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
+			_fieldParser.GetFields().Returns(testHeaders);
 
 
-            string actionResult = ExtractStringResponse(_controller.LoadFileHeaders(""));
-            string[] splittedResult = actionResult.Split(new char[] { (char)13, (char)10 }, System.StringSplitOptions.RemoveEmptyEntries);
+			string actionResult = ExtractStringResponse(_controller.LoadFileHeaders(""));
+			string[] splittedResult = actionResult.Split(new char[] { (char)13, (char)10 }, System.StringSplitOptions.RemoveEmptyEntries);
 
-            IEnumerator<string> tdEnum = sortedHeaders.GetEnumerator();
-            tdEnum.MoveNext();
-            int idx = 0;
-            foreach (string currentResult in splittedResult)
-            {
-                Assert.AreEqual(currentResult, string.Format("{0} ({1})", tdEnum.Current, testHeaders.IndexOf(tdEnum.Current) + 1));
+			IEnumerator<string> tdEnum = sortedHeaders.GetEnumerator();
+			tdEnum.MoveNext();
+			int idx = 0;
+			foreach (string currentResult in splittedResult)
+			{
+				Assert.AreEqual(currentResult, string.Format("{0} ({1})", tdEnum.Current, testHeaders.IndexOf(tdEnum.Current) + 1));
 
-                tdEnum.MoveNext();
-                idx++;
-            }
-        }
+				tdEnum.MoveNext();
+				idx++;
+			}
+		}
 
-        private IEnumerable<string> ExtractListResponse(IHttpActionResult response)
-        {
-            JsonResult<IEnumerable<string>> result = response as JsonResult<IEnumerable<string>>;
-            return result.Content;
-        }
+		private IEnumerable<string> ExtractListResponse(IHttpActionResult response)
+		{
+			JsonResult<IEnumerable<string>> result = response as JsonResult<IEnumerable<string>>;
+			return result.Content;
+		}
 
-        private string ExtractStringResponse(IHttpActionResult response)
-        {
-            return (response as OkNegotiatedContentResult<string>).Content;
-        }
+		private string ExtractStringResponse(IHttpActionResult response)
+		{
+			return (response as OkNegotiatedContentResult<string>).Content;
+		}
 
-        private List<string> TestHeaders(int fieldCount)
-        {
-            return
-                Enumerable
-                .Range(0, fieldCount)
-                .Select(x => string.Format(FIELD_NAME_BASE + "{0}", x))
-                .ToList();
-        }
-    }
+		private List<string> TestHeaders(int fieldCount)
+		{
+			return
+				Enumerable
+				.Range(0, fieldCount)
+				.Select(x => string.Format(FIELD_NAME_BASE + "{0}", x))
+				.ToList();
+		}
+	}
 }

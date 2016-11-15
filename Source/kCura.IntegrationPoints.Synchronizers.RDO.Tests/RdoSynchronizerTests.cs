@@ -1,28 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
+using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class RdoSynchronizerTests
+	public class RdoSynchronizerTests : TestBase
 	{
 		public static RdoSynchronizerBase ChangeWebAPIPath(RdoSynchronizerBase synchronizer)
 		{
 			var prop = synchronizer.GetType().GetProperty(kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH);
 			prop.SetValue(synchronizer, "Mock value");
 			return synchronizer;
+		}
+
+		[SetUp]
+		public override void SetUp()
+		{
+			
 		}
 
 		[Test]

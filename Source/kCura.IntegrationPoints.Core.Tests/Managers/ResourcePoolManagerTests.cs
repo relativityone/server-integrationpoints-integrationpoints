@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Workspace = kCura.Relativity.Client.DTOs.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	public class ResourcePoolManagerTests
+	[TestFixture]
+	public class ResourcePoolManagerTests : TestBase
 	{
 		private class ResourcePoolManagerTestImpl : ResourcePoolManager
 		{
@@ -49,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		#endregion //Fields
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_rsApiClientMock = Substitute.For<IRSAPIClient>();

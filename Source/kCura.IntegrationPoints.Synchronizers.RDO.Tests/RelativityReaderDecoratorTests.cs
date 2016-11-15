@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
@@ -8,7 +9,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class RelativityReaderDecoratorTests
+	public class RelativityReaderDecoratorTests : TestBase
 	{
 		IDataReader _reader;
 		FieldMap[] _fieldMaps;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		private const string _ExpectFolderInformationPath = @"C:\abc\def.txt";
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			DataTable table = new DataTable();
 			table.Columns.AddRange(new[] { new DataColumn(_Column0Name, typeof(int)),

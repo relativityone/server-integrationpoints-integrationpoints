@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -10,14 +11,15 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	public class JobErrorLoggingMediatorTests
+	[TestFixture]
+	public class JobErrorLoggingMediatorTests : TestBase
 	{
 		private ICoreExporterStatusNotification _exporterStatusNotification;
 		private IJobHistoryErrorService _historyErrorService;
 		private IUserMessageNotification _userMessageNotification;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_historyErrorService = Substitute.For<IJobHistoryErrorService>();

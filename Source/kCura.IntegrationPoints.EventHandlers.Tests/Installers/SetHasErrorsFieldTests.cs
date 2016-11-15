@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -16,7 +17,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 {
 	[TestFixture]
-	public class SetHasErrorsFieldTests
+	public class SetHasErrorsFieldTests : TestBase
 	{
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		private ICaseServiceContext _caseServiceContext;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();

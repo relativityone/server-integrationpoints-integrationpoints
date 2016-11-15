@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.ScheduleQueue.Core.Helpers;
 using NUnit.Framework;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
 	[TestFixture]
-	public class QueueTableHelperTests
+	public class QueueTableHelperTests : TestBase
 	{
-
 		private readonly string GetQueueTableNameException = "Could not retrieve Queue table name.";
+
 		private readonly string GetAgentGuidException = "Could not retrieve Agent Guid.";
+
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
 
 		[Test]
 		public void GetQueueTableName_NoAttributes_ReturnsDefaultName()
@@ -97,7 +104,5 @@ namespace kCura.ScheduleQueue.Core.Tests
 			//ASSERT
 			Assert.AreEqual("Could not retrieve Agent Guid.", ex.Message);
 		}
-
-
 	}
 }

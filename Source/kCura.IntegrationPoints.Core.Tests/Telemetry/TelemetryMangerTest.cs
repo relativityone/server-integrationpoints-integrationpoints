@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Telemetry;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -10,7 +11,7 @@ using Relativity.Services.InternalMetricsCollection;
 
 namespace kCura.IntegrationPoints.Core.Tests.Telemetry
 {
-	public class TelemetryMangerTest
+	public class TelemetryMangerTest : TestBase
 	{
 		#region Fields
 
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Telemetry
 		#endregion //Fields
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_mockHelper = Substitute.For<IHelper>();
 			_mockServicesMgr = Substitute.For<IServicesMgr>();

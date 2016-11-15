@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -9,7 +10,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	public class OnClickEventConstructorTests
+	[TestFixture]
+	public class OnClickEventConstructorTests : TestBase
 	{
 		private IManagerFactory _managerFactory;
 		private IContextContainer _contextContainer;
@@ -23,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private OnClickEventConstructor _instance;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainer = Substitute.For<IContextContainer>();

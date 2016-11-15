@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -13,7 +14,7 @@ using Relativity.Services.Search;
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
-	public class JobHistoryErrorRepositoryTests
+	public class JobHistoryErrorRepositoryTests : TestBase
 	{
 		private JobHistoryErrorRepository _instance;
 		private IHelper _helper;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private int _workspaceArtifactId;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_helper = NSubstitute.Substitute.For<IHelper>();
 			_objectQueryAdaptorManager = NSubstitute.Substitute.For<IObjectQueryManagerAdaptor>();
