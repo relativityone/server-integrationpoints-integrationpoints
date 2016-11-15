@@ -30,12 +30,11 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				// Determine if the user first has access to workspaces and object type
 				IAuthenticationMgr authenticationManager = _helper.GetAuthenticationManager();
 				var userArtifactId = authenticationManager.UserInfo.ArtifactID;
-				var jobHistorySummary = new JobHistorySummaryModel();
 
 				FieldValueList<Workspace> workspaces = GetWorkspacesUserHasPermissionToView(userArtifactId);
 				if (!workspaces.Any())
 				{
-					return jobHistorySummary;
+					return new JobHistorySummaryModel();
 				}
 
 				IList<JobHistoryModel> jobHistories = new List<JobHistoryModel>(request.PageSize);
@@ -48,40 +47,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				
 				queryResult = SortJobHistories(request, queryResult);
 
-				var start = request.Page * request.PageSize;
-				var end = start + request.PageSize;
-
-				var totalAvailable = 0;
-				var totalDocuments = 0;
-
-				foreach (var res in queryResult)
-				{
-					var userHasPermission = DoesUserHavePermissionToThisDestinationWorkspace(workspaces, res.DestinationWorkspace);
-					if (!userHasPermission)
-					{
-						continue;
-					}
-
-					if ((totalAvailable >= start) && (totalAvailable < end))
-					{
-						var jobHistory = new JobHistoryModel
-						{
-							ItemsTransferred = res.ItemsTransferred ?? 0,
-							EndTimeUTC = res.EndTimeUTC.GetValueOrDefault(),
-							DestinationWorkspace = res.DestinationWorkspace
-						};
-						jobHistories.Add(jobHistory);
-					}
-
-					totalDocuments += res.ItemsTransferred ?? 0;
-					totalAvailable++;
-				}
-
-				jobHistorySummary.Data = jobHistories.ToArray();
-				jobHistorySummary.TotalAvailable = totalAvailable;
-				jobHistorySummary.TotalDocumentsPushed = totalDocuments;
-
-				return jobHistorySummary;
+				return GetJobHistorySummaryModel(request, queryResult, workspaces, jobHistories);
 			}
 			catch (Exception ex)
 			{
@@ -89,7 +55,48 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				throw;
 			}
 		}
-		
+
+		private JobHistorySummaryModel GetJobHistorySummaryModel(JobHistoryRequest request, IEnumerable<JobHistory> queryResult,
+			FieldValueList<Workspace> workspaces, IList<JobHistoryModel> jobHistories)
+		{
+			var jobHistorySummary = new JobHistorySummaryModel();
+
+			var start = request.Page*request.PageSize;
+			var end = start + request.PageSize;
+
+			var totalAvailable = 0;
+			var totalDocuments = 0;
+
+			foreach (var res in queryResult)
+			{
+				var userHasPermission = DoesUserHavePermissionToThisDestinationWorkspace(workspaces, res.DestinationWorkspace);
+				if (!userHasPermission)
+				{
+					continue;
+				}
+
+				if ((totalAvailable >= start) && (totalAvailable < end))
+				{
+					var jobHistory = new JobHistoryModel
+					{
+						ItemsTransferred = res.ItemsTransferred ?? 0,
+						EndTimeUTC = res.EndTimeUTC.GetValueOrDefault(),
+						DestinationWorkspace = res.DestinationWorkspace
+					};
+					jobHistories.Add(jobHistory);
+				}
+
+				totalDocuments += res.ItemsTransferred ?? 0;
+				totalAvailable++;
+			}
+
+			jobHistorySummary.Data = jobHistories.ToArray();
+			jobHistorySummary.TotalAvailable = totalAvailable;
+			jobHistorySummary.TotalDocumentsPushed = totalDocuments;
+
+			return jobHistorySummary;
+		}
+
 		private IEnumerable<JobHistory> SortJobHistories(JobHistoryRequest request, IEnumerable<JobHistory> queryResult)
 		{
 			bool sortDescending = request.SortDescending ?? false;
