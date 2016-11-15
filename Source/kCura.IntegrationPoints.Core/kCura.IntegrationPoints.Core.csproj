@@ -380,6 +380,13 @@
     <Compile Include="Telemetry\TelemetryManager.cs" />
     <Compile Include="Telemetry\TelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryMetricProviderBase.cs" />
+    <Compile Include="Validation\IIntegrationModelValidator.cs" />
+    <Compile Include="Validation\Implementation\EmailValidator.cs" />
+    <Compile Include="Validation\Implementation\FieldMappingsValidator.cs" />
+    <Compile Include="Validation\Implementation\IntegrationModelValidator.cs" />
+    <Compile Include="Validation\Implementation\SchedulerValidator.cs" />
+    <Compile Include="Validation\Implementation\ValidatorFactory.cs" />
+    <Compile Include="Validation\IValidatorFactory.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

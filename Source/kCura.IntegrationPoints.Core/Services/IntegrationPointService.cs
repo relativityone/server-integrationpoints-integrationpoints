@@ -10,6 +10,8 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -35,6 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IManagerFactory _managerFactory;
+		private readonly IIntegrationModelValidator _integrationModelValidator;
 		private static readonly object _lock = new object();
 
 		public IntegrationPointService(IHelper helper,
@@ -51,7 +54,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_managerFactory = managerFactory;
-
+			//TODO Inject !
+			_integrationModelValidator = new IntegrationModelValidator(new ValidatorFactory());
 			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 
@@ -126,6 +130,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			try
 			{
 				ValidateConfigurationWhenUpdatingObject(model);
+				_integrationModelValidator.Validate(model);
 
 				IList<Relativity.Client.DTOs.Choice> choices =
 					_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
