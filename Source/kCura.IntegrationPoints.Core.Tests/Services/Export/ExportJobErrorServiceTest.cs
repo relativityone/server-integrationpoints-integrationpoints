@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 {
 	[TestFixture]
-	public class ExportJobErrorServiceTest
+	public class ExportJobErrorServiceTest : TestBase
 	{
 		private IScratchTableRepository _scratchTable;
 		private IRepositoryFactory _repositoryFactory;
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		private string _settingName = IntegrationPoints.Domain.Constants.REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_scratchTable = Substitute.For<IScratchTableRepository>();
 			_instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();

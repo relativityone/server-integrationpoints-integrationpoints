@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
@@ -14,7 +15,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class SourceJobManagerTests
+	public class SourceJobManagerTests : TestBase
 	{
 		private const string expectError = "Unable to create Relativity Source Job object. Please contact the system administrator.";
 		private SourceJobManager _instance;
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private Dictionary<Guid, int> _objectFieldToBeCreated;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_sourceWorkspaceArtifactId = 789456;
 			_destinationWorkspaceArtifactId = 744521;

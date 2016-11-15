@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Hosting;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -10,13 +11,14 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	public class ProductionControllerTests
+	[TestFixture]
+	public class ProductionControllerTests : TestBase
 	{
 		private ProductionController _controller;
 		private IProductionService _service;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_service = Substitute.For<IProductionService>();
 			_controller = new ProductionController(_service);

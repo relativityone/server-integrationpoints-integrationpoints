@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
@@ -11,14 +12,15 @@ using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services.Tests
 {
-	public class KeplerServiceTests
+	[TestFixture]
+	public class KeplerServiceTests : TestBase
 	{
 		private KeplerService _keplerServiceBase;
 		private ILog _logger;
 		private IPermissionRepository _permissionRepository;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_logger = Substitute.For<ILog>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();

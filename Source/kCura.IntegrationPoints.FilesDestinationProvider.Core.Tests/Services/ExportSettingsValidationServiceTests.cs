@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -10,7 +11,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	public class ExportSettingsValidationServiceTests
+	[TestFixture]
+	public class ExportSettingsValidationServiceTests : TestBase
 	{
 		private IExportInitProcessService _exportInitProcessService;
 		private ExportSettingsValidationService _exportSettingsValidationService;
@@ -19,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private IPaddingValidator _paddingValidator;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_integrationModel = new IntegrationModel
 			{

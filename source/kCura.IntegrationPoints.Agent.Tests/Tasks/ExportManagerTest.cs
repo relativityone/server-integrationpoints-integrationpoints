@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -21,7 +22,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	public class ExportManagerTest
+	public class ExportManagerTest : TestBase
 	{
 		#region Private Fields
 
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		#endregion //Private Fields
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_contextContainerFactoryMock = Substitute.For<IContextContainerFactory>();
 			_jobManagerMock = Substitute.For<IJobManager>();

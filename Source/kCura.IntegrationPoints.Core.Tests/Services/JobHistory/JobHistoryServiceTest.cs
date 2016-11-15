@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -19,7 +20,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
 	[TestFixture]
-	public class JobHistoryServiceTest
+	public class JobHistoryServiceTest : TestBase
 	{
 		private ICaseServiceContext _caseServiceContext;
 		private IWorkspaceRepository _workspaceRepository;
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private Guid _batchGuid;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();

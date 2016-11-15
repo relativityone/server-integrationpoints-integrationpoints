@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.Relativity.DataReaderClient;
 using NSubstitute;
 using NUnit.Framework;
@@ -10,23 +11,23 @@ using Relativity.Core.Service;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class ImportSettingsTests
+	public class ImportSettingsTests : TestBase
 	{
 		private IAuditSpoofTokenGenerator _generator;
 		private BaseServiceContext _context;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
-			_generator = NSubstitute.Substitute.For<IAuditSpoofTokenGenerator>();
-			_context = NSubstitute.Substitute.For<BaseServiceContext>();
+			_generator = Substitute.For<IAuditSpoofTokenGenerator>();
+			_context = Substitute.For<BaseServiceContext>();
 		}
 
 		[Test]
 		public void ImportSettings_SerializeDesirialize()
 		{
 			//ARRANGE
-			kCura.Apps.Common.Utils.Serializers.JSONSerializer serializer = new JSONSerializer();
+			JSONSerializer serializer = new JSONSerializer();
 			ImportSettings settings = new ImportSettings();
 			settings.ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay;
 

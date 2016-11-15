@@ -8,6 +8,7 @@ using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -20,7 +21,7 @@ using Relativity.Toggles;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
-	class DestinationTypeControllerTests
+	class DestinationTypeControllerTests : TestBase
 	{
 		private DestinationTypeController _instance;
 		private IWindsorContainer _windsorContainer;
@@ -41,12 +42,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		}
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_windsorContainer = new WindsorContainer();
-			_toggleProvider = NSubstitute.Substitute.For<IToggleProvider>();
-			_destinationTypeFactory = NSubstitute.Substitute.For<IDestinationTypeFactory>();
-			_iCaseServiceContext = NSubstitute.Substitute.For<ICaseServiceContext>();
+			_toggleProvider = Substitute.For<IToggleProvider>();
+			_destinationTypeFactory = Substitute.For<IDestinationTypeFactory>();
+			_iCaseServiceContext = Substitute.For<ICaseServiceContext>();
 			_iCaseServiceContext.WorkspaceUserID.Returns(-1);
 
 			_documentObjectGuid = new Guid("15C36703-74EA-4FF8-9DFB-AD30ECE7530D");

@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -8,8 +9,14 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 {
 	[TestFixture]
-	public class DocumentTransferProviderTests
+	public class DocumentTransferProviderTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		#region Read
 
 		[Test]

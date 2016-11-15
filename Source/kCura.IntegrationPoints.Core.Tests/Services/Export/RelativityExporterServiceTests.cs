@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -13,7 +14,7 @@ using Relativity.Core.Api.Shared.Manager.Export;
 namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 {
 	[TestFixture]
-	public class RelativityExporterServiceTests
+	public class RelativityExporterServiceTests : TestBase
 	{
 		private const string _CONTROL_NUMBER = "Control Num";
 		private const string _FILE_NAME = "FileName";
@@ -30,8 +31,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		private object[] _goldFlowRetrievableData;
 
 		[OneTimeSetUp]
-		public void Setup()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
+
 			_helper = Substitute.For<IHelper>();
 			_exporter = Substitute.For<IExporter>();
 			_longTextFieldFactory = Substitute.For<IILongTextStreamFactory>();
@@ -80,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		}
 
 		[SetUp]
-		public void TestSetup()
+		public override void SetUp()
 		{
 			_avfIds = new[] { 1, 2 };
 			_jobStopManager = Substitute.For<IJobStopManager>();

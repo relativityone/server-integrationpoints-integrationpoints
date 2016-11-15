@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -12,7 +13,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
 	[TestFixture]
-	public class TempTableReaderTests
+	public class TempTableReaderTests : TestBase
 	{
 		private const string ConstValue = "456";
 		private IDocumentRepository _documentRepo;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private DataColumn[] _columns;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_documentRepo = Substitute.For<IDocumentRepository>();
 			_reader = Substitute.For<IDataReader>();

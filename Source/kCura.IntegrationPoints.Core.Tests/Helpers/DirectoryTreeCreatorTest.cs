@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SystemInterface.IO;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
@@ -12,7 +13,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	public class DirectoryTreeCreatorTest
+	[TestFixture]
+	public class DirectoryTreeCreatorTest : TestBase
 	{
 		private DirectoryTreeCreator<JsTreeItemDTO> _subjectUnderTest;
 		private IDirectory _directoryMock;
@@ -35,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private readonly string _subFolderB1Path = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_B, _SUB_FOLDER_1);
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_directoryMock = Substitute.For<IDirectory>();
 

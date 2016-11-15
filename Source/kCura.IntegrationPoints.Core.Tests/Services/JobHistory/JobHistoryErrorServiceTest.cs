@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -14,7 +15,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
 	[TestFixture]
-	public class JobHistoryErrorServiceTest
+	public class JobHistoryErrorServiceTest : TestBase
 	{
 		private Data.IntegrationPoint _integrationPoint;
 		private Data.JobHistory _jobHistory;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private IJobStopManager _stopJobManager;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_integrationPoint = new Data.IntegrationPoint() {LogErrors = true};
 			_jobHistory = new Data.JobHistory { ArtifactId = 111 };

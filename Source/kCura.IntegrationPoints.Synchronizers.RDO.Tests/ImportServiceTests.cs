@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using NSubstitute;
@@ -10,8 +11,16 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class ImportServiceTests
+	public class ImportServiceTests : TestBase
 	{
+		private IHelper _helper;
+
+		[SetUp]
+		public override void SetUp()
+		{
+			_helper = Substitute.For<IHelper>();
+		}
+
 		[Test]
 		public void GenerateImportFields_Pass()
 		{
@@ -41,7 +50,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField7",GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
+			ImportService importService = new ImportService(null, null, null, null, null, _helper);
 
 			//ACT
 			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping, null);
@@ -61,6 +70,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		#region ValidateAllMappedFieldsAreInWorkspace
+
 		[Test]
 		public void ValidateAllMappedFieldsAreInWorkspace_AllFieldsMatch()
 		{
@@ -81,7 +91,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
+			ImportService importService = new ImportService(null, null, null, null, null, _helper);
 
 
 			//ACT
@@ -120,7 +130,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
+			ImportService importService = new ImportService(null, null, null, null, null, _helper);
 
 
 			//ACT
@@ -149,7 +159,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
+			ImportService importService = new ImportService(null, null, null, null, null, _helper);
 
 
 			//ACT
@@ -157,9 +167,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 13, 14, 15"));
 		}
+
 		#endregion
 
 		#region GenerateImportFields
+
 		[Test]
 		public void GenerateImportFields_NativeFileImportServiceIsNull_CorrectResult()
 		{
@@ -178,7 +190,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 			NativeFileImportService nativeFileImportService = null;
 
-			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
+			ImportService importService = new ImportService(null, null, null, null, null, _helper);
 
 
 			//ACT
@@ -212,7 +224,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				ImportNativeFiles = false
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
+			ImportService importService = new ImportService(null, null, null, null, null, _helper);
 
 
 			//ACT
@@ -247,7 +259,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				SourceFieldName = "MyPath"
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, Substitute.For<IHelper>());
+			ImportService importService = new ImportService(null, null, null, null, null, _helper);
 
 
 			//ACT
@@ -260,8 +272,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.AreEqual(true, result["F4"]);
 			Assert.AreEqual("\\\\Server1\\path1\\file1", result[nativeFileImportService.DestinationFieldName]);
 		}
-		#endregion
 
+		#endregion
 
 		private Field GetFieldObject(int artifactID, string name, Guid? guid = null)
 		{

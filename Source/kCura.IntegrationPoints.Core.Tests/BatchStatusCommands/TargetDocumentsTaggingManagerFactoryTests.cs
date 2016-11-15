@@ -1,4 +1,5 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
@@ -14,7 +15,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
 	[TestFixture]
-	public class TargetDocumentsTaggingManagerFactoryTests
+	public class TargetDocumentsTaggingManagerFactoryTests : TestBase
 	{
 		private const string _SOURCE_CONFIG = "source config";
 		private const string _DEST_CONFIG = "destination config";
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private IDataSynchronizer _dataSynchronizer;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();

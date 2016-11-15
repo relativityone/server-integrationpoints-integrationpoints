@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
@@ -11,13 +12,14 @@ using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	public class ExportFileBuilderTests
+	[TestFixture]
+	public class ExportFileBuilderTests : TestBase
 	{
 		private ExportFileBuilder _exportFileBuilder;
 		private ExportSettings _exportSettings;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_exportSettings = DefaultExportSettingsFactory.Create();
 			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>(), Substitute.For<IVolumeInfoBuilder>());

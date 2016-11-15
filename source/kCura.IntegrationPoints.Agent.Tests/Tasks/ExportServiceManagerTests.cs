@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 	             "These existing tests will show that they cover majority of the code. " +
 	             "But the tests below are only consist of the stopping scenarios and regular gold flow." +
 	             "A lot more tests must be added !")]
-	public class ExportServiceManagerTests
+	public class ExportServiceManagerTests : TestBase
 	{
 		private const int _RETRY_SAVEDSEARCHID = 312;
 		private const int _EXPORT_DOC_COUNT = 0;
@@ -91,7 +92,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobHistoryManager _historyManager;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			Job job = JobExtensions.CreateJob();
 			SetUp(job);
