@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Models;
@@ -9,6 +10,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
@@ -20,7 +22,8 @@ using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	public class ExportProcessBuilderTests
+	[TestFixture]
+	public class ExportProcessBuilderTests : TestBase
 	{
 		private class BatchReporterMock : IBatchReporter, ILoggingMediator
 		{
@@ -54,6 +57,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private IUserNotification _userNotification;
 		private IConfigFactory _configFactory;
 		private JobStatisticsService _jobStatisticsService;
+		private Job _job;
 
 		private List<int> AllExportableAvfIds => new List<int>() { 1234, 5678 };
 		private List<int> SelectedAvfIds => new List<int>() { 1234 };
@@ -63,7 +67,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		#region SetUp
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
 			_credentialProvider = Substitute.For<ICredentialProvider>();
@@ -96,6 +100,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				helper,
 				_jobStatisticsService
 			);
+
+			_job = JobExtensions.CreateJob();
 		}
 
 		private void MockExportFile()
@@ -124,7 +130,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			Assert.IsNotNull(_exportFile.CookieContainer);
 			Assert.AreEqual(credential, _exportFile.Credential);
@@ -142,7 +148,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			_searchManagerFactory.ReceivedWithAnyArgs().Create(null, null);
 			searchManager.Received().Dispose();
@@ -157,7 +163,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			_caseManagerFactory.ReceivedWithAnyArgs().Create(null, null);
 			caseManager.Received().Dispose();
@@ -179,7 +185,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			caseManager.Received().Read(expectedCaseInfoArtifactId);
 		}
@@ -195,7 +201,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			caseManager.DidNotReceiveWithAnyArgs().Read(1);
 		}
@@ -208,7 +214,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = AllExportableAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			CollectionAssert.AreEquivalent(expectedExportableFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
 
@@ -239,7 +245,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			MockSearchManagerReturnValue(expected);
 
-			_exportProcessBuilder.Create(settings, JobExtensions.CreateJob());
+			_exportProcessBuilder.Create(settings, _job);
 
 			CollectionAssert.AreEquivalent(expectedFilteredFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
 		}
@@ -272,7 +278,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			MockSearchManagerReturnValue(expected);
 
-			_exportProcessBuilder.Create(settings, JobExtensions.CreateJob());
+			_exportProcessBuilder.Create(settings, _job);
 
 			CollectionAssert.AreEquivalent(textPrecedenceFieldsIdsExpected, _exportFile.SelectedTextFields.Select(x => x.AvfId));
 		}
@@ -283,7 +289,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			_exporterFactory.Received().Create(_exportFile);
 		}
@@ -297,7 +303,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
-			}, JobExtensions.CreateJob());
+			}, _job);
 
 			_loggingMediator.Received().RegisterEventHandlers(_userMessageNotification, exporter);
 			exporter.Received().InteractionManager = _userNotification;
@@ -309,7 +315,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			//Arrange
 			var exporter = Substitute.For<Core.SharedLibrary.IExporter>();
 			var batchReporterMock = new BatchReporterMock();
-			var job = JobExtensions.CreateJob();
+			var job = _job;
 
 			_exporterFactory.Create(_exportFile).Returns(exporter);
 
@@ -343,7 +349,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			};
 
 			// act
-			_exportProcessBuilder.Create(settings, JobExtensions.CreateJob());
+			_exportProcessBuilder.Create(settings, _job);
 
 			// assert
 			CollectionAssert.AreEqual(expectedFieldIds, _exportFile.SelectedViewFields.Select(x => x.AvfId));

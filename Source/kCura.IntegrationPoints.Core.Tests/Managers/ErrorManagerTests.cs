@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
@@ -10,7 +11,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class ErrorManagerTests
+	public class ErrorManagerTests : TestBase
 	{
 		private IErrorManager _errorManager;
 		private IRepositoryFactory _repositoryFactory;
@@ -19,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const int _WORKSPACE_ID = 1234567;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_errorRepository = Substitute.For<IErrorRepository>();

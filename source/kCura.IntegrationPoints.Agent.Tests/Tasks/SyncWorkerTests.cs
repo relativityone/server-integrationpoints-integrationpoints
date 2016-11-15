@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
@@ -27,7 +28,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
 	[TestFixture]
-	public class SyncWorkerTests
+	public class SyncWorkerTests : TestBase
 	{
 		private ICaseServiceContext _caseServiceContext;
 		private IHelper _helper;
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobHistoryManager _jobHistoryManager;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_helper = Substitute.For<IHelper>();

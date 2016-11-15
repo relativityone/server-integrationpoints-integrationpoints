@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Managers;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -8,7 +9,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class FieldManagerTests
+	public class FieldManagerTests : TestBase
 	{
 		private IFieldManager _testInstance;
 		private IRepositoryFactory _repositoryFactory;
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const int _WORKSPACE_ID = 100532;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_fieldRepository = Substitute.For<IFieldRepository>();

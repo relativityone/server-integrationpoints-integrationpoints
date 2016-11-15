@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -15,7 +16,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	public class ResourcePoolControllerTests
+	[TestFixture]
+	public class ResourcePoolControllerTests : TestBase
 	{
 		#region Fields
 
@@ -38,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		#endregion //Fields
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_resourcePoolManagerMock = Substitute.For<IResourcePoolManager>();
 			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator<JsTreeItemDTO>>();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -20,14 +21,14 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.Agent
 {
 	[TestFixture]
-	public class IntegrationPointTaskBaseTests
+	public class IntegrationPointTaskBaseTests : TestBase
 	{
 		private TestClass _testInstance;
 
 		protected ICaseServiceContext _caseServiceContext;
 		protected IHelper _helper;
 		protected IDataProviderFactory _dataProviderFactory;
-		protected kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		protected Apps.Common.Utils.Serializers.ISerializer _serializer;
 		protected IJobHistoryService _jobHistoryService;
 		protected JobHistoryErrorService _jobHistoryErrorService;
 		protected ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 		protected IContextContainer _contextContainer;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_contextContainer = Substitute.For<IContextContainer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();

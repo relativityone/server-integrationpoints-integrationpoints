@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
@@ -14,7 +15,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests
 {
 	[TestFixture]
-	public class JobHistoryBatchUpdateStatusTests
+	public class JobHistoryBatchUpdateStatusTests : TestBase
 	{
 		private IJobStatusUpdater _updater;
 		private IJobHistoryService _jobHistoryService;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private JobHistoryBatchUpdateStatus _instance;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_updater = Substitute.For<IJobStatusUpdater>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();

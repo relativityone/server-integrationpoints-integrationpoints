@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.ScheduleQueue.Core;
@@ -8,7 +9,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
 {
 	[TestFixture]
-	public class TaskJobSubmitterTests
+	public class TaskJobSubmitterTests : TestBase
 	{
 		private TaskJobSubmitter _instance;
 		private IJobManager _jobManager;
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
 		private TaskType _task;
 
 		[SetUp]
-		public void TestSetup()
+		public override void SetUp()
 		{
 			_jobManager = Substitute.For<IJobManager>();
 			_testJob = JobExtensions.CreateJob();

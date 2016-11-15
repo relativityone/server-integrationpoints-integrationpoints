@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
@@ -10,14 +11,14 @@ using Relativity.Core;
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
     [TestFixture]
-    public class SqlArtifactGuidRepositoryTests
+    public class SqlArtifactGuidRepositoryTests : TestBase
     {
         private IArtifactGuidRepository _testInstance;
         private BaseContext _context;
         private kCura.Data.RowDataGateway.BaseContext _dBContext;
 
         [SetUp]
-        public void Setup()
+        public override void SetUp()
         {
             _context = Substitute.For<BaseContext>();
             _dBContext = Substitute.For<kCura.Data.RowDataGateway.BaseContext>();
