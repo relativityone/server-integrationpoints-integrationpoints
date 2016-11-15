@@ -106,7 +106,7 @@
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
-		self.FolderArtifactName = ko.observable(state.FolderArtifactName);
+		self.TargetFolder = ko.observable(state.TargetFolder);
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value !== undefined) {
@@ -119,9 +119,9 @@
 				type: "get",
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId)
 			}).then(function (result) {
-				if (!!self.FolderArtifactName() && self.FolderArtifactName().indexOf(result.text) === -1) {
+				if (!!self.TargetFolder() && self.TargetFolder().indexOf(result.text) === -1) {
 					self.FolderArtifactId("");
-					self.FolderArtifactName("");
+					self.TargetFolder("");
 				}
 				self.foldersStructure = result;
 				self.locationSelector.reload(result);
@@ -146,10 +146,10 @@
 
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.init(self.FolderArtifactName(), [], {
+			self.locationSelector.init(self.TargetFolder(), [], {
 				onNodeSelectedEventHandler: function (node) {
 					self.FolderArtifactId(node.id);
-					self.FolderArtifactName(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
+					self.TargetFolder(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
 				}
 			});
 			self.locationSelector.toggle(!self.disable);
@@ -264,7 +264,7 @@
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 				"FolderArtifactId": self.FolderArtifactId(),
-				"FolderArtifactName": self.FolderArtifactName()
+				TargetFolder: self.TargetFolder()
 			}
 		}
 	}
