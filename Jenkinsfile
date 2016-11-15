@@ -1,7 +1,7 @@
 def passed = false
 	try {
 		
-		node('!master') {
+		node('buildslave') {
 
 			stage('Checkout Integration Points') {
 				
@@ -34,6 +34,9 @@ def passed = false
 					bat 'powershell.exe "./build.ps1 -test -skip"'
 				}			
 			}
+		}
+		
+		node('nunit') {
 
 			stage('Integration Tests') {
 				
@@ -102,7 +105,7 @@ def passed = false
 					passThreshold : 100,
 					reportFileName : 'report.html',
 					unstableThreshold : 0]);
-			*/		
+			*/				
 		}
 		
 		passed = true
