@@ -1,7 +1,7 @@
 def passed = false
 	try {
 		
-		node {
+		node('!master') {
 
 			stage('Checkout Integration Points') {
 				
