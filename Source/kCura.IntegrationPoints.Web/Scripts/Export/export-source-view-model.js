@@ -76,7 +76,7 @@ var ExportSourceViewModel = function (state) {
         if (!!selectedSearch) {
             self.SavedSearchArtifactId(selectedSearch.value);
         } else {
-            self.SavedSearchArtifactId(null);
+            self.SavedSearchArtifactId(undefined);
         }
     };
 
@@ -124,19 +124,22 @@ var ExportSourceViewModel = function (state) {
 
     self.Folders = ko.observable()
 
-    self.GetFolderFullName = function () {
-        if (self.Folders().id === self.FolderArtifactId()) {
-            return self.Folders().text;
+    self.GetFolderFullName = function (currentFolder, folderId) {
+        currentFolder = currentFolder || self.Folders();
+        folderId = folderId || self.FolderArtifactId();
+
+        if (currentFolder.id === folderId) {
+            return currentFolder.text;
         } else {
-            for (var i = 0; i < self.Folders().children.length; i++) {
-                var childFolderPath = self.GetFolderFullName(self.Folders().children[i], self.FolderArtifactId());
+            for (var i = 0; i < currentFolder.children.length; i++) {
+                var childFolderPath = self.GetFolderFullName(currentFolder.children[i], folderId);
                 if (childFolderPath !== "") {
-                    return self.Folders().text + "/" + childFolderPath;
+                    return currentFolder.text + "/" + childFolderPath;
                 }
             }
-
-            return "";
         }
+
+        return "";
     };
 
     // views
@@ -241,6 +244,11 @@ var ExportSourceViewModel = function (state) {
             self.Folders.subscribe(function (value) {
                 self.LocationSelector.reload(value);
             });
+
+            var folders = self.Folders();
+            if (folders !== undefined) {
+                self.LocationSelector.reload(folders);
+            }
         }
     };
 
