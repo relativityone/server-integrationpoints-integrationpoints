@@ -48,6 +48,9 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				
 				queryResult = SortJobHistories(request, queryResult);
 
+				var start = request.Page * request.PageSize;
+				var end = start + request.PageSize;
+
 				var totalAvailable = 0;
 				var totalDocuments = 0;
 
@@ -59,13 +62,16 @@ namespace kCura.IntegrationPoints.Services.Repositories
 						continue;
 					}
 
-					var jobHistory = new JobHistoryModel
+					if ((totalAvailable >= start) && (totalAvailable < end))
 					{
-						ItemsTransferred = res.ItemsTransferred ?? 0,
-						EndTimeUTC = res.EndTimeUTC.GetValueOrDefault(),
-						DestinationWorkspace = res.DestinationWorkspace
-					};
-					jobHistories.Add(jobHistory);
+						var jobHistory = new JobHistoryModel
+						{
+							ItemsTransferred = res.ItemsTransferred ?? 0,
+							EndTimeUTC = res.EndTimeUTC.GetValueOrDefault(),
+							DestinationWorkspace = res.DestinationWorkspace
+						};
+						jobHistories.Add(jobHistory);
+					}
 
 					totalDocuments += res.ItemsTransferred ?? 0;
 					totalAvailable++;
