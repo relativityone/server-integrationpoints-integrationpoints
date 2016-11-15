@@ -34,6 +34,8 @@ def passed = false
 					bat 'powershell.exe "./build.ps1 -test -skip"'
 				}			
 			}
+			
+			stash includes: 'lib/UnitTests/*', name: 'testdlls'
 		}
 		
 		node('nunit') {
@@ -42,6 +44,8 @@ def passed = false
 				
 				dir('C:/SourceCode/integrationpoints') {
 
+					unstash 'testdlls'
+					
 					bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll --test=kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunTestCase,kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunInvalidFileshareTestCase --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
 
 					step([$class : 'XUnitBuilder',
