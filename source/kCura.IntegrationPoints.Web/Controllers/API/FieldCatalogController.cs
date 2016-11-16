@@ -7,26 +7,24 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Services.FieldMapping;
+using kCura.IntegrationPoints.Core.Services;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class FieldCatalogController : ApiController
     {
-        private readonly IHelper _helper;
-   
-        public FieldCatalogController(IHelper helper)
+        private readonly IFieldCatalogService _fieldCatalogService;
+
+        public FieldCatalogController(IFieldCatalogService fieldCatalogService)
         {
-            _helper = helper;
+            _fieldCatalogService = fieldCatalogService;
         }
 
         [LogApiExceptionFilter(Message = "Unable to retrieve field catalog information.")]
         public HttpResponseMessage Get(int id)
         {
-            using (IFieldMapping proxy = _helper.GetServicesManager().CreateProxy<IFieldMapping>(ExecutionIdentity.System))
-            {           
-                ExternalMapping[] fieldsMap = proxy.GetAllMappedFieldsAsync(id, new Guid[0], 0).Result;
-                return Request.CreateResponse(HttpStatusCode.OK, fieldsMap, Configuration.Formatters.JsonFormatter);
-            }
+            ExternalMapping[] fieldsMap = _fieldCatalogService.GetAllFieldCatalogMappings(id);
+            return Request.CreateResponse(HttpStatusCode.OK, fieldsMap, Configuration.Formatters.JsonFormatter);           
         }
     }
 }
