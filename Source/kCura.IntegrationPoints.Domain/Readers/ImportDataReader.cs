@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
         private DataTable _schemaTable;
 
         public ImportDataReader(
-            FieldMap[] fieldMaps,
             IDataSourceProvider sourceProvider,
             List<FieldEntry> sourceFields,
             List<string> entryIds,
@@ -34,10 +33,9 @@ namespace kCura.IntegrationPoints.Domain.Readers
             _nameToOrdinalMap = new Dictionary<string, int>();
             _ordinalMap = new Dictionary<int, int>();
             _schemaTable = new DataTable();
-            Setup(fieldMaps);
         }
 
-        private void Setup(FieldMap[] fieldMaps)
+        public void Setup(FieldMap[] fieldMaps)
         {
             int curColIdx = 0;
             foreach (FieldMap cur in fieldMaps)

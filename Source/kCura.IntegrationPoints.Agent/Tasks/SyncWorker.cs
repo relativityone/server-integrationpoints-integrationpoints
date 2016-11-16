@@ -136,14 +136,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-            using (IDataReader importDataReader = new ImportDataReader(
-                    fieldMaps,
+            using (ImportDataReader importDataReader = new ImportDataReader(
                     sourceProvider,
                     sourceFields,
                     entryIDs,
                     sourceConfiguration,
                     Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
             {
+                importDataReader.Setup(fieldMaps);
                 IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
                 if (dataSynchronizer is RdoSynchronizerBase)
                 {
