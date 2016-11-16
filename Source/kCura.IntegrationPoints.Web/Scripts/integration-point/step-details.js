@@ -180,7 +180,8 @@ var IP = IP || {};
 			$.each(self.sourceTypes(), function () {
 				if (this.value === selectedValue) {
 					self.sourceProvider = this.artifactID;
-					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null) {
+					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null
+					|| parentModel.destination.selectedDestinationTypeGuid() === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
 						parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
 					} else {
 						var compatibleRdos = this.model.config.compatibleRdoTypes;
@@ -218,7 +219,23 @@ var IP = IP || {};
 		this.selectedDestinationType = ko.observable().extend({ required: true });
 
 		this.selectedDestinationType.subscribe(function (selectedValue) {
-
+			var destType = self.selectedDestinationTypeGuid();
+			if (destType === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18"
+			|| (typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' || parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null)
+			) {
+				self.rdoTypes(self.allRdoTypes());
+			}
+			else {
+				if (!!parentModel.source.SourceProviderConfiguration.compatibleRdoTypes) {
+					var rdosToDisplay = [];
+					$.each(self.allRdoTypes(), function () {
+						if (parentModel.source.SourceProviderConfiguration.compatibleRdoTypes.indexOf(this.value) > -1) {
+							rdosToDisplay.push(this);
+						}
+					});
+					self.rdoTypes(rdosToDisplay);
+				}
+			}
 		});
 
 		this.destinationProviderVisible = ko.observable(false);
@@ -230,7 +247,7 @@ var IP = IP || {};
 			}
 		}
 		this.selectedDestinationTypeGuid = function () {
-			var results = this.destinationTypes().filter(withArtifactId(this.selectedDestinationType()));
+			var results = self.destinationTypes().filter(withArtifactId(self.selectedDestinationType()));
 			return results.length > 0 ? results[0].value : "";
 		}
 
@@ -710,6 +727,7 @@ var IP = IP || {};
 				this.model.destinationProvider = this.model.destination.selectedDestinationType();
 				var guid = this.model.destination.selectedDestinationTypeGuid();
 				this.model.destinationProviderGuid = guid;
+				this.model.artifactTypeID = this.model.destination.artifactTypeID(),
 				this.model.destination = JSON.stringify({
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					destinationProviderType: ko.toJS(guid),
