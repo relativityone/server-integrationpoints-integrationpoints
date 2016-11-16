@@ -37,53 +37,41 @@ namespace kCura.IntegrationPoints.Domain.Readers
             int curColIdx = 0;
             foreach (FieldMap cur in fieldMaps)
             {
-                string curColName = string.Empty;
-
                 //special cases
                 if (cur.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
                 {
-                    //1. Add the special folderpath field Guid as a column
-                    curColName = kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD;
-                    _schemaTable.Columns.Add(curColName);
+                    int sourceOrdinal = _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier);
+                    //Add special folder path column
+                    addColumn(
+                        kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
+                        sourceOrdinal,
+                        curColIdx++);
 
-                    //2. Get the ordinal of the underlying source data reader column containing this info
-                    int srcColIdx = _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier);
-
-                    //3. Set up the maps
-                    _ordinalMap[curColIdx] = srcColIdx;
-                    _nameToOrdinalMap[curColName] = srcColIdx;
-
-                    curColIdx++;
-
-                    //4. Check whether this field is also mapped to a document field; if so, it needs a column as well
+                    //If field is also mapped to a document field, it needs a column as well
                     if (cur.DestinationField.FieldIdentifier != null)
                     {
-                        //Get the underlying source name and add as a column
-                        curColName = cur.SourceField.FieldIdentifier;
-                        _schemaTable.Columns.Add(curColName);
-
-                        //Set up the maps
-                        _ordinalMap[curColIdx] = srcColIdx;
-                        _nameToOrdinalMap[curColName] = srcColIdx;
-
-                        curColIdx++;
+                        addColumn(
+                            cur.SourceField.FieldIdentifier,
+                            sourceOrdinal,
+                            curColIdx++);
                     }
                 }
-
                 //general case
                 else
                 {
-                    curColName = cur.SourceField.FieldIdentifier;
-                    _schemaTable.Columns.Add(curColName);
-
-                    int srcColIdx = _sourceDataReader.GetOrdinal(curColName);
-
-                    _ordinalMap[curColIdx] = srcColIdx;
-                    _nameToOrdinalMap[curColName] = srcColIdx;
-
-                    curColIdx++;
+                    addColumn(
+                        cur.SourceField.FieldIdentifier,
+                        _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier),
+                        curColIdx++);
                 }
             }
+        }
+
+        private void addColumn(string columnName, int srcColIdx, int curColIdx)
+        {
+            _schemaTable.Columns.Add(columnName);
+            _ordinalMap[curColIdx] = srcColIdx;
+            _nameToOrdinalMap[columnName] = srcColIdx;
         }
 
 		public object GetValue(int i)
