@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Domain.Readers
 {
     public class ImportDataReader : IDataReader
     {
-        private IAPILog _logger;
         private bool _isClosed;
         private IDataReader _sourceDataReader;
         private Dictionary<string, int> _nameToOrdinalMap; //map publicly available column names ==> source data reader ordinals
@@ -24,10 +23,8 @@ namespace kCura.IntegrationPoints.Domain.Readers
             IDataSourceProvider sourceProvider,
             List<FieldEntry> sourceFields,
             List<string> entryIds,
-            string sourceConfiguration,
-            IAPILog logger)
+            string sourceConfiguration)
         {
-            _logger = logger;
             _isClosed = false;
             _sourceDataReader = sourceProvider.GetData(sourceFields, entryIds, sourceConfiguration);
             _nameToOrdinalMap = new Dictionary<string, int>();
@@ -223,24 +220,8 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		// Following this example: https://msdn.microsoft.com/en-us/library/aa720693(v=vs.71).aspx -- biedrzycki: Jan 20th, 2016
 		public void Dispose()
 		{
-			this.Dispose(true);
+            this.Close();
 			System.GC.SuppressFinalize(this);
-		}
-
-		private void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				try
-				{
-					this.Close();
-				}
-				catch (Exception e)
-				{
-					throw new SystemException("An exception of type " + e.GetType() +
-											  " was encountered while closing the " + this.GetType().Name);
-				}
-			}
 		}
 
         public void Close()

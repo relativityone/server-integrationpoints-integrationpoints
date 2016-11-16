@@ -140,8 +140,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     sourceProvider,
                     sourceFields,
                     entryIDs,
-                    sourceConfiguration,
-                    Helper.GetLoggerFactory().GetLogger().ForContext<ImportDataReader>()))
+                    sourceConfiguration))
             {
                 importDataReader.Setup(fieldMaps);
                 IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
