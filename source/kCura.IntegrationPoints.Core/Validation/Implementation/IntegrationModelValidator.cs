@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
@@ -13,9 +15,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		public void Validate(IntegrationModel model)
 		{
-			var validators = _factory.CreateIntegrationModelValidators(model);
+			List<IProviderValidator> validators = _factory.CreateIntegrationModelValidators(model);
 
-			foreach (var validator in validators)
+			foreach (IProviderValidator validator in validators)
 			{
 				validator.Validate();
 			}

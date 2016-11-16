@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobHistoryService = jobHistoryService;
 			_managerFactory = managerFactory;
 			//TODO Inject !
-			_integrationModelValidator = new IntegrationModelValidator(new ValidatorFactory());
+			_integrationModelValidator = new IntegrationModelValidator(new ValidatorFactory(serializer));
 			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 

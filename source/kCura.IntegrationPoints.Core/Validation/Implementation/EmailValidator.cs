@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -22,25 +23,35 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		#region "Public methods"
 		public ValidationResult Validate()
 		{
+			List<string> invalidEmailList = new List<string>();
 			try
 			{
-				var emails =
+				List<string> emails =
 				(_notificationEmails ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
 					.Select(x => x.Trim())
 					.ToList();
 
-				foreach (var email in emails)
+				foreach (string email in emails)
 				{
 					if (!IsValidEmail(email))
 					{
-						return new ValidationResult()
-						{
-							IsValid = false,
-							Message = "Invalid e-mail: " + email
-						};
+						invalidEmailList.Add(email);
 					}
 				}
-				
+
+				if (invalidEmailList.Count > 0)
+				{
+					string delimiter = "; ";
+					string errorMessage = "Invalid e-mails: ";
+					errorMessage += string.Join(delimiter, invalidEmailList);
+
+					return new ValidationResult()
+					{
+						IsValid = false,
+						Message = errorMessage
+					};
+				}
+
 				return new ValidationResult() {IsValid = true};
 			}
 			catch (Exception ex)
