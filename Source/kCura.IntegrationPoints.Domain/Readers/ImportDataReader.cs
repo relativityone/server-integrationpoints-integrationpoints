@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
 		{
 			// We do not need this at this point
-			throw new System.NotImplementedException();
+			throw new System.InvalidOperationException("IDataReader.GetBytes is not supported.");
 		}
 
 		public char GetChar(int i)
@@ -141,13 +141,13 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferOffset, int length)
 		{
 			// We do not need this at this point
-			throw new System.NotImplementedException();
+			throw new System.InvalidOperationException("IDataReader.GetChars is not supported.");
 		}
 
 		public IDataReader GetData(int i)
 		{
 			// This is used to expose nested tables and other hierarchical data but currently this is not desired
-			throw new System.NotImplementedException();
+			throw new System.InvalidOperationException("IDataReader.GetData is not supported.");
 		}
 
 		public DateTime GetDateTime(int i)
@@ -192,7 +192,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public int GetValues(object[] values)
 		{
-			throw new System.NotImplementedException();
+			throw new System.InvalidOperationException("IDataReader.GetValues is not supported.");
 		}
 
 		public bool IsDBNull(int i)
@@ -202,7 +202,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public bool NextResult()
 		{
-            throw new NotImplementedException();
+			throw new System.InvalidOperationException("IDataReader.NextResult is not supported.");
 		}
 
 		// Following this example: https://msdn.microsoft.com/en-us/library/aa720693(v=vs.71).aspx -- biedrzycki: Jan 20th, 2016
@@ -244,12 +244,12 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		public string GetDataTypeName(int i)
 		{
-            throw new NotImplementedException();
+			throw new System.InvalidOperationException("IDataReader.GetDataTypeName is not supported.");
 		}
 
 		public Type GetFieldType(int i)
 		{
-            throw new NotImplementedException();
+			throw new System.InvalidOperationException("IDataReader.GetFieldType is not supported.");
 		}
     }
 }
