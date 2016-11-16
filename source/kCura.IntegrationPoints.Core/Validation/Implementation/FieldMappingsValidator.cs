@@ -1,20 +1,16 @@
-﻿using kCura.IntegrationPoints.Domain;
+﻿using System;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
-	public class FieldMappingsValidator : IProviderValidator
+	public class FieldMappingsValidator : IValidator
 	{
-		private readonly string _fieldsMappings;
+		public string Key => Constants.IntegrationPoints.Validation.FIELD_MAP;
 
-		public FieldMappingsValidator(string fieldMappings)
+		public ValidationResult Validate(object value)
 		{
-			_fieldsMappings = fieldMappings;
-		}
-
-		public ValidationResult Validate()
-		{
-			throw new System.NotImplementedException();
+			return new ValidationResult { IsValid = true };
 		}
 	}
 }

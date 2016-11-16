@@ -231,6 +231,7 @@
     <Compile Include="Helpers\LongPathDirectory.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
+    <Compile Include="Installers\ValidationInstaller.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
     <Compile Include="Managers\DestinationWorkspaceFieldManagerBase.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
@@ -385,8 +386,6 @@
     <Compile Include="Validation\Implementation\FieldMappingsValidator.cs" />
     <Compile Include="Validation\Implementation\IntegrationModelValidator.cs" />
     <Compile Include="Validation\Implementation\SchedulerValidator.cs" />
-    <Compile Include="Validation\Implementation\ValidatorFactory.cs" />
-    <Compile Include="Validation\IValidatorFactory.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

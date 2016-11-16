@@ -97,6 +97,13 @@ namespace kCura.IntegrationPoints.Core
 
 				#endregion //Export
 			}
+
+			public class Validation
+			{
+				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";
+				public const string FIELD_MAP = "AED64B63-1D26-406B-9040-DAF8C21BF5DD";
+				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
+			}
 		}
 
 		public static class RelativityProvider

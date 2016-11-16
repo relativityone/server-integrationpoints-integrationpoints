@@ -11,15 +11,14 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
@@ -46,7 +45,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			ISerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
-			IManagerFactory managerFactory)
+			IManagerFactory managerFactory,
+			IIntegrationModelValidator integrationModelValidator)
 		{
 			_context = context;
 			_serializer = serializer;
@@ -54,8 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_managerFactory = managerFactory;
-			//TODO Inject !
-			_integrationModelValidator = new IntegrationModelValidator(new ValidatorFactory(serializer));
+			_integrationModelValidator = integrationModelValidator;
 			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 
@@ -129,12 +128,21 @@ namespace kCura.IntegrationPoints.Core.Services
 			PeriodicScheduleRule rule = null;
 			try
 			{
-				ValidateConfigurationWhenUpdatingObject(model);
-				_integrationModelValidator.Validate(model);
-
-				IList<Relativity.Client.DTOs.Choice> choices =
-					_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
+				IList<Choice> choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 				ip = model.ToRdo(choices);
+
+				ValidateConfigurationWhenUpdatingObject(model);
+
+				SourceProvider sourceProvider = GetSourceProvider(ip);
+				DestinationProvider destinationProvider = GetDestinationProvider(ip);
+
+				ValidationAggregateResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider);
+
+				if (!validationResult.IsValid)
+				{
+					throw new ArgumentOutOfRangeException(String.Join(Environment.NewLine, validationResult.Messages), default(Exception));					 
+				}
+
 				rule = ToScheduleRule(model);
 
 				if (ip.EnableScheduler.GetValueOrDefault(false))
@@ -149,12 +157,10 @@ namespace kCura.IntegrationPoints.Core.Services
 					rule = null;
 				}
 
-				SourceProvider sourceProvider = GetSourceProvider(ip);
-				DestinationProvider destinationProvider = GetDestinationProvider(ip);
 				TaskType task = GetJobTaskType(ip, sourceProvider);
 
-				if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
-					destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
+				if (sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
+					destinationProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
 				{
 					CheckForProviderAdditionalPermissions(ip, Constants.SourceProvider.Relativity, _context.EddsUserID);
 				}
@@ -190,14 +196,22 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				throw;
 			}
-			catch (Exception e)
+			catch(ArgumentOutOfRangeException ex)
+			{
+				CreateRelativityError(Constants.IntegrationPoints.INVALID_PARAMETERS, ex.Message);
+
+				throw;
+			}
+			catch (Exception ex)
 			{
 				CreateRelativityError(
-					Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-					String.Join(System.Environment.NewLine, new[] {e.Message, e.StackTrace}));
+					Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE, 
+					String.Join(Environment.NewLine, new[] { ex.Message, ex.StackTrace })
+				);
 
-				throw new Exception(Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
 			}
+
 			return ip.ArtifactId;
 		}
 
@@ -263,7 +277,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
 					}
 
-					if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+					if (provider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 					{
 						if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
 						{
@@ -338,7 +352,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				return new List<DayOfWeek>();
 			}
-			var values = (DaysOfWeek[]) Enum.GetValues(typeof(DaysOfWeek));
+			var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
 			return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
 		}
 
@@ -379,8 +393,9 @@ namespace kCura.IntegrationPoints.Core.Services
 				case ScheduleInterval.Weekly:
 					var sendOn = _serializer.Deserialize<Weekly>(model.Scheduler.SendOn);
 					periodicScheduleRule.DaysToRun =
-						FromDayOfWeek(sendOn.SelectedDays.Select(x => (DayOfWeek) Enum.Parse(typeof(DayOfWeek), x)).ToList());
+						FromDayOfWeek(sendOn.SelectedDays.Select(x => (DayOfWeek)Enum.Parse(typeof(DayOfWeek), x)).ToList());
 					break;
+
 				case ScheduleInterval.Monthly:
 					var monthlySendOn = _serializer.Deserialize<Monthly>(model.Scheduler.SendOn);
 					if (monthlySendOn.MonthChoice == MonthlyType.Days)
@@ -418,10 +433,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			catch (Exception e)
 			{
 				CreateRelativityError(
-					Core.Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
-					String.Join(System.Environment.NewLine, new[] {e.Message, e.StackTrace}));
+					Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
+					String.Join(System.Environment.NewLine, new[] { e.Message, e.StackTrace }));
 
-				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE);
+				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE);
 			}
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, destinationProvider, userId);
@@ -443,13 +458,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			catch (Exception e)
 			{
 				CreateRelativityError(
-					Core.Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
-					String.Join(System.Environment.NewLine, new[] {e.Message, e.StackTrace}));
+					Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE,
+					String.Join(System.Environment.NewLine, new[] { e.Message, e.StackTrace }));
 
-				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE);
+				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE);
 			}
 
-			if (!sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+			if (!sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
 				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 			}
@@ -495,11 +510,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void CheckStopPermission(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IIntegrationPointManager manager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
-			PermissionCheckDTO result =	manager.UserHasPermissionToStopJob(workspaceArtifactId, integrationPointArtifactId);
+			PermissionCheckDTO result = manager.UserHasPermissionToStopJob(workspaceArtifactId, integrationPointArtifactId);
 			if (!result.Success)
 			{
 				CreateRelativityError(
-					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
 					$"User is missing the following permissions:{Environment.NewLine}{String.Join(Environment.NewLine, result.ErrorMessages)}");
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
@@ -580,11 +595,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			else
 			{
-				 // I don't think this is currently possible. SAMO - 7/27/2016
-				 throw new Exception("Failed to retrieve job history RDO. Please retry the operation.");
+				// I don't think this is currently possible. SAMO - 7/27/2016
+				throw new Exception("Failed to retrieve job history RDO. Please retry the operation.");
 			}
 		}
-
 
 		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, DestinationProvider destinationProvider, int userId)
 		{
@@ -597,10 +611,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
 
 			Constants.SourceProvider sourceProviderEnum = Constants.SourceProvider.Other;
-			if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
-				destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
+			if (sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
+				destinationProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
 			{
-				sourceProviderEnum = Constants.SourceProvider.Relativity;	
+				sourceProviderEnum = Constants.SourceProvider.Relativity;
 			}
 
 			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(workspaceArtifactId, integrationPointDto, sourceProviderEnum);
@@ -608,7 +622,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (!permissionCheck.Success)
 			{
 				CreateRelativityError(
-					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
 					$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}");
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
@@ -643,7 +657,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				SourceProvider = integrationPoint.SourceProvider,
 				SourceConfiguration = integrationPoint.SourceConfiguration,
 				NextScheduledRuntimeUTC = integrationPoint.NextScheduledRuntimeUTC,
-//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
+				//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
 				ScheduleRule = integrationPoint.ScheduleRule
 			};
 			return integrationPointDto;
@@ -663,7 +677,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			catch (Exception e)
 			{
-				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_SOURCE_PROVIDER, e);
+				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_SOURCE_PROVIDER, e);
 			}
 
 			return sourceProvider;
@@ -683,7 +697,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			catch (Exception e)
 			{
-				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER, e);
+				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER, e);
 			}
 
 			return destinationProvider;
@@ -707,7 +721,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private TaskType GetJobTaskType(IntegrationPoint integrationPoint, SourceProvider sourceProvider)
 		{
 			TaskType jobTaskType =
-				sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
+				sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 					? TaskType.ExportService
 					: TaskType.SyncManager;
 
@@ -738,10 +752,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (!permissionCheck.Success)
 			{
 				CreateRelativityError(
-					Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
-					$"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}");
+					Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
+					$"{Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}");
 
-				throw new PermissionException(Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
+				throw new PermissionException(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
 			}
 		}
 
@@ -752,11 +766,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				Message = message,
 				FullText = fullText,
-				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+				Source = Constants.IntegrationPoints.APPLICATION_NAME,
 				WorkspaceId = _context.WorkspaceID
 			};
 
-			errorManager.Create(new[] {error});
+			errorManager.Create(new[] { error });
 		}
 
 		private void CheckForOtherJobsExecutingOrInQueue(TaskType taskType, int workspaceArtifactId, int integrationPointArtifactId)

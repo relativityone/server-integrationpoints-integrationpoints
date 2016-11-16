@@ -1,26 +1,54 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
 	public class IntegrationModelValidator : IIntegrationModelValidator
 	{
-		private readonly IValidatorFactory _factory;
+		private readonly ILookup<string, IValidator> _validatorsMap;
 
-		public IntegrationModelValidator(IValidatorFactory factory)
+		public IntegrationModelValidator(IEnumerable<IValidator> validators)
 		{
-			_factory = factory;
+			_validatorsMap = validators.ToLookup(x => x.Key);
 		}
 
-		public void Validate(IntegrationModel model)
+		public ValidationAggregateResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
 		{
-			List<IProviderValidator> validators = _factory.CreateIntegrationModelValidators(model);
+			var result = new ValidationAggregateResult();
 
-			foreach (IProviderValidator validator in validators)
+			if (model.Scheduler.EnableScheduler)
 			{
-				validator.Validate();
+				foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.EMAIL])
+				{
+					result.Add(validator.Validate(model.NotificationEmails));
+				}
+
+				foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.SCHEDULE])
+				{
+					result.Add(validator.Validate(model.Scheduler));
+				}
 			}
+
+			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.FIELD_MAP])
+			{
+				result.Add(validator.Validate(model.Map));
+			}
+
+			foreach (var validator in _validatorsMap[sourceProvider.Identifier])
+			{
+				result.Add(validator.Validate(model.SourceConfiguration));
+			}
+
+			foreach (var validator in _validatorsMap[destinationProvider.Identifier])
+			{
+				result.Add(validator.Validate(model.Destination));
+			}
+
+			return result;
 		}
 	}
 }

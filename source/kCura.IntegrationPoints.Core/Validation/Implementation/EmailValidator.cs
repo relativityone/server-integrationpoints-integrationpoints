@@ -8,21 +8,14 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
-	public class EmailValidator : IProviderValidator
+	public class EmailValidator : IValidator
 	{
-		private readonly string _notificationEmails;
+		public string Key => Constants.IntegrationPoints.Validation.EMAIL;
 
-		#region "Constructor"
-
-		public EmailValidator(string notificationEmails)
+		public ValidationResult Validate(object value)
 		{
-			_notificationEmails = notificationEmails;
-		}
-		#endregion
+			var _notificationEmails = value as string;
 
-		#region "Public methods"
-		public ValidationResult Validate()
-		{
 			List<string> invalidEmailList = new List<string>();
 			try
 			{
@@ -52,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 					};
 				}
 
-				return new ValidationResult() {IsValid = true};
+				return new ValidationResult() { IsValid = true };
 			}
 			catch (Exception ex)
 			{
@@ -63,18 +56,14 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 				};
 			}
 		}
-		#endregion
 
-		#region "Private methods"
-
-		private static bool IsValidEmail(string email)
+		private bool IsValidEmail(string email)
 		{
 			if (string.IsNullOrEmpty(email))
 				return false;
 
 			// Use IdnMapping class to convert Unicode domain names.
-			email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
-								  RegexOptions.None, TimeSpan.FromMilliseconds(200));
+			email = Regex.Replace(email, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
 
 			// Return true if email is in valid e-mail format.
 			return Regex.IsMatch(email,
@@ -83,15 +72,15 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 				  RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
 		}
 
-		private static string DomainMapper(Match match)
+		private string DomainMapper(Match match)
 		{
 			// IdnMapping class with default property values.
 			IdnMapping idn = new IdnMapping();
 
 			string domainName = match.Groups[2].Value;
 			domainName = idn.GetAscii(domainName);
+
 			return match.Groups[1].Value + domainName;
 		}
-		#endregion
 	}
 }

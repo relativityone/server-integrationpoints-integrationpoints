@@ -14,9 +14,12 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -221,9 +224,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobResourceTracker jobResourceTracker = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
 				JobTracker jobTracker = new JobTracker(jobResourceTracker);
 				IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _helper, _serializer, jobTracker);
+				IIntegrationModelValidator ipValidator = new IntegrationModelValidator(Enumerable.Empty<IValidator>());
 
-				integrationPointService = new IntegrationPointService(_helper, _caseServiceContext,
-					_contextContainerFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory);
+				integrationPointService = new IntegrationPointService(_helper, _caseServiceContext, _contextContainerFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory, ipValidator);
 			}
 			else
 			{
@@ -288,7 +291,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			//check if it's a scheduled job
 			if (!string.IsNullOrEmpty(job.ScheduleRuleType))
 			{
-				integrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, agentBase.ScheduleRuleFactory, new TaskResult {Status = TaskStatusEnum.None});
+				integrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, agentBase.ScheduleRuleFactory, new TaskResult { Status = TaskStatusEnum.None });
 				exceptionMessage = $@"{exceptionMessage} Job is re-scheduled for {integrationPointDto.NextScheduledRuntimeUTC}.";
 			}
 			else

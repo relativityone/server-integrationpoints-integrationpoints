@@ -207,8 +207,8 @@
     <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IInternalDataSourceProvider.cs" />
     <Compile Include="IPluginProvider.cs" />
-    <Compile Include="IProviderValidator.cs" />
     <Compile Include="ISynchronizerFactory.cs" />
+    <Compile Include="IValidator.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\BaseDTO.cs" />
@@ -224,6 +224,7 @@
     <Compile Include="Models\JsTreeItemDTO.cs" />
     <Compile Include="Models\ErrorDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />
+    <Compile Include="Models\ValidationAggregateResult.cs" />
     <Compile Include="Models\ValidationResult.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />

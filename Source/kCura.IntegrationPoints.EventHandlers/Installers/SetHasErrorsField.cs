@@ -12,11 +12,14 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
@@ -105,8 +108,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IManagerFactory managerFactory = new ManagerFactory(Helper);
 
 			_caseServiceContext = caseServiceContext;
-			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService,
-				managerFactory);
+			IIntegrationModelValidator ipValidator = new IntegrationModelValidator(Enumerable.Empty<IValidator>());
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator);
 		}
 
 		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)

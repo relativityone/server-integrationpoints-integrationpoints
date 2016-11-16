@@ -152,6 +152,7 @@
     <Compile Include="Extensions\ExportFileExtension.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
+    <Compile Include="Installer\ValidationInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />
     <Compile Include="Logging\ExportLoggingMediator.cs" />
     <Compile Include="Logging\ICompositeLoggingMediator.cs" />
@@ -204,6 +205,8 @@
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
     <Compile Include="SharedLibrary\ProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
+    <Compile Include="Validation\DestinationProviderConfigurationValidator.cs" />
+    <Compile Include="Validation\SourceProviderConfigurationValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

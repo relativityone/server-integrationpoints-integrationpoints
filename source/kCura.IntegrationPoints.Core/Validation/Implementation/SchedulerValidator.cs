@@ -10,27 +10,27 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
-	public class SchedulerValidator : IProviderValidator
+	public class SchedulerValidator : IValidator
 	{
-		private readonly Scheduler _scheduler;
-		private List<string> _errorsList;
 		private readonly ISerializer _serializer;
 
-		public SchedulerValidator(Scheduler scheduler, ISerializer serializer)
+		public string Key => Constants.IntegrationPoints.Validation.SCHEDULE;
+
+		public SchedulerValidator(ISerializer serializer)
 		{
-			_scheduler = scheduler;
 			_serializer = serializer;
 		}
 
-		public ValidationResult Validate()
+		public ValidationResult Validate(object value)
 		{
-			_errorsList = new List<string>();
+			var scheduler = value as Scheduler;
+			var errorsList = new List<string>();
 
-			ValidateDates();
-			ValidateIntervals();
+			ValidateDates(scheduler, errorsList);
+			ValidateIntervals(scheduler, errorsList);
 
 			//TODO Aggregate errors
-			if (_errorsList.Count > 0)
+			if (errorsList.Count > 0)
 			{
 				string delimiter = "; ";
 				string errorMessage = "Scheduler validation failed: ";
@@ -41,123 +41,121 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 					Message = errorMessage
 				};
 			}
-			
-			return new ValidationResult() {IsValid = true};
+
+			return new ValidationResult() { IsValid = true };
 		}
 
-#region Private methods
-		private void ValidateDates()
+		private void ValidateDates(Scheduler scheduler, IList<string> errorsList)
 		{
 			DateTime tmpDate;
 
-			if (!DateTime.TryParse(_scheduler.StartDate, out tmpDate))
+			if (!DateTime.TryParse(scheduler.StartDate, out tmpDate))
 			{
-				_errorsList.Add("StartDate does not contain a valid string representation of a date and time");
+				errorsList.Add("StartDate does not contain a valid string representation of a date and time");
 			}
 
-			if (!string.IsNullOrEmpty(_scheduler.EndDate) && 
-				!DateTime.TryParse(_scheduler.EndDate, out tmpDate))
+			if (!string.IsNullOrEmpty(scheduler.EndDate) &&
+				!DateTime.TryParse(scheduler.EndDate, out tmpDate))
 			{
-				_errorsList.Add("EndDate does not contain a valid string representation of a date and time");
+				errorsList.Add("EndDate does not contain a valid string representation of a date and time");
 			}
 
 			TimeSpan time;
-			if (TimeSpan.TryParse(_scheduler.ScheduledTime, out time))
+			if (TimeSpan.TryParse(scheduler.ScheduledTime, out time))
 			{
-				_errorsList.Add("ScheduledTime is invalid format");
+				errorsList.Add("ScheduledTime is invalid format");
 			}
 		}
 
-		private void ValidateIntervals()
+		private void ValidateIntervals(Scheduler scheduler, IList<string> errorsList)
 		{
 			List<string> scheduleIntervals = Enum.GetNames(typeof(ScheduleInterval)).ToList();
-			if (!scheduleIntervals.Contains(_scheduler.SelectedFrequency))
+			if (!scheduleIntervals.Contains(scheduler.SelectedFrequency))
 			{
-				_errorsList.Add("Invalid interval: " + _scheduler.SelectedFrequency);
+				errorsList.Add("Invalid interval: " + scheduler.SelectedFrequency);
 			}
 
-			if (_scheduler.SelectedFrequency == ScheduleInterval.Weekly.ToString())
+			if (scheduler.SelectedFrequency == ScheduleInterval.Weekly.ToString())
 			{
-				ValidateReoccur();
-				ValidateWeeklyInterval();
+				ValidateReoccur(scheduler, errorsList);
+				ValidateWeeklyInterval(scheduler, errorsList);
 			}
-			else if (_scheduler.SelectedFrequency == ScheduleInterval.Monthly.ToString())
+			else if (scheduler.SelectedFrequency == ScheduleInterval.Monthly.ToString())
 			{
-				ValidateReoccur();
-				ValidateMonthlyInterval();
+				ValidateReoccur(scheduler, errorsList);
+				ValidateMonthlyInterval(scheduler, errorsList);
 			}
 		}
 
-		private void ValidateWeeklyInterval()
+		private void ValidateWeeklyInterval(Scheduler scheduler, IList<string> errorsList)
 		{
-			var weeklySendOn = _serializer.Deserialize<IntegrationPointService.Weekly>(_scheduler.SendOn);
-			
+			var weeklySendOn = _serializer.Deserialize<IntegrationPointService.Weekly>(scheduler.SendOn);
+
 			if (weeklySendOn.SelectedDays.Count == 0)
 			{
-				_errorsList.Add("Any day selected. For Weekly frequency at least one day must be selected.");
+				errorsList.Add("Any day selected. For Weekly frequency at least one day must be selected.");
 				return;
 			}
 
 			foreach (string selectedDay in weeklySendOn.SelectedDays)
 			{
-				ValidateDayOfWeek(selectedDay, "selectedDay");
+				ValidateDayOfWeek(selectedDay, "selectedDay", errorsList);
 			}
 		}
 
-		private void ValidateMonthlyInterval()
+		private void ValidateMonthlyInterval(Scheduler scheduler, IList<string> errorsList)
 		{
 			const int minDayOfMonth = 1, maxDayOfMonth = 31;
-			var monthlySendOn = _serializer.Deserialize<IntegrationPointService.Monthly>(_scheduler.SendOn);
+			var monthlySendOn = _serializer.Deserialize<IntegrationPointService.Monthly>(scheduler.SendOn);
 			List<string> occurancesInMonth = Enum.GetNames(typeof(OccuranceInMonth)).ToList();
 
 			if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Days)
 			{
 				if (monthlySendOn.SelectedDay < minDayOfMonth || monthlySendOn.SelectedDay > maxDayOfMonth)
 				{
-					_errorsList.Add($"DayOfMonth ({monthlySendOn.SelectedDay}) is not in range ({minDayOfMonth}:{maxDayOfMonth})");
+					errorsList.Add($"DayOfMonth ({monthlySendOn.SelectedDay}) is not in range ({minDayOfMonth}:{maxDayOfMonth})");
 				}
 			}
 			else if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Month)
 			{
-				ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth");
+				ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth", errorsList);
 
 				if (monthlySendOn.SelectedType == null)
 				{
-					_errorsList.Add("No occurance selected");
+					errorsList.Add("No occurance selected");
 				}
 				else if (!occurancesInMonth.Contains(monthlySendOn.SelectedType.ToString()))
 				{
-					_errorsList.Add("Invalid occurance selected");
+					errorsList.Add("Invalid occurance selected");
 				}
 			}
 			else
 			{
-				_errorsList.Add("Invalid MonthChoice: " + monthlySendOn.MonthChoice);
+				errorsList.Add("Invalid MonthChoice: " + monthlySendOn.MonthChoice);
 			}
 		}
 
-		private void ValidateDayOfWeek(string dayOfWeek, string fieldName)
+		private void ValidateDayOfWeek(string dayOfWeek, string fieldName, IList<string> errorsList)
 		{
 			if (dayOfWeek == null)
 			{
-				_errorsList.Add("Value for dayOfWeek not selected");
+				errorsList.Add("Value for dayOfWeek not selected");
 			}
 			List<string> daysOfWeek = Enum.GetNames(typeof(DayOfWeek)).ToList();
 
 			if (!daysOfWeek.Contains(dayOfWeek))
 			{
-				_errorsList.Add($"Invalid {fieldName}: {dayOfWeek}");
+				errorsList.Add($"Invalid {fieldName}: {dayOfWeek}");
 			}
 		}
 
-		private void ValidateReoccur()
+		private void ValidateReoccur(Scheduler scheduler, IList<string> errorsList)
 		{
 			const int min = 1, max = 999;
-			if (_scheduler.Reoccur < min || _scheduler.Reoccur > max)
+			if (scheduler.Reoccur < min || scheduler.Reoccur > max)
 			{
-				_errorsList.Add($"Reoccur value ({_scheduler.Reoccur}) is not in range ({min}:{max})");
+				errorsList.Add($"Reoccur value ({scheduler.Reoccur}) is not in range ({min}:{max})");
 			}
 		}
-#endregion
 	}
 }
