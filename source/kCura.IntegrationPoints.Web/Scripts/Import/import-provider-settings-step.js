@@ -37,6 +37,7 @@
             self.publish("saveState", stringified);
             self.publish('saveComplete', stringified);
             windowObj.RelativityImport.disablePreviewButton(false);
+            IP.frameMessaging().dFrame.IP.message.error.clear();
         }
     };
 
@@ -66,6 +67,10 @@
     //An event raised when the host page has loaded the current settings page.
     //Arriving at the custom settings page; either from hitting Back from field mapping, or Next from the first RIP screen
     message.subscribe('load', function (model) {
+        //closing preview btn if the user opens the btn and then goes back to step2 from step 3
+        var $el = currentSettingsFromUi();
+        if ($el.ImportType === "document") { windowObj.RelativityImport.closePreviewBtn(); };
+
         if (!!model) {
             windowObj.RelativityImport.GetCachedUiModel = JSON.parse(model);
         };
