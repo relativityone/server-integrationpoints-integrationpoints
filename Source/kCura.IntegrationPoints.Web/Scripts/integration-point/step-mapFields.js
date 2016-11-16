@@ -519,7 +519,7 @@ ko.validation.insertValidationMessage = function (element) {
 		    var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
 		        for (var x = 0; x < self.CatalogField.length; x++) {
 		            if (self.CatalogField[x].fieldArtifactId == wsFieldArtifactId &&
-                        self.CatalogField[x].friendlyName == fieldName) {
+                        self.CatalogField[x].friendlyName === fieldName) {
 		                return true;
 		            }
 		        }
@@ -530,7 +530,7 @@ ko.validation.insertValidationMessage = function (element) {
 		    var wspaceFieldToAdd = ko.observableArray([]);
 		    for (var i = 0; i < self.sourceField().length; i++) {
 		        for (var j = 0; j < self.workspaceFields().length; j++) {
-		            if (self.sourceField()[i].name == self.workspaceFields()[j].name) {
+		            if (self.sourceField()[i].name === self.workspaceFields()[j].name) {
 		                sourceFieldToAdd.push(self.sourceField()[i]);
 		                wspaceFieldToAdd.push(self.workspaceFields()[j])
 		            }
@@ -540,8 +540,14 @@ ko.validation.insertValidationMessage = function (element) {
 		            }
 		        }
 		    }
-		    IP.workspaceFieldsControls.add(self.sourceField, sourceFieldToAdd, self.sourceMapped);
-		    IP.workspaceFieldsControls.add(self.workspaceFields, wspaceFieldToAdd, self.mappedWorkspace);
+
+		    if (sourceFieldToAdd().length > 0) {
+		        IP.workspaceFieldsControls.add(self.sourceField, sourceFieldToAdd, self.sourceMapped);
+		        IP.workspaceFieldsControls.add(self.workspaceFields, wspaceFieldToAdd, self.mappedWorkspace);
+		    }
+		    else {
+		        IP.message.error.raise("Unable to auto map. No matching fields found.");
+		    }
 		};
 
 	};// end of the viewmodel
