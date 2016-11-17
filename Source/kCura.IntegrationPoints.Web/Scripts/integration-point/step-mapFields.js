@@ -532,11 +532,13 @@ ko.validation.insertValidationMessage = function (element) {
 		        for (var j = 0; j < self.workspaceFields().length; j++) {
 		            if (self.sourceField()[i].name === self.workspaceFields()[j].name) {
 		                sourceFieldToAdd.push(self.sourceField()[i]);
-		                wspaceFieldToAdd.push(self.workspaceFields()[j])
+		                wspaceFieldToAdd.push(self.workspaceFields()[j]);
+		                break;
 		            }
 		            else if (isCatalogFieldMatch(self.workspaceFields()[j].identifer, self.sourceField()[i].name)) {
 		                sourceFieldToAdd.push(self.sourceField()[i]);
-		                wspaceFieldToAdd.push(self.workspaceFields()[j])
+		                wspaceFieldToAdd.push(self.workspaceFields()[j]);
+		                break;
 		            }
 		        }
 		    }
