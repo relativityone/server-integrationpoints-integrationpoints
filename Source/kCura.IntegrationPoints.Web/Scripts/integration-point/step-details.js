@@ -594,7 +594,8 @@ var IP = IP || {};
 
 		var sourceTypePromise = root.data.ajax({ type: 'get', async: false, url: root.utils.generateWebAPIURL('SourceType') });
 		var destinationTypePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') });
-		var rdoFilterPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter') });
+		var rdoFilterPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetAll') });
+		var defaultRdoTypeIdPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetDefaultRdoTypeId') });
 
 		self.destination = new Destination(settings.destination, self);
 		self.source = new Source(settings.source, self);
@@ -602,7 +603,8 @@ var IP = IP || {};
 		root.data.deferred().all([
 				sourceTypePromise,
 				destinationTypePromise,
-				rdoFilterPromise
+				rdoFilterPromise,
+				defaultRdoTypeIdPromise
 		]).then(function (result) {
 
 			var sTypes = $.map(result[0], function (entry) {
@@ -621,6 +623,7 @@ var IP = IP || {};
 				return new Choice(entry.name, entry.value);
 			});
 
+			self.DefaultRdoTypeId = result[3];
 
 			self.destination.destinationTypes(dTypes);
 			self.destination.allRdoTypes(rdoTypes);

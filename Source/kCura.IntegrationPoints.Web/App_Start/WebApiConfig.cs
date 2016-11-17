@@ -181,6 +181,19 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetDefaultRdoTypeId",
+				routeTemplate: "{workspaceID}/api/RdoFilter/GetDefaultRdoTypeId",
+				defaults: new { controller = "RdoFilter", action = "GetDefaultRdoTypeId" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetAllViewableRdos",
+				routeTemplate: "{workspaceID}/api/RdoFilter/GetAll",
+				defaults: new { controller = "RdoFilter", action = "GetAllViewableRdos" }
+			);
+
+			
+			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
 				defaults: new { id = RouteParameter.Optional }
