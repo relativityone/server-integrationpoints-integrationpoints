@@ -37,12 +37,13 @@ namespace kCura.IntegrationPoints.Domain.Readers
             int curColIdx = 0;
             foreach (FieldMap cur in fieldMaps)
             {
+                int sourceOrdinal = _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier);
+
                 //special cases
                 if (cur.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
                 {
-                    int sourceOrdinal = _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier);
                     //Add special folder path column
-                    addColumn(
+                    AddColumn(
                         kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
                         sourceOrdinal,
                         curColIdx++);
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
                     //If field is also mapped to a document field, it needs a column as well
                     if (cur.DestinationField.FieldIdentifier != null)
                     {
-                        addColumn(
+                        AddColumn(
                             cur.SourceField.FieldIdentifier,
                             sourceOrdinal,
                             curColIdx++);
@@ -59,15 +60,15 @@ namespace kCura.IntegrationPoints.Domain.Readers
                 //general case
                 else
                 {
-                    addColumn(
+                    AddColumn(
                         cur.SourceField.FieldIdentifier,
-                        _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier),
+                        sourceOrdinal,
                         curColIdx++);
                 }
             }
         }
 
-        private void addColumn(string columnName, int srcColIdx, int curColIdx)
+        private void AddColumn(string columnName, int srcColIdx, int curColIdx)
         {
             _schemaTable.Columns.Add(columnName);
             _ordinalMap[curColIdx] = srcColIdx;
