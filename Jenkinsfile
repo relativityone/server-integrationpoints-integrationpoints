@@ -35,7 +35,7 @@ def passed = false
 				}			
 			}
 			*/
-			stash includes: 'lib/UnitTests/*', name: 'testdlls'
+			stash includes: 'C:/SourceCode/integrationpoints/lib/UnitTests/*', name: 'testdlls'
 		}
 		
 		node('nunit') {
