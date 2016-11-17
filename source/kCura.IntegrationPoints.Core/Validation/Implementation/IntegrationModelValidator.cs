@@ -16,9 +16,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			_validatorsMap = validators.ToLookup(x => x.Key);
 		}
 
-		public ValidationAggregateResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
+		public ValidationResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
 		{
-			var result = new ValidationAggregateResult();
+			var result = new ValidationResult();
 
 			if (model.Scheduler.EnableScheduler)
 			{

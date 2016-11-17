@@ -8,12 +8,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public ValidationResult Validate(int totalDocCount)
 		{
-			var result = new ValidationResult {IsValid = totalDocCount > 0};
-			if (!result.IsValid)
-			{
-				result.Message = _FILE_COUNT_WARNING;
-			}
-			return result;
+			return (totalDocCount > 0) ? 
+				new ValidationResult() : 
+				new ValidationResult(false, _FILE_COUNT_WARNING);
 		}
 	}
 }

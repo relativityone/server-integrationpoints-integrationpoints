@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using System.Linq;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -44,16 +45,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			string expectedMessage = "expected_message";
 
 			_exportInitProcessService.CalculateDocumentCountToTransfer(Arg.Any<ExportUsingSavedSearchSettings>()).Returns(0);
-			_fileCountValidator.Validate(0).Returns(new ValidationResult
-			{
-				IsValid = false,
-				Message = expectedMessage
-			});
+			_fileCountValidator.Validate(0).Returns(new ValidationResult(false, expectedMessage));
 
 			var result = _exportSettingsValidationService.Validate(1, _integrationModel);
 
 			Assert.That(result.IsValid, Is.False);
-			Assert.That(result.Message, Is.EqualTo(expectedMessage));
+			Assert.That(result.Messages.FirstOrDefault(), Is.EqualTo(expectedMessage));
 		}
 
 		[Test]
@@ -79,16 +76,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 				IsValid = true
 			});
 
-			_paddingValidator.Validate(Arg.Any<int>(), Arg.Any<ExportFile>(), Arg.Any<int>()).Returns(new ValidationResult
-			{
-				IsValid = false,
-				Message = expectedMessage
-			});
-
+			_paddingValidator.Validate(Arg.Any<int>(), Arg.Any<ExportFile>(), Arg.Any<int>()).Returns(new ValidationResult(false, expectedMessage));
+			
 			var result = _exportSettingsValidationService.Validate(1, _integrationModel);
 
-			Assert.That(result.IsValid, Is.False);
-			Assert.That(result.Message, Is.EqualTo(expectedMessage));
+			Assert.That(result.IsValid, Is.False);			
+			Assert.That(result.Messages.FirstOrDefault(), Is.EqualTo(expectedMessage));
 		}
 
 		[Test]
@@ -107,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			var result = _exportSettingsValidationService.Validate(1, _integrationModel);
 
 			Assert.That(result.IsValid, Is.True);
-			Assert.That(result.Message, Is.Null.Or.Empty);
+			Assert.That(result.Messages.FirstOrDefault(), Is.Null.Or.Empty);
 		}
 	}
 }

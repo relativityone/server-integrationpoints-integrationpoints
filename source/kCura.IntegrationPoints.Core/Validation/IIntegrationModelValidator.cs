@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Core.Validation
 {
 	public interface IIntegrationModelValidator
 	{
-		ValidationAggregateResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider);
+		ValidationResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider);
 	}
 }

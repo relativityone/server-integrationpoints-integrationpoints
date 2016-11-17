@@ -48,22 +48,14 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 					string errorMessage = "Invalid e-mails: ";
 					errorMessage += string.Join(delimiter, invalidEmailList);
 
-					return new ValidationResult()
-					{
-						IsValid = false,
-						Message = errorMessage
-					};
+					return new ValidationResult(false, errorMessage);
 				}
 
 				return new ValidationResult() { IsValid = true };
 			}
 			catch (Exception ex)
 			{
-				return new ValidationResult()
-				{
-					IsValid = false,
-					Message = "Email Validation exception: " + ex.Message
-				};
+				return new ValidationResult(false, $"Email Validation exception: {ex.Message}");
 			}
 		}
 

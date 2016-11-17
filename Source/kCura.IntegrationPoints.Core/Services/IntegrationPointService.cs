@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				SourceProvider sourceProvider = GetSourceProvider(ip);
 				DestinationProvider destinationProvider = GetDestinationProvider(ip);
 
-				ValidationAggregateResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider);
+				ValidationResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider);
 
 				if (!validationResult.IsValid)
 				{
