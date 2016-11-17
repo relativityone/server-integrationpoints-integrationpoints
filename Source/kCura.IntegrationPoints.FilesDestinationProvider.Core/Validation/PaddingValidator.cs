@@ -13,20 +13,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			var currentVolumeNumber = exportFile.VolumeInfo.VolumeStartNumber;
 			var currentSubdirectoryNumber = exportFile.VolumeInfo.SubdirectoryStartNumber;
 
-			var subdirectoryNumberPaddingWidth = (int) Math.Floor(Math.Log10(currentSubdirectoryNumber + 1) + 1);
-			var volumeNumberPaddingWidth = (int) Math.Floor(Math.Log10(currentVolumeNumber + 1) + 1);
-			var totalFilesNumberPaddingWidth = (int) Math.Floor(Math.Log10(totalDocCount + currentVolumeNumber + 1) + 1);
+			var subdirectoryNumberPaddingWidth = (int)Math.Floor(Math.Log10(currentSubdirectoryNumber + 1) + 1);
+			var volumeNumberPaddingWidth = (int)Math.Floor(Math.Log10(currentVolumeNumber + 1) + 1);
+			var totalFilesNumberPaddingWidth = (int)Math.Floor(Math.Log10(totalDocCount + currentVolumeNumber + 1) + 1);
 			var volumeLabelPaddingWidth = Math.Max(totalFilesNumberPaddingWidth, volumeNumberPaddingWidth);
 			var subdirectoryLabelPaddingWidth = Math.Max(totalFilesNumberPaddingWidth, subdirectoryNumberPaddingWidth);
 
 			var warningValidator = new PaddingWarningValidator();
 			var isValid = warningValidator.IsValid(exportFile, volumeLabelPaddingWidth, subdirectoryLabelPaddingWidth);
 
-			return new ValidationResult
-			{
-				IsValid = isValid,
-				Message = warningValidator.ErrorMessages
-			};
+			return new ValidationResult(isValid, warningValidator.ErrorMessages);
 		}
 	}
 }

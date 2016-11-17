@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
+﻿using System.Linq;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
@@ -19,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var result = _fileCountValidator.Validate(0);
 
 			Assert.That(result.IsValid, Is.False);
-			Assert.That(result.Message, Is.EqualTo("There are no items to export. Verify your source location."));
+			Assert.That(result.Messages.FirstOrDefault(), Is.EqualTo("There are no items to export. Verify your source location."));
 		}
 
 		[Test]
@@ -30,8 +31,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 		{
 			var result = _fileCountValidator.Validate(totalDocCount);
 
-			Assert.That(result.IsValid, Is.True);
-			Assert.That(result.Message, Is.Null.Or.Empty);
+			Assert.That(result.IsValid, Is.True);			
+			Assert.That(result.Messages.FirstOrDefault(), Is.Null.Or.Empty);
 		}
 	}
 }
