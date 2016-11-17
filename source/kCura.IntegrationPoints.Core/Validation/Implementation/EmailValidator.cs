@@ -14,13 +14,23 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		public ValidationResult Validate(object value)
 		{
-			var _notificationEmails = value as string;
+			var notificationEmails = value as string;
+			
+			var invalidEmailList = new List<string>();
 
-			List<string> invalidEmailList = new List<string>();
+			//TODO Remove all white spaces
+			const char tab = '\u0009';
+
+			if (notificationEmails == null)
+			{
+				return new ValidationResult() { IsValid = true };
+			}
+
+			notificationEmails = notificationEmails.Replace(tab.ToString(), "");
 			try
 			{
 				List<string> emails =
-				(_notificationEmails ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
+				(notificationEmails ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
 					.Select(x => x.Trim())
 					.ToList();
 
@@ -59,8 +69,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		private bool IsValidEmail(string email)
 		{
-			if (string.IsNullOrEmpty(email))
-				return false;
+			if (string.IsNullOrWhiteSpace(email))
+				return true;
+
+			//string domainMapString;
+			//if (!TryMaoToDomainString(match:))
+
 
 			// Use IdnMapping class to convert Unicode domain names.
 			email = Regex.Replace(email, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
@@ -71,6 +85,29 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 				  @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
 				  RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
 		}
+
+		//private bool TryMaoToDomainString(Match match, out string value)
+		//{
+		//	value = string.Empty;
+
+		//	try
+		//	{
+		//		// IdnMapping class with default property values.
+		//		IdnMapping idn = new IdnMapping();
+
+		//		string domainName = match.Groups[2].Value;
+		//		domainName = idn.GetAscii(domainName);
+
+		//		value= match.Groups[1].Value + domainName;
+
+		//		return true;
+		//	}
+		//	catch // (ArgumentException)
+		//	{
+
+		//		return false;
+		//	}
+		//}
 
 		private string DomainMapper(Match match)
 		{

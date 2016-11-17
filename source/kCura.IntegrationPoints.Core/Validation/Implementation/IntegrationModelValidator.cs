@@ -22,15 +22,15 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			if (model.Scheduler.EnableScheduler)
 			{
-				foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.EMAIL])
-				{
-					result.Add(validator.Validate(model.NotificationEmails));
-				}
-
 				foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.SCHEDULE])
 				{
 					result.Add(validator.Validate(model.Scheduler));
 				}
+			}
+			
+			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.EMAIL])
+			{
+				result.Add(validator.Validate(model.NotificationEmails));
 			}
 
 			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.FIELD_MAP])
