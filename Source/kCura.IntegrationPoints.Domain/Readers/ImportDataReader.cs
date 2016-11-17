@@ -209,9 +209,17 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		// Following this example: https://msdn.microsoft.com/en-us/library/aa720693(v=vs.71).aspx -- biedrzycki: Jan 20th, 2016
 		public void Dispose()
 		{
-            this.Close();
+            this.Dispose(true);
 			System.GC.SuppressFinalize(this);
 		}
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Close();
+            }
+        }
 
         public void Close()
         {
