@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Hosting;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -21,7 +22,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
-	public class JobControllerTests
+	public class JobControllerTests : TestBase
 	{
 		private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
 		private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IAuditManager _auditManager;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_payload = new JobController.Payload { AppId = _WORKSPACE_ARTIFACT_ID, ArtifactId = _INTEGRATION_POINT_ARTIFACT_ID };
 			

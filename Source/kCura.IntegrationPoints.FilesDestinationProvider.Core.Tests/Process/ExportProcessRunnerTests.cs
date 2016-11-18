@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -10,32 +11,33 @@ using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-    public class ExportProcessRunnerTests
-    {
-        private IExportProcessBuilder _exportProcessBuilder;
-	    private IExportSettingsBuilder _exportSettingsBuilder;
-        private ExportProcessRunner _exportProcessRunner;
+	[TestFixture]
+	public class ExportProcessRunnerTests : TestBase
+	{
+		private IExportProcessBuilder _exportProcessBuilder;
+		private IExportSettingsBuilder _exportSettingsBuilder;
+		private ExportProcessRunner _exportProcessRunner;
 
-        [SetUp]
-        public void SetUp()
-        {
-            _exportProcessBuilder = Substitute.For<IExportProcessBuilder>();
-	        _exportSettingsBuilder = Substitute.For<IExportSettingsBuilder>();
-	        var helper = Substitute.For<IHelper>();
-            _exportProcessRunner = new ExportProcessRunner(_exportProcessBuilder, _exportSettingsBuilder, helper);
-        }
+		[SetUp]
+		public override void SetUp()
+		{
+			_exportProcessBuilder = Substitute.For<IExportProcessBuilder>();
+			_exportSettingsBuilder = Substitute.For<IExportSettingsBuilder>();
+			var helper = Substitute.For<IHelper>();
+			_exportProcessRunner = new ExportProcessRunner(_exportProcessBuilder, _exportSettingsBuilder, helper);
+		}
 
-        [Test]
-        public void ItShouldCreateExporterBasedOnSettings()
-        {
-            var settings = new ExportSettings();
+		[Test]
+		public void ItShouldCreateExporterBasedOnSettings()
+		{
+			var settings = new ExportSettings();
 
-	        var job = JobExtensions.CreateJob();
+			var job = JobExtensions.CreateJob();
 
 			_exportProcessRunner.StartWith(settings, job);
 
-            _exportProcessBuilder.Received().Create(settings, job);
-        }
+			_exportProcessBuilder.Received().Create(settings, job);
+		}
 
 		[Test]
 		public void ItShouldBuildExportSettingsBasedOnInputData()
@@ -52,16 +54,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-        public void ItShouldRunExporter()
-        {
-            var exporter = Substitute.For<IExporter>();
+		public void ItShouldRunExporter()
+		{
+			var exporter = Substitute.For<IExporter>();
 			var job = JobExtensions.CreateJob();
 			_exportProcessBuilder.Create(new ExportSettings(), job).ReturnsForAnyArgs(exporter);
 
-            _exportProcessRunner.StartWith(new ExportSettings(), job);
+			_exportProcessRunner.StartWith(new ExportSettings(), job);
 
-            exporter.Received().ExportSearch();
-        }
+			exporter.Received().ExportSearch();
+		}
 
 		[Test]
 		public void ItShouldRunExporterForInputData()

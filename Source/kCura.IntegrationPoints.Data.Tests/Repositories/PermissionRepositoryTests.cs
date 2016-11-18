@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
@@ -14,7 +15,7 @@ using Relativity.Services.Permission;
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
-	public class PermissionRepositoryTests
+	public class PermissionRepositoryTests : TestBase
 	{
 		private IPermissionRepository _instance;
 		private IHelper _helper;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private const int _WORKSPACE_ID = 392834;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_helper = NSubstitute.Substitute.For<IHelper>();
 			_servicesMgr = NSubstitute.Substitute.For<IServicesMgr>();

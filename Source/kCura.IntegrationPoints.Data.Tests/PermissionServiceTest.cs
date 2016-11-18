@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -12,7 +13,7 @@ using Relativity.Services.Permission;
 namespace kCura.IntegrationPoints.Data.Tests
 {
 	[TestFixture]
-	public class PermissionServiceTest
+	public class PermissionServiceTest : TestBase
 	{
 		private IPermissionManager _permissionManager;
 		private IHelper _helper;
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		private const int _editDocPermission = 45;
 
 		[SetUp]
-		public void SetUp() {
+		public override void SetUp() {
 			_helper = NSubstitute.Substitute.For<IHelper>();
 			_permissionManager = NSubstitute.Substitute.For<IPermissionManager>();
 

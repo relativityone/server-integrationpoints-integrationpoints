@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -9,13 +10,14 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
-	class StatisticsLoggingMediatorTest
+	[TestFixture]
+	internal class StatisticsLoggingMediatorTest : TestBase
 	{
 		private StatisticsLoggingMediator _subjectUnderTest;
 		private ICoreExporterStatusNotification _exporterStatusNotificationMock;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_subjectUnderTest = new StatisticsLoggingMediator();
 

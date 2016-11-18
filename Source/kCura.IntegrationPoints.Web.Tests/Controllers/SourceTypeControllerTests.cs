@@ -8,6 +8,7 @@ using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
@@ -21,7 +22,7 @@ using Relativity.Toggles;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
-	public class SourceTypeControllerTests
+	public class SourceTypeControllerTests : TestBase
 	{
 		private SourceTypeController _instance;
 		private IWindsorContainer _windsorContainer;
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		}
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_windsorContainer = new WindsorContainer();
 			_toggleProvider = NSubstitute.Substitute.For<IToggleProvider>();

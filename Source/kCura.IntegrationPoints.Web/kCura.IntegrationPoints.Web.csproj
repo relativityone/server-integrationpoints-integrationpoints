@@ -312,6 +312,7 @@
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Controllers\API\WorkspaceViewController.cs" />
+    <Compile Include="DataStructures\ExportSourceOptions.cs" />
     <Compile Include="ErrorFactory.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
@@ -496,6 +497,7 @@
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
+    <Content Include="Scripts\Export\export-source-view-model.js" />
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />

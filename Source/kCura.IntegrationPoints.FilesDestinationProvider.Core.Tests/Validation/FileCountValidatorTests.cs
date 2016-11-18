@@ -1,14 +1,16 @@
-﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {
-	public class FileCountValidatorTests
+	[TestFixture]
+	public class FileCountValidatorTests : TestBase
 	{
 		private FileCountValidator _fileCountValidator;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_fileCountValidator = new FileCountValidator();
 		}

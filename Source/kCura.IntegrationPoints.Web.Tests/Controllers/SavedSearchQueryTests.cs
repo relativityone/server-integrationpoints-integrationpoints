@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -11,12 +12,12 @@ using Relativity.Core.Service;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
-	public class SavedSearchQueryTests
+	public class SavedSearchQueryTests : TestBase
 	{
 		private IHtmlSanitizerManager _htmlSanitizerManager;
 
 		[SetUp]
-		public void TestSetup()
+		public override void SetUp()
 		{
 			_htmlSanitizerManager = Substitute.For<IHtmlSanitizerManager>();
 		}

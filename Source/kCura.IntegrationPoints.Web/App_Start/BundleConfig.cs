@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.Web
                 // settings
 				"~/Scripts/Export/field-mapping-view-model.js",
 				"~/Scripts/export/list-picker-view-model.js",
+                "~/Scripts/export/export-source-view-model.js",
 				"~/Scripts/export/text-precedence-picker.js",
 				"~/Scripts/export/image-production-picker.js",
 				"~/Scripts/export/location-jstree-selector.js",

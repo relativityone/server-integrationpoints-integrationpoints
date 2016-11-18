@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validators
 {
-	class PreCascadeDeleteEventHandlerValidatorTests
+	class PreCascadeDeleteEventHandlerValidatorTests : TestBase
 	{
 		#region Fields
 
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 		#endregion //Fields
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_queueManagerMock = Substitute.For<IQueueManager>();
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();

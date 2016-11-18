@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -15,7 +16,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
 	[TestFixture]
-	public class JobHistoryErrorBatchUpdateManagerTest
+	public class JobHistoryErrorBatchUpdateManagerTest : TestBase
 	{
 		private IScratchTableRepository _scratchTableRepository;
 		private IRepositoryFactory _repositoryFactory;
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private const string _SCRATCHTABLE_JOBCOMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_scratchTableRepository = Substitute.For<IScratchTableRepository>();

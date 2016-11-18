@@ -21,15 +21,5 @@
 		/// The batch size for all providers except the Relativity provider.
 		/// </summary>
 		int BatchSize { get; }
-
-		/// <summary>
-		/// The flag to determine the instance of Relativity
-		/// </summary>
-		bool IsCloudInstance { get; }
-
-		/// <summary>
-		/// The flag to Use EddsResource for storing scratch table.
-		/// </summary>
-		bool UseEDDSResource { get; }
 	}
 }

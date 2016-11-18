@@ -124,7 +124,7 @@ var IP = IP || {};
 	};
 
 	var Source = function (s, parentModel) {
-		var settings = $.extend({}, s);
+		this.settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
 		self.disable = parentModel.hasBeenRun();
@@ -135,30 +135,12 @@ var IP = IP || {};
 
 		this.SourceProviderConfiguration = ko.observable();
 
-		var tmpRelativitySourceTypeObject = null;
+		this.tmpRelativitySourceTypeObject = null;
 
-		this.sourceProvider = settings.sourceProvider || 0;
-		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
-			var types = $.map(result, function (entry) {
-				var c = new Choice(entry.name, entry.value, entry.id, entry);
-				c.href = entry.url;
-				return c;
-			});
-			self.sourceTypes(types);
-			$.each(self.sourceTypes(), function () {
-				if (this.value === settings.selectedType || this.artifactID === self.sourceProvider) {
-					self.selectedType(this.value);
-				}
-
-				if (this.displayName == "Relativity") {
-					tmpRelativitySourceTypeObject = this;
-				}
-			});
-			parentModel.setExportTypeVisibility(parentModel.isExportType());
-		});
+		this.sourceProvider = self.settings.sourceProvider || 0;
 
 		this.displayRelativityInSourceTypes = function (value) {
-			if (tmpRelativitySourceTypeObject === undefined) return;
+			if (self.tmpRelativitySourceTypeObject === null) return;
 
 			if (value === true) {
 				var containsRelativityObj = false;
@@ -169,23 +151,37 @@ var IP = IP || {};
 						}
 					});
 				if (containsRelativityObj === false) {
-					self.sourceTypes.push(tmpRelativitySourceTypeObject);
+					self.sourceTypes.push(self.tmpRelativitySourceTypeObject);
 				}
 			} else {
 				$.each(self.sourceTypes(),
 					function () {
-						if (this === tmpRelativitySourceTypeObject) {
+						if (this === self.tmpRelativitySourceTypeObject) {
 							self.sourceTypes.remove(this);
 						}
 					});
 			}
 		};
 
+		this.updateSelectedType = function () {
+
+			$.each(self.sourceTypes(), function () {
+				if (!!self.settings && this.value === self.settings.selectedType || this.artifactID === self.sourceProvider) {
+					self.selectedType(this.value);
+				}
+
+				if (this.displayName == "Relativity") {
+					self.tmpRelativitySourceTypeObject = this;
+				}
+			});
+		};
+
 		this.selectedType.subscribe(function (selectedValue) {
 			$.each(self.sourceTypes(), function () {
 				if (this.value === selectedValue) {
 					self.sourceProvider = this.artifactID;
-					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null) {
+					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null
+					|| parentModel.destination.selectedDestinationTypeGuid() === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
 						parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
 					} else {
 						var compatibleRdos = this.model.config.compatibleRdoTypes;
@@ -211,18 +207,9 @@ var IP = IP || {};
 		} catch (e) {
 			d = d;
 		}
-		var settings = $.extend({}, d);
+		this.settings = $.extend({}, d);
 		var self = this;
 		self.disable = parentModel.hasBeenRun();
-
-		IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
-			var types = $.map(result, function (entry) {
-				return new Choice(entry.name, entry.value);
-			});
-			self.allRdoTypes(types);
-		}, function () {
-
-		});
 
 		this.templateID = 'ldapDestinationConfig';
 		this.allRdoTypes = ko.observableArray();
@@ -232,7 +219,23 @@ var IP = IP || {};
 		this.selectedDestinationType = ko.observable().extend({ required: true });
 
 		this.selectedDestinationType.subscribe(function (selectedValue) {
-
+			var destType = self.selectedDestinationTypeGuid();
+			if (destType === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18"
+			|| (typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' || parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null)
+			) {
+				self.rdoTypes(self.allRdoTypes());
+			}
+			else {
+				if (!!parentModel.source.SourceProviderConfiguration.compatibleRdoTypes) {
+					var rdosToDisplay = [];
+					$.each(self.allRdoTypes(), function () {
+						if (parentModel.source.SourceProviderConfiguration.compatibleRdoTypes.indexOf(this.value) > -1) {
+							rdosToDisplay.push(this);
+						}
+					});
+					self.rdoTypes(rdosToDisplay);
+				}
+			}
 		});
 
 		this.destinationProviderVisible = ko.observable(false);
@@ -244,7 +247,7 @@ var IP = IP || {};
 			}
 		}
 		this.selectedDestinationTypeGuid = function () {
-			var results = this.destinationTypes().filter(withArtifactId(this.selectedDestinationType()));
+			var results = self.destinationTypes().filter(withArtifactId(self.selectedDestinationType()));
 			return results.length > 0 ? results[0].value : "";
 		}
 
@@ -257,29 +260,18 @@ var IP = IP || {};
 			}
 		}
 
-		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') }).then(function (result) {
-			var types = $.map(result, function (entry) {
-				var c = new Choice(entry.name, entry.id, entry.artifactID, entry);
-				c.href = entry.url;
-				return c;
-			});
-			self.destinationTypes(types);
-			self.destinationProviderVisible(self.destinationTypes().length > 1);
-
-			self.setRelativityAsDestinationProvider();
-
+		this.updateDestinationProvider = function () {
 			$.each(self.destinationTypes(), function () {
 
-				if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
+				if (!!self.settings && !!self.settings.destinationProviderType && this.value === self.settings.destinationProviderType && self.settings.destinationProviderType !== undefined) {
 					self.selectedDestinationType(this.artifactID);
 				}
-			});
-
-		});
+			})
+		};
 
 		this.artifactTypeID = ko.observable().extend({ required: true });
 		this.UpdateSelectedItem = function () {
-			self.artifactTypeID(settings.artifactTypeID);
+			self.artifactTypeID(self.settings.artifactTypeID);
 		}
 
 		this.isDestinationObjectDisabled = ko.observable(false);
@@ -345,7 +337,7 @@ var IP = IP || {};
 			this.selectedDay = ko.observable(currentState.selectedDay);
 
 			this.overflowMessage = ko.computed(function () {
-				return 'For months containing fewer than '+ self.selectedDay() + ' days, Relativity will attempt to initiate the job on the last day of the month';
+				return 'For months containing fewer than ' + self.selectedDay() + ' days, Relativity will attempt to initiate the job on the last day of the month';
 			});
 
 			this.dayTypes = ko.observableArray([
@@ -600,8 +592,54 @@ var IP = IP || {};
 
 		this.hasBeenRun = ko.observable(hasBeenRun);
 
-		this.destination = new Destination(settings.destination, self);
-		this.source = new Source(settings.source, self);
+		var sourceTypePromise = root.data.ajax({ type: 'get', async: false, url: root.utils.generateWebAPIURL('SourceType') });
+		var destinationTypePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') });
+		var rdoFilterPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetAll') });
+		var defaultRdoTypeIdPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetDefaultRdoTypeId') });
+
+		self.destination = new Destination(settings.destination, self);
+		self.source = new Source(settings.source, self);
+
+		root.data.deferred().all([
+				sourceTypePromise,
+				destinationTypePromise,
+				rdoFilterPromise,
+				defaultRdoTypeIdPromise
+		]).then(function (result) {
+
+			var sTypes = $.map(result[0], function (entry) {
+				var c = new Choice(entry.name, entry.value, entry.id, entry);
+				c.href = entry.url;
+				return c;
+			});
+
+			var dTypes = $.map(result[1], function (entry) {
+				var c = new Choice(entry.name, entry.id, entry.artifactID, entry);
+				c.href = entry.url;
+				return c;
+			});
+
+			var rdoTypes = $.map(result[2], function (entry) {
+				return new Choice(entry.name, entry.value);
+			});
+
+			self.DefaultRdoTypeId = result[3];
+
+			self.destination.destinationTypes(dTypes);
+			self.destination.allRdoTypes(rdoTypes);
+
+
+			self.destination.destinationProviderVisible(self.destination.destinationTypes().length > 1);
+
+			self.destination.setRelativityAsDestinationProvider();
+			self.destination.updateDestinationProvider();
+
+			self.source.sourceTypes(sTypes);
+			self.source.updateSelectedType();
+
+			self.setExportTypeVisibility(self.isExportType());
+
+		});
 
 		this.destinationProvider = settings.destinationProvider;
 		this.notificationEmails = ko.observable(settings.notificationEmails).extend({
@@ -631,34 +669,34 @@ var IP = IP || {};
 		this.isTypeDisabled = ko.observable(false);
 
 		self.setExportTypeVisibility = function (isExportType) {
-			if (isExportType === undefined && self.destinationProvider != null){
-				if(self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
+			if (isExportType === undefined && self.destinationProvider != null) {
+				if (self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
 					self.isExportType('true');
-				} 
+				}
 				else {
 					self.isExportType('false');
 				}
-			} 
+			}
 
-			if (self.hasBeenRun() || self.isEdit()) {				
+			if (self.hasBeenRun() || self.isEdit()) {
 				self.source.isSourceProviderDisabled(true);
 				self.destination.isDestinationProviderDisabled(true);
 				self.destination.isDestinationObjectDisabled(true)
 				self.isTypeDisabled(true)
-			} 			
+			}
 			else {
 				if (isExportType === "false") {
-				self.source.displayRelativityInSourceTypes(false);
-				self.source.isSourceProviderDisabled(false);
-				self.destination.setRelativityAsDestinationProvider();
-				self.destination.isDestinationProviderDisabled(true);
-			} else {
-				self.source.displayRelativityInSourceTypes(true);
-				var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
-				self.source.selectedType(relativitySourceProviderGuid);
-				self.source.isSourceProviderDisabled(true);
-				self.destination.isDestinationProviderDisabled(false);
-			}
+					self.source.displayRelativityInSourceTypes(false);
+					self.source.isSourceProviderDisabled(false);
+					self.destination.setRelativityAsDestinationProvider();
+					self.destination.isDestinationProviderDisabled(true);
+				} else {
+					self.source.displayRelativityInSourceTypes(true);
+					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+					self.source.selectedType(relativitySourceProviderGuid);
+					self.source.isSourceProviderDisabled(true);
+					self.destination.isDestinationProviderDisabled(false);
+				}
 			}
 		};
 	};
@@ -692,6 +730,7 @@ var IP = IP || {};
 				this.model.destinationProvider = this.model.destination.selectedDestinationType();
 				var guid = this.model.destination.selectedDestinationTypeGuid();
 				this.model.destinationProviderGuid = guid;
+				this.model.artifactTypeID = this.model.destination.artifactTypeID(),
 				this.model.destination = JSON.stringify({
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					destinationProviderType: ko.toJS(guid),

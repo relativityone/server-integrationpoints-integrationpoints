@@ -141,7 +141,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="SendEmailManagerUnitTests.cs" />
     <Compile Include="Tasks\ExportManagerTest.cs" />
     <Compile Include="Tasks\ExportServiceManagerTests.cs" />

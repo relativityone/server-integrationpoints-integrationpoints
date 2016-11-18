@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using NUnit.Framework;
@@ -7,12 +8,12 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Data.Tests
 {
 	[TestFixture]
-	public class RelativityReaderBaseTests
+	public class RelativityReaderBaseTests : TestBase
 	{
 		private const string _TOKEN_FOR_MORE = "There are some more things to get";
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 		}
 

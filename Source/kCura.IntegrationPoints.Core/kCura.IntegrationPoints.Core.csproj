@@ -260,6 +260,7 @@
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
     <Compile Include="Managers\Implementations\SourceJobManager.cs" />
     <Compile Include="Managers\Implementations\StateManager.cs" />
+    <Compile Include="Managers\Implementations\WorkspaceManager.cs" />
     <Compile Include="Managers\IResourcePoolManager.cs" />
     <Compile Include="Managers\ISourceProviderManager.cs" />
     <Compile Include="Managers\IQueueManager.cs" />
@@ -267,6 +268,7 @@
     <Compile Include="Managers\ISourceJobManager.cs" />
     <Compile Include="Managers\IObjectTypeManager.cs" />
     <Compile Include="Managers\IStateManager.cs" />
+    <Compile Include="Managers\IWorkspaceManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\StoppableJobCollection.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -15,7 +16,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
 	[TestFixture]
-	public class TargetDocumentsTaggingManagerTests
+	public class TargetDocumentsTaggingManagerTests : TestBase
 	{
 		private IRepositoryFactory _repositoryFactory;
 		private IScratchTableRepository _scratchTableRepository;
@@ -34,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private Job _job = null;
 
 		private const string _scratchTableName = "IntegrationPoint_Relativity_SourceWorkspace";
+
 		private readonly string _uniqueJobId = "1_JobIdGuid";
 
 		readonly SourceWorkspaceDTO _sourceWorkspaceDto = new SourceWorkspaceDTO()
@@ -44,8 +46,10 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		};
 
 		[OneTimeSetUp]
-		public void Setup()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
+
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_scratchTableRepository = Substitute.For<IScratchTableRepository>();
 			_synchronizer = Substitute.For<IDataSynchronizer>();
@@ -87,6 +91,12 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_instance = new TargetDocumentsTaggingManager(_repositoryFactory, _synchronizer, _sourceWorkspaceManager, _sourceJobManager, 
 				_documentRepo, _helper, _fieldMaps, _importConfig, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, 
 				_jobHistoryArtifactId, _uniqueJobId);
+		}
+
+		[SetUp]
+		public override void SetUp()
+		{
+			
 		}
 
 		[Test]

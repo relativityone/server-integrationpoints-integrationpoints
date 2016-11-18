@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.Relativity.Client;
@@ -10,7 +11,8 @@ using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	public class ArtifactTreeServiceTests
+	[TestFixture]
+	public class ArtifactTreeServiceTests : TestBase
 	{
 		private ArtifactTreeService _artifactTreeService;
 		private IRSAPIClient _client;
@@ -19,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private APIOptions _apiOptions;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_client = Substitute.For<IRSAPIClient>();
 			_treeCreator = Substitute.For<IArtifactTreeCreator>();

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
@@ -14,7 +15,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	public class ViewServiceTests
+	[TestFixture]
+	public class ViewServiceTests : TestBase
 	{
 		private ViewService _subjectUnderTest;
 		private IServiceManagerProvider _serviceManagerProviderMock;
@@ -54,7 +56,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private readonly int _VIEW_5_ORDER = 20;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			var helper = Substitute.For<IHelper>();
 			_searchManagerMock = Substitute.For<ISearchManager>();

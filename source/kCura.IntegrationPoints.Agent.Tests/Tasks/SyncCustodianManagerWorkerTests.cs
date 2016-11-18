@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -34,7 +35,7 @@ using Field = kCura.Relativity.Client.DTOs.Field;
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
 	[TestFixture]
-	public class SyncCustodianManagerWorkerTests
+	public class SyncCustodianManagerWorkerTests : TestBase
 	{
 		private IRepositoryFactory _repositoryFactory;
 		private ICaseServiceContext _caseServiceContext;
@@ -78,13 +79,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IFieldRepository _fieldRepository;
 
 		[OneTimeSetUp]
-		public void Setup()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			_jsonSerializer = new JSONSerializer();
 		}
 
 		[SetUp]
-		public void TestSetup()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
@@ -274,7 +276,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<System.Data.IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_jobHistoryErrorService.Received().CommitErrors();
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -296,7 +298,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<System.Data.IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
 		}

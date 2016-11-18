@@ -215,7 +215,6 @@
     <Compile Include="Controllers\API\FieldCatalogControllerTests.cs" />
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
-    <Compile Include="Helpers\TestBase.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />

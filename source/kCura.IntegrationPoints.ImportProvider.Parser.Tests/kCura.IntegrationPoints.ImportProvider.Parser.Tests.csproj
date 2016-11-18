@@ -169,6 +169,10 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>

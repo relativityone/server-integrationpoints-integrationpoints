@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Claims;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data.Contexts;
@@ -15,7 +16,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
 	[TestFixture]
-	public class SourceObjectBatchUpdateManagerTest
+	public class SourceObjectBatchUpdateManagerTest : TestBase
 	{
 		private IScratchTableRepository _scratchTableRepository;
 		private IHelper _helper;
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private WorkspaceDTO _workspaceY;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
 			_scratchTableRepository = Substitute.For<IScratchTableRepository>();

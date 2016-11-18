@@ -1,18 +1,18 @@
 ﻿<script id="exportProviderFieldsStep" type="text/html">
 	<div class="card">
 		<div class="label">Source Detail</div>
-		<div class="field-row">
+		<div class="field-row" data-bind="visible: !exportSource.ExportRdoMode()">
 			<div class="field-label required">Source:</div>
 			<div class="field-value">
-				<select id="sourceSelector" data-bind="options: ExportEnums.SourceOptions , optionsText: 'key', optionsValue: 'value',  optionsCaption: 'Select...', value: TypeOfExport, disable: HasBeenRun(), select2: {}"></select>
+				<select id="sourceSelector" data-bind="options: ExportEnums.SourceOptions , optionsText: 'key', optionsValue: 'value',  optionsCaption: 'Select...', value: exportSource.TypeOfExport, disable: HasBeenRun(), select2: {}"></select>
 			</div>
 		</div>
-		<div class="field-row" data-bind="visible: IsFolderOrSubfolderSelected()">
-			<div class="field-label required" data-bind="text: FolderLabelDescription">
+		<div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected() && !exportSource.ExportRdoMode()">
+			<div class="field-label required" data-bind="text: exportSource.FolderLabelDescription">
 			</div>
 			<div class="field-value select2-double-width">
 				<div id="location-select" class="select2-container fluid-mock-select filter-container">
-					<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: FolderArtifactName" />
+					<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: exportSource.FolderArtifactName" />
 					<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
 				</div>
 				<div id="jstree-holder-div" class="jstree-holder browse">
@@ -20,26 +20,25 @@
 				</div>
 			</div>
 		</div>
-		<div class="field-row" data-bind="visible: IsFolderOrSubfolderSelected()">
+		<div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected()">
 			<div class="field-label required">Views:</div>
 			<div class="field-value">
-				<select id="viewSelector" data-bind="options: availableViews ,  optionsCaption: 'Select...',optionsText: 'name', optionsValue: 'artifactId', value: ViewId, disable: HasBeenRun(), select2: {}"></select>
+				<select id="viewSelector" data-bind="options: exportSource.AvailableViews, optionsText: 'name', optionsValue: 'artifactId', optionsCaption: 'Select...', value: exportSource.ViewId, disable: HasBeenRun(), select2: {}"></select>
 			</div>
 		</div>
-		<div class="field-row" data-bind="visible: IsSavedSearchSelected()">
+		<div class="field-row" data-bind="visible: exportSource.IsSavedSearchSelected()">
 			<div class="field-label required">Saved Search:</div>
 			<div class="field-value">
-				<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: savedSearch, disable: HasBeenRun(), select2searchable: {}"></select>
-                <button id="saved-search-selection-button" data-bind="click: openSavedSearchPicker, visible: !HasBeenRun()" class="actionButtonSmall">...</button>
+				<select id="savedSearchSelector" data-bind="options: exportSource.SavedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: exportSource.SavedSearchArtifactId, disable: HasBeenRun(), select2searchable: {}"></select>
+				<button id="saved-search-selection-button" data-bind="click: exportSource.OpenSavedSearchPicker, visible: !HasBeenRun()" class="actionButtonSmall">...</button>
 			</div>
 		</div>
-		<div class="field-row" data-bind="visible: IsProductionSelected()">
+		<div class="field-row" data-bind="visible: exportSource.IsProductionSelected()">
 			<div class="field-label required">Production Set:</div>
 			<div class="field-value">
-				<select id="productionSetsSelector" data-bind="options: productionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: ProductionId, disable: HasBeenRun(), select2: {}"></select>
+				<select id="productionSetsSelector" data-bind="options: exportSource.ProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: exportSource.ProductionId, disable: HasBeenRun(), select2: {}"></select>
 			</div>
-		</div>
-
+		</div>	
 		<div class="field-row">
 			<div class="field-label required">Start Export at Record:</div>
 			<div class="field-value">

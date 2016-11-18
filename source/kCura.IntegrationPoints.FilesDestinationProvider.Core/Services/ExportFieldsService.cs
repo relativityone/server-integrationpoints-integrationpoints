@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 			IEnumerable<int> viewFieldIds = searchManager.RetrieveDefaultViewFieldIds(workspaceArtifactID, viewArtifactID, artifactTypeID, isProduction);
 
-			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, (int)ArtifactType.Document)
+			return searchManager.RetrieveAllExportableViewFields(workspaceArtifactID, artifactTypeID)
 				.Where(x => viewFieldIds.Contains(x.AvfId))
 				.Select(x => new FieldEntry
 				{

@@ -1,12 +1,19 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 {
 	[TestFixture]
-	public class ExportApiHelperTests
+	public class ExportApiHelperTests : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		private const String MultiObjectParsingError = "Encountered an error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
 
 		[TestCase("<object>Abc</object>", "Abc")]

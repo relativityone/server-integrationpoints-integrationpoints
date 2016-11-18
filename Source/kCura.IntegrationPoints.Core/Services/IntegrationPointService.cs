@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 				SourceProvider sourceProvider = GetSourceProvider(ip);
 				DestinationProvider destinationProvider = GetDestinationProvider(ip);
-				TaskType task = GetJobTaskType(ip, sourceProvider);
+				TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
 
 				if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
 					destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
@@ -420,7 +420,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, destinationProvider, userId);
-			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, destinationProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
 		}
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
@@ -458,7 +458,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 			}
 
-			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, destinationProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
 		}
 
 		private void CheckPreviousJobHistoryStatusOnRetry(int workspaceArtifactId, int integrationPointArtifactId)
@@ -684,12 +684,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			return destinationProvider;
 		}
 
-		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Choice jobType, int workspaceArtifactId, int userId)
+		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, DestinationProvider destinationProvider, Choice jobType, int workspaceArtifactId, int userId)
 		{
 			lock (_lock)
 			{
 				// If the Relativity provider is selected, we need to create an export task
-				TaskType jobTaskType = GetJobTaskType(integrationPoint, sourceProvider);
+				TaskType jobTaskType = GetJobTaskType(sourceProvider, destinationProvider);
 
 				CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
@@ -699,16 +699,14 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private TaskType GetJobTaskType(IntegrationPoint integrationPoint, SourceProvider sourceProvider)
+		private TaskType GetJobTaskType(SourceProvider sourceProvider, DestinationProvider destinationProvider)
 		{
 			TaskType jobTaskType =
 				sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 					? TaskType.ExportService
 					: TaskType.SyncManager;
-
-			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-			if (
-				importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
+			
+			if (destinationProvider.Identifier.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
 			{
 				jobTaskType = TaskType.ExportManager;
 			}

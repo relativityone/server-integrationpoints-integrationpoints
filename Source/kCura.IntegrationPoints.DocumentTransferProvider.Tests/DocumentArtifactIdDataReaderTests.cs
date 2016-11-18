@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.Domain.Models;
@@ -12,7 +13,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 {
 	[TestFixture]
-	public class DocumentArtifactIdDataReaderTests
+	public class DocumentArtifactIdDataReaderTests : TestBase
 	{
 		private const string _ARTIFACT_ID_FIELD_NAME = "ArtifactId";
 		private ISavedSearchRepository _savedSearchRepository;
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 		private Query<kCura.Relativity.Client.DTOs.Document> _expectedQuery;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_savedSearchRepository = NSubstitute.Substitute.For<ISavedSearchRepository>();
 
