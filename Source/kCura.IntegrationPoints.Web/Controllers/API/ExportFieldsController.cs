@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.DataStructures;
 using Newtonsoft.Json;
 using Relativity;
 using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
@@ -25,18 +26,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retrieve list of exportable fields.")]
-		public HttpResponseMessage GetExportableFields(SourceOptions data)
+		public HttpResponseMessage GetExportableFields(ExtendedSourceOptions data)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-			var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, (int)ArtifactType.Document);
+			var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, data.TransferredArtifactTypeId);
 				
 			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retrieve list of available fields.")]
-		public HttpResponseMessage GetAvailableFields(SourceOptions data)
+		public HttpResponseMessage GetAvailableFields(ExtendedSourceOptions data)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			var artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
 
-			var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, (int) ArtifactType.Document,
+			var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, data.TransferredArtifactTypeId,
 				exportType == ExportSettings.ExportType.ProductionSet);
 
 			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
