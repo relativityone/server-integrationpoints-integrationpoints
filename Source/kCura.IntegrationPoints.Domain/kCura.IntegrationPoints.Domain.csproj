@@ -249,6 +249,7 @@
     <Compile Include="Readers\DataColumnWithValue.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Readers\ImportDataReader.cs" />
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="RelativityFeaturePathService.cs" />
     <Compile Include="SecureAppDomainDataMarshaller.cs" />

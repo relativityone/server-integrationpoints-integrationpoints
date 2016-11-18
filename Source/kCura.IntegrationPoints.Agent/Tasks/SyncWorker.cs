@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -135,24 +136,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
-			{
-				IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-				if (dataSynchronizer is RdoSynchronizerBase)
-				{
-					ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
-					settings.OnBehalfOfUserId = job.SubmittedBy;
-					destinationConfiguration = Serializer.Serialize(settings);
-				}
+            using (ImportDataReader importDataReader = new ImportDataReader(
+                    sourceProvider,
+                    sourceFields,
+                    entryIDs,
+                    sourceConfiguration))
+            {
+                importDataReader.Setup(fieldMaps);
+                IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+                if (dataSynchronizer is RdoSynchronizerBase)
+                {
+                    ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
+                    settings.OnBehalfOfUserId = job.SubmittedBy;
+                    destinationConfiguration = Serializer.Serialize(settings);
+                }
 
-				SetupSubscriptions(dataSynchronizer, job);
+                SetupSubscriptions(dataSynchronizer, job);
 
-				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+                JobStopManager?.ThrowIfStopRequested();
 
-				JobStopManager?.ThrowIfStopRequested();
-
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
-			}
+                dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
+            }
 		}
 
 		protected virtual void ExecuteTask(Job job)
