@@ -215,8 +215,10 @@ var ExportSourceViewModel = function (state) {
 
         if (!!selectedProduction) {
             self.ProductionId(selectedProduction.artifactID);
+            self.ProductionName(selectedProduction.displayName);
         } else {
             self.ProductionId(undefined);
+            self.ProductionName(undefined);
         }
     };
 

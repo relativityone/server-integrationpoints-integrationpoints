@@ -104,6 +104,7 @@
 
                 self.ipModel.sourceConfiguration.SavedSearchArtifactId = 0;
                 self.ipModel.sourceConfiguration.ProductionId = 0;
+                self.ipModel.sourceConfiguration.ProductionName = undefined;
                 self.ipModel.sourceConfiguration.ViewId = 0;
 
                 self.model.fields.removeAllFields();
@@ -112,6 +113,7 @@
 
                 self.model.exportSource.SavedSearchArtifactId(undefined);
                 self.model.exportSource.ProductionId(undefined);
+                self.model.exportSource.ProductionName(undefined);
                 self.model.exportSource.FolderArtifactName(undefined);
                 self.model.exportSource.ViewId(undefined);
 
