@@ -1,13 +1,13 @@
 ﻿<script id="exportProviderFieldsStep" type="text/html">
 	<div class="card">
 		<div class="label">Source Detail</div>
-		<div class="field-row">
+		<div class="field-row" data-bind="visible: !exportSource.ExportRdoMode()">
 			<div class="field-label required">Source:</div>
 			<div class="field-value">
 				<select id="sourceSelector" data-bind="options: ExportEnums.SourceOptions , optionsText: 'key', optionsValue: 'value',  optionsCaption: 'Select...', value: exportSource.TypeOfExport, disable: HasBeenRun(), select2: {}"></select>
 			</div>
 		</div>
-		<div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected()">
+		<div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected() && !exportSource.ExportRdoMode()">
 			<div class="field-label required" data-bind="text: exportSource.FolderLabelDescription">
 			</div>
 			<div class="field-value select2-double-width">
