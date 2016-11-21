@@ -5,6 +5,10 @@ def passed = false
 
 			stage('Checkout Integration Points') {
 				
+				dir('C:/SourceCode/integrationpoints') {
+					bat 'taskkill /F /IM msbuild.exe /T 2> nul'
+				}	
+
 				dir('C:/SourceCode') {
 
 					checkout([$class : 'GitSCM',
