@@ -94,7 +94,7 @@ var ExportSourceViewModel = function (state) {
 		if (!!selectedSearch) {
 			self.SavedSearchArtifactId(selectedSearch.value);
 		} else {
-			self.SavedSearchArtifactId(null);
+			self.SavedSearchArtifactId(undefined);
 		}
 	};
 
@@ -223,6 +223,16 @@ var ExportSourceViewModel = function (state) {
 		}
 	});
 
+	self.ProductionId.subscribe(function (value) {
+		var selectedProduction = self.GetSelectedProduction(value);
+
+		if (!!selectedProduction) {
+			self.ProductionName(selectedProduction.displayName);
+		} else {
+			self.ProductionName(undefined);
+		}
+	});
+
 	self.GetSelectedProduction = function (artifactId) {
 		var selectedProduction = ko.utils.arrayFirst(self.ProductionSets(), function (item) {
 			if (item.artifactID === artifactId) {
@@ -237,8 +247,10 @@ var ExportSourceViewModel = function (state) {
 
 		if (!!selectedProduction) {
 			self.ProductionId(selectedProduction.artifactID);
+			self.ProductionName(selectedProduction.displayName);
 		} else {
 			self.ProductionId(undefined);
+			self.ProductionName(undefined);
 		}
 	};
 
@@ -266,6 +278,11 @@ var ExportSourceViewModel = function (state) {
 			self.Folders.subscribe(function (value) {
 				self.LocationSelector.reload(value);
 			});
+
+			var folders = self.Folders();
+			if (folders !== undefined) {
+				self.LocationSelector.reload(folders);
+			}
 		}
 	};
 
