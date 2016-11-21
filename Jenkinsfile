@@ -6,7 +6,7 @@ def passed = false
 			stage('Checkout Integration Points') {
 				
 				dir('C:/SourceCode/integrationpoints') {
-					bat 'taskkill /F /IM msbuild.exe /T 2> nul'
+					bat 'powershell.exe "Stop-Process -name msbuild -Force -ErrorAction SilentlyContinue"'
 				}	
 
 				dir('C:/SourceCode') {
