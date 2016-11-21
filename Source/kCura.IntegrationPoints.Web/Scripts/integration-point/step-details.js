@@ -92,7 +92,6 @@ var IP = IP || {};
 	root.services.getChoice = function (fieldGuid) {
 		return root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('Choice', fieldGuid) });
 	};
-
 })(IP);
 
 (function (root, ko) {
@@ -221,7 +220,6 @@ var IP = IP || {};
 			});
 			self.allRdoTypes(types);
 		}, function () {
-
 		});
 
 		this.templateID = 'ldapDestinationConfig';
@@ -232,7 +230,6 @@ var IP = IP || {};
 		this.selectedDestinationType = ko.observable().extend({ required: true });
 
 		this.selectedDestinationType.subscribe(function (selectedValue) {
-
 		});
 
 		this.destinationProviderVisible = ko.observable(false);
@@ -269,12 +266,10 @@ var IP = IP || {};
 			self.setRelativityAsDestinationProvider();
 
 			$.each(self.destinationTypes(), function () {
-
 				if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
 					self.selectedDestinationType(this.artifactID);
 				}
 			});
-
 		});
 
 		this.artifactTypeID = ko.observable().extend({ required: true });
@@ -345,7 +340,7 @@ var IP = IP || {};
 			this.selectedDay = ko.observable(currentState.selectedDay);
 
 			this.overflowMessage = ko.computed(function () {
-				return 'For months containing fewer than '+ self.selectedDay() + ' days, Relativity will attempt to initiate the job on the last day of the month';
+				return 'For months containing fewer than ' + self.selectedDay() + ' days, Relativity will attempt to initiate the job on the last day of the month';
 			});
 
 			this.dayTypes = ko.observableArray([
@@ -392,7 +387,6 @@ var IP = IP || {};
 			this.selectedDayOfTheMonth = ko.observable(currentState.selectedDayOfTheMonth);
 
 			this.monthChoice = ko.observable(currentState.monthChoice);
-
 		};
 
 		var self = this;
@@ -631,34 +625,34 @@ var IP = IP || {};
 		this.isTypeDisabled = ko.observable(false);
 
 		self.setExportTypeVisibility = function (isExportType) {
-			if (isExportType === undefined && self.destinationProvider != null){
-				if(self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
+			if (isExportType === undefined && self.destinationProvider != null) {
+				if (self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
 					self.isExportType('true');
-				} 
+				}
 				else {
 					self.isExportType('false');
 				}
-			} 
+			}
 
-			if (self.hasBeenRun() || self.isEdit()) {				
+			if (self.hasBeenRun() || self.isEdit()) {
 				self.source.isSourceProviderDisabled(true);
 				self.destination.isDestinationProviderDisabled(true);
 				self.destination.isDestinationObjectDisabled(true)
 				self.isTypeDisabled(true)
-			} 			
+			}
 			else {
 				if (isExportType === "false") {
-				self.source.displayRelativityInSourceTypes(false);
-				self.source.isSourceProviderDisabled(false);
-				self.destination.setRelativityAsDestinationProvider();
-				self.destination.isDestinationProviderDisabled(true);
-			} else {
-				self.source.displayRelativityInSourceTypes(true);
-				var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
-				self.source.selectedType(relativitySourceProviderGuid);
-				self.source.isSourceProviderDisabled(true);
-				self.destination.isDestinationProviderDisabled(false);
-			}
+					self.source.displayRelativityInSourceTypes(false);
+					self.source.isSourceProviderDisabled(false);
+					self.destination.setRelativityAsDestinationProvider();
+					self.destination.isDestinationProviderDisabled(true);
+				} else {
+					self.source.displayRelativityInSourceTypes(true);
+					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+					self.source.selectedType(relativitySourceProviderGuid);
+					self.source.isSourceProviderDisabled(true);
+					self.destination.isDestinationProviderDisabled(false);
+				}
 			}
 		};
 	};
@@ -673,6 +667,7 @@ var IP = IP || {};
 			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
 			this.model.sourceConfiguration = ip.sourceConfiguration;
+			this.model.Map = ip.Map;
 		};
 
 		this.getTemplate = function () {
@@ -718,5 +713,4 @@ var IP = IP || {};
 	});
 
 	root.points.steps.push(step);
-
 })(IP, ko);
