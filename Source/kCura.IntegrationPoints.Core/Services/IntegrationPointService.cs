@@ -433,7 +433,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJob(integrationPoint, sourceProvider, destinationProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
 		}
 
-		private void ValidateWorkspaceName(SourceProvider sourceProvider, DestinationProvider destinationProvider,
+		protected virtual void ValidateWorkspaceName(SourceProvider sourceProvider, DestinationProvider destinationProvider,
 			IntegrationPoint integrationPoint)
 		{
 			if (sourceProvider.Identifier.ToUpper() !=
@@ -461,8 +461,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 			}
 		}
-
-
+		
 		protected virtual IRSAPIClient GetRsapiClient(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
