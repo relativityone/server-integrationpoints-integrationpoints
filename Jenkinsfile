@@ -38,7 +38,7 @@ def passed = false
 			*/
 			
 			dir('C:/SourceCode/integrationpoints') {
-				stash includes: 'lib/UnitTests/*', name: 'testdlls'				
+				stash includes: 'lib/UnitTests/**', name: 'testdlls'				
 			}
 		}
 		
