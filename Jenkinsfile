@@ -4,12 +4,9 @@ def passed = false
 		node('buildslave') {
 
 			stage('Checkout Integration Points') {
-				
-				dir('C:/SourceCode/integrationpoints') {
-					bat 'powershell.exe "Stop-Process -name msbuild -Force -ErrorAction SilentlyContinue"'
-				}	
-
+							
 				dir('C:/SourceCode') {
+					bat 'powershell.exe "taskkill /f /im msbuild.exe /T /fi \'IMAGENAME eq msbuild.exe\'"'
 
 					checkout([$class : 'GitSCM',
 							branches : [[name : env.BRANCH_NAME]],
