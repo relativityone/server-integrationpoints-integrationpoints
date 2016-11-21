@@ -5,6 +5,7 @@
             <span style="visibility: hidden;" id="forceRedraw"></span>
             <div class="map-field-title">
                 <label class="list-title leftSide-field">Destination</label>
+                <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map Fields</button>
                 <label class="list-title rightSide-field">Source</label>
 
             </div>
@@ -23,7 +24,6 @@
                 </div>
                 <div class="cell">
                     <select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField" multiple="multiple"></select>
-
                 </div>
                 <div class="cell selection map-move">
                     <div>

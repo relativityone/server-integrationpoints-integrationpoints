@@ -305,6 +305,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
+    <Compile Include="Controllers\API\FieldCatalogController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
