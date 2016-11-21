@@ -38,7 +38,10 @@ def passed = false
 			*/
 			
 			dir('C:/SourceCode/integrationpoints') {
-				stash includes: 'lib/UnitTests/**', name: 'testdlls'				
+				stash includes: 'lib/UnitTests/*', name: 'testdlls'				
+				stash includes: 'lib/UnitTests/TestData/*', name: 'testdata'				
+				stash includes: 'lib/UnitTests/TestData/IMAGES/*', name: 'testdata_images'				
+				stash includes: 'lib/UnitTests/TestData/NATIVES/*', name: 'testdata_natives'				
 			}
 		}
 		
@@ -49,7 +52,10 @@ def passed = false
 				dir('C:/SourceCode/integrationpoints') {
 
 					unstash 'testdlls'
-					
+					unstash 'testdata'
+					unstash 'testdata_images'
+					unstash 'testdata_natives'
+
 					bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll --test=kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunTestCase,kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunInvalidFileshareTestCase --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
 
 					step([$class : 'XUnitBuilder',
