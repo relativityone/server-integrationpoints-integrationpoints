@@ -28,15 +28,14 @@ def passed = false
 					bat 'powershell.exe "./build.ps1 release"'
 				}			
 			}
-			/*
+			
 			stage('Unit Tests') {
 				
 				dir('C:/SourceCode/integrationpoints') {
 					bat 'powershell.exe "./build.ps1 -test -skip"'
 				}			
 			}
-			*/
-			
+						
 			dir('C:/SourceCode/integrationpoints') {
 				stash includes: 'lib/UnitTests/*', name: 'testdlls'				
 				stash includes: 'lib/UnitTests/TestData/*', name: 'testdata'				
