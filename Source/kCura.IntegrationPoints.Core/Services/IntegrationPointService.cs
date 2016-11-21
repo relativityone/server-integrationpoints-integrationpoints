@@ -436,21 +436,28 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void ValidateWorkspaceName(SourceProvider sourceProvider, DestinationProvider destinationProvider,
 			IntegrationPoint integrationPoint)
 		{
-			if (sourceProvider.Identifier.ToUpper() == kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID.ToUpper() &&
-			    destinationProvider.Identifier.ToUpper() ==
+			if (sourceProvider.Identifier.ToUpper() !=
+			    kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID.ToUpper() ||
+			    destinationProvider.Identifier.ToUpper() !=
 			    kCura.IntegrationPoints.Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString().ToUpper())
 			{
-				using (IRSAPIClient currentClient = GetRsapiClient(-1))
+				return;
+			}
+
+			using (IRSAPIClient currentClient = GetRsapiClient(-1))
+			{
+				ExportSettings settings = JsonConvert.DeserializeObject<ExportSettings>(integrationPoint.SourceConfiguration);
+				Workspace sourceWorkspace = currentClient.Repositories.Workspace.ReadSingle(settings.SourceWorkspaceArtifactId);
+				Workspace targetWorkspace = currentClient.Repositories.Workspace.ReadSingle(settings.TargetWorkspaceArtifactId);
+
+				if (sourceWorkspace.Name.Contains(";"))
 				{
-					ExportSettings settings = JsonConvert.DeserializeObject<ExportSettings>(integrationPoint.SourceConfiguration);
-					Workspace sourceWorkspace = currentClient.Repositories.Workspace.ReadSingle(settings.SourceWorkspaceArtifactId);
-					Workspace targetWorkspace = currentClient.Repositories.Workspace.ReadSingle(settings.TargetWorkspaceArtifactId);
+					throw new Exception("Source workspace name contains an invalid character. Please remove before continuing.");
+				}
 
-					if (sourceWorkspace.Name.Contains(";"))
-						throw new Exception("Source workspace name contains an invalid character. Please remove before continuing.");
-
-					if (targetWorkspace.Name.Contains(";"))
-						throw new Exception("Target workspace name contains an invalid character. Please remove before continuing.");
+				if (targetWorkspace.Name.Contains(";"))
+				{
+					throw new Exception("Target workspace name contains an invalid character. Please remove before continuing.");
 				}
 			}
 		}
