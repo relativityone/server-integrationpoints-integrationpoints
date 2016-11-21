@@ -436,9 +436,9 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void ValidateWorkspaceName(SourceProvider sourceProvider, DestinationProvider destinationProvider,
 			IntegrationPoint integrationPoint)
 		{
-			if (sourceProvider.Identifier == kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID &&
-			    destinationProvider.Identifier ==
-			    kCura.IntegrationPoints.Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString())
+			if (sourceProvider.Identifier.ToUpper() == kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID.ToUpper() &&
+			    destinationProvider.Identifier.ToUpper() ==
+			    kCura.IntegrationPoints.Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString().ToUpper())
 			{
 				using (IRSAPIClient currentClient = GetRsapiClient(-1))
 				{
