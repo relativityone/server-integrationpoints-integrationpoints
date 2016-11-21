@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -12,13 +13,17 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
+using ExportSettings = kCura.IntegrationPoints.Domain.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -36,6 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IManagerFactory _managerFactory;
 		private static readonly object _lock = new object();
+		private readonly IHelper _helper;
 
 		public IntegrationPointService(IHelper helper,
 			ICaseServiceContext context,
@@ -51,6 +57,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_managerFactory = managerFactory;
+			_helper = helper;
 
 			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
@@ -409,6 +416,9 @@ namespace kCura.IntegrationPoints.Core.Services
 				integrationPoint = GetRdo(integrationPointArtifactId);
 				sourceProvider = GetSourceProvider(integrationPoint);
 				destinationProvider = GetDestinationProvider(integrationPoint);
+
+				//TODO: Remove after proper validation implementation
+				ValidateWorkspaceName(sourceProvider, destinationProvider, integrationPoint);
 			}
 			catch (Exception e)
 			{
@@ -421,6 +431,36 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, destinationProvider, userId);
 			CreateJob(integrationPoint, sourceProvider, destinationProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
+		}
+
+		private void ValidateWorkspaceName(SourceProvider sourceProvider, DestinationProvider destinationProvider,
+			IntegrationPoint integrationPoint)
+		{
+			if (sourceProvider.Identifier == kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID &&
+			    destinationProvider.Identifier ==
+			    kCura.IntegrationPoints.Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString())
+			{
+				using (IRSAPIClient currentClient = GetRsapiClient(-1))
+				{
+					ExportSettings settings = JsonConvert.DeserializeObject<ExportSettings>(integrationPoint.SourceConfiguration);
+					Workspace sourceWorkspace = currentClient.Repositories.Workspace.ReadSingle(settings.SourceWorkspaceArtifactId);
+					Workspace targetWorkspace = currentClient.Repositories.Workspace.ReadSingle(settings.TargetWorkspaceArtifactId);
+
+					if (sourceWorkspace.Name.Contains(";"))
+						throw new Exception("Source workspace name contains an invalid character. Please remove before continuing.");
+
+					if (targetWorkspace.Name.Contains(";"))
+						throw new Exception("Target workspace name contains an invalid character. Please remove before continuing.");
+				}
+			}
+		}
+
+
+		protected virtual IRSAPIClient GetRsapiClient(int workspaceArtifactId)
+		{
+			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+			rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
+			return rsapiClient;
 		}
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
