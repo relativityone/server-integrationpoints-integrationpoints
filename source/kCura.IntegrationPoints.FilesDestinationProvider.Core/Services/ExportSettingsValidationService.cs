@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
@@ -29,10 +30,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public ValidationResult Validate(int workspaceID, IntegrationModel model)
 		{
-			ExportFile exportFile = BuildExportFile(model);
+			IEnumerable<FieldMap> fieldMap = JsonConvert.DeserializeObject<IEnumerable<FieldMap>>(model.Map);
+			ExportUsingSavedSearchSettings sourceSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(model.SourceConfiguration);
+			int artifactTypeId = JsonConvert.DeserializeAnonymousType(model.Destination, new { ArtifactTypeId = 1 }).ArtifactTypeId;
 
-			int totalDocsCount = _exportInitProcessService.CalculateDocumentCountToTransfer(
-				JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(model.SourceConfiguration));
+			ExportFile exportFile = BuildExportFile(sourceSettings, fieldMap, artifactTypeId);
+
+			int totalDocsCount = _exportInitProcessService.CalculateDocumentCountToTransfer(sourceSettings, artifactTypeId);
 
 			var fileCountValidationResult = _fileCountValidator.Validate(totalDocsCount);
 			if (!fileCountValidationResult.IsValid)
@@ -43,12 +47,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			return _paddingValidator.Validate(workspaceID, exportFile, totalDocsCount);
 		}
 
-		private ExportFile BuildExportFile(IntegrationModel model)
+		private ExportFile BuildExportFile(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId)
 		{
-			var sourceSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(model.SourceConfiguration);
-			var artifactTypeId = JsonConvert.DeserializeAnonymousType(model.Destination, new {ArtifactTypeId = 1}).ArtifactTypeId;
-			var fieldMap = JsonConvert.DeserializeObject<IEnumerable<FieldMap>>(model.Map);
-
 			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, fieldMap, artifactTypeId);
 			var exportFile = _exportFileBuilder.Create(exportSettings);
 			return exportFile;

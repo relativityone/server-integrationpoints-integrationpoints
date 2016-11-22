@@ -5,11 +5,18 @@
 	var viewModel = function (state) {
 		var self = this;
 
-		this.HasBeenRun = ko.observable(state.hasBeenRun || false);
+		this.HasBeenRun = ko.observable(state.sourceConfiguration.hasBeenRun || false);
+
+		this.ArtifactTypeID = state.artifactTypeID;
+		this.DefaultRdoTypeId = state.DefaultRdoTypeId;
+
+		this.ExportRdoMode = function () {
+			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
+		}
 
 		this.ProcessingSourceLocationList = ko.observableArray([]);
 
-		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation || 0;
+		this.ProcessingSourceLocationArtifactId = state.sourceConfiguration.ProcessingSourceLocation || 0;
 
 		this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
 			required: true
@@ -43,7 +50,7 @@
 			self.locationSelector.toggle(!!value);
 		};
 
-		this.Fileshare = ko.observable(state.Fileshare).extend({
+		this.Fileshare = ko.observable(state.sourceConfiguration.Fileshare).extend({
 			required: {
 				onlyIf: function () {
 					return self.ProcessingSourceLocation();
@@ -93,39 +100,39 @@
 			}
 		};
 
-		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
+		this.SelectedDataFileFormat = ko.observable(state.sourceConfiguration.SelectedDataFileFormat).extend({
 			required: true
 		});
 
-		this.ColumnSeparator = ko.observable(state.ColumnSeparator || 20).extend({
+		this.ColumnSeparator = ko.observable(state.sourceConfiguration.ColumnSeparator || 20).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.QuoteSeparator = ko.observable(state.QuoteSeparator || 254).extend({
+		this.QuoteSeparator = ko.observable(state.sourceConfiguration.QuoteSeparator || 254).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NewlineSeparator = ko.observable(state.NewlineSeparator || 174).extend({
+		this.NewlineSeparator = ko.observable(state.sourceConfiguration.NewlineSeparator || 174).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator || 59).extend({
+		this.MultiValueSeparator = ko.observable(state.sourceConfiguration.MultiValueSeparator || 59).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
 				}
 			}
 		});
-		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator || 92).extend({
+		this.NestedValueSeparator = ko.observable(state.sourceConfiguration.NestedValueSeparator || 92).extend({
 			required: {
 				onlyIf: function () {
 					return self.SelectedDataFileFormat() === ExportEnums.DataFileFormatEnum.Custom;
@@ -170,11 +177,11 @@
 				self.isCustomDisabled(true);
 			}
 		};
-		self.UpdateIsCustomDataFileFormatChanged(state.SelectedDataFileFormat);
+		self.UpdateIsCustomDataFileFormatChanged(state.sourceConfiguration.SelectedDataFileFormat);
 
 		this.SelectedDataFileFormat.subscribe(self.UpdateIsCustomDataFileFormatChanged);
 
-		this.ExportNatives = ko.observable(state.ExportNatives || false);
+		this.ExportNatives = ko.observable(state.sourceConfiguration.ExportNatives || false);
 		this.ExportNatives.subscribe(function (value) {
 			if (!value) {
 				self.SelectedImageFileType(0);
@@ -186,17 +193,17 @@
 			}
 		});
 
-		this.ExportTextFieldsAsFiles = ko.observable(state.ExportFullTextAsFile || false);
+		this.ExportTextFieldsAsFiles = ko.observable(state.sourceConfiguration.ExportFullTextAsFile || false);
 
-		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
+		this.OverwriteFiles = ko.observable(state.sourceConfiguration.OverwriteFiles || false);
 
-		this.DataFileEncodingTypeValue = state.DataFileEncodingType || "";
+		this.DataFileEncodingTypeValue = state.sourceConfiguration.DataFileEncodingType || "";
 
 		this.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({
 			required: true
 		});
 
-		this.TextFileEncodingTypeValue = state.TextFileEncodingType || "";
+		this.TextFileEncodingTypeValue = state.sourceConfiguration.TextFileEncodingType || "";
 
 		this.TextFileEncodingType = ko.observable(self.TextFileEncodingTypeValue).extend({
 			required: {
@@ -244,7 +251,7 @@
 
 		self._UpdateFileEncodingTypeList();
 
-		this.ExportImages = ko.observable(state.ExportImages || false);
+		this.ExportImages = ko.observable(state.sourceConfiguration.ExportImages || false);
 
 		this.SelectedImageDataFileFormat = ko.observable().extend({
 			required: {
@@ -258,14 +265,14 @@
 
 		this._updateImageFileFormat = function () {
 			var setSelectedImageDataFileFormat = function () {
-				if (state.SelectedImageDataFileFormat === 0) {
+				if (state.sourceConfiguration.SelectedImageDataFileFormat === 0) {
 					self.SelectedImageDataFileFormat("0");
 				}
-				else if (state.SelectedImageDataFileFormat === undefined) {
+				else if (state.sourceConfiguration.SelectedImageDataFileFormat === undefined) {
 					self.SelectedImageDataFileFormat(self.ImageFileFormatList()[0].value.toString());
 				}
 				else {
-					self.SelectedImageDataFileFormat(state.SelectedImageDataFileFormat.toString());
+					self.SelectedImageDataFileFormat(state.sourceConfiguration.SelectedImageDataFileFormat.toString());
 				}
 			}
 
@@ -285,11 +292,11 @@
 			}
 		}
 
-		this.IsProductionExport = ko.observable(state.ExportType === ExportEnums.SourceOptionsEnum.Production);
+		this.IsProductionExport = ko.observable(state.sourceConfiguration.ExportType === ExportEnums.SourceOptionsEnum.Production);
 
-		this.AppendOriginalFileName = ko.observable(state.AppendOriginalFileName || false);
+		this.AppendOriginalFileName = ko.observable(state.sourceConfiguration.AppendOriginalFileName || false);
 
-		this.SelectedExportNativesWithFileNameFrom = ko.observable(state.ExportNativesToFileNamedFrom || false).extend({
+		this.SelectedExportNativesWithFileNameFrom = ko.observable(state.sourceConfiguration.ExportNativesToFileNamedFrom || false).extend({
 			required: {
 				onlyIf: function () {
 					return self.AppendOriginalFileName();
@@ -301,7 +308,7 @@
 
 		self._updateImageFileFormat();
 
-		this.ProductionPrecedence = ko.observable(state.ProductionPrecedence).extend({
+		this.ProductionPrecedence = ko.observable(state.sourceConfiguration.ProductionPrecedence).extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportImages();
@@ -324,9 +331,9 @@
 			return self.ProductionPrecedence() === ExportEnums.ProductionPrecedenceTypeEnum.Produced;
 		}
 
-		this.IncludeOriginalImages = ko.observable(state.IncludeOriginalImages || false);
+		this.IncludeOriginalImages = ko.observable(state.sourceConfiguration.IncludeOriginalImages || false);
 
-		this.SelectedImageFileType = ko.observable(!self.ExportNatives() ? 0 : state.SelectedImageFileType).extend({
+		this.SelectedImageFileType = ko.observable(!self.ExportNatives() ? 0 : state.sourceConfiguration.SelectedImageFileType).extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportImages();
@@ -334,7 +341,7 @@
 			}
 		});
 
-		this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
+		this.SubdirectoryImagePrefix = ko.observable(state.sourceConfiguration.SubdirectoryImagePrefix || "IMG").extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportImages();
@@ -352,7 +359,7 @@
 				}
 			}
 		});
-		this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
+		this.SubdirectoryNativePrefix = ko.observable(state.sourceConfiguration.SubdirectoryNativePrefix || "NATIVE").extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportNatives();
@@ -370,7 +377,7 @@
 				}
 			}
 		});
-		this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
+		this.SubdirectoryTextPrefix = ko.observable(state.sourceConfiguration.SubdirectoryTextPrefix || "TEXT").extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportTextFieldsAsFiles();
@@ -393,7 +400,7 @@
 			return self.ExportImages() || self.ExportNatives() || self.ExportTextFieldsAsFiles();
 		}
 
-		this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
+		this.SubdirectoryStartNumber = ko.observable(state.sourceConfiguration.SubdirectoryStartNumber || 1).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();
@@ -411,7 +418,7 @@
 				}
 			}
 		});
-		this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
+		this.SubdirectoryDigitPadding = ko.observable(state.sourceConfiguration.SubdirectoryDigitPadding || 3).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();
@@ -435,7 +442,7 @@
 				}
 			}
 		});
-		this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
+		this.SubdirectoryMaxFiles = ko.observable(state.sourceConfiguration.SubdirectoryMaxFiles || 500).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();
@@ -459,7 +466,7 @@
 				}
 			}
 		});
-		this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
+		this.VolumePrefix = ko.observable(state.sourceConfiguration.VolumePrefix || "VOL").extend({
 			required: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();
@@ -477,7 +484,7 @@
 				}
 			}
 		});
-		this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
+		this.VolumeStartNumber = ko.observable(state.sourceConfiguration.VolumeStartNumber || 1).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();
@@ -495,7 +502,7 @@
 				}
 			}
 		});
-		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
+		this.VolumeDigitPadding = ko.observable(state.sourceConfiguration.VolumeDigitPadding || 2).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();
@@ -519,7 +526,7 @@
 				}
 			}
 		});
-		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 4400).extend({
+		this.VolumeMaxSize = ko.observable(state.sourceConfiguration.VolumeMaxSize || 4400).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsVolumeAndSubdirectioryDetailVisible();
@@ -546,11 +553,11 @@
 			return pad(self.SubdirectoryStartNumber().toString(), parseInt(self.SubdirectoryDigitPadding()));
 		}, this);
 
-		this.FilePath = ko.observable(state.FilePath || ExportEnums.FilePathTypeEnum.Relative).extend({
+		this.FilePath = ko.observable(state.sourceConfiguration.FilePath || ExportEnums.FilePathTypeEnum.Relative).extend({
 			required: true
 		});
 
-		this.UserPrefix = ko.observable(state.UserPrefix || "").extend({
+		this.UserPrefix = ko.observable(state.sourceConfiguration.UserPrefix || "").extend({
 			required: {
 				onlyIf: function () {
 					return self.FilePath() == ExportEnums.FilePathTypeEnum.UserPrefix;
@@ -584,10 +591,10 @@
 			}
 		});
 
-		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || false);
+		this.IncludeNativeFilesPath = ko.observable(state.sourceConfiguration.IncludeNativeFilesPath || false);
 		this.IncludeNativeFilesPathLastValue = this.IncludeNativeFilesPath();
 
-		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
+		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.sourceConfiguration.ExportMultipleChoiceFieldsAsNested || false);
 
 		var getTextRepresentation = function (value) {
 			if (!value) {
@@ -598,7 +605,7 @@
 				return x.displayName;
 			}).join(", ");
 		};
-		this.TextPrecedenceFields = ko.observable(state.TextPrecedenceFields || [])
+		this.TextPrecedenceFields = ko.observable(state.sourceConfiguration.TextPrecedenceFields || [])
 			.extend({
 				required: {
 					onlyIf: function () {
@@ -621,7 +628,7 @@
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
 		};
 
-		this.ImagePrecedence = ko.observable(state.ImagePrecedence || [])
+		this.ImagePrecedence = ko.observable(state.sourceConfiguration.ImagePrecedence || [])
 			.extend({
 				required: {
 					onlyIf: function () {
@@ -716,7 +723,7 @@
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
 
-			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration, { hasBeenRun: ip.hasBeenRun }));
+			self.model = new viewModel($.extend({}, self.ipModel, { hasBeenRun: ip.hasBeenRun }));
 			self.model.errors = ko.validation.group(self.model);
 
 			var processingSourceLocationListPromise = root.data.ajax({

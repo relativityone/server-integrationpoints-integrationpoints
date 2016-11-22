@@ -62,6 +62,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return QueryForTotals(query, "Failed to retrieve total export items count for production set: {productionSetId}.", productionSetId);
 		}
 
+		public int GetRdosCount(int artifactTypeId, int viewId)
+		{
+			var query = new Query<RDO>
+			{
+				ArtifactTypeID = artifactTypeId,
+				Fields = FieldValue.NoFields,
+				Condition = new ViewCondition(viewId)
+			};
+			return QueryForTotals(query, "Failed to retrieve total export items count for rdo type: {artifactTypeId}.", artifactTypeId);
+		}
+
 		private int QueryForTotals<T>(Query<T> query, string errMsgTemplate, params object[] parmeters)
 			where T : Relativity.Client.DTOs.Artifact, new()
 		{

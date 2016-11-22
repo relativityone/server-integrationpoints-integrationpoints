@@ -226,7 +226,7 @@ var IP = IP || {};
 				self.rdoTypes(self.allRdoTypes());
 			}
 			else {
-				if (!!parentModel.source.SourceProviderConfiguration.compatibleRdoTypes) {
+				if ($.isArray(parentModel.source.SourceProviderConfiguration.compatibleRdoTypes)) {
 					var rdosToDisplay = [];
 					$.each(self.allRdoTypes(), function () {
 						if (parentModel.source.SourceProviderConfiguration.compatibleRdoTypes.indexOf(this.value) > -1) {

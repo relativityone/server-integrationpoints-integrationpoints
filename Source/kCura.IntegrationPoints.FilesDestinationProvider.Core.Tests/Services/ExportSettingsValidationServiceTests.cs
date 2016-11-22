@@ -20,6 +20,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private IntegrationModel _integrationModel;
 		private IPaddingValidator _paddingValidator;
 
+		private const int _ARTIFACT_TYPE_ID = 1;
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -45,7 +47,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		{
 			string expectedMessage = "expected_message";
 
-			_exportInitProcessService.CalculateDocumentCountToTransfer(Arg.Any<ExportUsingSavedSearchSettings>()).Returns(0);
+			_exportInitProcessService.CalculateDocumentCountToTransfer(Arg.Any<ExportUsingSavedSearchSettings>(), _ARTIFACT_TYPE_ID).Returns(0);
 			_fileCountValidator.Validate(0).Returns(new ValidationResult
 			{
 				IsValid = false,

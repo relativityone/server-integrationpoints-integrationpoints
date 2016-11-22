@@ -74,7 +74,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void ItShouldReturnTotalExportDocsCount(int totalSavedSearchCount)
 		{
 			// Arrange
-			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO {SourceConfiguration = "Source Configuration"};
+			const int artifactTypeId = 1;
+			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
+			{
+				SourceConfiguration = "Source Configuration",
+				DestinationConfiguration = $"{{ArtifactTypeId: {artifactTypeId}}}"
+			};
 			ExportUsingSavedSearchSettings sourceConfiguration = new ExportUsingSavedSearchSettings()
 			{
 				SavedSearchArtifactId = 1,
@@ -84,7 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IIntegrationPointManager integrationPointManagerMock = Substitute.For<IIntegrationPointManager>();
 
 			integrationPointManagerMock.Read(_job.WorkspaceID, _job.RelatedObjectArtifactID).Returns(integrationPointDto);
-			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration).Returns(totalSavedSearchCount);
+			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration, artifactTypeId).Returns(totalSavedSearchCount);
 
 			_contextContainerFactoryMock.CreateContextContainer(_helperMock).Returns(contextContainerMock);
 			_managerFactoryMock.CreateIntegrationPointManager(contextContainerMock).Returns(integrationPointManagerMock);

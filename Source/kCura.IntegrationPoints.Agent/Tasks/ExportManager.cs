@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -99,8 +101,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
+			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
-			int totalCount = GetTotalExportItemsCount(sourceSettings, job);
+			int totalCount = GetTotalExportItemsCount(sourceSettings, destinationConfiguration, job);
 
 			if (totalCount > 0)
 			{
@@ -109,11 +112,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return totalCount;
 		}
 
-		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, Job job)
+		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
 		{
 			try
 			{
-				return _exportInitProcessService.CalculateDocumentCountToTransfer(settings);
+				return _exportInitProcessService.CalculateDocumentCountToTransfer(settings, destinationConfiguration.ArtifactTypeId);
 			}
 			catch (Exception ex)
 			{

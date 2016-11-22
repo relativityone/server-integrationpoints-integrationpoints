@@ -9,5 +9,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		int GetFolderTotalDocsCount(int folderId, int viewId, bool includeSubFoldersTotals);
 
 		int GetProductionDocsCount(int productionSetId);
+
+		int GetRdosCount(int artifactTypeId, int viewId);
 	}
 }
