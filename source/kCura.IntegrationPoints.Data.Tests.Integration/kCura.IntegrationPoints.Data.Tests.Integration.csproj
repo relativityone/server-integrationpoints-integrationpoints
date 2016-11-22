@@ -137,11 +137,11 @@
     <Compile Include="Repositories\ScratchTableRepositoryTests.cs" />
     <Compile Include="Repositories\SqlWorkspacesRepositoryTests.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\Release\app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

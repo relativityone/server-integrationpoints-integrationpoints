@@ -83,10 +83,11 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
-      <SubType>Designer</SubType>
-    </None>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\Release\app.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
