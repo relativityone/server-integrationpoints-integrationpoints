@@ -66,9 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IChoiceQuery _choiceQuery;
 		private PermissionCheckDTO _stopPermissionChecksResults;
 		private Data.JobHistory _previousJobHistory;
-
-		private IRSAPIClient _IRSAPIClient;
-
+		
 		public class IntegrationPointServiceMock : IntegrationPointService
 		{
 			public IntegrationPointServiceMock(IHelper helper, ICaseServiceContext context, IContextContainerFactory contextContainerFactory, ISerializer serializer, IChoiceQuery choiceQuery, IJobManager jobService, IJobHistoryService jobHistoryService, IManagerFactory managerFactory) 
@@ -103,12 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-
-			_IRSAPIClient = Substitute.For<IRSAPIClient>();
-			_IRSAPIClient.APIOptions = new APIOptions(_sourceWorkspaceArtifactId);
-
-			_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(_IRSAPIClient);
-
+			
 			_instance = Substitute.ForPartsOf<IntegrationPointServiceMock>(_helper, _caseServiceManager,
 				_contextContainerFactory, _serializer, _choiceQuery, _jobManager,
 				_jobHistoryService, _managerFactory);

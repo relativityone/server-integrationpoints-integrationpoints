@@ -462,7 +462,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 		
-		protected virtual IRSAPIClient GetRsapiClient(int workspaceArtifactId)
+		private IRSAPIClient GetRsapiClient(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
 			rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
