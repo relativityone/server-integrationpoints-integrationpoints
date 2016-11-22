@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -15,6 +17,15 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		private readonly ISerializer _serializer;
 
 		public string Key => Constants.IntegrationPoints.Validation.SCHEDULE;
+
+		public const string ERROR_REQUIRED_VALUE = "This field is required: ";
+		public const string ERROR_INVALID_DATE_FORMAT = "Invalid string representation of a date: ";
+		public const string ERROR_INVALID_TIME_FORMAT = "Invalid string representation of a time: ";
+		public const string ERROR_NOT_INT_RANGE = " value not in range: ";
+		public const string ERROR_INVALID_VALUE = "Invalid value for: ";
+		public const string ERROR_END_DATE_BEFORE_START_DATE = "The start date must come before the end date.";
+		public const int REOCCUR_MIN = 1, REOCCUR_MAX = 999;
+		public const int FIRST_DAY_OF_MONTH = 1, LAST_DAY_OF_MONTH = 31;
 
 		public SchedulerValidator(ISerializer serializer)
 		{
@@ -35,23 +46,47 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		private ValidationResult ValidateDates(Scheduler scheduler)
 		{
-			var result = new ValidationResult();
+			const string dateTimeFormat = "M/dd/yyyy";
+			string[] timeSpanFormats =  { @"hh\:mm", @"h\:m" };
 
-			DateTime tmpDate;
-			if (!DateTime.TryParse(scheduler.StartDate, out tmpDate))
+			var result = new ValidationResult();
+			var startDate = new DateTime();
+
+			if (scheduler.StartDate.IsNullOrEmpty())
 			{
-				result.Add("StartDate does not contain a valid string representation of a date and time");
+				result.Add(ERROR_REQUIRED_VALUE + "StartDate");
+			}
+			else if (!DateTime.TryParseExact(scheduler.StartDate, dateTimeFormat, CultureInfo.InvariantCulture,
+					   DateTimeStyles.None, out startDate))
+			{
+				result.Add(ERROR_INVALID_DATE_FORMAT + scheduler.StartDate);
 			}
 
-			if (!string.IsNullOrEmpty(scheduler.EndDate) && !DateTime.TryParse(scheduler.EndDate, out tmpDate))
+			if (!string.IsNullOrWhiteSpace(scheduler.EndDate))
 			{
-				result.Add("EndDate does not contain a valid string representation of a date and time");
+				DateTime endDate;
+				if(!DateTime.TryParseExact(scheduler.EndDate, dateTimeFormat, CultureInfo.InvariantCulture,
+					   DateTimeStyles.None, out endDate))
+				{
+					result.Add(ERROR_INVALID_DATE_FORMAT + scheduler.EndDate);
+				}
+				else
+				{
+					if (startDate > endDate)
+					{
+						result.Add(ERROR_END_DATE_BEFORE_START_DATE);
+					}
+				}
 			}
 
 			TimeSpan time;
-			if (TimeSpan.TryParse(scheduler.ScheduledTime, out time))
+			if (scheduler.ScheduledTime.IsNullOrEmpty())
 			{
-				result.Add("ScheduledTime is invalid format");
+				result.Add(ERROR_REQUIRED_VALUE + "ScheduledTime");
+			}
+			if (!TimeSpan.TryParseExact(scheduler.ScheduledTime, timeSpanFormats, CultureInfo.InvariantCulture, out time))
+			{
+				result.Add(ERROR_INVALID_TIME_FORMAT + scheduler.ScheduledTime);
 			}
 
 			return result;
@@ -61,9 +96,13 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			if (!Enum.GetNames(typeof(ScheduleInterval)).Contains(scheduler.SelectedFrequency))
+			if (scheduler.SelectedFrequency.IsNullOrEmpty())
 			{
-				result.Add($"Invalid interval: {scheduler.SelectedFrequency}");
+				result.Add(ERROR_REQUIRED_VALUE + "SelectedFrequency");
+			}
+			else if (!Enum.GetNames(typeof(ScheduleInterval)).Contains(scheduler.SelectedFrequency))
+			{
+				result.Add(ERROR_INVALID_VALUE + "SelectedFrequency");
 			}
 
 			if (scheduler.SelectedFrequency == ScheduleInterval.Weekly.ToString())
@@ -84,17 +123,26 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			var weeklySendOn = _serializer.Deserialize<IntegrationPointService.Weekly>(scheduler.SendOn);
-			if (weeklySendOn.SelectedDays.Count == 0)
+			try
 			{
-				result.Add("Any day selected. For Weekly frequency at least one day must be selected.");
-			}
-			else
-			{
-				foreach (string selectedDay in weeklySendOn.SelectedDays)
+				var weeklySendOn = _serializer.Deserialize<IntegrationPointService.Weekly>(scheduler.SendOn);
+
+				if (weeklySendOn.SelectedDays.Count == 0)
 				{
-					result.Add(ValidateDayOfWeek(selectedDay, "selectedDay"));
+					result.Add(ERROR_REQUIRED_VALUE + "SelectedDays");
 				}
+				else
+				{
+					foreach (string selectedDay in weeklySendOn.SelectedDays)
+					{
+						result.Add(ValidateDayOfWeek(selectedDay, "selectedDay"));
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				result.Add(ERROR_INVALID_VALUE + "SendOn. Error message" + ex.Message);
+				return result;
 			}
 
 			return result;
@@ -104,33 +152,41 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			const int minDayOfMonth = 1, maxDayOfMonth = 31;
-			var monthlySendOn = _serializer.Deserialize<IntegrationPointService.Monthly>(scheduler.SendOn);
-			List<string> occurancesInMonth = Enum.GetNames(typeof(OccuranceInMonth)).ToList();
-
-			if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Days)
+			try
 			{
-				if (monthlySendOn.SelectedDay < minDayOfMonth || monthlySendOn.SelectedDay > maxDayOfMonth)
+
+				var monthlySendOn = _serializer.Deserialize<IntegrationPointService.Monthly>(scheduler.SendOn);
+				List<string> occurancesInMonth = Enum.GetNames(typeof(OccuranceInMonth)).ToList();
+
+				if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Days)
 				{
-					result.Add($"DayOfMonth ({monthlySendOn.SelectedDay}) is not in range ({minDayOfMonth}:{maxDayOfMonth})");
+					if (monthlySendOn.SelectedDay < FIRST_DAY_OF_MONTH || monthlySendOn.SelectedDay > LAST_DAY_OF_MONTH)
+					{
+						result.Add("DayOfMonth" + ERROR_NOT_INT_RANGE + $"({FIRST_DAY_OF_MONTH}:{LAST_DAY_OF_MONTH})");
+					}
+				}
+				else if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Month)
+				{
+					result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth"));
+
+					if (monthlySendOn.SelectedType == null)
+					{
+						result.Add(ERROR_REQUIRED_VALUE + "SelectedType");
+					}
+					else if (!occurancesInMonth.Contains(monthlySendOn.SelectedType.ToString()))
+					{
+						result.Add(ERROR_INVALID_VALUE + "OccuranceInMonth");
+					}
+				}
+				else
+				{
+					result.Add(ERROR_INVALID_VALUE + "MonthChoice");
 				}
 			}
-			else if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Month)
+			catch (Exception ex)
 			{
-				result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth"));
-
-				if (monthlySendOn.SelectedType == null)
-				{
-					result.Add("No occurance selected");
-				}
-				else if (!occurancesInMonth.Contains(monthlySendOn.SelectedType.ToString()))
-				{
-					result.Add("Invalid occurance selected");
-				}
-			}
-			else
-			{
-				result.Add($"Invalid MonthChoice: {monthlySendOn.MonthChoice}");
+				result.Add(ERROR_INVALID_VALUE + "SendOn. Error message" + ex.Message);
+				return result;
 			}
 
 			return result;
@@ -140,14 +196,14 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			if (dayOfWeek == null)
+			if (dayOfWeek.IsNullOrEmpty())
 			{
-				result.Add("Value for dayOfWeek not selected");
+				result.Add(ERROR_REQUIRED_VALUE + "DayOfWeek");
 			}
 
 			if (!Enum.GetNames(typeof(DayOfWeek)).Contains(dayOfWeek))
 			{
-				result.Add($"Invalid {fieldName}: {dayOfWeek}");
+				result.Add(ERROR_INVALID_VALUE + "DayOfWeek");
 			}
 
 			return result;
@@ -157,10 +213,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			const int min = 1, max = 999;
-			if (scheduler.Reoccur < min || scheduler.Reoccur > max)
+			if (scheduler.Reoccur < REOCCUR_MIN || scheduler.Reoccur > REOCCUR_MAX)
 			{
-				result.Add($"Reoccur value ({scheduler.Reoccur}) is not in range ({min}:{max})");
+				result.Add("Reoccur" + ERROR_NOT_INT_RANGE + $"({REOCCUR_MIN}:{REOCCUR_MAX})");
 			}
 
 			return result;

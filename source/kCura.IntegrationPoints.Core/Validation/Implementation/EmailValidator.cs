@@ -12,21 +12,18 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 	{
 		public string Key => Constants.IntegrationPoints.Validation.EMAIL;
 
+		private const string _EMAIL_PATTERN = @"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[00A0D7FFF900FDCFFDF0FFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[00A0D7FFF900FDCFFDF0FFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[00A0D7FFF900FDCFFDF0FFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[00A0D7FFF900FDCFFDF0FFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[00A0D7FFF900FDCFFDF0FFEF])|(([a-z]|\d|[00A0D7FFF900FDCFFDF0FFEF])([a-z]|\d|-|\.|_|~|[00A0D7FFF900FDCFFDF0FFEF])*([a-z]|\d|[00A0D7FFF900FDCFFDF0FFEF])))\.)+(([a-z]|[00A0D7FFF900FDCFFDF0FFEF])|(([a-z]|[00A0D7FFF900FDCFFDF0FFEF])([a-z]|\d|-|\.|_|~|[00A0D7FFF900FDCFFDF0FFEF])*([a-z]|[00A0D7FFF900FDCFFDF0FFEF])))$";
+
+		public const string ERROR_INVALID_EMAIL = "E-mail format is invalid: ";
+		public const string ERROR_MISSING_EMAIL = "Missing email.";
+		public const string ERROR_VALIDATION_EXCEPTION = "Email Validation exception: ";
+
 		public ValidationResult Validate(object value)
 		{
 			var notificationEmails = value as string;
-			
-			var invalidEmailList = new List<string>();
 
-			//TODO Remove all white spaces
-			const char tab = '\u0009';
+			var result = new ValidationResult();
 
-			if (notificationEmails == null)
-			{
-				return new ValidationResult() { IsValid = true };
-			}
-
-			notificationEmails = notificationEmails.Replace(tab.ToString(), "");
 			try
 			{
 				List<string> emails =
@@ -36,80 +33,37 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 				foreach (string email in emails)
 				{
-					if (!IsValidEmail(email))
+
+					if (string.IsNullOrWhiteSpace(email))
 					{
-						invalidEmailList.Add(email);
+						result.Add(ERROR_MISSING_EMAIL);
+					}
+					else if (!IsValidEmail(email))
+					{
+						result.Add(ERROR_INVALID_EMAIL + email);
 					}
 				}
 
-				if (invalidEmailList.Count > 0)
-				{
-					string delimiter = "; ";
-					string errorMessage = "Invalid e-mails: ";
-					errorMessage += string.Join(delimiter, invalidEmailList);
-
-					return new ValidationResult(false, errorMessage);
-				}
-
-				return new ValidationResult() { IsValid = true };
+				return result;
 			}
 			catch (Exception ex)
 			{
-				return new ValidationResult(false, $"Email Validation exception: {ex.Message}");
+				return new ValidationResult(false, ERROR_VALIDATION_EXCEPTION + ex.Message);
 			}
 		}
 
 		private bool IsValidEmail(string email)
 		{
-			if (string.IsNullOrWhiteSpace(email))
-				return true;
+			RegexOptions options = RegexOptions.IgnoreCase;
 
-			//string domainMapString;
-			//if (!TryMaoToDomainString(match:))
+			Match match = Regex.Match(email, _EMAIL_PATTERN, options);
 
-
-			// Use IdnMapping class to convert Unicode domain names.
-			email = Regex.Replace(email, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
-
-			// Return true if email is in valid e-mail format.
-			return Regex.IsMatch(email,
-				  @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-				  @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
-				  RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-		}
-
-		//private bool TryMaoToDomainString(Match match, out string value)
-		//{
-		//	value = string.Empty;
-
-		//	try
-		//	{
-		//		// IdnMapping class with default property values.
-		//		IdnMapping idn = new IdnMapping();
-
-		//		string domainName = match.Groups[2].Value;
-		//		domainName = idn.GetAscii(domainName);
-
-		//		value= match.Groups[1].Value + domainName;
-
-		//		return true;
-		//	}
-		//	catch // (ArgumentException)
-		//	{
-
-		//		return false;
-		//	}
-		//}
-
-		private string DomainMapper(Match match)
-		{
-			// IdnMapping class with default property values.
-			IdnMapping idn = new IdnMapping();
-
-			string domainName = match.Groups[2].Value;
-			domainName = idn.GetAscii(domainName);
-
-			return match.Groups[1].Value + domainName;
+			if (!match.Success)
+			{
+				return false;
+			}
+			
+			return true;
 		}
 	}
 }

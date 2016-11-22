@@ -284,6 +284,8 @@
     <Compile Include="Services\JobHistory\JobHistoryServiceTest.cs" />
     <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
     <Compile Include="Telemetry\TelemetryMangerTest.cs" />
+    <Compile Include="Validation\FieldMappingsValidatorTest.cs" />
+    <Compile Include="Validation\SchedulerValidatorTest.cs" />
     <Compile Include="Validation\EmailValidatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
