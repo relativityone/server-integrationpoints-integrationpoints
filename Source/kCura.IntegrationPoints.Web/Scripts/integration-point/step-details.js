@@ -92,7 +92,6 @@ var IP = IP || {};
 	root.services.getChoice = function (fieldGuid) {
 		return root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('Choice', fieldGuid) });
 	};
-
 })(IP);
 
 (function (root, ko) {
@@ -262,13 +261,11 @@ var IP = IP || {};
 
 		this.updateDestinationProvider = function () {
 			$.each(self.destinationTypes(), function () {
-
 				if (!!self.settings && !!self.settings.destinationProviderType && this.value === self.settings.destinationProviderType && self.settings.destinationProviderType !== undefined) {
 					self.selectedDestinationType(this.artifactID);
 				}
 			})
 		};
-
 		this.artifactTypeID = ko.observable().extend({ required: true });
 		this.UpdateSelectedItem = function () {
 			self.artifactTypeID(self.settings.artifactTypeID);
@@ -384,7 +381,6 @@ var IP = IP || {};
 			this.selectedDayOfTheMonth = ko.observable(currentState.selectedDayOfTheMonth);
 
 			this.monthChoice = ko.observable(currentState.monthChoice);
-
 		};
 
 		var self = this;
@@ -711,6 +707,7 @@ var IP = IP || {};
 			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
 			this.model.sourceConfiguration = ip.sourceConfiguration;
+			this.model.Map = ip.Map;
 		};
 
 		this.getTemplate = function () {
@@ -757,5 +754,4 @@ var IP = IP || {};
 	});
 
 	root.points.steps.push(step);
-
 })(IP, ko);

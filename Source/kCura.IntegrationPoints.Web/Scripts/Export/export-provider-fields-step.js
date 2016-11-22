@@ -41,7 +41,7 @@
 				self.model.onDOMLoaded();
 				root.messaging.publish('details-loaded');
 			});
-		}
+		};
 
 		self.ipModel = {};
 		self.model = {};
@@ -151,8 +151,8 @@
 				var _fields = ko.utils.arrayMap(fields, function (_item1) {
 					var _field = ko.utils.arrayFilter(self.model.fields.availableFields(), function (_item2) {
 						return (_item1.sourceField) ?
-                            (_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) :
-                            (_item2.fieldIdentifier === _item1.fieldIdentifier);
+							(_item2.fieldIdentifier === _item1.sourceField.fieldIdentifier) :
+							(_item2.fieldIdentifier === _item1.fieldIdentifier);
 					});
 					return _field[0];
 				});
@@ -176,71 +176,45 @@
 					self.getAvailableFields("ViewId", value);
 				});
 			});
-		}
+		};
+
+		self.updateModel = function () {
+			self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
+
+			switch (self.ipModel.sourceConfiguration.ExportType) {
+				case ExportEnums.SourceOptionsEnum.Folder:
+				case ExportEnums.SourceOptionsEnum.FolderSubfolder:
+					self.ipModel.sourceConfiguration.FolderArtifactId = self.model.exportSource.FolderArtifactId();
+					self.ipModel.sourceConfiguration.FolderArtifactName = self.model.exportSource.FolderArtifactName();
+					self.ipModel.sourceConfiguration.FolderFullName = self.model.exportSource.GetFolderFullName();
+
+					var selectedView = self.model.exportSource.GetSelectedView();
+					self.ipModel.sourceConfiguration.ViewId = selectedView.artifactId;
+					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
+					break;
+
+				case ExportEnums.SourceOptionsEnum.Production:
+					self.ipModel.sourceConfiguration.ProductionId = self.model.exportSource.ProductionId();
+					self.ipModel.sourceConfiguration.ProductionName = self.model.exportSource.ProductionName();
+					break;
+
+				case ExportEnums.SourceOptionsEnum.SavedSearch:
+					var selectedSavedSearch = self.model.exportSource.GetSelectedSavedSearch(self.model.exportSource.SavedSearchArtifactId());
+					self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
+					self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
+					break;
+			}
+
+			self.ipModel.Map = self.model.fields.getMappedFields();
+		};
 
 		self.submit = function () {
 			var d = root.data.deferred().defer();
 
 			if (self.model.errors().length === 0) {
-				// update integration point's model
-				self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
-
-				switch (self.ipModel.sourceConfiguration.ExportType) {
-					case ExportEnums.SourceOptionsEnum.Folder:
-					case ExportEnums.SourceOptionsEnum.FolderSubfolder:
-						self.ipModel.sourceConfiguration.FolderArtifactId = self.model.exportSource.FolderArtifactId();
-						self.ipModel.sourceConfiguration.FolderArtifactName = self.model.exportSource.FolderArtifactName();
-						self.ipModel.sourceConfiguration.FolderFullName = self.model.exportSource.GetFolderFullName();
-
-						var selectedView = self.model.exportSource.GetSelectedView();
-						self.ipModel.sourceConfiguration.ViewId = selectedView.artifactId;
-						self.ipModel.sourceConfiguration.ViewName = selectedView.name;
-						break;
-
-					case ExportEnums.SourceOptionsEnum.Production:
-						self.ipModel.sourceConfiguration.ProductionId = self.model.exportSource.ProductionId();
-						self.ipModel.sourceConfiguration.ProductionName = self.model.exportSource.ProductionName();
-						break;
-
-					case ExportEnums.SourceOptionsEnum.SavedSearch:
-						var selectedSavedSearch = self.model.exportSource.GetSelectedSavedSearch(self.model.exportSource.SavedSearchArtifactId());
-						self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
-						self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
-						break;
-				}
-
-				var fieldMap = [];
-				var hasIdentifier = false;
-
-				self.model.fields.mappedFields().forEach(function (e, i) {
-					fieldMap.push({
-						sourceField: {
-							displayName: e.displayName,
-							isIdentifier: e.isIdentifier,
-							fieldIdentifier: e.fieldIdentifier,
-							isRequired: e.isRequired
-						},
-						destinationField: {
-							displayName: e.displayName,
-							isIdentifier: e.isIdentifier,
-							fieldIdentifier: e.fieldIdentifier,
-							isRequired: e.isRequired
-						},
-						fieldMapType: e.isIdentifier ? "Identifier" : "None"
-					});
-				});
-
-				// we need to have an identifier field in order not to break export
-				// based on sync worker which performs field mapping
-				if (!hasIdentifier) {
-					fieldMap[0].sourceField.isIdentifier = true;
-					fieldMap[0].destinationField.isIdentifier = true;
-					fieldMap[0].fieldMapType = "Identifier";
-				}
-
-				self.ipModel.Map = fieldMap;
-
 				Picker.closeDialog("savedSearchPicker");
+
+				self.updateModel();
 
 				d.resolve(self.ipModel);
 			} else {
@@ -249,17 +223,19 @@
 			}
 
 			return d.promise;
-		}
+		};
 
 		self.back = function () {
 			var d = root.data.deferred().defer();
 
 			Picker.closeDialog("savedSearchPicker");
 
+			self.updateModel();
+
 			d.resolve(self.ipModel);
 
 			return d.promise;
-		}
+		};
 	};
 
 	var step = new stepModel({
