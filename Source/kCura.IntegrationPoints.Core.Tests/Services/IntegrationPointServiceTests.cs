@@ -17,7 +17,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.Repositories;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -25,6 +26,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -64,6 +66,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IChoiceQuery _choiceQuery;
 		private PermissionCheckDTO _stopPermissionChecksResults;
 		private Data.JobHistory _previousJobHistory;
+		
+		public class IntegrationPointServiceMock : IntegrationPointService
+		{
+			public IntegrationPointServiceMock(IHelper helper, ICaseServiceContext context, IContextContainerFactory contextContainerFactory, ISerializer serializer, IChoiceQuery choiceQuery, IJobManager jobService, IJobHistoryService jobHistoryService, IManagerFactory managerFactory) 
+				: base(helper, context, contextContainerFactory, serializer, choiceQuery, jobService, jobHistoryService, managerFactory)
+			{
+			}
+
+			protected override void ValidateWorkspaceName(SourceProvider sourceProvider, DestinationProvider destinationProvider,
+				Data.IntegrationPoint integrationPoint)
+			{
+				return;
+			}
+		}
 
 		[SetUp]
 		public void Setup()
@@ -85,8 +101,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-
-			_instance = Substitute.ForPartsOf<IntegrationPointService>(_helper, _caseServiceManager,
+			
+			_instance = Substitute.ForPartsOf<IntegrationPointServiceMock>(_helper, _caseServiceManager,
 				_contextContainerFactory, _serializer, _choiceQuery, _jobManager,
 				_jobHistoryService, _managerFactory);
 
