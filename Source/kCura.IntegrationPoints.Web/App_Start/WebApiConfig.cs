@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "LongTextFields",
-				routeTemplate: "{workspaceID}/api/ExportFields/LongTextFields",
+				routeTemplate: "{workspaceID}/api/ExportFields/LongTextFields/{artifactTypeId}",
 				defaults: new { controller = "ExportFields", action = "GetExportableLongTextFields" }
 			);
 

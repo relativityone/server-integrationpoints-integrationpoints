@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private const int _PROD_SET_ID = 5;
 
 		//Document Type ID
-		private const int _ARTIFACT_TYPE_ID = 10;
+		private const int _DOC_ARTIFACT_TYPE_ID = 10;
 
 		private const int _EXPECTED_DOC_COUNT = 10;
 
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _ARTIFACT_TYPE_ID);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalsRepository.Received().GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID);
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetProductionDocsCount(_PROD_SET_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _ARTIFACT_TYPE_ID);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalsRepository.Received().GetProductionDocsCount(_PROD_SET_ID);
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetFolderTotalDocsCount(_FOLDER_ID, _VIEW_ID, includeSubFolders).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _ARTIFACT_TYPE_ID);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalsRepository.Received().GetFolderTotalDocsCount(_FOLDER_ID, _VIEW_ID, includeSubFolders);
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _ARTIFACT_TYPE_ID);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			Assert.That(returnedValue, Is.EqualTo(expectedCount));
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 
 			// Act & Assert
 			InvalidEnumArgumentException thrownException = Assert.Throws<InvalidEnumArgumentException>(() =>
-				_subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _ARTIFACT_TYPE_ID));
+				_subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID));
 			_loggerMock.Received().LogError(thrownException, Arg.Any<string>(), Arg.Any<object[]>());
 		}
 	}

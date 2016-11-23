@@ -102,12 +102,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				using (var caseManager = _caseManagerFactory.Create(exportFile.Credential, exportFile.CookieContainer))
 				{
 					PopulateCaseInfo(exportFile, caseManager);
-
+					SetRdoModeSpecificSettings(exportFile);
 					SetAllExportableFields(exportFile, searchManager);
 
 					PopulateViewFields(exportFile, selectedViewFieldIds);
 					PopulateTextPrecedenceFields(exportFile, selectedTextPrecedence);
 				}
+			}
+		}
+
+		private void SetRdoModeSpecificSettings(ExportFile exportFile)
+		{
+			// In the "Export RDO" mode we need to re-assign ArtifactId with Workspace Root Folder
+			if (exportFile.TypeOfExport == ExportFile.ExportType.AncestorSearch &&
+				exportFile.ArtifactTypeID != (int)ArtifactType.Document)
+			{
+				exportFile.ArtifactID = exportFile.CaseInfo.RootFolderID;
 			}
 		}
 

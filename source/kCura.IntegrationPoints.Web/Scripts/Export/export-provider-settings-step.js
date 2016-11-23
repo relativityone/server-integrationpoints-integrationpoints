@@ -620,7 +620,7 @@
 
 		var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
 			self.TextPrecedenceFields(fields);
-		});
+		}, self.ArtifactTypeID);
 
 		Picker.create("textPrecedencePicker", "ListPicker", textPrecedencePickerViewModel);
 
