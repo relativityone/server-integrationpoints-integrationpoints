@@ -410,7 +410,7 @@
       <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -422,7 +422,7 @@
       <HintPath>..\packages\Relativity.Data.9.4.371.60\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataGrid, Version=10.1.15.4, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.DataGrid, Version=10.3.1.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -454,7 +454,7 @@
       <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SDK.Services.Query, Version=9.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.SDK.Services.Query, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
     </Reference>

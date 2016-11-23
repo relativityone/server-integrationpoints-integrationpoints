@@ -109,6 +109,9 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Logging.Interfaces">
+      <HintPath>..\kCura.IntegrationPoints.Dependencies\bin\x64\Relativity.Logging.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
