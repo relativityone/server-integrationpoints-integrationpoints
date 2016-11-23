@@ -243,9 +243,11 @@
     <Compile Include="TestCases\ItShouldExportTextFilesWithCustomDirectoryPrefix.cs" />
     <Compile Include="TestCases\ItShouldExportVolumeWithCustomName.cs" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app-dev-box.config" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\Release\app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -322,9 +324,6 @@
     <Content Include="TestData\NATIVES\AZIPPER_0011318.msg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="Release\App.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
