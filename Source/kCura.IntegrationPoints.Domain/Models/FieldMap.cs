@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
@@ -18,8 +19,19 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public FieldEntry DestinationField { get; set; }
 
 		/// <summary>
-        /// Gets or sets the FieldMapTypeEnum, which indicates the type of mapping.
+		/// Gets or sets the FieldMapTypeEnum, which indicates the type of mapping.
 		/// </summary>
 		public FieldMapTypeEnum FieldMapType { get; set; }
+	}
+
+	public class IntegrationModelValidation
+	{
+		public IEnumerable<FieldMap> FieldsMap { get; set; }
+
+		public string SourceProviderId { get; set; }
+
+		public string DestinationProviderId { get; set; }
+
+		public dynamic Context { get; set; }
 	}
 }

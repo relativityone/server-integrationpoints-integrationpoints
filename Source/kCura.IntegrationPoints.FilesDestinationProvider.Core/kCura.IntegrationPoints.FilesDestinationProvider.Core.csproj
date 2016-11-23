@@ -191,6 +191,7 @@
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
+    <Compile Include="Validation\FieldsMappingValidator.cs" />
     <Compile Include="Validation\FileCountValidator.cs" />
     <Compile Include="Validation\IFileCountValidator.cs" />
     <Compile Include="Validation\IPaddingValidator.cs" />

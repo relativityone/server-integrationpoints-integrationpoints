@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 
@@ -10,7 +9,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 	{
 		private readonly ISerializer _serializer;
 
-		public string Key => IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID;
+		public string Key => IntegrationModelValidator.GetDestinationProviderValidatorKey(Constants.RELATIVITY_PROVIDER_GUID, IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID);
 
 		public DestinationProviderConfigurationValidator(ISerializer serializer)
 		{
@@ -19,7 +18,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public ValidationResult Validate(object value)
 		{
-			var settings = _serializer.Deserialize<ExportSettings>(value.ToString());
+			//TODO var destinationConfiguration = value as ImportSettings;
+			//var settings = _serializer.Deserialize<ExportSettings>(value.ToString());
 
 			// TODO implement validation (doh!)
 

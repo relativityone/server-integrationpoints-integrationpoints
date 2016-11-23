@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IManagerFactory managerFactory = new ManagerFactory(Helper);
 
 			_caseServiceContext = caseServiceContext;
-			IIntegrationModelValidator ipValidator = new IntegrationModelValidator(Enumerable.Empty<IValidator>());
+			IIntegrationModelValidator ipValidator = new IntegrationModelValidator(Enumerable.Empty<IValidator>(), serializer);
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator);
 		}
 

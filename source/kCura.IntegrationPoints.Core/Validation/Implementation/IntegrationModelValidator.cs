@@ -1,24 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
 	public class IntegrationModelValidator : IIntegrationModelValidator
 	{
 		private readonly ILookup<string, IValidator> _validatorsMap;
+		private readonly ISerializer _serializer;
 
-		public IntegrationModelValidator(IEnumerable<IValidator> validators)
+		public IntegrationModelValidator(IEnumerable<IValidator> validators, ISerializer serializer)
 		{
 			_validatorsMap = validators.ToLookup(x => x.Key);
+			_serializer = serializer;
 		}
 
-		public ValidationResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
+		public ValidationResult Validate(IntegrationModel model, SourceProvider sourceProvider,
+			DestinationProvider destinationProvider)
 		{
 			var result = new ValidationResult();
+
+			//TODO Figure out if deserialize these two below here??
+			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
+			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);  //TODO Maybe ExportSettings or just send JSON????
+			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(model.Map).ToList();
 
 			if (model.Scheduler.EnableScheduler)
 			{
@@ -27,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 					result.Add(validator.Validate(model.Scheduler));
 				}
 			}
-			
+
 			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.EMAIL])
 			{
 				result.Add(validator.Validate(model.NotificationEmails));
@@ -35,20 +47,45 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.FIELD_MAP])
 			{
-				result.Add(validator.Validate(model.Map));
+				var fieldMapValidation = new IntegrationModelValidation
+				{
+					FieldsMap = fieldMap,
+					SourceProviderId = sourceProvider.Identifier,
+					DestinationProviderId = destinationProvider.Identifier,
+					Context =
+						new FieldMapValidationContext() {SourceConfiguration = sourceConfiguration, DestinationConfiguration = destinationConfiguration}
+				};
+
+
+				result.Add(validator.Validate(fieldMapValidation));
 			}
 
-			foreach (var validator in _validatorsMap[sourceProvider.Identifier])
+			foreach (
+				var validator in
+					_validatorsMap[GetSourceProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
 			{
 				result.Add(validator.Validate(model.SourceConfiguration));
 			}
 
-			foreach (var validator in _validatorsMap[destinationProvider.Identifier])
+			foreach (
+				var validator in
+					_validatorsMap[GetDestinationProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
 			{
 				result.Add(validator.Validate(model.Destination));
 			}
 
+
 			return result;
+		}
+
+		public static string GetSourceProviderValidatorKey(string sourceProviderId, string destinationProviderId)
+		{
+			return $"{sourceProviderId}+{destinationProviderId}";
+		}
+
+		public static string GetDestinationProviderValidatorKey(string sourceProviderId, string destinationProviderId)
+		{
+			return $"{destinationProviderId}+{sourceProviderId}";
 		}
 	}
 }

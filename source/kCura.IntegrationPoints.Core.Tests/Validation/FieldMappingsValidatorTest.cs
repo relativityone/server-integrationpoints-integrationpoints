@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -15,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[SetUp]
 		public void Setup()
 		{
-			_instance = new FieldMappingsValidator(new JSONSerializer());
+			_instance = new FieldsMappingValidator(new JSONSerializer());
 		}
 
 		[Test]
@@ -24,9 +26,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void Validate_Valid_Field_Map(string fieldMap)
 		{
 			// Arrange
+			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
 
 			// Act
-			ValidationResult result = _instance.Validate(fieldMap);
+			ValidationResult result = _instance.Validate(integrationModelValidation);
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
@@ -34,19 +37,47 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		}
 
 		[Test]
-		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]", FieldMappingsValidator.ERROR_DESTINATION_FIELD_NOT_MAPPED)]
-		[TestCase("[{\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]", FieldMappingsValidator.ERROR_SOURCE_FIELD_NOT_MAPPED)]
-		[TestCase("[{\"fieldMapType\":\"Identifier\"}]", FieldMappingsValidator.ERROR_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED)]
+		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]", FieldsMappingValidator.ERROR_DESTINATION_FIELD_NOT_MAPPED)]
+		[TestCase("[{\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]", FieldsMappingValidator.ERROR_SOURCE_FIELD_NOT_MAPPED)]
+		[TestCase("[{\"fieldMapType\":\"Identifier\"}]", FieldsMappingValidator.ERROR_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED)]
 		public void Validate_Not_All_Fields_Mapped(string fieldMap, string errorMessage)
 		{
 			// Arrange
+			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
 
 			// Act
-			ValidationResult result = _instance.Validate(fieldMap);
+			ValidationResult result = _instance.Validate(integrationModelValidation);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(errorMessage)));
+			Assert.IsTrue(result.Messages.Contains(errorMessage));
+		}
+
+		[Test]
+		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]")]
+		public void Validate_Identifier_Not_Matched_Correctly(string fieldMap)
+		{
+			// Arrange
+			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationModelValidation);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Contains(FieldsMappingValidator.ERROR_IDENTIFIERS_NOT_MATCHED));
+		}
+
+		private IntegrationModelValidation GetFieldMapValidationObject(string fieldMap)
+		{
+			var fieldMaps = new JSONSerializer().Deserialize<IEnumerable<FieldMap>>(fieldMap);
+			return new IntegrationModelValidation()
+			{
+				FieldsMap = fieldMaps,
+				SourceProviderId = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
+				DestinationProviderId = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
+				Context = new FieldMapValidationContext()
+			};
 		}
 	}
 }

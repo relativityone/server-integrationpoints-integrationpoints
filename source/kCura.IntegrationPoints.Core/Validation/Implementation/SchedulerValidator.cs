@@ -123,26 +123,18 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			try
-			{
-				var weeklySendOn = _serializer.Deserialize<IntegrationPointService.Weekly>(scheduler.SendOn);
+			var weeklySendOn = _serializer.Deserialize<IntegrationPointService.Weekly>(scheduler.SendOn);
 
-				if (weeklySendOn.SelectedDays.Count == 0)
-				{
-					result.Add(ERROR_REQUIRED_VALUE + "SelectedDays");
-				}
-				else
-				{
-					foreach (string selectedDay in weeklySendOn.SelectedDays)
-					{
-						result.Add(ValidateDayOfWeek(selectedDay, "selectedDay"));
-					}
-				}
-			}
-			catch (Exception ex)
+			if (weeklySendOn.SelectedDays.Count == 0)
 			{
-				result.Add(ERROR_INVALID_VALUE + "SendOn. Error message" + ex.Message);
-				return result;
+				result.Add(ERROR_REQUIRED_VALUE + "SelectedDays");
+			}
+			else
+			{
+				foreach (string selectedDay in weeklySendOn.SelectedDays)
+				{
+					result.Add(ValidateDayOfWeek(selectedDay, "selectedDay"));
+				}
 			}
 
 			return result;
@@ -152,41 +144,32 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			try
+			var monthlySendOn = _serializer.Deserialize<IntegrationPointService.Monthly>(scheduler.SendOn);
+			List<string> occurancesInMonth = Enum.GetNames(typeof(OccuranceInMonth)).ToList();
+
+			if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Days)
 			{
-
-				var monthlySendOn = _serializer.Deserialize<IntegrationPointService.Monthly>(scheduler.SendOn);
-				List<string> occurancesInMonth = Enum.GetNames(typeof(OccuranceInMonth)).ToList();
-
-				if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Days)
+				if (monthlySendOn.SelectedDay < FIRST_DAY_OF_MONTH || monthlySendOn.SelectedDay > LAST_DAY_OF_MONTH)
 				{
-					if (monthlySendOn.SelectedDay < FIRST_DAY_OF_MONTH || monthlySendOn.SelectedDay > LAST_DAY_OF_MONTH)
-					{
-						result.Add("DayOfMonth" + ERROR_NOT_INT_RANGE + $"({FIRST_DAY_OF_MONTH}:{LAST_DAY_OF_MONTH})");
-					}
-				}
-				else if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Month)
-				{
-					result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth"));
-
-					if (monthlySendOn.SelectedType == null)
-					{
-						result.Add(ERROR_REQUIRED_VALUE + "SelectedType");
-					}
-					else if (!occurancesInMonth.Contains(monthlySendOn.SelectedType.ToString()))
-					{
-						result.Add(ERROR_INVALID_VALUE + "OccuranceInMonth");
-					}
-				}
-				else
-				{
-					result.Add(ERROR_INVALID_VALUE + "MonthChoice");
+					result.Add("DayOfMonth" + ERROR_NOT_INT_RANGE + $"({FIRST_DAY_OF_MONTH}:{LAST_DAY_OF_MONTH})");
 				}
 			}
-			catch (Exception ex)
+			else if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Month)
 			{
-				result.Add(ERROR_INVALID_VALUE + "SendOn. Error message" + ex.Message);
-				return result;
+				result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth"));
+
+				if (monthlySendOn.SelectedType == null)
+				{
+					result.Add(ERROR_REQUIRED_VALUE + "SelectedType");
+				}
+				else if (!occurancesInMonth.Contains(monthlySendOn.SelectedType.ToString()))
+				{
+					result.Add(ERROR_INVALID_VALUE + "OccuranceInMonth");
+				}
+			}
+			else
+			{
+				result.Add(ERROR_INVALID_VALUE + "MonthChoice");
 			}
 
 			return result;
