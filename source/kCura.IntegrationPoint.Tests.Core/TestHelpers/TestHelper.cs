@@ -37,10 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public T CreateUserProxy<T>() where T : IDisposable
 		{
-			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(RelativityUserName, RelativityPassword);
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, userCredential);
-			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
-			return userServiceFactory.CreateProxy<T>();
+			return CreateUserProxy<T>(RelativityUserName);
 		}
 
 		public T CreateAdminProxy<T>() where T : IDisposable
@@ -49,6 +46,14 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, credential);
 			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
 			return adminServiceFactory.CreateProxy<T>();
+		}
+
+		public T CreateUserProxy<T>(string username) where T : IDisposable
+		{
+			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, RelativityPassword);
+			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, userCredential);
+			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
+			return userServiceFactory.CreateProxy<T>();
 		}
 
 		public void Dispose()
