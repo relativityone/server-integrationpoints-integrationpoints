@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 
 			container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>());
-			container.Register(Component.For<IValidator>().ImplementedBy<FieldsMappingValidator>());
+			container.Register(Component.For<IValidator>().ImplementedBy<FieldsMappingValidator>());	//TODO Inject RdoFieldSynchronizerBase
 			container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>());
 			container.Register(Component.For<IValidator>().ImplementedBy<DestinationProviderConfigurationValidator>());
 			container.Register(Component.For<IValidator>().ImplementedBy<SourceProviderConfigurationValidator>());

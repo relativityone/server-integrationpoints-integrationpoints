@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Domain;
@@ -13,11 +13,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 	public class FieldMappingsValidatorTest
 	{
 		private IValidator _instance;
+		private IFieldProvider _fieldProvider;
 
 		[SetUp]
 		public void Setup()
 		{
-			_instance = new FieldsMappingValidator(new JSONSerializer());
+			_fieldProvider = NSubstitute.Substitute.For<IFieldProvider>();
+			_instance = new FieldsMappingValidator(new JSONSerializer(), _fieldProvider);
 		}
 
 		[Test]
@@ -68,15 +70,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.IsTrue(result.Messages.Contains(FieldsMappingValidator.ERROR_IDENTIFIERS_NOT_MATCHED));
 		}
 
-		private IntegrationModelValidation GetFieldMapValidationObject(string fieldMap)
+		private IntegrationModelValidation GetFieldMapValidationObject(string fieldsMap)
 		{
-			var fieldMaps = new JSONSerializer().Deserialize<IEnumerable<FieldMap>>(fieldMap);
 			return new IntegrationModelValidation()
 			{
-				FieldsMap = fieldMaps,
+				FieldsMap = fieldsMap,
 				SourceProviderId = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
 				DestinationProviderId = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
-				Context = new FieldMapValidationContext()
+				DestinationConfiguration = ""
 			};
 		}
 	}

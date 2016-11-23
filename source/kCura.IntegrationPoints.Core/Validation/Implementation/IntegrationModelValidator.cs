@@ -28,9 +28,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			var result = new ValidationResult();
 
 			//TODO Figure out if deserialize these two below here??
-			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);  //TODO Maybe ExportSettings or just send JSON????
-			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(model.Map).ToList();
+			//var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
+			//var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);  //TODO Maybe ExportSettings or just send JSON????
+			//TODO var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(model.Map).ToList();
+
+			var integrationModelValidation = new IntegrationModelValidation(model, sourceProvider.Identifier, destinationProvider.Identifier);
 
 			if (model.Scheduler.EnableScheduler)
 			{
@@ -47,17 +49,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.FIELD_MAP])
 			{
-				var fieldMapValidation = new IntegrationModelValidation
-				{
-					FieldsMap = fieldMap,
-					SourceProviderId = sourceProvider.Identifier,
-					DestinationProviderId = destinationProvider.Identifier,
-					Context =
-						new FieldMapValidationContext() {SourceConfiguration = sourceConfiguration, DestinationConfiguration = destinationConfiguration}
-				};
-
-
-				result.Add(validator.Validate(fieldMapValidation));
+				result.Add(validator.Validate(integrationModelValidation));
 			}
 
 			foreach (

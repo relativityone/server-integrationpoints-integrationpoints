@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			_serializer = serializer;
 		}
 
+		//TODO Merge this with Source Provider
 		public ValidationResult Validate(object value)
 		{
 			//TODO var destinationConfiguration = value as ImportSettings;

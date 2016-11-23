@@ -23,15 +23,4 @@ namespace kCura.IntegrationPoints.Domain.Models
 		/// </summary>
 		public FieldMapTypeEnum FieldMapType { get; set; }
 	}
-
-	public class IntegrationModelValidation
-	{
-		public IEnumerable<FieldMap> FieldsMap { get; set; }
-
-		public string SourceProviderId { get; set; }
-
-		public string DestinationProviderId { get; set; }
-
-		public dynamic Context { get; set; }
-	}
 }

@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Domain;
+﻿using kCura.IntegrationPoints.Core.Validation.Implementation;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -17,10 +18,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			    fieldMapValidation.SourceProviderId == Domain.Constants.RELATIVITY_PROVIDER_GUID &&
 			    fieldMapValidation.DestinationProviderId == Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID)
 			{
-				foreach (FieldMap fieldMap in fieldMapValidation.FieldsMap)
-				{
-					//TODO ...
-				}
+				//TODO ...
+				//foreach (FieldMap fieldMap in fieldMapValidation.FieldsMap)
+				//{
+				//	
+				//}
 			}
 
 			return result;

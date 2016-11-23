@@ -386,7 +386,7 @@
     <Compile Include="Validation\IIntegrationModelValidator.cs" />
     <Compile Include="Validation\Implementation\EmailValidator.cs" />
     <Compile Include="RelativityProviderValidator\FieldsMappingValidator.cs" />
-    <Compile Include="Validation\Implementation\FieldMapValidationContext.cs" />
+    <Compile Include="Validation\Implementation\IntegrationModelValidation.cs" />
     <Compile Include="Validation\Implementation\IntegrationModelValidator.cs" />
     <Compile Include="Validation\Implementation\SchedulerValidator.cs" />
   </ItemGroup>
