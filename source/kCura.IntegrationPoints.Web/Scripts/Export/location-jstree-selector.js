@@ -46,14 +46,14 @@ var LocationJSTreeSelector = function () {
 		});
 
 		$(self.domSelectorSettings.browserTreeSelector).on('select_node.jstree', function (evt, data) {
-		    //depending on if any optional settings are passed in, determine if only files or directories should be selectable
-		    self.domSelectorSettings.selectFilesOnly = self.domSelectorSettings.selectFilesOnly || false;
-		    if ((!self.domSelectorSettings.selectFilesOnly) || (!data.node.original.isDirectory && self.domSelectorSettings.selectFilesOnly)) {
-		        self.setSelection(data.node.id);
-		        self.SelectedNode = data.node.text;
-		        self.domSelectorSettings.onNodeSelectedEventHandler(data.node);
-		        self.setTreeVisibility(false);
-		    }
+			//depending on if any optional settings are passed in, determine if only files or directories should be selectable
+			self.domSelectorSettings.selectFilesOnly = self.domSelectorSettings.selectFilesOnly || false;
+			if ((!self.domSelectorSettings.selectFilesOnly) || (!data.node.original.isDirectory && self.domSelectorSettings.selectFilesOnly)) {
+				self.setSelection(data.node.id);
+				self.SelectedNode = data.node.text;
+				self.domSelectorSettings.onNodeSelectedEventHandler(data.node);
+				self.setTreeVisibility(false);
+			}
 		});
 	};
 
@@ -89,19 +89,20 @@ var LocationJSTreeSelector = function () {
 			'core': {
 				'data': function (obj, callback) {
 					var ajaxSuccess = function (returnData) {
-					    $.each(returnData, function (index, value) {					        
+						$.each(returnData, function (index, value) {
 							if (value.icon && value.icon === "jstree-root-folder") {
-							    $.each(value.children, function (index, child) {
-							        if (child.isDirectory == false) {
-                                        //make sure that files don't have the expand button
-							            child.children = false;
-							        } else {
-							            extendWithDefault(child);
-							        }
+								$.each(value.children, function (index, child) {
+									if (child.isDirectory == false) {
+										//make sure that files don't have the expand button
+										child.children = false;
+									} else {
+										extendWithDefault(child);
+									}
 								});
-							}
-							else
-							{
+							} else if (value.icon && value.icon === "jstree-file") {
+								//makeing sure to check nested folders to remove expand button
+								value.children = false;
+							} else {
 								extendWithDefault(value);
 							}
 						});
@@ -118,14 +119,14 @@ var LocationJSTreeSelector = function () {
 		});
 
 		$(self.domSelectorSettings.browserTreeSelector).on('select_node.jstree', function (evt, data) {
-		    //depending on if any optional settings are passed in, determine if only files or directories should be selectable
-		    self.domSelectorSettings.selectFilesOnly = self.domSelectorSettings.selectFilesOnly || false;
-		    if ((!self.domSelectorSettings.selectFilesOnly) || (!data.node.original.isDirectory && self.domSelectorSettings.selectFilesOnly)) {
-		        self.setSelection(data.node.id);
-		        self.SelectedNode = data.node.text;
-		        self.domSelectorSettings.onNodeSelectedEventHandler(data.node);
-		        self.setTreeVisibility(false);
-		    }
+			//depending on if any optional settings are passed in, determine if only files or directories should be selectable
+			self.domSelectorSettings.selectFilesOnly = self.domSelectorSettings.selectFilesOnly || false;
+			if ((!self.domSelectorSettings.selectFilesOnly) || (!data.node.original.isDirectory && self.domSelectorSettings.selectFilesOnly)) {
+				self.setSelection(data.node.id);
+				self.SelectedNode = data.node.text;
+				self.domSelectorSettings.onNodeSelectedEventHandler(data.node);
+				self.setTreeVisibility(false);
+			}
 		});
 	};
 
