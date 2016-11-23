@@ -64,15 +64,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
             int rowCount = r.Next(MAX_ROWS);
             List<string> testHeaders = TestHeaders(colCount);
             List<List<string>> testData = TestData(colCount, rowCount);
-            char delimiter = ',';
+            char recordDelimiter = ',';
+            char quoteDelimiter = '"';
 
             //Subsitute config so test can use GetFields
             _fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
             _fieldParser.GetFields().Returns(testHeaders);
 
             //Subsitute config so test can use GetData
-            IEnumerable<string> tdJoinedRows = testData.Select(x => string.Join(delimiter.ToString(), x));
-            EnumerableParser tdEnumerableParser = new EnumerableParser(tdJoinedRows, delimiter);
+            IEnumerable<string> tdJoinedRows = testData.Select(x => string.Join(recordDelimiter.ToString(), x));
+            EnumerableParser tdEnumerableParser = new EnumerableParser(tdJoinedRows, recordDelimiter, quoteDelimiter);
             _enumerableParserFactory.GetEnumerableParser(null, string.Empty).ReturnsForAnyArgs(tdEnumerableParser);
 
             ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory);

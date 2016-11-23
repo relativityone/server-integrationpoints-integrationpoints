@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         public IEnumerable<string[]> GetEnumerableParser(IEnumerable<string> sourceFileLines, string options)
         {
             ImportProviderSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
-            return new EnumerableParser(sourceFileLines, (char)settings.AsciiColumn);
+            return new EnumerableParser(sourceFileLines, (char)settings.AsciiColumn, (char)settings.AsciiQuote);
         }
     }
 }

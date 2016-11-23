@@ -30,15 +30,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			return rv;
 		}
 
-		private void BasicParsingHelper(char delimiter)
+		private void BasicParsingHelper(char recordDelimiter, char quoteDelimiter)
 		{
-			string[] separator = new string[] { delimiter.ToString() };
+			string[] separator = new string[] { recordDelimiter.ToString() };
 			Random randGen = new Random();
 			int rows = randGen.Next(MAX_ROWS);
 			int cols = randGen.Next(MAX_COLS);
-			IEnumerable<string> testData = BasicTestDataHelper(delimiter, rows, cols);
+			IEnumerable<string> testData = BasicTestDataHelper(recordDelimiter, rows, cols);
 
-			EnumerableParser ep = new EnumerableParser(testData, delimiter);
+			EnumerableParser ep = new EnumerableParser(testData, recordDelimiter, quoteDelimiter);
 
 			IEnumerator<string> testDataEnum = testData.GetEnumerator();
 			testDataEnum.MoveNext();
@@ -61,19 +61,25 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		[Test]
 		public void ParsesBasicCsvData()
 		{
-			BasicParsingHelper(',');
+			BasicParsingHelper(',', '"');
 		}
 
 		[Test]
 		public void ParsesBasicPipeData()
 		{
-			BasicParsingHelper('|');
+			BasicParsingHelper('|', '"');
 		}
 
 		[Test]
 		public void ParsesUnprintableDelimiterData()
 		{
-			BasicParsingHelper((char)(new Random()).Next(1, 32));
+            char quoteDelimiter = (char)(new Random()).Next(1, 32);
+            char recordDelimiter;
+            do
+            {
+                recordDelimiter = (char)(new Random()).Next(1, 32);
+            } while (recordDelimiter != quoteDelimiter);
+            BasicParsingHelper(recordDelimiter, quoteDelimiter);
 		}
 	}
 }
