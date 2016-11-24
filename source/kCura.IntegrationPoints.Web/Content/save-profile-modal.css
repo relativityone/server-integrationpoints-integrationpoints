@@ -1,0 +1,60 @@
+﻿﻿.ui-dialog {
+	padding: 0;
+}
+
+.list-box option {
+	font-size: 13px;
+}
+
+.popupTitle {
+	border-radius: 3px 3px 0 0;
+}
+
+.popupArtifactActionBar {
+	margin: 5px 12px;
+	text-align: right;
+	padding: 10px 10px 5px 2px;
+	margin: 0;
+	border-top: solid 1px #c1c1c1;
+	border-bottom: solid 0px #f7f7f7;
+	;
+}
+
+.card .field-value, .status-container .field-value {
+	display: table-cell;
+	padding-left: 5px;
+	font-size: 0.85em;
+	min-width: 300px;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+	font-family: Trebuchet MS, Verdana, Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+	font-size: 1em;
+	min-width: 200px;
+}
+
+.ui-widget button {
+	min-width: 100px !important;
+}
+
+.card .field-label, .status-container .field-label {
+	color: #404040;
+	text-align: right;
+	padding-top: 0px;
+	padding-right: 5px;
+	min-width: 100px;
+	display: table-cell;
+	border-right: 3px solid transparent;
+	font-size: .85em;
+	vertical-align: top;
+	font-weight: 700;
+}
+
+.card, .status-container {
+	background-color: #f7f7f7;
+	border: 1px solid #f7f7f7;
+	border-radius: 3px;
+	box-shadow: 1px 1px 3px #f7f7f7;
+	padding: 10px;
+	margin: 15px 12px 0 12px;
+}

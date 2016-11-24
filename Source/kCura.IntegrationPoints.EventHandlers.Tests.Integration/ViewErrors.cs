@@ -4,6 +4,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -69,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			//	FieldOverlayBehavior = "Use Field Settings"
 			//};
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -86,7 +87,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			};
 
 			//IntegrationPointModel integrationPoint = JsonConvert.DeserializeObject<IntegrationPointModel>(response);
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Data.IntegrationPoint integrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointCreated.ArtifactID);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPointDto, Guid.NewGuid(), DateTime.Now);
 			//Act

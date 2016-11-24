@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/integration-point/step-import.js ",
 				"~/Scripts/integration-point/step-mapFields-control.js",
 				"~/Scripts/integration-point/step-mapFields.js",
+				"~/Scripts/integration-point/picker.js",
 				"~/Scripts/route.js"
 			));
 
@@ -46,7 +47,6 @@ namespace kCura.IntegrationPoints.Web
                 // common
 				"~/Scripts/export/export-validation.js",
 				"~/Scripts/export/export-enums.js",
-				"~/Scripts/export/picker.js",
                 // fields selection
                 "~/Scripts/export/saved-search-picker.js",
 				"~/Scripts/export/export-provider-fields-step.js",				

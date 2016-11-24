@@ -160,8 +160,32 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ConsoleEventHandlerBase.cs" />
     <Compile Include="Installers\RegisterImportProvider.cs" />
+    <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
+    <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
+    <Compile Include="Installers\SetIntegrationPointType.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\FolderPathInformation.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IIntegrationPointViewPreLoad.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointViewPreLoad.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IWorkspaceNameValidator.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IRelativityProviderSourceConfiguration.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderSourceConfiguration.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\WorkspaceNameValidator.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScripts.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScriptsFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\DefaultProviderScripts.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScripts.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScriptsFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\LoadFileProviderScripts.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\RelativityProviderScripts.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\ScriptsHelper.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointPageInteractionEventHandler.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointPreLoadEventHandler.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointProfilePageInteractionEventHandler.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointProfilePreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />
@@ -170,8 +194,6 @@
     <Compile Include="Installers\Uninstaller.cs" />
     <Compile Include="Installers\RegisterLDAPInstaller.cs" />
     <Compile Include="IntegrationPoints\ConsoleEventHandler.cs" />
-    <Compile Include="Constant.cs" />
-    <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="MassOperations\IntegrationPointNameHelper.cs" />
@@ -188,7 +210,6 @@
     <Compile Include="PageInteractionHelper.cs" />
     <Compile Include="PreMassDeleteEventHandlerBase.cs" />
     <Compile Include="TagBuilder.cs" />
-    <Compile Include="PreLoadEventHandlerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

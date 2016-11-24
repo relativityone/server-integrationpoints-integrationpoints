@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			ControlIntegrationPointAgents(true);
 			// arrange
-			IntegrationModel model = new IntegrationModel()
+			IntegrationPointModel model = new IntegrationPointModel()
 			{
 				SourceProvider = RelativityProvider.ArtifactId,
 				Name = "OneExecutingScheduledJobInTheQueue",

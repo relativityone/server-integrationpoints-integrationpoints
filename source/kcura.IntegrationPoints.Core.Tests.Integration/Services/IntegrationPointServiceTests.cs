@@ -5,7 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateNothing()
 		{
 			const string name = "Resaved Rip";
-			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
-			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
+			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
+			IntegrationPointModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
 			ValidateModel(originalModel, newModel, new string[0]);
 		}
@@ -63,8 +63,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
-			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
+			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Name = "newName";
 
@@ -76,12 +76,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
 			const string name = "Update Map - OnRanIp";
-			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
+			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Map = "Blahh";
 
-			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
+			IntegrationPointModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 			ValidateModel(originalModel, newModel, new string[] { _FIELDMAP });
 
 			Audit audit = this.GetLastAuditsForIntegrationPoint(defaultModel.Name, 1).First();
@@ -94,8 +94,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateConfig_OnNewRip()
 		{
 			const string name = "Update Source Config - SavedSearch - OnNewRip";
-			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
+			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
 			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId);
@@ -108,8 +108,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateName_OnNewRip()
 		{
 			const string name = "Update Name - OnNewRip";
-			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
+			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Name = name + " 2";
 
@@ -121,12 +121,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateMap_OnNewRip()
 		{
 			const string name = "Update Map - OnNewRip";
-			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
+			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Map = "New Map string";
 
-			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
+			IntegrationPointModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
 			ValidateModel(originalModel, newModel, new[] { _FIELDMAP });
 
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("RunNow", 3));
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			};
 
 			//Act
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 			integrationPoint.Scheduler = new Scheduler()
 			{
 				EnableScheduler = true,
@@ -168,7 +168,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Reoccur = 0,
 				SelectedFrequency = ScheduleInterval.None.ToString()
 			};
-			IntegrationModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
+			IntegrationPointModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
 
 			//Assert
 			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(modifiedIntegrationPoint.Name, 1).First();
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -201,12 +201,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			//Act
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
-			IntegrationModel integrationPointPostJob = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+			IntegrationPointModel integrationPointPostJob = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
 			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
 			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostJob.ArtifactID) };
 			JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			//Arrange
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -248,7 +248,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			//Act
 
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 4);
 
 			//Update Integration Point's SelectedOverWrite to "Overlay Only"
-			IntegrationModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
 			integrationPointPostRun.SelectedOverwrite = "Overlay Only";
 			integrationPointPostRun.Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly);
 			CreateOrUpdateIntegrationPoint(integrationPointPostRun);
@@ -266,7 +266,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Retry Errors
 			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID);
-			IntegrationModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPoint(integrationPointPostRun.ArtifactID);
+			IntegrationPointModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPoint(integrationPointPostRun.ArtifactID);
 
 			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
 			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostRetry.ArtifactID) };
@@ -300,7 +300,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			DateTime utcNow = DateTime.UtcNow;
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -320,13 +320,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPointPreJobExecution = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointPreJobExecution = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			//Act
 
 			//Create Errors by using Append Only
 			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID);
-			IntegrationModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPointPreJobExecution.ArtifactID);
+			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPointPreJobExecution.ArtifactID);
 
 			//Assert
 			Assert.AreEqual(null, integrationPointPreJobExecution.LastRun);
@@ -357,7 +357,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			DateTime utcNow = DateTime.UtcNow;
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -395,7 +395,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			DateTime utcNow = DateTime.UtcNow;
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -431,7 +431,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			}
 		}
 
-		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
+		private void ValidateModel(IntegrationPointModel expectedModel, IntegrationPointModel actual, string[] updatedProperties)
 		{
 			Action<object, object> assertion = DetermineAssertion(updatedProperties, _SOURCECONFIG);
 			assertion(expectedModel.SourceConfiguration, actual.SourceConfiguration);
@@ -468,9 +468,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			return $"{{\"SavedSearchArtifactId\":{savedSearchId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId}}}";
 		}
 
-		private IntegrationModel CreateIntegrationPointThatHasNotRun(string name)
+		private IntegrationPointModel CreateIntegrationPointThatHasNotRun(string name)
 		{
-			return new IntegrationModel()
+			return new IntegrationPointModel()
 			{
 				Destination = $"{{\"artifactTypeID\":10,\"CaseArtifactId\":{TargetWorkspaceArtifactId},\"Provider\":\"relativity\",\"DoNotUseFieldsMapCache\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"importNativeFile\":\"false\",\"UseFolderPathInformation\":\"false\",\"ExtractedTextFieldContainsFilePath\":\"false\",\"ExtractedTextFileEncoding\":\"utf - 16\",\"CustodianManagerFieldContainsLink\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}}",
 				DestinationProvider = _destinationProvider.ArtifactId,
@@ -484,9 +484,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			};
 		}
 
-		private IntegrationModel CreateIntegrationPointThatIsAlreadyRunModel(string name)
+		private IntegrationPointModel CreateIntegrationPointThatIsAlreadyRunModel(string name)
 		{
-			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
+			IntegrationPointModel model = CreateIntegrationPointThatHasNotRun(name);
 			model.LastRun = DateTime.Now;
 			return model;
 		}

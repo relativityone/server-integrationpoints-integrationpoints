@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		public void IntegrationCreateAndSavePermissions()
 		{
 			//Arrange
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,

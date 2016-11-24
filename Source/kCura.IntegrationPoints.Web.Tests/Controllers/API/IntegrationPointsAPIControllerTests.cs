@@ -4,6 +4,7 @@ using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public void Update_StandardSourceProvider_NoJobsRun_GoldFlow()
 		{
 			// Arrange
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830

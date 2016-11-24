@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private IExportInitProcessService _exportInitProcessService;
 		private ExportSettingsValidationService _exportSettingsValidationService;
 		private IFileCountValidator _fileCountValidator;
-		private IntegrationModel _integrationModel;
+		private IntegrationPointModel _integrationModel;
 		private IPaddingValidator _paddingValidator;
 
 		private const int _ARTIFACT_TYPE_ID = 1;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		[SetUp]
 		public override void SetUp()
 		{
-			_integrationModel = new IntegrationModel
+			_integrationModel = new IntegrationPointModel
 			{
 				Destination = "{ArtifactTypeId:1}",
 				Map = "[]"

@@ -17,14 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 
 		public static IRSAPIService CreateRSAPIService(IHelper helper, int workspaceArtifactId)
 		{
-			return new RSAPIService()
-			{
-				IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(helper, workspaceArtifactId),
-				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(helper, workspaceArtifactId),
-				DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(helper, workspaceArtifactId),
-				JobHistoryLibrary = new RsapiClientLibrary<Data.JobHistory>(helper, workspaceArtifactId),
-				JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(helper, workspaceArtifactId)
-			};
+			return new RSAPIService(helper, workspaceArtifactId);
 		}
 	}
 }

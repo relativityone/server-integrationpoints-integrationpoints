@@ -56,6 +56,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(NUnit)\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
@@ -84,6 +87,7 @@
     <Compile Include="Installers\InstallEveryTimeTests.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
+    <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
     <Compile Include="ViewErrors.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 
 					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
 
-					IntegrationModel ip = request.CreateIntegrationPointModel();
+					Core.Models.IntegrationPointModel ip = request.CreateIntegrationPointModel(container);
 					IntegrationPointModel returnVal = new IntegrationPointModel
 					{
 						ArtifactId = integrationPointService.SaveIntegration(ip),
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 						throw new Exception($"The requested object with artifact id {request.IntegrationPointArtifactId} does not exist.");
 					}
 
-					IntegrationModel ip = request.CreateIntegrationPointModel();
+					Core.Models.IntegrationPointModel ip = request.CreateIntegrationPointModel(container);
 					IntegrationPointModel returnVal = new IntegrationPointModel
 					{
 						ArtifactId = integrationPointService.SaveIntegration(ip),
@@ -94,10 +94,10 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
 				{
 					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
-					IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointArtifactId);
+					IntegrationPoint integrationPoint;
 					try
 					{
-						integrationPointService.GetRdo(integrationPointArtifactId);
+						integrationPoint = integrationPointService.GetRdo(integrationPointArtifactId);
 					}
 					catch (Exception)
 					{
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
 				{
 					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
-					IList<IntegrationPoint> integrationPoints = integrationPointService.GetAllIntegrationPoints();
+					IList<IntegrationPoint> integrationPoints = integrationPointService.GetAllRDOs();
 
 					IList<IntegrationPointModel> result = new List<IntegrationPointModel>(integrationPoints.Count);
 					foreach (var integrationPoint in integrationPoints)
@@ -186,12 +186,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
 				{
 					IObjectTypeRepository objectTypeRepository = container.Resolve<IObjectTypeRepository>();
-					int? artifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
-					if (artifactTypeId == null)
-					{
-						throw new Exception($"Unable to find the artifact type id of the integration point on workspace ${workspaceArtifactId}.");
-					}
-					return artifactTypeId.Value;
+					return objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
 				}
 			}
 			catch (Exception ex)

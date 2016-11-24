@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
 			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldRepository), documentIdentifier).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				},
 				Map = CreateDefaultFieldMap()
 			};
-			IntegrationModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 

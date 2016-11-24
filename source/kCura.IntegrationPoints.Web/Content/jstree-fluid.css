@@ -4,7 +4,7 @@
 	padding: 0;
 	background-color: white;
 	height: 50%;
-	z-index: 200;	
+	z-index: 200;
 	border: 1px solid #c1c1c1;
 	border-top: 0px;
 	box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
@@ -15,9 +15,9 @@
 	outline-style: none;
 }
 
-.jstree-default .jstree-node, 
+.jstree-default .jstree-node,
 .jstree-default .jstree-icon {
-    background-image: none;	
+    background-image: none;
 }
 
 .jstree-children {
@@ -34,14 +34,14 @@
 .jstree-hovered {
 	background: white!important;
 	border: 1px solid #5d99df!important;
-	border-radius: 0px!important;	
+	border-radius: 0px!important;
 	box-shadow: inset 0 0 0px #999!important;
 }
 
-.jstree-anchor, 
-.jstree-anchor:link, 
-.jstree-anchor:visited, 
-.jstree-anchor:hover, 
+.jstree-anchor,
+.jstree-anchor:link,
+.jstree-anchor:visited,
+.jstree-anchor:hover,
 .jstree-anchor:active {
 	text-decoration: none !important;
 	border: 1px solid transparent;
@@ -50,13 +50,13 @@
 #location-select {
 	width: 100%;
 	border: 1px solid #c1c1c1;
-	position:relative;	
+	position:relative;
 	cursor: pointer;
 }
 
 #location-input {
-	width: 407px; 
-	border: 0px; 
+	width: 407px;
+	border: 0px;
 	padding-left: 7px;
 	cursor: pointer;
 }
@@ -78,9 +78,9 @@
 }
 
 #location-span {
-	height: 100%; 
-	padding-top: 6px; 
-	position: absolute; 
+	height: 100%;
+	padding-top: 6px;
+	position: absolute;
 	background-color: #fff;
 }
 
@@ -102,14 +102,14 @@
 i.jstree-icon {
 	font-family: 'fluid-ui';
 	font-size: 16px!important;
-	font-style: normal!important;	
+	font-style: normal!important;
 }
 
 i.jstree-ocl {
 	color: #000;
 }
 
-i.jstree-themeicon.jstree-themeicon-custom {	
+i.jstree-themeicon.jstree-themeicon-custom {
 	color: #1e5495;
 }
 
@@ -143,6 +143,10 @@ i.jstree-themeicon.jstree-themeicon-custom {
 	content: 'R';
 }
 
+.jstree-file::before {
+    content: '+';
+}
+
 li.jstree-node.jstree-closed > i.jstree-icon.jstree-ocl::after {
 	content: 'K';
 }
@@ -165,7 +169,7 @@ ul.jstree-container-ul.jstree-children::before {
 	content: '';
     position: absolute;
     border-left: dotted 1px;
-    left: 36px;    
+    left: 36px;
     top: 0px;
     bottom: 12px;
 	pointer-events: none;

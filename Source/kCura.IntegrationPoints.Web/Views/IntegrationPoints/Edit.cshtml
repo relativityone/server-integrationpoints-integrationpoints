@@ -55,6 +55,7 @@
 		IP.data.params['userID'] = @Model.UserID;
 		IP.data.params['caseUserID'] = @Model.CaseUserID;
 		IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
+		IP.data.params['apiControllerName'] = '@Model.APIControllerName';
 
 		IP.unsavedChangesHandler = new UnsavedChangesHandler();
 		IP.unsavedChangesHandler.register();

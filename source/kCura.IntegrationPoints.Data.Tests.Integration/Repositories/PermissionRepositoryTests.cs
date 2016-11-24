@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Helper.RelativityUserName = SharedVariables.RelativityUserName;
 			Helper.RelativityPassword = SharedVariables.RelativityPassword;
 
-			IntegrationModel model = new IntegrationModel()
+			IntegrationPointModel model = new IntegrationPointModel()
 			{
 				Destination = $"{{\"artifactTypeID\":10,\"CaseArtifactId\":{TargetWorkspaceArtifactId},\"Provider\":\"relativity\",\"DoNotUseFieldsMapCache\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"importNativeFile\":\"false\",\"UseFolderPathInformation\":\"false\",\"ExtractedTextFieldContainsFilePath\":\"false\",\"ExtractedTextFileEncoding\":\"utf - 16\",\"CustodianManagerFieldContainsLink\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}}",
 				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First().ArtifactId,

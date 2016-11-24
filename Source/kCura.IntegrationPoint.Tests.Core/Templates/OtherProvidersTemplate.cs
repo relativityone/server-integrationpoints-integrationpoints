@@ -107,11 +107,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return map;
 		}
 
-		protected IntegrationModel CreateDefaultLdapIntegrationModel(string name,
+		protected IntegrationPointModel CreateDefaultLdapIntegrationModel(string name,
 			Scheduler scheduler = null,
 			ImportOverwriteModeEnum overwrite = ImportOverwriteModeEnum.AppendOnly)
 		{
-			IntegrationModel model = new IntegrationModel()
+			IntegrationPointModel model = new IntegrationPointModel()
 			{
 				SourceProvider = LdapProvider.ArtifactId,
 				Name = name,

@@ -75,9 +75,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve export long text fields.")]
-		public HttpResponseMessage GetExportableLongTextFields(int sourceWorkspaceArtifactId)
+		public HttpResponseMessage GetExportableLongTextFields(int sourceWorkspaceArtifactId, int artifactTypeId)
 		{
-			var fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, (int)ArtifactType.Document);
+			var fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, artifactTypeId);
 
 			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 		}

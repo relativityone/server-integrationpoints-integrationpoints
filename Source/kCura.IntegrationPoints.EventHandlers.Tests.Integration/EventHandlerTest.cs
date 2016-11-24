@@ -6,6 +6,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		private IScratchTableRepository _scratchTableRepository;
 		private IJobService _jobService;
 		private IIntegrationPointService _integrationPointService;
-		private IntegrationModel _integrationModel;
+		private IntegrationPointModel _integrationModel;
 
 		public EventHandlerTest() : base("Eventhandler Tests", null)
 		{
@@ -63,8 +64,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 				Application = new Application(SourceWorkspaceArtifactId, null, null)
 			};
 
-			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
-			IntegrationModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
 			Data.IntegrationPoint integrationPointRdo = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 
@@ -115,9 +116,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 				Application = new Application(SourceWorkspaceArtifactId, null, null)
 			};
 
-			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
-			IntegrationModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
-			IntegrationModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(_integrationModel);
 			Data.IntegrationPoint integrationPointRdo = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo3 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel3.ArtifactID);
@@ -150,16 +151,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		public void PreCascade_DeletesJobHistoryErrors_Success()
 		{
 			//Arrange
-			IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
+			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
 				TempTableNameWithParentArtifactsToDelete = _scratchTableRepository.GetTempTableName(),
 				Application =  new Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId)
 			};
 
-			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
-			IntegrationModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
-			IntegrationModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(_integrationModel);
 			Data.IntegrationPoint integrationPointRdo = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo3 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel3.ArtifactID);
@@ -195,16 +196,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		public void PreCascade_DeletesSpecificJobHistoryErrors_Success()
 		{
 			//Arrange
-			IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
+			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
 				TempTableNameWithParentArtifactsToDelete = _scratchTableRepository.GetTempTableName(),
 				Application = new Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId)
 			};
 
-			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
-			IntegrationModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
-			IntegrationModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(_integrationModel);
+			IntegrationPointModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(_integrationModel);
 			Data.IntegrationPoint integrationPointRdo = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo3 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel3.ArtifactID);
@@ -244,16 +245,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		public void PreCascade_DeleteJobsWithAndWithoutHistory_Success()
 		{
 			//Arrange
-			IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
+			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
 				TempTableNameWithParentArtifactsToDelete = _scratchTableRepository.GetTempTableName(),
 				Application = new Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId)
 			};
 			
-			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
-			IntegrationModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
-			IntegrationModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
+			IntegrationPointModel integrationPointModel2 = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
+			IntegrationPointModel integrationPointModel3 = CreateOrUpdateIntegrationPoint(CreateIntegrationModel());
 			Data.IntegrationPoint integrationPointRdo = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactID);
 			Data.IntegrationPoint integrationPointRdo2 = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel2.ArtifactID);
 
@@ -289,14 +290,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		public void Delete_DeletesJobs_Success()
 		{
 			//Arrange
-			IntegrationPoints.DeleteEventHandler deleteEventHandler = new IntegrationPoints.DeleteEventHandler
+			EventHandlers.IntegrationPoints.DeleteEventHandler deleteEventHandler = new EventHandlers.IntegrationPoints.DeleteEventHandler
 			{
 				Application = new Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId),
 			};
 
 			DateTime utcNow = DateTime.UtcNow;
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -316,7 +317,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
 			Job jobPreDelete = _jobService.GetScheduledJobs(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, TaskType.SyncManager.ToString());
 			
 			//Act
@@ -334,7 +335,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		public void PreCascade_ThrowsException_Failure()
 		{
 			//Arrange
-			IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
+			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
 				Application = new Application(-1, null, null),
 				Helper = new EHHelper(Helper, -1),
@@ -353,7 +354,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		public void Delete_ThrowsException_Failure()
 		{
 			//Arrange
-			IntegrationPoints.DeleteEventHandler deleteEventHandler = new IntegrationPoints.DeleteEventHandler()
+			EventHandlers.IntegrationPoints.DeleteEventHandler deleteEventHandler = new EventHandlers.IntegrationPoints.DeleteEventHandler()
 			{
 				Application = new Application(-1, null, null),
 				Helper = new EHHelper(Helper, -1),
@@ -367,9 +368,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			StringAssert.Contains("Failed to delete corresponding job.", eventHandlerResponse.Message);
 		}
 
-		private IntegrationModel CreateIntegrationModel()
+		private IntegrationPointModel CreateIntegrationModel()
 		{
-			return new IntegrationModel
+			return new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,

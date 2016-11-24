@@ -62,7 +62,7 @@ var ExportSourceViewModel = function (state) {
 		self.SavedSearchArtifactId(value.id);
 	}, self.IsSavedSearchTreeNode);
 
-	Picker.create("savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
+	Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 
 	self.OpenSavedSearchPicker = function () {
 		savedSearchPickerViewModel.open(self.SavedSearchesTree(), self.SavedSearchArtifactId());

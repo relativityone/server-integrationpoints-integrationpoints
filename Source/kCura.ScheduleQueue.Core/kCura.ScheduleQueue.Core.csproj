@@ -161,6 +161,7 @@
     <Compile Include="Data\QueueDBContext.cs" />
     <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
     <Compile Include="BatchProcess\IBatchableTask.cs" />
+    <Compile Include="Helpers\DaysOfWeekConverter.cs" />
     <Compile Include="Helpers\QueueTableHelper.cs" />
     <Compile Include="Interfaces\IAgentService.cs" />
     <Compile Include="Interfaces\FinalizeJobResult.cs" />
@@ -186,9 +187,11 @@
     <Compile Include="ScheduleRules\Enums.cs" />
     <Compile Include="ScheduleRules\IScheduleRule.cs" />
     <Compile Include="ScheduleRules\ITimeService.cs" />
+    <Compile Include="ScheduleRules\Monthly.cs" />
     <Compile Include="ScheduleRules\PeriodicScheduleRule.cs" />
     <Compile Include="ScheduleRules\ScheduleRuleBase.cs" />
     <Compile Include="ScheduleRules\DefaultScheduleRuleFactory.cs" />
+    <Compile Include="ScheduleRules\Weekly.cs" />
     <Compile Include="Services\AgentService.cs" />
     <Compile Include="Services\JobService.cs" />
     <Compile Include="Services\TimeMachineService.cs" />

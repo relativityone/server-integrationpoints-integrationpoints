@@ -308,10 +308,13 @@
     <Compile Include="Controllers\API\FieldCatalogController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentController.cs" />
+    <Compile Include="Controllers\API\IntegrationPointProfilesAPIController.cs" />
+    <Compile Include="Controllers\API\IntegrationPointTypesController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Controllers\API\WorkspaceViewController.cs" />
+    <Compile Include="Controllers\IntegrationPointBaseController.cs" />
     <Compile Include="DataStructures\ExportSourceOptions.cs" />
     <Compile Include="ErrorFactory.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
@@ -348,8 +351,10 @@
     <Compile Include="GridModelFactory.cs" />
     <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
+    <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
     <Compile Include="IRelativityUrlHelper.cs" />
     <Compile Include="Models\EditPoint.cs" />
+    <Compile Include="Models\IntegrationPointTypeModel.cs" />
     <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\SavedSearchModel.cs" />
@@ -413,6 +418,7 @@
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\jstree-fluid.css" />
+    <Content Include="Content\save-profile-modal.css" />
     <Content Include="Content\list-picker.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\scheduler.css">
@@ -500,6 +506,8 @@
     <Content Include="Scripts\Export\export-source-view-model.js" />
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
+    <Content Include="Scripts\integration-point\picker.js" />
+    <Content Include="Scripts\integration-point\save-as-profile-modal-vm.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
@@ -512,7 +520,6 @@
     <Content Include="Scripts\Export\image-production-picker.js" />
     <Content Include="Scripts\Export\list-picker-view-model.js" />
     <Content Include="Scripts\Export\location-jstree-selector.js" />
-    <Content Include="Scripts\Export\picker.js" />
     <Content Include="Scripts\Export\saved-search-picker.js" />
     <Content Include="Scripts\Export\text-precedence-picker.js" />
     <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
@@ -731,6 +738,7 @@
     <Content Include="Views\IntegrationPoints\ExportProviderSettings.cshtml" />
     <Content Include="Views\ImportProvider\ImportSettings.cshtml" />
     <Content Include="Views\ImportProvider\ImportPreview.cshtml" />
+    <Content Include="Views\IntegrationPoints\SaveAsProfileModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

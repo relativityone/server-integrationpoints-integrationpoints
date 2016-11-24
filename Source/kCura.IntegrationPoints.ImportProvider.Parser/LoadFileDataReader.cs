@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
@@ -8,14 +9,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     {
         private bool _isClosed;
         private string _currentLine;
-        private string _delimiterString;
+        private string _recordDelimiterString;
+        private string _quoteDelimiterString;
 
         public LoadFileDataReader(kCura.WinEDDS.LoadFile config)
             : base(config)
         {
             _isClosed = false;
             _currentLine = string.Empty;
-            _delimiterString = _config.RecordDelimiter.ToString();
+            _recordDelimiterString = _config.RecordDelimiter.ToString();
+            _quoteDelimiterString = _config.QuoteDelimiter.ToString();
         }
 
         public void Init()
@@ -37,7 +40,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             {
                 data[artifact.ArtifactID] = artifact.ValueAsString;
             }
-            _currentLine = string.Join(_delimiterString, data);
+            _currentLine = string.Join(_recordDelimiterString, data.Select(x => _quoteDelimiterString + x + _quoteDelimiterString));
         }
 
         //IDataReader Implementation
