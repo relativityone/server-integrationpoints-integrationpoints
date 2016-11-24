@@ -25,14 +25,14 @@ def passed = false
 			stage('Build') {
 				
 				dir('C:/SourceCode/integrationpoints') {
-					bat 'powershell.exe "./build.ps1 release"'
+					bat 'powershell.exe "& {./build.ps1 release; exit $lastexitcode}"'
 				}			
 			}
 			
 			stage('Unit Tests') {
 				
 				dir('C:/SourceCode/integrationpoints') {
-					bat 'powershell.exe "./build.ps1 -test -skip"'
+					bat 'powershell.exe "& {./build.ps1 -test -skip; exit $lastexitcode}"'
 				}			
 			}
 						
