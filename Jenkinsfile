@@ -103,7 +103,7 @@ def passed = false
 				}					
 			}
 
-			stage('Functional Tests') {
+			stage('Functional Smoke Tests') {
 
 				dir('C:/SourceCode/automation/') {
 					bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "C:\\SourceCode\\automation\\Config\\pl2.cfg" -s "Tests.Relativity.Applications.RelativityIntegrationPoints.SmokeTests" "C:\\SourceCode\\automation"'
