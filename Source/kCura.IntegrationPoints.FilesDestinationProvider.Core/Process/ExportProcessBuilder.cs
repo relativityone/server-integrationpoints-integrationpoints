@@ -138,11 +138,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		{
 			exportFile.SelectedViewFields = FilterFields(exportFile, selectedViewFieldIds);
 
-			var fieldIdentifier = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier);
-			if (fieldIdentifier != null)
+			exportFile.IdentifierColumnName = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier)?.DisplayName;
+			
+			var fileTypeField = exportFile.AllExportableFields.FirstOrDefault(field => field.FieldType == FieldTypeHelper.FieldType.File);
+			if (fileTypeField != null)
 			{
-				exportFile.IdentifierColumnName = fieldIdentifier.DisplayName;
+				exportFile.FileField = new DocumentField(fileTypeField.DisplayName, fileTypeField.FieldArtifactId, (int)fileTypeField.FieldType, 
+					(int)fileTypeField.Category, fileTypeField.FieldCodeTypeID, 0, fileTypeField.AssociativeArtifactTypeID, fileTypeField.IsUnicodeEnabled, null, fileTypeField.EnableDataGrid);
 			}
+
 		}
 
 		private static void PopulateTextPrecedenceFields(ExportFile exportFile, List<int> selectedTextPrecedence)

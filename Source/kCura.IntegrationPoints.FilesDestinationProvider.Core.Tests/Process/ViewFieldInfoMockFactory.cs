@@ -7,21 +7,28 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
     internal class ViewFieldInfoMockFactory
     {
-        public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<int> expected, bool createIdentifiers = false)
+        public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<int> expected,
+			bool addFileField = false, int fileFieldId = 0)
         {
             var viewFieldInfo = new List<ViewFieldInfo>();
-            var dataTable = CreateMock(true);
+            DataTable dataTable = CreateMock();
+	        int elemIndex = 0;
             foreach (var i in expected)
             {
                 var row = dataTable.NewRow();
                 row["AvfId"] = i;
+	            if (addFileField && elemIndex++ == 0)
+	            {
+					row["FieldTypeID"] = FieldTypeHelper.FieldType.File;
+		            row["FieldArtifactID"] = fileFieldId;
+	            }
                 viewFieldInfo.Add(new ViewFieldInfo(row));
             }
 
             return viewFieldInfo.ToArray();
         }
 
-        private static DataTable CreateMock(bool createIdentifiers = false)
+        private static DataTable CreateMock()
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("FieldArtifactID", typeof (int));
@@ -31,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             dataTable.Columns["AvfID"].DefaultValue = 1;
 
             dataTable.Columns.Add("FieldCategoryID", typeof (int));
-            dataTable.Columns["FieldCategoryID"].DefaultValue = createIdentifiers ? FieldCategory.Identifier : 0;
+            dataTable.Columns["FieldCategoryID"].DefaultValue = FieldCategory.Identifier;
 
             dataTable.Columns.Add("ColumnSource", typeof (string));
             dataTable.Columns["ColumnSource"].DefaultValue = "Computed";
@@ -43,7 +50,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             dataTable.Columns["ConnectorFieldArtifactID"].DefaultValue = 1;
 
             dataTable.Columns.Add("FieldTypeID", typeof (int));
-            dataTable.Columns["FieldTypeID"].DefaultValue = 1;
+            dataTable.Columns["FieldTypeID"].DefaultValue = FieldTypeHelper.FieldType.Empty;
 
             dataTable.Columns.Add("ConnectorFieldCategoryID", typeof (int));
             dataTable.Columns["ConnectorFieldCategoryID"].DefaultValue = 1;

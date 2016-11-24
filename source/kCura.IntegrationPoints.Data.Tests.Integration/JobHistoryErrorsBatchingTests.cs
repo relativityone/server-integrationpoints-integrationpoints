@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			string docPrefix = "EqualBatchDoc";
 			string expDocPrefix = "EqualBatchExp";
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1, 2000, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1, 100, docPrefix, expDocPrefix);
 		}
 
 		[Test]
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			string docPrefix = "LessThanBatchDoc";
 			string expDocPrefix = "LessThanBatchExp";
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(3000, 1998, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(300, 98, docPrefix, expDocPrefix);
 		}
 
 		[Test]
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			string docPrefix = "MoreThanBatchDoc";
 			string expDocPrefix = "MoreThanBatchExp";
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(5000, 2002, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(500, 102, docPrefix, expDocPrefix);
 		}
 
 		[Test]
@@ -242,7 +242,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Arrange
 			string docPrefix = "DocForItemAndJob";
 			string expiredDocPrefix = "ExpForItemAndJob";
-			DataTable importTable = GetImportTable(8000, 1000, docPrefix, expiredDocPrefix);
+			DataTable importTable = GetImportTable(800, 100, docPrefix, expiredDocPrefix);
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
@@ -318,7 +318,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Arrange
 			string docPrefix = "SavedSearchDoc";
 			string expiredDocPrefix = "TempSavedSearchExp";
-			DataTable importTable = GetImportTable(1, 1000, docPrefix, expiredDocPrefix);
+			DataTable importTable = GetImportTable(1, 100, docPrefix, expiredDocPrefix);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(docPrefix, false);
 
