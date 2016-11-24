@@ -162,6 +162,7 @@
     </Compile>
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
+    <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
     <Compile Include="Installers\SetIntegrationPointType.cs" />
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
