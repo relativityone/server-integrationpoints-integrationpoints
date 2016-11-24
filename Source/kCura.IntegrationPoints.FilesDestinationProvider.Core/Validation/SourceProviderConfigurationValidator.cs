@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 	{
 		private readonly ISerializer _serializer;
 
-		public string Key => IntegrationModelValidator.GetSourceProviderValidatorKey(Constants.RELATIVITY_PROVIDER_GUID, IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID);
+		public string Key => IntegrationModelValidator.GetProviderValidatorKey(Constants.RELATIVITY_PROVIDER_GUID, IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID);
 
 		public SourceProviderConfigurationValidator(ISerializer serializer)
 		{

@@ -103,6 +103,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";
 				public const string FIELD_MAP = "AED64B63-1D26-406B-9040-DAF8C21BF5DD";
 				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
+				public const string NAME = "285F3C4A-1606-4D5A-A720-E65CE70742DD";
 			}
 		}
 
