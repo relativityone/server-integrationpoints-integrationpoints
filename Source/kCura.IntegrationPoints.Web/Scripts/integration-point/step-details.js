@@ -138,6 +138,13 @@ var IP = IP || {};
 
 		this.sourceProvider = self.settings.sourceProvider || 0;
 
+		this.loadSettings = function (settings) {
+			self.settings = settings;
+			self.sourceProvider = settings.sourceProvider;
+			self.updateSelectedType();
+		};
+		
+
 		this.displayRelativityInSourceTypes = function (value) {
 			if (self.tmpRelativitySourceTypeObject === null) return;
 
@@ -145,7 +152,7 @@ var IP = IP || {};
 				var containsRelativityObj = false;
 				$.each(self.sourceTypes(),
 					function () {
-						if (this.displayName == "Relativity") {
+						if (this.displayName === "Relativity") {
 							containsRelativityObj = true;
 						}
 					});
@@ -209,6 +216,12 @@ var IP = IP || {};
 		this.settings = $.extend({}, d);
 		var self = this;
 		self.disable = parentModel.hasBeenRun();
+
+		this.loadSettings = function (settings) {
+			self.settings = settings;
+			self.updateDestinationProvider();
+			self.UpdateSelectedItem();//TODO: refactor RDO update dependency on source
+		};
 
 		this.templateID = 'ldapDestinationConfig';
 		this.allRdoTypes = ko.observableArray();
@@ -600,55 +613,101 @@ var IP = IP || {};
 	var Model = function (m) {
 		var settings = $.extend({}, m);
 		var self = this;
-		this.name = ko.observable(settings.name).extend({ required: true });
-		if (typeof settings.logErrors === "undefined") {
-			settings.logErrors = "true";
+
+		this.name = ko.observable().extend({ required: true });
+	
+		this.logErrors = ko.observable();
+		this.showErrors = ko.observable(false);
+		this.integrationPointTypes = ko.observableArray();
+		this.type = ko.observable().extend({ required: true });
+		this.isEdit = ko.observable();
+		this.hasBeenRun = ko.observable();
+
+		this.notificationEmails = ko.observable().extend({
+			emailList: {
+				onlyIf: function () {
+					return self.showErrors();
+				}
+			}
+		});
+
+		this.loadSettings = function (settings) {
+			if (settings !== undefined) {
+				if (!!settings.name) {
+					self.name(settings.name);
+				}
+
+				var destinationSettings = JSON.parse(settings.destination || "{}");
+				self.SelectedOverwrite = settings.selectedOverwrite;
+				self.FieldOverlayBehavior = destinationSettings.FieldOverlayBehavior;
+				self.CustodianManagerFieldContainsLink = destinationSettings.CustodianManagerFieldContainsLink;
+				self.UseFolderPathInformation = destinationSettings.UseFolderPathInformation;
+				self.FolderPathSourceField = destinationSettings.FolderPathSourceField;
+				self.ExtractedTextFieldContainsFilePath = destinationSettings.ExtractedTextFieldContainsFilePath;
+				self.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
+				self.importNativeFile = destinationSettings.importNativeFile;
+				self.destinationProvider = settings.destinationProvider;
+
+				self.type(settings.type);
+
+				self.isEdit(parseInt(settings.artifactID) > 0);
+
+				var hasBeenRun = false;
+				if (settings.lastRun != null) {
+					hasBeenRun = true;
+				}
+				else if (settings.hasBeenRun != null) {
+					hasBeenRun = settings.hasBeenRun;
+				}
+				self.hasBeenRun(hasBeenRun);
+
+				self.notificationEmails(settings.notificationEmails);
+				if (typeof settings.logErrors === "undefined") {
+					settings.logErrors = "true";
+				}
+				self.logErrors(settings.logErrors.toString());
+			}
 		}
 
-		this.logErrors = ko.observable(settings.logErrors.toString());
-		this.showErrors = ko.observable(false);
+		this.loadSettings(settings);
 
-
-		this.integrationPointTypes = ko.observableArray();
-		this.type = ko.observable(settings.type).extend({ required: true });
-
+		this.destination = new Destination(settings.destination, self);
+		this.source = new Source(settings.source, self);
+		this.profile = new Profile(settings.profile, self);
+		this.scheduler = new Scheduler(settings.scheduler);
+		
+		//Subscriptions
 		this.type.subscribe(function (value) {
 			self.setTypeVisibility(value);
 			self.profile.getProfiles(value);
 		});
 
-		this.isEdit = ko.observable(settings !== undefined && parseInt(settings.artifactID) > 0)
+		this.profile.selectedProfile.subscribe(function (profileId) {
+			self.publishUpdateProfile(profileId);
+		});
 
-		var hasBeenRun = false;
-		if (settings.lastRun != null) {
-			hasBeenRun = true;
-		}
-		else if (settings.hasBeenRun != null) {
-			hasBeenRun = settings.hasBeenRun;
-		}
+		this.publishUpdateProfile = function (profileId) {
+			if (!!profileId) {
+				var item = self.profile.getSelectedProfile(profileId);
+				IP.messaging.publish('loadProfile', item);
+			}
+		};
 
-		this.hasBeenRun = ko.observable(hasBeenRun);
+		this.loadProfile = function (profile) {
+			console.log('Subscribe');
+			self.loadSettings(profile);
+			self.destination.loadSettings(JSON.parse(profile.destination || "{}"));
+			self.source.loadSettings(profile);
+			console.log(profile);
+		};
+
 
 		var sourceTypePromise = root.data.ajax({ type: 'get', async: false, url: root.utils.generateWebAPIURL('SourceType') });
 		var destinationTypePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') });
 		var rdoFilterPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetAll') });
 		var defaultRdoTypeIdPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetDefaultRdoTypeId') });
 		var ipTypesPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointTypes') });
-
-		self.destination = new Destination(settings.destination, self);
-		self.source = new Source(settings.source, self);
-		self.profile = new Profile(settings.profile, self);
-		self.profile.selectedProfile.subscribe(function (profileId) {
-			self.loadProfile(profileId);
-		});
-		self.loadProfile = function (profileId) {
-			if (!!profileId) {
-				var item = self.profile.getSelectedProfile(profileId);
-				console.log(item);
-			}
-		}
-
-
+		
 		root.data.deferred().all([
 				sourceTypePromise,
 				destinationTypePromise,
@@ -695,27 +754,7 @@ var IP = IP || {};
 			self.setTypeVisibility(self.type());
 			self.profile.getProfiles(self.type());
 		});
-
-		this.destinationProvider = settings.destinationProvider;
-		this.notificationEmails = ko.observable(settings.notificationEmails).extend({
-			emailList: {
-				onlyIf: function () {
-					return self.showErrors();
-				}
-			}
-		});
-
-		var destinationSettings = JSON.parse(settings.destination || "{}");
-		this.SelectedOverwrite = settings.selectedOverwrite;
-		this.FieldOverlayBehavior = destinationSettings.FieldOverlayBehavior;
-		this.CustodianManagerFieldContainsLink = destinationSettings.CustodianManagerFieldContainsLink;
-		this.UseFolderPathInformation = destinationSettings.UseFolderPathInformation;
-		this.FolderPathSourceField = destinationSettings.FolderPathSourceField;
-		this.ExtractedTextFieldContainsFilePath = destinationSettings.ExtractedTextFieldContainsFilePath;
-		this.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
-		this.importNativeFile = destinationSettings.importNativeFile;
-
-		this.scheduler = new Scheduler(settings.scheduler);
+		
 		this.submit = function () {
 			this.showErrors(true);
 			this.scheduler.submit();
@@ -777,6 +816,12 @@ var IP = IP || {};
 			this.model.sourceConfiguration = ip.sourceConfiguration;
 			this.model.Map = ip.Map;
 		};
+
+		IP.messaging.subscribe('loadProfile', function (profile) {
+			self.model.loadProfile(profile);
+			self.model.sourceConfiguration = profile.sourceConfiguration;
+			self.model.Map = profile.Map;
+		});
 
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
