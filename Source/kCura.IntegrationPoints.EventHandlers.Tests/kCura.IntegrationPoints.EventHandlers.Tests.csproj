@@ -115,7 +115,8 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
-    <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
+    <Compile Include="IntegrationPoints\Helpers\ConsoleBuilderTests.cs" />
+    <Compile Include="IntegrationPoints\Helpers\FolderPathInformationTests.cs" />
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
     <Compile Include="MassOperations\MassCopyIntegrationPointHelper.cs" />
     <Compile Include="MassOperations\IntegrationPointMassCopyTests.cs" />

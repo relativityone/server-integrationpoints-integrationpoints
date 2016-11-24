@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		public bool JobLevelErrorOccurred { get; private set; }
 
 		public Data.JobHistory JobHistory { get; set; }
-		public IntegrationPoint IntegrationPoint { get; set; }
+		public Data.IntegrationPoint IntegrationPoint { get; set; }
 		public IJobStopManager JobStopManager { get; set; }
 
 		public void SubscribeToBatchReporterEvents(object batchReporter)

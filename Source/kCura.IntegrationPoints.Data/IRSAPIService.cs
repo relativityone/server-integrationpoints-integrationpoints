@@ -2,13 +2,16 @@
 {
 	public partial interface IRSAPIService
 	{
-		IGenericLibrary<Document> DocumentLibrary { get; set; }
-		IGenericLibrary<IntegrationPoint> IntegrationPointLibrary { get; set; }
-		IGenericLibrary<SourceProvider> SourceProviderLibrary { get; set; }
-		IGenericLibrary<DestinationProvider> DestinationProviderLibrary { get; set; }
-		IGenericLibrary<JobHistory> JobHistoryLibrary { get; set; }
-		IGenericLibrary<JobHistoryError> JobHistoryErrorLibrary { get; set; }
-		IGenericLibrary<DestinationWorkspace> DestinationWorkspaceLibrary { get; set; }
+		IGenericLibrary<Document> DocumentLibrary { get; }
+		IGenericLibrary<IntegrationPoint> IntegrationPointLibrary { get; }
+		IGenericLibrary<SourceProvider> SourceProviderLibrary { get; }
+		IGenericLibrary<DestinationProvider> DestinationProviderLibrary { get; }
+		IGenericLibrary<JobHistory> JobHistoryLibrary { get; }
+		IGenericLibrary<JobHistoryError> JobHistoryErrorLibrary { get; }
+		IGenericLibrary<DestinationWorkspace> DestinationWorkspaceLibrary { get; }
+		IGenericLibrary<IntegrationPointType> IntegrationPointTypeLibrary { get; }
+		IGenericLibrary<IntegrationPointProfile> IntegrationPointProfileLibrary { get; }
 		
+		IGenericLibrary<T> GetGenericLibrary<T>() where T : BaseRdo, new();
 	}
 }

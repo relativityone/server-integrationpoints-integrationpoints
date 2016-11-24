@@ -1,14 +1,15 @@
 ﻿var Picker = {
-	create: function (containerId, viewName, viewModel, options) {	
+	create: function (controller, containerId, viewName, viewModel, options) {
 		var view = (window.$)('<div id="' + containerId + '" style="padding: 0px;"></div>');
 
-		IP.data.ajax({
-			url: IP.utils.generateWebURL("Fileshare", viewName),
+		var promise = IP.data.ajax({
+			url: IP.utils.generateWebURL(controller, viewName),
 			type: "get",
 			dataType: "html"
 		}).then(function (result) {
 			Picker.createDialog(result, view, viewModel, options);
 		});
+		return promise;
 	},
 	createDialog: function (modalHTML, view, viewModel, options) {
 		var $myWin = $(window);
@@ -24,11 +25,10 @@
 
 		view.append(modalHTML).dialog(selectedOptions);
 
-		setTimeout(function () {
-			viewModel.construct(view);
-			view.removeClass("ui-dialog-content").prev().hide();
-			ko.applyBindings(viewModel, view.get()[0]);
-		});
+		viewModel.construct(view);
+		view.removeClass("ui-dialog-content").prev().hide();
+		ko.applyBindings(viewModel, view.get()[0]);
+
 	},
 	closeDialog: function (containerId) {
 		$('#' + containerId).dialog('destroy').remove();

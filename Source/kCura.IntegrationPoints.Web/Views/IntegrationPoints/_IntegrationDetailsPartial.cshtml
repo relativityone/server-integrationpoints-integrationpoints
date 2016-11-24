@@ -19,15 +19,15 @@
 				Type:
 			</div>
 			<div class="field-value">
-				<ul id="isExportType">
-					<li><span><input id="importTypeRadioButton" value="false" name="isExportType" type="radio" data-bind="checked: isExportType, disable: hasBeenRun() || isTypeDisabled()" />Import</span></li>
-					<li><span><input id="exportTypeRadioButton" value="true" name="isExportType" type="radio" data-bind="checked: isExportType, disable: hasBeenRun() || isTypeDisabled()" />Export</span></li>
+				<ul id="isExportType" data-bind="foreach: integrationPointTypes">
+					<li><input type="radio" data-bind="value: artifactID, checked: $parent.type"/><span data-bind="text: displayName"></span></li>
 				</ul>
 			</div>
 		</div>
 		<div class="field-row">
 			<div data-bind="template: { name: source.templateID, data: source }"></div>
 			<div data-bind="template: { name: destination.templateID, data: destination }"></div>
+			<div data-bind="template: { name: profile.templateID, data: profile }"></div>
 		</div>
 
 	</div>
@@ -87,6 +87,16 @@
 		</div>
 		<div class="field-value">
 			<select id="destinationRdo" data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: artifactTypeID, optionsCaption: 'Select...', select2: {}, disable: isDestinationObjectDisabled()"></select>
+		</div>
+	</div>	
+</script>
+<script type="text/html" id="profileConfig">	
+	<div class="field-row">
+		<div class="field-label">
+			Apply Profile:
+		</div>
+		<div class="field-value">
+			<select id="applyProfile" data-bind="options: profileTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedProfile, optionsCaption: 'Select...', select2: {}"></select>
 		</div>
 	</div>
 </script>

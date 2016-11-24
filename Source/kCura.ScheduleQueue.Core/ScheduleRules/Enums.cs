@@ -44,4 +44,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		Third = OccuranceInMonth.Third,
 		Fourth = OccuranceInMonth.Fourth
 	}
+
+	public enum MonthlyType
+	{
+		Month = 1,
+		Days = 2
+	}
 }

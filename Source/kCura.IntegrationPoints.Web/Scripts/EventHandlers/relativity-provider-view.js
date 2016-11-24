@@ -137,6 +137,19 @@
 		});
 	};
 
+	root.saveAsProfile = function (integrationPointId, workspaceId) {
+		var saveAsProfileModalViewModel = new SaveAsProfileModalViewModel(function (value) {
+			IP.data.ajax({
+				url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, value),
+				type: 'POST'
+			});
+		});
+		var promise = Picker.create("IntegrationPoints", "saveAsProfileModal", "SaveAsProfileModal", saveAsProfileModalViewModel);
+		promise.done(function () {
+			saveAsProfileModalViewModel.open(integrationPointId, workspaceId);
+		});
+	};
+
 	var config = {
 		time: {
 			longDate: Date.CultureInfo.formatPatterns.shortDate + ' ' + Date.CultureInfo.formatPatterns.shortTime
@@ -214,7 +227,7 @@ $(function () {
 	var $field = IP.utils.getViewField(ruleFieldId).siblings('.dynamicViewFieldValue');
 	$field.text('');
 	IP.data.ajax({
-		url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.artifactid),
+		url: IP.utils.generateWebAPIURL(IP.apiControllerName, IP.artifactid),
 		type: 'Get'
 	}).then(function (result) {
 		var result = result.scheduler || {};

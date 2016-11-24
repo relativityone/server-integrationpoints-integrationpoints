@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -85,7 +86,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Arrange
 			bool errorReceived = false;
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -101,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			//Act
 			try
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -151,7 +152,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
 
 			//Act
@@ -185,7 +186,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -203,7 +204,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
@@ -248,7 +249,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -266,7 +267,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
@@ -321,7 +322,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -339,7 +340,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
@@ -364,7 +365,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -382,7 +383,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 

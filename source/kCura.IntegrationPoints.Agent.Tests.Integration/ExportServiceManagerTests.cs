@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -121,7 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			// arrange
 			ISerializer serializer = Container.Resolve<ISerializer>();
-			IntegrationModel model = new IntegrationModel()
+			IntegrationPointModel model = new IntegrationPointModel()
 			{
 				SourceProvider = RelativityProvider.ArtifactId,
 				Name = "ARRRRRRRGGGHHHHH - RunRelativityProviderAlone",
@@ -180,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				const int fakeAgentId = 78945;
 				ISerializer serializer = Container.Resolve<ISerializer>();
 				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-				IntegrationModel model = new IntegrationModel()
+				IntegrationPointModel model = new IntegrationPointModel()
 				{
 					SourceProvider = RelativityProvider.ArtifactId,
 					Name = "ARRRRRRRGGGHHHHH - AgentPickUpRunNowJobWhenScheduledJobIsRunning",
@@ -251,7 +252,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				const int fakeAgentId = 78945;
 				ISerializer serializer = Container.Resolve<ISerializer>();
 				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-				IntegrationModel model = new IntegrationModel()
+				IntegrationPointModel model = new IntegrationPointModel()
 				{
 					SourceProvider = RelativityProvider.ArtifactId,
 					Name = "ARRRRRRRGGGHHHHH - AgentPickUpScheduledJobJobWhenRunNowJobIsRunning",
@@ -327,7 +328,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				DataTable dataTable = Import.GetImportTable("DocId", 5);
 				Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
 
-				IntegrationModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
+				IntegrationPointModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
 					"StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers", "Append Only");
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 

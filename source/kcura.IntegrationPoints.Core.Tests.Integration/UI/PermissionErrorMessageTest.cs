@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 			_webDriver.LogIntoRelativity(_email, SharedVariables.RelativityPassword);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
 
-			IntegrationModel model = new IntegrationModel()
+			IntegrationPointModel model = new IntegrationPointModel()
 			{
 				//todo: fix this!
 				//SourceProvider = useRelativityProvider ? RelativityProvider.ArtifactId : LdapProvider.ArtifactId,

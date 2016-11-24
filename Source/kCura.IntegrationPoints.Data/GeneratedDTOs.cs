@@ -302,6 +302,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.HasErrors), value);
 			}
 		}
+		[DynamicField(IntegrationPointFields.Type, IntegrationPointFieldGuids.Type, FieldTypes.SingleObject)]
+		public int? Type
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(IntegrationPointFieldGuids.Type));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.Type), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(IntegrationPointFields.Name, IntegrationPointFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
@@ -906,4 +918,255 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 	}
+ 
+	[DynamicObject(ObjectTypes.IntegrationPointType, ObjectTypes.Workspace, "", ObjectTypeGuids.IntegrationPointType)]
+	public partial class IntegrationPointType : BaseRdo
+	{
+		public const int ApplicationIdentifierFieldLength = 50;
+		[DynamicField(IntegrationPointTypeFields.ApplicationIdentifier, IntegrationPointTypeFieldGuids.ApplicationIdentifier, FieldTypes.FixedLengthText, 50)]
+		public string ApplicationIdentifier
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointTypeFieldGuids.ApplicationIdentifier));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointTypeFieldGuids.ApplicationIdentifier), value);
+			}
+		}
+		public const int IdentifierFieldLength = 40;
+		[DynamicField(IntegrationPointTypeFields.Identifier, IntegrationPointTypeFieldGuids.Identifier, FieldTypes.FixedLengthText, 40)]
+		public string Identifier
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointTypeFieldGuids.Identifier));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointTypeFieldGuids.Identifier), value);
+			}
+		}
+		public const int NameFieldLength = 255;
+		[DynamicField(IntegrationPointTypeFields.Name, IntegrationPointTypeFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
+		public string Name
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointTypeFieldGuids.Name));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointTypeFieldGuids.Name), value);
+			}
+		}
+		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
+		{
+			get
+			{
+				if (!(_fieldMetadata == null))
+					return _fieldMetadata;
+				_fieldMetadata = GetFieldMetadata(typeof(IntegrationPointType));
+				return _fieldMetadata;
+			}
+		}
+		private static DynamicObjectAttribute _objectMetadata;
+		public override DynamicObjectAttribute ObjectMetadata
+		{
+			get
+			{
+				if (!(_objectMetadata == null))
+					return _objectMetadata;
+				_objectMetadata = GetObjectMetadata(typeof(IntegrationPointType));
+				return _objectMetadata;
+			}
+		}
+	}
+ 
+	[DynamicObject(ObjectTypes.IntegrationPointProfile, ObjectTypes.Workspace, "", ObjectTypeGuids.IntegrationPointProfile)]
+	public partial class IntegrationPointProfile : BaseRdo
+	{
+		[DynamicField(IntegrationPointProfileFields.DestinationConfiguration, IntegrationPointProfileFieldGuids.DestinationConfiguration, FieldTypes.LongText)]
+		public string DestinationConfiguration
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.DestinationConfiguration));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.DestinationConfiguration), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.DestinationProvider, IntegrationPointProfileFieldGuids.DestinationProvider, FieldTypes.SingleObject)]
+		public int? DestinationProvider
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(IntegrationPointProfileFieldGuids.DestinationProvider));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(IntegrationPointProfileFieldGuids.DestinationProvider), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.EmailNotificationRecipients, IntegrationPointProfileFieldGuids.EmailNotificationRecipients, FieldTypes.LongText)]
+		public string EmailNotificationRecipients
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.EmailNotificationRecipients));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.EmailNotificationRecipients), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.EnableScheduler, IntegrationPointProfileFieldGuids.EnableScheduler, FieldTypes.YesNo)]
+		public bool? EnableScheduler
+		{
+			get
+			{
+				return GetField<bool?>(new System.Guid(IntegrationPointProfileFieldGuids.EnableScheduler));
+			}
+			set
+			{
+				SetField<bool?>(new System.Guid(IntegrationPointProfileFieldGuids.EnableScheduler), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.FieldMappings, IntegrationPointProfileFieldGuids.FieldMappings, FieldTypes.LongText)]
+		public string FieldMappings
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.FieldMappings));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.FieldMappings), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.LogErrors, IntegrationPointProfileFieldGuids.LogErrors, FieldTypes.YesNo)]
+		public bool? LogErrors
+		{
+			get
+			{
+				return GetField<bool?>(new System.Guid(IntegrationPointProfileFieldGuids.LogErrors));
+			}
+			set
+			{
+				SetField<bool?>(new System.Guid(IntegrationPointProfileFieldGuids.LogErrors), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.NextScheduledRuntimeUTC, IntegrationPointProfileFieldGuids.NextScheduledRuntimeUTC, FieldTypes.Date)]
+		public DateTime? NextScheduledRuntimeUTC
+		{
+			get
+			{
+				return GetField<DateTime?>(new System.Guid(IntegrationPointProfileFieldGuids.NextScheduledRuntimeUTC));
+			}
+			set
+			{
+				SetField<DateTime?>(new System.Guid(IntegrationPointProfileFieldGuids.NextScheduledRuntimeUTC), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.OverwriteFields, IntegrationPointProfileFieldGuids.OverwriteFields, FieldTypes.SingleChoice)]
+		public Choice OverwriteFields
+		{
+			get
+			{
+				return GetField<Choice>(new System.Guid(IntegrationPointProfileFieldGuids.OverwriteFields));
+			}
+			set
+			{
+				SetField<Choice>(new System.Guid(IntegrationPointProfileFieldGuids.OverwriteFields), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.ScheduleRule, IntegrationPointProfileFieldGuids.ScheduleRule, FieldTypes.LongText)]
+		public string ScheduleRule
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.ScheduleRule));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.ScheduleRule), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.SourceConfiguration, IntegrationPointProfileFieldGuids.SourceConfiguration, FieldTypes.LongText)]
+		public string SourceConfiguration
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.SourceConfiguration));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.SourceConfiguration), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.SourceProvider, IntegrationPointProfileFieldGuids.SourceProvider, FieldTypes.SingleObject)]
+		public int? SourceProvider
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(IntegrationPointProfileFieldGuids.SourceProvider));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(IntegrationPointProfileFieldGuids.SourceProvider), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.Type, IntegrationPointProfileFieldGuids.Type, FieldTypes.SingleObject)]
+		public int? Type
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(IntegrationPointProfileFieldGuids.Type));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(IntegrationPointProfileFieldGuids.Type), value);
+			}
+		}
+		public const int NameFieldLength = 255;
+		[DynamicField(IntegrationPointProfileFields.Name, IntegrationPointProfileFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
+		public string Name
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.Name));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.Name), value);
+			}
+		}
+		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
+		{
+			get
+			{
+				if (!(_fieldMetadata == null))
+					return _fieldMetadata;
+				_fieldMetadata = GetFieldMetadata(typeof(IntegrationPointProfile));
+				return _fieldMetadata;
+			}
+		}
+		private static DynamicObjectAttribute _objectMetadata;
+		public override DynamicObjectAttribute ObjectMetadata
+		{
+			get
+			{
+				if (!(_objectMetadata == null))
+					return _objectMetadata;
+				_objectMetadata = GetObjectMetadata(typeof(IntegrationPointProfile));
+				return _objectMetadata;
+			}
+		}
+	}
+
 }

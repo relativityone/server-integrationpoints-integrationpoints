@@ -74,7 +74,7 @@
 		var model = {};
 		var artifactID = 0;
 		IP.data.ajax({
-			url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.data.params['artifactID']),
+			url: IP.utils.generateWebAPIURL(IP.data.params['apiControllerName'], IP.data.params['artifactID']),
 			type: 'Get'
 		}).then(function (result) {
 			vm = new viewModel();
@@ -171,7 +171,7 @@
 			if (typeof (save) != 'undefined') {
 				return;
 			}
-			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model) }).then(function (result) {
+			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL(IP.data.params['apiControllerName']), data: JSON.stringify(model) }).then(function (result) {
 				//redirect to page!!
 				IP.unsavedChangesHandler.unregister();
 				$('#save').attr('save', 'true');

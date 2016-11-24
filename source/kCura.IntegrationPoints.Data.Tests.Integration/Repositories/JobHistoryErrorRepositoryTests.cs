@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_instance = repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			_jobHistory = CreateJobHistoryOnIntegrationPoint(
 				integrationPointCreated.ArtifactID, 

@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			try
 			{
-				var model = new IntegrationModel();
+				var model = new IntegrationPointModel();
 				model.ArtifactID = id;
 				if (id > 0)
 				{
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
-		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
+		public HttpResponseMessage Update(int workspaceID, IntegrationPointModel model)
 		{
 			using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 			{

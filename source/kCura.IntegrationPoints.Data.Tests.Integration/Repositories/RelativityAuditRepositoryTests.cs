@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			// arrange
 			const string auditMessage = "Test audit.";
-			IntegrationModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
+			IntegrationPointModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
 				"CreateAuditRecord ", "Append Only");
 			model = CreateOrUpdateIntegrationPoint(model);
 

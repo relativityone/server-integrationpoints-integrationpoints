@@ -2,17 +2,21 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
 using Relativity.CustomPages;
+using Timer = System.Timers.Timer;
 
 namespace kCura.IntegrationPoints.Web.SignalRHubs
 {
@@ -20,31 +24,32 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 	public class IntegrationPointDataHub : Hub
 	{
 		private static SortedDictionary<string, IntegrationPointDataHubInput> _tasks;
-		private static System.Timers.Timer _updateTimer;
-		private int _updateInterval = 5000;
-		private int _intervalBetweentasks = 100;
-		private IContextContainer _context;
-		private IManagerFactory _managerFactory;
-		private IHelperClassFactory _helperClassFactory;
-		private IIntegrationPointManager _integrationPointManager;
-		private IJobHistoryManager _jobHistoryManager;
-		private IQueueManager _queueManager;
-		private IStateManager _stateManager;
+		private static Timer _updateTimer;
+		private readonly IButtonStateBuilder _buttonStateBuilder;
+		private readonly IContextContainer _contextContainer;
+		private readonly IHelperClassFactory _helperClassFactory;
+		private readonly IIntegrationPointManager _integrationPointManager;
+		private readonly int _intervalBetweentasks = 100;
+		private readonly IManagerFactory _managerFactory;
+		private readonly int _updateInterval = 5000;
 
-		public IntegrationPointDataHub() :
-			this(new ContextContainer(ConnectionHelper.Helper()), new ManagerFactory(ConnectionHelper.Helper()), new HelperClassFactory())
+		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory(), new ManagerFactory(ConnectionHelper.Helper()))
 		{
+			var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
+			var queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+			var jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+			var stateManager = _managerFactory.CreateStateManager();
+
+			_buttonStateBuilder = new ButtonStateBuilder(_integrationPointManager, queueManager, jobHistoryManager, stateManager, permissionRepository);
 		}
 
-		internal IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory, IHelperClassFactory helperClassFactory)
+		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory,
+			IManagerFactory managerFactory)
 		{
-			_context = context;
-			_managerFactory = managerFactory;
+			_contextContainer = contextContainer;
 			_helperClassFactory = helperClassFactory;
-			_integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
-			_jobHistoryManager = _managerFactory.CreateJobHistoryManager(_context);
-			_queueManager = _managerFactory.CreateQueueManager(_context);
-			_stateManager = _managerFactory.CreateStateManager();
+			_managerFactory = managerFactory;
+			_integrationPointManager = managerFactory.CreateIntegrationPointManager(_contextContainer);
 
 			if (_tasks == null)
 			{
@@ -53,20 +58,16 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			if (_updateTimer == null)
 			{
-				_updateTimer = new System.Timers.Timer(_updateInterval);
+				_updateTimer = new Timer(_updateInterval);
 				_updateTimer.Elapsed += _updateTimer_Elapsed;
 				_updateTimer.Start();
 			}
 		}
 
-		public override System.Threading.Tasks.Task OnConnected()
+		internal IntegrationPointDataHub(IButtonStateBuilder buttonStateBuilder, IContextContainer contextContainer, IHelperClassFactory helperClassFactory,
+			IManagerFactory managerFactory) : this(contextContainer, helperClassFactory, managerFactory)
 		{
-			return base.OnConnected();
-		}
-
-		public override System.Threading.Tasks.Task OnReconnected()
-		{
-			return base.OnReconnected();
+			_buttonStateBuilder = buttonStateBuilder;
 		}
 
 		public override Task OnDisconnected(bool stopCalled)
@@ -77,11 +78,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 		public void GetIntegrationPointUpdate(int workspaceId, int artifactId)
 		{
-			int userId = ((ICPHelper)_context.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
+			int userId = ((ICPHelper) _contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
 			AddTask(workspaceId, artifactId, userId);
 		}
 
-		private void _updateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		private void _updateTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			try
 			{
@@ -92,41 +93,23 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					{
 						IntegrationPointDataHubInput input = _tasks[key];
 						IntegrationPointDTO integrationPointDTO = _integrationPointManager.Read(input.WorkspaceId, input.ArtifactId);
-						bool integrationPointHasErrors = integrationPointDTO.HasErrors.GetValueOrDefault(false);
 
 						Core.Constants.SourceProvider sourceProvider = _integrationPointManager.GetSourceProvider(input.WorkspaceId, integrationPointDTO);
-						bool sourceProviderIsRelativity = (sourceProvider == Core.Constants.SourceProvider.Relativity);
+						bool sourceProviderIsRelativity = sourceProvider == Core.Constants.SourceProvider.Relativity;
 
-						if (integrationPointDTO != null)
+						IntegrationPointModel model = new IntegrationPointModel
 						{
-							IntegrationModel model = new IntegrationModel()
-							{
-								HasErrors = integrationPointDTO.HasErrors,
-								LastRun = integrationPointDTO.LastRuntimeUTC,
-								NextRun = integrationPointDTO.NextScheduledRuntimeUTC
-							};
+							HasErrors = integrationPointDTO.HasErrors,
+							LastRun = integrationPointDTO.LastRuntimeUTC,
+							NextRun = integrationPointDTO.NextScheduledRuntimeUTC
+						};
 
-							var buttonStates = new ButtonStateDTO();
-							var onClickEvents = new OnClickEventDTO();
-							IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
-							StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(input.WorkspaceId, input.ArtifactId);
-							bool hasStoppableJobs = stoppableJobCollection.HasStoppableJobs;
-							bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
-							if (sourceProviderIsRelativity)
-							{
-								// NOTE: we are always passing true for now. Once we figure out why the ExecutionIdentity.CurrentUser isn't always the same -- biedrzycki: May 25th, 2016
-								buttonStates = _stateManager.GetRelativityProviderButtonState(hasJobsExecutingOrInQueue, integrationPointHasErrors, true, hasStoppableJobs);
-								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId,
-									(RelativityButtonStateDTO)buttonStates);
-							}
-							else
-							{
-								buttonStates = _stateManager.GetButtonState(hasJobsExecutingOrInQueue, hasStoppableJobs);
-								onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId, buttonStates);
-							}
+						IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
 
-							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
-						}
+						var buttonStates = _buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
+						var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId, buttonStates);
+
+						Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
 
 						//sleep between getting each stats to get SQL Server a break
 						Thread.Sleep(_intervalBetweentasks);
@@ -170,8 +153,13 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					if (_tasks.ContainsKey(key))
 					{
 						if (_tasks[key].ConnectionIds.Contains(Context.ConnectionId))
+						{
 							_tasks[key].ConnectionIds.Remove(Context.ConnectionId);
-						if (_tasks[key].ConnectionIds.Count == 0) _tasks.Remove(key);
+						}
+						if (_tasks[key].ConnectionIds.Count == 0)
+						{
+							_tasks.Remove(key);
+						}
 					}
 				}
 			}
@@ -179,7 +167,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 		private string GetKey(int workspaceId, int artifactId, int userId)
 		{
-			return string.Format("{0}{1}{2}", userId, workspaceId, artifactId);
+			return $"{userId}{workspaceId}{artifactId}";
 		}
 	}
 }

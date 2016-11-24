@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_fileCountValidator = fileCountValidator;
 		}
 
-		public ValidationResult Validate(int workspaceID, IntegrationModel model)
+		public ValidationResult Validate(int workspaceID, IntegrationPointModel model)
 		{
 			IEnumerable<FieldMap> fieldMap = JsonConvert.DeserializeObject<IEnumerable<FieldMap>>(model.Map);
 			ExportUsingSavedSearchSettings sourceSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(model.SourceConfiguration);

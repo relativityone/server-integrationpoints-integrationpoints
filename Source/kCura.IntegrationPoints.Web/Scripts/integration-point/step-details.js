@@ -274,6 +274,44 @@ var IP = IP || {};
 		this.isDestinationObjectDisabled = ko.observable(false);
 	};
 
+	var Profile = function (p, parentModel) {
+		try {
+			p = JSON.parse(p);
+		} catch (e) {
+			p = p;
+		}
+		this.settings = $.extend({}, p);
+		var self = this;
+		self.disable = parentModel.hasBeenRun();
+
+		this.templateID = 'profileConfig';
+
+		this.selectedProfile = ko.observable();
+
+		this.profileTypes = ko.observableArray();
+		this.profiles = [];
+
+		this.getSelectedProfile = function (value) {
+			var selectedItem = ko.utils.arrayFirst(self.profiles, function (item) {
+				if (item.artifactID === value) {
+					return item;
+				}
+			});
+			return selectedItem;
+		};
+
+		this.getProfiles = function (ipType) {
+			var profilePromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetByType', ipType) });
+			profilePromise.then(function (result) {
+				var profileTypes = $.map(result, function (entry) {
+					return new Choice(entry.name, entry.artifactID);
+				});
+				self.profileTypes(profileTypes);
+				self.profiles = result;
+			});
+		};
+	};
+
 	var Scheduler = function (model) {
 		var options = $.extend({}, {
 			enabled: 'false',
@@ -570,10 +608,13 @@ var IP = IP || {};
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
 
-		this.isExportType = ko.observable(settings.isExportType).extend({ required: true });
 
-		this.isExportType.subscribe(function (value) {
-			self.setExportTypeVisibility(value);
+		this.integrationPointTypes = ko.observableArray();
+		this.type = ko.observable(settings.type).extend({ required: true });
+
+		this.type.subscribe(function (value) {
+			self.setTypeVisibility(value);
+			self.profile.getProfiles(value);
 		});
 
 		this.isEdit = ko.observable(settings !== undefined && parseInt(settings.artifactID) > 0)
@@ -592,15 +633,28 @@ var IP = IP || {};
 		var destinationTypePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') });
 		var rdoFilterPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetAll') });
 		var defaultRdoTypeIdPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetDefaultRdoTypeId') });
+		var ipTypesPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointTypes') });
 
 		self.destination = new Destination(settings.destination, self);
 		self.source = new Source(settings.source, self);
+		self.profile = new Profile(settings.profile, self);
+		self.profile.selectedProfile.subscribe(function (profileId) {
+			self.loadProfile(profileId);
+		});
+		self.loadProfile = function (profileId) {
+			if (!!profileId) {
+				var item = self.profile.getSelectedProfile(profileId);
+				console.log(item);
+			}
+		}
+
 
 		root.data.deferred().all([
 				sourceTypePromise,
 				destinationTypePromise,
 				rdoFilterPromise,
-				defaultRdoTypeIdPromise
+				defaultRdoTypeIdPromise,
+				ipTypesPromise
 		]).then(function (result) {
 
 			var sTypes = $.map(result[0], function (entry) {
@@ -621,6 +675,10 @@ var IP = IP || {};
 
 			self.DefaultRdoTypeId = result[3];
 
+			var ipTypes = $.map(result[4], function (entry) {
+				return new Choice(entry.name, entry.identifier, entry.artifactId);
+			});
+
 			self.destination.destinationTypes(dTypes);
 			self.destination.allRdoTypes(rdoTypes);
 
@@ -633,8 +691,9 @@ var IP = IP || {};
 			self.source.sourceTypes(sTypes);
 			self.source.updateSelectedType();
 
-			self.setExportTypeVisibility(self.isExportType());
-
+			self.integrationPointTypes(ipTypes);
+			self.setTypeVisibility(self.type());
+			self.profile.getProfiles(self.type());
 		});
 
 		this.destinationProvider = settings.destinationProvider;
@@ -664,34 +723,43 @@ var IP = IP || {};
 
 		this.isTypeDisabled = ko.observable(false);
 
-		self.setExportTypeVisibility = function (isExportType) {
-			if (isExportType === undefined && self.destinationProvider != null) {
-				if (self.source.selectedType() == null || self.source.selectedType() === '423b4d43-eae9-4e14-b767-17d629de4bb2') {
-					self.isExportType('true');
+		this.getSelectedType = function (value, comparator) {
+			var selectedPath = ko.utils.arrayFirst(self.integrationPointTypes(), function (item) {
+				if (comparator(item, value)) {
+					return item;
 				}
-				else {
-					self.isExportType('false');
-				}
+			});
+			return selectedPath;
+		};
+
+		this.setTypeVisibility = function (type) {
+			var isExportType = true;
+			var exportGuid = "dbb2860a-5691-449b-bc4a-e18d8519eb3a";
+			if (type === undefined || type === 0) {
+				type = self.getSelectedType(exportGuid, function (item, guid) { return item.value === guid }).artifactID;
+				isExportType = true;
+				self.type(type);
+			}
+			else {
+				var guid = self.getSelectedType(type, function (item, artifactID) { return item.artifactID === artifactID }).value;
+				isExportType = guid === exportGuid;
 			}
 
 			if (self.hasBeenRun() || self.isEdit()) {
 				self.source.isSourceProviderDisabled(true);
 				self.destination.isDestinationProviderDisabled(true);
-				self.destination.isDestinationObjectDisabled(true)
-				self.isTypeDisabled(true)
+				self.destination.isDestinationObjectDisabled(true);
+				self.isTypeDisabled(true);
 			}
 			else {
-				if (isExportType === "false") {
-					self.source.displayRelativityInSourceTypes(false);
-					self.source.isSourceProviderDisabled(false);
+				self.source.displayRelativityInSourceTypes(isExportType);
+				self.source.isSourceProviderDisabled(isExportType);
+				self.destination.isDestinationProviderDisabled(!isExportType);
+				if (isExportType === false) {
 					self.destination.setRelativityAsDestinationProvider();
-					self.destination.isDestinationProviderDisabled(true);
 				} else {
-					self.source.displayRelativityInSourceTypes(true);
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
-					self.source.isSourceProviderDisabled(true);
-					self.destination.isDestinationProviderDisabled(false);
 				}
 			}
 		};

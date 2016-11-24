@@ -178,9 +178,13 @@
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
+    <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
+    <Compile Include="IntegrationPointBaseQuery.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
+    <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Repositories\Implementations\SqlWorkspacesRepository.cs" />
     <Compile Include="Repositories\IWorkspacesRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />

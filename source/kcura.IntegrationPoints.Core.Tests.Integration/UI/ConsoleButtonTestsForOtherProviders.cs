@@ -56,8 +56,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 			try
 			{
 				//Arrange
-				IntegrationModel integrationModel = CreateDefaultLdapIntegrationModel("Ldap_StopButton_SetsStopStateOnClick_Success");
-				IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+				IntegrationPointModel integrationModel = CreateDefaultLdapIntegrationModel("Ldap_StopButton_SetsStopStateOnClick_Success");
+				IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";

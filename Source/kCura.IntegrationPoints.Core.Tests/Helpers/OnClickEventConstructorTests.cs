@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		{
 			//Arrange
 			string expectedViewErrorsOnClickEvent = ViewErrorsLinkSetup();
-			var buttonStates = new RelativityButtonStateDTO()
+			var buttonStates = new ButtonStateDTO()
 			{
 				RunButtonEnabled = true,
 				RetryErrorsButtonEnabled = true,
@@ -56,21 +56,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			};
 
 			//Act
-			RelativityOnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
-				buttonStates);
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
 			
 			//Assert
 			Assert.IsTrue(onClickEvents.RunOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == $"IP.stopJob({_integrationPointId},{_workspaceId})");
+			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId})");
 		}
 
 		[Test]
 		public void GetOnClickEventsForRelativityProvider_GoldFlow_AllButtonsDisabled()
 		{
 			//Arrange
-			var buttonStates = new RelativityButtonStateDTO()
+			var buttonStates = new ButtonStateDTO()
 			{
 				RunButtonEnabled = false,
 				RetryErrorsButtonEnabled = false,
@@ -79,14 +79,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			};
 
 			//Act
-			RelativityOnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
-				buttonStates);
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
 
 			//Assert
 			Assert.IsTrue(onClickEvents.RunOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == String.Empty);
+			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId})");
 		}
 
 		[Test]

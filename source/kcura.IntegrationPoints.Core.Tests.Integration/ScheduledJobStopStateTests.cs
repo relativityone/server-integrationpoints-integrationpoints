@@ -64,8 +64,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				kCura.IntegrationPoints.Injection.InjectionHelper.InitializeAndEnableInjectionPoints(new List<kCura.Injection.Injection>() { cansu });
 
 				//IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
-				IntegrationModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", "01/01/2016", "01/01/2017", kCura.ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
-				IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+				IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", "01/01/2016", "01/01/2017", kCura.ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
+				IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 				kCura.IntegrationPoints.Injection.InjectionHelper.WaitUntilInjectionPointIsReached("E702D4CF-0468-4FEA-BA8D-6C8C20ED91F4", DateTime.Now);
 

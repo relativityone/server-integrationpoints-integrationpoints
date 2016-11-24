@@ -622,7 +622,7 @@
 			self.TextPrecedenceFields(fields);
 		}, self.ArtifactTypeID);
 
-		Picker.create("textPrecedencePicker", "ListPicker", textPrecedencePickerViewModel);
+		Picker.create("Fileshare","textPrecedencePicker", "ListPicker", textPrecedencePickerViewModel);
 
 		this.openTextPrecedencePicker = function () {
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
@@ -645,7 +645,7 @@
 			self.ImagePrecedence(productions);
 		});
 
-		Picker.create("imageProductionPicker", "ListPicker", imageProductionPickerViewModel);
+		Picker.create("Fileshare","imageProductionPicker", "ListPicker", imageProductionPickerViewModel);
 
 		this.openImageProductionPicker = function () {
 			imageProductionPickerViewModel.open(self.ImagePrecedence());

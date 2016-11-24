@@ -49,6 +49,37 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "Save",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "Save" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "SaveProfileUsingIP",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/SaveAsProfile/{integrationPointArtifactId}/{profileName}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "SaveUsingIntegrationPoint" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetProfile",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/{artifactId}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "Get" },
+				constraints: new { artifactId = @"^[0-9]+$" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetAllProfiles",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/GetAll",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "GetAll" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetProfilesByType",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/GetByType/{artifactId}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "GetByType" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "RelativityViewSettings",
 				routeTemplate: "{workspaceID}/api/relativity/view",
 				defaults: new { controller = "relativity", action = "GetViewFields" }

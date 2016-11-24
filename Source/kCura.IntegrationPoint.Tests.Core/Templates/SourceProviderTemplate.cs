@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -136,14 +137,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		#region Helper methods
 
-		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)
+		protected IntegrationPointModel CreateOrUpdateIntegrationPoint(IntegrationPointModel model)
 		{
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
 
 			int integrationPointArtifactId = service.SaveIntegration(model);
 
 			IntegrationPoints.Data.IntegrationPoint rdo = service.GetRdo(integrationPointArtifactId);
-			IntegrationModel newModel = new IntegrationModel(rdo);
+			IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
 			return newModel;
 		}
 
@@ -168,12 +169,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return audits;
 		}
 
-		protected IntegrationModel RefreshIntegrationModel(IntegrationModel model)
+		protected IntegrationPointModel RefreshIntegrationModel(IntegrationPointModel model)
 		{
 			ICaseServiceContext caseServiceContext = Container.Resolve<ICaseServiceContext>();
 
 			var ip = caseServiceContext.RsapiService.IntegrationPointLibrary.Read(model.ArtifactID);
-			return new IntegrationModel(ip);
+			return IntegrationPointModel.FromIntegrationPoint(ip);
 		}
 
 		protected void AssignJobToAgent(int agentId, long jobId)

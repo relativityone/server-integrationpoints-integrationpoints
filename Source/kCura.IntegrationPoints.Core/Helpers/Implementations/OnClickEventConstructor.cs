@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
 	public class OnClickEventConstructor : IOnClickEventConstructor
 	{
-		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainer _contextContainer;
+		private readonly IManagerFactory _managerFactory;
 
 		public OnClickEventConstructor(IContextContainer contextContainer, IManagerFactory managerFactory)
 		{
@@ -17,30 +17,21 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			_contextContainer = contextContainer;
 		}
 
-		public RelativityOnClickEventDTO GetOnClickEventsForRelativityProvider(int workspaceId, int integrationPointId, RelativityButtonStateDTO buttonStates)
+		public OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates)
 		{
-			string runEvent = buttonStates.RunButtonEnabled ? GetActionButtonRunEvent(integrationPointId, workspaceId) : String.Empty;
-			string retryErrorsEvent = buttonStates.RetryErrorsButtonEnabled ? $"IP.retryJob({integrationPointId},{workspaceId})" : String.Empty;
-			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : String.Empty;
-			string stopEvent = buttonStates.StopButtonEnabled ? GetActionButtonStopEvent(integrationPointId, workspaceId) : String.Empty;
-			
-			return new RelativityOnClickEventDTO()
+			string runEvent = buttonStates.RunButtonEnabled ? GetActionButtonRunEvent(integrationPointId, workspaceId) : string.Empty;
+			string retryErrorsEvent = buttonStates.RetryErrorsButtonEnabled ? GetActionButtonRetryEvent(integrationPointId, workspaceId) : string.Empty;
+			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : string.Empty;
+			string stopEvent = buttonStates.StopButtonEnabled ? GetActionButtonStopEvent(integrationPointId, workspaceId) : string.Empty;
+			string saveAsProfileEvent = GetActionButtonSaveAsProfile(integrationPointId, workspaceId);
+
+			return new OnClickEventDTO
 			{
 				RunOnClickEvent = runEvent,
 				RetryErrorsOnClickEvent = retryErrorsEvent,
 				ViewErrorsOnClickEvent = viewErrorsEvent,
-				StopOnClickEvent = stopEvent
-			};
-		}
-
-		public OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates)
-		{
-			string runEvent = buttonStates.RunButtonEnabled ? GetActionButtonRunEvent(integrationPointId, workspaceId) : String.Empty;
-			string stopEvent = buttonStates.StopButtonEnabled ? GetActionButtonStopEvent(integrationPointId, workspaceId) : String.Empty;
-			return new OnClickEventDTO()
-			{
-				RunOnClickEvent = runEvent,
-				StopOnClickEvent = stopEvent
+				StopOnClickEvent = stopEvent,
+				SaveAsProfileOnClickEvent = saveAsProfileEvent
 			};
 		}
 
@@ -52,6 +43,16 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 		private string GetActionButtonStopEvent(int integrationPointId, int workspaceId)
 		{
 			return $"IP.stopJob({integrationPointId},{workspaceId})";
+		}
+
+		private string GetActionButtonRetryEvent(int integrationPointId, int workspaceId)
+		{
+			return $"IP.retryJob({integrationPointId},{workspaceId})";
+		}
+
+		private string GetActionButtonSaveAsProfile(int integrationPointId, int workspaceId)
+		{
+			return $"IP.saveAsProfile({integrationPointId},{workspaceId})";
 		}
 
 		private string GetViewErrorsLinkEvent(int workspaceId, int integrationPointId)
@@ -66,20 +67,21 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			Dictionary<Guid, int> guidsAndArtifactIds = artifactGuidManager.GetArtifactIdsForGuids(workspaceId, new[]
 			{
-					JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New,
-					errorErrorStatusFieldGuid,
-					jobHistoryFieldGuid
-				});
+				JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New,
+				errorErrorStatusFieldGuid,
+				jobHistoryFieldGuid
+			});
 
-			int jobHistoryErrorStatusArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(workspaceId, guidsAndArtifactIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
+			int jobHistoryErrorStatusArtifactViewFieldId =
+				fieldManager.RetrieveArtifactViewFieldId(workspaceId, guidsAndArtifactIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
 			int jobHistoryErrorStatusNewChoiceArtifactId = guidsAndArtifactIds[JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New];
 			int jobHistoryErrorDescriptorArtifactTypeId = objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(workspaceId, new Guid(JobHistoryErrorDTO.ArtifactTypeGuid));
 			int jobHistoryArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(workspaceId, guidsAndArtifactIds[jobHistoryFieldGuid]).GetValueOrDefault();
 			int jobHistoryInstanceArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceId, integrationPointId);
 
 			string onClickEvent = $"window.location='../../Case/IntegrationPoints/ErrorsRedirect.aspx?ErrorStatusArtifactViewFieldID={jobHistoryErrorStatusArtifactViewFieldId}"
-					+ $"&ErrorStatusNewChoiceArtifactId={jobHistoryErrorStatusNewChoiceArtifactId}&JobHistoryErrorArtifactTypeId={jobHistoryErrorDescriptorArtifactTypeId}"
-					+ $"&JobHistoryArtifactViewFieldID={jobHistoryArtifactViewFieldId}&JobHistoryInstanceArtifactId={jobHistoryInstanceArtifactId}'; return false;";
+								+ $"&ErrorStatusNewChoiceArtifactId={jobHistoryErrorStatusNewChoiceArtifactId}&JobHistoryErrorArtifactTypeId={jobHistoryErrorDescriptorArtifactTypeId}"
+								+ $"&JobHistoryArtifactViewFieldID={jobHistoryArtifactViewFieldId}&JobHistoryInstanceArtifactId={jobHistoryInstanceArtifactId}'; return false;";
 
 			return onClickEvent;
 		}
