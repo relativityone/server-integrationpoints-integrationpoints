@@ -87,9 +87,9 @@ def passed = false
 			stage('Checkout Automation') {
 
 				dir('C:/SourceCode') {
-
+				
 					checkout([$class : 'GitSCM',
-							branches: [[name: '*///develop']],
+							branches : [[name : 'develop']],
 							doGenerateSubmoduleConfigurations : false,
 							extensions :
 							[[$class : 'CleanBeforeCheckout'],
@@ -98,8 +98,8 @@ def passed = false
 							submoduleCfg : [],
 							userRemoteConfigs :
 							[[credentialsId : 'TalosCI (bitbucket)',
-									refspec : '+refs/heads/develop:refs/remotes/origin/develop',
-									url : 'ssh://git@git.kcura.com:7999/aut/automation.git']]])
+								url : 'ssh://git@git.kcura.com:7999/aut/automation.git']]])
+
 				}					
 			}
 
