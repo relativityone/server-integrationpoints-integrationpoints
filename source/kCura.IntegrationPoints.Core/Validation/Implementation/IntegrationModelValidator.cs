@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
@@ -19,15 +20,14 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			_serializer = serializer;
 		}
 
-		public ValidationResult Validate(IntegrationModel model, SourceProvider sourceProvider,
-			DestinationProvider destinationProvider)
+		public ValidationResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
 		{
 			var result = new ValidationResult();
-			
+
 			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
 			var integrationModelValidation = new IntegrationModelValidation(model, sourceProvider.Identifier, destinationProvider.Identifier);
-            integrationModelValidation.ArtifactTypeId = destinationConfiguration.ArtifactTypeId;
+			integrationModelValidation.ArtifactTypeId = destinationConfiguration.ArtifactTypeId;
 
 			if (model.Scheduler.EnableScheduler)
 			{
@@ -58,7 +58,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			{
 				result.Add(validator.Validate(integrationModelValidation));
 			}
-
 
 			return result;
 		}

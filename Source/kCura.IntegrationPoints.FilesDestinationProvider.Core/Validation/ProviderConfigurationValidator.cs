@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			_validatorsFactory = validatorsFactory;
 		}
 
-		public string Key => IntegrationModelValidator.GetSourceProviderValidatorKey(
+		public string Key => IntegrationModelValidator.GetProviderValidatorKey(
 			IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
 			IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID
 		);
