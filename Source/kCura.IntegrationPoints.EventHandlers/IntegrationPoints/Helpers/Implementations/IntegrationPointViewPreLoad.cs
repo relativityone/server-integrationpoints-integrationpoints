@@ -30,14 +30,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			if (IsRelativityProvider(artifact))
 			{
 				IDictionary<string,object> sourceConfiguration = GetSourceConfiguration(artifact);
-				IDictionary<string, object> destinationConfiguration = GetDestinationConfiguration(artifact);
-
+				
 				_relativityProviderSourceConfiguration.UpdateNames(sourceConfiguration);
-				_relativityProviderDestinationConfiguration.UpdateNames(destinationConfiguration);
-
 				artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(sourceConfiguration);
-				artifact.Fields[_fieldsConstants.DestinationConfiguration].Value.Value = JsonConvert.SerializeObject(destinationConfiguration);
 			}
+			IDictionary<string, object> destinationConfiguration = GetDestinationConfiguration(artifact);
+
+			_relativityProviderDestinationConfiguration.UpdateNames(destinationConfiguration);
+			artifact.Fields[_fieldsConstants.DestinationConfiguration].Value.Value = JsonConvert.SerializeObject(destinationConfiguration);
 		}
 
 		private bool IsRelativityProvider(Artifact artifact)
