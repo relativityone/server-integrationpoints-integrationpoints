@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
@@ -6,6 +7,7 @@ using kCura.EventHandler.CustomAttributes;
 using kCura.Relativity.Client;
 using Relativity.API;
 using ArtifactType = Relativity.ArtifactType;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -28,9 +30,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			};
 
 			List<int> artifactIds = RetrieveArtifactIdsByGuids(new List<string> {_PRE_LAOD_EVENT_HANDLER_GUID, _PAGE_INTERACTION_EVENT_HANDLER_GUID});
-
+			
 			if (artifactIds.Count > 0)
 			{
+				UnlinkFromApplication(artifactIds);
+
 				ResultSet deleteResults = DeleteByArtifactIds(artifactIds);
 				response.Success = deleteResults.Success;
 				if (!response.Success)
@@ -40,6 +44,30 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			}
 
 			return response;
+		}
+
+		private void UnlinkFromApplication(List<int> artifactIds)
+		{
+			try
+			{
+				string sqlStatement = @"DELETE FROM ApplicationEventHandler
+								WHERE EventHandlerArtifactID IN 
+									({0})
+								AND ApplicationArtifactID =
+									(SELECT ArtifactID
+									FROM ArtifactGuid
+									WHERE ArtifactGuid = @ApplicationGuid)";
+
+				var ids = string.Join(",", artifactIds);
+				SqlParameter applicationGuidParameter = new SqlParameter("@ApplicationGuid", Constants.IntegrationPoints.APPLICATION_GUID_STRING);
+
+				IDBContext context = Helper.GetDBContext(Helper.GetActiveCaseID());
+				context.ExecuteNonQuerySQLStatement(string.Format(sqlStatement, ids), new[] {applicationGuidParameter});
+			}
+			catch (Exception e)
+			{
+				Helper.GetLoggerFactory().GetLogger().ForContext<RemoveUnusedEventHandlers>().LogError(e, "Failed to unlink event handlers from application");
+			}
 		}
 
 		private List<int> RetrieveArtifactIdsByGuids(IList<string> guids)
