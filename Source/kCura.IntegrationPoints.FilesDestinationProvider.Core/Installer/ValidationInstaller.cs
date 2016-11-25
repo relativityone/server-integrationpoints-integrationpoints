@@ -13,7 +13,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             // only register provider's top most validator
-            container.Register(Component.For<IValidator>().ImplementedBy<ProviderConfigurationValidator>());
+            container.Register(Component.For<IValidator>()
+				.ImplementedBy<ProviderConfigurationValidator>()
+				.Named($"{nameof(ProviderConfigurationValidator)}+{nameof(IValidator)}")
+				.LifestyleTransient()
+			);
         }
     }
 }
