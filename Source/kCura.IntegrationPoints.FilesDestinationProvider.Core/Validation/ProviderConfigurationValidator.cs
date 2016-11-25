@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID
 		);
 
-		public ValidationResult PreValidate(IntegrationModel model)
+		public ValidationResult Prevalidate(IntegrationModel model)
 		{
 			var result = new ValidationResult();
 
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public ValidationResult Validate(object value)
 		{
-			return Validate(value as IntegrationModelValidation);
+			return Validate(value as IntegrationModel);
 		}
 
 		public ValidationResult Validate(IntegrationModel model)
