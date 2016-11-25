@@ -524,18 +524,17 @@ var IP = IP || {};
 		self.settings = settings;
 		this.template = ko.observable();
 		this.hasTemplate = false;
-		this.model = new Model();
 		this.loadModel = function (ip) {
 			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
 			this.model.sourceConfiguration = ip.sourceConfiguration;
-			this.model.Map = ip.Map;
+			this.model.map = ip.map;
 		};
 
 		IP.messaging.subscribe('loadProfile', function (profile) {
 			self.model.loadProfile(profile);
 			self.model.sourceConfiguration = profile.sourceConfiguration;
-			self.model.Map = profile.Map;
+			self.model.map = profile.map;
 		});
 
 		this.getTemplate = function () {
