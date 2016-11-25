@@ -82,7 +82,7 @@ def passed = false
 			}
 		}
 
-		node('buildslave') {
+		node('robot') {
 
 			stage('Checkout Automation') {
 
