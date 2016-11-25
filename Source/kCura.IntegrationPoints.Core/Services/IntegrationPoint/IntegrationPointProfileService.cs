@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IContextContainerFactory contextContainerFactory,
 			ISerializer serializer, IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory,new IntegrationPointProfileFieldGuidsConstants())
 		{
 		}
 

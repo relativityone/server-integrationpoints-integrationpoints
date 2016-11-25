@@ -104,7 +104,7 @@
 
 		// we need to have an identifier field in order not to break export
 		// based on sync worker which performs field mapping
-		if (!hasIdentifier) {
+		if (!hasIdentifier && fieldMap.length > 0) {
 			fieldMap[0].sourceField.isIdentifier = true;
 			fieldMap[0].destinationField.isIdentifier = true;
 			fieldMap[0].fieldMapType = "Identifier";

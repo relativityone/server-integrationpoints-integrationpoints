@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory,new IntegrationPointFieldGuidsConstants())
 		{
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;

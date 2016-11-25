@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
 	public abstract class IntegrationPointServiceBase<T> where T : BaseRdo, new()
 	{
+		private readonly IIntegrationPointBaseFieldGuidsConstants _guidsConstants;
 		protected ISerializer Serializer;
 		protected ICaseServiceContext Context;
 		protected IContextContainer ContextContainer;
@@ -30,18 +31,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected IntegrationPointServiceBase(IHelper helper, ICaseServiceContext context, IChoiceQuery choiceQuery,
 			ISerializer serializer, IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory)
+			IContextContainerFactory contextContainerFactory, IIntegrationPointBaseFieldGuidsConstants guidsConstants)
 		{
 			Serializer = serializer;
 			Context = context;
 			ChoiceQuery = choiceQuery;
 			ManagerFactory = managerFactory;
+			_guidsConstants = guidsConstants;
 			ContextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 		public IList<T> GetAllRDOs()
 		{
-			var integrationPointProfileQuery = new IntegrationPointBaseQuery<T>(Context.RsapiService);
-			return integrationPointProfileQuery.GetAllIntegrationPoints();
+			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
+			return query.GetAllIntegrationPoints();
 		}
 
 		public T GetRdo(int artifactId)
@@ -62,8 +64,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			if (artifactId > 0)
 			{
 				string fieldmap =
-						Context.RsapiService.IntegrationPointProfileLibrary.Read(artifactId, new Guid(IntegrationPointProfileFieldGuids.FieldMappings))
-							.FieldMappings;
+						Context.RsapiService.GetGenericLibrary<T>().Read(artifactId, new Guid(_guidsConstants.FieldMappings)).GetField<string>(new Guid(_guidsConstants.FieldMappings));
 
 				if (!String.IsNullOrEmpty(fieldmap))
 				{
