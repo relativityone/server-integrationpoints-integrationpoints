@@ -26,13 +26,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			DestinationProvider destinationProvider)
 		{
 			var result = new ValidationResult();
-
-			//TODO Figure out if deserialize these two below here??
-			//var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-			//var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);  //TODO Maybe ExportSettings or just send JSON????
-			//TODO var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(model.Map).ToList();
+			
+			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
 			var integrationModelValidation = new IntegrationModelValidation(model, sourceProvider.Identifier, destinationProvider.Identifier);
+            integrationModelValidation.ArtifactTypeId = destinationConfiguration.ArtifactTypeId;
 
 			if (model.Scheduler.EnableScheduler)
 			{

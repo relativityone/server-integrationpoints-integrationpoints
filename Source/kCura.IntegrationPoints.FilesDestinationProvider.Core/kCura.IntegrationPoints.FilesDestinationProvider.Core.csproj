@@ -170,7 +170,6 @@
     <Compile Include="Process\ExportProcessRunner.cs" />
     <Compile Include="Process\ExportSettingsBuilder.cs" />
     <Compile Include="Services\ExportInitProcessService.cs" />
-    <Compile Include="Services\ExportSettingsValidationService.cs" />
     <Compile Include="Process\IDelimitersBuilder.cs" />
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
@@ -191,11 +190,9 @@
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
-    <Compile Include="Validation\FieldsMappingValidator.cs" />
-    <Compile Include="Validation\FileCountValidator.cs" />
-    <Compile Include="Validation\IFileCountValidator.cs" />
-    <Compile Include="Validation\IPaddingValidator.cs" />
-    <Compile Include="Validation\PaddingValidator.cs" />
+    <Compile Include="Validation\Parts\ExportFileValidator.cs" />
+    <Compile Include="Validation\Parts\FileCountValidator.cs" />
+    <Compile Include="Validation\Parts\PaddingValidator.cs" />
     <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
@@ -206,8 +203,10 @@
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
     <Compile Include="SharedLibrary\ProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
-    <Compile Include="Validation\DestinationProviderConfigurationValidator.cs" />
-    <Compile Include="Validation\SourceProviderConfigurationValidator.cs" />
+    <Compile Include="Validation\Parts\BaseValidator.cs" />
+    <Compile Include="Validation\ProviderConfigurationValidator.cs" />
+    <Compile Include="Validation\ValidationMessages.cs" />
+    <Compile Include="Validation\ValidatorsFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -128,10 +128,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			PeriodicScheduleRule rule = null;
 			try
 			{
+				ValidateConfigurationWhenUpdatingObject(model);
+
 				IList<Choice> choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 				ip = model.ToRdo(choices);
-
-				ValidateConfigurationWhenUpdatingObject(model);
 
 				SourceProvider sourceProvider = GetSourceProvider(ip);
 				DestinationProvider destinationProvider = GetDestinationProvider(ip);

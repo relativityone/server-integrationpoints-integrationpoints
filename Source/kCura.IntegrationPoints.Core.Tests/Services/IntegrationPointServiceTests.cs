@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests.Helpers;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private readonly int _sourceProviderId = 321;
 		private readonly int _destinationProviderId = 424;
 		private readonly int _userId = 951;
-		private int _previousJobHistoryArtifactId = Int32.MaxValue;
+		private readonly int _previousJobHistoryArtifactId = Int32.MaxValue;
 
 		private IHelper _helper;
 		private ICaseServiceContext _caseServiceManager;
@@ -59,11 +60,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationPointManager _integrationPointManager;
 		private IErrorManager _errorManager;
 		private IJobHistoryManager _jobHistoryManager;
-
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
 		private PermissionCheckDTO _stopPermissionChecksResults;
 		private Data.JobHistory _previousJobHistory;
+		private IIntegrationModelValidator _integrationModelValidator;
 
 		[SetUp]
 		public void Setup()
@@ -85,10 +86,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
+			_integrationModelValidator = Substitute.For<IIntegrationModelValidator>();
+			_integrationModelValidator.Validate(Arg.Any<IntegrationModel>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>()).Returns(new ValidationResult());
 
-			_instance = Substitute.ForPartsOf<IntegrationPointService>(_helper, _caseServiceManager,
-				_contextContainerFactory, _serializer, _choiceQuery, _jobManager,
-				_jobHistoryService, _managerFactory);
+			_instance = Substitute.ForPartsOf<IntegrationPointService>(
+				_helper, 
+				_caseServiceManager,
+				_contextContainerFactory, 
+				_serializer, 
+				_choiceQuery, 
+				_jobManager,
+				_jobHistoryService, 
+				_managerFactory,
+				_integrationModelValidator
+			);
 
 			_caseServiceManager.RsapiService = Substitute.For<IRSAPIService>();
 			_caseServiceManager.RsapiService.IntegrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
@@ -1399,8 +1410,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			}
 
 			string filteredNames = String.Join(",", propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
-			string expectedErrorString =
-				$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
+			string expectedErrorString = $"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
 
 			// Act
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), expectedErrorString);

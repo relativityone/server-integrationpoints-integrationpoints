@@ -42,9 +42,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IExportInitProcessService>().ImplementedBy<ExportInitProcessService>().LifestyleTransient());
 			container.Register(Component.For<IProductionService>().ImplementedBy<ProductionService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
-			container.Register(Component.For<IExportSettingsValidationService>().ImplementedBy<ExportSettingsValidationService>().LifestyleTransient());
-			container.Register(Component.For<IPaddingValidator>().ImplementedBy<PaddingValidator>().LifestyleTransient());
-			container.Register(Component.For<IFileCountValidator>().ImplementedBy<FileCountValidator>().LifestyleTransient());
+			container.Register(Component.For<IIntegrationPointValidationService>().ImplementedBy<ProviderConfigurationValidator>().LifestyleTransient());
 		}
 	}
 }

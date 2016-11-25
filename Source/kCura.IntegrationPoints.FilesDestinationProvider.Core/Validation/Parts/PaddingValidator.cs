@@ -1,17 +1,23 @@
 ﻿using System;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters.Validator;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
-	public class PaddingValidator : IPaddingValidator
+	public class PaddingValidator : BaseValidator<ExportFile>
 	{
-		public ValidationResult Validate(int workspaceId, ExportFile exportFile, int totalDocCount)
+		public override ValidationResult Validate(ExportFile value)
+		{
+			return Validate(value, 0);
+		}
+
+		public ValidationResult Validate(ExportFile value, int totalDocCount)
 		{
 			//Logic extracted from SharedLibrary
-			var currentVolumeNumber = exportFile.VolumeInfo.VolumeStartNumber;
-			var currentSubdirectoryNumber = exportFile.VolumeInfo.SubdirectoryStartNumber;
+			var currentVolumeNumber = value.VolumeInfo.VolumeStartNumber;
+			var currentSubdirectoryNumber = value.VolumeInfo.SubdirectoryStartNumber;
 
 			var subdirectoryNumberPaddingWidth = (int)Math.Floor(Math.Log10(currentSubdirectoryNumber + 1) + 1);
 			var volumeNumberPaddingWidth = (int)Math.Floor(Math.Log10(currentVolumeNumber + 1) + 1);
@@ -20,9 +26,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			var subdirectoryLabelPaddingWidth = Math.Max(totalFilesNumberPaddingWidth, subdirectoryNumberPaddingWidth);
 
 			var warningValidator = new PaddingWarningValidator();
-			var isValid = warningValidator.IsValid(exportFile, volumeLabelPaddingWidth, subdirectoryLabelPaddingWidth);
+			var isValid = warningValidator.IsValid(value, volumeLabelPaddingWidth, subdirectoryLabelPaddingWidth);
 
-			return new ValidationResult(isValid, warningValidator.ErrorMessages);
+			// this validation results only in a warning
+			return new ValidationResult(true, warningValidator.ErrorMessages);
 		}
 	}
 }

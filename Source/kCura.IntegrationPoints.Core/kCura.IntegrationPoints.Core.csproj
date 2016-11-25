@@ -310,7 +310,7 @@
     <Compile Include="Services\IErrorService.cs" />
     <Compile Include="Services\IExportFieldsService.cs" />
     <Compile Include="Services\IExportProcessService.cs" />
-    <Compile Include="Services\IExportSettingsValidationService.cs" />
+    <Compile Include="Services\IIntegrationPointValidationService.cs" />
     <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\IProductionService.cs" />

@@ -8,13 +8,12 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
-	public class ValidationInstaller : IWindsorInstaller
-	{
-		public void Install(IWindsorContainer container, IConfigurationStore store)
-		{
-			container.Register(Component.For<IValidator>().ImplementedBy<FieldsMappingValidator>());
-			container.Register(Component.For<IValidator>().ImplementedBy<DestinationProviderConfigurationValidator>());
-			container.Register(Component.For<IValidator>().ImplementedBy<SourceProviderConfigurationValidator>());
-		}
-	}
+    public class ValidationInstaller : IWindsorInstaller
+    {
+        public void Install(IWindsorContainer container, IConfigurationStore store)
+        {
+            // only register provider's top most validator
+            container.Register(Component.For<IValidator>().ImplementedBy<ProviderConfigurationValidator>());
+        }
+    }
 }
