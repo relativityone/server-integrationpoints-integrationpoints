@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
@@ -45,6 +42,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 				result.Add(validator.Validate(model.NotificationEmails));
 			}
 
+			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.NAME])
+			{
+				result.Add(validator.Validate(model.Name));
+			}
+
 			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.FIELD_MAP])
 			{
 				result.Add(validator.Validate(integrationModelValidation));
@@ -52,24 +54,20 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			foreach (
 				var validator in
-					_validatorsMap[GetSourceProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
+					_validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
 			{
-				result.Add(validator.Validate(model.SourceConfiguration));
-			}
-
-			foreach (
-				var validator in
-					_validatorsMap[GetDestinationProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
-			{
-				result.Add(validator.Validate(model.Destination));
+				result.Add(validator.Validate(integrationModelValidation));
 			}
 
 
 			return result;
 		}
 
-		public static string GetSourceProviderValidatorKey(string sourceProviderId, string destinationProviderId)
+		public static string GetProviderValidatorKey(string sourceProviderId, string destinationProviderId)
 		{
+			sourceProviderId = destinationProviderId.ToUpper();
+			destinationProviderId = destinationProviderId.ToUpper();
+
 			return $"{sourceProviderId}+{destinationProviderId}";
 		}
 

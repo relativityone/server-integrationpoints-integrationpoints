@@ -276,8 +276,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="RelativityProviderValidator\DestinationProviderConfigurationValidator.cs" />
-    <Compile Include="RelativityProviderValidator\SourceProviderConfigurationValidator.cs" />
+    <Compile Include="Validation\Implementation\NameValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\ProviderConfigurationValidator.cs" />
     <Compile Include="Services\CustodianManager\IManagerQueueService.cs" />
     <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
@@ -385,7 +385,7 @@
     <Compile Include="Telemetry\TelemetryMetricProviderBase.cs" />
     <Compile Include="Validation\IIntegrationModelValidator.cs" />
     <Compile Include="Validation\Implementation\EmailValidator.cs" />
-    <Compile Include="RelativityProviderValidator\FieldsMappingValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\FieldsMappingValidator.cs" />
     <Compile Include="Validation\Implementation\IntegrationModelValidation.cs" />
     <Compile Include="Validation\Implementation\IntegrationModelValidator.cs" />
     <Compile Include="Validation\Implementation\SchedulerValidator.cs" />

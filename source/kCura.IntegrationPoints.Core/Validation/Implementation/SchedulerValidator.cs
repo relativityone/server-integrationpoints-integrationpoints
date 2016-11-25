@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		public string Key => Constants.IntegrationPoints.Validation.SCHEDULE;
 
+		public const string ERROR_SCHEDULER_NOT_INITIALIZED = "Scheduler object not initialized";
 		public const string ERROR_REQUIRED_VALUE = "This field is required: ";
 		public const string ERROR_INVALID_DATE_FORMAT = "Invalid string representation of a date: ";
 		public const string ERROR_INVALID_TIME_FORMAT = "Invalid string representation of a time: ";
@@ -34,9 +35,10 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		public ValidationResult Validate(object value)
 		{
+			var scheduler = value as Scheduler;
+			if(scheduler == null) { throw new Exception(ERROR_SCHEDULER_NOT_INITIALIZED); }
 			var result = new ValidationResult();
 
-			var scheduler = value as Scheduler;
 
 			result.Add(ValidateDates(scheduler));
 			result.Add(ValidateIntervals(scheduler));

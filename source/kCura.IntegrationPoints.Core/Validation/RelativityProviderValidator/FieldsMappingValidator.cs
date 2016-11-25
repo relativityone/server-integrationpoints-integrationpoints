@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -7,7 +8,7 @@ using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.Core.RelativityProviderValidator
+namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
 	public class FieldsMappingValidator : IValidator
 	{
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.RelativityProviderValidator
 		private readonly IFieldProvider _rdoFieldSynchronizerBase;
 		public string Key => Constants.IntegrationPoints.Validation.FIELD_MAP;
 
+		public const string ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED = "Integration model validation object not initialized";
 		public const string ERROR_SOURCE_FIELD_NOT_MAPPED = "All selected fields must be mapped. Source field not mapped to Destination: ";
 		public const string ERROR_DESTINATION_FIELD_NOT_MAPPED = "All selected fields must be mapped. Destination field not mapped to Source: ";
 		public const string ERROR_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED = "All selected fields must be mapped. Destination and Source fields not mapped.";
@@ -32,22 +34,22 @@ namespace kCura.IntegrationPoints.Core.RelativityProviderValidator
 		{
 			var result = new ValidationResult();
 			var integrationModel = value as IntegrationModelValidation;
+			if (integrationModel == null) { throw new Exception(ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED); }
 			bool mappedIdentifier = false;
-
-			if (integrationModel == null){return result;}
-
+			
 			if (integrationModel.SourceProviderId != IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID ||
 			    integrationModel.DestinationProviderId != Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString())
 			{
 				return result;
 			}
 
-			var fieldsMap = _serializer.Deserialize<IEnumerable<FieldMap>>(integrationModel.FieldsMap);
+			var fieldsMap = _serializer.Deserialize<List<FieldMap>>(integrationModel.FieldsMap);
 			
 			foreach (FieldMap fieldMap in fieldsMap)
 			{
 				result.Add(ValidateFieldMapped(fieldMap));
 				result.Add(ValidateFieldIdentifierMappedWithAnotherIdentifier(fieldMap));
+				//TODO Validate mapped field exist in Destination wsk Fields: ValidateDestinationFields
 
 				if (fieldMap.FieldMapType == FieldMapTypeEnum.Identifier)
 				{
@@ -55,6 +57,7 @@ namespace kCura.IntegrationPoints.Core.RelativityProviderValidator
 				}
 			}
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
+			result.Add(ValidateAllRequiredFieldsMapped(fieldsMap, integrationModel.DestinationConfiguration));	//TODO Perform also for source Workspace fields
 
 			return result;
 		}
@@ -82,6 +85,8 @@ namespace kCura.IntegrationPoints.Core.RelativityProviderValidator
 		private ValidationResult ValidateFieldIdentifierMappedWithAnotherIdentifier(FieldMap fieldMap)
 		{
 			var result = new ValidationResult();
+
+			if(fieldMap.SourceField == null || fieldMap.DestinationField == null) { return result; }
 
 			if (fieldMap.SourceField.IsIdentifier &&
 			    !fieldMap.DestinationField.IsIdentifier)
