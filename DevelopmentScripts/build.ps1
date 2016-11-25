@@ -192,3 +192,5 @@ if($ALERT) {
 	}
     
 }
+
+exit !$STATUS
