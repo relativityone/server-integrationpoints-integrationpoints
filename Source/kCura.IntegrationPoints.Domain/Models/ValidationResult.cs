@@ -36,7 +36,11 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public ValidationResult(bool result, string message)
 		{
 			IsValid = result;
-			_messages.Add(message);
+
+			if (!String.IsNullOrWhiteSpace(message))
+			{
+				_messages.Add(message);
+			}
 		}
 
 		/// <summary>

@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.Messages.FirstOrDefault(), Is.Not.Null.Or.Empty);
 		}
 
 		[TestCase(42)]
