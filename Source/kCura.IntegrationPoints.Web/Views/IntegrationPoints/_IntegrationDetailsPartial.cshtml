@@ -90,13 +90,14 @@
 		</div>
 	</div>	
 </script>
-<script type="text/html" id="profileConfig">	
+<script type="text/html" id="profileConfig">
 	<div class="field-row">
 		<div class="field-label">
 			Apply Profile:
 		</div>
 		<div class="field-value">
-			<select id="applyProfile" data-bind="options: profileTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedProfile, optionsCaption: 'Select...', select2: {}"></select>
+			<select id="apply-profile-selector" data-bind="options: profileTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedProfile, optionsCaption: 'Select...', select2: {}"></select>
+			<button id="apply-profile-button" data-bind="click: publishUpdateProfile, disable: HasBeenRun()" class="actionButtonSmall">Apply</button>
 		</div>
 	</div>
 </script>

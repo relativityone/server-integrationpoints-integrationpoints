@@ -326,6 +326,15 @@ var IP = IP || {};
 				self.profiles = result;
 			});
 		};
+
+		this.publishUpdateProfile = function () {
+			var profileId = self.selectedProfile();
+			if (!!profileId) {
+				var item = self.getSelectedProfile(profileId);
+				IP.messaging.publish("loadProfile", item);
+			}
+		};
+
 	};
 
 	var Model = function (m) {
@@ -400,18 +409,7 @@ var IP = IP || {};
 			self.setTypeVisibility(value);
 			self.profile.getProfiles(value);
 		});
-
-		this.profile.selectedProfile.subscribe(function (profileId) {
-			self.publishUpdateProfile(profileId);
-		});
-
-		this.publishUpdateProfile = function (profileId) {
-			if (!!profileId) {
-				var item = self.profile.getSelectedProfile(profileId);
-				IP.messaging.publish('loadProfile', item);
-			}
-		};
-
+		
 		this.loadProfile = function (profile) {
 			console.log('Subscribe');
 			self.loadSettings(profile);
