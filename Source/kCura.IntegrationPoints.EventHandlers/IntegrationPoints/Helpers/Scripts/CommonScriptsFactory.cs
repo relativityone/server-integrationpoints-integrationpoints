@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 
 		private ICommonScripts CreateForDefault(EventHandlerBase eventHandler)
 		{
-			return new DefaultProviderScripts(new ScriptsHelper(eventHandler, _caseServiceContext, _fieldsConstants, _apiControllerName), _guidsConstants);
+			return new ImportProvidersScripts(new ScriptsHelper(eventHandler, _caseServiceContext, _fieldsConstants, _apiControllerName), _guidsConstants);
 		}
 	}
 }
