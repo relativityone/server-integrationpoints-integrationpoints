@@ -140,25 +140,29 @@ var ExportSourceViewModel = function (state) {
 		}
 	});
 
-	self.Folders = ko.observable()
+	self.Folders = ko.observable();
 
 	self.GetFolderFullName = function () {
 		if (self.ExportRdoMode()) {
 			return "";
 		}
-		if (self.Folders().id === self.FolderArtifactId()) {
-			return self.Folders().text;
-		} else {
-			for (var i = 0; i < self.Folders().children.length; i++) {
-				var childFolderPath = self.GetFolderFullName(self.Folders().children[i], self.FolderArtifactId());
-				if (childFolderPath !== "") {
-					return self.Folders().text + "/" + childFolderPath;
+		var getFullName = function (currentFolder, folderId) {
+			if (currentFolder.id === folderId) {
+				return currentFolder.text;
+			} else {
+				for (var i = 0; i < currentFolder.children.length; i++) {
+					var childFolderPath = getFullName(currentFolder.children[i], folderId);
+					if (childFolderPath !== "") {
+						return currentFolder.text + "/" + childFolderPath;
+					}
 				}
 			}
-
 			return "";
-		}
+		};
+		return getFullName(self.Folders(), self.FolderArtifactId());
 	};
+
+
 
 	// views
 

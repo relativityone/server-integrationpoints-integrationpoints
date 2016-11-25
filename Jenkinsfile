@@ -80,15 +80,16 @@ def passed = false
 									stopProcessingIfError : true]]])
 				}
 			}
+		}
 
-			/*
+		node('buildslave') {
+
 			stage('Checkout Automation') {
 
 				dir('C:/SourceCode') {
-
+				
 					checkout([$class : 'GitSCM',
-							branches: [[name: '*///develop']],
-			/*
+							branches : [[name : 'develop']],
 							doGenerateSubmoduleConfigurations : false,
 							extensions :
 							[[$class : 'CleanBeforeCheckout'],
@@ -97,15 +98,15 @@ def passed = false
 							submoduleCfg : [],
 							userRemoteConfigs :
 							[[credentialsId : 'TalosCI (bitbucket)',
-									refspec : '+refs/heads/develop:refs/remotes/origin/develop',
-									url : 'ssh://git@git.kcura.com:7999/aut/automation.git']]])
+								url : 'ssh://git@git.kcura.com:7999/aut/automation.git']]])
+
 				}					
 			}
 
-			stage('Functional Tests') {
+			stage('Functional Smoke Tests') {
 
 				dir('C:/SourceCode/automation/') {
-					bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "C:\\SourceCode\\automation\\Config\\pl1.cfg" -s "Tests.Relativity.Applications.RelativityIntegrationPoints.FilesDestinationProvider" "C:\\SourceCode\\automation"'
+					bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "C:\\SourceCode\\automation\\Config\\pl2.cfg" -s "Tests.Relativity.Applications.RelativityIntegrationPoints.SmokeTests" "C:\\SourceCode\\automation"'
 				}			
 			}
 
@@ -117,8 +118,7 @@ def passed = false
 					outputPath : 'C:\\SourceCode\\automation',
 					passThreshold : 100,
 					reportFileName : 'report.html',
-					unstableThreshold : 0]);
-			*/				
+					unstableThreshold : 0]);				
 		}
 		
 		passed = true
