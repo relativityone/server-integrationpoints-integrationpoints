@@ -17,6 +17,7 @@ task build_initalize {
     'build type   = ' + $build_type 
     'branch       = ' + $branch 
     'build config = ' + $build_config
+    'enable_injections = ' + $enable_injections
     ''
 
     'Time: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
@@ -62,7 +63,7 @@ task restore_nuget {
                                                                                 
 task build_projects -depends create_build_script, restore_nuget {  
     exec {     
-        if ($build_type -eq 'DEV') {
+        if ($build_type -eq 'DEV' -And $enable_injections) {
             $Injections = 'EnableInjections'
         }
         

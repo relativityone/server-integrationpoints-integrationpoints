@@ -12,6 +12,7 @@ $TEST = $false
 $NUGET = $false
 $PACKAGE = $false
 $DEPLOY = ""
+$ENABLEINJECTIONS = $false
 
 $ALERT = [environment]::GetEnvironmentVariable("alertOnBuildCompletion","User")
 
@@ -42,6 +43,7 @@ for ($i = 0; $i -lt $args.count; $i++){
                        $i++;
         } 
         "^[/-]al"     {$ALERT   = $true}
+        "^[/-]ei"     {$ENABLEINJECTIONS = $true}
                 
         "^debug$"   {$BUILDCONFIG = "Debug"}
         "^release$" {$BUILDCONFIG = "Release"}
@@ -128,7 +130,8 @@ if($BUILD -and $STATUS){
     Invoke-psake $root\DevelopmentScripts\psake-build.ps1 -properties @{'version'=$VERSION;
                                                                         'server_type'='local';
                                                                         'build_config'=$BUILDCONFIG;
-                                                                        'build_type'=$BUILDTYPE;}
+                                                                        'build_type'=$BUILDTYPE;
+                                                                        'enable_injections'=$ENABLEINJECTIONS;}
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }
 

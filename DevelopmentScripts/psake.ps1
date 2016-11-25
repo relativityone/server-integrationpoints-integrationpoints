@@ -10,6 +10,7 @@ $COMPANY = 'kCura LLC'
 $PRODUCT = 'Template'
 $PRODUCTDESCRIPTION = 'Template repo for kCura'
 $PACKAGEROOT = 'C:\Packages'
+$ENABLEINJECTIONS = $false
 
 }
 
@@ -29,7 +30,8 @@ if ($psake.build_success -eq $false) { exit 1 }
 Invoke-psake .\psake-build.ps1 -properties @{'version'=$VERSION;
                                              'server_type'=$SERVERTYPE;
                                              'build_config'=$BUILDCONFIG;
-                                             'build_type'=$BUILDTYPE;}
+                                             'build_type'=$BUILDTYPE;
+                                             'enable_injections'=$ENABLEINJECTIONS;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
 Invoke-psake .\psake-application.ps1 -properties @{'version'=$VERSION;
