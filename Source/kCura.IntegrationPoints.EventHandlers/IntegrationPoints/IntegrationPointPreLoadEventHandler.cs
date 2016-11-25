@@ -19,7 +19,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				return _integrationPointViewPreLoad ??
 						(_integrationPointViewPreLoad =
-							new IntegrationPointViewPreLoad(ServiceContextFactory.CreateCaseServiceContext(Helper, Application.ArtifactID), new RelativityProviderSourceConfiguration(Helper),
+							new IntegrationPointViewPreLoad(ServiceContextFactory.CreateCaseServiceContext(Helper, Application.ArtifactID), 
+							new RelativityProviderSourceConfiguration(Helper),
+							new RelativityProviderDestinationConfiguration(Helper),
 								new IntegrationPointFieldsConstants()));
 			}
 			set { _integrationPointViewPreLoad = value; }

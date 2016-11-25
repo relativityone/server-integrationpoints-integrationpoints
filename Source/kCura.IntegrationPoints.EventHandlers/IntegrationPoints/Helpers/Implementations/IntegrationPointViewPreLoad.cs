@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -12,13 +13,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 	{
 		private readonly ICaseServiceContext _context;
 		private readonly IIntegrationPointBaseFieldsConstants _fieldsConstants;
-		private readonly IRelativityProviderSourceConfiguration _relativityProviderSourceConfiguration;
+		private readonly IRelativityProviderConfiguration _relativityProviderSourceConfiguration;
+		private readonly IRelativityProviderConfiguration _relativityProviderDestinationConfiguration;
 
-		public IntegrationPointViewPreLoad(ICaseServiceContext context, IRelativityProviderSourceConfiguration relativityProviderSourceConfiguration,
-			IIntegrationPointBaseFieldsConstants fieldsConstants)
+		public IntegrationPointViewPreLoad(ICaseServiceContext context, IRelativityProviderConfiguration relativityProviderSourceConfiguration,
+			IRelativityProviderConfiguration relativityProviderDestinationConfiguration, IIntegrationPointBaseFieldsConstants fieldsConstants)
 		{
 			_context = context;
 			_relativityProviderSourceConfiguration = relativityProviderSourceConfiguration;
+			_relativityProviderDestinationConfiguration = relativityProviderDestinationConfiguration;
 			_fieldsConstants = fieldsConstants;
 		}
 
@@ -26,11 +29,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			if (IsRelativityProvider(artifact))
 			{
-				var settings = GetSourceConfiguration(artifact);
+				IDictionary<string,object> sourceConfiguration = GetSourceConfiguration(artifact);
+				IDictionary<string, object> destinationConfiguration = GetDestinationConfiguration(artifact);
 
-				_relativityProviderSourceConfiguration.UpdateNames(settings);
+				_relativityProviderSourceConfiguration.UpdateNames(sourceConfiguration);
+				_relativityProviderDestinationConfiguration.UpdateNames(destinationConfiguration);
 
-				artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(settings);
+				artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(sourceConfiguration);
+				artifact.Fields[_fieldsConstants.DestinationConfiguration].Value.Value = JsonConvert.SerializeObject(destinationConfiguration);
 			}
 		}
 
@@ -42,8 +48,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private IDictionary<string, object> GetSourceConfiguration(Artifact artifact)
 		{
-			string sourceConfiguration = artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value.ToString();
-			IDictionary<string, object> settings = JsonConvert.DeserializeObject<ExpandoObject>(sourceConfiguration);
+			return GetConfiguration(artifact, _fieldsConstants.SourceConfiguration);
+		}
+
+		private IDictionary<string, object> GetDestinationConfiguration(Artifact artifact)
+		{
+			return GetConfiguration(artifact, _fieldsConstants.DestinationConfiguration);
+		}
+
+		private IDictionary<string, object> GetConfiguration(Artifact artifact, string configuration)
+		{
+			string sourceConfiguration = artifact.Fields[configuration].Value.Value.ToString();
+			IDictionary<string, object> settings = new Dictionary<string, object>(JsonConvert.DeserializeObject<ExpandoObject>(sourceConfiguration), 
+				StringComparer.CurrentCultureIgnoreCase);
 			return settings;
 		}
 	}

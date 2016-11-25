@@ -3,9 +3,9 @@ using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Scripts
 {
-	public class DefaultProviderScripts : CommonScripts
+	public class ImportProvidersScripts : CommonScripts
 	{
-		public DefaultProviderScripts(ScriptsHelper scriptsHelper, IIntegrationPointBaseFieldGuidsConstants guidsConstants) : base(scriptsHelper, guidsConstants)
+		public ImportProvidersScripts(ScriptsHelper scriptsHelper, IIntegrationPointBaseFieldGuidsConstants guidsConstants) : base(scriptsHelper, guidsConstants)
 		{
 		}
 

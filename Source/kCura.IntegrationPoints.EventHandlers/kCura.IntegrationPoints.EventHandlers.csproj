@@ -170,13 +170,15 @@
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointViewPreLoad.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderConfiguration.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderDestinationConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\IWorkspaceNameValidator.cs" />
-    <Compile Include="IntegrationPoints\Helpers\IRelativityProviderSourceConfiguration.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IRelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderSourceConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\WorkspaceNameValidator.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScriptsFactory.cs" />
-    <Compile Include="IntegrationPoints\Helpers\Scripts\DefaultProviderScripts.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Scripts\ImportProvidersScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScriptsFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\LoadFileProviderScripts.cs" />
