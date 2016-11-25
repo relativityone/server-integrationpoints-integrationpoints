@@ -508,6 +508,7 @@
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\integration-point\picker.js" />
     <Content Include="Scripts\integration-point\save-as-profile-modal-vm.js" />
+    <Content Include="Scripts\integration-point\scheduler.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
