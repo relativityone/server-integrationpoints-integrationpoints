@@ -106,6 +106,9 @@ def passed = false
 			stage('Functional Smoke Tests') {
 
 				dir('C:/SourceCode/automation/') {
+				
+					bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\RIP_upgrade_report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "C:\\SourceCode\\automation\\Config\\pl2.cfg" -s "Automation.PostInstall.InstallApps.UpdateRIPApp" "C:\\SourceCode\\automation"'
+					
 					bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "C:\\SourceCode\\automation\\Config\\pl2.cfg" -s "Tests.Relativity.Applications.RelativityIntegrationPoints.SmokeTests" "C:\\SourceCode\\automation"'
 				}			
 			}
