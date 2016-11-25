@@ -117,6 +117,8 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -134,9 +136,16 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
+    <Compile Include="IntegrationPointManager\ItShouldRetrieveAllIntegrationPoints.cs" />
+    <Compile Include="IntegrationPointManager\ItShouldRetrieveIntegrationPointArtifactTypeId.cs" />
+    <Compile Include="IntegrationPointManager\ItShouldRetrieveSourceProviderGuids.cs" />
+    <Compile Include="IntegrationPointManager\ItShouldRunIntegrationPoint.cs" />
+    <Compile Include="JobHistoryManager\ItShouldRetrieveJobHistory.cs" />
     <Compile Include="Permissions\NoWorkspacePermissionTests.cs" />
     <Compile Include="Permissions\KeplerServiceMissingPermissionTests.cs" />
     <Compile Include="Permissions\NoIntegrationPointViewPermissionTests.cs" />
+    <Compile Include="Helpers\Utils.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
@@ -149,6 +158,10 @@
       <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
@@ -160,6 +173,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj">
       <Project>{fd2c5db6-8fd6-40d6-8e50-3641b7d89d9d}</Project>
       <Name>kCura.IntegrationPoints.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

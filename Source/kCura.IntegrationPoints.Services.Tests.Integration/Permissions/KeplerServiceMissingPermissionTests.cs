@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Constants = kCura.IntegrationPoints.Data.Constants;
@@ -11,20 +12,18 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 {
 	public abstract class KeplerServiceMissingPermissionTests : SourceProviderTemplate
 	{
-		protected static string Identifier => $"{DateTime.Now:yyyyMMddHHmmss}";
-
 		protected UserModel UserModel;
 		protected int GroupId;
 
-		protected KeplerServiceMissingPermissionTests() : base($"Kepler_Service_{Identifier}")
+		protected KeplerServiceMissingPermissionTests() : base($"Kepler_Service_{Utils.Identifier}")
 		{
 		}
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			GroupId = Group.CreateGroup($"group_{Identifier}");
-			UserModel = User.CreateUser("firstname", "lastname", $"test_{Identifier}@kcura.com", new List<int> { GroupId });
+			GroupId = Group.CreateGroup($"group_{Utils.Identifier}");
+			UserModel = User.CreateUser("firstname", "lastname", $"test_{Utils.Identifier}@kcura.com", new List<int> { GroupId });
 			SetPermissions();
 		}
 
