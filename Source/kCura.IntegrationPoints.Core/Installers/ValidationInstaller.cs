@@ -18,9 +18,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>());
 			container.Register(Component.For<IValidator>().ImplementedBy<NameValidator>());
-			container.Register(Component.For<IValidator>().ImplementedBy<FieldsMappingValidator>());	//TODO Inject RdoFieldSynchronizerBase
+			//container.Register(Component.For<IValidator>().ImplementedBy<FieldsMappingValidator>());	//TODO Inject RdoFieldSynchronizerBase
 			container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>());
-			container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifestyleTransient());  //TODO Figure out if it was registered in ServicesInstaller I need to register it again and register parameters (IHelper , ISystemEventLoggingService)
 			container.Register(Component.For<IValidator>().ImplementedBy<ProviderConfigurationValidator>());
 			
 			container.Register(Component.For<IIntegrationModelValidator>().ImplementedBy<IntegrationModelValidator>());
