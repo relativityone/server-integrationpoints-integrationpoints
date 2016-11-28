@@ -236,6 +236,9 @@ var IP = IP || {};
 			|| (typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' || parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null)
 			) {
 				self.rdoTypes(self.allRdoTypes());
+				if (typeof self.artifactTypeID() === 'undefined') {
+					self.artifactTypeID(parentModel.DefaultRdoTypeId);
+				}
 			}
 			else {
 				if ($.isArray(parentModel.source.SourceProviderConfiguration.compatibleRdoTypes)) {
