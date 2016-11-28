@@ -85,6 +85,14 @@
       <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
@@ -96,6 +104,13 @@
     <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
