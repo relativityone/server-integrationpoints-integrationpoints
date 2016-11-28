@@ -314,7 +314,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(10).ToString("mm"),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 				},
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).ArtifactId
 			};
 
 			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
@@ -383,7 +384,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 				{
 					EnableScheduler = false
 				},
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 		}
 
