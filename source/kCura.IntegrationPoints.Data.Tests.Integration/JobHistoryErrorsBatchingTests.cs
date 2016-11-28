@@ -99,7 +99,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				{
 					EnableScheduler = false
 				},
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
@@ -149,7 +150,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				{
 					EnableScheduler = false
 				},
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
@@ -200,7 +202,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 					EnableScheduler = false
 				},
 				HasErrors = true,
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			//Create an Integration Point and assign a Job History
@@ -263,7 +266,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 					EnableScheduler = false
 				},
 				HasErrors = true,
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			//Create an Integration Point and assign a Job History
@@ -336,7 +340,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 					EnableScheduler = false
 				},
 				HasErrors = true,
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			//Create an Integration Point and assign a Job History
@@ -379,7 +384,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 					EnableScheduler = false
 				},
 				HasErrors = true,
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			//Create an Integration Point and assign a Job History

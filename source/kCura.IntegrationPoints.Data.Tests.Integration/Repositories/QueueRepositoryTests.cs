@@ -5,6 +5,7 @@ using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -218,6 +219,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 					SelectedFrequency = ScheduleInterval.Daily.ToString()
 				},
 				SelectedOverwrite = "Append Only",
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			// act
