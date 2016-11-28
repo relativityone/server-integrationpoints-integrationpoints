@@ -371,6 +371,7 @@ var IP = IP || {};
 				self.CustodianManagerFieldContainsLink = destinationSettings.CustodianManagerFieldContainsLink;
 				self.UseFolderPathInformation = destinationSettings.UseFolderPathInformation;
 				self.FolderPathSourceField = destinationSettings.FolderPathSourceField;
+				self.LongTextColumnThatContainsPathToFullText = destinationSettings.LongTextColumnThatContainsPathToFullText;
 				self.ExtractedTextFieldContainsFilePath = destinationSettings.ExtractedTextFieldContainsFilePath;
 				self.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
 				self.importNativeFile = destinationSettings.importNativeFile;

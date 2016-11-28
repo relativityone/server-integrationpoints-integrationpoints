@@ -49,17 +49,26 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_repositoryFactory = repositoryFactory;
 		}
 
+
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
 		public HttpResponseMessage GetFields()
 		{
-			ImportSettings settings = new ImportSettings { WebServiceURL = _config.WebApiPath };
-			IImportAPI importApi = _importApiFactory.GetImportAPI(settings);
+			IImportAPI importApi = ImportApiConfiguration();
+			List<FieldEntry> textFields = GetTextFields(Convert.ToInt32(ArtifactType.Document), false);
 
-			List<FieldEntry> textFields = GetTextFields(Convert.ToInt32(ArtifactType.Document));
-			IEnumerable<Relativity.ImportAPI.Data.Field> workspaceFields = importApi.GetWorkspaceFields(_client.APIOptions.WorkspaceID, Convert.ToInt32(ArtifactType.Document));
-			HashSet<int> mappableArtifactIds = new HashSet<int>(workspaceFields.Where(y => y.FieldCategory != FieldCategoryEnum.Identifier).Select(x => x.ArtifactID));
-			IEnumerable<FieldEntry> textMappableFields = textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
+			var textMappableFields = GetFieldCategory(importApi, textFields);
+			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
+		}
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unabel to retrieve long text fields data.")]
+		public HttpResponseMessage GetLongTextFields()
+		{
+			IImportAPI importApi = ImportApiConfiguration();
+			List<FieldEntry> textFields = GetTextFields(Convert.ToInt32(ArtifactType.Document), true);
+
+			IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(importApi, textFields);
 			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
 		}
 
@@ -83,6 +92,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return Request.CreateResponse(HttpStatusCode.OK, folderCount, Configuration.Formatters.JsonFormatter);
 		}
 
+		private IImportAPI ImportApiConfiguration()
+		{
+			ImportSettings settings = new ImportSettings { WebServiceURL = _config.WebApiPath };
+			IImportAPI importApi = _importApiFactory.GetImportAPI(settings);
+
+			return importApi;
+		}
+
+		private IEnumerable<FieldEntry> GetFieldCategory(IImportAPI importApi, List<FieldEntry> textFields)
+		{
+			IEnumerable<Relativity.ImportAPI.Data.Field> workspaceFields = importApi.GetWorkspaceFields(_client.APIOptions.WorkspaceID, Convert.ToInt32(ArtifactType.Document));
+			HashSet<int> mappableArtifactIds = new HashSet<int>(workspaceFields.Where(y => y.FieldCategory != FieldCategoryEnum.Identifier).Select(x => x.ArtifactID));
+			IEnumerable<FieldEntry> textMappableFields = textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
+
+			return textMappableFields;
+		}
+
+
 		private ArtifactDTO[] GetDocumentDtos(IntegrationPointSourceConfiguration sourceConfiguration, IntegrationPointDestinationConfiguration destinationConfiguration)
 		{
 			Query<Document> query = new Query<Document>
@@ -93,7 +120,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			QueryResultSet<Document> resultSet = _client.Repositories.Document.Query(query, 1000);
 
-			ArtifactDTO[] results = {};
+			ArtifactDTO[] results = { };
 			if (resultSet != null && resultSet.Success)
 			{
 				results = resultSet.Results.Select(
@@ -130,7 +157,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return folderTree.FolderCount;
 		}
 
-		private List<FieldEntry> GetTextFields(int rdoTypeId)
+		private List<FieldEntry> GetTextFields(int rdoTypeId, bool longTextFieldsOnly)
 		{
 			var rdoCondition = new ObjectCondition
 			{
@@ -168,8 +195,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			};
 			CompositeCondition documentLongTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, longTextCondition);
 			CompositeCondition documentFixedLengthTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, fixedLengthTextCondition);
-			query.Condition = new CompositeCondition(documentLongTextCondition, CompositeConditionEnum.Or, documentFixedLengthTextCondition);
-
+			query.Condition = longTextFieldsOnly ? documentLongTextCondition : new CompositeCondition(documentLongTextCondition, CompositeConditionEnum.Or, documentFixedLengthTextCondition);
 			var result = _client.Query(_client.APIOptions, query);
 
 			if (!result.Success)
