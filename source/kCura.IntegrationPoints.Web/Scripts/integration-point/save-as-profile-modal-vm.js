@@ -1,4 +1,4 @@
-﻿var SaveAsProfileModalViewModel = function (okCallback, validateCallback) {
+﻿var SaveAsProfileModalViewModel = function (okCallback) {
 	var self = this;
 
 	self.profileName = ko.observable();
@@ -12,7 +12,12 @@
 	}
 
 	this.open = function () {
-		self.view.dialog('open');
+		self.view.dialog("open");
+		self.view.keypress(function (e) {
+			if (e.which === 13) {
+				self.ok();
+			}
+		});
 	}
 
 	this.ok = function () {
@@ -21,11 +26,11 @@
 
 		if (canClose) {
 			self.okCallback(self.profileName());
-			self.view.dialog('close');
+			self.view.dialog("close");
 		}
 	}
 
 	this.cancel = function () {
-		self.view.dialog('close');
+		self.view.dialog("close");
 	}
 }
