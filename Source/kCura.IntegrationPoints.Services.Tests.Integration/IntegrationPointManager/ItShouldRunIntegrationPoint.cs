@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			var ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();
-			client.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID);
+			client.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID).Wait();
 
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
 
