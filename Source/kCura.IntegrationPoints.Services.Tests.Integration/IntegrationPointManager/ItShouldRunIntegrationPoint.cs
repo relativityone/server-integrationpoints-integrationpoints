@@ -1,13 +1,32 @@
-﻿using NUnit.Framework;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
-	public class ItShouldRunIntegrationPoint
+	public class ItShouldRunIntegrationPoint : RelativityProviderTemplate
 	{
-		[Test]
-		public void TODO()
+		public ItShouldRunIntegrationPoint() : base($"KeplerService_{Utils.Identifier}", $"KeplerService_Target_{Utils.Identifier}")
 		{
-			//TODO
+		}
+
+		public void Execute()
+		{
+			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.Identifier}", "Append Only");
+			var ip = CreateOrUpdateIntegrationPoint(ipModel);
+
+			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			client.RunIntegrationPointAsync(SourceWorkspaceArtifactId, ip.ArtifactID);
+
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
+
+			var jobHistoryDataTable = Helper.GetDBContext(SourceWorkspaceArtifactId).ExecuteSqlStatementAsDataTable("SELECT * FROM [JobHistory]");
+
+			Assert.That(jobHistoryDataTable.Rows.Count, Is.EqualTo(1));
+
+			Assert.That(jobHistoryDataTable.Rows[0]["Name"], Is.EqualTo(ip.Name));
 		}
 	}
 }
