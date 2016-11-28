@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public bool DisableExtractedTextFileLocationValidation { get; set; }
 		public bool? DisableNativeLocationValidation { get; set; }
 		public bool? DisableNativeValidation { get; set; }
-		public string DestinationProviderType { get; set; }		
+		public string DestinationProviderType { get; set; }
 		public bool DisableUserSecurityCheck { get; set; }
 
 		[JsonIgnore]
@@ -64,14 +64,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public String ExtractedTextFileEncoding { get; set; }
 
-		/// <summary>
-		/// Indicates user preferences of field overlay behavior.
-		/// </summary>
-		/// <remarks>
-		/// possible values : 'Merge Values', 'Replace Values', 'Use Field Settings'
-		/// value is assigned in step-mapFields.js
-		/// </remarks>
-		public string FieldOverlayBehavior { get; set; }
+        /// <summary>
+        /// Indicates user preferences of field overlay behavior.
+        /// </summary>
+        /// <remarks>
+        /// possible values : 'Merge Values', 'Replace Values', 'Use Field Settings'
+        /// value is assigned in step-mapFields.js
+        /// </remarks>
+        public string FieldOverlayBehavior { get; set; }
 
 		public string FileNameColumn { get; set; }
 		public string FileSizeColumn { get; set; }
@@ -111,7 +111,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
-		public int MaximumErrorCount { get; set; }
+        public string LongTextColumnThatContainsPathToFullText { get; set; }
+        public int MaximumErrorCount { get; set; }
 		public char MultiValueDelimiter { get; set; }
 		public string NativeFilePathSourceFieldName { get; set; }
 		public char NestedValueDelimiter { get; set; }

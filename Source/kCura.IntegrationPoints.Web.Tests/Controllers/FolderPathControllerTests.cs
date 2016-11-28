@@ -57,34 +57,26 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		[Test]
 		public void GetFields_Success()
 		{
-			//ARRANGE
-			string webServiceUrl = @"http://localhost/";
-			int workspaceId = 123;
-			int documentArtifactTypeId = 10;
+            //ARRANGE
+            GetFieldsSharedSetup();
 
-			QueryResult result = new QueryResult { Success = true };
-			ImportSettings settings = new ImportSettings { WebServiceURL = webServiceUrl };
-			_client.APIOptions = new APIOptions(workspaceId);
-
-			IImportAPI importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
-
-			_config.WebApiPath
-				.Returns(webServiceUrl);
-
-			_importApiFactory.GetImportAPI(settings)
-				.Returns(importApi);
-
-			importApi.GetWorkspaceFields(workspaceId, documentArtifactTypeId);
-
-			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>())
-				.Returns(result);
-
-			HttpResponseMessage response = _instance.GetFields();
+            HttpResponseMessage response = _instance.GetFields();
 			Assert.IsTrue(response.IsSuccessStatusCode);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
-		[Test]
+        [Test]
+        public void GetLongTextFields_Success()
+        {
+            //ARRANGE
+            GetFieldsSharedSetup();
+
+            HttpResponseMessage response = _instance.GetLongTextFields();
+            Assert.IsTrue(response.IsSuccessStatusCode);
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Test]
 		public void GetFields_Exception()
 		{
 			//ARRANGE
@@ -138,5 +130,29 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_repositoryFactory.Received(1).GetIntegrationPointRepository(workspaceId);
 			integrationPointRepository.Received(1).Read(Convert.ToInt32(integrationPointArtifactId));
 		}
+
+        private void GetFieldsSharedSetup()
+        {
+            string webServiceUrl = @"http://localhost/";
+            int workspaceId = 123;
+            int documentArtifactTypeId = 10;
+
+            QueryResult result = new QueryResult { Success = true };
+            ImportSettings settings = new ImportSettings { WebServiceURL = webServiceUrl };
+            _client.APIOptions = new APIOptions(workspaceId);
+
+            IImportAPI importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
+
+            _config.WebApiPath
+                .Returns(webServiceUrl);
+
+            _importApiFactory.GetImportAPI(settings)
+                .Returns(importApi);
+
+            importApi.GetWorkspaceFields(workspaceId, documentArtifactTypeId);
+
+            _client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>())
+                .Returns(result);
+        }
 	}
 }
