@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -12,7 +13,7 @@ using Relativity.Core;
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
-	public class FieldRepositoryTests
+	public class FieldRepositoryTests : TestBase
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 1024165;
 
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private IFieldRepository _instance;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
 			_objectQueryManagerAdaptor = Substitute.For<IObjectQueryManagerAdaptor>();

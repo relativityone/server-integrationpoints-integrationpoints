@@ -63,8 +63,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 		public void StopButton_SetsStopStateOnClick_Success(TestBrowser browser)
 		{
 			//Arrange
-			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
@@ -125,8 +125,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 		public void StopButton_ErrorMessageWhenJobIsNotValid(TestBrowser browser)
 		{
 			//Arrange
-			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only");
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);

@@ -17,17 +17,8 @@ $(function () {
 	var $value = $input.siblings('.dynamicViewFieldValue');
 	$input.siblings('.dynamicViewFieldName').text();
 	var obj = JSON.parse($value.text());
-	$value.text('');
-	IP.utils.updateField($input.parent('tr'), 'Destination RDO', '');
-	var url = IP.utils.generateWebAPIURL('RdoFilter', obj.artifactTypeID);
-	
-	IP.data.get(url).then(function (result) {
-	    $value.text(result.name);
-	    $value.attr("id", "destinationrdo");
-	    $value.attr("data-destinationRdo", result.name);
-	}, function () {
-		//debugger;
-	});
+
+	IP.utils.updateField($input.parent('tr'), 'Destination RDO', obj.ArtifactTypeName);
 });
 
 $(function () {

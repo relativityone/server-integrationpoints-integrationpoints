@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
@@ -11,13 +12,13 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -25,11 +26,12 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
 	[TestFixture]
-	public class SyncManagerTests
+	public class SyncManagerTests : TestBase
 	{
 		private readonly Guid _defaultGuidValue = new Guid("4258D67D-63D4-4902-A48A-B1B19649ABFA");
 		private readonly Guid _jobGuidValue = new Guid("0D01AF2F-5AF5-4F4D-820C-90471AD75750");
@@ -66,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobHistoryManager _jobHistoryManager;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_dataProviderFactory = Substitute.For<IDataProviderFactory>();

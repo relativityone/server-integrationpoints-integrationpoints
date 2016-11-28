@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		internal IRSAPIService Service
 		{
-			get { return _service ?? (new RSAPIService()); }
+			get { return _service ?? (_service = new RSAPIService(Helper, Helper.GetActiveCaseID())); }
 		}
 
 		private DeleteIntegrationPoints _deleteIntegrationPoints;

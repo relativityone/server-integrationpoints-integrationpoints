@@ -39,6 +39,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"Job History";
 		public const string JobHistoryError = @"Job History Error";
 		public const string DestinationWorkspace = @"Destination Workspace";
+		public const string IntegrationPointType = @"Integration Point Type";
+		public const string IntegrationPointProfile = @"Integration Point Profile";
 		}
 
 	public partial class ObjectTypeGuids
@@ -50,6 +52,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9";
 		public const string JobHistoryError = @"17e7912d-4f57-4890-9a37-abc2b8a37bdb";
 		public const string DestinationWorkspace = @"3f45e490-b4cf-4c7d-8bb6-9ca891c0c198";
+		public const string IntegrationPointType = @"3c4acdf0-41c8-4888-a374-383c25a734cb";
+		public const string IntegrationPointProfile = @"6dc915a9-25d7-4500-97f7-07cb98a06f64";
 		}
 
 	#region "Field Constants"
@@ -96,6 +100,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string LogErrors = @"LogErrors";
 		public const string EmailNotificationRecipients = @"EmailNotificationRecipients";
 		public const string HasErrors = @"Has Errors";
+		public const string Type = @"Type";
 		public const string Name = @"Name";
 	}
 
@@ -115,6 +120,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string LogErrors = @"0319869e-37aa-499c-a95b-6d8d0e96a711";
 		public const string EmailNotificationRecipients = @"1bac59db-f7bf-48e0-91d4-18cf09ff0e39";
 		public const string HasErrors = @"a9853e55-0ba0-43d8-a766-747a61471981";
+		public const string Type = @"e646016e-5df6-4440-b218-18a00926d002";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
 	}
 
@@ -238,47 +244,108 @@ namespace kCura.IntegrationPoints.Data
 		public const string Name = @"155649c0-db15-4ee7-b449-bfdf2a54b7b5";
 	}
 
+
+
+	public partial class IntegrationPointTypeFields : BaseFields
+	{
+		public const string ApplicationIdentifier = @"Application Identifier";
+		public const string Identifier = @"Identifier";
+		public const string Name = @"Name";
+	}
+
+	public partial class IntegrationPointTypeFieldGuids 
+	{
+		public const string ApplicationIdentifier = @"9720e543-cce0-445c-8af7-042355671a71";
+		public const string Identifier = @"3bd675a0-555d-49bc-b108-e2d04afcc1e3";
+		public const string Name = @"ae4fe868-5428-49fd-b2e4-bb17abd597ef";
+	}
+
+
+
+	public partial class IntegrationPointProfileFields : BaseFields
+	{
+		public const string DestinationConfiguration = @"Destination Configuration";
+		public const string DestinationProvider = @"Destination Provider";
+		public const string EmailNotificationRecipients = @"EmailNotificationRecipients";
+		public const string EnableScheduler = @"Enable Scheduler";
+		public const string FieldMappings = @"Field Mappings";
+		public const string LogErrors = @"LogErrors";
+		public const string NextScheduledRuntimeUTC = @"Next Scheduled Runtime (UTC)";
+		public const string OverwriteFields = @"Overwrite Fields";
+		public const string ScheduleRule = @"Schedule Rule";
+		public const string SourceConfiguration = @"Source Configuration";
+		public const string SourceProvider = @"Source Provider";
+		public const string Type = @"Type";
+		public const string Name = @"Name";
+	}
+
+	public partial class IntegrationPointProfileFieldGuids 
+	{
+		public const string DestinationConfiguration = @"5d9e425a-b59c-4119-9ceb-73665a5e7049";
+		public const string DestinationProvider = @"7d9e7944-bf13-4c4f-a9eb-5f60e683ec0c";
+		public const string EmailNotificationRecipients = @"b72f5bb9-2e07-45f0-903a-b20d3a17958c";
+		public const string EnableScheduler = @"bc2e19fd-c95c-4f1c-b4a9-1692590cef8e";
+		public const string FieldMappings = @"8ae37734-29d1-4441-b5d8-483134f98818";
+		public const string LogErrors = @"b582f002-00fe-4c44-b721-859dd011d4fd";
+		public const string NextScheduledRuntimeUTC = @"a3c48572-4ec7-4e06-b57f-1c1681cd07d1";
+		public const string OverwriteFields = @"e0a14a2c-0bb6-47ad-a34f-26400258a761";
+		public const string ScheduleRule = @"35b6c8b8-5b0c-4660-bfdd-226e424edeb5";
+		public const string SourceConfiguration = @"9ed96d44-7767-46f5-a67f-28b48b155ff2";
+		public const string SourceProvider = @"60d3de54-f0d5-4744-a23f-a17609edc537";
+		public const string Type = @"8999dd19-c67c-43e3-88c0-edc989e224cc";
+		public const string Name = @"ad0552e0-4511-4507-a60d-23c0c6d05972";
+	}
+
+
+
 	#endregion
 
 	#region "Choice Constants"
 
 	public partial class OverwriteFieldsChoices
 	{
-		public static Choice IntegrationPointAppendOnly = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8")) {Name= @"Append Only"};
-		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd")) {Name= @"Append/Overlay"};
-		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515")) {Name= @"Overlay Only"};
+		public static Choice IntegrationPointAppendOnly = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8")) {Name=@"Append Only"};
+		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd")) {Name=@"Append/Overlay"};
+		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515")) {Name=@"Overlay Only"};
 	}
 
 	public partial class JobStatusChoices
 	{
-		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96")) {Name= @"Pending"};
-		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54")) {Name= @"Processing"};
-		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c")) {Name= @"Completed"};
-		public static Choice JobHistoryCompletedWithErrors = new Choice(Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37")) {Name= @"Completed with errors"};
-		public static Choice JobHistoryErrorJobFailed = new Choice(Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63")) {Name= @"Error - job failed"};
-		public static Choice JobHistoryStopping = new Choice(Guid.Parse("97c1410d-864d-4811-857b-952464872baa")) {Name= @"Stopping"};
-		public static Choice JobHistoryStopped = new Choice(Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3")) {Name= @"Stopped"};
+		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96")) {Name=@"Pending"};
+		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54")) {Name=@"Processing"};
+		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c")) {Name=@"Completed"};
+		public static Choice JobHistoryCompletedWithErrors = new Choice(Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37")) {Name=@"Completed with errors"};
+		public static Choice JobHistoryErrorJobFailed = new Choice(Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63")) {Name=@"Error - job failed"};
+		public static Choice JobHistoryStopping = new Choice(Guid.Parse("97c1410d-864d-4811-857b-952464872baa")) {Name=@"Stopping"};
+		public static Choice JobHistoryStopped = new Choice(Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3")) {Name=@"Stopped"};
 	}
 
 	public partial class JobTypeChoices
 	{
-		public static Choice JobHistoryRun = new Choice(Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20")) {Name= @"Run"};
-		public static Choice JobHistoryScheduledRun = new Choice(Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d")) {Name= @"Scheduled Run"};
-		public static Choice JobHistoryRetryErrors = new Choice(Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f")) {Name= @"Retry Errors"};
+		public static Choice JobHistoryRun = new Choice(Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20")) {Name=@"Run"};
+		public static Choice JobHistoryScheduledRun = new Choice(Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d")) {Name=@"Scheduled Run"};
+		public static Choice JobHistoryRetryErrors = new Choice(Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f")) {Name=@"Retry Errors"};
 	}
 
 	public partial class ErrorTypeChoices
 	{
-		public static Choice JobHistoryErrorItem = new Choice(Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b")) {Name= @"Item"};
-		public static Choice JobHistoryErrorJob = new Choice(Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b")) {Name= @"Job"};
+		public static Choice JobHistoryErrorItem = new Choice(Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b")) {Name=@"Item"};
+		public static Choice JobHistoryErrorJob = new Choice(Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b")) {Name=@"Job"};
 	}
 
 	public partial class ErrorStatusChoices
 	{
-		public static Choice JobHistoryErrorNew = new Choice(Guid.Parse("f881b199-8a67-4d49-b1c1-f9e68658fb5a")) {Name= @"New"};
-		public static Choice JobHistoryErrorExpired = new Choice(Guid.Parse("af01a8fa-b419-49b1-bd71-25296e221e57")) {Name= @"Expired"};
-		public static Choice JobHistoryErrorInProgress = new Choice(Guid.Parse("e5ebd98c-c976-4fa2-936f-434e265ea0aa")) {Name= @"In Progress"};
-		public static Choice JobHistoryErrorRetried = new Choice(Guid.Parse("7d3d393d-384f-434e-9776-f9966550d29a")) {Name= @"Retried"};
+		public static Choice JobHistoryErrorNew = new Choice(Guid.Parse("f881b199-8a67-4d49-b1c1-f9e68658fb5a")) {Name=@"New"};
+		public static Choice JobHistoryErrorExpired = new Choice(Guid.Parse("af01a8fa-b419-49b1-bd71-25296e221e57")) {Name=@"Expired"};
+		public static Choice JobHistoryErrorInProgress = new Choice(Guid.Parse("e5ebd98c-c976-4fa2-936f-434e265ea0aa")) {Name=@"In Progress"};
+		public static Choice JobHistoryErrorRetried = new Choice(Guid.Parse("7d3d393d-384f-434e-9776-f9966550d29a")) {Name=@"Retried"};
+	}
+
+	public partial class OverwriteFieldsChoices
+	{
+		public static Choice IntegrationPointProfileAppendOnly = new Choice(Guid.Parse("12105945-5fb8-4640-8516-11a96f12279c")) {Name=@"Append Only"};
+		public static Choice IntegrationPointProfileAppendOverlay = new Choice(Guid.Parse("e5c80435-d876-4cba-b645-658a545eaea1")) {Name=@"Append/Overlay"};
+		public static Choice IntegrationPointProfileOverlayOnly = new Choice(Guid.Parse("e08fc9e5-416c-4656-a9a1-6323013160fb")) {Name=@"Overlay Only"};
 	}
 
 	#endregion								
@@ -353,6 +420,26 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationWorkspaceLayout = @"Destination Workspace Layout";
 	}
 
+	public partial class IntegrationPointTypeLayoutGuids
+	{
+		public const string IntegrationPointTypeLayout = @"64197e82-591d-4b2c-a971-b760b11e8307";
+	}
+
+	public partial class IntegrationPointTypeLayouts
+	{
+		public const string IntegrationPointTypeLayout = @"Integration Point Type Layout";
+	}
+
+	public partial class IntegrationPointProfileLayoutGuids
+	{
+		public const string IntegrationPointProfileLayout = @"f8505b51-802b-466f-952b-2e0eb7aadb2f";
+	}
+
+	public partial class IntegrationPointProfileLayouts
+	{
+		public const string IntegrationPointProfileLayout = @"Integration Point Profile Layout";
+	}
+
 	#endregion
 	
 	
@@ -396,6 +483,16 @@ namespace kCura.IntegrationPoints.Data
 	public partial class DestinationWorkspaceTabs
 	{
 		public const string DestinationWorkspaces = @"Destination Workspaces";
+	}
+
+	public partial class IntegrationPointProfileTabGuids
+	{
+		public const string Profile = @"0ac27fca-a6fe-425b-87f0-afb12e40563a";
+	}
+
+	public partial class IntegrationPointProfileTabs
+	{
+		public const string Profile = @"Profile";
 	}
 
 	#endregion
@@ -472,6 +569,26 @@ namespace kCura.IntegrationPoints.Data
 	public partial class DestinationWorkspaceViews
 	{
 		public const string AllDestinationWorkspaces = @"All Destination Workspaces";
+	}
+
+	public partial class IntegrationPointTypeViewGuids
+	{
+		public const string AllIntegrationPointTypes = @"57fd219a-a2e4-4110-8956-af6c026041ee";
+	}
+
+	public partial class IntegrationPointTypeViews
+	{
+		public const string AllIntegrationPointTypes = @"All Integration Point Types";
+	}
+
+	public partial class IntegrationPointProfileViewGuids
+	{
+		public const string AllProfiles = @"2b9d50cb-6d0e-46f3-a4c5-110001526704";
+	}
+
+	public partial class IntegrationPointProfileViews
+	{
+		public const string AllProfiles = @"All Profiles";
 	}
 
 	#endregion									

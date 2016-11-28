@@ -234,8 +234,11 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
+    <Compile Include="Managers\WorkspaceManagerTests.cs" />
+    <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />

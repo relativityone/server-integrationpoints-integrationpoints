@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -21,7 +23,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-	public class ExportManagerTest
+	public class ExportManagerTest : TestBase
 	{
 		#region Private Fields
 
@@ -41,7 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		#endregion //Private Fields
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_contextContainerFactoryMock = Substitute.For<IContextContainerFactory>();
 			_jobManagerMock = Substitute.For<IJobManager>();
@@ -73,7 +75,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void ItShouldReturnTotalExportDocsCount(int totalSavedSearchCount)
 		{
 			// Arrange
-			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO {SourceConfiguration = "Source Configuration"};
+			const int artifactTypeId = 1;
+			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
+			{
+				SourceConfiguration = "Source Configuration",
+				DestinationConfiguration = $"{{ArtifactTypeId: {artifactTypeId}}}"
+			};
 			ExportUsingSavedSearchSettings sourceConfiguration = new ExportUsingSavedSearchSettings()
 			{
 				SavedSearchArtifactId = 1,
@@ -83,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IIntegrationPointManager integrationPointManagerMock = Substitute.For<IIntegrationPointManager>();
 
 			integrationPointManagerMock.Read(_job.WorkspaceID, _job.RelatedObjectArtifactID).Returns(integrationPointDto);
-			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration).Returns(totalSavedSearchCount);
+			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration, artifactTypeId).Returns(totalSavedSearchCount);
 
 			_contextContainerFactoryMock.CreateContextContainer(_helperMock).Returns(contextContainerMock);
 			_managerFactoryMock.CreateIntegrationPointManager(contextContainerMock).Returns(integrationPointManagerMock);
@@ -96,11 +103,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// Assert
 			Assert.That(retTotalCount, Is.EqualTo(totalSavedSearchCount));
 
-			if (totalSavedSearchCount > 0)
-			{
-				_jobManagerMock.Received().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.ExportWorker, Arg.Any<string>());
-				Assert.That(_instanceToTest.BatchJobCount, Is.EqualTo(1));
-			}
+			_jobManagerMock.Received(totalSavedSearchCount > 0 ? 1 : 0).CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.ExportWorker, Arg.Any<string>());
+			Assert.That(_instanceToTest.BatchJobCount, Is.EqualTo(totalSavedSearchCount > 0 ? 1 : 0));
 		}
 
 		[Test]

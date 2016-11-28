@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -11,7 +12,7 @@ using Artifact = kCura.Relativity.Client.Artifact;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class RdoSynchronizerPushTests
+	public class RdoSynchronizerPushTests : TestBase
 	{
 		private RdoSynchronizerPush _rdoSynchronizerPush;
 		private IRelativityFieldQuery _relativityFieldQuery;
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_relativityFieldQuery = NSubstitute.Substitute.For<IRelativityFieldQuery>();
 			_importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();

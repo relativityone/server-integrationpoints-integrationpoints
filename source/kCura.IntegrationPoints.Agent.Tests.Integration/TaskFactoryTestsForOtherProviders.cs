@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			try
 			{
 				// ARRANGE
-				IntegrationModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob");
+				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob");
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
 				Guid batchInstance = Guid.NewGuid();
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					StartDate = DateTime.MaxValue.ToString(),
 					ScheduledTime = DateTime.Now.ToString()
 				};
-				IntegrationModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob_ScheduledJob", scheduler);
+				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob_ScheduledJob", scheduler);
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
 				int lastScheduledJobId = GetLastScheduledJobId(WorkspaceArtifactId, model.ArtifactID);

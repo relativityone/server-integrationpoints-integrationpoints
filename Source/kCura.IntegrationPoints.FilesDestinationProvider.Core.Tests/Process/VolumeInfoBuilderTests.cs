@@ -1,18 +1,20 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	public class VolumeInfoBuilderTests
+	[TestFixture]
+	public class VolumeInfoBuilderTests : TestBase
 	{
 		private ExportFile _exportFile;
 		private ExportSettings _exportSettings;
 		private VolumeInfoBuilder _volumeInfoBuilder;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_exportSettings = DefaultExportSettingsFactory.Create();
 			_exportFile = new ExportFile(1);

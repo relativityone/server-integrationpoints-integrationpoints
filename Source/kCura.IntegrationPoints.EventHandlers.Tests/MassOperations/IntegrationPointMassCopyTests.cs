@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.MassOperations;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 {
 	[TestFixture]
-	public class IntegrationPointMassCopyTests
+	public class IntegrationPointMassCopyTests : TestBase
 	{
 		private IntegrationPointMassCopy _massCopy;
 		private IRSAPIService _service;
 		private IIntegrationPointNameHelper _nameHelper;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_service = Substitute.For<IRSAPIService>();
 			_nameHelper = Substitute.For<IIntegrationPointNameHelper>();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -11,8 +12,10 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -53,30 +56,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsMatchingBatchSize()
 		{
 			string docPrefix = "EqualBatchDoc";
 			string expDocPrefix = "EqualBatchExp";
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1, 2000, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1, 100, docPrefix, expDocPrefix);
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsUnderBatchSize()
 		{
 			string docPrefix = "LessThanBatchDoc";
 			string expDocPrefix = "LessThanBatchExp";
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(3000, 1998, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(300, 98, docPrefix, expDocPrefix);
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsOverBatchSize()
 		{
 			string docPrefix = "MoreThanBatchDoc";
 			string expDocPrefix = "MoreThanBatchExp";
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(5000, 2002, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(500, 102, docPrefix, expDocPrefix);
 		}
 
 		[Test]
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Arrange
 			bool errorReceived = false;
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			//Act
 			try
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
 
 			//Act
@@ -177,7 +177,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
@@ -187,7 +186,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -205,7 +204,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
@@ -238,20 +237,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectJobandItemLevelJobHistoryErrorsUpdatedWhenBatching()
 		{
 			//Arrange
 			string docPrefix = "DocForItemAndJob";
 			string expiredDocPrefix = "ExpForItemAndJob";
-			DataTable importTable = GetImportTable(8000, 1000, docPrefix, expiredDocPrefix);
+			DataTable importTable = GetImportTable(800, 100, docPrefix, expiredDocPrefix);
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -269,7 +267,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
@@ -320,11 +318,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Arrange
 			string docPrefix = "SavedSearchDoc";
 			string expiredDocPrefix = "TempSavedSearchExp";
-			DataTable importTable = GetImportTable(1, 1000, docPrefix, expiredDocPrefix);
+			DataTable importTable = GetImportTable(1, 100, docPrefix, expiredDocPrefix);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(docPrefix, false);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -342,7 +340,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
@@ -367,7 +365,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -385,7 +383,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			//Create an Integration Point and assign a Job History
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
@@ -541,7 +539,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private DataTable GetTempTable(string tempTableName)
 		{
-			string query = $"SELECT [ArtifactID] FROM [EDDSResource].[eddsdbo].[{ tempTableName }]";
+			string query = $"SELECT [ArtifactID] FROM { ClaimsPrincipal.Current.ResourceDBPrepend(SourceWorkspaceArtifactId) }.[{ tempTableName }]";
 			try
 			{
 				DataTable tempTable = CaseContext.SqlContext.ExecuteSqlStatementAsDataTable(query);

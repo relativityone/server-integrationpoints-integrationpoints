@@ -23,20 +23,33 @@
         return model;
     };
 
-    windowObj.RelativityImport.GetCurrentUiModel = currentSettingsFromUi;
+    var validationCheck = function (self) {
+        var results = windowObj.RelativityImport.koErrors();
+        console.log(results);
+        if (results.length > 0) {
+            root.frameMessaging().dFrame.IP.message.error.raise("Resolve all errors before proceeding");
+            $('.import-validation-error').append(windowObj.RelativityImport.koErrors.showAllMessages());
 
+        } else {
+            var current = currentSettingsFromUi();
+            var stringified = JSON.stringify(current);
+
+            self.publish("saveState", stringified);
+            self.publish('saveComplete', stringified);
+            windowObj.RelativityImport.disablePreviewButton(false);
+            IP.frameMessaging().dFrame.IP.message.error.clear();
+        }
+    };
+
+    windowObj.RelativityImport.GetCurrentUiModel = currentSettingsFromUi;
 
     //An event raised when the user has clicked the Next or Save button.
     //Leaving the custom settings page and going to field mapping screen.
     message.subscribe('submit', function () {
         //Execute save logic that persists the root.
-        var current = currentSettingsFromUi();
-        var stringified = JSON.stringify(current);
 
-        this.publish("saveState", stringified);
-        this.publish('saveComplete', stringified);
+        validationCheck(this);
 
-        windowObj.RelativityImport.disablePreviewButton(false);
         //TODO: validation logic here to allow moving off the settings page (e.g. check for valid load file)
     });
 
@@ -54,6 +67,10 @@
     //An event raised when the host page has loaded the current settings page.
     //Arriving at the custom settings page; either from hitting Back from field mapping, or Next from the first RIP screen
     message.subscribe('load', function (model) {
+        //closing preview btn if the user opens the btn and then goes back to step2 from step 3
+        var $el = currentSettingsFromUi();
+        if ($el.ImportType === "document") { windowObj.RelativityImport.closePreviewBtn(); };
+
         if (!!model) {
             windowObj.RelativityImport.GetCachedUiModel = JSON.parse(model);
         };

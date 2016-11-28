@@ -12,7 +12,6 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services
 {
-	[Obsolete("This class is obsolete as it does not conform to our usage of the Composition Root.")]
 	public class ServiceInstaller
 	{
 		private readonly int _caseArtifactId;
@@ -38,8 +37,6 @@ namespace kCura.IntegrationPoints.Services
 					IServiceHelper helper = k.Resolve<IServiceHelper>();
 					return new ServiceContextHelperForKelperService(helper, _caseArtifactId);
 				}));
-			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
-			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
 			container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceContext>()

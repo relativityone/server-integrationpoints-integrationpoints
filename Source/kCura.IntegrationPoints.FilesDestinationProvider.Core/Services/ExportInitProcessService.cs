@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
 using Relativity.API;
 using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
@@ -19,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportInitProcessService>();
 		}
 
-		public int CalculateDocumentCountToTransfer(ExportUsingSavedSearchSettings exportSettings)
+		public int CalculateDocumentCountToTransfer(ExportUsingSavedSearchSettings exportSettings, int artifactTypeId)
 		{
 			_logger.LogDebug("Start retrieving Total Document count for {exportSettings.ExportType} export type...", exportSettings.ExportType);
 
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 			IDocumentTotalsRepository documentTotalsRepository = _repositoryFactory.GetDocumentTotalsRepository(exportSettings.SourceWorkspaceArtifactId);
 
-			int docsCount = GetTotalDocCount(exportSettings, exportType, documentTotalsRepository);
+			int docsCount = GetTotalDocCount(exportSettings, exportType, artifactTypeId, documentTotalsRepository);
 
 			int extractedIndex = Math.Min(docsCount, Math.Abs(exportSettings.StartExportAtRecord - 1));
 			int retValue = Math.Max(docsCount - extractedIndex, 0);
@@ -36,14 +37,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			return retValue;
 		}
 
-		private static int GetTotalDocCount(ExportUsingSavedSearchSettings exportSettings, ExportSettings.ExportType exportType, IDocumentTotalsRepository documentTotalsRepository)
+		private static int GetTotalDocCount(ExportUsingSavedSearchSettings exportSettings, ExportSettings.ExportType exportType, 
+			int artifactTypeId, IDocumentTotalsRepository documentTotalsRepository)
 		{
 			switch (exportType)
 			{
 				case ExportSettings.ExportType.Folder:
 				case ExportSettings.ExportType.FolderAndSubfolders:
-					return documentTotalsRepository.GetFolderTotalDocsCount(exportSettings.FolderArtifactId,
-						exportSettings.ViewId, exportType == ExportSettings.ExportType.FolderAndSubfolders);
+					return artifactTypeId == (int)ArtifactType.Document
+						? documentTotalsRepository.GetFolderTotalDocsCount(exportSettings.FolderArtifactId, exportSettings.ViewId,
+							exportType == ExportSettings.ExportType.FolderAndSubfolders)
+						: documentTotalsRepository.GetRdosCount(artifactTypeId, exportSettings.ViewId);
 				case ExportSettings.ExportType.ProductionSet:
 					return documentTotalsRepository.GetProductionDocsCount(exportSettings.ProductionId);
 				default:

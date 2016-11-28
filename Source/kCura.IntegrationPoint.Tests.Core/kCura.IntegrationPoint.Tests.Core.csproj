@@ -268,17 +268,18 @@
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
     <Compile Include="TestHelpers\TestHelper.cs" />
+    <Compile Include="TestBase.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="View.cs" />
     <Compile Include="Workspace.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
+		<None Include="App.config" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<None Include="Release\App.config" />
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>

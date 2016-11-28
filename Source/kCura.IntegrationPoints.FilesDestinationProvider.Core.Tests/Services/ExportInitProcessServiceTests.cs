@@ -1,6 +1,6 @@
 ﻿
-using System;
 using System.ComponentModel;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -12,7 +12,8 @@ using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
-	class ExportInitProcessServiceTests
+	[TestFixture]
+	internal class ExportInitProcessServiceTests : TestBase
 	{
 		private ExportInitProcessService _subjectUnderTests;
 		private IHelper _helperMock;
@@ -27,10 +28,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private const int _SAVED_SEARCH_ID = 4;
 		private const int _PROD_SET_ID = 5;
 
+		//Document Type ID
+		private const int _DOC_ARTIFACT_TYPE_ID = 10;
+
 		private const int _EXPECTED_DOC_COUNT = 10;
 
 		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
 			_exportSettings = new ExportUsingSavedSearchSettings
 			{
@@ -60,6 +64,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		}
 
 		[Test]
+		public void ItShouldReturnCorrectRdosCountNumber()
+		{
+			// Arrange
+			const int artifactTypeId = 12345;
+			_exportSettings.ExportType = ExportSettings.ExportType.FolderAndSubfolders.ToString();
+
+			_documentTotalsRepository.GetRdosCount(artifactTypeId, _VIEW_ID).Returns(_EXPECTED_DOC_COUNT);
+
+			// Act
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, artifactTypeId);
+
+			// Assert
+			_documentTotalsRepository.Received().GetRdosCount(artifactTypeId, _VIEW_ID);
+			Assert.That(returnedValue, Is.EqualTo(_EXPECTED_DOC_COUNT));
+		}
+
+		[Test]
 		public void ItShouldReturnCorrectSavedSearchDocCountNumber()
 		{
 			// Arrange
@@ -68,7 +89,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalsRepository.Received().GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID);
@@ -84,7 +105,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetProductionDocsCount(_PROD_SET_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalsRepository.Received().GetProductionDocsCount(_PROD_SET_ID);
@@ -102,7 +123,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetFolderTotalDocsCount(_FOLDER_ID, _VIEW_ID, includeSubFolders).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalsRepository.Received().GetFolderTotalDocsCount(_FOLDER_ID, _VIEW_ID, includeSubFolders);
@@ -123,7 +144,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalsRepository.GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings);
+			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			Assert.That(returnedValue, Is.EqualTo(expectedCount));
@@ -136,7 +157,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_exportSettings.ExportType = "SomeType";
 
 			// Act & Assert
-			InvalidEnumArgumentException thrownException = Assert.Throws<InvalidEnumArgumentException>(() => _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings));
+			InvalidEnumArgumentException thrownException = Assert.Throws<InvalidEnumArgumentException>(() =>
+				_subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID));
 			_loggerMock.Received().LogError(thrownException, Arg.Any<string>(), Arg.Any<object[]>());
 		}
 	}

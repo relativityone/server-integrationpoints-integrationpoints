@@ -246,6 +246,7 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 		}
 
+		this.FolderPathImportProvider = ko.observableArray([]);
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
 		{
@@ -271,11 +272,12 @@ ko.validation.insertValidationMessage = function (element) {
 				message: 'The Native file path field is required.',
 			}
 		});
-		
+
 		this.isDocument = ko.observable("false");
 		if (artifactTypeId == 10) {
 			self.isDocument("true");
 		}
+
 		this.selectedIdentifier = ko.observable().extend({
 			required: {
 				onlyIf: function () {
@@ -383,7 +385,11 @@ ko.validation.insertValidationMessage = function (element) {
 						sourceFields = result[1] || [],
 						mapping = result[2];
 
-				self.nativeFilePathOption(sourceFields);				
+				self.nativeFilePathOption(sourceFields);
+				self.FolderPathImportProvider(sourceFields);
+
+			    // Setting the cached value for Non-Relativity Providers
+				self.FolderPathSourceField(model.FolderPathSourceField);
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
@@ -458,6 +464,21 @@ ko.validation.insertValidationMessage = function (element) {
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
+
+		this.GetCatalogFieldMappings = function () {
+		    self.CatalogField = {};
+		    $.ajax({
+		        url: IP.utils.generateWebAPIURL('FieldCatalog', IP.utils.getParameterByName('AppID', window.top)),
+		        type: 'GET',
+		        success: function (data) {
+		            self.CatalogField = data;
+		        },
+		        error: function (error) {
+		            console.log(error);
+		        }
+		    });
+		};
+
 		/********** Submit Validation**********/
 		this.submit = function () {
 			this.showErrors(true);
@@ -490,7 +511,51 @@ ko.validation.insertValidationMessage = function (element) {
 			IP.workspaceFieldsControls.moveTop(this.sourceMapped, this.selectedMappedSource());
 		};
 		this.moveMappedSourceBottom = function () {
-			IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
+		    IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
+		};
+
+	    /********** AutoMap Controls  **********/
+		this.GetCatalogFieldMappings();
+
+		this.autoFieldMap = function () {
+		    //Remove current mappings first
+		    self.addAlltoSourceField();
+		    self.addAlltoWorkspaceField();
+
+		    var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
+		        for (var x = 0; x < self.CatalogField.length; x++) {
+		            if (self.CatalogField[x].fieldArtifactId == wsFieldArtifactId &&
+                        self.CatalogField[x].friendlyName === fieldName) {
+		                return true;
+		            }
+		        }
+		        return false;
+		    };
+
+		    var sourceFieldToAdd = ko.observableArray([]);
+		    var wspaceFieldToAdd = ko.observableArray([]);
+		    for (var i = 0; i < self.sourceField().length; i++) {
+		        for (var j = 0; j < self.workspaceFields().length; j++) {
+		            if (self.sourceField()[i].name === self.workspaceFields()[j].name) {
+		                sourceFieldToAdd.push(self.sourceField()[i]);
+		                wspaceFieldToAdd.push(self.workspaceFields()[j]);
+		                break;
+		            }
+		            else if (isCatalogFieldMatch(self.workspaceFields()[j].identifer, self.sourceField()[i].name)) {
+		                sourceFieldToAdd.push(self.sourceField()[i]);
+		                wspaceFieldToAdd.push(self.workspaceFields()[j]);
+		                break;
+		            }
+		        }
+		    }
+
+		    if (sourceFieldToAdd().length > 0) {
+		        IP.workspaceFieldsControls.add(self.sourceField, sourceFieldToAdd, self.sourceMapped);
+		        IP.workspaceFieldsControls.add(self.workspaceFields, wspaceFieldToAdd, self.mappedWorkspace);
+		    }
+		    else {
+		        IP.message.error.raise("Unable to auto map. No matching fields found.");
+		    }
 		};
 
 	};// end of the viewmodel
@@ -543,7 +608,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
 		this.getTemplate = function () {
-		    if (IP.reverseMapFields) {  
+		    if (IP.reverseMapFields) {
 		            self.settings.url=
 		        IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3Reversed');
 self.settings.templateID = "step4";
@@ -552,9 +617,9 @@ self.settings.templateID = "step4";
 		        IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3');
 				self.settings.templateID = "step3";
 			}
-            
+
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
-				
+
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
@@ -670,13 +735,21 @@ self.settings.templateID = "step4";
 					}
 
 					if (this.model.UseFolderPathInformation() == "true") {
-						var folderPathField = "";
+					    var folderPathField = "";
 						var folderPathFields = this.model.FolderPathFields();
 						for (var i = 0; i < folderPathFields.length; i++) {
 							if (folderPathFields[i].fieldIdentifier === this.model.FolderPathSourceField()) {
 								folderPathField = folderPathFields[i];
 								break;
 							}
+						}
+
+						var sourceFields = this.model.FolderPathImportProvider();
+						for (var k = 0; k < sourceFields.length; k++) {
+						    if (sourceFields[k].fieldIdentifier === this.model.FolderPathSourceField()) {
+						        folderPathField = sourceFields[k];
+						        break;
+						    }
 						}
 
 						// update fieldMapType if folderPath is in mapping field
@@ -739,13 +812,13 @@ self.settings.templateID = "step4";
 			return d.promise;
 		};
 	};
-    
+
         var step = new Step({
             url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
             templateID: 'step3'
         });
-    
-	
+
+
 	IP.messaging.subscribe('back', function () {
 
 	});

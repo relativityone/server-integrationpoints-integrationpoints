@@ -1,15 +1,15 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.Web.Tests.Helpers;
 using Newtonsoft.Json;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
@@ -29,19 +29,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private const int _WORKSPACE_ID = 23432;
 
 		[SetUp]
-		public new void OneTimeSetUp()
+		public override void SetUp()
 		{
-			_relativityUrlHelper = this.GetMock<IRelativityUrlHelper>();
-			_integrationPointService = this.GetMock<IIntegrationPointService>();
-			_rdoSynchronizerProvider = this.GetMock<IRdoSynchronizerProvider>();
-			_cpHelper = this.GetMock<ICPHelper>();
+			_relativityUrlHelper = Substitute.For<IRelativityUrlHelper>();
+			_integrationPointService = Substitute.For<IIntegrationPointService>();
+			_rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
+			_cpHelper = Substitute.For<ICPHelper>();
 			_svcMgr = Substitute.For<IServicesMgr>();
 
 			_cpHelper.GetServicesManager().Returns(_svcMgr);
 			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>()).Returns(Substitute.For<IMetricsManager>());
 
-			_instance = this.ResolveInstance<IntegrationPointsAPIController>();
-			_instance.Request = new HttpRequestMessage();
+			_instance = new IntegrationPointsAPIController(_integrationPointService, _relativityUrlHelper,
+				_rdoSynchronizerProvider, _cpHelper) {Request = new HttpRequestMessage()};
 			_instance.Request.SetConfiguration(new HttpConfiguration());
 		}
 
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public void Update_StandardSourceProvider_NoJobsRun_GoldFlow()
 		{
 			// Arrange
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830
@@ -59,9 +59,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			string url = "http://lolol.com";
 			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(_WORKSPACE_ID),
-				Arg.Is(model.ArtifactID),
-				Arg.Is(Data.ObjectTypes.IntegrationPoint))
+					_WORKSPACE_ID,
+					model.ArtifactID,
+					ObjectTypes.IntegrationPoint)
 				.Returns(url);
 
 			// Act
@@ -72,13 +72,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
 			Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
 
-			_integrationPointService.Received(1).SaveIntegration(Arg.Is(model));
+			_integrationPointService.Received(1).SaveIntegration(model);
 			_relativityUrlHelper
 				.Received(1)
 				.GetRelativityViewUrl(
-					Arg.Is(_WORKSPACE_ID),
-					Arg.Is(model.ArtifactID),
-					Arg.Is(Data.ObjectTypes.IntegrationPoint));
+					_WORKSPACE_ID,
+					model.ArtifactID,
+					ObjectTypes.IntegrationPoint);
 		}
 	}
 }

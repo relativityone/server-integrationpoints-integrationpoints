@@ -3,6 +3,7 @@ using System.Data;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			try
 			{
 				// ARRANGE
-				IntegrationModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobsInQueue_ThrowsJobsAlreadyRunning");
+				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobsInQueue_ThrowsJobsAlreadyRunning");
 				model = CreateOrUpdateIntegrationPoint(model);
 				int integrationPointId = model.ArtifactID;
 

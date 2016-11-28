@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -13,6 +15,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -99,22 +102,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
+			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
-			int totalCount = GetTotalExportItemsCount(sourceSettings, job);
+			int totalCount = GetTotalExportItemsCount(sourceSettings, destinationConfiguration, job);
 
-			// This condition should be changed when we implement correct Total Items count for Production or Folders/Subfolders Export types
-			if (totalCount >= 0)
+			if (totalCount > 0)
 			{
 				CreateBatchJob(job, new List<string>());
 			}
 			return totalCount;
 		}
 
-		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, Job job)
+		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
 		{
 			try
 			{
-				return _exportInitProcessService.CalculateDocumentCountToTransfer(settings);
+				return _exportInitProcessService.CalculateDocumentCountToTransfer(settings, destinationConfiguration.ArtifactTypeId);
 			}
 			catch (Exception ex)
 			{

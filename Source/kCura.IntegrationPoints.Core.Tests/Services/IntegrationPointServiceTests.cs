@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests.Helpers;
@@ -18,7 +19,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.Repositories;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -26,11 +28,12 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
 	[TestFixture]
-	public class IntegrationPointServiceTests
+	public class IntegrationPointServiceTests : TestBase
 	{
 		private readonly int _sourceWorkspaceArtifactId = 789;
 		private readonly int _targetWorkspaceArtifactId = 9954;
@@ -67,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationModelValidator _integrationModelValidator;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
 			_caseServiceManager = Substitute.For<ICaseServiceContext>();
@@ -102,8 +105,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			);
 
 			_caseServiceManager.RsapiService = Substitute.For<IRSAPIService>();
-			_caseServiceManager.RsapiService.IntegrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
-			_caseServiceManager.RsapiService.SourceProviderLibrary = Substitute.For<IGenericLibrary<SourceProvider>>();
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Returns(Substitute.For<IGenericLibrary<Data.IntegrationPoint>>());
+			_caseServiceManager.RsapiService.SourceProviderLibrary.Returns(Substitute.For<IGenericLibrary<SourceProvider>>());
 			_caseServiceManager.WorkspaceID = _sourceWorkspaceArtifactId;
 
 			_repositoryFactory.GetPermissionRepository(_sourceWorkspaceArtifactId).Returns(_sourcePermissionRepository);
@@ -166,7 +169,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(_previousJobHistoryArtifactId);
 			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
 
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
 			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(_destinationProviderId).Returns(_destinationProvider);
 		}
@@ -665,6 +668,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// arrange
 			_sourceProvider.Identifier = "some thing else";
+			_destinationProvider.Identifier = "bla bla";
 
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
@@ -934,7 +938,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// Arrange
 			int targetWorkspaceArtifactId = 9302;
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
@@ -942,7 +946,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				LastRun = DateTime.Now
 			};
 
-			var existingModel = new IntegrationModel()
+			var existingModel = new IntegrationPointModel()
 			{
 				ArtifactID = model.ArtifactID,
 				SourceProvider = model.SourceProvider,
@@ -972,14 +976,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void Save_NonPermissionExceptionIsThrown_ExceptionIsWrapped()
 		{
 			// Arrange
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
 				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = 2322 }),
 				SelectedOverwrite = "SelectedOverwrite",
 				Scheduler = new Scheduler() { EnableScheduler = false },
-				LastRun = null
+				LastRun = DateTime.Today
 			};
 			IEnumerable<ErrorDTO> errors = new []
 			{
@@ -994,7 +998,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Act
 			const string errorMessage = "KHAAAAAANN!!!";
 			var exception = new Exception(errorMessage);
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(0).ThrowsForAnyArgs(exception);
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Read(0).ThrowsForAnyArgs(exception);
 			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
 
 			// Assert
@@ -1018,7 +1022,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// Arrange
 			int targetWorkspaceArtifactId = 9302;
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
@@ -1030,7 +1034,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
-			var existingModel = new IntegrationModel()
+			var existingModel = new IntegrationPointModel()
 			{
 				ArtifactID = model.ArtifactID,
 				SourceProvider = model.SourceProvider,
@@ -1107,7 +1111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// Arrange
 			int targetWorkspaceArtifactId = 9302;
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
@@ -1119,7 +1123,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
-			var existingModel = new IntegrationModel()
+			var existingModel = new IntegrationPointModel()
 			{
 				ArtifactID = model.ArtifactID,
 				SourceProvider = model.SourceProvider,
@@ -1177,7 +1181,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
 			_jobManager.Received(1).GetJob(
 				_sourceWorkspaceArtifactId, 
 				model.ArtifactID,
@@ -1190,7 +1194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// Arrange
 			int targetWorkspaceArtifactId = 9302;
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 0,
 				SourceProvider = 9830,
@@ -1231,7 +1235,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(new PermissionCheckDTO());
 
 			const int newIntegrationPoinId = 389234;
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
 				.Returns(newIntegrationPoinId);
 
 			_caseServiceManager.EddsUserID = 1232;
@@ -1251,7 +1255,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Received(1).Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Received(1).Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
 			_jobManager.Received(1).GetJob(
 				_sourceWorkspaceArtifactId,
 				newIntegrationPoinId,
@@ -1262,7 +1266,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void Update_IPReadFails_Excepts()
 		{
 			int targetWorkspaceArtifactId = 9302;
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
@@ -1287,7 +1291,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			const int integrationPointArtifactId = 9847654;
 			_caseServiceManager.EddsUserID = 78946;
 			_caseServiceManager.WorkspaceID = _sourceWorkspaceArtifactId;
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				SourceProvider = 9830,
 				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
@@ -1304,7 +1308,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				LastRun = null,
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = ""})
 			};
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Create(Arg.Any<Data.IntegrationPoint>())
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Create(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
 
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
@@ -1360,7 +1364,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			int existingTargetWorkspaceArtifactId = propertyNameHashSet.Contains("Source Configuration")
 				? 12324
 				: targetWorkspaceArtifactId;
-			var model = new IntegrationModel()
+			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				Name = "My Name",
@@ -1374,7 +1378,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				})
 			};
 
-			var existingModel = new IntegrationModel()
+			var existingModel = new IntegrationPointModel()
 			{
 				ArtifactID = model.ArtifactID,
 				LastRun = DateTime.Now,
@@ -1429,7 +1433,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			Data.IntegrationPoint integrationPoint = _instance.GetRdo(_integrationPointArtifactId);
 
 			//Assert
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Received(1).Read(_integrationPointArtifactId);
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Received(1).Read(_integrationPointArtifactId);
 			Assert.IsNotNull(integrationPoint);
 		}
 
@@ -1437,7 +1441,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
 		{
 			//Arrange
-			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Throws<Exception>();
+			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Read(_integrationPointArtifactId).Throws<Exception>();
 
 			//Act
 			Assert.Throws<Exception>(() => _instance.GetRdo(_integrationPointArtifactId), "Unable to retrieve Integration Point.");

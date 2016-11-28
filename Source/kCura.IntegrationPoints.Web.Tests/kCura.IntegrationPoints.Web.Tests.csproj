@@ -159,6 +159,10 @@
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.4.226.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.4.226.9\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
@@ -208,9 +212,9 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Attributes\WebAPIFilterExceptionTests.cs" />
+    <Compile Include="Controllers\API\FieldCatalogControllerTests.cs" />
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
-    <Compile Include="Helpers\TestBase.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />

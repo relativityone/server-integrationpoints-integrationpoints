@@ -123,7 +123,7 @@ h1
 	top: 19px;
 }
 
-.transparent {	
+.transparent {
 	background-color: transparent!important;
 }
 
@@ -295,23 +295,26 @@ ul li .day-select
 
 .map-field-title
 {
-	padding-top: 20px;
-	display: flex;
-	width: 1200px;
+    padding-top: 20px;
+    display: flex;
+    width: 1200px;
+}
+
+.map-field-btn
+{
+    margin-left: 42.8%;
+    min-width: 76px;
 }
 
 .leftSide-field
 {
-
-	float: left;
 	padding-bottom: 10px;
 }
 
 .rightSide-field
 {
-	float: left;
 	padding-bottom: 10px;
-	margin-left: 92%;
+	margin-left: 44%;
 }
 .source-field, .rightSide-field.reverse
 {
@@ -499,7 +502,7 @@ select option.hover
 }
 #password {
   width: 200px;
-    height: 26px;  
+    height: 26px;
 }
 #filename_prefix {
     width: 450px;

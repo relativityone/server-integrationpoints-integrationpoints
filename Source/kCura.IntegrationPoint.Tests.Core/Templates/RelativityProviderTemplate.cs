@@ -144,9 +144,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
 		}
 
-		protected IntegrationModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		protected IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
 		{
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(overwriteMode),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -162,9 +162,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return integrationModel;
 		}
 
-		protected IntegrationModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
+		protected IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
 		{
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(overwriteMode),
 				DestinationProvider = DestinationProvider.ArtifactId,

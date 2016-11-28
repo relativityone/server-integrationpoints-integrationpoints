@@ -5,6 +5,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Logging;
@@ -14,7 +15,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Attributes
 {
-	public class WebAPIFilterExceptionTests
+	[TestFixture]
+	public class WebAPIFilterExceptionTests : TestBase
 	{
 		private IErrorFactory _errorFactory;
 		private IErrorService _errorService;
@@ -22,7 +24,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
 		private WebAPIFilterException _webAPIFilterException;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_errorService = Substitute.For<IErrorService>();
 			_errorFactory = Substitute.For<IErrorFactory>();

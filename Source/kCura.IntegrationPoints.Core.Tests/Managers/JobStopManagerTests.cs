@@ -1,21 +1,22 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
-	public class JobStopManagerTests
+	public class JobStopManagerTests : TestBase
 	{
 		private JobStopManager _instance;
 		private IJobService _jobService;
@@ -25,11 +26,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private JobHistory _jobHistory;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_jobHistory = new JobHistory();
-			_jobService = NSubstitute.Substitute.For<IJobService>();
-			_jobHistoryService = NSubstitute.Substitute.For<IJobHistoryService>();
+			_jobService = Substitute.For<IJobService>();
+			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			var helper = Substitute.For<IHelper>();
 			_guid = Guid.NewGuid();
 			_jobId = 123;

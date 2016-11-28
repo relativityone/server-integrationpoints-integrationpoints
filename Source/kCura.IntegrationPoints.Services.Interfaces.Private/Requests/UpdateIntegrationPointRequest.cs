@@ -1,7 +1,6 @@
 ﻿using System;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 
 namespace kCura.IntegrationPoints.Services
 {
@@ -28,9 +27,9 @@ namespace kCura.IntegrationPoints.Services
 			base.ValidatePermission(container);
 		}
 
-		public override IntegrationModel CreateIntegrationPointModel()
+		public override Core.Models.IntegrationPointModel CreateIntegrationPointModel(IWindsorContainer container)
 		{
-			IntegrationModel baseModel = base.CreateIntegrationPointModel();
+			Core.Models.IntegrationPointModel baseModel = base.CreateIntegrationPointModel(container);
 			baseModel.ArtifactID = IntegrationPointArtifactId;
 			return baseModel;
 		}

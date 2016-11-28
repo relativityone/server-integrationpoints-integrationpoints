@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -16,7 +18,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 {
 	[TestFixture]
-	public class SetHasErrorsFieldTests
+	public class SetHasErrorsFieldTests : TestBase
 	{
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
@@ -25,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		private ICaseServiceContext _caseServiceContext;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
@@ -43,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			var integrationPointTwo = new Data.IntegrationPoint { ArtifactId = 2 };
 			IList<Data.IntegrationPoint> expectedIntegrationPoints = new[] { integrationPointTwo, integrationPointOne };
 
-			_integrationPointService.GetAllIntegrationPoints().Returns(expectedIntegrationPoints);
+			_integrationPointService.GetAllRDOs().Returns(expectedIntegrationPoints);
 
 			// Act
 			List<Data.IntegrationPoint> actualIntegrationPoints = _instance.GetIntegrationPoints().ToList();
@@ -52,7 +54,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			Assert.IsNotEmpty(actualIntegrationPoints);
 			Assert.AreEqual(expectedIntegrationPoints, actualIntegrationPoints);
 
-			_integrationPointService.Received(1).GetAllIntegrationPoints();
+			_integrationPointService.Received(1).GetAllRDOs();
 		}
 
 		[Test]
@@ -158,9 +160,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories.Select(x => x.ArtifactId).ToArray());
 			IList<Data.IntegrationPoint> integrationPoints = new[] { integrationPoint };
 
-			_integrationPointService.GetAllIntegrationPoints().Returns(integrationPoints);
+			_integrationPointService.GetAllRDOs().Returns(integrationPoints);
 			_jobHistoryService.GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory))).Returns(jobHistories);
-			_integrationPointService.SaveIntegration(Arg.Is<IntegrationModel>(x => x.ArtifactID == integrationPoint.ArtifactId)).Returns(1);
+			_integrationPointService.SaveIntegration(Arg.Is<IntegrationPointModel>(x => x.ArtifactID == integrationPoint.ArtifactId)).Returns(1);
 
 			// Act
 			Response response = _instance.ExecuteInstanced();
@@ -169,7 +171,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			Assert.IsTrue(response.Success);
 			Assert.AreEqual("Updated successfully.", response.Message);
 
-			_integrationPointService.Received(1).GetAllIntegrationPoints();
+			_integrationPointService.Received(1).GetAllRDOs();
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
@@ -180,7 +182,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		{
 			// Arrange
 			Exception e = new Exception("Query failed");
-			_integrationPointService.GetAllIntegrationPoints().Throws(e);
+			_integrationPointService.GetAllRDOs().Throws(e);
 
 			// Act
 			Response response = _instance.ExecuteInstanced();
@@ -189,7 +191,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			Assert.IsFalse(response.Success);
 			Assert.AreEqual("Updating the Has Errors field on the Integration Point object failed. Exception message: Query failed.", response.Message);
 
-			_integrationPointService.Received(1).GetAllIntegrationPoints();
+			_integrationPointService.Received(1).GetAllRDOs();
 			_jobHistoryService.Received(0).GetJobHistory(null);
 			_integrationPointService.Received(0).SaveIntegration(null);
 		}

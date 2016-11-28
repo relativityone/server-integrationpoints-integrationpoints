@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -9,12 +10,13 @@ using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	public class ArtifactTreeCreatorTests
+	[TestFixture]
+	public class ArtifactTreeCreatorTests : TestBase
 	{
 		private ArtifactTreeCreator _treeByParentIdCreator;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			var helper = Substitute.For<IHelper>();
 			_treeByParentIdCreator = new ArtifactTreeCreator(helper);

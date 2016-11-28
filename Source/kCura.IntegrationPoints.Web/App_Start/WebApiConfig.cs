@@ -49,6 +49,37 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "Save",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "Save" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "SaveProfileUsingIP",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/SaveAsProfile/{integrationPointArtifactId}/{profileName}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "SaveUsingIntegrationPoint" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetProfile",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/{artifactId}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "Get" },
+				constraints: new { artifactId = @"^[0-9]+$" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetAllProfiles",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/GetAll",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "GetAll" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetProfilesByType",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/GetByType/{artifactId}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "GetByType" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "RelativityViewSettings",
 				routeTemplate: "{workspaceID}/api/relativity/view",
 				defaults: new { controller = "relativity", action = "GetViewFields" }
@@ -92,7 +123,7 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "LongTextFields",
-				routeTemplate: "{workspaceID}/api/ExportFields/LongTextFields",
+				routeTemplate: "{workspaceID}/api/ExportFields/LongTextFields/{artifactTypeId}",
 				defaults: new { controller = "ExportFields", action = "GetExportableLongTextFields" }
 			);
 
@@ -180,6 +211,19 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new {controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }
 			);
 
+			config.Routes.MapHttpRoute(
+				name: "GetDefaultRdoTypeId",
+				routeTemplate: "{workspaceID}/api/RdoFilter/GetDefaultRdoTypeId",
+				defaults: new { controller = "RdoFilter", action = "GetDefaultRdoTypeId" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetAllViewableRdos",
+				routeTemplate: "{workspaceID}/api/RdoFilter/GetAll",
+				defaults: new { controller = "RdoFilter", action = "GetAllViewableRdos" }
+			);
+
+			
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",

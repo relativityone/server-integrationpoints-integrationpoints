@@ -45,9 +45,19 @@ namespace kCura.IntegrationPoints.Core
 			public static Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 			public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 
+			public const string API_CONTROLLER_NAME = "IntegrationPointsAPI";
+
 			public static class IntegrationPoint
 			{
 				public static Guid ObjectTypeGuid = new Guid("03D4F67E-22C9-488C-BEE6-411F05C52E01");
+			}
+
+			public static class IntegrationPointTypes
+			{
+				public static Guid ImportGuid = new Guid("700D94A7-014C-4C7C-B1A2-B53229E3A1C4");
+				public static string ImportName = @"Import";
+				public static Guid ExportGuid = new Guid("DBB2860A-5691-449B-BC4A-E18D8519EB3A");
+				public static string ExportName = @"Export";
 			}
 
 			public static class PermissionErrors
@@ -96,6 +106,27 @@ namespace kCura.IntegrationPoints.Core
 				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.SharedLibrary.Export.Duration";
 
 				#endregion //Export
+
+				#region Profiles
+
+				public const string BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR = "IntegrationPointProfiles.Web.Controllers.API.SaveAsProfile.Duration";
+				public const string BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR = "IntegrationPointProfiles.Web.Controllers.API.Save.Duration";
+
+				#endregion
+
+			}
+		}
+
+		public static class IntegrationPointProfiles
+		{
+			public const string API_CONTROLLER_NAME = "IntegrationPointProfilesAPI";
+
+			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE = "Unable to retrieve Integration Point Profle.";
+
+			public static class PermissionErrors
+			{
+				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_PROFILE_ADMIN_MESSAGE = "Unable to save Integration Point Profile.";
+				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_PROFILE_USER_MESSAGE = "Unable to save the Integration Point Profile. Please contact your system administrator.";
 			}
 
 			public class Validation

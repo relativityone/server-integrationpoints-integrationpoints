@@ -7,6 +7,13 @@
 
 		this.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
+		this.ArtifactTypeID = state.artifactTypeId;
+		this.DefaultRdoTypeId = state.defaultRdoTypeId;
+
+		this.ExportRdoMode = function () {
+			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
+		}
+
 		this.ProcessingSourceLocationList = ko.observableArray([]);
 
 		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation || 0;
@@ -613,9 +620,9 @@
 
 		var textPrecedencePickerViewModel = new TextPrecedencePickerViewModel(function (fields) {
 			self.TextPrecedenceFields(fields);
-		});
+		}, self.ArtifactTypeID);
 
-		Picker.create("textPrecedencePicker", "ListPicker", textPrecedencePickerViewModel);
+		Picker.create("Fileshare", "textPrecedencePicker", "ListPicker", textPrecedencePickerViewModel);
 
 		this.openTextPrecedencePicker = function () {
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
@@ -638,7 +645,7 @@
 			self.ImagePrecedence(productions);
 		});
 
-		Picker.create("imageProductionPicker", "ListPicker", imageProductionPickerViewModel);
+		Picker.create("Fileshare", "imageProductionPicker", "ListPicker", imageProductionPickerViewModel);
 
 		this.openImageProductionPicker = function () {
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
@@ -716,7 +723,12 @@
 		self.loadModel = function (ip) {
 			self.ipModel = ip;
 
-			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration, { hasBeenRun: ip.hasBeenRun }));
+			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration,
+			{
+				hasBeenRun: ip.hasBeenRun,
+				artifactTypeId: ip.artifactTypeID,
+				defaultRdoTypeId: ip.DefaultRdoTypeId
+			}));
 			self.model.errors = ko.validation.group(self.model);
 
 			var processingSourceLocationListPromise = root.data.ajax({
@@ -764,18 +776,18 @@
 					settings.DataFileEncodingType = '';
 				}
 
-				if (typeof (self.ipModel.sourceConfiguration) === 'string') {
-					self.ipModel.sourceConfiguration = JSON.parse(self.ipModel.sourceConfiguration);
+				if (typeof (self.ipModel) === 'string') {
+					self.ipModel = JSON.parse(self.ipModel);
 				}
 
 				if (typeof (self.ipModel.Map) === 'string') {
 					self.ipModel.Map = JSON.parse(self.ipModel.Map);
 				}
 
-				$.extend(self.ipModel.sourceConfiguration, settings);
-				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
+				$.extend(self.ipModel, settings);
+				self.ipModel.TargetWorkspaceArtifactId = self.ipModel.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
 
-				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
+				self.ipModel = JSON.stringify(self.ipModel);
 
 				var destination = JSON.parse(self.ipModel.destination);
 				destination.Provider = "Load File";

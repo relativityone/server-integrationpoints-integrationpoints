@@ -24,10 +24,11 @@ namespace kCura.IntegrationPoints.Data
 		foreach  (ObjectTypeDTO objType in objTypes)
 		{
 		#>
-IGenericLibrary<<#=objType.Name.ToPascalCase()#>> <#=objType.Name.ToPascalCase()#>Library { get; set; }
+IGenericLibrary<<#=objType.Name.ToPascalCase()#>> <#=objType.Name.ToPascalCase()#>Library { get; }
 		<#
 		}
 		#>
 
+		IGenericLibrary<T> GetGenericLibrary<T>() where T : BaseRdo, new();
 	}
 }

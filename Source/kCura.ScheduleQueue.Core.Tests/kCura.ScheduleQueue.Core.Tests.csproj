@@ -39,10 +39,10 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <ItemGroup>    
+  <ItemGroup>
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-    </Reference> 
+    </Reference>
     <Reference Include="NSubstitute">
       <HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
     </Reference>
@@ -88,6 +88,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
       <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
       <Name>kCura.IntegrationPoints.Core.Contracts</Name>

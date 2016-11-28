@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Data.Migrations
 			yield return new AddWebApiConfigValueMigration(_eddsContext);
 			yield return new UpdateJobErrorsBlankToNo(_workspaceContext);
 			yield return new AddReplaceWebApiWithExportCoreSetting(_eddsContext);
+			yield return new Migration(_eddsContext, Resources.Resource.SetExportProviderToogle);
 		}
 
 	}

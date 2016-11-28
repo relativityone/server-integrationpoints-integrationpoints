@@ -1,9 +1,9 @@
-var TextPrecedencePickerViewModel = function(okCallback, data) {
+var TextPrecedencePickerViewModel = function(okCallback, artifactTypeId) {
 	var self = this;
 	self.PopupTitle = ko.observable("Select Text Precedence");
 	self.PickerName = ko.observable("Long Text Fields");
 
-	self.data = data;
+	self.artifactTypeId = artifactTypeId;
 
 	this.okCallback = okCallback;
 
@@ -19,7 +19,8 @@ var TextPrecedencePickerViewModel = function(okCallback, data) {
 				type: "get",
 				url: IP.utils.generateWebAPIURL("ExportFields/LongTextFields"),
 				data: {
-					sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
+					sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top),
+					artifactTypeId : self.artifactTypeId
 				}
 			})
 			.then(function(result) {

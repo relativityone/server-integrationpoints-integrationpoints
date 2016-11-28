@@ -105,6 +105,10 @@
         updateHeaders();
     });
 
+    windowObj.RelativityImport.closePreviewBtn = function () {
+        windowObj.parent.$(idSelector(BUTTON_UL)).hide();
+    };
+
     var populateCachedState = function () {
         var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
         var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
@@ -212,6 +216,7 @@
         windowPar.$(idSelector(CONFIGURATION_FRAME)).css({ "min-width": '900px' });
         $(idSelector(JSTREE_HOLDER_DIV)).css({ 'min-height': '50%' });
         $(idSelector(JSTREE_HOLDER_DIV)).height('auto');
+        $('body').addClass('import-body-style');
     };
 
     windowObj.RelativityImport.enableLocation = function (en) {
@@ -220,6 +225,9 @@
         $el.children().each(function (i, e) {
             $(e).toggleClass('location-disabled', !en);
         });
+        if (en) {
+            $('#loadData').show();
+        };
     };
 
     windowObj.RelativityImport.enableLoadModal = function (bool) {
@@ -262,7 +270,7 @@
                 windowObj.RelativityImport.enableLocation(true);
             }).fail(function (error) {
                 onFail(error);
-                IP.frameMessaging().dFrame.IP.message.error.raise("Failed to load Directories for the selected Source Location.");
+                IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve directories and subfolders info. Please contact system administrator");
             });
         };
         windowObj.RelativityImport.locationSelector.reloadWithRoot(reloadTree);
@@ -290,7 +298,7 @@
         });
     }).fail(function () {
         windowObj.RelativityImport.enableLoadModal(false);
-        IP.frameMessaging().dFrame.IP.message.error.raise("Failed to load Processing Source Locations.");
+        IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve processing source locations. Please contact system administrator");
     });
 
     $.ajax({

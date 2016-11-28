@@ -220,7 +220,9 @@
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />
+    <Compile Include="Helpers\IButtonStateBuilder.cs" />
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
+    <Compile Include="Helpers\Implementations\ButtonStateBuilder.cs" />
     <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
     <Compile Include="Helpers\Implementations\ArtifactTreeCreator.cs" />
@@ -261,6 +263,7 @@
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
     <Compile Include="Managers\Implementations\SourceJobManager.cs" />
     <Compile Include="Managers\Implementations\StateManager.cs" />
+    <Compile Include="Managers\Implementations\WorkspaceManager.cs" />
     <Compile Include="Managers\IResourcePoolManager.cs" />
     <Compile Include="Managers\ISourceProviderManager.cs" />
     <Compile Include="Managers\IQueueManager.cs" />
@@ -268,8 +271,12 @@
     <Compile Include="Managers\ISourceJobManager.cs" />
     <Compile Include="Managers\IObjectTypeManager.cs" />
     <Compile Include="Managers\IStateManager.cs" />
+    <Compile Include="Managers\IWorkspaceManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Models\ExportSettings.cs" />
+    <Compile Include="Models\IntegrationPointModelBase.cs" />
+    <Compile Include="Models\IntegrationPointProfileModel.cs" />
+    <Compile Include="Models\Scheduler.cs" />
     <Compile Include="Models\StoppableJobCollection.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -304,15 +311,22 @@
     <Compile Include="Services\Exporter\ILongTextStreamFactory.cs" />
     <Compile Include="Services\Exporter\LazyExceptArtifactFieldDto.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
+    <Compile Include="Services\FieldCatalogService.cs" />
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
     <Compile Include="Services\IErrorService.cs" />
     <Compile Include="Services\IExportFieldsService.cs" />
     <Compile Include="Services\IExportProcessService.cs" />
-    <Compile Include="Services\IIntegrationPointValidationService.cs" />
-    <Compile Include="Services\IIntegrationPointService.cs" />
+    <Compile Include="Services\IExportSettingsValidationService.cs" />
+    <Compile Include="Services\IntegrationPoint\IIntegrationPointProfileService.cs" />
+    <Compile Include="Services\IntegrationPoint\IIntegrationPointService.cs" />
+    <Compile Include="Services\IntegrationPoint\IIntegrationPointTypeService.cs" />
+    <Compile Include="Services\IFieldCatalogService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
+    <Compile Include="Services\IntegrationPoint\IntegrationPointProfileService.cs" />
+    <Compile Include="Services\IntegrationPoint\IntegrationPointServiceBase.cs" />
+    <Compile Include="Services\IntegrationPoint\IntegrationPointTypeService.cs" />
     <Compile Include="Services\IProductionService.cs" />
     <Compile Include="Services\IArtifactTreeService.cs" />
     <Compile Include="Services\ISavedSearchesTreeService.cs" />
@@ -352,7 +366,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Models\IntegrationModel.cs" />
+    <Compile Include="Models\IntegrationPointModel.cs" />
     <Compile Include="Models\RdoFilter.cs" />
     <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="Services\ServiceContext\CaseServiceContext.cs" />
@@ -361,7 +375,7 @@
     <Compile Include="Services\Conversion\IObjectBuilder.cs" />
     <Compile Include="Services\Conversion\SynchronizerObjectBuilder.cs" />
     <Compile Include="Services\ErrorService.cs" />
-    <Compile Include="Services\IntegrationPointService.cs" />
+    <Compile Include="Services\IntegrationPoint\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForKelperService.cs" />

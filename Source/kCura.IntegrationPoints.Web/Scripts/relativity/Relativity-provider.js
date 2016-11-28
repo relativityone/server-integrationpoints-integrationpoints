@@ -106,7 +106,7 @@
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
-		self.FolderArtifactName = ko.observable(state.FolderArtifactName);
+		self.TargetFolder = ko.observable(state.TargetFolder);
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value !== undefined) {
@@ -119,6 +119,10 @@
 				type: "get",
 				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId)
 			}).then(function (result) {
+				if (!!self.TargetFolder() && self.TargetFolder().indexOf(result.text) === -1) {
+					self.FolderArtifactId("");
+					self.TargetFolder("");
+				}
 				self.foldersStructure = result;
 				self.locationSelector.reload(result);
 			}).fail(function (error) {
@@ -126,15 +130,29 @@
 			});
 		};
 
+		self.getFolderFullName = function (currentFolder, folderId) {
+			if (currentFolder.id === folderId) {
+				return currentFolder.text;
+			} else {
+				for (var i = 0; i < currentFolder.children.length; i++) {
+					var childFolderPath = self.getFolderFullName(currentFolder.children[i], folderId);
+					if (childFolderPath !== "") {
+						return currentFolder.text + "/" + childFolderPath;
+					}
+				}
+			}
+			return "";
+		};
+
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.init(self.FolderArtifactName(), [], {
+			self.locationSelector.init(self.TargetFolder(), [], {
 				onNodeSelectedEventHandler: function (node) {
-					self.FolderArtifactName(node.text);
 					self.FolderArtifactId(node.id);
+					self.TargetFolder(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
 				}
 			});
-			self.locationSelector.toggle(true);
+			self.locationSelector.toggle(!self.disable);
 		};
 
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
@@ -246,7 +264,7 @@
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 				"FolderArtifactId": self.FolderArtifactId(),
-				"FolderArtifactName": self.FolderArtifactName()
+				TargetFolder: self.TargetFolder()
 			}
 		}
 	}

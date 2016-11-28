@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
@@ -9,7 +10,8 @@ using IExporter = kCura.WinEDDS.IExporter;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
-	public class StoppableExporterTests
+	[TestFixture]
+	public class StoppableExporterTests : TestBase
 	{
 		private Controller _controller;
 		private IExporter _exporter;
@@ -17,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		private StoppableExporter _stoppableExporter;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			Client.LazyMetricsClient = new Lazy<IMetricsCollector>(() => Substitute.For<IMetricsCollector>());
 			_exporter = Substitute.For<IExporter>();

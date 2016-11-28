@@ -1,18 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
 	[TestFixture]
-	public class RdoFilterTest
+	public class RdoFilterTest : TestBase
 	{
+		[SetUp]
+		public override void SetUp()
+		{
+			
+		}
+
 		[Test]
 		public void rdoFilterRemovesAllHistoryAndEvents()
 		{

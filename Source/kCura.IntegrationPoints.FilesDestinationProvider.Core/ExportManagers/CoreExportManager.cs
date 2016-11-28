@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
 using kCura.EDDS.WebAPI.ExportManagerBase;
+using kCura.Relativity.Client;
 using kCura.WinEDDS.Service.Export;
-using Relativity;
 using Relativity.Core;
 using Relativity.Core.Exception;
 using Permission = Relativity.Core.Permission;
@@ -23,38 +23,38 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			_dynamicallyLoadedDlls = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths;
 		}
 
-		public object[] RetrieveResultsBlock(int appID, Guid runId, int artifactTypeID, int[] avfIds, int chunkSize, bool displayMulticodesAsNested, char multiValueDelimiter,
+		public object[] RetrieveResultsBlock(int appID, Guid runId, int artifactTypeId, int[] avfIds, int chunkSize, bool displayMulticodesAsNested, char multiValueDelimiter,
 			char nestedValueDelimiter, int[] textPrecedenceAvfIds)
 		{
-			var export = CreateExport(appID, artifactTypeID, textPrecedenceAvfIds);
+			var export = CreateExport(appID, artifactTypeId, textPrecedenceAvfIds);
 			return export.RetrieveResultsBlock(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter);
 		}
 
-		public object[] RetrieveResultsBlockForProduction(int appID, Guid runId, int artifactTypeID, int[] avfIds, int chunkSize, bool displayMulticodesAsNested,
+		public object[] RetrieveResultsBlockForProduction(int appID, Guid runId, int artifactTypeId, int[] avfIds, int chunkSize, bool displayMulticodesAsNested,
 			char multiValueDelimiter, char nestedValueDelimiter, int[] textPrecedenceAvfIds, int productionId)
 		{
-			var export = CreateExport(appID, artifactTypeID, textPrecedenceAvfIds);
+			var export = CreateExport(appID, artifactTypeId, textPrecedenceAvfIds);
 			var result = export.RetrieveResultsBlockForProduction(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
 				nestedValueDelimiter, productionId);
 			return RehydrateStringsIfNeeded(result);
 		}
 
-		public InitializationResults InitializeFolderExport(int appID, int viewArtifactID, int parentArtifactID, bool includeSubFolders, int[] avfIds, int startAtRecord,
-			int artifactTypeID)
+		public InitializationResults InitializeFolderExport(int appId, int viewArtifactId, int parentArtifactId, bool includeSubFolders, int[] avfIds, int startAtRecord,
+			int artifactTypeId)
 		{
-			var export = CreateExportWithPermissionCheck(appID);
-			return export.InitializeFolderExport(viewArtifactID, parentArtifactID, includeSubFolders, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
+			var export = CreateExportWithPermissionCheck(appId, artifactTypeId);
+			return export.InitializeFolderExport(viewArtifactId, parentArtifactId, includeSubFolders, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
 		}
 
-		public InitializationResults InitializeProductionExport(int appID, int productionArtifactID, int[] avfIds, int startAtRecord)
+		public InitializationResults InitializeProductionExport(int appId, int productionArtifactId, int[] avfIds, int startAtRecord)
 		{
-			var export = CreateExportWithPermissionCheck(appID);
-			return export.InitializeProductionExport(productionArtifactID, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
+			var export = CreateExportWithPermissionCheck(appId, (int)ArtifactType.Document);
+			return export.InitializeProductionExport(productionArtifactId, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
 		}
 
 		public InitializationResults InitializeSearchExport(int appID, int searchArtifactID, int[] avfIds, int startAtRecord)
 		{
-			var export = CreateExportWithPermissionCheck(appID);
+			var export = CreateExportWithPermissionCheck(appID, (int)ArtifactType.Document);
 			return export.InitializeSavedSearchExport(searchArtifactID, _dynamicallyLoadedDlls, avfIds, startAtRecord).ToInitializationResults();
 		}
 
@@ -93,24 +93,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			}
 		}
 
-		private Export CreateExportWithPermissionCheck(int appID)
+		private Export CreateExportWithPermissionCheck(int appId, int artifactTypeId)
 		{
-			var export = CreateExport(appID, (int) ArtifactType.Document);
+			var export = CreateExport(appId, artifactTypeId);
 			CheckExportPermissions(export);
 			return export;
 		}
 
-		private Export CreateExport(int appID, int artifactTypeID, int[] textPrecedenceAvfIds = null)
+		private Export CreateExport(int appID, int artifactTypeId, int[] textPrecedenceAvfIds = null)
 		{
 			_baseServiceContext.AppArtifactID = appID;
 			Export export;
 			if (textPrecedenceAvfIds == null)
 			{
-				export = new Export(_baseServiceContext, _userPermissionsMatrix, artifactTypeID);
+				export = new Export(_baseServiceContext, _userPermissionsMatrix, artifactTypeId);
 			}
 			else
 			{
-				export = new Export(_baseServiceContext, _userPermissionsMatrix, artifactTypeID, textPrecedenceAvfIds);
+				export = new Export(_baseServiceContext, _userPermissionsMatrix, artifactTypeId, textPrecedenceAvfIds);
 			}
 			export.SerializeRetrievedDataIntoBytes = false;
 			return export;

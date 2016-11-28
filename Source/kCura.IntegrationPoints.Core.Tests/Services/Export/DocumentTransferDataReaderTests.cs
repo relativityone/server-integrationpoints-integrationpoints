@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -14,7 +15,7 @@ using Relativity.Core;
 namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 {
 	[TestFixture]
-	public class DocumentTransferDataReaderTests
+	public class DocumentTransferDataReaderTests : TestBase
 	{
 		private IExporterService _exportService;
 		private IDataReader _instance;
@@ -75,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		};
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_context = Substitute.For<ICoreContext>();
 			_exportService = Substitute.For<IExporterService>();

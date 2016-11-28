@@ -5,6 +5,7 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -19,7 +20,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
-	public class FolderPathControllerTests
+	public class FolderPathControllerTests : TestBase
 	{
 		private IRSAPIClient _client;
 		private IImportApiFactory _importApiFactory;
@@ -30,14 +31,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private FolderPathController _instance;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			_client = NSubstitute.Substitute.For<IRSAPIClient>();
-			_importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
-			_config = NSubstitute.Substitute.For<IConfig>();
-			_repositoryFactory = NSubstitute.Substitute.For<IRepositoryFactory>();
+			_client = Substitute.For<IRSAPIClient>();
+			_importApiFactory = Substitute.For<IImportApiFactory>();
+			_config = Substitute.For<IConfig>();
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 
-			_configuration = NSubstitute.Substitute.For<HttpConfiguration>();
+			_configuration = Substitute.For<HttpConfiguration>();
 
 			HttpConfiguration config = new HttpConfiguration();
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");

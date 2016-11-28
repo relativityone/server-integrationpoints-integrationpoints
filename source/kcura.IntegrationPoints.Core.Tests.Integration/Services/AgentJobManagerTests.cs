@@ -78,8 +78,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void VerifyCheckBatchOnCompleteTrue()
 		{
 			//Arrange
-			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "test", "Append Only");
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "test", "Append Only");
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			int jobId = 1;
 			int rootJobId = 1;
@@ -102,8 +102,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void VerifyCheckBatchOnCompleteFalse()
 		{
 			//Arrange
-			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "CheckBatchOnCompleteFalse", "Append Only");
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "CheckBatchOnCompleteFalse", "Append Only");
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			int jobId = 10;
 			int jobId2 = 20;
@@ -127,8 +127,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void VerifyDeleteJob()
 		{
 			//Arrange
-			IntegrationModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "Delete", "Append Only");
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "Delete", "Append Only");
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			int jobId = 1;
 			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId);

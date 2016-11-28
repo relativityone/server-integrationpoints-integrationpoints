@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.ScheduleQueue.Core.BatchProcess;
@@ -10,14 +11,14 @@ using Relativity.API;
 namespace kCura.ScheduleQueue.Core.Tests
 {
 	[TestFixture]
-	public class BatchManagerBaseTests
+	public class BatchManagerBaseTests : TestBase
 	{
 		private BatchManagerTest _instance;
 		private Job _job;
 		private const string _JOB_DETAILS = "{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\"}";
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, _JOB_DETAILS, 0, new DateTime(), 1, null, null);
 			IHelper helper = Substitute.For<IHelper>();

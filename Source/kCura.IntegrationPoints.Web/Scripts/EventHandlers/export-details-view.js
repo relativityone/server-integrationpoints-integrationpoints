@@ -18,6 +18,8 @@ ExportDetailsView.downloadSummaryPage = function () {
 	});
 };
 var DataContainer = function () {
+
+	this.transferredRdoTypeName = IP.utils.getViewField(IP.destinationid).siblings('.dynamicViewFieldValue').text();
 	this.hasErrors = IP.utils.getViewField(IP.hasErrorsId).siblings('.dynamicViewFieldValue').text();
 	this.logErrors = IP.utils.getViewField(IP.logErrorsId).siblings('.dynamicViewFieldValue').text();
 	this.emailNotification = IP.utils.getViewField(IP.emailNotificationId).siblings('.dynamicViewFieldValue').text();
@@ -40,27 +42,35 @@ var Model = function (dataContainer) {
 	this.emailNotification = dataContainer.emailNotification;
 	this.name = dataContainer.name;
 	this.settings = dataContainer.settings;
+	this.transferredRdoTypeName = dataContainer.transferredRdoTypeName;
 
-	this.sourceDetails = function() {
-		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.SavedSearch){
+	this.sourceDetails = function () {
+		if (self.isRdoExportMode()) {
+			return "RDO: " + self.transferredRdoTypeName + "; " + self.settings.ViewName;
+		}
+		if (self.settings.ExportType == ExportEnums.SourceOptionsEnum.SavedSearch) {
 			return "Saved search: " + self.settings.SavedSearch;
 		}
-		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.Folder){
+		if (self.settings.ExportType == ExportEnums.SourceOptionsEnum.Folder) {
 			return "Folder: " + self.settings.FolderFullName;
 		}
-		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.FolderSubfolder){
+		if (self.settings.ExportType == ExportEnums.SourceOptionsEnum.FolderSubfolder) {
 			return "Folder + Subfolders: " + self.settings.FolderFullName;
 		}
-		if(self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production){
+		if (self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production) {
 			return "Production: " + self.settings.ProductionName;
 		}
 	};
 
-	this.isProductionSet = function() {
+	this.isRdoExportMode = function () {
+		return self.transferredRdoTypeName !== "Document";
+	}
+
+	this.isProductionSet = function () {
 		return self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production;
 	};
 
-	this.textAndNativeFileNames = function() {
+	this.textAndNativeFileNames = function () {
 		var namedAfter = "";
 		for (var i = 0; i < ExportEnums.ExportNativeWithFilenameFromTypes.length; i++) {
 			if (ExportEnums.ExportNativeWithFilenameFromTypes[i].value == self.settings.ExportNativesToFileNamedFrom) {
@@ -103,17 +113,17 @@ var Model = function (dataContainer) {
 
 	this.setEncoding = function (dataFileEncodingName, callback) {
 		IP.data.ajax({ type: "get", url: IP.utils.generateWebAPIURL("GetAvailableEncodings") }).then(function (result) {
-		    var encoding = ko.utils.arrayFirst(result, function (item) {
-		        return (item.name === dataFileEncodingName);
-		    });
-		    callback(encoding.displayName);
+			var encoding = ko.utils.arrayFirst(result, function (item) {
+				return (item.name === dataFileEncodingName);
+			});
+			callback(encoding.displayName);
 		});
 	}
 
 	this.concatenateLoadFileFormat = function (displayName) {
 		var fileFormat = "";
 		var dataFileFormat = ko.utils.arrayFirst(ExportEnums.DataFileFormats, function (item) {
-		    return item.value === self.settings.SelectedDataFileFormat;
+			return item.value === self.settings.SelectedDataFileFormat;
 		});
 		fileFormat = dataFileFormat.key;
 

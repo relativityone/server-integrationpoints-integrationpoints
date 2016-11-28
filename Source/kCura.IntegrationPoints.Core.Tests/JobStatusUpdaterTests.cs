@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -10,7 +11,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests
 {
 	[TestFixture]
-	public class JobStatusUpdaterTests
+	public class JobStatusUpdaterTests : TestBase
 	{
 		private IJobHistoryService _jobHistoryService;
 		private IRSAPIService _rsapi;
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private JobStatusUpdater _instance;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_rsapi = Substitute.For<IRSAPIService>();
 			_service = Substitute.For<JobHistoryErrorQuery>(_rsapi);

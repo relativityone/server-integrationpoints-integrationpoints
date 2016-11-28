@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
@@ -18,7 +19,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Core.Tests
 {
     [TestFixture]
-    public class AgentJobManagerTest
+    public class AgentJobManagerTest : TestBase
     {
         private AgentJobManager _manager;
         private IEddsServiceContext _context;
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private TaskType _task;
 
         [SetUp]
-        public void Setup()
+        public override void SetUp()
         {
             _workspaceId = 123;
             _integrationPointId = 456;

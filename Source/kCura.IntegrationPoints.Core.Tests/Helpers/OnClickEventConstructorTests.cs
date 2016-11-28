@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -9,7 +10,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
-	public class OnClickEventConstructorTests
+	[TestFixture]
+	public class OnClickEventConstructorTests : TestBase
 	{
 		private IManagerFactory _managerFactory;
 		private IContextContainer _contextContainer;
@@ -23,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private OnClickEventConstructor _instance;
 
 		[SetUp]
-		public void Setup()
+		public override void SetUp()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainer = Substitute.For<IContextContainer>();
@@ -45,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		{
 			//Arrange
 			string expectedViewErrorsOnClickEvent = ViewErrorsLinkSetup();
-			var buttonStates = new RelativityButtonStateDTO()
+			var buttonStates = new ButtonStateDTO()
 			{
 				RunButtonEnabled = true,
 				RetryErrorsButtonEnabled = true,
@@ -54,21 +56,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			};
 
 			//Act
-			RelativityOnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
-				buttonStates);
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
 			
 			//Assert
 			Assert.IsTrue(onClickEvents.RunOnClickEvent == $"IP.importNow({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == $"IP.stopJob({_integrationPointId},{_workspaceId})");
+			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId})");
 		}
 
 		[Test]
 		public void GetOnClickEventsForRelativityProvider_GoldFlow_AllButtonsDisabled()
 		{
 			//Arrange
-			var buttonStates = new RelativityButtonStateDTO()
+			var buttonStates = new ButtonStateDTO()
 			{
 				RunButtonEnabled = false,
 				RetryErrorsButtonEnabled = false,
@@ -77,14 +79,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			};
 
 			//Act
-			RelativityOnClickEventDTO onClickEvents = _instance.GetOnClickEventsForRelativityProvider(_workspaceId, _integrationPointId,
-				buttonStates);
+			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, buttonStates);
 
 			//Assert
 			Assert.IsTrue(onClickEvents.RunOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == String.Empty);
+			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId})");
 		}
 
 		[Test]

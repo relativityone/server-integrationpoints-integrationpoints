@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			return jobHistories;
 		}
 
-		public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
+		public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;
 
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			return jobHistory;
 		}
 
-		public Data.JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, Choice jobType, DateTime? startTimeUtc)
+		public Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, Choice jobType, DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;
 
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_logger.LogWarning("More than one job history instance found for {BatchInstance}.", batchInstance.ToString());
 		}
 
-		private void LogHistoryNotFoundError(IntegrationPoint integrationPoint, Exception e)
+		private void LogHistoryNotFoundError(Data.IntegrationPoint integrationPoint, Exception e)
 		{
 			_logger.LogError(e, "Job history for Integration Point {IntegrationPointId} not found.", integrationPoint.ArtifactId);
 		}

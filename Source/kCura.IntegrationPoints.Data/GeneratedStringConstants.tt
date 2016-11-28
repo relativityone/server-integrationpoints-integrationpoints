@@ -145,7 +145,7 @@ foreach (ObjectTypeDTO objType in objTypes)
 	foreach (CodeDTO code in field.Codes)
 	{
 #>
-		public static Choice <#=(objType.Name+code.Name).ToPascalCase()#> = new Choice(Guid.Parse("<#=code.Guid#>"), @"<#=code.Name#>");
+		public static Choice <#=(objType.Name+code.Name).ToPascalCase()#> = new Choice(Guid.Parse("<#=code.Guid#>")) {Name=@"<#=code.Name#>"};
 <#
 	}
 #>

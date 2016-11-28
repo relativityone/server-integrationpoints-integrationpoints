@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Link_JobHistoryErrorToDestinationWorkspace_Success()
 		{
 			//Arrange
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 
 			Guid batchInstance = Guid.NewGuid();
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldRepository), "DocsToTag").ConfigureAwait(false).GetAwaiter().GetResult();
 			_scratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Map = CreateDefaultFieldMap()
 			};
 
-			IntegrationModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 
 			Guid batchInstance = Guid.NewGuid();

@@ -2,21 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
-
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.ImportProvider;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests
 {
     [TestFixture]
-    public class ImportProviderTests
+    public class ImportProviderTests : TestBase
     {
         private int MAX_COLS = 100;
         private int MAX_ROWS = 20;
@@ -27,7 +23,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
         private IEnumerableParserFactory _enumerableParserFactory;
 
         [SetUp]
-        public void Setup()
+        public override void SetUp()
         {
             _fieldParser = Substitute.For<IFieldParser>();
             _fieldParserFactory = Substitute.For<IFieldParserFactory>();;
@@ -68,15 +64,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
             int rowCount = r.Next(MAX_ROWS);
             List<string> testHeaders = TestHeaders(colCount);
             List<List<string>> testData = TestData(colCount, rowCount);
-            char delimiter = ',';
+            char recordDelimiter = ',';
+            char quoteDelimiter = '"';
 
             //Subsitute config so test can use GetFields
             _fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
             _fieldParser.GetFields().Returns(testHeaders);
 
             //Subsitute config so test can use GetData
-            IEnumerable<string> tdJoinedRows = testData.Select(x => string.Join(delimiter.ToString(), x));
-            EnumerableParser tdEnumerableParser = new EnumerableParser(tdJoinedRows, delimiter);
+            IEnumerable<string> tdJoinedRows = testData.Select(x => string.Join(recordDelimiter.ToString(), x));
+            EnumerableParser tdEnumerableParser = new EnumerableParser(tdJoinedRows, recordDelimiter, quoteDelimiter);
             _enumerableParserFactory.GetEnumerableParser(null, string.Empty).ReturnsForAnyArgs(tdEnumerableParser);
 
             ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory);
