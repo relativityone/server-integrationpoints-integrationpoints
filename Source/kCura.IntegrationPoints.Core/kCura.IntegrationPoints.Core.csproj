@@ -283,6 +283,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\IIntegrationPointValidationService.cs" />
     <Compile Include="Validation\Implementation\NameValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\ProviderConfigurationValidator.cs" />
     <Compile Include="Services\CustodianManager\IManagerQueueService.cs" />
@@ -318,7 +319,6 @@
     <Compile Include="Services\IErrorService.cs" />
     <Compile Include="Services\IExportFieldsService.cs" />
     <Compile Include="Services\IExportProcessService.cs" />
-    <Compile Include="Services\IExportSettingsValidationService.cs" />
     <Compile Include="Services\IntegrationPoint\IIntegrationPointProfileService.cs" />
     <Compile Include="Services\IntegrationPoint\IIntegrationPointService.cs" />
     <Compile Include="Services\IntegrationPoint\IIntegrationPointTypeService.cs" />

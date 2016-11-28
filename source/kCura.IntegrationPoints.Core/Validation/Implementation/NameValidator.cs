@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 {
 	public class NameValidator : IValidator
 	{
-		public string Key => Constants.IntegrationPoints.Validation.NAME;
+		public string Key => Constants.IntegrationPointProfiles.Validation.NAME;
 
 		public const string ERROR_INTEGRATION_POINT_EMPTY = "Integration Point name can not be empty.";
 
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			var result = new ValidationResult();
 
-			if(name.IsNullOrEmpty()) { result.Add(ERROR_INTEGRATION_POINT_EMPTY);}
+			if (name.IsNullOrEmpty()) { result.Add(ERROR_INTEGRATION_POINT_EMPTY); }
 
 			return result;
 		}

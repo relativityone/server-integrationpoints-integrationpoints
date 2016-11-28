@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			_serializer = serializer;
 		}
 
-		public ValidationResult Validate(IntegrationModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
+		public ValidationResult Validate(IntegrationPointModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
 		{
 			var result = new ValidationResult();
 
@@ -31,23 +31,23 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			if (model.Scheduler.EnableScheduler)
 			{
-				foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.SCHEDULE])
+				foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.SCHEDULE])
 				{
 					result.Add(validator.Validate(model.Scheduler));
 				}
 			}
 
-			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.EMAIL])
+			foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.EMAIL])
 			{
 				result.Add(validator.Validate(model.NotificationEmails));
 			}
 
-			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.NAME])
+			foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.NAME])
 			{
 				result.Add(validator.Validate(model.Name));
 			}
 
-			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.FIELD_MAP])
+			foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.FIELD_MAP])
 			{
 				result.Add(validator.Validate(integrationModelValidation));
 			}

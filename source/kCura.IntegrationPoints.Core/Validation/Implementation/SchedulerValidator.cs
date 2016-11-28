@@ -5,7 +5,6 @@ using System.Linq;
 using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -16,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 	{
 		private readonly ISerializer _serializer;
 
-		public string Key => Constants.IntegrationPoints.Validation.SCHEDULE;
+		public string Key => Constants.IntegrationPointProfiles.Validation.SCHEDULE;
 
 		public const string ERROR_SCHEDULER_NOT_INITIALIZED = "Scheduler object not initialized";
 		public const string ERROR_REQUIRED_VALUE = "This field is required: ";
@@ -36,9 +35,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		public ValidationResult Validate(object value)
 		{
 			var scheduler = value as Scheduler;
-			if(scheduler == null) { throw new Exception(ERROR_SCHEDULER_NOT_INITIALIZED); }
+			if (scheduler == null) { throw new Exception(ERROR_SCHEDULER_NOT_INITIALIZED); }
 			var result = new ValidationResult();
-
 
 			result.Add(ValidateDates(scheduler));
 			result.Add(ValidateIntervals(scheduler));
@@ -49,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		private ValidationResult ValidateDates(Scheduler scheduler)
 		{
 			const string dateTimeFormat = "M/dd/yyyy";
-			string[] timeSpanFormats =  { @"hh\:mm", @"h\:m" };
+			string[] timeSpanFormats = { @"hh\:mm", @"h\:m" };
 
 			var result = new ValidationResult();
 			var startDate = new DateTime();
@@ -67,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			if (!string.IsNullOrWhiteSpace(scheduler.EndDate))
 			{
 				DateTime endDate;
-				if(!DateTime.TryParseExact(scheduler.EndDate, dateTimeFormat, CultureInfo.InvariantCulture,
+				if (!DateTime.TryParseExact(scheduler.EndDate, dateTimeFormat, CultureInfo.InvariantCulture,
 					   DateTimeStyles.None, out endDate))
 				{
 					result.Add(ERROR_INVALID_DATE_FORMAT + scheduler.EndDate);
@@ -125,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			var weeklySendOn = _serializer.Deserialize<IntegrationPointService.Weekly>(scheduler.SendOn);
+			var weeklySendOn = _serializer.Deserialize<Weekly>(scheduler.SendOn);
 
 			if (weeklySendOn.SelectedDays.Count == 0)
 			{
@@ -146,17 +144,17 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		{
 			var result = new ValidationResult();
 
-			var monthlySendOn = _serializer.Deserialize<IntegrationPointService.Monthly>(scheduler.SendOn);
+			var monthlySendOn = _serializer.Deserialize<Monthly>(scheduler.SendOn);
 			List<string> occurancesInMonth = Enum.GetNames(typeof(OccuranceInMonth)).ToList();
 
-			if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Days)
+			if (monthlySendOn.MonthChoice == MonthlyType.Days)
 			{
 				if (monthlySendOn.SelectedDay < FIRST_DAY_OF_MONTH || monthlySendOn.SelectedDay > LAST_DAY_OF_MONTH)
 				{
 					result.Add("DayOfMonth" + ERROR_NOT_INT_RANGE + $"({FIRST_DAY_OF_MONTH}:{LAST_DAY_OF_MONTH})");
 				}
 			}
-			else if (monthlySendOn.MonthChoice == IntegrationPointService.MonthlyType.Month)
+			else if (monthlySendOn.MonthChoice == MonthlyType.Month)
 			{
 				result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth"));
 

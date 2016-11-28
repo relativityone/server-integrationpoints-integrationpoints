@@ -9,8 +9,8 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
-    public class ProviderConfigurationValidator : IValidator, IIntegrationPointValidationService
-    {
+	public class ProviderConfigurationValidator : IValidator, IIntegrationPointValidationService
+	{
 		private readonly ISerializer _serializer;
 
 		private readonly IValidatorsFactory _validatorsFactory;
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID
 		);
 
-		public ValidationResult Prevalidate(IntegrationModel model)
+		public ValidationResult Prevalidate(IntegrationPointModel model)
 		{
 			var result = new ValidationResult();
 
@@ -38,10 +38,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public ValidationResult Validate(object value)
 		{
-			return Validate(value as IntegrationModel);
+			return Validate(value as IntegrationPointModel);
 		}
 
-		public ValidationResult Validate(IntegrationModel model)
+		public ValidationResult Validate(IntegrationPointModel model)
 		{
 			var result = new ValidationResult();
 

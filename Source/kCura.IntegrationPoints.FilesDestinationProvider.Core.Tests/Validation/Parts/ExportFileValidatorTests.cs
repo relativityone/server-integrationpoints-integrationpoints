@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			var validator = new ExportFileValidator(serializer, settingsBuilder, initProcessService, fileBuilder);
 
-			var model = new IntegrationModel();
+			var model = new IntegrationPointModel();
 
 			// act & assert
 			Assert.Throws<NullReferenceException>(() => validator.Validate(model));

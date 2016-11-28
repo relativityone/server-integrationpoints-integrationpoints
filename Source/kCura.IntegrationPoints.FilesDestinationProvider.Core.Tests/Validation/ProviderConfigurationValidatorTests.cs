@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var validator = new ProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 
 			// act
-			var actual = validator.Prevalidate(new IntegrationModel());
+			var actual = validator.Prevalidate(new IntegrationPointModel());
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var validator = new ProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 
 			// act
-			var actual = validator.Validate(new IntegrationModel());
+			var actual = validator.Validate(new IntegrationPointModel());
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			var validator = new ProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 
-			object model = new IntegrationModel();
+			object model = new IntegrationPointModel();
 
 			// act
 			var actual = validator.Validate(model);

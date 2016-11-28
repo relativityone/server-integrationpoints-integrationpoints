@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class ExportFileValidator : BaseValidator<IntegrationModel>
+	public class ExportFileValidator : BaseValidator<IntegrationPointModel>
 	{
 		private readonly ISerializer _serializer;
 		private readonly IExportSettingsBuilder _exportSettingsBuilder;
@@ -24,17 +24,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			_exportFileBuilder = exportFileBuilder;
 		}
 
-		public override ValidationResult Validate(IntegrationModel value)
+		public override ValidationResult Validate(IntegrationPointModel value)
 		{
 			var result = new ValidationResult();
 
 			var exportSettingsEx = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
-			var totalDocCount = _exportInitProcessService.CalculateDocumentCountToTransfer(exportSettingsEx);
+			var destinationSettingsEx = _serializer.Deserialize<Destination>(value.Destination);
+
+			var totalDocCount = _exportInitProcessService.CalculateDocumentCountToTransfer(exportSettingsEx, destinationSettingsEx.ArtifactTypeID);
 
 			var fileCountValidator = new FileCountValidator();
 			result.Add(fileCountValidator.Validate(totalDocCount));
-
-			var destinationSettingsEx = _serializer.Deserialize<Destination>(value.Destination);
+			
 			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.Map);
 
 			var exportSettings = _exportSettingsBuilder.Create(exportSettingsEx, fieldMap, destinationSettingsEx.ArtifactTypeID);

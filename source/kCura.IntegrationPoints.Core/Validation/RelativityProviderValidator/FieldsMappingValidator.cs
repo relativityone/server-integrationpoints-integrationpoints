@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
@@ -21,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		private const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 
-		public string Key => Constants.IntegrationPoints.Validation.FIELD_MAP;
+		public string Key => Constants.IntegrationPointProfiles.Validation.FIELD_MAP;
 
 		public const string ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED = "Integration model validation object not initialized";
 		public const string ERROR_SOURCE_FIELD_NOT_MAPPED = "All selected fields must be mapped. Source field not mapped to Destination: ";
@@ -32,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public const string ERROR_FIELD_MUST_BE_MAPPED = "must be mapped.";
 		public const string ERROR_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE = "Field does not exist in source workspace: ";
 		public const string ERROR_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE = "Field does not exist in destination workspace: ";
-
 
 		public const string FIELD_NAME = "Name";
 		public const string FIELD_IS_IDENTIFIER = "Is Identifier";
@@ -81,13 +78,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private static bool IsRelativityProvider(string sourceProviderId, string destinationProviderId)
 		{
 			return string.Equals(sourceProviderId, IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, StringComparison.CurrentCultureIgnoreCase) &&
-			       string.Equals(destinationProviderId, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(), StringComparison.CurrentCultureIgnoreCase);
+				   string.Equals(destinationProviderId, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(), StringComparison.CurrentCultureIgnoreCase);
 		}
 
 		private static ValidationResult ValidateFieldMapped(FieldMap fieldMap)
 		{
 			var result = new ValidationResult();
-			
+
 			if (fieldMap.SourceField == null && fieldMap.DestinationField == null)
 			{
 				result.Add(ERROR_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED);
@@ -108,10 +105,10 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			var result = new ValidationResult();
 
-			if(fieldMap.SourceField == null || fieldMap.DestinationField == null) { return result; }
+			if (fieldMap.SourceField == null || fieldMap.DestinationField == null) { return result; }
 
 			if (fieldMap.SourceField.IsIdentifier &&
-			    !fieldMap.DestinationField.IsIdentifier)
+				!fieldMap.DestinationField.IsIdentifier)
 			{
 				result.Add(ERROR_IDENTIFIERS_NOT_MATCHED);
 			}
@@ -124,7 +121,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var result = new ValidationResult();
 
 			if (fieldMap.SourceField?.FieldIdentifier == null || fieldMap.DestinationField?.FieldIdentifier == null) { return result; }
-			
+
 			int sourceFieldIdentifier = int.Parse(fieldMap.SourceField.FieldIdentifier);
 			int destinationFieldIdentifier = int.Parse(fieldMap.DestinationField.FieldIdentifier);
 

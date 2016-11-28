@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_integrationModelValidator = Substitute.For<IIntegrationModelValidator>();
-			_integrationModelValidator.Validate(Arg.Any<IntegrationModel>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>()).Returns(new ValidationResult());
+			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModel>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>()).Returns(new ValidationResult());
 
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(
 				_helper, 
