@@ -141,8 +141,8 @@
 				}).fail(function (error) {
 					IP.message.error.raise("No mapped fields were returned from the source provider.");
 				});
-			} else if (!!self.ipModel.Map) {
-				mappedFieldsPromise = self.ipModel.Map;
+			} else if (!!self.ipModel.map) {
+				mappedFieldsPromise = self.ipModel.map;
 			} else {
 				mappedFieldsPromise = [];
 			}
@@ -205,7 +205,7 @@
 					break;
 			}
 
-			self.ipModel.Map = self.model.fields.getMappedFields();
+			self.ipModel.map = self.model.fields.getMappedFields();
 		};
 
 		self.submit = function () {
