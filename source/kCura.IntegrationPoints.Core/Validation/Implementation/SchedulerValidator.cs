@@ -35,7 +35,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 		public ValidationResult Validate(object value)
 		{
 			var scheduler = value as Scheduler;
-			if (scheduler == null) { throw new Exception(ERROR_SCHEDULER_NOT_INITIALIZED); }
+			if (scheduler == null)
+			{
+				throw new Exception(ERROR_SCHEDULER_NOT_INITIALIZED);
+			}
+
 			var result = new ValidationResult();
 
 			result.Add(ValidateDates(scheduler));
@@ -56,8 +60,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			{
 				result.Add(ERROR_REQUIRED_VALUE + "StartDate");
 			}
-			else if (!DateTime.TryParseExact(scheduler.StartDate, dateTimeFormat, CultureInfo.InvariantCulture,
-					   DateTimeStyles.None, out startDate))
+			else if (!DateTime.TryParseExact(scheduler.StartDate, dateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate))
 			{
 				result.Add(ERROR_INVALID_DATE_FORMAT + scheduler.StartDate);
 			}
@@ -65,17 +68,13 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			if (!string.IsNullOrWhiteSpace(scheduler.EndDate))
 			{
 				DateTime endDate;
-				if (!DateTime.TryParseExact(scheduler.EndDate, dateTimeFormat, CultureInfo.InvariantCulture,
-					   DateTimeStyles.None, out endDate))
+				if (!DateTime.TryParseExact(scheduler.EndDate, dateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
 				{
 					result.Add(ERROR_INVALID_DATE_FORMAT + scheduler.EndDate);
 				}
-				else
+				else if (startDate > endDate)
 				{
-					if (startDate > endDate)
-					{
-						result.Add(ERROR_END_DATE_BEFORE_START_DATE);
-					}
+					result.Add(ERROR_END_DATE_BEFORE_START_DATE);
 				}
 			}
 
@@ -133,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			{
 				foreach (string selectedDay in weeklySendOn.SelectedDays)
 				{
-					result.Add(ValidateDayOfWeek(selectedDay, "selectedDay"));
+					result.Add(ValidateDayOfWeek(selectedDay));
 				}
 			}
 
@@ -156,7 +155,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			}
 			else if (monthlySendOn.MonthChoice == MonthlyType.Month)
 			{
-				result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString(), "SelectedDayOfTheMonth"));
+				result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString()));
 
 				if (monthlySendOn.SelectedType == null)
 				{
@@ -175,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 			return result;
 		}
 
-		private ValidationResult ValidateDayOfWeek(string dayOfWeek, string fieldName)
+		private ValidationResult ValidateDayOfWeek(string dayOfWeek)
 		{
 			var result = new ValidationResult();
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Domain.Models;
+﻿using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Domain
 {

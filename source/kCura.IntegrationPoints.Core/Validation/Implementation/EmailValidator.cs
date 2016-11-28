@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Domain;
@@ -26,15 +25,14 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			try
 			{
-				List<string> emails =
-				(notificationEmails ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
+				List<string> emails = (notificationEmails ?? string.Empty)
+					.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
 					.Select(x => x.Trim())
 					.ToList();
 
 				foreach (string email in emails)
 				{
-
-					if (string.IsNullOrWhiteSpace(email))
+					if (string.IsNullOrEmpty(email))
 					{
 						result.Add(ERROR_MISSING_EMAIL);
 					}
@@ -54,16 +52,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		private bool IsValidEmail(string email)
 		{
-			RegexOptions options = RegexOptions.IgnoreCase;
+			Match match = Regex.Match(email, _EMAIL_PATTERN, RegexOptions.IgnoreCase);
 
-			Match match = Regex.Match(email, _EMAIL_PATTERN, options);
-
-			if (!match.Success)
-			{
-				return false;
-			}
-			
-			return true;
+			return match.Success;
 		}
 	}
 }

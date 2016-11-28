@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
 	public class ProviderConfigurationValidator : IValidator
 	{
+		private const string _WORKSPACE_INVALID_NAME_CHAR = ";";
+
 		private readonly ISerializer _serializer;
 		private readonly IRepositoryFactory _repositoryFactory;
 
@@ -33,7 +35,11 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public ValidationResult Validate(object value)
 		{
 			var integrationModel = value as IntegrationModelValidation;
-			if (integrationModel == null) { throw new Exception(ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED); }
+			if (integrationModel == null)
+			{
+				throw new Exception(ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED);
+			}
+
 			var result = new ValidationResult();
 
 			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
@@ -41,7 +47,10 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 			result.Add(ValidateSourceWorkspace(sourceConfiguration.SourceWorkspaceArtifactId));
 
-			if (!result.IsValid) { return result; }
+			if (!result.IsValid)
+			{
+				return result;
+			}
 
 			result.Add(ValidateSavedSearchExists(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId));
 			result.Add(ValidateDestinationWorkspace(sourceConfiguration.TargetWorkspaceArtifactId));
@@ -54,17 +63,19 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			var result = new ValidationResult();
 
-			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
-			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
+			try
+			{
+				WorkspaceDTO workspaceDto = _repositoryFactory.GetWorkspaceRepository().Retrieve(sourceWorkspaceArtifactId);
 
-			if (workspaceDto == null)
+				if (workspaceDto.Name.Contains(_WORKSPACE_INVALID_NAME_CHAR))
+				{
+					result.Add(ERROR_SOURCE_WORKSPACE_INVALID_NAME);
+				}
+			}
+			catch
 			{
 				result.Add(ERROR_SOURCE_WORKSPACE_NOT_EXIST);
-			}
-			else if (workspaceDto.Name.Contains(";"))
-			{
-				result.Add(ERROR_SOURCE_WORKSPACE_INVALID_NAME);
-			}
+			}			
 
 			return result;
 		}
@@ -80,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			{
 				result.Add(ERROR_DESTINATION_WORKSPACE_NOT_EXIST);
 			}
-			else if (destinationWorkspace.Name.Contains(";"))
+			else if (destinationWorkspace.Name.Contains(_WORKSPACE_INVALID_NAME_CHAR))
 			{
 				result.Add(ERROR_DESTINATION_WORKSPACE_INVALID_NAME);
 			}

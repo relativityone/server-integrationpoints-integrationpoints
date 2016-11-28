@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private readonly ISerializer _serializer;
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		private const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
+		private const string _OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 
 		public string Key => Constants.IntegrationPointProfiles.Validation.FIELD_MAP;
 
@@ -44,8 +44,10 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			var result = new ValidationResult();
 			var integrationModel = value as IntegrationModelValidation;
-			if (integrationModel == null) { throw new Exception(ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED); }
-			bool mappedIdentifier = false;
+			if (integrationModel == null)
+			{
+				throw new Exception(ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED);
+			}
 
 			if (!IsRelativityProvider(integrationModel.SourceProviderId, integrationModel.DestinationProviderId))
 			{
@@ -58,6 +60,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(sourceConfiguration.SourceWorkspaceArtifactId);
 			List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(sourceConfiguration.TargetWorkspaceArtifactId);
 
+			bool mappedIdentifier = false;
+
 			foreach (FieldMap fieldMap in fieldsMap)
 			{
 				result.Add(ValidateFieldMapped(fieldMap));
@@ -69,6 +73,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 					mappedIdentifier = true;
 				}
 			}
+
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
 			result.Add(ValidateAllRequiredFieldsMapped(fieldsMap, destinationWorkpaceFields));
 
@@ -172,7 +177,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 				if (isIdentifierFieldValue > 0)
 				{
-					displayName += OBJECT_IDENTIFIER_APPENDAGE_TEXT;
+					displayName += _OBJECT_IDENTIFIER_APPENDAGE_TEXT;
 					requiredFields.Add(displayName);
 				}
 			}
