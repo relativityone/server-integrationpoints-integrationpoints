@@ -250,7 +250,7 @@
     <Compile Include="Placeholder.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="ProductionDataSource.cs" />
-    <Compile Include="RelativityApplication.cs" />
+    <Compile Include="RelativityApplicationManager.cs" />
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
@@ -274,12 +274,12 @@
     <Compile Include="View.cs" />
     <Compile Include="Workspace.cs" />
   </ItemGroup>
-	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
-		<None Include="App.config" />
-	</ItemGroup>
-	<ItemGroup Condition="'$(Configuration)' == 'Release'">
-		<None Include="Release\App.config" />
-	</ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="Release\App.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>

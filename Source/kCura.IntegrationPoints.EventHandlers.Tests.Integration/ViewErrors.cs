@@ -83,7 +83,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 				{
 					EnableScheduler = false
 				},
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			//IntegrationPointModel integrationPoint = JsonConvert.DeserializeObject<IntegrationPointModel>(response);

@@ -12,16 +12,12 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Web;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -44,12 +40,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected IEnumerable<SourceProvider> SourceProviders;
 
 		protected ICaseServiceContext CaseContext;
+		protected RelativityApplicationManager RelativityApplicationManager;
 
 		protected SourceProviderTemplate(string workspaceName,
 			string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
 		{
 			_workspaceName = workspaceName;
 			_workspaceTemplate = workspaceTemplate;
+			RelativityApplicationManager = new RelativityApplicationManager(ClaimsPrincipal.Current);
 		}
 
 		public override void SuiteSetup()
@@ -290,8 +288,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected async Task SetupAsync()
 		{
-			await Task.Run(() => RelativityApplication.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId, 
-				new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), ClaimsPrincipal.Current));
+			await Task.Run(() =>
+			{
+				var libraryApplication =
+					RelativityApplicationManager.GetLibraryApplicationDTO(
+						new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+
+				if (libraryApplication != null && libraryApplication.IsVisible)
+				{
+					RelativityApplicationManager.RemoveApplicationFromLibrary(libraryApplication);
+				}
+
+				RelativityApplicationManager.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId);
+			});
 			if (CreateAgent)
 			{
 				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());

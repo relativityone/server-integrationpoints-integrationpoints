@@ -2,6 +2,7 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -119,7 +120,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				SourceConfiguration = CreateDefaultLdapSourceConfig(),
 				Destination = CreateDefaultLdapDestinationConfig((int)ArtifactType.Document, overwrite),
 				Map = CreateDefaultLdapFieldMap(),
-				Scheduler = scheduler ?? new Scheduler { EnableScheduler = false }
+				Scheduler = scheduler ?? new Scheduler { EnableScheduler = false },
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).ArtifactId
 			};
 
 			switch (overwrite)

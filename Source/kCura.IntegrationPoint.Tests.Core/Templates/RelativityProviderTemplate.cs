@@ -11,6 +11,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -156,7 +157,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Name = name + DateTime.Now,
 				SelectedOverwrite = overwrite,
 				Scheduler = new Scheduler() { EnableScheduler = false },
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			return integrationModel;

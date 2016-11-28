@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -82,7 +83,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				{
 					EnableScheduler = false
 				},
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);

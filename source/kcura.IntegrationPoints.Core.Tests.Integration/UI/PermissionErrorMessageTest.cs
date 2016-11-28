@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -108,6 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 					EnableScheduler = false
 				},
 				SelectedOverwrite = "Append Only",
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			model = CreateOrUpdateIntegrationPoint(model);
