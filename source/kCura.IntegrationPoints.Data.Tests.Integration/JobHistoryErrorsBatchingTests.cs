@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string docPrefix = "ErrorScenarioDoc";
 
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
@@ -249,7 +249,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
@@ -323,7 +323,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string expiredDocPrefix = "TempSavedSearchExp";
 			DataTable importTable = GetImportTable(1, 100, docPrefix, expiredDocPrefix);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
@@ -352,7 +352,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
 
 			//Act
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, true);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, true);
 			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
 
@@ -365,7 +365,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Arrange
 			DataTable importTable = GetImportTable(startingControlNumber, numberOfDocuments, documentPrefix, expiredDocumentPrefix);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
 			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
 			IHelper helper = NSubstitute.Substitute.For<IHelper>();
 
@@ -406,7 +406,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			List<int> expectedJobHistoryErrorExpired = GetExpectedExpiredErrors(expectedNonExpiredJobHistoryArtifacts);
 
 			//Act
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
 			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactId);
 
 			string startTempTableName = $"{ itemStartIncludedTempTablePrefix }_{ tempTableSuffix }";

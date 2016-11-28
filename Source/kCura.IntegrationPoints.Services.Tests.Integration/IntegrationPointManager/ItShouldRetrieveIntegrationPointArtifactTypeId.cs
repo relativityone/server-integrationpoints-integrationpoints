@@ -4,9 +4,10 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
-	internal class ItShouldRetrieveIntegrationPointArtifactTypeId : SourceProviderTemplate
+	[TestFixture]
+	public class ItShouldRetrieveIntegrationPointArtifactTypeId : SourceProviderTemplate
 	{
-		public ItShouldRetrieveIntegrationPointArtifactTypeId() : base($"KeplerService_{Utils.Identifier}")
+		public ItShouldRetrieveIntegrationPointArtifactTypeId() : base($"KeplerService_{Utils.FormatedDateTimeNow}")
 		{
 		}
 

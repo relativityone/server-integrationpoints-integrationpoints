@@ -73,10 +73,6 @@
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NSubstitute, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\$(NSubstitute)\lib\net45\NSubstitute.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(NUnit)\lib\net45\nunit.framework.dll</HintPath>
@@ -87,14 +83,6 @@
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
@@ -109,13 +97,6 @@
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.XML" />
@@ -126,11 +107,7 @@
         <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
       </ItemGroup>
     </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
+    <Otherwise />
   </Choose>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
@@ -169,10 +146,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
       <Project>{b8bf6d01-e190-4c2c-b07f-3b627ffc1bfc}</Project>
       <Name>kCura.IntegrationPoints.Services.Interfaces.Private</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj">
-      <Project>{fd2c5db6-8fd6-40d6-8e50-3641b7d89d9d}</Project>
-      <Name>kCura.IntegrationPoints.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>

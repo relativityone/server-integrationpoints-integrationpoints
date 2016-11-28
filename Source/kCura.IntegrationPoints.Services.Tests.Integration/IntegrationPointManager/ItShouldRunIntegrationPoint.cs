@@ -6,15 +6,17 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
+	[TestFixture]
 	public class ItShouldRunIntegrationPoint : RelativityProviderTemplate
 	{
-		public ItShouldRunIntegrationPoint() : base($"KeplerService_{Utils.Identifier}", $"KeplerService_Target_{Utils.Identifier}")
+		public ItShouldRunIntegrationPoint() : base($"KeplerService_{Utils.FormatedDateTimeNow}", $"KeplerService_Target_{Utils.FormatedDateTimeNow}")
 		{
 		}
 
+		[Test]
 		public void Execute()
 		{
-			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.Identifier}", "Append Only");
+			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormatedDateTimeNow}", "Append Only");
 			var ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();

@@ -15,15 +15,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 		protected UserModel UserModel;
 		protected int GroupId;
 
-		protected KeplerServiceMissingPermissionTests() : base($"Kepler_Service_{Utils.Identifier}")
+		protected KeplerServiceMissingPermissionTests() : base($"Kepler_Service_{Utils.FormatedDateTimeNow}")
 		{
 		}
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			GroupId = Group.CreateGroup($"group_{Utils.Identifier}");
-			UserModel = User.CreateUser("firstname", "lastname", $"test_{Utils.Identifier}@kcura.com", new List<int> { GroupId });
+			GroupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
+			UserModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@kcura.com", new List<int> { GroupId });
 			SetPermissions();
 		}
 

@@ -5,9 +5,10 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
+	[TestFixture]
 	public class ItShouldHandleRetrievingNoIntegrationPoints : RelativityProviderTemplate
 	{
-		public ItShouldHandleRetrievingNoIntegrationPoints() : base($"KeplerService_{Utils.Identifier}", $"KeplerService_Target_{Utils.Identifier}")
+		public ItShouldHandleRetrievingNoIntegrationPoints() : base($"KeplerService_{Utils.FormatedDateTimeNow}", $"KeplerService_Target_{Utils.FormatedDateTimeNow}")
 		{
 		}
 

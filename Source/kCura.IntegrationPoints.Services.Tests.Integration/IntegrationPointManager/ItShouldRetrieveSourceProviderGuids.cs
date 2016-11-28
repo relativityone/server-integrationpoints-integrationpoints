@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 	[TestFixture]
 	public class ItShouldRetrieveSourceProviderGuids : SourceProviderTemplate
 	{
-		public ItShouldRetrieveSourceProviderGuids() : base($"KeplerService_{Utils.Identifier}")
+		public ItShouldRetrieveSourceProviderGuids() : base($"KeplerService_{Utils.FormatedDateTimeNow}")
 		{
 		}
 

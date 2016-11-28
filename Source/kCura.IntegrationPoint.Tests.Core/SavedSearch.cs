@@ -69,9 +69,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void ModifySavedSearchByAddingPrefix(IWindsorContainer container, int workspaceId, int savedSearchId, string documentPrefix, bool excludeExpDocs)
+		public static void ModifySavedSearchByAddingPrefix(IRepositoryFactory repositoryFactory, int workspaceId, int savedSearchId, string documentPrefix, bool excludeExpDocs)
 		{
-			IFieldRepository sourceFieldRepository = container.Resolve<IRepositoryFactory>().GetFieldRepository(workspaceId);
+			IFieldRepository sourceFieldRepository = repositoryFactory.GetFieldRepository(workspaceId);
 			int controlNumberFieldArtifactId = sourceFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document).ArtifactId;
 
 			FieldRef fieldRef = new FieldRef(controlNumberFieldArtifactId)

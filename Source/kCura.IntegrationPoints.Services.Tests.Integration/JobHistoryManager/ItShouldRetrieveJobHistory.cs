@@ -11,9 +11,10 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 {
+	[TestFixture]
 	public class ItShouldRetrieveJobHistory : RelativityProviderTemplate
 	{
-		public ItShouldRetrieveJobHistory() : base($"SourceWorkspace_{Utils.Identifier}", $"TargetWorkspace_{Utils.Identifier}")
+		public ItShouldRetrieveJobHistory() : base($"SourceWorkspace_{Utils.FormatedDateTimeNow}", $"TargetWorkspace_{Utils.FormatedDateTimeNow}")
 		{
 		}
 
@@ -25,8 +26,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			base.SuiteSetup();
 
-			_groupId = Group.CreateGroup($"group_{Utils.Identifier}");
-			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.Identifier}@kcura.com", new List<int> {_groupId});
+			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
+			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormatedDateTimeNow}@kcura.com", new List<int> {_groupId});
 
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
 
@@ -43,19 +44,19 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			var importTableForTagging = Import.GetImportTable(testData.DocPrefix, testData.DocsTransfered);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTableForTagging);
 
-			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.Identifier}", "Append Only");
+			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormatedDateTimeNow}", "Append Only");
 			ipModel.SourceConfiguration = CreateSourceConfigWithTargetWorkspace(testData.WorkspaceId);
 			ipModel.Destination = CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, testData.WorkspaceId);
 
 			var ip = CreateOrUpdateIntegrationPoint(ipModel);
 
-			SavedSearch.ModifySavedSearchByAddingPrefix(Container, SourceWorkspaceArtifactId, SavedSearchArtifactId, testData.DocPrefix, true);
+			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, testData.DocPrefix, true);
 
 			var service = Container.Resolve<IIntegrationPointService>();
 			service.RunIntegrationPoint(SourceWorkspaceArtifactId, ip.ArtifactID, 9);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
 
-			if (!testData.PreventUserAcces)
+			if (!testData.PreventUserAccess)
 			{
 				Group.AddGroupToWorkspace(testData.WorkspaceId, _groupId);
 			}
@@ -149,7 +150,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			var testDataAfterPermission = _testData.Where(x => !x.PreventUserAcces).ToList();
+			var testDataAfterPermission = _testData.Where(x => !x.PreventUserAccess).ToList();
 
 			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(testDataAfterPermission.Sum(x => x.DocsTransfered)));
 			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(testDataAfterPermission.Count));
@@ -199,27 +200,27 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			public string DocPrefix => WorkspaceName;
 			public int DocsTransfered { get; private set; }
 			public string FullName => $"{WorkspaceName} - {WorkspaceId}";
-			public bool PreventUserAcces { get; set; }
+			public bool PreventUserAccess { get; set; }
 
 			public static IList<TestData> Create()
 			{
 				var workspace1 = new TestData
 				{
-					WorkspaceName = $"target_1_{Utils.Identifier}",
+					WorkspaceName = $"target_1_{Utils.FormatedDateTimeNow}",
 					DocsTransfered = 17,
-					PreventUserAcces = true
+					PreventUserAccess = true
 				};
 				var workspace2 = new TestData
 				{
-					WorkspaceName = $"target_2_{Utils.Identifier}",
+					WorkspaceName = $"target_2_{Utils.FormatedDateTimeNow}",
 					DocsTransfered = 11,
-					PreventUserAcces = false
+					PreventUserAccess = false
 				};
 				var workspace3 = new TestData
 				{
-					WorkspaceName = $"target_3_{Utils.Identifier}",
+					WorkspaceName = $"target_3_{Utils.FormatedDateTimeNow}",
 					DocsTransfered = 23,
-					PreventUserAcces = false
+					PreventUserAccess = false
 				};
 
 				var testData = new List<TestData> {workspace1, workspace2, workspace3};
