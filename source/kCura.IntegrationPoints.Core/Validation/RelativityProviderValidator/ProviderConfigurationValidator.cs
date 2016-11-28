@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			if (!result.IsValid) { return result; }
 
 			result.Add(ValidateSavedSearchExists(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId));
-			result.Add(ValidateDestinationWorkspace(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.TargetWorkspaceArtifactId));
+			result.Add(ValidateDestinationWorkspace(sourceConfiguration.TargetWorkspaceArtifactId));
 			result.Add(ValidateDestinationFolderExists(destinationConfiguration.CaseArtifactId, destinationConfiguration.DestinationFolderArtifactId));
 
 			return result;
@@ -69,19 +69,18 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return result;
 		}
 
-		private ValidationResult ValidateDestinationWorkspace(int sourceWorkspaceArtifactId, int targetWorkspaceArtifactId)
+		private ValidationResult ValidateDestinationWorkspace(int targetWorkspaceArtifactId)
 		{
 			var result = new ValidationResult();
 
-			IDestinationWorkspaceRepository destinationWorkspaceRepository =
-				_repositoryFactory.GetDestinationWorkspaceRepository(sourceWorkspaceArtifactId); ;
-			DestinationWorkspaceDTO destinationWorkspace = destinationWorkspaceRepository.Query(targetWorkspaceArtifactId);
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
+			WorkspaceDTO destinationWorkspace = workspaceRepository.Retrieve(targetWorkspaceArtifactId);
 
 			if (destinationWorkspace == null)
 			{
 				result.Add(ERROR_DESTINATION_WORKSPACE_NOT_EXIST);
 			}
-			else if (destinationWorkspace.WorkspaceName.Contains(";"))
+			else if (destinationWorkspace.Name.Contains(";"))
 			{
 				result.Add(ERROR_DESTINATION_WORKSPACE_INVALID_NAME);
 			}

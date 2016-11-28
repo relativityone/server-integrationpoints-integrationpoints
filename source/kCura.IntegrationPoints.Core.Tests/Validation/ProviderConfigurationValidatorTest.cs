@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 	{
 		private IValidator _instance;
 		private IRepositoryFactory _repositoryFactory;
+		private IWorkspaceRepository _workspaceRepository;
 
 		private const int SavedSearchArtifactId = 1038052;
 		private const int SourceWorkspaceArtifactId = 1074540;
@@ -32,6 +33,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void Setup()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
 			_instance = new ProviderConfigurationValidator(new JSONSerializer(), _repositoryFactory);
 		}
 
@@ -39,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void Validate_Source_Workspace_Not_Exists()
 		{
 			// Arrange
-			MockWorkspaceRepository(null);
+			MockWorkspaceRepository(null, SourceWorkspaceArtifactId);
 			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject();
 
 			// Act
@@ -58,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			// Arrange
 			WorkspaceDTO workspaceDto = new WorkspaceDTO() {Name = sourceWorkspaceName };
-			MockWorkspaceRepository(workspaceDto);
+			MockWorkspaceRepository(workspaceDto, SourceWorkspaceArtifactId);
 			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject();
 
 			// Act
@@ -74,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			// Arrange
 			WorkspaceDTO workspaceDto = new WorkspaceDTO() { Name = "sourceWorkspaceName" };
-			MockWorkspaceRepository(workspaceDto);
+			MockWorkspaceRepository(workspaceDto, SourceWorkspaceArtifactId);
 			MockSavedSearchRepository(null);
 			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject();
 
@@ -90,9 +93,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void Validate_Destination_Workspace_Not_Exist()
 		{
 			// Arrange
-			WorkspaceDTO workspaceDto = new WorkspaceDTO() { Name = "sourceWorkspaceName" };
-			MockWorkspaceRepository(workspaceDto);
-			MockDestinationWorkspaceRepository(null);
+			WorkspaceDTO sourceWorkspaceDto = new WorkspaceDTO() { Name = "sourceWorkspaceName" };
+			MockWorkspaceRepository(sourceWorkspaceDto, SourceWorkspaceArtifactId);
+			MockWorkspaceRepository(null, TargetWorkspaceArtifactId);
+			//TODO MockDestinationWorkspaceRepository(null);
 			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject();
 
 			// Act
@@ -110,10 +114,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void Validate_Destination_Workspace_Invalid_Name(string destinationWorkspaceName)
 		{
 			// Arrange
-			WorkspaceDTO workspaceDto = new WorkspaceDTO() { Name = "sourceWorkspaceName" };
-			MockWorkspaceRepository(workspaceDto);
-			DestinationWorkspaceDTO destinationWorkspace = new DestinationWorkspaceDTO() {WorkspaceName = destinationWorkspaceName};
-			MockDestinationWorkspaceRepository(destinationWorkspace);
+			WorkspaceDTO sourceWorkspaceDto = new WorkspaceDTO() { Name = "sourceWorkspaceName" };
+			MockWorkspaceRepository(sourceWorkspaceDto, SourceWorkspaceArtifactId);
+			WorkspaceDTO destinationWorkspaceDto = new WorkspaceDTO() { Name = destinationWorkspaceName};
+			MockWorkspaceRepository(destinationWorkspaceDto, TargetWorkspaceArtifactId);
+			//TODO MockDestinationWorkspaceRepository(destinationWorkspace);
 			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject();
 
 			// Act
@@ -124,37 +129,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.IsTrue(result.Messages.Contains(ProviderConfigurationValidator.ERROR_DESTINATION_WORKSPACE_INVALID_NAME));
 		}
 
+		private void MockWorkspaceRepository(WorkspaceDTO workspaceDto, int workspaceArtifactId)
+		{
+			//TODO
+			//IWorkspaceRepository workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			//_repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
+			_workspaceRepository.Retrieve(workspaceArtifactId).Returns(workspaceDto);
+		}
 
-
-		//[Test]
-		//public void Validate_Source_Workspace_Not_Exists()
+		//TODO Delete
+		//private void MockDestinationWorkspaceRepository(DestinationWorkspaceDTO workspaceDto)
 		//{
-		//	// Arrange
-		//	_repositoryFactory.GetWorkspaceRepository().Returns(null);
-		//	IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject();
-
-		//	// Act
-		//	ValidationResult result = _instance.Validate(integrationModelValidation);
-
-		//	// Assert
-		//	Assert.IsTrue(result.IsValid);
-		//	Assert.IsNull(result.Messages.FirstOrDefault());
+		//	IDestinationWorkspaceRepository workspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
+		//	_repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId).Returns(workspaceRepository);
+		//	workspaceRepository.Query(TargetWorkspaceArtifactId).Returns(workspaceDto);
 		//}
-
-
-		private void MockWorkspaceRepository(WorkspaceDTO workspaceDto)
-		{
-			IWorkspaceRepository workspaceRepository = Substitute.For<IWorkspaceRepository>();
-			_repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
-			workspaceRepository.Retrieve(SourceWorkspaceArtifactId).Returns(workspaceDto);
-		}
-
-		private void MockDestinationWorkspaceRepository(DestinationWorkspaceDTO workspaceDto)
-		{
-			IDestinationWorkspaceRepository workspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
-			_repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId).Returns(workspaceRepository);
-			workspaceRepository.Query(TargetWorkspaceArtifactId).Returns(workspaceDto);
-		}
 
 		private void MockSavedSearchRepository(SavedSearchDTO savedSearch)
 		{

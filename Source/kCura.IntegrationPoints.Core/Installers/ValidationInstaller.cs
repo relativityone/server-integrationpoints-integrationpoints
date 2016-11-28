@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Implementation;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>());
 			container.Register(Component.For<IValidator>().ImplementedBy<NameValidator>());
-			//container.Register(Component.For<IValidator>().ImplementedBy<FieldsMappingValidator>());	//TODO Inject RdoFieldSynchronizerBase
+			container.Register(Component.For<IValidator>().ImplementedBy<FieldsMappingValidator>());
 			container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>());
 			container.Register(Component.For<IValidator>().ImplementedBy<ProviderConfigurationValidator>());
 			
