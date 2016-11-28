@@ -118,6 +118,14 @@
 				self.model.exportSource.FolderArtifactName(undefined);
 				self.model.exportSource.ViewId(undefined);
 
+				self.model.exportSource.SavedSearchArtifactId.isModified(false);
+				self.model.exportSource.ProductionId.isModified(false);
+				self.model.exportSource.ProductionName.isModified(false);
+				self.model.exportSource.FolderArtifactName.isModified(false);
+				self.model.exportSource.ViewId.isModified(false);
+
+				self.model.fields.mappedFields.isModified(false);
+
 				self.model.exportSource.Reload();
 			});
 
