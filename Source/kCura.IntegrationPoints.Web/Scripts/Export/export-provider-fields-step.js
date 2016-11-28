@@ -150,7 +150,11 @@
 					IP.message.error.raise("No mapped fields were returned from the source provider.");
 				});
 			} else if (!!self.ipModel.map) {
-				mappedFieldsPromise = self.ipModel.map;
+				var map = self.ipModel.map;
+				if (typeof (map) === 'string') {
+					map = jQuery.parseJSON(self.ipModel.map);
+				}
+				mappedFieldsPromise = map;
 			} else {
 				mappedFieldsPromise = [];
 			}
