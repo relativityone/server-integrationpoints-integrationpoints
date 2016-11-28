@@ -776,25 +776,25 @@
 					settings.DataFileEncodingType = '';
 				}
 
-				if (typeof (self.ipModel) === 'string') {
-					self.ipModel = JSON.parse(self.ipModel);
+				if (typeof (self.ipModel.sourceConfiguration) === 'string') {
+					self.ipModel.sourceConfiguration = JSON.parse(self.ipModel.sourceConfiguration);
 				}
 
-				if (typeof (self.ipModel.Map) === 'string') {
-					self.ipModel.Map = JSON.parse(self.ipModel.Map);
+				if (typeof (self.ipModel.map) === 'string') {
+					self.ipModel.map = JSON.parse(self.ipModel.map);
 				}
 
-				$.extend(self.ipModel, settings);
-				self.ipModel.TargetWorkspaceArtifactId = self.ipModel.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
+				$.extend(self.ipModel.sourceConfiguration, settings);
+				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
 
-				self.ipModel = JSON.stringify(self.ipModel);
+				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 
 				var destination = JSON.parse(self.ipModel.destination);
 				destination.Provider = "Load File";
 				destination.DoNotUseFieldsMapCache = false;
 				self.ipModel.destination = JSON.stringify(destination);
 
-				self.ipModel.Map = JSON.stringify(self.ipModel.Map);
+				self.ipModel.map = JSON.stringify(self.ipModel.map);
 
 				Picker.closeDialog("textPrecedencePicker");
 				Picker.closeDialog("imageProductionPicker");
