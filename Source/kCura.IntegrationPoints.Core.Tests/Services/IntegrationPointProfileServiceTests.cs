@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IManagerFactory _managerFactory;
 		private IntegrationPointProfile _integrationPointProfile;
 		private SourceProvider _sourceProvider;
-		private IIntegrationModelValidator _integrationModelValidator;
+		private IIntegrationPointProviderValidator _integrationModelValidator;
 		private IntegrationPointProfileService _instance;
 		private IChoiceQuery _choiceQuery;
 
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_serializer = Substitute.For<ISerializer>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
-			_integrationModelValidator = Substitute.For<IIntegrationModelValidator>();
+			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(

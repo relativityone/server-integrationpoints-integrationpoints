@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Validation.Implementation;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -10,7 +11,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Validation
+namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
 	[TestFixture]
 	public class FieldMappingsValidatorTest
@@ -32,17 +33,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			_instance = new FieldsMappingValidator(new JSONSerializer(), _repositoryFactory);
 		}
 
-		[Test]
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]")]
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]")]
-		public void Validate_Valid_Field_Map(string fieldMap)
+		public void ItShouldValidateFieldMap(string fieldMap)
 		{
 			// Arrange
-			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(integrationModelValidation);
+			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
@@ -50,17 +50,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		}
 
 		[Test]
-		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]", FieldsMappingValidator.ERROR_DESTINATION_FIELD_NOT_MAPPED)]
-		[TestCase("[{\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]", FieldsMappingValidator.ERROR_SOURCE_FIELD_NOT_MAPPED)]
-		[TestCase("[{\"fieldMapType\":\"Identifier\"}]", FieldsMappingValidator.ERROR_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED)]
-		public void Validate_Not_All_Fields_Mapped(string fieldMap, string errorMessage)
+		public void ItShouldValidateDestinationFieldNotMapped()
 		{
 			// Arrange
-			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
+			string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			string errorMessage = RelativityProviderValidationMessages.FIELD_MAP_DESTINATION_FIELD_NOT_MAPPED;
+
+			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(integrationModelValidation);
+			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
@@ -68,66 +68,99 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		}
 
 		[Test]
-		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]")]
-		public void Validate_Identifier_Not_Matched_Correctly(string fieldMap)
+		public void ItShouldValidateSourceFieldNotMapped()
 		{
 			// Arrange
-			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
+			string fieldMap = "[{\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			string errorMessage = RelativityProviderValidationMessages.FIELD_MAP_SOURCE_FIELD_NOT_MAPPED;
+
+			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(integrationModelValidation);
+			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Contains(FieldsMappingValidator.ERROR_IDENTIFIERS_NOT_MATCHED));
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(errorMessage)));
 		}
 
 		[Test]
-		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new [] { "Control Number"})]
-		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To [Object Identifier]\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Email To [Object Identifier]\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] { "Control Number", "Email To" })]
-		public void Validate_All_Required_Fields_Mapped(string fieldMap, string[] requiredFields)
+		public void ItShouldValidateSourceAndDestinationFieldsNotMapped()
 		{
 			// Arrange
-			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
+			string fieldMap = "[{\"fieldMapType\":\"Identifier\"}]";
+			string errorMessage = RelativityProviderValidationMessages.FIELD_MAP_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED;
+
+			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(errorMessage)));
+		}
+
+		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]")]
+		public void ItShouldValidateIdentifierNotMatchedCorrectly(string fieldMap)
+		{
+			// Arrange
+			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Contains(RelativityProviderValidationMessages.FIELD_MAP_IDENTIFIERS_NOT_MATCHED));
+		}
+
+		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] { "Control Number" })]
+		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To [Object Identifier]\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Email To [Object Identifier]\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] { "Control Number", "Email To" })]
+		public void ItShouldValidateAllRequiredFieldsMapped(string fieldMap, string[] requiredFields)
+		{
+			// Arrange
+			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository(requiredFields.ToList());
 
 			// Act
-			ValidationResult result = _instance.Validate(integrationModelValidation);
+			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
 			Assert.IsNull(result.Messages.FirstOrDefault());
 		}
 
-		[Test]
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] { "requiredField_1" })]
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] { "requiredField_1", "requiredField_2" })]
-		public void Validate_Required_Fields_Not_Mapped(string fieldMap, string[] requiredFields)
+		public void ItShouldValidateRequiredFieldsNotMapped(string fieldMap, string[] requiredFields)
 		{
 			// Arrange
-			IntegrationModelValidation integrationModelValidation = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository(requiredFields.ToList());
 
 			// Act
-			ValidationResult result = _instance.Validate(integrationModelValidation);
+			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(FieldsMappingValidator.ERROR_FIELD_MUST_BE_MAPPED)));
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_MUST_BE_MAPPED)));
 			foreach (string requiredField in requiredFields)
 			{
 				Assert.IsTrue(result.Messages.Any(x => x.Contains(requiredField)));
 			}
 		}
 
-		private IntegrationModelValidation GetFieldMapValidationObject(string fieldsMap)
+		private IntegrationPointProviderValidationModel GetFieldMapValidationObject(string fieldsMap)
 		{
-			return new IntegrationModelValidation()
+			return new IntegrationPointProviderValidationModel()
 			{
 				FieldsMap = fieldsMap,
-				SourceProviderId = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
-				DestinationProviderId = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
+				SourceProviderIdentifier = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
+				DestinationProviderIdentifier = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
 				SourceConfiguration = SourceConfiguration,
 				DestinationConfiguration = string.Empty
 			};
@@ -143,8 +176,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 				{
 					var fields = new List<ArtifactFieldDTO>()
 					{
-						new ArtifactFieldDTO() {Name = FieldsMappingValidator.FIELD_NAME, Value = field},
-						new ArtifactFieldDTO() {Name = FieldsMappingValidator.FIELD_IS_IDENTIFIER, Value = "1"}
+						new ArtifactFieldDTO() {Name = RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME, Value = field},
+						new ArtifactFieldDTO() {Name = RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER, Value = "1"}
 					};
 					fieldArtifacts.Add(new ArtifactDTO(0, 0, "", fields));
 				}
@@ -166,8 +199,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			_fieldRepository.RetrieveFields(artifactTypeDocument,
 				new HashSet<string>(new[]
 				{
-					FieldsMappingValidator.FIELD_NAME,
-					FieldsMappingValidator.FIELD_IS_IDENTIFIER
+					RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,
+					RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER
 				}))
 				.ReturnsForAnyArgs(fieldArtifacts.ToArray());
 		}

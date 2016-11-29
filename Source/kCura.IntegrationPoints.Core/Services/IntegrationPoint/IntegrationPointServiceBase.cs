@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		protected IContextContainer ContextContainer;
 		protected IChoiceQuery ChoiceQuery;
 		protected IManagerFactory ManagerFactory;
-		protected IIntegrationModelValidator IntegrationModelValidator;
+		protected IIntegrationPointProviderValidator IntegrationModelValidator;
 		protected static readonly object Lock = new object();
 
 		protected abstract string UnableToSaveFormat { get; }
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointBaseFieldGuidsConstants guidsConstants,
-			IIntegrationModelValidator integrationModelValidator)
+			IIntegrationPointProviderValidator integrationModelValidator)
 		{
 			Serializer = serializer;
 			Context = context;

@@ -1,26 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-using kCura.IntegrationPoints.Core.Validation.Implementation;
-using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain.Models;
-using NSubstitute;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
 	[TestFixture]
 	public class EmailValidatorTest
 	{
-		private IValidator _instance;
-
-		[SetUp]
-		public void Setup()
-		{
-			_instance = Substitute.For<EmailValidator>();
-		}
-
-		[Test]
 		[TestCase(null)]
 		[TestCase("")]
 		[TestCase(";")]
@@ -53,8 +42,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("test@domain.com;\ntest2@domain.com")]
 		public void Validate_Valid_Notification_Emails_List(string emails)
 		{
+			//Arrange
+			var validator = new EmailValidator();
+
 			//Act
-			ValidationResult result = _instance.Validate(emails);
+			ValidationResult result = validator.Validate(emails);
 
 			//Assert
 			Assert.IsTrue(result.IsValid);
@@ -88,8 +80,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			//Arrange
 			string validationMessage = EmailValidator.ERROR_INVALID_EMAIL + emails;
 
+			var validator = new EmailValidator();
+
 			//Act
-			ValidationResult result = _instance.Validate(emails);
+			ValidationResult result = validator.Validate(emails);
 
 			//Assert
 			Assert.IsFalse(result.IsValid);
@@ -104,8 +98,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("test@domain.com	;			")]
 		public void Validate_Missing_Emails(string emails)
 		{
+			//Arrange
+			var validator = new EmailValidator();
+
 			//Act
-			ValidationResult result = _instance.Validate(emails);
+			ValidationResult result = validator.Validate(emails);
 
 			//Assert
 			Assert.IsFalse(result.IsValid);
@@ -113,23 +110,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		}
 
 		[Test]
-		[TestCase("test@domain.com;test@#$%.com;test2@domain.com", new [] {true, false, true})]
-		[TestCase("test@#$%.com;test@domain.com;test2@domain.com;", new [] {false, true, true})]
-		[TestCase("test@domain.com;testdomain.com ; test@domain..com;	test2@domain.com;", new [] {true, false, false, true})]
+		[TestCase("test@domain.com;test@#$%.com;test2@domain.com", new[] { true, false, true })]
+		[TestCase("test@#$%.com;test@domain.com;test2@domain.com;", new[] { false, true, true })]
+		[TestCase("test@domain.com;testdomain.com ; test@domain..com;	test2@domain.com;", new[] { true, false, false, true })]
 		public void Validate_Notification_Emails_List(string emails, bool[] isValidList)
 		{
 			//Arrange
-			string[] emailList =
-				emails.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
-					.ToArray();
+			string[] emailList = emails.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+
 			var invalidEmailList = new List<string>();
-			for (int i = 0; i < isValidList.Length ; i++)
+			for (int i = 0; i < isValidList.Length; i++)
 			{
-				if(!isValidList[i]) { invalidEmailList.Add(EmailValidator.ERROR_INVALID_EMAIL + emailList[i].Trim());}
+				if (!isValidList[i])
+				{
+					invalidEmailList.Add($"{EmailValidator.ERROR_INVALID_EMAIL}{emailList[i].Trim()}");
+				}
 			}
 
+			var validator = new EmailValidator();
+
 			//Act
-			ValidationResult result = _instance.Validate(emails);
+			ValidationResult result = validator.Validate(emails);
 
 			//Assert
 			Assert.IsFalse(result.IsValid);

@@ -276,6 +276,7 @@
     <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\IntegrationPointModelBase.cs" />
     <Compile Include="Models\IntegrationPointProfileModel.cs" />
+    <Compile Include="Models\IntegrationPointProviderValidationModel.cs" />
     <Compile Include="Models\Scheduler.cs" />
     <Compile Include="Models\StoppableJobCollection.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
@@ -284,8 +285,12 @@
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\IIntegrationPointValidationService.cs" />
-    <Compile Include="Validation\Implementation\NameValidator.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\ProviderConfigurationValidator.cs" />
+    <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
+    <Compile Include="Validation\Parts\NameValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\FolderValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\SavedSearchValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\WorkspaceValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidator.cs" />
     <Compile Include="Services\CustodianManager\IManagerQueueService.cs" />
     <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
@@ -397,12 +402,13 @@
     <Compile Include="Telemetry\TelemetryManager.cs" />
     <Compile Include="Telemetry\TelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryMetricProviderBase.cs" />
-    <Compile Include="Validation\IIntegrationModelValidator.cs" />
-    <Compile Include="Validation\Implementation\EmailValidator.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\FieldsMappingValidator.cs" />
-    <Compile Include="Validation\Implementation\IntegrationModelValidation.cs" />
-    <Compile Include="Validation\Implementation\IntegrationModelValidator.cs" />
-    <Compile Include="Validation\Implementation\SchedulerValidator.cs" />
+    <Compile Include="Validation\Abstract\IIntegrationPointProviderValidator.cs" />
+    <Compile Include="Validation\Parts\EmailValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\FieldsMappingValidator.cs" />
+    <Compile Include="Validation\IntegrationPointProviderValidator.cs" />
+    <Compile Include="Validation\Parts\SchedulerValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationMessages.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidatorsFactory.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

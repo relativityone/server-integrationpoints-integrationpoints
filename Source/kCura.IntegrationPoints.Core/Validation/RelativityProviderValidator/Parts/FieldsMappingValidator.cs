@@ -3,36 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Validation.Implementation;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 
-namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
+namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
-	public class FieldsMappingValidator : IValidator
+	public class FieldsMappingValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
 	{
 		private readonly ISerializer _serializer;
 		private readonly IRepositoryFactory _repositoryFactory;
 
 		private const string _OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
-
-		public string Key => Constants.IntegrationPointProfiles.Validation.FIELD_MAP;
-
-		public const string ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED = "Integration model validation object not initialized";
-		public const string ERROR_SOURCE_FIELD_NOT_MAPPED = "All selected fields must be mapped. Source field not mapped to Destination: ";
-		public const string ERROR_DESTINATION_FIELD_NOT_MAPPED = "All selected fields must be mapped. Destination field not mapped to Source: ";
-		public const string ERROR_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED = "All selected fields must be mapped. Destination and Source fields not mapped.";
-		public const string ERROR_IDENTIFIERS_NOT_MATCHED = "Identifier must be mapped with another identifier.";
-		public const string ERROR_UNIQUE_IDENTIFIER_MUST_BE_MAPPED = "The unique identifier must be mapped.";
-		public const string ERROR_FIELD_MUST_BE_MAPPED = "must be mapped.";
-		public const string ERROR_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE = "Field does not exist in source workspace: ";
-		public const string ERROR_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE = "Field does not exist in destination workspace: ";
-
-		public const string FIELD_NAME = "Name";
-		public const string FIELD_IS_IDENTIFIER = "Is Identifier";
 
 		public FieldsMappingValidator(ISerializer serializer, IRepositoryFactory repositoryFactory)
 		{
@@ -40,22 +25,17 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public ValidationResult Validate(object value)
+		public override ValidationResult Validate(IntegrationPointProviderValidationModel value)
 		{
 			var result = new ValidationResult();
-			var integrationModel = value as IntegrationModelValidation;
-			if (integrationModel == null)
-			{
-				throw new Exception(ERROR_INTEGRATION_MODEL_VALIDATION_NOT_INITIALIZED);
-			}
 
-			if (!IsRelativityProvider(integrationModel.SourceProviderId, integrationModel.DestinationProviderId))
+			if (!IsRelativityProvider(value.SourceProviderIdentifier, value.DestinationProviderIdentifier))
 			{
 				return result;
 			}
 
-			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
-			var fieldsMap = _serializer.Deserialize<List<FieldMap>>(integrationModel.FieldsMap);
+			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(value.SourceConfiguration);
+			var fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
 
 			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(sourceConfiguration.SourceWorkspaceArtifactId);
 			List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(sourceConfiguration.TargetWorkspaceArtifactId);
@@ -68,7 +48,9 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 				result.Add(ValidateFieldIdentifierMappedWithAnotherIdentifier(fieldMap));
 				result.Add(ValidateFieldExist(fieldMap, sourceWorkpaceFields, destinationWorkpaceFields));
 
-				if (fieldMap.FieldMapType == FieldMapTypeEnum.Identifier)
+				if ((fieldMap.FieldMapType == FieldMapTypeEnum.Identifier) && 
+					(fieldMap.SourceField != null) &&
+					(fieldMap.SourceField.IsIdentifier))
 				{
 					mappedIdentifier = true;
 				}
@@ -80,27 +62,27 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return result;
 		}
 
-		private static bool IsRelativityProvider(string sourceProviderId, string destinationProviderId)
+		private bool IsRelativityProvider(string sourceProviderId, string destinationProviderId)
 		{
 			return string.Equals(sourceProviderId, IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, StringComparison.CurrentCultureIgnoreCase) &&
 				   string.Equals(destinationProviderId, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(), StringComparison.CurrentCultureIgnoreCase);
 		}
 
-		private static ValidationResult ValidateFieldMapped(FieldMap fieldMap)
+		private ValidationResult ValidateFieldMapped(FieldMap fieldMap)
 		{
 			var result = new ValidationResult();
 
 			if (fieldMap.SourceField == null && fieldMap.DestinationField == null)
 			{
-				result.Add(ERROR_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED);
+				result.Add(RelativityProviderValidationMessages.FIELD_MAP_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED);
 			}
 			else if (fieldMap.SourceField == null)
 			{
-				result.Add($"{ERROR_SOURCE_FIELD_NOT_MAPPED} {fieldMap.DestinationField.DisplayName}");
+				result.Add($"{RelativityProviderValidationMessages.FIELD_MAP_SOURCE_FIELD_NOT_MAPPED} {fieldMap.DestinationField.DisplayName}");
 			}
 			else if (fieldMap.DestinationField == null)
 			{
-				result.Add($"{ERROR_DESTINATION_FIELD_NOT_MAPPED} {fieldMap.SourceField.DisplayName}");
+				result.Add($"{RelativityProviderValidationMessages.FIELD_MAP_DESTINATION_FIELD_NOT_MAPPED} {fieldMap.SourceField.DisplayName}");
 			}
 
 			return result;
@@ -110,12 +92,14 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			var result = new ValidationResult();
 
-			if (fieldMap.SourceField == null || fieldMap.DestinationField == null) { return result; }
-
-			if (fieldMap.SourceField.IsIdentifier &&
-				!fieldMap.DestinationField.IsIdentifier)
+			if (fieldMap.SourceField == null || fieldMap.DestinationField == null)
 			{
-				result.Add(ERROR_IDENTIFIERS_NOT_MATCHED);
+				return result;
+			}
+
+			if (fieldMap.SourceField.IsIdentifier && !fieldMap.DestinationField.IsIdentifier)
+			{
+				result.Add(RelativityProviderValidationMessages.FIELD_MAP_IDENTIFIERS_NOT_MATCHED);
 			}
 
 			return result;
@@ -125,18 +109,22 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			var result = new ValidationResult();
 
-			if (fieldMap.SourceField?.FieldIdentifier == null || fieldMap.DestinationField?.FieldIdentifier == null) { return result; }
+			if (fieldMap.SourceField?.FieldIdentifier == null || fieldMap.DestinationField?.FieldIdentifier == null)
+			{
+				return result;
+			}
 
 			int sourceFieldIdentifier = int.Parse(fieldMap.SourceField.FieldIdentifier);
 			int destinationFieldIdentifier = int.Parse(fieldMap.DestinationField.FieldIdentifier);
 
 			if (sourceFields.All(x => x.ArtifactId != sourceFieldIdentifier))
 			{
-				result.Add(ERROR_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE);
+				result.Add(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE);
 			}
+
 			if (destinationFields.All(x => x.ArtifactId != destinationFieldIdentifier))
 			{
-				result.Add(ERROR_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE);
+				result.Add(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE);
 			}
 
 			return result;
@@ -145,10 +133,12 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private ValidationResult ValidateUniqueIdentifierIsMapped(bool isMapped)
 		{
 			var result = new ValidationResult();
+
 			if (!isMapped)
 			{
-				result.Add(ERROR_UNIQUE_IDENTIFIER_MUST_BE_MAPPED);
+				result.Add(RelativityProviderValidationMessages.FIELD_MAP_UNIQUE_IDENTIFIER_MUST_BE_MAPPED);
 			}
+
 			return result;
 		}
 
@@ -165,11 +155,11 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
-					if (field.Name == FIELD_NAME)
+					if (field.Name == RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME)
 					{
 						displayName = field.Value as string;
 					}
-					else if (field.Name == FIELD_IS_IDENTIFIER)
+					else if (field.Name == RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER)
 					{
 						isIdentifierFieldValue = Convert.ToInt32(field.Value);
 					}
@@ -189,11 +179,12 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 					missingFields.Add(requiredField);
 				}
 			}
+
 			if (missingFields.Count > 0)
 			{
 				var fieldMessage = string.Join(" and ", missingFields);
 				string fieldPlural = requiredFields.Count == 1 ? "field" : "fields";
-				result.Add($"The {fieldMessage} {fieldPlural} {ERROR_FIELD_MUST_BE_MAPPED}");
+				result.Add($"The {fieldMessage} {fieldPlural} {RelativityProviderValidationMessages.FIELD_MAP_FIELD_MUST_BE_MAPPED}");
 			}
 
 			return result;
@@ -207,8 +198,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 				Convert.ToInt32(ArtifactType.Document),
 				new HashSet<string>(new[]
 				{
-					FIELD_NAME,
-					FIELD_IS_IDENTIFIER
+					RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,
+					RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER
 				}));
 
 			return fieldArtifacts.ToList();

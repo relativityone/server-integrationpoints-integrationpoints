@@ -47,7 +47,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			return result;
 		}
 
-		// ...yes really :/
 		private class Destination
 		{
 			public int ArtifactTypeID { get; set; }

@@ -2,11 +2,11 @@
 using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Validation.Implementation;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using NUnit.Framework;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("12/15/2016", "01/19/2017", "12:0", "Daily")]
 		public void Validate_Valid_Scheduler_Dates(string startDate, string endDate, string scheduledTime, string selectedFrequency)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = startDate,
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("0/0/2016", "25:99 AM", "Daily")]
 		public void Validate_Invalid_Scheduler_Start_Date_Format(string startDate, string scheduledTime, string selectedFrequency)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = startDate,
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("1/1/2015", "0/0/2016", "25:99 AM", "Daily")]
 		public void Validate_Invalid_Scheduler_End_Date_Format(string startDate, string endDate, string scheduledTime, string selectedFrequency)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = startDate,
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("01/20/2017", "09/01/2016", "12:0", "Daily")]
 		public void Validate_Invalid_Scheduler_Dates_EndDate_Before_StartDate(string startDate, string endDate, string scheduledTime, string selectedFrequency)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = startDate,
@@ -127,7 +127,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 				ScheduledTime = scheduledTime,
 				SelectedFrequency = ScheduleInterval.Daily.ToString()
 			};
-
 
 			// Act
 			ValidationResult result = _instance.Validate(scheduler);
@@ -142,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("invalid")]
 		public void Validate_Invalid_Intervals(string interval)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = VALID_START_DATE,
@@ -166,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase((SchedulerValidator.REOCCUR_MAX - SchedulerValidator.REOCCUR_MIN) / 2)]
 		public void Validate_Valid_Reoccur(int reoccur)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = VALID_START_DATE,
@@ -190,7 +189,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase(SchedulerValidator.REOCCUR_MAX + 1)]
 		public void Validate_Inalid_Reoccur(int reoccur)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = VALID_START_DATE,
@@ -221,7 +220,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("{\"selectedDays\":[\"Sunday\",\"Monday\",\"Tuesday\",\"Wednesday\",\"Thursday\",\"Friday\"]}")]
 		public void Validate_Valid_SendOn_Weekle(string sendOn)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = VALID_START_DATE,
@@ -245,7 +244,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("ioasdfnoas")]
 		public void Validate_Inalid_SendOn_Weekle(string day)
 		{
-			// Arrange 
+			// Arrange
 			string sendOn = "{\"selectedDays\":[\"" + day + "\"]}";
 			var scheduler = new Scheduler()
 			{
@@ -273,7 +272,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[TestCase("{\"monthChoice\":\"1\",\"selectedDay\":1,\"selectedDayOfTheMonth\":4,\"selectedType\":4}")]
 		public void Validate_Valid_SendOn_Monthly(string sendOn)
 		{
-			// Arrange 
+			// Arrange
 			var scheduler = new Scheduler()
 			{
 				StartDate = VALID_START_DATE,

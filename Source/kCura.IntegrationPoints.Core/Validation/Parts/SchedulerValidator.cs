@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 
-namespace kCura.IntegrationPoints.Core.Validation.Implementation
+namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class SchedulerValidator : IValidator
 	{

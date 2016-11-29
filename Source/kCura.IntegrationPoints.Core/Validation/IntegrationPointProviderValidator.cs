@@ -2,19 +2,20 @@
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
-namespace kCura.IntegrationPoints.Core.Validation.Implementation
+namespace kCura.IntegrationPoints.Core.Validation
 {
-	public class IntegrationModelValidator : IIntegrationModelValidator
+	public class IntegrationPointProviderValidator : IIntegrationPointProviderValidator
 	{
 		private readonly ILookup<string, IValidator> _validatorsMap;
 		private readonly ISerializer _serializer;
 
-		public IntegrationModelValidator(IEnumerable<IValidator> validators, ISerializer serializer)
+		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, ISerializer serializer)
 		{
 			_validatorsMap = validators.ToLookup(x => x.Key);
 			_serializer = serializer;
@@ -26,8 +27,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
-			var integrationModelValidation = new IntegrationModelValidation(model, sourceProvider.Identifier, destinationProvider.Identifier);
-			integrationModelValidation.ArtifactTypeId = destinationConfiguration.ArtifactTypeId;
+			var IntegrationPointProviderValidationModel = new IntegrationPointProviderValidationModel(model)
+			{
+				ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
+				SourceProviderIdentifier = sourceProvider.Identifier,
+				DestinationProviderIdentifier = destinationProvider.Identifier
+			};
 
 			if (model.Scheduler.EnableScheduler)
 			{
@@ -47,16 +52,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 				result.Add(validator.Validate(model.Name));
 			}
 
-			foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.FIELD_MAP])
+			foreach (var validator in _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
 			{
-				result.Add(validator.Validate(integrationModelValidation));
-			}
-
-			foreach (
-				var validator in
-					_validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
-			{
-				result.Add(validator.Validate(integrationModelValidation));
+				result.Add(validator.Validate(IntegrationPointProviderValidationModel));
 			}
 
 			return result;

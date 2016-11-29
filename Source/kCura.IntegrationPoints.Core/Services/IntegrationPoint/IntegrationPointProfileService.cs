@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			ISerializer serializer,
 			IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory,
-			IIntegrationModelValidator integrationModelValidator)
+			IIntegrationPointProviderValidator integrationModelValidator)
 			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator)
 		{
 		}

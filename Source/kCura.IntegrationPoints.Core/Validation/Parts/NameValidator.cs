@@ -1,8 +1,8 @@
-﻿using kCura.IntegrationPoints.Domain;
+﻿using System;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Utility.Extensions;
 
-namespace kCura.IntegrationPoints.Core.Validation.Implementation
+namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class NameValidator : IValidator
 	{
@@ -12,11 +12,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Implementation
 
 		public ValidationResult Validate(object value)
 		{
-			var name = value as string;
-
 			var result = new ValidationResult();
 
-			if (name.IsNullOrEmpty())
+			if (String.IsNullOrWhiteSpace(value as string))
 			{
 				result.Add(ERROR_INTEGRATION_POINT_EMPTY);
 			}

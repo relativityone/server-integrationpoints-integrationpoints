@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.Core.Validation.Implementation
+namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class EmailValidator : IValidator
 	{

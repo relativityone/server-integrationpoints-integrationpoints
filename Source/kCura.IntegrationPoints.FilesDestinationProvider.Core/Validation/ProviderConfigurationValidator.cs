@@ -3,7 +3,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Validation.Implementation;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			_validatorsFactory = validatorsFactory;
 		}
 
-		public string Key => IntegrationModelValidator.GetProviderValidatorKey(
+		public string Key => IntegrationPointProviderValidator.GetProviderValidatorKey(
 			IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
 			IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID
 		);

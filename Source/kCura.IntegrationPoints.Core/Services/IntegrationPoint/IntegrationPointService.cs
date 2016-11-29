@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory,
-			IIntegrationModelValidator integrationModelValidator)
+			IIntegrationPointProviderValidator integrationModelValidator)
 			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(), integrationModelValidator)
 		{
 			_jobService = jobService;

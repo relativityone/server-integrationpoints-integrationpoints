@@ -14,13 +14,11 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests.Helpers;
-using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.Repositories;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -67,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IChoiceQuery _choiceQuery;
 		private PermissionCheckDTO _stopPermissionChecksResults;
 		private Data.JobHistory _previousJobHistory;
-		private IIntegrationModelValidator _integrationModelValidator;
+		private IIntegrationPointProviderValidator _integrationModelValidator;
 
 		[SetUp]
 		public override void SetUp()
@@ -89,17 +87,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_integrationModelValidator = Substitute.For<IIntegrationModelValidator>();
+			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
 			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModel>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>()).Returns(new ValidationResult());
 
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(
-				_helper, 
+				_helper,
 				_caseServiceManager,
-				_contextContainerFactory, 
-				_serializer, 
-				_choiceQuery, 
+				_contextContainerFactory,
+				_serializer,
+				_choiceQuery,
 				_jobManager,
-				_jobHistoryService, 
+				_jobHistoryService,
 				_managerFactory,
 				_integrationModelValidator
 			);
@@ -130,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				JobHistory = null,
 				LastRuntimeUTC = null,
 				LogErrors = false,
-				SourceProvider = _sourceProviderId,				
+				SourceProvider = _sourceProviderId,
 				SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId}, SavedSearchArtifactId: {_savedSearchArtifactId} }}",
 				NextScheduledRuntimeUTC = null,
 				//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
@@ -157,8 +155,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				//				OverwriteFields = _integrationPoint.OverwriteFields, -- This would require further transformation
 				ScheduleRule = _integrationPoint.ScheduleRule
 			};
-			_previousJobHistory = new Data.JobHistory() {JobStatus = JobStatusChoices.JobHistoryCompleted};
-			_stopPermissionChecksResults = new PermissionCheckDTO() {ErrorMessages = new string[0]};
+			_previousJobHistory = new Data.JobHistory() { JobStatus = JobStatusChoices.JobHistoryCompleted };
+			_stopPermissionChecksResults = new PermissionCheckDTO() { ErrorMessages = new string[0] };
 
 			_integrationPointManager.UserHasPermissionToStopJob(
 				_sourceWorkspaceArtifactId,
@@ -213,17 +211,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			var stoppableJobCollection = new StoppableJobCollection()
 			{
-				PendingJobArtifactIds = new [] { pendingJob1Id, pendingJob2Id },
-				ProcessingJobArtifactIds = new [] { processingJob1Id, processingJob2Id }
+				PendingJobArtifactIds = new[] { pendingJob1Id, pendingJob2Id },
+				ProcessingJobArtifactIds = new[] { processingJob1Id, processingJob2Id }
 			};
 			_jobHistoryManager
 				.GetStoppableJobCollection(
-					Arg.Is(_sourceWorkspaceArtifactId), 
+					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId))
 				.Returns(stoppableJobCollection);
 
-			Data.JobHistory pendingJob1 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()}; 
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>( x => x.Contains(pendingJob1Id))).Returns(new List<Data.JobHistory>() { pendingJob1 });
+			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob1Id))).Returns(new List<Data.JobHistory>() { pendingJob1 });
 
 			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob2Id))).Returns(new List<Data.JobHistory>() { pendingJob2 });
@@ -249,7 +247,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// assert
 			_jobHistoryManager.Received(1)
 				.GetStoppableJobCollection(
-					Arg.Is(_sourceWorkspaceArtifactId), 
+					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId));
 
 			_jobHistoryService.Received(2)
@@ -265,7 +263,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						x =>
 							stoppableJobCollection.ProcessingJobArtifactIds.Contains(x.ArtifactId)));
 
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>( x => x.Contains(1)));
+			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(3)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(4)));
@@ -283,8 +281,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			var stoppableJobCollection = new StoppableJobCollection()
 			{
-				PendingJobArtifactIds = new[] {pendingJob1Id, pendingJob2Id},
-				ProcessingJobArtifactIds = new[] {processingJob1Id, processingJob2Id}
+				PendingJobArtifactIds = new[] { pendingJob1Id, pendingJob2Id },
+				ProcessingJobArtifactIds = new[] { processingJob1Id, processingJob2Id }
 			};
 			_jobHistoryManager
 				.GetStoppableJobCollection(
@@ -292,28 +290,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					Arg.Is(_integrationPointArtifactId))
 				.Returns(stoppableJobCollection);
 
-			Data.JobHistory pendingJob1 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob1Id)))
-				.Returns(new List<Data.JobHistory>() {pendingJob1});
+				.Returns(new List<Data.JobHistory>() { pendingJob1 });
 
-			Data.JobHistory pendingJob2 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob2Id)))
-				.Returns(new List<Data.JobHistory>() {pendingJob2});
+				.Returns(new List<Data.JobHistory>() { pendingJob2 });
 
-			Data.JobHistory processingJob1 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob1Id)))
-				.Returns(new List<Data.JobHistory>() {processingJob1});
+				.Returns(new List<Data.JobHistory>() { processingJob1 });
 
-			Data.JobHistory processingJob2 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob2Id)))
-				.Returns(new List<Data.JobHistory>() {processingJob2});
+				.Returns(new List<Data.JobHistory>() { processingJob2 });
 
 			Job baseJob = JobExtensions.CreateJob();
 			IDictionary<Guid, List<Job>> jobs = new Dictionary<Guid, List<Job>>();
-			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(1)};
-			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(2)};
-			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(3)};
-			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(4)};
+			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
+			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(2) };
+			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
+			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
 			_jobManager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointArtifactId).Returns(jobs);
 
@@ -322,10 +320,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			const string errorMessageThree = "E3";
 			const string errorMessageFour = "E4";
 
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(1)))).Do(x => {throw new Exception(errorMessageOne);});
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(2)))).Do(x => {throw new Exception(errorMessageTwo);});
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(3)))).Do(x => {throw new Exception(errorMessageThree);});
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(4)))).Do(x => {throw new Exception(errorMessageFour);});
+			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(1)))).Do(x => { throw new Exception(errorMessageOne); });
+			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(2)))).Do(x => { throw new Exception(errorMessageTwo); });
+			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(3)))).Do(x => { throw new Exception(errorMessageThree); });
+			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(4)))).Do(x => { throw new Exception(errorMessageFour); });
 
 			// act
 			bool aggregateExceptionWasThrown = false;
@@ -467,8 +465,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			var stoppableJobCollection = new StoppableJobCollection()
 			{
-				PendingJobArtifactIds = new[] {pendingJob1Id, pendingJob2Id},
-				ProcessingJobArtifactIds = new[] {processingJob1Id, processingJob2Id}
+				PendingJobArtifactIds = new[] { pendingJob1Id, pendingJob2Id },
+				ProcessingJobArtifactIds = new[] { processingJob1Id, processingJob2Id }
 			};
 			_jobHistoryManager
 				.GetStoppableJobCollection(
@@ -476,28 +474,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					Arg.Is(_integrationPointArtifactId))
 				.Returns(stoppableJobCollection);
 
-			Data.JobHistory pendingJob1 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob1Id)))
-				.Returns(new List<Data.JobHistory>() {pendingJob1});
+				.Returns(new List<Data.JobHistory>() { pendingJob1 });
 
-			Data.JobHistory pendingJob2 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob2Id)))
-				.Returns(new List<Data.JobHistory>() {pendingJob2});
+				.Returns(new List<Data.JobHistory>() { pendingJob2 });
 
-			Data.JobHistory processingJob1 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob1Id)))
-				.Returns(new List<Data.JobHistory>() {processingJob1});
+				.Returns(new List<Data.JobHistory>() { processingJob1 });
 
-			Data.JobHistory processingJob2 = new Data.JobHistory() {BatchInstance = Guid.NewGuid().ToString()};
+			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
 			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob2Id)))
-				.Returns(new List<Data.JobHistory>() {processingJob2});
+				.Returns(new List<Data.JobHistory>() { processingJob2 });
 
 			Job baseJob = JobExtensions.CreateJob();
 			IDictionary<Guid, List<Job>> jobs = new Dictionary<Guid, List<Job>>();
-			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(1)};
-			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(2)};
-			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(3)};
-			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() {baseJob.CopyJobWithJobId(4)};
+			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
+			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(2) };
+			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
+			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
 			_jobManager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointArtifactId).Returns(jobs);
 
@@ -509,7 +507,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Do(x => { throw new Exception(errorMessageOne); });
 			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(3))))
 				.Do(x => { throw new Exception(errorMessageTwo); });
-			_jobHistoryService.When(x => 
+			_jobHistoryService.When(x =>
 				x.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						y =>
@@ -578,14 +576,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			// act
-			Exception exception = Assert.Throws<Exception>( () => _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId));
+			Exception exception = Assert.Throws<Exception>(() => _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId));
 
 			// assert
 			Assert.IsNotNull(exception);
 			Assert.AreEqual(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS, exception.Message);
 			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
-
-
 		}
 
 		[Test]
@@ -595,7 +591,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
-			string[] errorMessages = {"Uh", "oh"};
+			string[] errorMessages = { "Uh", "oh" };
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
@@ -692,13 +688,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void RunIntegrationPoint_GoldFlow_OtherProviders_InvalidPermissions()
 		{
 			// arrange
-			_sourceProvider.Identifier = "some thing else";	
-			string[] errorMessages = {"Uh", "oh"};
+			_sourceProvider.Identifier = "some thing else";
+			string[] errorMessages = { "Uh", "oh" };
 			_integrationPointManager.UserHasPermissionToRunJob(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Other))
-				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages});
+				.Returns(new PermissionCheckDTO() { ErrorMessages = errorMessages });
 
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, 12345), String.Join("<br/>", errorMessages));
@@ -717,11 +713,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				WorkspaceId = _sourceWorkspaceArtifactId
 			};
 
-			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new [] {expectedErrorMessage}, x)));
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
-		
 
 		[Test]
 		public void RetryIntegrationPoint_IntegrationPointHasNoErrors_ThrowsException_Test()
@@ -833,7 +828,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceManager.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Returns((Data.JobHistory)null);
 
 			// Act
-			Exception exception = Assert.Throws<Exception>(() =>	_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
+			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
 
 			// Assert
 			Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
@@ -861,7 +856,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Assert
 			Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
 		}
-
 
 		[Test]
 		public void RetryIntegrationPoint_RetryOnStoppedJob()
@@ -985,7 +979,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Scheduler = new Scheduler() { EnableScheduler = false },
 				LastRun = DateTime.Today
 			};
-			IEnumerable<ErrorDTO> errors = new []
+			IEnumerable<ErrorDTO> errors = new[]
 			{
 				new ErrorDTO()
 				{
@@ -1006,7 +1000,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(
 				x => Validate(x.First(), errors.First())));
-				//x => x.Equals(errors) && x.First().FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point")));
+			//x => x.Equals(errors) && x.First().FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point")));
 		}
 
 		private bool Validate(ErrorDTO errors1, ErrorDTO errors2)
@@ -1067,7 +1061,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_managerFactory.CreateIntegrationPointManager(_contextContainer)
 				.Returns(_integrationPointManager);
 
-			string[] errorMessages = {"Oh", "no"};
+			string[] errorMessages = { "Oh", "no" };
 			_integrationPointManager.UserHasPermissionToSaveIntegrationPoint(
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
@@ -1082,7 +1076,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			var expectedError = new ErrorDTO()
 			{
 				Message = Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
-				FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, errorMessages.Concat(new [] { Constants.IntegrationPoints.NO_USERID }))}",
+				FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, errorMessages.Concat(new[] { Constants.IntegrationPoints.NO_USERID }))}",
 				Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
 				WorkspaceId = _sourceWorkspaceArtifactId
 			};
@@ -1102,7 +1096,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
-			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new ErrorDTO[] {expectedError}, x)));
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new ErrorDTO[] { expectedError }, x)));
 		}
 
 		[TestCase(true)]
@@ -1183,7 +1177,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
 			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
 			_jobManager.Received(1).GetJob(
-				_sourceWorkspaceArtifactId, 
+				_sourceWorkspaceArtifactId,
 				model.ArtifactID,
 				isRelativityProvider ? TaskType.ExportService.ToString() : TaskType.SyncManager.ToString());
 		}
@@ -1306,7 +1300,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					Reoccur = 2,
 				},
 				LastRun = null,
-				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = ""})
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 			_caseServiceManager.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Create(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
