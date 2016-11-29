@@ -9,8 +9,13 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.Relativity.Client;
+using Relativity.Services.Field;
+using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -22,10 +27,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private string _destinationConfig;
 		protected SourceProvider RelativityProvider;
 		protected SourceProvider LdapProvider;
+		protected IRepositoryFactory RepositoryFactory;
 
 		public int SourceWorkspaceArtifactId { get; protected set; }
 		public int TargetWorkspaceArtifactId { get; protected set; }
 		public int SavedSearchArtifactId { get; set; }
+		public int FolderArtifactId { get; set; }
 
 		public RelativityProviderTemplate(string sourceWorkspaceName, string targetWorkspaceName,
 			string sourceWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE,
@@ -61,6 +68,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 				throw;
 			}
+			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
 		}
 
 		public override void SuiteTeardown()
@@ -75,17 +83,27 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			if (_destinationConfig == null)
 			{
-				_destinationConfig = $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{TargetWorkspaceArtifactId}}}";
+				_destinationConfig = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactId);
 			}
 			return _destinationConfig;
 		}
 
+		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
+		{
+			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId}}}";
+		}
+
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
+		{
+			return CreateDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactId);
+		}
+
+		protected string CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
 		{
 			ImportSettings destinationConfig = new ImportSettings
 			{
 				ArtifactTypeId = 10,
-				CaseArtifactId = SourceWorkspaceArtifactId,
+				CaseArtifactId = targetWorkspaceId,
 				Provider = "Relativity",
 				ImportOverwriteMode = overwriteMode,
 				ImportNativeFile = false,
@@ -156,7 +174,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Name = name + DateTime.Now,
 				SelectedOverwrite = overwrite,
 				Scheduler = new Scheduler() { EnableScheduler = false },
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			return integrationModel;
@@ -183,12 +202,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					Reoccur = 0,
 					SelectedFrequency = interval.ToString()
 				},
-				Map = CreateDefaultFieldMap()
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			return integrationModel;
 		}
-
+		
 		#endregion Helper Methods
 	}
 }

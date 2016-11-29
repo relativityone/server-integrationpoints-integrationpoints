@@ -15,5 +15,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		T CreateUserProxy<T>() where T : IDisposable;
 
 		T CreateAdminProxy<T>() where T : IDisposable;
+
+		T CreateUserProxy<T>(string username) where T : IDisposable;
 	}
 }

@@ -135,6 +135,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					EnableScheduler = false
 				},
 				SelectedOverwrite = "Append Only",
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
@@ -198,6 +199,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 						SelectedFrequency = ScheduleInterval.Daily.ToString()
 					},
 					SelectedOverwrite = "Append Only",
+					Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 				};
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 				int jobId = GetLastScheduledJobId(SourceWorkspaceArtifactId, model.ArtifactID);
@@ -269,6 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 						SelectedFrequency = ScheduleInterval.Daily.ToString()
 					},
 					SelectedOverwrite = "Append Only",
+					Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 				};
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 				int jobId = GetLastScheduledJobId(SourceWorkspaceArtifactId, model.ArtifactID);

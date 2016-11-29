@@ -29,8 +29,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 
 		public virtual void SuiteSetup() {}
-
-		[OneTimeTearDown]
+		
 		public virtual void TestSetup() {}
 
 		[TearDown]

@@ -118,6 +118,14 @@
 				self.model.exportSource.FolderArtifactName(undefined);
 				self.model.exportSource.ViewId(undefined);
 
+				self.model.exportSource.SavedSearchArtifactId.isModified(false);
+				self.model.exportSource.ProductionId.isModified(false);
+				self.model.exportSource.ProductionName.isModified(false);
+				self.model.exportSource.FolderArtifactName.isModified(false);
+				self.model.exportSource.ViewId.isModified(false);
+
+				self.model.fields.mappedFields.isModified(false);
+
 				self.model.exportSource.Reload();
 			});
 
@@ -142,7 +150,11 @@
 					IP.message.error.raise("No mapped fields were returned from the source provider.");
 				});
 			} else if (!!self.ipModel.map) {
-				mappedFieldsPromise = self.ipModel.map;
+				var map = self.ipModel.map;
+				if (typeof (map) === 'string') {
+					map = jQuery.parseJSON(self.ipModel.map);
+				}
+				mappedFieldsPromise = map;
 			} else {
 				mappedFieldsPromise = [];
 			}
