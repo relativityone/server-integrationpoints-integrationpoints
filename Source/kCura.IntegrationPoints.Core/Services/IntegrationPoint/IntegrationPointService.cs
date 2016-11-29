@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -26,15 +27,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected override string UnableToSaveFormat
 			=> "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
-		
+
 		public IntegrationPointService(IHelper helper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
 			ISerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
-			IManagerFactory managerFactory)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory,new IntegrationPointFieldGuidsConstants())
+			IManagerFactory managerFactory,
+			IIntegrationPointProviderValidator integrationModelValidator)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(), integrationModelValidator)
 		{
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
@@ -44,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			return ReadIntegrationPoint(artifactId);
 		}
-		
+
 		public virtual IntegrationPointModel ReadIntegrationPoint(int artifactId)
 		{
 			Data.IntegrationPoint integrationPoint = GetRdo(artifactId);
@@ -83,9 +85,17 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 				rule = ConvertModelToScheduleRule(model);
 				integrationPoint = model.ToRdo(choices, rule);
-				
+
 				SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
+
+				ValidationResult validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider);
+
+				if (!validationResult.IsValid)
+				{
+					throw new ArgumentOutOfRangeException(String.Join(Environment.NewLine, validationResult.Messages), default(Exception));
+				}
+
 				TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
 
 				if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
@@ -317,7 +327,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				throw new Exception("Failed to retrieve job history RDO. Please retry the operation.");
 			}
 		}
-
 
 		private void CheckPermissions(int workspaceArtifactId, Data.IntegrationPoint integrationPoint, SourceProvider sourceProvider, DestinationProvider destinationProvider, int userId)
 		{

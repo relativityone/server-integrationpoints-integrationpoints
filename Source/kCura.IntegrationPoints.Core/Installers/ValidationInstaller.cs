@@ -1,0 +1,29 @@
+﻿using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+using Castle.MicroKernel.SubSystems.Configuration;
+using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Domain;
+
+namespace kCura.IntegrationPoints.Core.Installers
+{
+	public class ValidationInstaller : IWindsorInstaller
+	{
+		public void Install(IWindsorContainer container, IConfigurationStore store)
+		{
+			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+
+			container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>().LifestyleTransient());
+			container.Register(Component.For<IValidator>().ImplementedBy<NameValidator>().LifestyleTransient());
+			container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>().LifestyleTransient());
+
+			container.Register(Component.For<IRelativityProviderValidatorsFactory>().ImplementedBy<RelativityProviderValidatorsFactory>().LifestyleTransient());
+			container.Register(Component.For<IValidator>().ImplementedBy<RelativityProviderConfigurationValidator>().LifestyleTransient());
+
+			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderValidator>().LifestyleTransient());
+		}
+	}
+}
