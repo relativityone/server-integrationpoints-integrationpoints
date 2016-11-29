@@ -96,8 +96,8 @@
 			Apply Profile:
 		</div>
 		<div class="field-value">
-			<select id="apply-profile-selector" data-bind="options: profileTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedProfile, optionsCaption: 'Select...', select2: {}"></select>
-			<button id="apply-profile-button" data-bind="click: publishUpdateProfile, disable: HasBeenRun()" class="actionButtonSmall">Apply</button>
+			<select id="apply-profile-selector" data-bind="options: filterProfiles, optionsText: 'displayName', optionsValue: 'value', value: selectedProfile, optionsCaption: 'Select...', select2: {}"></select>
+			<button id="apply-profile-button" data-bind="click: publishUpdateProfile" class="actionButtonSmall">Apply</button>
 		</div>
 	</div>
 </script>
