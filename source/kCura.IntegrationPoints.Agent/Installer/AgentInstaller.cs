@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>().DependsOn(Dependency.OnComponent<ISynchronizerFactory, ExportDestinationSynchronizerFactory>()).LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorServiceProvider>().ImplementedBy<JobHistoryErrorServiceProvider>().LifeStyle.BoundTo<ExportWorker>());
 			container.Register(Component.For<IManagerFactory<ISearchManager>>().ImplementedBy<SearchManagerFactory>().LifestyleSingleton());
-			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderValidatorImpl>().LifestyleSingleton());
+			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 		}
 	}
 }

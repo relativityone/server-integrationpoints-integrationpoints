@@ -267,6 +267,7 @@
     <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
+    <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
     <Compile Include="TestHelpers\TestHelper.cs" />
     <Compile Include="TestBase.cs" />
