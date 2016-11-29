@@ -83,5 +83,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		public int Reoccur { get; set; }
 		public string ScheduledTime { get; set; }
 		public string SendOn { get; set; }
+		public string ClientTimeZone { get; set; }
 	}
 }
