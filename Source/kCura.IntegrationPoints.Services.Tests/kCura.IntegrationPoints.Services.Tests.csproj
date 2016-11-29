@@ -46,6 +46,10 @@
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.IntegrationPoints">
       <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
     </Reference>
@@ -62,10 +66,14 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="JobHistory\CompletedJobQueryBuilderTests.cs" />
+    <Compile Include="JobHistory\DestinationWorkspaceParserTests.cs" />
+    <Compile Include="JobHistory\JobHistoryAccessTests.cs" />
     <Compile Include="KeplerServiceTests.cs" />
     <Compile Include="Repositories\DocumentRepositoryLoggingTests.cs" />
     <Compile Include="IntegrationPointRepositoryLoggingTests.cs" />
     <Compile Include="Repositories\JobHistoryRepositoryLoggingTests.cs" />
+    <Compile Include="Repositories\JobHistoryRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

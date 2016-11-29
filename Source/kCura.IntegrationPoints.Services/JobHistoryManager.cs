@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
+using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 
@@ -26,16 +27,17 @@ namespace kCura.IntegrationPoints.Services
 
 		public JobHistoryManager(ILog logger) : base(logger)
 		{
-			_jobHistoryRepository = new JobHistoryRepository(logger);
-		}
-
-		public void Dispose()
-		{
+			_jobHistoryRepository = new JobHistoryRepository(logger, new CompletedJobQueryBuilder(), new WorkspaceManager(global::Relativity.API.Services.Helper),
+				new JobHistoryAccess(new DestinationWorkspaceParser()), new JobHistorySummaryModelBuilder(), new JobHistoryLibraryFactory(global::Relativity.API.Services.Helper));
 		}
 
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
 			return await Execute(() => _jobHistoryRepository.GetJobHistory(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }
