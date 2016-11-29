@@ -17,13 +17,13 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			_contextContainer = contextContainer;
 		}
 
-		public OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates)
+		public OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, string integrationPointName, ButtonStateDTO buttonStates)
 		{
 			string runEvent = buttonStates.RunButtonEnabled ? GetActionButtonRunEvent(integrationPointId, workspaceId) : string.Empty;
 			string retryErrorsEvent = buttonStates.RetryErrorsButtonEnabled ? GetActionButtonRetryEvent(integrationPointId, workspaceId) : string.Empty;
 			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : string.Empty;
 			string stopEvent = buttonStates.StopButtonEnabled ? GetActionButtonStopEvent(integrationPointId, workspaceId) : string.Empty;
-			string saveAsProfileEvent = GetActionButtonSaveAsProfile(integrationPointId, workspaceId);
+			string saveAsProfileEvent = GetActionButtonSaveAsProfile(integrationPointId, integrationPointName, workspaceId);
 
 			return new OnClickEventDTO
 			{
@@ -50,9 +50,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return $"IP.retryJob({integrationPointId},{workspaceId})";
 		}
 
-		private string GetActionButtonSaveAsProfile(int integrationPointId, int workspaceId)
+		private string GetActionButtonSaveAsProfile(int integrationPointId, string integrationPointName, int workspaceId)
 		{
-			return $"IP.saveAsProfile({integrationPointId},{workspaceId})";
+			return $"IP.saveAsProfile({integrationPointId},{workspaceId},{integrationPointName})";
 		}
 
 		private string GetViewErrorsLinkEvent(int workspaceId, int integrationPointId)

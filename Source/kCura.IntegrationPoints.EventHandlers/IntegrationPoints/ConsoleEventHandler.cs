@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
@@ -79,7 +80,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		public override FieldCollection RequiredFields => new FieldCollection();
+		public override FieldCollection RequiredFields => new FieldCollection
+		{
+			new Field(IntegrationPointFields.Name)
+		};
 
 		public override void OnButtonClick(ConsoleButton consoleButton)
 		{
@@ -88,7 +92,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public override Console GetConsole(PageEvent pageEvent)
 		{
 			ButtonStateDTO buttonState = ButtonStateBuilder.CreateButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID);
-			OnClickEventDTO onClickEvents = OnClickEventConstructor.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
+			OnClickEventDTO onClickEvents = OnClickEventConstructor.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID,
+				ActiveArtifact.Fields[IntegrationPointFields.Name].ToString(), buttonState);
 
 			return _consoleBuilder.CreateConsole(buttonState, onClickEvents);
 		}
