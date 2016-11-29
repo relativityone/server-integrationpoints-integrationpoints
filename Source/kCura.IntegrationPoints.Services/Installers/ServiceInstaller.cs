@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Services
 
 			_dependencies = new List<IWindsorInstaller>
 			{
-				new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller()
+				new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller(), new ValidationInstaller()
 			};
 		}
 

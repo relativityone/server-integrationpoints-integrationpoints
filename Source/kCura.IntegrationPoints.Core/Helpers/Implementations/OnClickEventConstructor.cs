@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private string GetActionButtonSaveAsProfile(int integrationPointId, string integrationPointName, int workspaceId)
 		{
-			return $"IP.saveAsProfile({integrationPointId},{workspaceId},{integrationPointName})";
+			return $"IP.saveAsProfile({integrationPointId},{workspaceId},'{integrationPointName}')";
 		}
 
 		private string GetViewErrorsLinkEvent(int workspaceId, int integrationPointId)

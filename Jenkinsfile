@@ -40,7 +40,8 @@ def passed = false
 				stash includes: 'lib/UnitTests/*', name: 'testdlls'				
 				stash includes: 'lib/UnitTests/TestData/*', name: 'testdata'				
 				stash includes: 'lib/UnitTests/TestData/IMAGES/*', name: 'testdata_images'				
-				stash includes: 'lib/UnitTests/TestData/NATIVES/*', name: 'testdata_natives'				
+				stash includes: 'lib/UnitTests/TestData/NATIVES/*', name: 'testdata_natives'		
+				stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'		
 			}
 		}
 		
@@ -54,6 +55,7 @@ def passed = false
 					unstash 'testdata'
 					unstash 'testdata_images'
 					unstash 'testdata_natives'
+					unstash 'integrationPointsRap'
 
 					bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll --test=kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunTestCase,kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunInvalidFileshareTestCase --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
 

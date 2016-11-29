@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == $"IP.retryJob({_integrationPointId},{_workspaceId})");
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == expectedViewErrorsOnClickEvent);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == $"IP.stopJob({_integrationPointId},{_workspaceId})");
-			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId},{_integrationPointName})");
+			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId},'{_integrationPointName}')");
 		}
 
 		[Test]
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			Assert.IsTrue(onClickEvents.RetryErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.ViewErrorsOnClickEvent == String.Empty);
 			Assert.IsTrue(onClickEvents.StopOnClickEvent == String.Empty);
-			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId},{_integrationPointName})");
+			Assert.IsTrue(onClickEvents.SaveAsProfileOnClickEvent == $"IP.saveAsProfile({_integrationPointId},{_workspaceId},'{_integrationPointName}')");
 		}
 
 		[Test]
