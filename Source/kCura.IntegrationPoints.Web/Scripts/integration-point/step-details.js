@@ -143,7 +143,7 @@ var IP = IP || {};
 			self.sourceProvider = settings.sourceProvider;
 			self.updateSelectedType();
 		};
-		
+
 
 		this.displayRelativityInSourceTypes = function (value) {
 			if (self.tmpRelativitySourceTypeObject === null) return;
@@ -189,7 +189,8 @@ var IP = IP || {};
 					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null
 					|| parentModel.destination.selectedDestinationTypeGuid() === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
 						parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
-					} else {
+					}
+					else {
 						var compatibleRdos = this.model.config.compatibleRdoTypes;
 						var rdosToDisplay = [];
 						$.each(parentModel.destination.allRdoTypes(), function () {
@@ -204,6 +205,7 @@ var IP = IP || {};
 				}
 			});
 			self.selectedType.isModified(false);
+			IP.messaging.publish("ProviderTypeChanged", self.selectedType());
 		});
 	};
 
@@ -251,6 +253,7 @@ var IP = IP || {};
 					self.rdoTypes(rdosToDisplay);
 				}
 			}
+			IP.messaging.publish("ProviderTypeChanged", self.selectedDestinationType());
 		});
 
 		this.destinationProviderVisible = ko.observable(false);
@@ -315,17 +318,32 @@ var IP = IP || {};
 			});
 			return selectedItem;
 		};
+		self.currentFilter = ko.observable();
+
+		self.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (type) {
+			self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
+		});
 
 		this.getProfiles = function (ipType) {
 			var profilePromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetByType', ipType) });
 			profilePromise.then(function (result) {
 				var profileTypes = $.map(result, function (entry) {
-					return new Choice(entry.name, entry.artifactID);
+					return new Choice(entry.name, entry.artifactID, "", { source: entry.sourceProvider, destination: entry.destinationProvider });
 				});
 				self.profileTypes(profileTypes);
 				self.profiles = result;
 			});
 		};
+
+		self.filterProfiles = ko.computed(function () {
+			if (!self.currentFilter()) {
+				return self.profileTypes();
+			} else {
+				return ko.utils.arrayFilter(self.profileTypes(), function (profile) {
+					return profile.model.source === self.currentFilter().source && profile.model.destination == self.currentFilter().destination;
+				});
+			}
+		});
 
 		this.publishUpdateProfile = function () {
 			var profileId = self.selectedProfile();
@@ -342,7 +360,7 @@ var IP = IP || {};
 		var self = this;
 
 		this.name = ko.observable().extend({ required: true });
-	
+
 		this.logErrors = ko.observable();
 		this.showErrors = ko.observable(false);
 		this.isTypeDisabled = ko.observable(false);
@@ -404,13 +422,13 @@ var IP = IP || {};
 		this.source = new Source(settings.source, self);
 		this.profile = new Profile(settings.profile, self);
 		this.scheduler = new Scheduler(settings.scheduler);
-		
+
 		//Subscriptions
 		this.type.subscribe(function (value) {
 			self.setTypeVisibility(value);
 			self.profile.getProfiles(value);
 		});
-		
+
 		this.loadProfile = function (profile) {
 			console.log('Subscribe');
 			self.loadSettings(profile);
@@ -426,7 +444,7 @@ var IP = IP || {};
 		var rdoFilterPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetAll') });
 		var defaultRdoTypeIdPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetDefaultRdoTypeId') });
 		var ipTypesPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointTypes') });
-		
+
 		root.data.deferred().all([
 				sourceTypePromise,
 				destinationTypePromise,
@@ -473,7 +491,7 @@ var IP = IP || {};
 			self.setTypeVisibility(self.type());
 			self.profile.getProfiles(self.type());
 		});
-		
+
 		this.submit = function () {
 			this.showErrors(true);
 			this.scheduler.submit();

@@ -9,7 +9,7 @@
 			channel.publish(name, func);
 		},
 		subscribe: function (name, func) {
-			channel.subscribe(name, func);
+			return channel.subscribe(name, func);
 		}
 	};
 
