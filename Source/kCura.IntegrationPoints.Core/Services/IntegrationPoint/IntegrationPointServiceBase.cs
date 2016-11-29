@@ -7,13 +7,14 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
-using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -25,21 +26,30 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		protected IContextContainer ContextContainer;
 		protected IChoiceQuery ChoiceQuery;
 		protected IManagerFactory ManagerFactory;
+		protected IIntegrationPointProviderValidator IntegrationModelValidator;
 		protected static readonly object Lock = new object();
-		
+
 		protected abstract string UnableToSaveFormat { get; }
 
-		protected IntegrationPointServiceBase(IHelper helper, ICaseServiceContext context, IChoiceQuery choiceQuery,
-			ISerializer serializer, IManagerFactory managerFactory,
-			IContextContainerFactory contextContainerFactory, IIntegrationPointBaseFieldGuidsConstants guidsConstants)
+		protected IntegrationPointServiceBase(
+			IHelper helper,
+			ICaseServiceContext context,
+			IChoiceQuery choiceQuery,
+			ISerializer serializer,
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainerFactory,
+			IIntegrationPointBaseFieldGuidsConstants guidsConstants,
+			IIntegrationPointProviderValidator integrationModelValidator)
 		{
 			Serializer = serializer;
 			Context = context;
 			ChoiceQuery = choiceQuery;
 			ManagerFactory = managerFactory;
 			_guidsConstants = guidsConstants;
+			IntegrationModelValidator = integrationModelValidator;
 			ContextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
+
 		public IList<T> GetAllRDOs()
 		{
 			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
@@ -131,8 +141,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				case ScheduleInterval.Weekly:
 					var sendOn = Serializer.Deserialize<Weekly>(model.Scheduler.SendOn);
 					periodicScheduleRule.DaysToRun =
-						DaysOfWeekConverter.FromDayOfWeek(Enumerable.Select<string, DayOfWeek>(sendOn.SelectedDays, x => (DayOfWeek) Enum.Parse(typeof(DayOfWeek), x)).ToList());
+						DaysOfWeekConverter.FromDayOfWeek(Enumerable.Select<string, DayOfWeek>(sendOn.SelectedDays, x => (DayOfWeek)Enum.Parse(typeof(DayOfWeek), x)).ToList());
 					break;
+
 				case ScheduleInterval.Monthly:
 					var monthlySendOn = Serializer.Deserialize<Monthly>(model.Scheduler.SendOn);
 					if (monthlySendOn.MonthChoice == MonthlyType.Days)

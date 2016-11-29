@@ -128,6 +128,13 @@ namespace kCura.IntegrationPoints.Core
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_PROFILE_ADMIN_MESSAGE = "Unable to save Integration Point Profile.";
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_PROFILE_USER_MESSAGE = "Unable to save the Integration Point Profile. Please contact your system administrator.";
 			}
+
+			public class Validation
+			{
+				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";				
+				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
+				public const string NAME = "285F3C4A-1606-4D5A-A720-E65CE70742DD";
+			}
 		}
 
 		public static class RelativityProvider

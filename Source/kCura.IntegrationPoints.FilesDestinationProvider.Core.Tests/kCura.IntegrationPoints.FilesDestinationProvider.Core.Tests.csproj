@@ -146,10 +146,12 @@
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
     <Compile Include="Services\ArtifactTreeServiceTests.cs" />
     <Compile Include="Services\ExportInitProcessServiceTests.cs" />
-    <Compile Include="Services\ExportSettingsValidationServiceTests.cs" />
     <Compile Include="Services\ViewServiceTests.cs" />
     <Compile Include="SharedLibrary\StoppableExporterTests.cs" />
-    <Compile Include="Validation\FileCountValidatorTests.cs" />
+    <Compile Include="Validation\Parts\ExportFileValidatorTests.cs" />
+    <Compile Include="Validation\Parts\FileCountValidatorTests.cs" />
+    <Compile Include="Validation\Parts\PaddingValidatorTests.cs" />
+    <Compile Include="Validation\ProviderConfigurationValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

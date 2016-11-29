@@ -146,6 +146,9 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -284,6 +287,13 @@
     <Compile Include="Services\JobHistory\JobHistoryServiceTest.cs" />
     <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
     <Compile Include="Telemetry\TelemetryMangerTest.cs" />
+    <Compile Include="Validation\NameValidatorTests.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\FieldMappingsValidatorTest.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\SavedSearchValidatorTests.cs" />
+    <Compile Include="Validation\SchedulerValidatorTest.cs" />
+    <Compile Include="Validation\EmailValidatorTest.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\WorkspaceValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
