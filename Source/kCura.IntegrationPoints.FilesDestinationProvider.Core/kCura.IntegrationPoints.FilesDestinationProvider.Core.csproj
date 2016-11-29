@@ -192,6 +192,7 @@
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />
     <Compile Include="Validation\Parts\FileCountValidator.cs" />
+    <Compile Include="Validation\Parts\ViewValidator.cs" />
     <Compile Include="Validation\Parts\PaddingValidator.cs" />
     <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
@@ -206,6 +207,7 @@
     <Compile Include="Validation\FileDestinationProviderConfigurationValidator.cs" />
     <Compile Include="Validation\FileDestinationProviderValidationMessages.cs" />
     <Compile Include="Validation\FileDestinationProviderValidatorsFactory.cs" />
+    <Compile Include="Validation\Parts\ProductionValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

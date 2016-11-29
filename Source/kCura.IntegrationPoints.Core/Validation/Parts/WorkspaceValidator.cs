@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
+namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class WorkspaceValidator : BasePartsValidator<int>
 	{
@@ -27,15 +27,10 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			try
 			{
 				WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(value);
-
-				if (workspaceDto.Name.Contains(_WORKSPACE_INVALID_NAME_CHAR))
-				{
-					result.Add($"{_prefix} {RelativityProviderValidationMessages.WORKSPACE_INVALID_NAME}");
-				}
 			}
 			catch
 			{
-				result.Add($"{_prefix} {RelativityProviderValidationMessages.WORKSPACE_NOT_EXIST}");
+				result.Add($"{_prefix} {IntegrationPointProviderValidationMessages.WORKSPACE_NOT_EXIST}");
 			}
 
 			return result;

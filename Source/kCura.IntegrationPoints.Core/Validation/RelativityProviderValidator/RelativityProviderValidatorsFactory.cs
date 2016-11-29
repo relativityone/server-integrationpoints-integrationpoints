@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data.Factories;
 
@@ -14,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId);
 
-		WorkspaceValidator CreateWorkspaceValidator(string prefix);
+		RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix);
 	}
 
 	public class RelativityProviderValidatorsFactory : IRelativityProviderValidatorsFactory
@@ -43,9 +44,9 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchRepository(workspaceArtifactId, savedSearchArtifactId));
 		}
 
-		public WorkspaceValidator CreateWorkspaceValidator(string prefix)
+		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix)
 		{
-			return new WorkspaceValidator(_repositoryFactory.GetWorkspaceRepository(), prefix);
+			return new RelativityProviderWorkspaceValidator(_repositoryFactory.GetWorkspaceRepository(), prefix);
 		}
 	}
 }

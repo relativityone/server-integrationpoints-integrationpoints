@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Contains(RelativityProviderValidationMessages.SAVED_SEARCH_NOT_EXIST));
+			Assert.IsTrue(actual.Messages.Contains(IntegrationPointProviderValidationMessages.SAVED_SEARCH_NOT_EXIST));
 		}
 	}
 }

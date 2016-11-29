@@ -16,9 +16,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public static readonly string FIELD_MAP_SOURCE_FIELD_NOT_MAPPED = "All selected fields must be mapped. Source field not mapped to Destination: ";
 		public static readonly string FIELD_MAP_UNIQUE_IDENTIFIER_MUST_BE_MAPPED = "The unique identifier must be mapped.";
 
-		public static readonly string SAVED_SEARCH_NOT_EXIST = "Saved Search does not exist.";
-
 		public static readonly string WORKSPACE_INVALID_NAME = "workspace name contains an invalid character.";
-		public static readonly string WORKSPACE_NOT_EXIST = "workspace does not exist.";					
 	}
 }

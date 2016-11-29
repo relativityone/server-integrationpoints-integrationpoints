@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data.Factories;
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
 
 			var workspaceRepositoryMock = Substitute.For<IWorkspaceRepository>();
-			var workspaceValidatorMock = Substitute.For<WorkspaceValidator>(workspaceRepositoryMock, String.Empty);
+			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceValidator>(workspaceRepositoryMock, String.Empty);
 			workspaceValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>())
