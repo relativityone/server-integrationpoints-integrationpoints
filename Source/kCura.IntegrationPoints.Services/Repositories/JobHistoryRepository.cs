@@ -13,8 +13,6 @@ namespace kCura.IntegrationPoints.Services.Repositories
 {
 	public class JobHistoryRepository : IJobHistoryRepository
 	{
-		private const string _JOB_HISTORY_OBJECT_TYPE_GUID = "08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9";
-
 		private readonly ILog _logger;
 		private readonly IServiceHelper _helper;
 
@@ -41,9 +39,9 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				IRSAPIService service = new RSAPIService(_helper, request.WorkspaceArtifactId);
 
 				var queryResult = service.JobHistoryLibrary
-					.Query(new Query<RDO>() { ArtifactTypeGuid = new Guid(_JOB_HISTORY_OBJECT_TYPE_GUID), Fields = FieldValue.AllFields })
-					.Where(s => string.Equals(s.JobStatus.Name, "Completed", StringComparison.InvariantCultureIgnoreCase) 
-					            || string.Equals(s.JobStatus.Name,"Completed With Errors", StringComparison.InvariantCultureIgnoreCase));
+					.Query(new Query<RDO>() { ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistory), Fields = FieldValue.AllFields })
+					.Where(s => string.Equals(s.JobStatus.Name, JobStatusChoices.JobHistoryCompleted.Name, StringComparison.InvariantCultureIgnoreCase) 
+					            || string.Equals(s.JobStatus.Name, JobStatusChoices.JobHistoryCompletedWithErrors.Name, StringComparison.InvariantCultureIgnoreCase));
 				
 				queryResult = SortJobHistories(request, queryResult);
 

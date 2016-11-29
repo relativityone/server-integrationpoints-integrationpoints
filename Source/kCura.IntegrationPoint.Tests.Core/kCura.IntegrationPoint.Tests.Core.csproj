@@ -261,6 +261,7 @@
     <Compile Include="Templates\OtherProvidersTemplate.cs" />
     <Compile Include="Templates\RelativityProviderTemplate.cs" />
     <Compile Include="Templates\SourceProviderTemplate.cs" />
+    <Compile Include="TestHelpers\ExceptionHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIKeywordSearchManager.cs" />
     <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />

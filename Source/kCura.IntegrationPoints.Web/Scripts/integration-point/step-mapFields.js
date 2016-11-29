@@ -257,6 +257,44 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
+		this.LongTextColumnThatContainsPathToFullText = ko.observable().extend({
+			required: {
+				onlyIf: function () {
+					return self.ExtractedTextFieldContainsFilePath() === 'true';
+				}
+			}
+		});
+
+		this.TotalLongTextFields = {};//has the full set of long text fields in workspace
+
+		this.MappedLongTextFields = ko.observableArray([]); //only has the mapped long text fields
+		if (self.MappedLongTextFields.length === 0) {
+				IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetLongTextFields') }).then(function (result) {
+					// Returns a list of all attributes in a workspace with the FieldCategory for long text
+					self.TotalLongTextFields = result;
+					self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
+			});
+		}
+
+		this.populateExtractedText = function() {
+			if ($.isEmptyObject(self.mappedWorkspace())) {
+				self.MappedLongTextFields([]);
+			} else {
+				var mappedWorkspace = self.mappedWorkspace();
+				var matchesContainer = [];
+				for (var i = 0; i < mappedWorkspace.length; i++) {
+					for (var j = 0; j < self.TotalLongTextFields.length; j++) {
+						if (mappedWorkspace[i].name === self.TotalLongTextFields[j].displayName) {
+							matchesContainer.push(self.TotalLongTextFields[j]);
+							break;
+						}
+					}
+				}
+
+				self.MappedLongTextFields(matchesContainer);
+			}
+		};
+
 		this.ExtractedTextFileEncodingList = ko.observableArray([]);
 		if (self.ExtractedTextFileEncodingList.length === 0) {
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
@@ -461,6 +499,8 @@ ko.validation.insertValidationMessage = function (element) {
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
+				self.populateExtractedText();
+				self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
@@ -487,10 +527,22 @@ ko.validation.insertValidationMessage = function (element) {
 		/********** WorkspaceFields control  **********/
 
 
-		this.addSelectFields = function () { IP.workspaceFieldsControls.add(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace); }
-		this.addToWorkspaceField = function () { IP.workspaceFieldsControls.add(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields); }
-		this.addAllWorkspaceFields = function () { IP.workspaceFieldsControls.addAll(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace); }
-		this.addAlltoWorkspaceField = function () { IP.workspaceFieldsControls.addAll(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields); }
+		this.addSelectFields = function () {
+		    IP.workspaceFieldsControls.add(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
+		    self.populateExtractedText();
+		}
+		this.addToWorkspaceField = function() {
+		    IP.workspaceFieldsControls.add(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
+		    self.populateExtractedText();
+		}
+		this.addAllWorkspaceFields = function() {
+		    IP.workspaceFieldsControls.addAll(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
+		    self.populateExtractedText();
+		}
+		this.addAlltoWorkspaceField = function() {
+		    IP.workspaceFieldsControls.addAll(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
+		    self.populateExtractedText();
+		}
 
 		/********** Source Attribute control  **********/
 		this.addToMappedSource = function () { IP.workspaceFieldsControls.add(this.sourceField, this.selectedSourceField, this.sourceMapped); };
@@ -556,6 +608,7 @@ ko.validation.insertValidationMessage = function (element) {
 		    else {
 		        IP.message.error.raise("Unable to auto map. No matching fields found.");
 		    }
+		    self.populateExtractedText();
 		};
 
 	};// end of the viewmodel
@@ -576,6 +629,7 @@ ko.validation.insertValidationMessage = function (element) {
 				SelectedOverwrite: model.SelectedOverwrite,
 				FieldOverlayBehavior : model.FieldOverlayBehavior,
 				FolderPathSourceField: model.FolderPathSourceField,
+				LongTextColumnThatContainsPathToFullText: model.LongTextColumnThatContainsPathToFullText,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
 			} || '';
@@ -648,6 +702,7 @@ self.settings.templateID = "step4";
 			this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
 			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
+			this.returnModel.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 
@@ -779,6 +834,17 @@ self.settings.templateID = "step4";
 						}
 					}
 
+				    if (this.model.ExtractedTextFieldContainsFilePath() == 'true') {
+				        var longTextField = "";
+				        var longTextFields = this.model.MappedLongTextFields();
+				        for (var j = 0; j < longTextFields.length; j++) {
+				            if (longTextFields[j].displayName === this.model.LongTextColumnThatContainsPathToFullText()) {
+				                longTextField = longTextFields[j];
+				                break;
+				            }
+				        }
+				    }
+
 					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
 					_destination.importNativeFile = this.model.importNativeFile();
 
@@ -789,6 +855,8 @@ self.settings.templateID = "step4";
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
+					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
+
 				}
 
 				this.bus.subscribe('saveComplete', function (data) {

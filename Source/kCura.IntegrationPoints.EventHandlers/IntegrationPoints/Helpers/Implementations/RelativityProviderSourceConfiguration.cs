@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
-
 	public class RelativityProviderSourceConfiguration : RelativityProviderConfiguration
 	{
-		public RelativityProviderSourceConfiguration(IEHHelper helper) : base(helper)
+		private readonly IWorkspaceRepository _workspaceRepository;
+
+		public RelativityProviderSourceConfiguration(IEHHelper helper, IWorkspaceRepository workspaceRepository) : base(helper)
 		{
+			_workspaceRepository = workspaceRepository;
 		}
 
 		public override void UpdateNames(IDictionary<string, object> settings)
@@ -50,31 +53,24 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private void SetTargetWorkspaceName(IDictionary<string, object> settings)
 		{
-			using (IRSAPIClient client = GetRsapiClient(-1))
+			try
 			{
 				int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
-				try
-				{
-					var targetWorkspace = client.Repositories.Workspace.ReadSingle(targetWorkspaceId);
-					settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspace)] = targetWorkspace.Name;
-				}
-				catch (APIException ex)
-				{
-					Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointViewPreLoad>().LogError(ex, "Target workspace not found");
-					settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId)] = 0;
-				}
+				var workspaceDTO = _workspaceRepository.Retrieve(targetWorkspaceId);
+				settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspace)] = workspaceDTO.Name;
+			}
+			catch (Exception ex)
+			{
+				Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointViewPreLoad>().LogError(ex, "Target workspace not found");
+				settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId)] = 0;
 			}
 		}
 
 		private void SetSourceWorkspaceName(IDictionary<string, object> settings)
 		{
-			using (IRSAPIClient client = GetRsapiClient(-1))
-			{
-				int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
-				var sourceWorkspace = client.Repositories.Workspace.ReadSingle(sourceWorkspaceId);
-				settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)] = sourceWorkspace.Name;
-			}
+			int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
+			var workspaceDTO = _workspaceRepository.Retrieve(sourceWorkspaceId);
+			settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)] = workspaceDTO.Name;
 		}
-
 	}
 }

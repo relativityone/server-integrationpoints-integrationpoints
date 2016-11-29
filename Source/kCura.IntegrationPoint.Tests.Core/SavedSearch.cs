@@ -1,4 +1,11 @@
-﻿using kCura.IntegrationPoints.Data.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using Castle.Windsor;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client;
+using Relativity.Services.Field;
 using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -60,6 +67,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				return proxy.CreateSingleAsync(workspaceArtifactId, searchContainer).GetResultsWithoutContextSync();
 			}
+		}
+
+		public static void ModifySavedSearchByAddingPrefix(IRepositoryFactory repositoryFactory, int workspaceId, int savedSearchId, string documentPrefix, bool excludeExpDocs)
+		{
+			IFieldRepository sourceFieldRepository = repositoryFactory.GetFieldRepository(workspaceId);
+			int controlNumberFieldArtifactId = sourceFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document).ArtifactId;
+
+			FieldRef fieldRef = new FieldRef(controlNumberFieldArtifactId)
+			{
+				Name = "Control Number",
+				Guids = new List<Guid>() { new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438") }
+			};
+
+			CriteriaCollection searchCriteria = new CriteriaCollection();
+
+			if (excludeExpDocs)
+			{
+				Criteria criteria = new Criteria()
+				{
+					BooleanOperator = BooleanOperatorEnum.None,
+					Condition = new CriteriaCondition(fieldRef, CriteriaConditionEnum.IsLike, documentPrefix),
+				};
+
+				searchCriteria.Conditions.Add(criteria);
+			}
+			SavedSearch.UpdateSavedSearchCriteria(workspaceId, savedSearchId, searchCriteria);
 		}
 	}
 }

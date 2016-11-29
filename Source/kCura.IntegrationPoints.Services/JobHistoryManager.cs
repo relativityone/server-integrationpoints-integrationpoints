@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
-using Relativity.API;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services
