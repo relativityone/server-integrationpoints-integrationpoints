@@ -92,8 +92,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public override Console GetConsole(PageEvent pageEvent)
 		{
 			ButtonStateDTO buttonState = ButtonStateBuilder.CreateButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID);
+			var integrationPointName = ActiveArtifact.Fields[IntegrationPointFields.Name].Value.Value.ToString();
 			OnClickEventDTO onClickEvents = OnClickEventConstructor.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID,
-				ActiveArtifact.Fields[IntegrationPointFields.Name].ToString(), buttonState);
+				integrationPointName, buttonState);
 
 			return _consoleBuilder.CreateConsole(buttonState, onClickEvents);
 		}

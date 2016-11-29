@@ -37,8 +37,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
-
-			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
+			
+			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
+			{
+				new Field(1, "Name", "Name", 1, 1, 1, false, false, new FieldValue(_ARTIFACT_NAME), null)
+			});
 			var application = new Application(_APPLICATION_ID, "", "");
 
 			_instance =
