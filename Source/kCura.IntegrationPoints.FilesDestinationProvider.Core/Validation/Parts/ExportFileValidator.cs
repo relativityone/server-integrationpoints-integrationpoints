@@ -4,12 +4,13 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class ExportFileValidator : BaseValidator<IntegrationPointModel>
+	public class ExportFileValidator : BasePartsValidator<IntegrationPointModel>
 	{
 		private readonly ISerializer _serializer;
 		private readonly IExportSettingsBuilder _exportSettingsBuilder;

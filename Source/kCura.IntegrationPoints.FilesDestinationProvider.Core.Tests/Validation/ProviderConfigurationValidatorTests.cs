@@ -28,11 +28,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			validatorMock.Validate(Arg.Any<object>())
 				.Returns(new ValidationResult());
 
-			var validatorsFactoryMock = Substitute.For<IValidatorsFactory>();
+			var validatorsFactoryMock = Substitute.For<IFileDestinationProviderValidatorsFactory>();
 			validatorsFactoryMock.CreateExportFileValidator()
 				.Returns(validatorMock);
 
-			var validator = new ProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
+			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 
 			// act
 			var actual = validator.Prevalidate(new IntegrationPointModel());
@@ -47,9 +47,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 		{
 			// arrange
 			var serializerMock = Substitute.For<ISerializer>();
-			var validatorsFactoryMock = Substitute.For<IValidatorsFactory>();
+			var validatorsFactoryMock = Substitute.For<IFileDestinationProviderValidatorsFactory>();
 
-			var validator = new ProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
+			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 
 			// act
 			var actual = validator.Validate(new IntegrationPointModel());
@@ -64,9 +64,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 		{
 			// arrange
 			var serializerMock = Substitute.For<ISerializer>();
-			var validatorsFactoryMock = Substitute.For<IValidatorsFactory>();
+			var validatorsFactoryMock = Substitute.For<IFileDestinationProviderValidatorsFactory>();
 
-			var validator = new ProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
+			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 
 			object model = new IntegrationPointModel();
 

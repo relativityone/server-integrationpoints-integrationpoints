@@ -7,19 +7,19 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
-	public interface IValidatorsFactory
+	public interface IFileDestinationProviderValidatorsFactory
 	{
 		ExportFileValidator CreateExportFileValidator();
 	}
 
-	public class ValidatorsFactory : IValidatorsFactory
+	public class FileDestinationProviderValidatorsFactory : IFileDestinationProviderValidatorsFactory
 	{
 		private readonly ISerializer _serializer;
 		private readonly IExportSettingsBuilder _exportSettingsBuilder;
 		private readonly IExportInitProcessService _exportInitProcessService;
 		private readonly IExportFileBuilder _exportFileBuilder;
 
-		public ValidatorsFactory(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, IExportInitProcessService exportInitProcessService, IExportFileBuilder exportFileBuilder)
+		public FileDestinationProviderValidatorsFactory(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, IExportInitProcessService exportInitProcessService, IExportFileBuilder exportFileBuilder)
 		{
 			_serializer = serializer;
 			_exportSettingsBuilder = exportSettingsBuilder;

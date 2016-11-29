@@ -9,13 +9,13 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
-	public class ProviderConfigurationValidator : IValidator, IIntegrationPointValidationService
+	public class FileDestinationProviderConfigurationValidator : IValidator, IIntegrationPointValidationService
 	{
 		private readonly ISerializer _serializer;
 
-		private readonly IValidatorsFactory _validatorsFactory;
+		private readonly IFileDestinationProviderValidatorsFactory _validatorsFactory;
 
-		public ProviderConfigurationValidator(ISerializer serializer, IValidatorsFactory validatorsFactory)
+		public FileDestinationProviderConfigurationValidator(ISerializer serializer, IFileDestinationProviderValidatorsFactory validatorsFactory)
 		{
 			_serializer = serializer;
 			_validatorsFactory = validatorsFactory;

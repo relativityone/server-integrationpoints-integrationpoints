@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Agent.Validation
 {
-	internal class IntegrationPointProviderValidatorImpl : IIntegrationPointProviderValidator
+	internal class IntegrationPointProviderEmptyValidator : IIntegrationPointProviderValidator
 	{
 		public ValidationResult Validate(IntegrationPointModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
 		{
