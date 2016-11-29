@@ -320,7 +320,7 @@ ko.validation.insertValidationMessage = function (element) {
 		if (destination.DoNotUseFieldsMapCache) {
 			mappedSourcePromise = [];
 		} else {
-			if (typeof (model.map) === "undefined") {
+			if (typeof (model.map) === "undefined" || model.map === null) {
 				mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
 			} else {
 				mappedSourcePromise = jQuery.parseJSON(model.map);
