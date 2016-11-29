@@ -12,15 +12,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-			container.Register(Component.For<IValidatorsFactory>()
-				.ImplementedBy<ValidatorsFactory>()
+			container.Register(Component.For<IFileDestinationProviderValidatorsFactory>()
+				.ImplementedBy<FileDestinationProviderValidatorsFactory>()
 				.LifestyleTransient()
 			);
 
             // only register provider's top most validator
             container.Register(Component.For<IValidator>()
-				.ImplementedBy<ProviderConfigurationValidator>()
-				.Named($"{nameof(ProviderConfigurationValidator)}+{nameof(IValidator)}")
+				.ImplementedBy<FileDestinationProviderConfigurationValidator>()
+				.Named($"{nameof(FileDestinationProviderConfigurationValidator)}+{nameof(IValidator)}")
 				.LifestyleTransient()
 			);
         }

@@ -1,12 +1,12 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters.Validator;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
-	public class PaddingValidator : BaseValidator<ExportFile>
+	public class PaddingValidator : BasePartsValidator<ExportFile>
 	{
 		public override ValidationResult Validate(ExportFile value)
 		{

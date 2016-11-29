@@ -203,10 +203,9 @@
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
     <Compile Include="SharedLibrary\ProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
-    <Compile Include="Validation\Parts\BaseValidator.cs" />
-    <Compile Include="Validation\ProviderConfigurationValidator.cs" />
-    <Compile Include="Validation\ValidationMessages.cs" />
-    <Compile Include="Validation\ValidatorsFactory.cs" />
+    <Compile Include="Validation\FileDestinationProviderConfigurationValidator.cs" />
+    <Compile Include="Validation\FileDestinationProviderValidationMessages.cs" />
+    <Compile Include="Validation\FileDestinationProviderValidatorsFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
