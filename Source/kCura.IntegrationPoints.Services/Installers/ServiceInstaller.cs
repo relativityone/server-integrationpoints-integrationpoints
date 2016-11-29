@@ -5,6 +5,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.Relativity.Client;
@@ -54,6 +56,8 @@ namespace kCura.IntegrationPoints.Services
 				.LifeStyle.Transient);
 
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper.GetServicesManager()));
+
+			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderValidator>().LifestyleTransient());
 
 			foreach (IWindsorInstaller dependency in _dependencies)
 			{
