@@ -9,8 +9,9 @@ namespace kCura.IntegrationPoints.Core.Helpers
 		/// </summary>
 		/// <param name="workspaceId">The current workspace ID.</param>
 		/// <param name="integrationPointId">The current integration point's ID.</param>
+		/// <param name="integrationPointName">The current integration point's name.</param>
 		/// <param name="buttonStates">A DTO of button states for the Relativity Provider.</param>
 		/// <returns>A DTO containing a set of strings for the On Click Events, for the Relativity Provider.</returns>
-		OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, ButtonStateDTO buttonStates);
+		OnClickEventDTO GetOnClickEvents(int workspaceId, int integrationPointId, string integrationPointName, ButtonStateDTO buttonStates);
 	}
 }

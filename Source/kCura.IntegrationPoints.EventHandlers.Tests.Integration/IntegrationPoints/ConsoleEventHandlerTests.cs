@@ -54,6 +54,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 		private const int _ARTIFACT_ID = 100300;
 		private const int _APPLICATION_ID = 100101;
+		private const string _ARTIFACT_NAME = "artifact_name";
 		private const string _RUN = "Run";
 		private const string _STOP = "Stop";
 		private const string _RETRY_ERRORS = "Retry Errors";
@@ -190,7 +191,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				StopOnClickEvent = actionButtonOnClickEvent
 			};
 
-			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
+			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, _ARTIFACT_NAME, buttonStates)
 				.Returns(onClickEvents);
 
 			// ACT
@@ -337,7 +338,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				StopOnClickEvent = actionButtonOnClickEvent
 			};
 
-			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
+			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, _ARTIFACT_NAME, buttonStates)
 				.Returns(onClickEvents);
 
 			// ACT
