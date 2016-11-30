@@ -304,6 +304,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 
 				RelativityApplicationManager.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId);
+				RelativityApplicationManager.DeployIntegrationPointsCustomPage();
 			});
 			if (CreateAgent)
 			{

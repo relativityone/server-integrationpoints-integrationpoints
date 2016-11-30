@@ -45,6 +45,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
+		public void DeployIntegrationPointsCustomPage()
+		{
+			string sqlText =
+				$@"Update EDDS.eddsdbo.ApplicationServer set state = 0 where AppGuid = '{IntegrationPoints.Core.Constants
+					.IntegrationPoints.RELATIVITY_CUSTOMPAGE_GUID}'";
+
+			_baseServiceContext.ChicagoContext.DBContext.ExecuteNonQuerySQLStatement(sqlText);
+		}
+
 		private void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath)
 		{
 			AppInstallRequest appInstallRequest = new AppInstallRequest()
