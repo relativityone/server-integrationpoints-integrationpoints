@@ -310,13 +310,14 @@ var IP = IP || {};
 		this.profileTypes = ko.observableArray();
 		this.profiles = [];
 
-		this.getSelectedProfile = function (value) {
-			var selectedItem = ko.utils.arrayFirst(self.profiles, function (item) {
-				if (item.artifactID === value) {
-					return item;
-				}
+		this.getSelectedProfilePromise = function (artifactId) {
+			var validatedProfileModelPromise = root.data.ajax({
+				url: root.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetValidatedProfileModel', artifactId),
+				type: 'get'
+			}).fail(function (error) {
+				IP.message.error.raise("No exportable fields were returned from the source provider.");
 			});
-			return selectedItem;
+			return validatedProfileModelPromise;
 		};
 		self.currentFilter = ko.observable();
 
@@ -350,8 +351,10 @@ var IP = IP || {};
 		this.publishUpdateProfile = function () {
 			var profileId = self.selectedProfile();
 			if (!!profileId) {
-				var item = self.getSelectedProfile(profileId);
-				IP.messaging.publish("loadProfile", item);
+				var promise = self.getSelectedProfilePromise(profileId);
+				promise.then(function (profile) {
+					IP.messaging.publish("loadProfile", profile);
+				});
 			}
 		};
 
