@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 			_serializer = serializer;
 		}
 
-		public ValidationResult Validate(IntegrationPointModel model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
+		public ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
 		{
 			var result = new ValidationResult();
 

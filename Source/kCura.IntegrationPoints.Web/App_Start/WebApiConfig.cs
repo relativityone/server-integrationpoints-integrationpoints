@@ -80,6 +80,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetValidatedProfileModel",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/GetValidatedProfileModel/{artifactId}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "GetValidatedProfileModel" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "RelativityViewSettings",
 				routeTemplate: "{workspaceID}/api/relativity/view",
 				defaults: new { controller = "relativity", action = "GetViewFields" }
