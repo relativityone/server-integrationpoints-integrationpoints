@@ -60,6 +60,7 @@
 		});
 		this.options.currentStep = stepIdx;
 		this.$this.trigger('spChangeStep');
+		$("#back").show();
 		if (this.options.currentStep == 1) {
 			$("#back").prop('disabled', true);
 		} else {
@@ -71,6 +72,11 @@
 		return this.options.currentStep >= this.$this.find('li').length;
 	};
 
+	var _allowSaveProfile = function () {
+		$("#back").hide();
+		$("#save").show();
+	};
+
 	$.stepProgress = $.stepProgress || {};
 
 	$.extend($.stepProgress, {
@@ -78,7 +84,8 @@
 		next: _next,
 		back: _back,
 		goToStep: _goToStep,
-		last: _isLast
+		last: _isLast,
+		allowSaveProfile: _allowSaveProfile
 	});
 
 	$.fn.stepProgress = function (options) {
@@ -114,5 +121,4 @@
 			$.stepProgress.goToStep.call(this, this.options.currentStep);
 		});
 	};
-
 })(jQuery);
