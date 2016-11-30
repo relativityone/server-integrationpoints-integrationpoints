@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to validate export settings.")]
 		public HttpResponseMessage ValidateSettings(int workspaceID, IntegrationPointModel model)
 		{
-			var validationResult = _validationService.Prevalidate(model);
+			var validationResult = _validationService.Prevalidate(new IntegrationPointProviderValidationModel(model));
 			return Request.CreateResponse(HttpStatusCode.OK, validationResult);
 		}
 	}

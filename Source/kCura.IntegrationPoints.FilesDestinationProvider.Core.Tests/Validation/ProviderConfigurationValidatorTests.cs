@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock, exportSettingsBuilderMock);
 
 			// act
-			var actual = validator.Prevalidate(new IntegrationPointModel());
+			var actual = validator.Prevalidate(new IntegrationPointProviderValidationModel());
 
 			// assert
 			Assert.IsTrue(actual.IsValid);

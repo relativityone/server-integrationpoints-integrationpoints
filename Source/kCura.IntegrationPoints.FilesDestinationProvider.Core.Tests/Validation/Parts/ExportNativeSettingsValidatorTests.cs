@@ -74,11 +74,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				}
 			};
 
-			IntegrationPointModel model = new IntegrationPointModel()
+			var model = new IntegrationPointProviderValidationModel()
 			{
-				Destination = String.Empty,
+				DestinationConfiguration = String.Empty,
 				SourceConfiguration = String.Empty,
-				Map = String.Empty
+				FieldsMap = String.Empty
 			};
 
 			_fileBuilder.Create(Arg.Any<ExportSettings>()).Returns(exportFile);

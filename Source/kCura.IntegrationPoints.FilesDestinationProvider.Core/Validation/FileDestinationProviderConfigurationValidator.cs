@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID
 		);
 
-		public ValidationResult Prevalidate(IntegrationPointModel model)
+		public ValidationResult Prevalidate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
 
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 					result.Add(viewValidator.Validate(exportSettings));
 
 					var exportNativeSettingsValidator = _validatorsFactory.CreateExportNativeSettingsValidator();
-					result.Add(exportNativeSettingsValidator.Validate(model.ConvertToIpModel()));
+					result.Add(exportNativeSettingsValidator.Validate(model));
 					break;
 
 				case ExportType.ProductionSet:
