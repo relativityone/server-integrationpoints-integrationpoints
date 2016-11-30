@@ -321,7 +321,9 @@ var IP = IP || {};
 		self.currentFilter = ko.observable();
 
 		self.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (type) {
-			self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
+			if (!!parentModel.source.sourceProvider && !!parentModel.destination.selectedDestinationType) {
+				self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
+			}
 		});
 
 		this.getProfiles = function (ipType) {
@@ -477,17 +479,14 @@ var IP = IP || {};
 
 			self.destination.destinationTypes(dTypes);
 			self.destination.allRdoTypes(rdoTypes);
+			self.source.sourceTypes(sTypes);
+			self.integrationPointTypes(ipTypes);
 
-
+			self.source.updateSelectedType();
 			self.destination.destinationProviderVisible(self.destination.destinationTypes().length > 1);
-
 			self.destination.setRelativityAsDestinationProvider();
 			self.destination.updateDestinationProvider();
 
-			self.source.sourceTypes(sTypes);
-			self.source.updateSelectedType();
-
-			self.integrationPointTypes(ipTypes);
 			self.setTypeVisibility(self.type());
 			self.profile.getProfiles(self.type());
 		});
