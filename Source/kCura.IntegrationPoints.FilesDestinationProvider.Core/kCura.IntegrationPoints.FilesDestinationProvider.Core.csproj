@@ -191,6 +191,8 @@
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />
+    <Compile Include="Validation\Parts\ExportFileValidatorBase.cs" />
+    <Compile Include="Validation\Parts\ExportNativeSettingsValidator.cs" />
     <Compile Include="Validation\Parts\FileCountValidator.cs" />
     <Compile Include="Validation\Parts\ViewValidator.cs" />
     <Compile Include="Validation\Parts\PaddingValidator.cs" />
