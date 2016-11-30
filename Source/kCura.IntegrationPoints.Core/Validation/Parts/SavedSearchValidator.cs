@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
+namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class SavedSearchValidator : BasePartsValidator<int>
 	{
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			if (savedSearch == null)
 			{
-				result.Add(RelativityProviderValidationMessages.SAVED_SEARCH_NOT_EXIST);
+				result.Add(IntegrationPointProviderValidationMessages.SAVED_SEARCH_NOT_EXIST);
 			}
 
 			return result;

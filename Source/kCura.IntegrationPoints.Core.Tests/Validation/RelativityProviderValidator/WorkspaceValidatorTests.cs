@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			workspaceRepositoryMock.Retrieve(Arg.Any<int>())
 				.Returns(workspaceDTO);
 
-			var validator = new WorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);
@@ -51,14 +52,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			workspaceRepositoryMock.Retrieve(Arg.Any<int>())
 				.Returns(x => { throw new Exception("Thou shall not pass!"); });
 
-			var validator = new WorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(RelativityProviderValidationMessages.WORKSPACE_NOT_EXIST));
+			Assert.IsTrue(actual.Messages.First().Contains(IntegrationPointProviderValidationMessages.WORKSPACE_NOT_EXIST));
 			Assert.IsTrue(actual.Messages.First().Contains(workspacePrefix));
 		}
 
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			workspaceRepositoryMock.Retrieve(Arg.Any<int>())
 				.Returns(workspaceDTO);
 
-			var validator = new WorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);

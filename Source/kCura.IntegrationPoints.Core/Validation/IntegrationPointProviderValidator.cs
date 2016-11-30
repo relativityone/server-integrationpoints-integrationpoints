@@ -27,13 +27,6 @@ namespace kCura.IntegrationPoints.Core.Validation
 
 			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
-			var IntegrationPointProviderValidationModel = new IntegrationPointProviderValidationModel(model)
-			{
-				ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
-				SourceProviderIdentifier = sourceProvider.Identifier,
-				DestinationProviderIdentifier = destinationProvider.Identifier
-			};
-
 			if (model.Scheduler.EnableScheduler)
 			{
 				foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.SCHEDULE])
@@ -52,9 +45,19 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(model.Name));
 			}
 
+			var validationModel = new IntegrationPointProviderValidationModel(model)
+			{
+				ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
+				SourceProviderIdentifier = sourceProvider.Identifier,
+				SourceConfiguration = model.SourceConfiguration,
+				DestinationProviderIdentifier = destinationProvider.Identifier,
+				DestinationConfiguration = model.Destination,
+				FieldsMap = model.Map
+			};
+
 			foreach (var validator in _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
 			{
-				result.Add(validator.Validate(IntegrationPointProviderValidationModel));
+				result.Add(validator.Validate(validationModel));
 			}
 
 			return result;
