@@ -36,16 +36,16 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 
 		public class TestData
 		{
-			public IList<Data.JobHistory> JobHistories;
-			public IList<Data.JobHistory> ExpectedJobHistories;
+			public IList<JobHistoryModel> JobHistories;
+			public IList<JobHistoryModel> ExpectedJobHistories;
 			public IList<int> Workspaces;
 
 			public static TestData EmptyJobHistoriesList()
 			{
 				return new TestData
 				{
-					JobHistories = new List<Data.JobHistory>(),
-					ExpectedJobHistories = new List<Data.JobHistory>(),
+					JobHistories = new List<JobHistoryModel>(),
+					ExpectedJobHistories = new List<JobHistoryModel>(),
 					Workspaces = new List<int> {1, 2, 3}
 				};
 			}
@@ -54,12 +54,12 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 			{
 				return new TestData
 				{
-					JobHistories = new List<Data.JobHistory>
+					JobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(1),
 						CreateJobHistory(2)
 					},
-					ExpectedJobHistories = new List<Data.JobHistory>(),
+					ExpectedJobHistories = new List<JobHistoryModel>(),
 					Workspaces = new List<int>()
 				};
 			}
@@ -68,12 +68,12 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 			{
 				return new TestData
 				{
-					JobHistories = new List<Data.JobHistory>
+					JobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(1),
 						CreateJobHistory(2)
 					},
-					ExpectedJobHistories = new List<Data.JobHistory>
+					ExpectedJobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(1),
 						CreateJobHistory(2)
@@ -86,13 +86,13 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 			{
 				return new TestData
 				{
-					JobHistories = new List<Data.JobHistory>
+					JobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(1),
 						CreateJobHistory(2),
 						CreateJobHistory(3)
 					},
-					ExpectedJobHistories = new List<Data.JobHistory>
+					ExpectedJobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(1),
 						CreateJobHistory(3)
@@ -105,12 +105,12 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 			{
 				return new TestData
 				{
-					JobHistories = new List<Data.JobHistory>
+					JobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(1),
 						CreateJobHistory(3)
 					},
-					ExpectedJobHistories = new List<Data.JobHistory>
+					ExpectedJobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(3)
 					},
@@ -122,19 +122,19 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 			{
 				return new TestData
 				{
-					JobHistories = new List<Data.JobHistory>
+					JobHistories = new List<JobHistoryModel>
 					{
 						CreateJobHistory(1),
 						CreateJobHistory(2)
 					},
-					ExpectedJobHistories = new List<Data.JobHistory>(),
+					ExpectedJobHistories = new List<JobHistoryModel>(),
 					Workspaces = new List<int> { 3, 4, 5 }
 				};
 			}
 
-			private static Data.JobHistory CreateJobHistory(int workspaceId)
+			private static JobHistoryModel CreateJobHistory(int workspaceId)
 			{
-				return new Data.JobHistory
+				return new JobHistoryModel
 				{
 					DestinationWorkspace = $"workspace - {workspaceId}"
 				};

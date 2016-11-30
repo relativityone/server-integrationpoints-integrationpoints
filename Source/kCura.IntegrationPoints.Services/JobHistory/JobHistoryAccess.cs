@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			_destinationWorkspaceParser = destinationWorkspaceParser;
 		}
 
-		public IList<Data.JobHistory> Filter(IEnumerable<Data.JobHistory> allJobHistories, IList<int> workspacesWithAccess)
+		public IList<JobHistoryModel> Filter(IList<JobHistoryModel> allJobHistories, IList<int> workspacesWithAccess)
 		{
 			return allJobHistories.Where(x => DoesUserHavePermissionToThisDestinationWorkspace(workspacesWithAccess, x.DestinationWorkspace)).ToList();
 		}

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Services.JobHistory
+namespace kCura.IntegrationPoints.Data.QueryBuilders
 {
-	public interface ICompletedJobQueryBuilder
+	public interface IIntegrationPointsCompletedJobsQueryBuilder
 	{
 		Query<RDO> CreateQuery(string sortColumn, bool sortDescending, List<int> integrationPointArtifactIds);
 	}

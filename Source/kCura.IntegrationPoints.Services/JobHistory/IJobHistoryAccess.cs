@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public interface IJobHistoryAccess
 	{
-		IList<Data.JobHistory> Filter(IEnumerable<Data.JobHistory> allJobHistories, IList<int> workspacesWithAccess);
+		IList<JobHistoryModel> Filter(IList<JobHistoryModel> allJobHistories, IList<int> workspacesWithAccess);
 	}
 }

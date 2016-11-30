@@ -1,6 +1,6 @@
 ﻿using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Services.JobHistory
+namespace kCura.IntegrationPoints.Data.QueryBuilders
 {
 	public interface IIntegrationPointByProvidersQueryBuilder
 	{

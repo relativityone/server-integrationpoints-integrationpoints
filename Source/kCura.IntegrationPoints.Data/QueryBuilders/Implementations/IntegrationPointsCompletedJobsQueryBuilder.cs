@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Services.JobHistory
+namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
-	public class CompletedJobQueryBuilder : ICompletedJobQueryBuilder
+	public class IntegrationPointsCompletedJobsQueryBuilder : IIntegrationPointsCompletedJobsQueryBuilder
 	{
 		public Query<RDO> CreateQuery(string sortColumn, bool sortDescending, List<int> integrationPointArtifactIds)
 		{
@@ -63,7 +62,7 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 		private string GetSortColumn(string sortColumnName)
 		{
 			string sortColumn = string.IsNullOrEmpty(sortColumnName)
-				? nameof(JobHistoryModel.DestinationWorkspace)
+				? nameof(JobHistory.DestinationWorkspace)
 				: sortColumnName;
 
 			return sortColumn;

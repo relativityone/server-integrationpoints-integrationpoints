@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Services.JobHistory
+namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
-	public class SourceProviderArtifactIdByGuidQueryBuilder
+	public class SourceProviderArtifactIdByGuidQueryBuilder : ISourceProviderArtifactIdByGuidQueryBuilder
 	{
 		public Query<RDO> Create(string guid)
 		{
@@ -14,7 +13,7 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			{
 				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
 				Condition = new TextCondition(new Guid(SourceProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, guid),
-				Fields = new List<FieldValue>()
+				Fields = new List<FieldValue>
 				{
 					new FieldValue("Artifact ID")
 				}

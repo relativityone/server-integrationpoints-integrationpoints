@@ -97,18 +97,5 @@ namespace kCura.IntegrationPoints.Services
 				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 			}
 		}
-
-		protected async Task<IWindsorContainer> GetDependenciesContainerAsync(int workspaceArtifactId)
-		{
-			return await Task.Run(() =>
-			{
-				IWindsorContainer container = new WindsorContainer();
-#pragma warning disable 618
-				ServiceInstaller installer = new ServiceInstaller(workspaceArtifactId);
-#pragma warning restore 618
-				installer.Install(container, new DefaultConfigurationStore());
-				return container;
-			}).ConfigureAwait(false);
-		}
 	}
 }

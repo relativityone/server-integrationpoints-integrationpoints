@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public class JobHistorySummaryModelBuilder : IJobHistorySummaryModelBuilder
 	{
-		public JobHistorySummaryModel Create(int page, int pageSize, IList<Data.JobHistory> jobHistories)
+		public JobHistorySummaryModel Create(int page, int pageSize, IList<JobHistoryModel> jobHistories)
 		{
 			var jobHistorySummary = new JobHistorySummaryModel();
 			var jobHistoryModels = new List<JobHistoryModel>();
@@ -16,18 +16,12 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			for (int i = start; (i < end) && (i < jobHistories.Count); i++)
 			{
 				var history = jobHistories[i];
-				var jobHistory = new JobHistoryModel
-				{
-					ItemsTransferred = history.ItemsTransferred ?? 0,
-					EndTimeUTC = history.EndTimeUTC.GetValueOrDefault(),
-					DestinationWorkspace = history.DestinationWorkspace
-				};
-				jobHistoryModels.Add(jobHistory);
+				jobHistoryModels.Add(history);
 			}
 
 			jobHistorySummary.Data = jobHistoryModels.ToArray();
 			jobHistorySummary.TotalAvailable = jobHistories.Count();
-			jobHistorySummary.TotalDocumentsPushed = jobHistories.Sum(x => x.ItemsTransferred ?? 0);
+			jobHistorySummary.TotalDocumentsPushed = jobHistories.Sum(x => x.ItemsTransferred);
 
 			return jobHistorySummary;
 		}

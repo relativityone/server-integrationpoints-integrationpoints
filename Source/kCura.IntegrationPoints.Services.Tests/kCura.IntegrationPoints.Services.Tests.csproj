@@ -66,9 +66,9 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="JobHistory\CompletedJobQueryBuilderTests.cs" />
     <Compile Include="JobHistory\DestinationWorkspaceParserTests.cs" />
     <Compile Include="JobHistory\JobHistoryAccessTests.cs" />
+    <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
     <Compile Include="KeplerServiceTests.cs" />
     <Compile Include="Repositories\DocumentRepositoryLoggingTests.cs" />
     <Compile Include="IntegrationPointRepositoryLoggingTests.cs" />

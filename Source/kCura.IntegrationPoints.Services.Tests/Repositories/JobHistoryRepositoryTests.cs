@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Logging;
@@ -12,27 +10,26 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
 	public class JobHistoryRepositoryTests : TestBase
 	{
-		private JobHistoryRepository _jobHistoryRepository;
-		private ICompletedJobQueryBuilder _completedJobQueryBuilder;
+		private IRelativityIntegrationPointsRepository _relativityIntegrationPointsRepository;
+		private ICompletedJobsHistoryRepository _completedJobsHistoryRepository;
 		private IWorkspaceManager _workspaceManager;
 		private IJobHistoryAccess _jobHistoryAccess;
-		private IJobHistorySummaryModelBuilder _jobHistorySummaryModelBuilder;
-		private ILibraryFactory _libraryFactory;
-		private IGenericLibrary<Data.JobHistory> _genericLibrary;
+		private IJobHistorySummaryModelBuilder _summaryModelBuilder;
+
+		private JobHistoryRepository _jobHistoryRepository;
 
 		public override void SetUp()
 		{
 			var logger = Substitute.For<ILog>();
 
-			_completedJobQueryBuilder = Substitute.For<ICompletedJobQueryBuilder>();
+			_relativityIntegrationPointsRepository = Substitute.For<IRelativityIntegrationPointsRepository>();
+			_completedJobsHistoryRepository = Substitute.For<ICompletedJobsHistoryRepository>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_jobHistoryAccess = Substitute.For<IJobHistoryAccess>();
-			_jobHistorySummaryModelBuilder = Substitute.For<IJobHistorySummaryModelBuilder>();
-			_libraryFactory = Substitute.For<ILibraryFactory>();
-			_genericLibrary = Substitute.For<IGenericLibrary<Data.JobHistory>>();
+			_summaryModelBuilder = Substitute.For<IJobHistorySummaryModelBuilder>();
 
-			_jobHistoryRepository = new JobHistoryRepository(logger, _completedJobQueryBuilder, _workspaceManager, _jobHistoryAccess, _jobHistorySummaryModelBuilder,
-				_libraryFactory);
+			_jobHistoryRepository = new JobHistoryRepository(logger, _relativityIntegrationPointsRepository, _completedJobsHistoryRepository, _workspaceManager, _jobHistoryAccess,
+				_summaryModelBuilder);
 		}
 
 		[Test]
@@ -46,19 +43,18 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				Page = 0,
 				SortDescending = true
 			};
-			var query = new Query<RDO>();
 			var workspaces = new List<int> {1, 2, 3};
-			var queryResult = new List<Data.JobHistory>();
-			var filteredJobHistories = new List<Data.JobHistory>();
+			var integrationPoints = new List<Data.IntegrationPoint>();
+			var queryResult = new List<JobHistoryModel>();
+			var filteredJobHistories = new List<JobHistoryModel>();
 
 			var expectedResult = new JobHistorySummaryModel();
 
 			_workspaceManager.GetIdsOfWorkspacesUserHasPermissionToView().Returns(workspaces);
-			_completedJobQueryBuilder.CreateQuery(request.SortColumnName, request.SortDescending.Value, new List<int>()).Returns(query);
-			_libraryFactory.Create<Data.JobHistory>(request.WorkspaceArtifactId).Returns(_genericLibrary);
-			_genericLibrary.Query(query).Returns(queryResult);
+			_relativityIntegrationPointsRepository.RetrieveRelativityIntegrationPoints(request.WorkspaceArtifactId).Returns(integrationPoints);
+			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, integrationPoints).Returns(queryResult);
 			_jobHistoryAccess.Filter(queryResult, workspaces).Returns(filteredJobHistories);
-			_jobHistorySummaryModelBuilder.Create(request.Page, request.PageSize, filteredJobHistories).Returns(expectedResult);
+			_summaryModelBuilder.Create(request.Page, request.PageSize, filteredJobHistories).Returns(expectedResult);
 
 			var actualResult = _jobHistoryRepository.GetJobHistory(request);
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
@@ -71,7 +67,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 			_jobHistoryRepository.GetJobHistory(new JobHistoryRequest());
 
-			_completedJobQueryBuilder.Received(0).CreateQuery(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<List<int>>());
+			_relativityIntegrationPointsRepository.Received(0).RetrieveRelativityIntegrationPoints(Arg.Any<int>());
 		}
 	}
 }

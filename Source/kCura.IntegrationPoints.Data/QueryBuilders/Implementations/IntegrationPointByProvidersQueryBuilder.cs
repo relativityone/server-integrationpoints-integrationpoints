@@ -1,9 +1,8 @@
 ﻿using System;
-using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Services.JobHistory
+namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
 	public class IntegrationPointByProvidersQueryBuilder : IIntegrationPointByProvidersQueryBuilder
 	{
