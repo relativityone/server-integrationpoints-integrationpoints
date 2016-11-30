@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -14,8 +15,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 	[TestFixture]
 	public class ArtifactTreeServiceTests : TestBase
 	{
-		private ArtifactTreeService _artifactTreeService;
 		private IRSAPIClient _client;
+		private IHelper _helper;
+
+		private IArtifactService _artifactService;
+
+		private ArtifactTreeService _artifactTreeService;
+
 		private QueryResult _queryResult;
 		private IArtifactTreeCreator _treeCreator;
 		private APIOptions _apiOptions;
@@ -24,15 +30,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		public override void SetUp()
 		{
 			_client = Substitute.For<IRSAPIClient>();
-			_treeCreator = Substitute.For<IArtifactTreeCreator>();
-			var helper = Substitute.For<IHelper>();
-			_apiOptions = Substitute.For<APIOptions>();
+			_helper = Substitute.For<IHelper>();
 
-			_queryResult = new QueryResult {Success = true};
+			_queryResult = new QueryResult { Success = true };
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(_queryResult);
+
+			_apiOptions = Substitute.For<APIOptions>();
 			_client.APIOptions.Returns(_apiOptions);
 
-			_artifactTreeService = new ArtifactTreeService(_client, _treeCreator, helper);
+			_artifactService = Substitute.For<ArtifactService>(_client, _helper);
+			_treeCreator = Substitute.For<IArtifactTreeCreator>();
+
+			_artifactTreeService = new ArtifactTreeService(_artifactService, _treeCreator);
 		}
 
 		[Test]
@@ -43,7 +52,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_artifactTreeService.GetArtifactTreeWithWorkspaceSet(artifactTypeName);
 
 			_client.Received().Query(Arg.Any<APIOptions>(), Arg.Is<Query>(x => x.ArtifactTypeName.Equals(artifactTypeName)));
-			
 		}
 
 		[Test]
@@ -52,7 +60,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			const string artifactTypeName = "artifact_type";
 			const int destinationWorkspaceId = 1024178;
 
-			_artifactTreeService.GetArtifactTreeWithWorkspaceSet(artifactTypeName,destinationWorkspaceId);
+			_artifactTreeService.GetArtifactTreeWithWorkspaceSet(artifactTypeName, destinationWorkspaceId);
 
 			_client.Received().Query(Arg.Any<APIOptions>(), Arg.Is<Query>(x => x.ArtifactTypeName.Equals(artifactTypeName)));
 
@@ -83,11 +91,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 				ParentArtifactID = 1
 			};
 
-			_queryResult.QueryArtifacts.AddRange(new List<Artifact> {artifact2, artifact1});
+			_queryResult.QueryArtifacts.AddRange(new List<Artifact> { artifact2, artifact1 });
 
 			_artifactTreeService.GetArtifactTreeWithWorkspaceSet("artifact_type");
 
-			_treeCreator.Received().Create(Arg.Is<IList<Artifact>>(x => x.SequenceEqual(new List<Artifact> {artifact2, artifact1})));
+			_treeCreator.Received().Create(Arg.Is<IList<Artifact>>(x => x.SequenceEqual(new List<Artifact> { artifact2, artifact1 })));
 		}
 	}
 }

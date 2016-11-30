@@ -339,11 +339,11 @@ var IP = IP || {};
 		};
 
 		self.filterProfiles = ko.computed(function () {
-			if (!self.currentFilter()) {
+			if (!self.currentFilter() || !self.currentFilter().source || !self.currentFilter().destination) {
 				return self.profileTypes();
 			} else {
 				return ko.utils.arrayFilter(self.profileTypes(), function (profile) {
-					return profile.model.source === self.currentFilter().source && profile.model.destination == self.currentFilter().destination;
+					return profile.model.source === self.currentFilter().source && profile.model.destination === self.currentFilter().destination;
 				});
 			}
 		});
