@@ -59,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		[TestCase(499, "UnderBatch")]
 		[TestCase(500, "EqualBatch")]
 		[TestCase(502, "OverBatch")]

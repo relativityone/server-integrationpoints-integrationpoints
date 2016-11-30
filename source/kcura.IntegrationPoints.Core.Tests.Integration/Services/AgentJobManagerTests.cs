@@ -75,6 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void VerifyCheckBatchOnCompleteTrue()
 		{
 			//Arrange
