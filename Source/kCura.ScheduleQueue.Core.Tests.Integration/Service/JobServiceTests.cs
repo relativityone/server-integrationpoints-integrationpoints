@@ -95,6 +95,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		[TestCase(StopState.None)]
 		[TestCase(StopState.Stopping)]
 		[TestCase(StopState.Unstoppable)]

@@ -46,6 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void VerifyGetUnbatchedId()
 		{
 			string jobDetails =
