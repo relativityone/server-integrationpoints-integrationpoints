@@ -25,7 +25,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		public int? TimeZoneOffsetInMinute { get; set; }
 
 		[DataMember]
-		public string ClientTimeZone { get; set; }
+		public string TimeZoneId { get; set; }
 
 		[DataMember]
 		public int? DayOfMonth { get; set; }

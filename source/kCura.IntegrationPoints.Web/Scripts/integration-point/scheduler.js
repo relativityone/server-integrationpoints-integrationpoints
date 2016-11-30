@@ -253,36 +253,34 @@
 		return date.getTimezoneOffset();
 	}, this);
 
-	this.clientTimeZone = ko.computed(function () {
-		var timezone = String(new Date());
-		return timezone.substring(timezone.lastIndexOf('(') + 1).replace(')', '').trim();
-	}, this);
+	//this.clientTimeZone = ko.computed(function () {
+	//	var timezone = String(new Date());
+	//	return timezone.substring(timezone.lastIndexOf('(') + 1).replace(')', '').trim();
+	//}, this);
 	
 	this.timeZones = ko.observableArray();
-	this.selectedTimeZone = ko.observable().extend({ required: true });
+	this.timeZoneId = ko.observable().extend({ required: true });
 
 	IP.data.ajax({
 		contentType: "application/json",
 		dataType: "json",
 		headers: { "X-CSRF-Header": "-" },
 		type: "POST",
-		url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZones"),
+		url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZones")
 	}).then(function (winTimeZones) {
 		self.timeZones(winTimeZones);
 	});
 
-	var localTimeZoneIana = moment.tz.guess();
-
 	IP.data.ajax({
 		cache: false,
 		contentType: "application/json",
+		data: JSON.stringify({ ianaZoneId: moment.tz.guess() }),
 		dataType: "json",
 		headers: { "X-CSRF-Header": "-" },
 		type: "POST",
-		url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/ConvertIanaToWindowsTimeZone"),
-		data: { ianaZoneId: localTimeZoneIana }
+		url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/ConvertIanaToWindowsTimeZone")
 	}).then(function (winTimeZone) {
-		self.selectedTimeZone(winTimeZone);
+		self.timeZoneId(winTimeZone);
 	});
 
 	this.endDate = ko.observable(this.options.endDate).extend({

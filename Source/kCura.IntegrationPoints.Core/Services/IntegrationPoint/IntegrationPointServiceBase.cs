@@ -110,9 +110,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				periodicScheduleRule.EndDate = endDate;
 			}
 			periodicScheduleRule.TimeZoneOffsetInMinute = model.Scheduler.TimeZoneOffsetInMinute;
-			periodicScheduleRule.ClientTimeZone = model.Scheduler.ClientTimeZone;
-
-			//since we do not know what user local time is, time is passed in UTC
+			periodicScheduleRule.TimeZoneId = model.Scheduler.TimeZoneId;
+			
 			TimeSpan time;
 			if (TimeSpan.TryParse(model.Scheduler.ScheduledTime, out time))
 			{
