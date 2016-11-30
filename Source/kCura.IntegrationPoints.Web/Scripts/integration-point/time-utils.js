@@ -94,7 +94,7 @@ IP.timeUtil = (function () {
 		utcToLocal: utcToLocal,
 		timeLocalToUtc: timeLocalToUtc,
 		utcDateToLocal: _noOp,
-		utcToAmPm: utcToTime,
+		timeToAmPm: utcToTime,
 		utcToLocalAmPm : utcToLocalAmPm
 	};
 

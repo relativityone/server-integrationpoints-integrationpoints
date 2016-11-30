@@ -69,9 +69,9 @@ namespace kCura.IntegrationPoints.Core.Models
 					var ticks = new DateTime(rule.LocalTimeOfDay.Value.Ticks);
 					date = date.AddHours(ticks.Hour);
 					date = date.AddMinutes(ticks.Minute);
-					var time = date.ToUniversalTime();
-					ScheduledTime = time.Hour + ":" + time.Minute;
+					ScheduledTime = date.Hour + ":" + date.Minute;
 				}
+				TimeZoneId = rule.TimeZoneId;
 			}
 		}
 

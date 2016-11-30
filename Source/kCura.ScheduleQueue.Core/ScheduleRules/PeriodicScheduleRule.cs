@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -85,22 +86,92 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 				endDateHelper = new LocalEndDate(TimeService);
 				endDateHelper.EndDate = EndDate;
 				endDateHelper.StartDate = StartDate ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
-				endDateHelper.LocalTimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks);
+				endDateHelper.TimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks);
+
+				return GetNextRunTimeByInterval(Interval, endDateHelper,
+					DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
 			}
 
-			//Use the timeZoneOffSet to compare time in utc
-			else
+			TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.Local;
+			if (TimeZoneId != null)
 			{
-				endDateHelper = new UtcEndDate(TimeService);
-
-				endDateHelper.EndDate = EndDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).AddTicks(localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks));
-				endDateHelper.StartDate = StartDate?.AddMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()) ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
-				endDateHelper.LocalTimeOfDayTick = localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks); //set the local schedule time value
-				endDateHelper.LocalTimeOfDayTick += TimeSpan.FromMinutes(TimeZoneOffsetInMinute.GetValueOrDefault()).Ticks; //adjut to utc
+				clientTimeZoneInfo = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == TimeZoneId) ??
+									 TimeZoneInfo.Local;
 			}
 
-			return GetNextRunTimeByInterval(Interval, endDateHelper,
-				DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
+			DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(DateTime.UtcNow);
+			DateTime clientTimeLocal = startDate.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
+			TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
+			DateTime clientTimeUtc = clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes);
+
+			DaysOfWeek? daysToRunUtc = AdjustDaysShiftBetweenLocalAndUtc(DaysToRun, clientTimeLocal, clientTimeUtc, ref startDate);
+
+			endDateHelper = new UtcEndDate(TimeService);
+			DateTime nextStartDate = startDate.Date > endDateHelper.Time.Date ? startDate.Date : endDateHelper.Time.Date;
+
+			endDateHelper.EndDate = EndDate?.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault(TimeService.UtcNow.TimeOfDay).TotalMinutes)
+					.AddMinutes(-clientUtcOffset.TotalMinutes);
+			endDateHelper.StartDate = nextStartDate;
+			endDateHelper.TimeOfDayTick = clientTimeUtc.Ticks;
+
+
+			DateTime? nextRunTimeUtc = GetNextRunTimeByInterval(Interval, endDateHelper,
+				daysToRunUtc, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
+
+			return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo, clientUtcOffset);
+		}
+
+		/// <summary>
+		/// Adjust nextRunTime to Daylight Saving Time / Standard Time
+		/// </summary>
+		/// <returns>Adjusted nextRunTime to DST or Standard</returns>
+		private DateTime? AdjustToDaylightSavingOrStandardTime(DateTime? nextRunTimeUtc, TimeZoneInfo clientTimeZoneInfo, TimeSpan clientUtcOffset)
+		{
+			if (nextRunTimeUtc == null || LocalTimeOfDay == null) { return nextRunTimeUtc; }
+
+			TimeSpan nextRunTimeUtcOffSet = clientTimeZoneInfo.GetUtcOffset((DateTime) nextRunTimeUtc);
+			nextRunTimeUtc = nextRunTimeUtc.Value.AddMinutes(clientUtcOffset.TotalMinutes - nextRunTimeUtcOffSet.TotalMinutes);
+			return nextRunTimeUtc;
+		}
+
+		/// <summary>
+		/// Shift days of week if are not corresponding between local and UTC
+		/// </summary>
+		/// <param name="daysToRun"></param>
+		/// <param name="clientTime"></param>
+		/// <param name="clientTimeUtc"></param>
+		/// <param name="startDate"></param>
+		/// <returns></returns>
+		private DaysOfWeek? AdjustDaysShiftBetweenLocalAndUtc(DaysOfWeek? daysToRun, DateTime clientTime, DateTime clientTimeUtc, ref DateTime startDate)
+		{
+			if (StartDate == null || LocalTimeOfDay == null) return daysToRun;
+
+			if (clientTime.DayOfWeek < clientTimeUtc.DayOfWeek)
+			{
+				startDate = startDate.AddDays(1);	//TODO PN Calculate proper startdate outside
+				if (daysToRun == null) return null;
+
+				//TODO PN It is not only one day!
+				daysToRun = (DaysOfWeek)((byte)daysToRun << 1);
+				if (daysToRun == DaysOfWeek.Day)
+				{
+					daysToRun = DaysOfWeek.Monday;
+				}
+			}
+			else if (clientTime.DayOfWeek > clientTimeUtc.DayOfWeek)
+			{
+				startDate = startDate.AddDays(-1);  //TODO PN Calculate proper startdate outside
+				if (daysToRun == null) return null;
+
+				//TODO PN It is not only one day!
+				daysToRun = (DaysOfWeek)((byte)daysToRun >> 1);
+				if (daysToRun == DaysOfWeek.None)
+				{
+					daysToRun = DaysOfWeek.Sunday;
+				}
+			}
+
+			return daysToRun;
 		}
 
 		public override string Description

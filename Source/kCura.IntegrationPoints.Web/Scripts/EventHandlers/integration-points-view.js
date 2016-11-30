@@ -191,7 +191,7 @@ $(function () {
         }
         obj.push({ key: 'Start Date', value: result.startDate || '' });
         obj.push({ key: 'End Date', value: result.endDate || '' });
-        obj.push({ key: 'Scheduled Time (UTC)', value: IP.timeUtil.utcToAmPm(result.scheduledTime || '') });
+        obj.push({ key: 'Scheduled Time', value: IP.timeUtil.timeToAmPm(result.scheduledTime || '') });
         IP.utils.createFields($field, obj);
     }, function () {
         $field.text('There was an error retrieving the scheduling information.');
