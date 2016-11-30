@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 		[Test]
 		public void ItShouldCreateValidQuery()
 		{
-			var query = _builder.CreateQuery(string.Empty, false);
+			var query = _builder.CreateQuery(string.Empty, false, new List<int>());
 
 			Assert.That(query.ArtifactTypeGuid.Value.ToString().ToUpperInvariant(), Is.EqualTo(ObjectTypeGuids.JobHistory.ToUpperInvariant()));
 			Assert.That(query.Fields[0].Name, Is.EqualTo(FieldValue.AllFields[0].Name));
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 		[TestCase(false, SortEnum.Ascending)]
 		public void ItShouldSetSortAccordingly(bool sortDescending, SortEnum expectedSort)
 		{
-			var query = _builder.CreateQuery(string.Empty, sortDescending);
+			var query = _builder.CreateQuery(string.Empty, sortDescending, new List<int>());
 
 			Assert.That(query.Sorts[0].Direction, Is.EqualTo(expectedSort));
 		}
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 		[TestCase(null, nameof(JobHistoryModel.DestinationWorkspace))]
 		public void ItShouldSetSortColumnAccordingly(string sortColumn, string expectedSortColumn)
 		{
-			var query = _builder.CreateQuery(sortColumn, false);
+			var query = _builder.CreateQuery(sortColumn, false, new List<int>());
 
 			Assert.That(query.Sorts[0].Field, Is.EqualTo(expectedSortColumn));
 		}

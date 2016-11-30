@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		private IWorkspaceManager _workspaceManager;
 		private IJobHistoryAccess _jobHistoryAccess;
 		private IJobHistorySummaryModelBuilder _jobHistorySummaryModelBuilder;
-		private IJobHistoryLibraryFactory _jobHistoryLibraryFactory;
+		private ILibraryFactory _libraryFactory;
 		private IGenericLibrary<Data.JobHistory> _genericLibrary;
 
 		public override void SetUp()
@@ -28,11 +28,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_jobHistoryAccess = Substitute.For<IJobHistoryAccess>();
 			_jobHistorySummaryModelBuilder = Substitute.For<IJobHistorySummaryModelBuilder>();
-			_jobHistoryLibraryFactory = Substitute.For<IJobHistoryLibraryFactory>();
+			_libraryFactory = Substitute.For<ILibraryFactory>();
 			_genericLibrary = Substitute.For<IGenericLibrary<Data.JobHistory>>();
 
 			_jobHistoryRepository = new JobHistoryRepository(logger, _completedJobQueryBuilder, _workspaceManager, _jobHistoryAccess, _jobHistorySummaryModelBuilder,
-				_jobHistoryLibraryFactory);
+				_libraryFactory);
 		}
 
 		[Test]
@@ -54,8 +54,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			var expectedResult = new JobHistorySummaryModel();
 
 			_workspaceManager.GetIdsOfWorkspacesUserHasPermissionToView().Returns(workspaces);
-			_completedJobQueryBuilder.CreateQuery(request.SortColumnName, request.SortDescending.Value).Returns(query);
-			_jobHistoryLibraryFactory.Create(request.WorkspaceArtifactId).Returns(_genericLibrary);
+			_completedJobQueryBuilder.CreateQuery(request.SortColumnName, request.SortDescending.Value, new List<int>()).Returns(query);
+			_libraryFactory.Create<Data.JobHistory>(request.WorkspaceArtifactId).Returns(_genericLibrary);
 			_genericLibrary.Query(query).Returns(queryResult);
 			_jobHistoryAccess.Filter(queryResult, workspaces).Returns(filteredJobHistories);
 			_jobHistorySummaryModelBuilder.Create(request.Page, request.PageSize, filteredJobHistories).Returns(expectedResult);
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 			_jobHistoryRepository.GetJobHistory(new JobHistoryRequest());
 
-			_completedJobQueryBuilder.Received(0).CreateQuery(Arg.Any<string>(), Arg.Any<bool>());
+			_completedJobQueryBuilder.Received(0).CreateQuery(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<List<int>>());
 		}
 	}
 }

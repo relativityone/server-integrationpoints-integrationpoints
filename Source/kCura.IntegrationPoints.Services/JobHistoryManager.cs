@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Services
 		public JobHistoryManager(ILog logger) : base(logger)
 		{
 			_jobHistoryRepository = new JobHistoryRepository(logger, new CompletedJobQueryBuilder(), new WorkspaceManager(global::Relativity.API.Services.Helper),
-				new JobHistoryAccess(new DestinationWorkspaceParser()), new JobHistorySummaryModelBuilder(), new JobHistoryLibraryFactory(global::Relativity.API.Services.Helper));
+				new JobHistoryAccess(new DestinationWorkspaceParser()), new JobHistorySummaryModelBuilder(), new LibraryFactory(global::Relativity.API.Services.Helper));
 		}
 
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)

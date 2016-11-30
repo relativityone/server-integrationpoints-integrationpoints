@@ -15,17 +15,20 @@ namespace kCura.IntegrationPoints.Services.Repositories
 		private readonly IWorkspaceManager _workspaceManager;
 		private readonly IJobHistoryAccess _jobHistoryAccess;
 		private readonly IJobHistorySummaryModelBuilder _summaryModelBuilder;
-		private readonly IJobHistoryLibraryFactory _jobHistoryLibraryFactory;
+		private readonly ILibraryFactory _libraryFactory;
+		private readonly IIntegrationPointByProvidersQueryBuilder _integrationPointByProvidersQueryBuilder = new IntegrationPointByProvidersQueryBuilder();
+		private readonly SourceProviderArtifactIdByGuidQueryBuilder _sourceProviderArtifactIdByGuidQueryBuilder = new SourceProviderArtifactIdByGuidQueryBuilder();
+		private readonly DestinationProviderArtifactIdByGuidQueryBuilder _destinationProviderArtifactIdByGuidQueryBuilder = new DestinationProviderArtifactIdByGuidQueryBuilder();
 
 		public JobHistoryRepository(ILog logger, ICompletedJobQueryBuilder completedJobQueryBuilder, IWorkspaceManager workspaceManager, IJobHistoryAccess jobHistoryAccess,
-			IJobHistorySummaryModelBuilder summaryModelBuilder, IJobHistoryLibraryFactory jobHistoryLibraryFactory)
+			IJobHistorySummaryModelBuilder summaryModelBuilder, ILibraryFactory libraryFactory)
 		{
 			_logger = logger;
 			_completedJobQueryBuilder = completedJobQueryBuilder;
 			_workspaceManager = workspaceManager;
 			_jobHistoryAccess = jobHistoryAccess;
 			_summaryModelBuilder = summaryModelBuilder;
-			_jobHistoryLibraryFactory = jobHistoryLibraryFactory;
+			_libraryFactory = libraryFactory;
 		}
 
 		public JobHistorySummaryModel GetJobHistory(JobHistoryRequest request)
@@ -38,9 +41,20 @@ namespace kCura.IntegrationPoints.Services.Repositories
 					return new JobHistorySummaryModel();
 				}
 
-				Query<RDO> query = _completedJobQueryBuilder.CreateQuery(request.SortColumnName, (request.SortDescending != null) && request.SortDescending.Value);
+				var sourceProviderQuery = _sourceProviderArtifactIdByGuidQueryBuilder.Create(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
+				var destinationProviderQuery = _destinationProviderArtifactIdByGuidQueryBuilder.Create(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
 
-				IGenericLibrary<Data.JobHistory> library = _jobHistoryLibraryFactory.Create(request.WorkspaceArtifactId);
+				var sourceProvider = _libraryFactory.Create<SourceProvider>(request.WorkspaceArtifactId).Query(sourceProviderQuery);
+				var destinationProvider = _libraryFactory.Create<DestinationProvider>(request.WorkspaceArtifactId).Query(destinationProviderQuery);
+
+				Query<RDO> ipQuery = _integrationPointByProvidersQueryBuilder.CreateQuery(sourceProvider[0].ArtifactId, destinationProvider[0].ArtifactId);
+				IGenericLibrary<IntegrationPoint> ipLibrary = _libraryFactory.Create<IntegrationPoint>(request.WorkspaceArtifactId);
+
+				var ips = ipLibrary.Query(ipQuery);
+				Query<RDO> query = _completedJobQueryBuilder.CreateQuery(request.SortColumnName, (request.SortDescending != null) && request.SortDescending.Value,
+					ips.Select(x => x.ArtifactId).ToList());
+
+				IGenericLibrary<Data.JobHistory> library = _libraryFactory.Create<Data.JobHistory>(request.WorkspaceArtifactId);
 				IList<Data.JobHistory> queryResult = library.Query(query);
 
 				IList<Data.JobHistory> jobHistories = _jobHistoryAccess.Filter(queryResult, workspacesWithAccess);
