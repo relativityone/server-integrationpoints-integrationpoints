@@ -286,6 +286,8 @@
     </Compile>
     <Compile Include="Services\IIntegrationPointValidationService.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
+    <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
+    <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Parts\NameValidator.cs" />
     <Compile Include="Validation\Parts\WorkspaceValidator.cs" />
