@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
@@ -59,13 +60,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 			{
-				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, 
-					Guid.Empty, model.Name, MetricTargets.APMandSUM ))
+				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
+					Guid.Empty, model.Name, MetricTargets.APMandSUM))
 				{
-					int createdId = _reader.SaveIntegration(model);
+					int createdId;
+
+					try
+					{
+						createdId = _reader.SaveIntegration(model);
+					}
+					catch (IntegrationPointProviderValidationException ex)
+					{
+						return Request.CreateResponse(HttpStatusCode.NotAcceptable, String.Join("<br />", ex.Result.Messages));
+					}
+
 					string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
 
-					return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
+					return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 				}
 			}
 		}

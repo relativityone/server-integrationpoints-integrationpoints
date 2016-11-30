@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -8,6 +6,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using static kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
@@ -70,6 +69,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 					var viewValidator = _validatorsFactory.CreateViewValidator();
 					result.Add(viewValidator.Validate(exportSettings));
+					var exportNativeSettingsValidator = _validatorsFactory.CreateExportNativeSettingsValidator();
+					result.Add(exportNativeSettingsValidator.Validate(model.ConvertToIpModel()));
 					break;
 
 				case ExportType.ProductionSet:

@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				{
 					DisplayName = x.DisplayName,
 					FieldIdentifier = x.AvfId.ToString(),
-					FieldType = FieldType.String,
+					FieldType = ConvertFromExFieldType(x.FieldType),
 					IsIdentifier = x.Category == FieldCategory.Identifier,
 					IsRequired = false
 				}).ToArray();
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				{
 					DisplayName = x.DisplayName,
 					FieldIdentifier = x.AvfId.ToString(),
-					FieldType = FieldType.String,
+					FieldType = ConvertFromExFieldType(x.FieldType),
 					IsIdentifier = x.Category == FieldCategory.Identifier,
 					IsRequired = false
 				}).ToArray();
@@ -70,6 +70,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 					IsIdentifier = x.Category == FieldCategory.Identifier,
 					IsRequired = false
 				}).ToArray();
+		}
+
+		private FieldType ConvertFromExFieldType(FieldTypeHelper.FieldType fieldType)
+		{
+			return fieldType == FieldTypeHelper.FieldType.File ? FieldType.File : FieldType.String;
 		}
 	}
 }

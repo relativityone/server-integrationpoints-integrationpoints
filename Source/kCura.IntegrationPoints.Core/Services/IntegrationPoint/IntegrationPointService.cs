@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -93,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 				if (!validationResult.IsValid)
 				{
-					throw new ArgumentOutOfRangeException(String.Join(Environment.NewLine, validationResult.Messages), default(Exception));
+					throw new IntegrationPointProviderValidationException(validationResult);
 				}
 
 				TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
@@ -132,6 +133,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				}
 			}
 			catch (PermissionException)
+			{
+				throw;
+			}
+			catch (IntegrationPointProviderValidationException)
 			{
 				throw;
 			}
