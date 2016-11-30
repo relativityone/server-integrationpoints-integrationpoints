@@ -310,18 +310,21 @@ var IP = IP || {};
 		this.profileTypes = ko.observableArray();
 		this.profiles = [];
 
-		this.getSelectedProfile = function (value) {
-			var selectedItem = ko.utils.arrayFirst(self.profiles, function (item) {
-				if (item.artifactID === value) {
-					return item;
-				}
+		this.getSelectedProfilePromise = function (artifactId) {
+			var validatedProfileModelPromise = root.data.ajax({
+				url: root.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetValidatedProfileModel', artifactId),
+				type: 'get'
+			}).fail(function (error) {
+				IP.message.error.raise("No exportable fields were returned from the source provider.");
 			});
-			return selectedItem;
+			return validatedProfileModelPromise;
 		};
 		self.currentFilter = ko.observable();
 
 		self.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (type) {
-			self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
+			if (!!parentModel.source.sourceProvider && !!parentModel.destination.selectedDestinationType) {
+				self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
+			}
 		});
 
 		this.getProfiles = function (ipType) {
@@ -348,8 +351,10 @@ var IP = IP || {};
 		this.publishUpdateProfile = function () {
 			var profileId = self.selectedProfile();
 			if (!!profileId) {
-				var item = self.getSelectedProfile(profileId);
-				IP.messaging.publish("loadProfile", item);
+				var promise = self.getSelectedProfilePromise(profileId);
+				promise.then(function (profile) {
+					IP.messaging.publish("loadProfile", profile);
+				});
 			}
 		};
 
@@ -477,17 +482,14 @@ var IP = IP || {};
 
 			self.destination.destinationTypes(dTypes);
 			self.destination.allRdoTypes(rdoTypes);
+			self.source.sourceTypes(sTypes);
+			self.integrationPointTypes(ipTypes);
 
-
+			self.source.updateSelectedType();
 			self.destination.destinationProviderVisible(self.destination.destinationTypes().length > 1);
-
 			self.destination.setRelativityAsDestinationProvider();
 			self.destination.updateDestinationProvider();
 
-			self.source.sourceTypes(sTypes);
-			self.source.updateSelectedType();
-
-			self.integrationPointTypes(ipTypes);
 			self.setTypeVisibility(self.type());
 			self.profile.getProfiles(self.type());
 		});
