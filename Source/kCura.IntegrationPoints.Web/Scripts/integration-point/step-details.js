@@ -485,10 +485,11 @@ var IP = IP || {};
 			self.source.sourceTypes(sTypes);
 			self.integrationPointTypes(ipTypes);
 
-			self.source.updateSelectedType();
+
 			self.destination.destinationProviderVisible(self.destination.destinationTypes().length > 1);
 			self.destination.setRelativityAsDestinationProvider();
 			self.destination.updateDestinationProvider();
+			self.source.updateSelectedType();
 
 			self.setTypeVisibility(self.type());
 			self.profile.getProfiles(self.type());
