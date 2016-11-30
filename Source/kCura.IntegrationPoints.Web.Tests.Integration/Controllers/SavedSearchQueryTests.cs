@@ -191,6 +191,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void Query_SavedSearchesWithController_Success()
 		{
 			//Arrange

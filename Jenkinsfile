@@ -57,7 +57,18 @@ def passed = false
 					unstash 'testdata_natives'
 					unstash 'integrationPointsRap'
 
-					bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll --test=kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunTestCase,kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.ExportProcessRunnerTest.RunInvalidFileshareTestCase --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
+					bat '''"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" 
+							lib\\UnitTests\\kCura.IntegrationPoints.Agent.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.Core.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.Data.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.Services.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll
+							lib\\UnitTests\\kCura.IntegrationPoints.Web.Tests.Integration.dll
+							lib\\UnitTests\\kCura.ScheduleQueue.Core.Tests.Integration.dll
+							 --where "cat == SmokeTest" --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'''
 
 					step([$class : 'XUnitBuilder',
 							testTimeMargin : '3000',

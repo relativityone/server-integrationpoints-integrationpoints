@@ -26,6 +26,7 @@ using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
+	[TestFixture]
 	public class ExportProcessRunnerTest
 	{
 		#region Fields
@@ -120,6 +121,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 
 		[TestCaseSource(nameof(ExportTestCaseSource))]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void RunTestCase(IExportTestCase testCase)
 		{
 			// Arrange
@@ -136,6 +138,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
 			// Arrange

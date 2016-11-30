@@ -27,5 +27,15 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string DestinationProviderIdentifier { get; set; }
 
 		public string DestinationConfiguration { get; set; }
+
+		public IntegrationPointModel ConvertToIpModel()
+		{
+			return new IntegrationPointModel
+			{
+				Destination = DestinationConfiguration,
+				SourceConfiguration = SourceConfiguration,
+				Map = FieldsMap,
+			};
+		}
 	}
 }

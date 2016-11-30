@@ -261,6 +261,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			}
 		}
 
+		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		[TestCase(true, true)]
 		[TestCase(true, false)]
 		[TestCase(false, false)]
