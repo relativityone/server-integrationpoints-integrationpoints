@@ -136,6 +136,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				throw;
 			}
+			catch (IntegrationPointProviderValidationException)
+			{
+				throw;
+			}
 			catch (Exception e)
 			{
 				CreateRelativityError(
