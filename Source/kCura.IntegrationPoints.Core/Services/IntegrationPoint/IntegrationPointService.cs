@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 
 				ValidationResult validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider);
-
+				
 				if (!validationResult.IsValid)
 				{
 					throw new IntegrationPointProviderValidationException(validationResult);
@@ -136,15 +136,21 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				throw;
 			}
-			catch (IntegrationPointProviderValidationException)
+			catch (IntegrationPointProviderValidationException validationException)
 			{
+				CreateRelativityError(
+					Constants.IntegrationPoints.UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED, 
+					String.Join(Environment.NewLine, validationException.Result.Messages)
+				);
+
 				throw;
 			}
-			catch (Exception e)
+			catch (Exception exception)
 			{
 				CreateRelativityError(
 					Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-					String.Join(Environment.NewLine, new[] { e.Message, e.StackTrace }));
+					String.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace })
+				);
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
 			}
