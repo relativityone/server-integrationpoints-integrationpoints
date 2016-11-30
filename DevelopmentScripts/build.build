@@ -53,13 +53,13 @@
 			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.192\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.264\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.16\lib"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ServiceBus.2.1.2\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.DataContracts.Shared.9.4.74\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.MetricsCollection.9.4.74\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.Vfs.IO.1.0.12\lib\net451"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Vfs.IO.1.0.20\lib\net451"' />
 			<arg line='/lib:"${source.packages.directory}\FluentValidation.6.1.0.0\lib\Net45"' />
 			<arg line='/lib:"${source.packages.directory}\Microsoft.IdentityModel.Protocol.Extensions.1.0.2.206221351\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Microsoft.Owin.3.0.1\lib\net45"' />
@@ -176,7 +176,7 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.192\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.264\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\systemwrapper.interfaces.0.7.0.0\lib\net45"'/>
 			<arg line='/lib:"${source.packages.directory}\kCura.LongPath.1.0.8\lib\net45"' />
