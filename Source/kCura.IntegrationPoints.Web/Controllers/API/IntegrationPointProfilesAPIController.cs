@@ -3,9 +3,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
@@ -19,14 +25,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IIntegrationPointProfileService _profileService;
 		private readonly IRelativityUrlHelper _urlHelper;
+		private readonly ICaseServiceContext _context;
+		private readonly IIntegrationPointProviderValidator _integrationModelValidator;
 
 		public IntegrationPointProfilesAPIController(ICPHelper cpHelper, IIntegrationPointProfileService profileService, IIntegrationPointService integrationPointService,
-			IRelativityUrlHelper urlHelper)
+			IRelativityUrlHelper urlHelper, ICaseServiceContext context, IIntegrationPointProviderValidator integrationModelValidator)
 		{
 			_cpHelper = cpHelper;
 			_profileService = profileService;
 			_integrationPointService = integrationPointService;
 			_urlHelper = urlHelper;
+			_context = context;
+			_integrationModelValidator = integrationModelValidator;
 		}
 
 		[HttpGet]
@@ -61,6 +71,27 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			
 			return Request.CreateResponse(HttpStatusCode.OK, model);
+		}
+
+		[LogApiExceptionFilter(Message = "Unable to validate integration point profile.")]
+		public HttpResponseMessage GetValidatedProfileModel(int artifactId)
+		{
+			if (artifactId > 0)
+			{
+				IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfile(artifactId);
+				
+				SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
+				DestinationProvider destinationProvider = _context.RsapiService.DestinationProviderLibrary.Read(model.DestinationProvider);
+
+				ValidationResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider);
+
+				if (validationResult.IsValid)
+				{
+					return Request.CreateResponse(HttpStatusCode.OK, model);
+				}
+			}
+
+			return Request.CreateResponse(HttpStatusCode.InternalServerError);
 		}
 
 		[HttpPost]
