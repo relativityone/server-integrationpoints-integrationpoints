@@ -527,7 +527,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		[TestCase("10/01/2014 21:00:00", ScheduleInterval.Weekly, "02/23/2016", "12:31", null, 0, DaysOfWeek.Monday, null, null, 1, null, "02/29/2016")]
 		public void GetNextUTCRunDateTime_CorrectValue(string utcNowTime, ScheduleInterval interval, string startDate, string scheduledLocalTime, DateTime? endDate, int timeZoneOffSet, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDay, int? reoccur, OccuranceInMonth? occuranceInMonth, string expectedDate)
 		{
-			PeriodicScheduleRule rule = new PeriodicScheduleRule(interval, DateTime.Parse(startDate), TimeSpan.Parse(scheduledLocalTime), endDate, timeZoneOffSet, daysToRun, dayOfMonth, setLastDay, reoccur, occuranceInMonth);
+			const string timeZoneId = "UTC";
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(interval, DateTime.Parse(startDate), TimeSpan.Parse(scheduledLocalTime), endDate, timeZoneOffSet, daysToRun, dayOfMonth, setLastDay, reoccur, occuranceInMonth, timeZoneId);
 			var utcNow = DateTime.Parse(utcNowTime);
 			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
 			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
@@ -695,9 +696,9 @@ namespace kCura.ScheduleQueue.Core.Tests
 		#endregion ForwardValidOccurance
 
 		[TestCase("Tokyo Standard Time", "12:30 PM", "Central Standard Time", "9/13/2016 3:30 AM")]
-		[TestCase("Central Standard Time", "12:30 PM", "Tokyo Standard Time", "9/13/2016 6:30 PM")]
+		[TestCase("Central Standard Time", "12:30 PM", "Tokyo Standard Time", "9/13/2016 5:30 PM")]
 		[TestCase("Tokyo Standard Time", "7:30 AM", "Central Standard Time", "9/12/2016 10:30 PM")]
-		[TestCase("Central Standard Time", "11:30 PM", "Tokyo Standard Time", "9/14/2016 5:30 AM")]
+		[TestCase("Central Standard Time", "11:30 PM", "Tokyo Standard Time", "9/14/2016 4:30 AM")]
 		[TestCase("Nepal Standard Time", "10:30 PM", "Tokyo Standard Time", "9/13/2016 4:45 PM")]           //Nepal Standard Time (UTC+05:45)
 		[TestCase("AUS Central Standard Time", "8:00 AM", "Tokyo Standard Time", "9/12/2016 10:30 PM")]     //AUS Central Standard Time (UTC+09:30)
 		public void CalculateLastDayOfScheduledJob(string clientTimeZone, string clientLocalTime, string serverTimeZone, string expectedRunUtcTime)
@@ -715,7 +716,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 			// server time
 			TimeZoneInfo serverTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(serverTimeZone);
 			TimeSpan serverClientOffSet = clientUtcOffSet.Add(serverTimeZoneInfo.BaseUtcOffset);
-			DateTime serverLocalTime = clientTime.Add(serverClientOffSet);
+			const int serverTimeShift = -2;     //To set server time before expectedRunUtcTime
+			DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
 
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, date, clientlocalTime, date, (int)clientUtcOffSet.TotalMinutes)
 			{
@@ -723,6 +725,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			};
 			rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
 			rule.TimeService.LocalTime.Returns(serverLocalTime);
+			rule.TimeZoneId = clientTimeZone;
 
 			// act
 			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
