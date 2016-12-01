@@ -48,12 +48,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			PeriodicScheduleRule rule;
 			try
 			{
-				if (model.ArtifactID > 0)
-				{
-					IntegrationPointProfileModel existingModel = ReadIntegrationPointProfile(model.ArtifactID);
-					ValidateConfigurationWhenUpdatingObject(model, existingModel);
-				}
-
 				IList<Choice> choices =
 					ChoiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
 
