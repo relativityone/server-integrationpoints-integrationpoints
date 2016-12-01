@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Logging;
 using Relativity.Services.ObjectQuery;
 using Query = Relativity.Services.ObjectQuery.Query;
 
@@ -22,218 +20,171 @@ namespace kCura.IntegrationPoints.Services.Repositories
 
 		private static readonly int[] _viewPermission = {1};
 
-		private readonly ILog _logger;
-
-		public DocumentRepository(ILog logger)
+		public PercentagePushedToReviewModel GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
-			_logger = logger;
+			string destinationWorkspaceDisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
+
+			IObjectQueryManager objectQueryManager = global::Relativity.API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
+			Query totalDocumentsQuery = new Query();
+			Query totalDocumentsPushedToReviewQuery = new Query
+			{
+				Condition = $"'{destinationWorkspaceDisplayName}' ISSET",
+				Fields = new[] {destinationWorkspaceDisplayName}
+			};
+
+			ObjectQueryResultSet totalDocumentsResultSet =
+				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
+			ObjectQueryResultSet totalDocumentsPushedToReviewResultSet =
+				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsPushedToReviewQuery, 1, 1, _viewPermission, string.Empty).Result;
+
+			if (!totalDocumentsResultSet.Success)
+			{
+				throw new Exception(totalDocumentsResultSet.Message);
+			}
+			if (!totalDocumentsPushedToReviewResultSet.Success)
+			{
+				throw new Exception(totalDocumentsPushedToReviewResultSet.Message);
+			}
+
+			PercentagePushedToReviewModel model = new PercentagePushedToReviewModel
+			{
+				TotalDocuments = totalDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsPushedToReview = totalDocumentsPushedToReviewResultSet.Data.TotalResultCount
+			};
+			return model;
 		}
 
-		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
+		public CurrentPromotionStatusModel GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
-			try
+			string promotedDisplayName = GetDisplayName(request.WorkspaceArtifactId, _PROMOTE_GUID);
+			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
+
+			IObjectQueryManager objectQueryManager = global::Relativity.API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
+			Query totalUntaggedDocumentsQuery = new Query
 			{
-				string destinationWorkspaceDisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
-
-				IObjectQueryManager objectQueryManager = global::Relativity.API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-				Query totalDocumentsQuery = new Query();
-				Query totalDocumentsPushedToReviewQuery = new Query
-				{
-					Condition = $"'{destinationWorkspaceDisplayName}' ISSET",
-					Fields = new[] {destinationWorkspaceDisplayName}
-				};
-
-				ObjectQueryResultSet totalDocumentsResultSet =
-					await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsQuery, 1, 1, _viewPermission, string.Empty);
-				ObjectQueryResultSet totalDocumentsPushedToReviewResultSet =
-					await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsPushedToReviewQuery, 1, 1, _viewPermission, string.Empty);
-
-				if (!totalDocumentsResultSet.Success)
-				{
-					throw new Exception(totalDocumentsResultSet.Message);
-				}
-				if (!totalDocumentsPushedToReviewResultSet.Success)
-				{
-					throw new Exception(totalDocumentsPushedToReviewResultSet.Message);
-				}
-
-				PercentagePushedToReviewModel model = new PercentagePushedToReviewModel
-				{
-					TotalDocuments = totalDocumentsResultSet.Data.TotalResultCount,
-					TotalDocumentsPushedToReview = totalDocumentsPushedToReviewResultSet.Data.TotalResultCount
-				};
-				return model;
-			}
-			catch (Exception ex)
+				Condition = $"NOT '{promotedDisplayName}' ISSET",
+				Fields = new[] {promotedDisplayName}
+			};
+			Query totalIncludedDocumentsQuery = new Query
 			{
-				_logger.LogError(ex, "{0}.{1}", nameof(DocumentManager), nameof(GetPercentagePushedToReviewAsync));
-				throw;
+				Condition = $"'{promotedDisplayName}' == CHOICE {_INCLUDE_GUID}",
+				Fields = new[] {promotedDisplayName}
+			};
+			Query totalExcludedDocumentsQuery = new Query
+			{
+				Condition = $"'{promotedDisplayName}' == CHOICE {_EXCLUDE_GUID}",
+				Fields = new[] {promotedDisplayName}
+			};
+			Query totalPushedToReviewDocumentsQuery = new Query
+			{
+				Condition = $"'{destinationWorkspacedisplayName}' ISSET",
+				Fields = new[] {destinationWorkspacedisplayName}
+			};
+
+			ObjectQueryResultSet totalUntaggedDocumentsResultSet =
+				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalUntaggedDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
+			ObjectQueryResultSet totalIncludedDocumentsResultSet =
+				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalIncludedDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
+			ObjectQueryResultSet totalExcludedDocumentsResultSet =
+				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalExcludedDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
+			ObjectQueryResultSet totalPushedToReviewDocumentsResultSet =
+				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalPushedToReviewDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
+
+			if (!totalUntaggedDocumentsResultSet.Success)
+			{
+				throw new Exception(totalUntaggedDocumentsResultSet.Message);
 			}
+
+			if (!totalIncludedDocumentsResultSet.Success)
+			{
+				throw new Exception(totalIncludedDocumentsResultSet.Message);
+			}
+
+			if (!totalExcludedDocumentsResultSet.Success)
+			{
+				throw new Exception(totalExcludedDocumentsResultSet.Message);
+			}
+
+			if (!totalPushedToReviewDocumentsResultSet.Success)
+			{
+				throw new Exception(totalPushedToReviewDocumentsResultSet.Message);
+			}
+
+			CurrentPromotionStatusModel model = new CurrentPromotionStatusModel
+			{
+				TotalDocumentsUntagged = totalUntaggedDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsIncluded = totalIncludedDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsExcluded = totalExcludedDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsPushedToReview = totalPushedToReviewDocumentsResultSet.Data.TotalResultCount
+			};
+			return model;
 		}
 
-		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
+		public HistoricalPromotionStatusSummaryModel GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			try
+			HistoricalPromotionStatusModel currentPromotionStatus = GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
+			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
+
+			bool currentPromotionStatusUpdated = false;
+			DateTime currentDate = currentPromotionStatus.Date.Date;
+
+			for (int i = 0; i < historicalPromotionStatus.Count; i++)
 			{
-				string promotedDisplayName = GetDisplayName(request.WorkspaceArtifactId, _PROMOTE_GUID);
-				string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
-
-				IObjectQueryManager objectQueryManager = global::Relativity.API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-				Query totalUntaggedDocumentsQuery = new Query
+				if (historicalPromotionStatus[i].Date.Date == currentDate)
 				{
-					Condition = $"NOT '{promotedDisplayName}' ISSET",
-					Fields = new[] {promotedDisplayName}
-				};
-				Query totalIncludedDocumentsQuery = new Query
-				{
-					Condition = $"'{promotedDisplayName}' == CHOICE {_INCLUDE_GUID}",
-					Fields = new[] {promotedDisplayName}
-				};
-				Query totalExcludedDocumentsQuery = new Query
-				{
-					Condition = $"'{promotedDisplayName}' == CHOICE {_EXCLUDE_GUID}",
-					Fields = new[] {promotedDisplayName}
-				};
-				Query totalPushedToReviewDocumentsQuery = new Query
-				{
-					Condition = $"'{destinationWorkspacedisplayName}' ISSET",
-					Fields = new[] {destinationWorkspacedisplayName}
-				};
-
-				ObjectQueryResultSet totalUntaggedDocumentsResultSet =
-					await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalUntaggedDocumentsQuery, 1, 1, _viewPermission, string.Empty);
-				ObjectQueryResultSet totalIncludedDocumentsResultSet =
-					await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalIncludedDocumentsQuery, 1, 1, _viewPermission, string.Empty);
-				ObjectQueryResultSet totalExcludedDocumentsResultSet =
-					await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalExcludedDocumentsQuery, 1, 1, _viewPermission, string.Empty);
-				ObjectQueryResultSet totalPushedToReviewDocumentsResultSet =
-					await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalPushedToReviewDocumentsQuery, 1, 1, _viewPermission, string.Empty);
-
-				if (!totalUntaggedDocumentsResultSet.Success)
-				{
-					throw new Exception(totalUntaggedDocumentsResultSet.Message);
+					historicalPromotionStatus[i] = currentPromotionStatus;
+					currentPromotionStatusUpdated = true;
+					break;
 				}
-
-				if (!totalIncludedDocumentsResultSet.Success)
-				{
-					throw new Exception(totalIncludedDocumentsResultSet.Message);
-				}
-
-				if (!totalExcludedDocumentsResultSet.Success)
-				{
-					throw new Exception(totalExcludedDocumentsResultSet.Message);
-				}
-
-				if (!totalPushedToReviewDocumentsResultSet.Success)
-				{
-					throw new Exception(totalPushedToReviewDocumentsResultSet.Message);
-				}
-
-				CurrentPromotionStatusModel model = new CurrentPromotionStatusModel
-				{
-					TotalDocumentsUntagged = totalUntaggedDocumentsResultSet.Data.TotalResultCount,
-					TotalDocumentsIncluded = totalIncludedDocumentsResultSet.Data.TotalResultCount,
-					TotalDocumentsExcluded = totalExcludedDocumentsResultSet.Data.TotalResultCount,
-					TotalDocumentsPushedToReview = totalPushedToReviewDocumentsResultSet.Data.TotalResultCount
-				};
-				return model;
 			}
-			catch (Exception ex)
+
+			if (!currentPromotionStatusUpdated)
 			{
-				_logger.LogError(ex, "{0}.{1}", nameof(DocumentManager), nameof(GetCurrentPromotionStatusAsync));
-				throw;
+				historicalPromotionStatus.Add(currentPromotionStatus);
 			}
+
+			HistoricalPromotionStatusSummaryModel model = new HistoricalPromotionStatusSummaryModel
+			{
+				HistoricalPromotionStatus = historicalPromotionStatus.ToArray()
+			};
+			return model;
 		}
 
-		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
+		private HistoricalPromotionStatusModel GetCurrentDocumentModelAsync(int workspaceId)
 		{
-			try
+			CurrentPromotionStatusRequest request = new CurrentPromotionStatusRequest {WorkspaceArtifactId = workspaceId};
+			CurrentPromotionStatusModel currentPromotionStatus = GetCurrentPromotionStatusAsync(request);
+
+			HistoricalPromotionStatusModel model = new HistoricalPromotionStatusModel
 			{
-				HistoricalPromotionStatusModel currentPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
-				IList<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
+				Date = DateTime.UtcNow,
+				TotalDocumentsIncluded = currentPromotionStatus.TotalDocumentsIncluded,
+				TotalDocumentsExcluded = currentPromotionStatus.TotalDocumentsExcluded,
+				TotalDocumentsUntagged = currentPromotionStatus.TotalDocumentsUntagged
+			};
+			return model;
+		}
 
-				bool currentPromotionStatusUpdated = false;
-				DateTime currentDate = currentPromotionStatus.Date.Date;
+		private IList<HistoricalPromotionStatusModel> GetHistoricalDocumentModelAsync(int workspaceId)
+		{
+			IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(workspaceId);
 
-				for (int i = 0; i < historicalPromotionStatus.Count; i++)
+			List<HistoricalPromotionStatusModel> historicalModels = new List<HistoricalPromotionStatusModel>();
+			using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
+			{
+				while (reader.Read())
 				{
-					if (historicalPromotionStatus[i].Date.Date == currentDate)
+					HistoricalPromotionStatusModel historicalModel = new HistoricalPromotionStatusModel
 					{
-						historicalPromotionStatus[i] = currentPromotionStatus;
-						currentPromotionStatusUpdated = true;
-						break;
-					}
+						Date = reader.GetDateTime(0),
+						TotalDocumentsIncluded = reader.GetInt32(1),
+						TotalDocumentsExcluded = reader.GetInt32(2),
+						TotalDocumentsUntagged = reader.GetInt32(3)
+					};
+					historicalModels.Add(historicalModel);
 				}
-
-				if (!currentPromotionStatusUpdated)
-				{
-					historicalPromotionStatus.Add(currentPromotionStatus);
-				}
-
-				HistoricalPromotionStatusSummaryModel model = new HistoricalPromotionStatusSummaryModel
-				{
-					HistoricalPromotionStatus = historicalPromotionStatus.ToArray()
-				};
-				return model;
 			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "{0}.{1}", nameof(DocumentManager), nameof(GetHistoricalPromotionStatusAsync));
-				throw;
-			}
-		}
-
-		private async Task<HistoricalPromotionStatusModel> GetCurrentDocumentModelAsync(int workspaceId)
-		{
-			try
-			{
-				CurrentPromotionStatusRequest request = new CurrentPromotionStatusRequest {WorkspaceArtifactId = workspaceId};
-				CurrentPromotionStatusModel currentPromotionStatus = await GetCurrentPromotionStatusAsync(request);
-
-				HistoricalPromotionStatusModel model = new HistoricalPromotionStatusModel
-				{
-					Date = DateTime.UtcNow,
-					TotalDocumentsIncluded = currentPromotionStatus.TotalDocumentsIncluded,
-					TotalDocumentsExcluded = currentPromotionStatus.TotalDocumentsExcluded,
-					TotalDocumentsUntagged = currentPromotionStatus.TotalDocumentsUntagged
-				};
-				return model;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "{0}.{1}", nameof(DocumentManager), nameof(GetCurrentDocumentModelAsync));
-				throw;
-			}
-		}
-
-		private async Task<IList<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
-		{
-			try
-			{
-				IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(workspaceId);
-
-				List<HistoricalPromotionStatusModel> historicalModels = new List<HistoricalPromotionStatusModel>();
-				using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
-				{
-					while (await reader.ReadAsync())
-					{
-						HistoricalPromotionStatusModel historicalModel = new HistoricalPromotionStatusModel
-						{
-							Date = reader.GetDateTime(0),
-							TotalDocumentsIncluded = reader.GetInt32(1),
-							TotalDocumentsExcluded = reader.GetInt32(2),
-							TotalDocumentsUntagged = reader.GetInt32(3)
-						};
-						historicalModels.Add(historicalModel);
-					}
-				}
-				return historicalModels;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "{0}.{1}", nameof(DocumentManager), nameof(GetHistoricalDocumentModelAsync));
-				throw;
-			}
+			return historicalModels;
 		}
 
 		private string GetDisplayName(int workspaceArtifactId, string artifactGuid)

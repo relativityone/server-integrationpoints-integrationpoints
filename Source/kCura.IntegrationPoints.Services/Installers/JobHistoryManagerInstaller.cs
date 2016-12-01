@@ -6,12 +6,10 @@ using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.API;
-using Relativity.Logging;
-using Relativity.Logging.Factory;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
-	public class JobHistoryManagerInstaller
+	public class JobHistoryManagerInstaller : IInstaller
 	{
 		private readonly List<IWindsorInstaller> _dependencies;
 
@@ -23,11 +21,10 @@ namespace kCura.IntegrationPoints.Services.Installers
 			};
 		}
 
-		public void Install(IWindsorContainer container, IConfigurationStore store)
+		public void Install(IWindsorContainer container, IConfigurationStore store, int workspaceId)
 		{
 			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, true));
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
-			container.Register(Component.For<ILog>().UsingFactoryMethod(k => LogFactory.GetLogger(LogFactory.GetOptionsFromAppDomain().Clone()), true));
 
 			container.Register(Component.For<IWorkspaceManager>().ImplementedBy<WorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<IDestinationWorkspaceParser>().ImplementedBy<DestinationWorkspaceParser>().LifestyleTransient());
