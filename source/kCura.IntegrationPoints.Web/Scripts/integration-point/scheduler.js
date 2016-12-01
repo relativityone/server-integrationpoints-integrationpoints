@@ -1,5 +1,12 @@
 ﻿var Scheduler = function (model) {
 	var self = this;
+	//TODO: move to seperate js file - quick fix
+	var Choice = function (name, value, artifactID, object) {
+		this.displayName = name;
+		this.value = value;
+		this.artifactID = artifactID;
+		this.model = object;
+	};
 
 	this.options = $.extend({}, {
 		enabled: "false",

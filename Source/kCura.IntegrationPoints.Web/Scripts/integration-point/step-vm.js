@@ -121,6 +121,28 @@
 			return d.promise;
 		};
 
+		var _save = function () {
+			if (step === 0) {
+				var d = IP.data.deferred().defer();
+
+				vm.currentStep().submit().then(function (result) {
+					result.artifactID = artifactID;
+					model = result;
+					IP.message.error.clear();
+					d.resolve(result);
+				}).fail(function (err) {
+					if (err.message) {
+						err = err.message;
+					}
+					IP.message.error.raise(err);
+					d.reject(err);
+				});
+				return d.promise;
+			} else {
+				return _next();
+			}
+		};
+
 		IP.messaging.subscribe('next', function () {
 			_next();
 		});
@@ -144,7 +166,7 @@
 		}
 
 		IP.messaging.subscribe('save', function () {
-			_next().then(function (result) {
+			_save().then(function (result) {
 
 				if (typeof (vm.currentStep().validate) !== "function") {
 					vm.currentStep().validate = function () {
