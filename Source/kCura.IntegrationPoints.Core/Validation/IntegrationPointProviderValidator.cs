@@ -15,6 +15,11 @@ namespace kCura.IntegrationPoints.Core.Validation
 		private readonly ILookup<string, IValidator> _validatorsMap;
 		private readonly ISerializer _serializer;
 
+		public static string GetProviderValidatorKey(string sourceProviderId, string destinationProviderId)
+		{
+			return $"{sourceProviderId.ToUpper()}+{destinationProviderId.ToUpper()}";
+		}
+
 		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, ISerializer serializer)
 		{
 			_validatorsMap = validators.ToLookup(x => x.Key);
@@ -61,19 +66,6 @@ namespace kCura.IntegrationPoints.Core.Validation
 			}
 
 			return result;
-		}
-
-		public static string GetProviderValidatorKey(string sourceProviderId, string destinationProviderId)
-		{
-			sourceProviderId = destinationProviderId.ToUpper();
-			destinationProviderId = destinationProviderId.ToUpper();
-
-			return $"{sourceProviderId}+{destinationProviderId}";
-		}
-
-		public static string GetDestinationProviderValidatorKey(string sourceProviderId, string destinationProviderId)
-		{
-			return $"{destinationProviderId}+{sourceProviderId}";
 		}
 	}
 }

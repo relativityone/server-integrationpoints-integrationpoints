@@ -24,6 +24,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		ExportNativeSettingsValidator CreateExportNativeSettingsValidator();
 
 		ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName);
+
+		FieldsMapValidator CreateFieldsMapValidator();
 	}
 
 	public class FileDestinationProviderValidatorsFactory : IFileDestinationProviderValidatorsFactory
@@ -94,6 +96,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName)
 		{
 			return new ArtifactValidator(_artifactService, workspaceArtifactId, artifactTypeName);
+		}
+
+		public FieldsMapValidator CreateFieldsMapValidator()
+		{
+			return new FieldsMapValidator(_serializer, _exportFieldsService);
 		}
 	}
 }
