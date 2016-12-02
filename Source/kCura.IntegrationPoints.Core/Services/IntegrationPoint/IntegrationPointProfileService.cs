@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
@@ -56,6 +57,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 				SourceProvider sourceProvider = GetSourceProvider(profile.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(profile.DestinationProvider);
+
+				var validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider);
+				if (!validationResult.IsValid)
+				{
+					throw new IntegrationPointProviderValidationException(validationResult);
+				}
 
 				//TODO create CheckForProviderAdditionalPermissions for IP Profile
 				//if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
