@@ -120,6 +120,9 @@ var IP = IP || {};
 		var self = this;
 
 		this.name = ko.observable().extend({ required: true });
+		if (!!settings.name) {
+			self.name(settings.name);
+		}
 
 		this.logErrors = ko.observable();
 		this.showErrors = ko.observable(false);
@@ -139,9 +142,6 @@ var IP = IP || {};
 
 		this.loadSettings = function (settings) {
 			if (settings !== undefined) {
-				if (!!settings.name) {
-					self.name(settings.name);
-				}
 
 				var destinationSettings = JSON.parse(settings.destination || "{}");
 				self.SelectedOverwrite = settings.selectedOverwrite;
@@ -180,7 +180,7 @@ var IP = IP || {};
 
 		this.destination = new Destination(settings.destination, self);
 		this.source = new Source(settings.source, self);
-		this.profile = new Profile(settings.profile, self);
+		this.profile = new Profile(settings.profileName, self);
 		this.scheduler = new Scheduler(settings.scheduler);
 
 		//Subscriptions
@@ -190,14 +190,12 @@ var IP = IP || {};
 		});
 
 		this.loadProfile = function (profile) {
-			console.log('Subscribe');
 			self.loadSettings(profile);
 			self.destination.loadSettings(JSON.parse(profile.destination || "{}"));
 			self.source.loadSettings(profile);
 			self.scheduler.loadSettings(profile.scheduler);
-			console.log(profile);
+			$.stepProgress.allowSaveProfile();
 		};
-
 
 		var sourceTypePromise = root.data.ajax({ type: 'get', async: false, url: root.utils.generateWebAPIURL('SourceType') });
 		var destinationTypePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') });
@@ -339,7 +337,7 @@ var IP = IP || {};
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});
-
+				this.model.profileName = this.model.profile.selectedProfile();
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
 				this.model.SourceProviderConfiguration = this.model.source.SourceProviderConfiguration;

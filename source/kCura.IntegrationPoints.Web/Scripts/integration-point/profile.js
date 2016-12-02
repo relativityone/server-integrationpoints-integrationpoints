@@ -1,10 +1,5 @@
-﻿var Profile = function (p, parentModel) {
-	try {
-		p = JSON.parse(p);
-	} catch (e) {
-		p = p;
-	}
-	this.settings = $.extend({}, p);
+﻿var Profile = function (profileName, parentModel) {
+	this.settings = $.extend({}, { name: profileName });
 	var self = this;
 	self.disable = parentModel.hasBeenRun();
 
@@ -40,6 +35,9 @@
 			});
 			self.profileTypes(profileTypes);
 			self.profiles = result;
+			if (self.settings.name) {
+				self.selectedProfile(self.settings.name);
+			}
 		});
 	};
 
