@@ -322,7 +322,7 @@
 		}]
 	});
 
-	this.scheduledTime = ko.observable(this.options.scheduledTime).extend({
+	this.scheduledTime = ko.observable(IP.timeUtil.formatTimeMinutes(this.options.scheduledTime)).extend({
 		required: {
 			onlyIf: function () {
 				return self.isEnabled();
