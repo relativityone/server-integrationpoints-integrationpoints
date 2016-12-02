@@ -36,21 +36,21 @@ namespace kCura.IntegrationPoints.Services
 		{
 			return
 				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetPercentagePushedToReviewAsync(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+					Execute((IDocumentRepository documentRepository) => documentRepository.GetPercentagePushedToReview(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 
 		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
 			return
 				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetCurrentPromotionStatusAsync(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+					Execute((IDocumentRepository documentRepository) => documentRepository.GetCurrentPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 
 		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
 			return
 				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetHistoricalPromotionStatusAsync(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+					Execute((IDocumentRepository documentRepository) => documentRepository.GetHistoricalPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 
 		protected override IInstaller Installer => _installer ?? (_installer = new DocumentManagerInstaller());

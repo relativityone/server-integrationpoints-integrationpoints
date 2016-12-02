@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Services.Tests
 
 			try
 			{
-				_keplerService.Execute<int, int>(a => { throw expectedException; }, 1).Wait();
+				_keplerService.Execute<char, int>(a => { throw expectedException; }, 1).Wait();
 			}
 			catch
 			{
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Services.Tests
 				//Ignore as throwing exception is tested in different test
 			}
 
-			_logger.Received(1).LogError(expectedException, "{}", typeof(float));
+			_logger.Received(1).LogError(expectedException, "{}", typeof(double));
 		}
 
 		[Test]

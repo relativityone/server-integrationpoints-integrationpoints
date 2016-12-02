@@ -60,23 +60,23 @@ namespace kCura.IntegrationPoints.Services
 			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
 		}
 
-		protected Task<T> Execute<T, TT>(Func<TT, T> a, int workspaceId)
+		protected Task<TResult> Execute<TResult, TParameter>(Func<TParameter, TResult> funcToExecute, int workspaceId)
 		{
 			CheckPermissions(workspaceId);
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceId))
 				{
-					TT t = container.Resolve<TT>();
+					TParameter parameter = container.Resolve<TParameter>();
 					return Task.Run(() =>
 					{
 						try
 						{
-							return a(t);
+							return funcToExecute(parameter);
 						}
 						catch (Exception e)
 						{
-							_logger.LogError(e, "{}", typeof(T));
+							_logger.LogError(e, "{}", typeof(TParameter));
 							throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 						}
 					});
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "{}", typeof(T));
+				_logger.LogError(e, "{}", typeof(TParameter));
 				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 			}
 		}

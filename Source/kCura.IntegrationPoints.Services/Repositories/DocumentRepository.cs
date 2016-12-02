@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 
 		private static readonly int[] _viewPermission = {1};
 
-		public PercentagePushedToReviewModel GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
+		public PercentagePushedToReviewModel GetPercentagePushedToReview(PercentagePushedToReviewRequest request)
 		{
 			string destinationWorkspaceDisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
 
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 			return model;
 		}
 
-		public CurrentPromotionStatusModel GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
+		public CurrentPromotionStatusModel GetCurrentPromotionStatus(CurrentPromotionStatusRequest request)
 		{
 			string promotedDisplayName = GetDisplayName(request.WorkspaceArtifactId, _PROMOTE_GUID);
 			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 			return model;
 		}
 
-		public HistoricalPromotionStatusSummaryModel GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
+		public HistoricalPromotionStatusSummaryModel GetHistoricalPromotionStatus(HistoricalPromotionStatusRequest request)
 		{
 			HistoricalPromotionStatusModel currentPromotionStatus = GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
 			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 		private HistoricalPromotionStatusModel GetCurrentDocumentModelAsync(int workspaceId)
 		{
 			CurrentPromotionStatusRequest request = new CurrentPromotionStatusRequest {WorkspaceArtifactId = workspaceId};
-			CurrentPromotionStatusModel currentPromotionStatus = GetCurrentPromotionStatusAsync(request);
+			CurrentPromotionStatusModel currentPromotionStatus = GetCurrentPromotionStatus(request);
 
 			HistoricalPromotionStatusModel model = new HistoricalPromotionStatusModel
 			{

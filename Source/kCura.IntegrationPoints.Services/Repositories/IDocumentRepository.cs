@@ -2,8 +2,8 @@
 {
 	public interface IDocumentRepository
 	{
-		CurrentPromotionStatusModel GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request);
-		HistoricalPromotionStatusSummaryModel GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request);
-		PercentagePushedToReviewModel GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request);
+		CurrentPromotionStatusModel GetCurrentPromotionStatus(CurrentPromotionStatusRequest request);
+		HistoricalPromotionStatusSummaryModel GetHistoricalPromotionStatus(HistoricalPromotionStatusRequest request);
+		PercentagePushedToReviewModel GetPercentagePushedToReview(PercentagePushedToReviewRequest request);
 	}
 }
