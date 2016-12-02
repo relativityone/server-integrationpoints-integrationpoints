@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 		object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId);
 		IList<IntegrationPointModel> GetAllIntegrationPoints();
 		int GetSourceProviderArtifactId(int workspaceArtifactId, string sourceProviderGuidIdentifier);
+		int GetDestinationProviderArtifactId(int workspaceArtifactId, string destinationProviderGuidIdentifier);
 		int GetIntegrationPointArtifactTypeId();
 	}
 }
