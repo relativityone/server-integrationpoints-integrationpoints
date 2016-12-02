@@ -5,7 +5,7 @@
 			<span style="visibility: hidden;" id="forceRedraw"></span>
 			<div class="map-field-title">
 				<label class="list-title leftSide-field">Source</label>
-				 <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map Fields</button>
+				<button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map Fields</button>
 				<label class="list-title rightSide-field">Destination</label>
 			</div>
 			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
@@ -15,7 +15,7 @@
 				</div>
 				<div class="cell selection map-move">
 					<div>
-						 <a href="#" id="add-all-source-fields" class="icon-move-last" data-bind="click: addSourceToMapped"></a>
+						<a href="#" id="add-all-source-fields" class="icon-move-last" data-bind="click: addSourceToMapped"></a>
 						<a href="#" id="add-source-field" class="icon-move-next" data-bind="click: addToMappedSource"></a>
 						<a href="#" id="remove-source-field" class="icon-move-previous" data-bind="click: addToSourceField"></a>
 						<a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addAlltoSourceField"></a>
@@ -69,7 +69,7 @@
 				</div>
 			</div>
 			<div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
-				<div class="field-label required">Multi-Select Field<br />Overlay Behavior:</div>
+				<div class="field-label required">Multi-Select Field<br/>Overlay Behavior:</div>
 				<div class="field-value">
 					<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
 				</div>
@@ -91,10 +91,10 @@
 				<div class="field-value">
 					<ul>
 						<li>
-							<input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes
+							<label><input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</label>
 						</li>
 						<li>
-							<input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No
+							<label><input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</label>
 						</li>
 					</ul>
 				</div>
@@ -107,16 +107,16 @@
 			</div>
 			<div class="field-row" data-bind="visible: showManager">
 				<div class="field-label required ">
-					Custodian Manager<br />
+					Custodian Manager<br/>
 					Contains Link:
 				</div>
 				<div class="field-value">
 					<ul>
 						<li>
-							<input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes
+							<label><input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</label>
 						</li>
 						<li>
-							<input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No
+							<label><input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</label>
 						</li>
 					</ul>
 				</div>
@@ -126,10 +126,10 @@
 				<div class="field-value">
 					<ul>
 						<li>
-							<input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes
+							<label><input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes</label>
 						</li>
 						<li>
-							<input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No
+							<label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
 						</li>
 					</ul>
 				</div>
@@ -155,10 +155,10 @@
 					<div class="field-value">
 						<ul>
 							<li>
-								<input id="extracted-text-radio-0" type="radio" name="import_extractedTextLocation" value="true" data-bind="checked: ExtractedTextFieldContainsFilePath">Yes
+								<label><input id="extracted-text-radio-0" type="radio" name="import_extractedTextLocation" value="true" data-bind="checked: ExtractedTextFieldContainsFilePath">Yes</label>
 							</li>
 							<li>
-								<input id="extracted-text-radio-1" type="radio" name="import_extractedTextLocation" value="false" data-bind="checked: ExtractedTextFieldContainsFilePath">No
+								<label><input id="extracted-text-radio-1" type="radio" name="import_extractedTextLocation" value="false" data-bind="checked: ExtractedTextFieldContainsFilePath">No</label>
 							</li>
 						</ul>
 					</div>

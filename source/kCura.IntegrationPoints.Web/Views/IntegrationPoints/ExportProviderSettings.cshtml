@@ -17,26 +17,22 @@
 									<ul>
 										<li>
 											<div class="field-value">
-												<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true" />
-												<label disabled="true">Load File</label>
+												<label disabled="true"><input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true" />Load File</label>
 											</div>
 										</li>
 										<li>
 											<div class="field-value"  data-bind="visible: !ExportRdoMode()">
-												<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages" />
-												<label>Images</label>
+												<label><input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages" />Images</label>
 											</div>
 										</li>
 										<li>
 											<div class="field-value">
-												<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives" />
-												<label>Natives</label>
+												<label><input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives" />Natives</label>
 											</div>
 										</li>
 										<li>
 											<div class="field-value">
-												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles" />
-												<label>Text Fields As Files</label>
+												<label><input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles" />Text Fields As Files</label>
 											</div>
 										</li>
 									</ul>
@@ -173,7 +169,7 @@
 										<ul data-bind="foreach: ExportEnums.FilePathType">
 											<li>
 												<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
-												<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index() }"></label>
+												<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index(),for: 'filePath_' + $index() }"></label>
 												<!-- ko if: value==2 -->
 												<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
 												<!-- /ko -->
