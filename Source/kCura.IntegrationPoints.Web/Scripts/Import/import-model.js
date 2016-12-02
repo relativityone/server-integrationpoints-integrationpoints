@@ -17,25 +17,26 @@
         return target;
     };
 
-    var ImportTypeModel = function (data) {
-        var self = this;
-
-        self.id = ko.observable(data.id);
-        self.name = ko.observable(data.name);
-        self.value = ko.observable(data.value);
+    var ImportTypeEnum = {
+    	Document: 0,
+    	Image: 1,
+    	Production: 2
     };
 
     var viewModel = function () {
-        //TODO: refactor viewmodel
-        //- why are we passing self.Fileshare into the ko.observable function that defines... this.Fileshare? understand required / onlyIf; is this knockout or integration points?
-
         var self = this;
-        self.selectedImportType = ko.observable("document");
-        self.importTypes = ko.observableArray([
-            new ImportTypeModel({ value: "document", name: "Document Load File" }),
-            new ImportTypeModel({ value: "image", name: "Image Load File" }),
-            new ImportTypeModel({ value: "production", name: "Production Load File" })
-        ]);
+
+        self.selectedImportType = ko.observable();
+        self.setSelectedImportType = function(data) {
+	        self.selectedImportType(data);
+        }
+
+
+	    self.importTypes = ko.observableArray([]);
+	    $.getJSON(root.utils.generateWebAPIURL("/ImportProviderDocument/GetImportTypes"), function (data) {
+		    self.importTypes(data);
+		    self.setSelectedImportType(ImportTypeEnum.Document);
+	    });
 
         self.populateFileColumnHeaders = ko.observable();
         self.setPopulateFileColumnHeaders = function (data) {

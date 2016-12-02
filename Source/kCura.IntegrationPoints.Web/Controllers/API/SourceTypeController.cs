@@ -47,20 +47,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				Config = new SourceProviderConfigModel(x.Config, rdoTypesCache)
 			}).ToList();
 
-            // TODO: Remove the toggle once the Import provider is ready
-            bool isShowImportProviderToggleEnabled = _toggleProvider.IsEnabled<ShowFileShareImportProviderToggle>();//TODO toggle
-            if (!isShowImportProviderToggleEnabled)
-            {
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (list.ElementAt(i).value.ToUpper() == "548F0873-8E5E-4DA6-9F27-5F9CDA764636")//TODO GUID Import provider
-                    {
-                        list.RemoveAt(i);
-                        break;
-                    }
-                }
-            }
-
             return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 	}

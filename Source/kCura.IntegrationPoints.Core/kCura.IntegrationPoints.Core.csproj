@@ -274,6 +274,7 @@
     <Compile Include="Managers\IWorkspaceManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Models\ExportSettings.cs" />
+    <Compile Include="Models\ImportType.cs" />
     <Compile Include="Models\IntegrationPointModelBase.cs" />
     <Compile Include="Models\IntegrationPointProfileModel.cs" />
     <Compile Include="Models\IntegrationPointProviderValidationModel.cs" />
@@ -284,8 +285,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\IImportTypeService.cs" />
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\IIntegrationPointValidationService.cs" />
+    <Compile Include="Services\ImportTypeService.cs" />
+    <Compile Include="Toggles\ShowImportProviderNonDocumentTypesToggle.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
