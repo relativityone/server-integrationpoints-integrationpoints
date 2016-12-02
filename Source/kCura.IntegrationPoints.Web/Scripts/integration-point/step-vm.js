@@ -197,6 +197,7 @@
 				//redirect to page!!
 				IP.unsavedChangesHandler.unregister();
 				$('#save').attr('save', 'true');
+				IP.modal.open(200, $('body'));
 				var prefix = window.top.location.protocol + "//" + window.top.location.host;
 				window.top.location = prefix + result.returnURL;
 			}, function (error) {
