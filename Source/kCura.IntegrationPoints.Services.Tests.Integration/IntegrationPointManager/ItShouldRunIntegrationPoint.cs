@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		}
 
 		[Test]
+		[Category(Constants.SMOKE_TEST)]
 		public void Execute()
 		{
 			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormatedDateTimeNow}", "Append Only");

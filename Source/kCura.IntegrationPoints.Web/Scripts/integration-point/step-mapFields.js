@@ -265,6 +265,9 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
+		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
+		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
+
 		this.TotalLongTextFields = {};//has the full set of long text fields in workspace
 
 		this.MappedLongTextFields = ko.observableArray([]); //only has the mapped long text fields
@@ -358,7 +361,7 @@ ko.validation.insertValidationMessage = function (element) {
 		if (destination.DoNotUseFieldsMapCache) {
 			mappedSourcePromise = [];
 		} else {
-			if (typeof (model.map) === "undefined") {
+			if (typeof (model.map) === "undefined" || model.map === null) {
 				mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
 			} else {
 				mappedSourcePromise = jQuery.parseJSON(model.map);
@@ -662,15 +665,10 @@ ko.validation.insertValidationMessage = function (element) {
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
 		this.getTemplate = function () {
-		    if (IP.reverseMapFields) {
-		            self.settings.url=
-		        IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3Reversed');
-self.settings.templateID = "step4";
-		    }else{
-				 self.settings.url=
-		        IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3');
-				self.settings.templateID = "step3";
-			}
+
+			self.settings.url=
+			IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3');
+			self.settings.templateID = "step3";
 
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
 

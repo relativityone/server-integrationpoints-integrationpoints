@@ -438,8 +438,8 @@
       <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.192, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.1.0.1.192\lib\net45\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.264, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.264\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
@@ -494,8 +494,8 @@
       <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.192, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.192\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.264, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.264\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.74.5, Culture=neutral, processorArchitecture=MSIL">
@@ -522,24 +522,24 @@
       <HintPath>..\packages\Relativity.Toggles.1.0.0.68\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs, Version=1.0.12.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.1.0.12\lib\net45\Relativity.Vfs.dll</HintPath>
+    <Reference Include="Relativity.Vfs, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.1.0.20\lib\net45\Relativity.Vfs.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO, Version=1.0.12.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.12\lib\net451\Relativity.Vfs.IO.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO.Azure, Version=1.0.12.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.12\lib\net451\Relativity.Vfs.IO.Azure.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO.Azure, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.Azure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO.Disk, Version=1.0.12.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.12\lib\net451\Relativity.Vfs.IO.Disk.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO.Disk, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.Disk.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO.Interfaces, Version=1.0.12.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.12\lib\net451\Relativity.Vfs.IO.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO.Interfaces, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Remotion.Linq, Version=2.0.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">

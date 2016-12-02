@@ -506,8 +506,12 @@
     <Content Include="Scripts\Export\export-source-view-model.js" />
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
+    <Content Include="Scripts\integration-point\profile.js" />
+    <Content Include="Scripts\integration-point\source.js" />
+    <Content Include="Scripts\integration-point\destination.js" />
     <Content Include="Scripts\integration-point\picker.js" />
     <Content Include="Scripts\integration-point\save-as-profile-modal-vm.js" />
+    <Content Include="Scripts\integration-point\choice.js" />
     <Content Include="Scripts\integration-point\scheduler.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
@@ -730,7 +734,6 @@
     </Content>
     <Content Include="Views\IntegrationPoints\NotEnoughPermission.cshtml" />
     <Content Include="Views\IntegrationPoints\RelativityProviderConfiguration.cshtml" />
-    <Content Include="Views\IntegrationPoints\_IntegrationMapFieldsReversed.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderFields.cshtml" />
     <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
     <Content Include="Views\Fileshare\ExportDetails.cshtml" />

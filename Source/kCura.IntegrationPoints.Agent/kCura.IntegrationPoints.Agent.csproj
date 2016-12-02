@@ -189,6 +189,7 @@
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />
     <Compile Include="Tasks\TaskComponentSelector.cs" />
+    <Compile Include="Validation\IntegrationPointProviderEmptyValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

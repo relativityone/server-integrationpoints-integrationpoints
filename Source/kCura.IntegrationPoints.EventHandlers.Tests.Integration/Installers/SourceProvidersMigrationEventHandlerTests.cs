@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		}
 
 		[Test]
+		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void OneProviderInPreviousWorkspace()
 		{
 			Guid identifier = new Guid("e01ff2d2-2ac7-4390-bbc3-64c6c17758bc");

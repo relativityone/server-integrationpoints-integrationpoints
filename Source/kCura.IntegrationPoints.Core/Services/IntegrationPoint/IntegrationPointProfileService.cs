@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -19,9 +20,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		public IntegrationPointProfileService(IHelper helper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			ISerializer serializer, IChoiceQuery choiceQuery,
-			IManagerFactory managerFactory)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory,new IntegrationPointProfileFieldGuidsConstants())
+			ISerializer serializer,
+			IChoiceQuery choiceQuery,
+			IManagerFactory managerFactory,
+			IIntegrationPointProviderValidator integrationModelValidator)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator)
 		{
 		}
 
@@ -46,12 +49,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			PeriodicScheduleRule rule;
 			try
 			{
-				if (model.ArtifactID > 0)
-				{
-					IntegrationPointProfileModel existingModel = ReadIntegrationPointProfile(model.ArtifactID);
-					ValidateConfigurationWhenUpdatingObject(model, existingModel);
-				}
-
 				IList<Choice> choices =
 					ChoiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
 
@@ -60,6 +57,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 				SourceProvider sourceProvider = GetSourceProvider(profile.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(profile.DestinationProvider);
+
+				var validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider);
+				if (!validationResult.IsValid)
+				{
+					throw new IntegrationPointProviderValidationException(validationResult);
+				}
 
 				//TODO create CheckForProviderAdditionalPermissions for IP Profile
 				//if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
@@ -96,7 +99,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 			return profile.ArtifactId;
 		}
-
 
 		protected override IntegrationPointModelBase GetModel(int artifactId)
 		{

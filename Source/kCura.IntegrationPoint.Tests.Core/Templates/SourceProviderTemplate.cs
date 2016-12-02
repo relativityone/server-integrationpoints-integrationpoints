@@ -9,12 +9,14 @@ using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Installers;
@@ -124,10 +126,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
+			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };
 #pragma warning restore 618
+
 			foreach (IWindsorInstaller dependency in dependencies)
 			{
 				dependency.Install(Container, ConfigurationStore);
@@ -213,7 +217,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				jobHistoryService.UpdateRdo(jobHistory);
 			}
-			
+
 			return jobHistory;
 		}
 
@@ -301,6 +305,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 
 				RelativityApplicationManager.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId);
+				RelativityApplicationManager.DeployIntegrationPointsCustomPage();
 			});
 			if (CreateAgent)
 			{
@@ -308,7 +313,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				AgentArtifactId = agentCreatedResult.ArtifactID;
 				_deleteAgentInTeardown = agentCreatedResult.Success;
 			}
-		} 
+		}
 
 		#endregion Helper methods
 	}

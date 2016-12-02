@@ -37,8 +37,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
-
-			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
+			
+			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
+			{
+				new Field(1, "Name", "Name", 1, 1, 1, false, false, new FieldValue(_ARTIFACT_NAME), null)
+			});
 			var application = new Application(_APPLICATION_ID, "", "");
 
 			_instance =
@@ -54,6 +57,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 		private const int _ARTIFACT_ID = 100300;
 		private const int _APPLICATION_ID = 100101;
+		private const string _ARTIFACT_NAME = "artifact_name";
 		private const string _RUN = "Run";
 		private const string _STOP = "Stop";
 		private const string _RETRY_ERRORS = "Retry Errors";
@@ -190,7 +194,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				StopOnClickEvent = actionButtonOnClickEvent
 			};
 
-			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
+			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, _ARTIFACT_NAME, buttonStates)
 				.Returns(onClickEvents);
 
 			// ACT
@@ -257,6 +261,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			}
 		}
 
+		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		[TestCase(true, true)]
 		[TestCase(true, false)]
 		[TestCase(false, false)]
@@ -337,7 +342,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				StopOnClickEvent = actionButtonOnClickEvent
 			};
 
-			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
+			_onClickEventHelper.GetOnClickEvents(_APPLICATION_ID, _ARTIFACT_ID, _ARTIFACT_NAME, buttonStates)
 				.Returns(onClickEvents);
 
 			// ACT

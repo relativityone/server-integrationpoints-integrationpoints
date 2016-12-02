@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void Ldap_MultipleJobs_AgentDropsJob_RunJob()
 		{
 			Job job1 = null;

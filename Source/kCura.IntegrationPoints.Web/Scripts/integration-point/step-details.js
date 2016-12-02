@@ -115,234 +115,15 @@ var IP = IP || {};
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'));
 	});
 
-	var Choice = function (name, value, artifactID, object) {
-		this.displayName = name;
-		this.value = value;
-		this.artifactID = artifactID;
-		this.model = object;
-	};
-
-	var Source = function (s, parentModel) {
-		this.settings = $.extend({}, s);
-		this.templateID = 'ldapSourceConfig';
-		var self = this;
-		self.disable = parentModel.hasBeenRun();
-
-		this.sourceTypes = ko.observableArray();
-		this.selectedType = ko.observable().extend({ required: true });
-		this.isSourceProviderDisabled = ko.observable(false);
-
-		this.SourceProviderConfiguration = ko.observable();
-
-		this.tmpRelativitySourceTypeObject = null;
-
-		this.sourceProvider = self.settings.sourceProvider || 0;
-
-		this.loadSettings = function (settings) {
-			self.settings = settings;
-			self.sourceProvider = settings.sourceProvider;
-			self.updateSelectedType();
-		};
-		
-
-		this.displayRelativityInSourceTypes = function (value) {
-			if (self.tmpRelativitySourceTypeObject === null) return;
-
-			if (value === true) {
-				var containsRelativityObj = false;
-				$.each(self.sourceTypes(),
-					function () {
-						if (this.displayName === "Relativity") {
-							containsRelativityObj = true;
-						}
-					});
-				if (containsRelativityObj === false) {
-					self.sourceTypes.push(self.tmpRelativitySourceTypeObject);
-				}
-			} else {
-				$.each(self.sourceTypes(),
-					function () {
-						if (this === self.tmpRelativitySourceTypeObject) {
-							self.sourceTypes.remove(this);
-						}
-					});
-			}
-		};
-
-		this.updateSelectedType = function () {
-
-			$.each(self.sourceTypes(), function () {
-				if (!!self.settings && this.value === self.settings.selectedType || this.artifactID === self.sourceProvider) {
-					self.selectedType(this.value);
-				}
-
-				if (this.displayName == "Relativity") {
-					self.tmpRelativitySourceTypeObject = this;
-				}
-			});
-		};
-
-		this.selectedType.subscribe(function (selectedValue) {
-			$.each(self.sourceTypes(), function () {
-				if (this.value === selectedValue) {
-					self.sourceProvider = this.artifactID;
-					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null
-					|| parentModel.destination.selectedDestinationTypeGuid() === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
-						parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
-					} else {
-						var compatibleRdos = this.model.config.compatibleRdoTypes;
-						var rdosToDisplay = [];
-						$.each(parentModel.destination.allRdoTypes(), function () {
-							if (compatibleRdos.indexOf(this.value) > -1) {
-								rdosToDisplay.push(this);
-							}
-						});
-						parentModel.destination.rdoTypes(rdosToDisplay);
-					}
-					self.SourceProviderConfiguration = this.model.config;
-					parentModel.destination.UpdateSelectedItem();
-				}
-			});
-			self.selectedType.isModified(false);
-		});
-	};
-
-	var Destination = function (d, parentModel) {
-		try {
-			d = JSON.parse(d);
-		} catch (e) {
-			d = d;
-		}
-		this.settings = $.extend({}, d);
-		var self = this;
-		self.disable = parentModel.hasBeenRun();
-
-		this.loadSettings = function (settings) {
-			self.settings = settings;
-			self.updateDestinationProvider();
-			self.UpdateSelectedItem();//TODO: refactor RDO update dependency on source
-		};
-
-		this.templateID = 'ldapDestinationConfig';
-		this.allRdoTypes = ko.observableArray();
-		this.rdoTypes = ko.observableArray();
-
-		this.destinationTypes = ko.observableArray();
-		this.selectedDestinationType = ko.observable().extend({ required: true });
-
-		this.selectedDestinationType.subscribe(function (selectedValue) {
-			var destType = self.selectedDestinationTypeGuid();
-			if (destType === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18"
-			|| (typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' || parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null)
-			) {
-				self.rdoTypes(self.allRdoTypes());
-				if (typeof self.artifactTypeID() === 'undefined') {
-					self.artifactTypeID(parentModel.DefaultRdoTypeId);
-				}
-			}
-			else {
-				if ($.isArray(parentModel.source.SourceProviderConfiguration.compatibleRdoTypes)) {
-					var rdosToDisplay = [];
-					$.each(self.allRdoTypes(), function () {
-						if (parentModel.source.SourceProviderConfiguration.compatibleRdoTypes.indexOf(this.value) > -1) {
-							rdosToDisplay.push(this);
-						}
-					});
-					self.rdoTypes(rdosToDisplay);
-				}
-			}
-		});
-
-		this.destinationProviderVisible = ko.observable(false);
-		this.isDestinationProviderDisabled = ko.observable(false);
-
-		var withArtifactId = function (artifacId) {
-			return function (element) {
-				return element.artifactID === artifacId;
-			}
-		}
-		this.selectedDestinationTypeGuid = function () {
-			var results = self.destinationTypes().filter(withArtifactId(self.selectedDestinationType()));
-			return results.length > 0 ? results[0].value : "";
-		}
-
-		this.setRelativityAsDestinationProvider = function () {
-			var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
-				return obj.value === "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
-			});
-			if (defaultRelativityProvider.length === 1) {
-				self.selectedDestinationType(defaultRelativityProvider[0].artifactID);
-			}
-		}
-
-		this.updateDestinationProvider = function () {
-			$.each(self.destinationTypes(), function () {
-				if (!!self.settings && !!self.settings.destinationProviderType && this.value === self.settings.destinationProviderType && self.settings.destinationProviderType !== undefined) {
-					self.selectedDestinationType(this.artifactID);
-				}
-			})
-		};
-		this.artifactTypeID = ko.observable().extend({ required: true });
-		this.UpdateSelectedItem = function () {
-			self.artifactTypeID(self.settings.artifactTypeID);
-		}
-
-		this.isDestinationObjectDisabled = ko.observable(false);
-	};
-
-	var Profile = function (p, parentModel) {
-		try {
-			p = JSON.parse(p);
-		} catch (e) {
-			p = p;
-		}
-		this.settings = $.extend({}, p);
-		var self = this;
-		self.disable = parentModel.hasBeenRun();
-
-		this.templateID = 'profileConfig';
-
-		this.selectedProfile = ko.observable();
-
-		this.profileTypes = ko.observableArray();
-		this.profiles = [];
-
-		this.getSelectedProfile = function (value) {
-			var selectedItem = ko.utils.arrayFirst(self.profiles, function (item) {
-				if (item.artifactID === value) {
-					return item;
-				}
-			});
-			return selectedItem;
-		};
-
-		this.getProfiles = function (ipType) {
-			var profilePromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetByType', ipType) });
-			profilePromise.then(function (result) {
-				var profileTypes = $.map(result, function (entry) {
-					return new Choice(entry.name, entry.artifactID);
-				});
-				self.profileTypes(profileTypes);
-				self.profiles = result;
-			});
-		};
-
-		this.publishUpdateProfile = function () {
-			var profileId = self.selectedProfile();
-			if (!!profileId) {
-				var item = self.getSelectedProfile(profileId);
-				IP.messaging.publish("loadProfile", item);
-			}
-		};
-
-	};
-
 	var Model = function (m) {
 		var settings = $.extend({}, m);
 		var self = this;
 
 		this.name = ko.observable().extend({ required: true });
-	
+		if (!!settings.name) {
+			self.name(settings.name);
+		}
+
 		this.logErrors = ko.observable();
 		this.showErrors = ko.observable(false);
 		this.isTypeDisabled = ko.observable(false);
@@ -361,9 +142,6 @@ var IP = IP || {};
 
 		this.loadSettings = function (settings) {
 			if (settings !== undefined) {
-				if (!!settings.name) {
-					self.name(settings.name);
-				}
 
 				var destinationSettings = JSON.parse(settings.destination || "{}");
 				self.SelectedOverwrite = settings.selectedOverwrite;
@@ -402,31 +180,29 @@ var IP = IP || {};
 
 		this.destination = new Destination(settings.destination, self);
 		this.source = new Source(settings.source, self);
-		this.profile = new Profile(settings.profile, self);
+		this.profile = new Profile(settings.profileName, self);
 		this.scheduler = new Scheduler(settings.scheduler);
-		
+
 		//Subscriptions
 		this.type.subscribe(function (value) {
 			self.setTypeVisibility(value);
 			self.profile.getProfiles(value);
 		});
-		
+
 		this.loadProfile = function (profile) {
-			console.log('Subscribe');
 			self.loadSettings(profile);
 			self.destination.loadSettings(JSON.parse(profile.destination || "{}"));
 			self.source.loadSettings(profile);
 			self.scheduler.loadSettings(profile.scheduler);
-			console.log(profile);
+			$.stepProgress.allowSaveProfile();
 		};
-
 
 		var sourceTypePromise = root.data.ajax({ type: 'get', async: false, url: root.utils.generateWebAPIURL('SourceType') });
 		var destinationTypePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') });
 		var rdoFilterPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetAll') });
 		var defaultRdoTypeIdPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter/GetDefaultRdoTypeId') });
 		var ipTypesPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointTypes') });
-		
+
 		root.data.deferred().all([
 				sourceTypePromise,
 				destinationTypePromise,
@@ -459,21 +235,19 @@ var IP = IP || {};
 
 			self.destination.destinationTypes(dTypes);
 			self.destination.allRdoTypes(rdoTypes);
+			self.source.sourceTypes(sTypes);
+			self.integrationPointTypes(ipTypes);
 
 
 			self.destination.destinationProviderVisible(self.destination.destinationTypes().length > 1);
-
 			self.destination.setRelativityAsDestinationProvider();
 			self.destination.updateDestinationProvider();
-
-			self.source.sourceTypes(sTypes);
 			self.source.updateSelectedType();
 
-			self.integrationPointTypes(ipTypes);
 			self.setTypeVisibility(self.type());
 			self.profile.getProfiles(self.type());
 		});
-		
+
 		this.submit = function () {
 			this.showErrors(true);
 			this.scheduler.submit();
@@ -563,7 +337,7 @@ var IP = IP || {};
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});
-
+				this.model.profileName = this.model.profile.selectedProfile();
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
 				this.model.SourceProviderConfiguration = this.model.source.SourceProviderConfiguration;

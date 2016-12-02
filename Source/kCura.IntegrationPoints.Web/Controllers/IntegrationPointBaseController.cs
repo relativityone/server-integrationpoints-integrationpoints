@@ -80,11 +80,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("~/Views/IntegrationPoints/_IntegrationDetailsPartial.cshtml");
 		}
 
-		public ActionResult StepDetails3Reversed()
-		{
-			return PartialView("~/Views/IntegrationPoints/_IntegrationMapFieldsReversed.cshtml");
-		}
-
 		public ActionResult StepDetails3()
 		{
 			return PartialView("~/Views/IntegrationPoints/_IntegrationMapFields.cshtml");
