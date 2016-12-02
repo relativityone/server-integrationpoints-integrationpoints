@@ -20,15 +20,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 		public override void SetUp()
 		{
-			var logger = Substitute.For<ILog>();
-
 			_relativityIntegrationPointsRepository = Substitute.For<IRelativityIntegrationPointsRepository>();
 			_completedJobsHistoryRepository = Substitute.For<ICompletedJobsHistoryRepository>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_jobHistoryAccess = Substitute.For<IJobHistoryAccess>();
 			_summaryModelBuilder = Substitute.For<IJobHistorySummaryModelBuilder>();
 
-			_jobHistoryRepository = new JobHistoryRepository(logger, _relativityIntegrationPointsRepository, _completedJobsHistoryRepository, _workspaceManager, _jobHistoryAccess,
+			_jobHistoryRepository = new JobHistoryRepository(_relativityIntegrationPointsRepository, _completedJobsHistoryRepository, _workspaceManager, _jobHistoryAccess,
 				_summaryModelBuilder);
 		}
 

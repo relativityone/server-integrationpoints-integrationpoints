@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using NSubstitute;
@@ -13,7 +14,7 @@ using Relativity.Logging;
 namespace kCura.IntegrationPoints.Services.Tests
 {
 	[TestFixture]
-	public class KeplerServiceTests : TestBase
+	public class KeplerServicePermissionTests : TestBase
 	{
 		private KeplerService _keplerServiceBase;
 		private ILog _logger;
@@ -83,5 +84,7 @@ namespace kCura.IntegrationPoints.Services.Tests
 		{
 			base.CheckPermissions(workspaceId);
 		}
+
+		protected override IInstaller Installer { get; }
 	}
 }

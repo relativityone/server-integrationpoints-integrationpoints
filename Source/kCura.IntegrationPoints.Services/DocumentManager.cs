@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
@@ -11,23 +12,20 @@ namespace kCura.IntegrationPoints.Services
 	/// </summary>
 	public class DocumentManager : KeplerServiceBase, IDocumentManager
 	{
-		private readonly IDocumentRepository _documentRepository;
+		private IInstaller _installer;
 
 		/// <summary>
 		///     For testing purposes only
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		/// <param name="documentRepository"></param>
-		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IDocumentRepository documentRepository)
+		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory)
 			: base(logger, permissionRepositoryFactory)
 		{
-			_documentRepository = documentRepository;
 		}
 
 		public DocumentManager(ILog logger) : base(logger)
 		{
-			_documentRepository = new DocumentRepository(logger);
 		}
 
 		public void Dispose()
@@ -36,17 +34,25 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
-			return await Execute(() => _documentRepository.GetPercentagePushedToReviewAsync(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			return
+				await
+					Execute((IDocumentRepository documentRepository) => documentRepository.GetPercentagePushedToReview(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 
 		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
-			return await Execute(() => _documentRepository.GetCurrentPromotionStatusAsync(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			return
+				await
+					Execute((IDocumentRepository documentRepository) => documentRepository.GetCurrentPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 
 		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			return await Execute(() => _documentRepository.GetHistoricalPromotionStatusAsync(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			return
+				await
+					Execute((IDocumentRepository documentRepository) => documentRepository.GetHistoricalPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
+
+		protected override IInstaller Installer => _installer ?? (_installer = new DocumentManagerInstaller());
 	}
 }
