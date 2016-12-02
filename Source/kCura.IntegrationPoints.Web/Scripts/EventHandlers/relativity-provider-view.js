@@ -137,7 +137,7 @@
 		});
 	};
 
-	root.saveAsProfile = function (integrationPointId, workspaceId) {
+	root.saveAsProfile = function (integrationPointId, workspaceId, ipName) {
 		var saveAsProfileModalViewModel = new SaveAsProfileModalViewModel(function (value) {
 			IP.data.ajax({
 				url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, value),
@@ -146,7 +146,7 @@
 		});
 		var promise = Picker.create("IntegrationPoints", "saveAsProfileModal", "SaveAsProfileModal", saveAsProfileModalViewModel);
 		promise.done(function () {
-			saveAsProfileModalViewModel.open(integrationPointId, workspaceId);
+			saveAsProfileModalViewModel.open(ipName);
 		});
 	};
 

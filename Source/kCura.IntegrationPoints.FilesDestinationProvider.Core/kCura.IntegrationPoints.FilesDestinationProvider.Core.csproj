@@ -152,6 +152,7 @@
     <Compile Include="Extensions\ExportFileExtension.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
+    <Compile Include="Installer\ValidationInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />
     <Compile Include="Logging\ExportLoggingMediator.cs" />
     <Compile Include="Logging\ICompositeLoggingMediator.cs" />
@@ -169,11 +170,11 @@
     <Compile Include="Process\ExportProcessRunner.cs" />
     <Compile Include="Process\ExportSettingsBuilder.cs" />
     <Compile Include="Services\ExportInitProcessService.cs" />
-    <Compile Include="Services\ExportSettingsValidationService.cs" />
     <Compile Include="Process\IDelimitersBuilder.cs" />
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Process\IExportSettingsBuilder.cs" />
+    <Compile Include="Services\ArtifactService.cs" />
     <Compile Include="Services\ProductionService.cs" />
     <Compile Include="Process\IVolumeInfoBuilder.cs" />
     <Compile Include="Process\VolumeInfoBuilder.cs" />
@@ -190,10 +191,14 @@
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
-    <Compile Include="Validation\FileCountValidator.cs" />
-    <Compile Include="Validation\IFileCountValidator.cs" />
-    <Compile Include="Validation\IPaddingValidator.cs" />
-    <Compile Include="Validation\PaddingValidator.cs" />
+    <Compile Include="Validation\Parts\ArtifactValidator.cs" />
+    <Compile Include="Validation\Parts\ExportFileValidator.cs" />
+    <Compile Include="Validation\Parts\ExportFileValidatorBase.cs" />
+    <Compile Include="Validation\Parts\ExportNativeSettingsValidator.cs" />
+    <Compile Include="Validation\Parts\FieldsMapValidator.cs" />
+    <Compile Include="Validation\Parts\FileCountValidator.cs" />
+    <Compile Include="Validation\Parts\ViewValidator.cs" />
+    <Compile Include="Validation\Parts\PaddingValidator.cs" />
     <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
@@ -204,6 +209,10 @@
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
     <Compile Include="SharedLibrary\ProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
+    <Compile Include="Validation\FileDestinationProviderConfigurationValidator.cs" />
+    <Compile Include="Validation\FileDestinationProviderValidationMessages.cs" />
+    <Compile Include="Validation\FileDestinationProviderValidatorsFactory.cs" />
+    <Compile Include="Validation\Parts\ProductionValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

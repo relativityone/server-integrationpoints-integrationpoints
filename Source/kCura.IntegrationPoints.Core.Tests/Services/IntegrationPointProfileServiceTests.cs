@@ -6,7 +6,10 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -34,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IManagerFactory _managerFactory;
 		private IntegrationPointProfile _integrationPointProfile;
 		private SourceProvider _sourceProvider;
-
+		private IIntegrationPointProviderValidator _integrationModelValidator;
 		private IntegrationPointProfileService _instance;
 		private IChoiceQuery _choiceQuery;
 
@@ -48,12 +51,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_serializer = Substitute.For<ISerializer>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
-
+			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
-			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(_helper, _caseServiceContext,
-				_contextContainerFactory, _serializer,
-				_choiceQuery, _managerFactory);
+			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>()).Returns(new ValidationResult());
+
+			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(
+				_helper,
+				_caseServiceContext,
+				_contextContainerFactory,
+				_serializer,
+				_choiceQuery,
+				_managerFactory,
+				_integrationModelValidator
+			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();
 			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Returns(Substitute.For<IGenericLibrary<IntegrationPointProfile>>());
@@ -96,10 +107,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				ArtifactID = 0,
 				SourceProvider = 9999,
 				DestinationProvider = 7553,
-				SourceConfiguration = JsonConvert.SerializeObject(new {TargetWorkspaceArtifactId = targetWorkspaceArtifactId}),
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
 				SelectedOverwrite = "SelectedOverwrite",
-				Scheduler = new Scheduler() {EnableScheduler = false},
-				Destination = JsonConvert.SerializeObject(new {DestinationProviderType = ""})
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
 			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
@@ -138,10 +149,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				ArtifactID = 741,
 				SourceProvider = 9999,
 				DestinationProvider = 7553,
-				SourceConfiguration = JsonConvert.SerializeObject(new {TargetWorkspaceArtifactId = targetWorkspaceArtifactId}),
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
 				SelectedOverwrite = "SelectedOverwrite",
-				Scheduler = new Scheduler() {EnableScheduler = false},
-				Destination = JsonConvert.SerializeObject(new {DestinationProviderType = ""})
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
 			var existingModel = new IntegrationPointProfileModel()
@@ -152,7 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				DestinationProvider = model.DestinationProvider,
 				SelectedOverwrite = model.SelectedOverwrite,
 				Scheduler = model.Scheduler,
-				Destination = JsonConvert.SerializeObject(new {DestinationProviderType = ""})
+				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
 			_instance.ReadIntegrationPointProfile(Arg.Is(model.ArtifactID)).Returns(existingModel);
@@ -181,12 +192,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			Assert.AreEqual(model.ArtifactID, result, "The resulting artifact id should match.");
-			_instance.Received(1).ReadIntegrationPointProfile(Arg.Is(model.ArtifactID));
 			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Received(1)
 				.Update(Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == model.ArtifactID));
 
 			_caseServiceContext.RsapiService.SourceProviderLibrary
-				.Received(2)
+				.Received(1)
 				.Read(Arg.Is(model.SourceProvider));
 		}
 
@@ -227,8 +237,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Act
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve Integration Point");
-
-			_instance.Received(1).ReadIntegrationPointProfile(Arg.Is(model.ArtifactID));
 		}
 	}
 }

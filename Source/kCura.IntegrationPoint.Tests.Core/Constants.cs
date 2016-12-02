@@ -6,5 +6,6 @@
 
 		public const string INTEGRATION_CATEGORY = "Integration";
 		public const string STOPJOB_FEATURE = "StopJob";
+		public const string SMOKE_TEST = "SmokeTest";
 	}
 }

@@ -80,6 +80,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetValidatedProfileModel",
+				routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/GetValidatedProfileModel/{artifactId}",
+				defaults: new { controller = "IntegrationPointProfilesAPI", action = "GetValidatedProfileModel" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "RelativityViewSettings",
 				routeTemplate: "{workspaceID}/api/relativity/view",
 				defaults: new { controller = "relativity", action = "GetViewFields" }
@@ -91,7 +97,13 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "FolderPath", action = "GetFields" }
 			);
 
-			config.Routes.MapHttpRoute(
+            config.Routes.MapHttpRoute(
+                name: "FolderPathGetLongTextFields",
+                routeTemplate: "{workspaceID}/api/FolderPath/GetLongTextFields",
+                defaults: new { controller = "FolderPath", action = "GetLongTextFields" }
+            );
+
+            config.Routes.MapHttpRoute(
 				name: "FolderPathGetFolderCount",
 				routeTemplate: "{workspaceID}/api/FolderPath/GetFolderCount/{integrationPointArtifactId}",
 				defaults: new { controller = "FolderPath", action = "GetFolderCount", integrationPointArtifactId = RouteParameter.Optional }
@@ -223,7 +235,7 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "RdoFilter", action = "GetAllViewableRdos" }
 			);
 
-			
+
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",

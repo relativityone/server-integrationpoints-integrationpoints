@@ -160,12 +160,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation;
 			importJob.Settings.DisableNativeValidation = Settings.DisableNativeValidation;
 			importJob.Settings.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = Settings.ExtractedTextFieldContainsFilePath;
+			importJob.Settings.ExtractedTextFieldContainsFilePath = Settings.ExtractedTextFieldContainsFilePath;                       
+
 			// only set if the extracted file map links to extracted text location
 			if (Settings.ExtractedTextFieldContainsFilePath)
 			{
 				importJob.Settings.ExtractedTextEncoding = Settings.ExtractedTextEncoding;
-			}
+                importJob.Settings.LongTextColumnThatContainsPathToFullText = Settings.LongTextColumnThatContainsPathToFullText;
+            }
 
 			importJob.Settings.FileNameColumn = Settings.FileNameColumn;
 			importJob.Settings.FileSizeColumn = Settings.FileSizeColumn;

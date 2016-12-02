@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 	internal class RegisterDocumentTransferProviderTests
 	{
 		[Test]
+		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{
 			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider();

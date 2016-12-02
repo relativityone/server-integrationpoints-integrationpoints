@@ -11,7 +11,8 @@
 		self.view = view;
 	}
 
-	this.open = function () {
+	this.open = function (name) {
+		self.profileName(name);
 		self.view.dialog("open");
 		self.view.keypress(function (e) {
 			if (e.which === 13) {
