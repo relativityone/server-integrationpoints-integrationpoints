@@ -160,42 +160,78 @@ $(function () {
     var ruleFieldId = IP.params['scheduleRuleId'];
     var $field = IP.utils.getViewField(ruleFieldId).siblings('.dynamicViewFieldValue');
     $field.text('');
-    IP.data.ajax({
-        url: IP.utils.generateWebAPIURL(IP.apiControllerName, IP.artifactid),
-        type: 'Get'
-    }).then(function (result) {
-        var result = result.scheduler || {};
-        var sendOn;
-        var obj = [
-			{ key: 'Frequency', value: result.selectedFrequency || '' }
-        ];
 
-        if (result.selectedFrequency === "Weekly") {
-            obj.push({ 'key': 'Reoccur', value: 'Every ' + result.reoccur + ' week(s).' });
-            sendOn = '<ul style="list-style-type: none; padding: 0; margin: 0;">';
-            $.each(JSON.parse(result.sendOn).selectedDays || [], function () {
-                sendOn += '<li>' + this + '</li>';
-            });
-            sendOn += '</ul>';
-            obj.push({ 'key': 'Send On', value: sendOn });
-        }
-        else if (result.selectedFrequency === "Monthly") {
-            sendOn = JSON.parse(result.sendOn);
-            obj.push({ 'key': 'Reoccur', value: 'Every ' + result.reoccur + ' month(s).' });
 
-            if (sendOn.monthChoice === 1) {
-                obj.push({ key: 'Send On', value: 'The ' + dayLookUp[sendOn.selectedType] + ' ' + dayOfMonthLookup[sendOn.selectedDayOfTheMonth] + ' of the Month.' });
-            } else if (sendOn.monthChoice == 2) {
-                obj.push({ key: 'Send On', value: 'Day ' + sendOn.selectedDay + ' of the Month.' });
-            }
-        }
-        obj.push({ key: 'Start Date', value: result.startDate || '' });
-        obj.push({ key: 'End Date', value: result.endDate || '' });
-        obj.push({ key: 'Scheduled Time', value: IP.timeUtil.timeToAmPm(result.scheduledTime || '') });
-        IP.utils.createFields($field, obj);
-    }, function () {
-        $field.text('There was an error retrieving the scheduling information.');
-    });
+	var populateSummarySchedulingTabPromise = function(result) {
+		var windowsTimeZones = result;
+		var promise = IP.data.ajax({
+				url: IP.utils.generateWebAPIURL(IP.apiControllerName, IP.artifactid),
+				type: 'Get'
+			})
+			.then(function(result) {
+					var result = result.scheduler || {};
+					var sendOn;
+					var obj = [
+						{ key: 'Frequency', value: result.selectedFrequency || '' }
+					];
+
+					if (result.selectedFrequency === "Weekly") {
+						obj.push({ 'key': 'Reoccur', value: 'Every ' + result.reoccur + ' week(s).' });
+						sendOn = '<ul style="list-style-type: none; padding: 0; margin: 0;">';
+						$.each(JSON.parse(result.sendOn).selectedDays || [],
+							function() {
+								sendOn += '<li>' + this + '</li>';
+							});
+						sendOn += '</ul>';
+						obj.push({ 'key': 'Send On', value: sendOn });
+					} else if (result.selectedFrequency === "Monthly") {
+						sendOn = JSON.parse(result.sendOn);
+						obj.push({ 'key': 'Reoccur', value: 'Every ' + result.reoccur + ' month(s).' });
+
+						if (sendOn.monthChoice === 1) {
+							obj.push({
+								key: 'Send On',
+								value: 'The ' +
+									dayLookUp[sendOn.selectedType] +
+									' ' +
+									dayOfMonthLookup[sendOn.selectedDayOfTheMonth] +
+									' of the Month.'
+							});
+						} else if (sendOn.monthChoice == 2) {
+							obj.push({ key: 'Send On', value: 'Day ' + sendOn.selectedDay + ' of the Month.' });
+						}
+					}
+					obj.push({ key: 'Start Date', value: result.startDate || '' });
+					obj.push({ key: 'End Date', value: result.endDate || '' });
+
+					var timeZone = null;
+					if (result.timeZoneId) {
+						timeZone = ko.utils.arrayFirst(windowsTimeZones,
+							function (item) {
+								if (item.Id === result.timeZoneId) {
+									return item;
+								}
+							});
+					}
+					obj.push({ key: 'Scheduled Time', value: IP.timeUtil.timeToAmPm(result.scheduledTime || '') + (timeZone ? '; ' + timeZone.DisplayName : '') });
+					IP.utils.createFields($field, obj);
+				},
+				function() {
+					$field.text('There was an error retrieving the scheduling information.');
+				});
+		return promise;
+	};
+
+	IP.data.ajax({
+		contentType: "application/json",
+		dataType: "json",
+		headers: { "X-CSRF-Header": "-" },
+		type: "POST",
+		url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZones")
+	})
+	.then(function (result) {
+		populateSummarySchedulingTabPromise(result);
+	});
 });
 
 $(function () {
