@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace's id where the requested integration point object lives</param>
 		/// <param name="integrationPointArtifactId">the integration point's artifact id</param>
-		Task RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId);
+		Task<object> RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId);
 
 		/// <summary>
 		/// Get all available integration point objects in the workspace.

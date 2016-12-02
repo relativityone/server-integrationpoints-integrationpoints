@@ -53,6 +53,14 @@
     <Reference Include="kCura.IntegrationPoints">
       <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Core, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Castle_Core)\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Windsor, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,10 +77,9 @@
     <Compile Include="JobHistory\DestinationWorkspaceParserTests.cs" />
     <Compile Include="JobHistory\JobHistoryAccessTests.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
-    <Compile Include="KeplerServiceTests.cs" />
-    <Compile Include="Repositories\DocumentRepositoryLoggingTests.cs" />
-    <Compile Include="IntegrationPointRepositoryLoggingTests.cs" />
-    <Compile Include="Repositories\JobHistoryRepositoryLoggingTests.cs" />
+    <Compile Include="KeplerServiceLoggingTests.cs" />
+    <Compile Include="KeplerServicePermissionTests.cs" />
+    <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\JobHistoryRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>

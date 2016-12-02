@@ -92,8 +92,10 @@
     </Compile>
     <Compile Include="DocumentManager.cs" />
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
+    <Compile Include="Installers\DocumentManagerInstaller.cs" />
+    <Compile Include="Installers\IInstaller.cs" />
     <Compile Include="Installers\JobHistoryManagerInstaller.cs" />
-    <Compile Include="Installers\ServiceInstaller.cs" />
+    <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />
     <Compile Include="IntegrationPointManager.cs" />
     <Compile Include="IntegrationPointsModule.cs" />
     <Compile Include="JobHistoryManager.cs" />
