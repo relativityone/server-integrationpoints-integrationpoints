@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Castle.MicroKernel.SubSystems.Configuration;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;

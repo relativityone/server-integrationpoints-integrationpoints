@@ -65,7 +65,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 				CaseContext = Container.Resolve<ICaseServiceContext>();
 				SourceProviders = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
-				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll(new Guid(DestinationProviderFieldGuids.Identifier))
+					.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
 			}
 			catch (Exception setupException)
 			{

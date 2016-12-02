@@ -3,6 +3,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.QueryBuilders;
+using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Relativity.API;
@@ -33,6 +35,11 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = k.Resolve<IHelper>().GetDBContext(-1)).LifestyleTransient());
 			container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
 			container.Register(Component.For<ISystemEventLoggingService>().ImplementedBy<SystemEventLoggingService>().LifestyleTransient());
+
+			container.Register(Component.For<ISourceProviderArtifactIdByGuidQueryBuilder>().ImplementedBy<SourceProviderArtifactIdByGuidQueryBuilder>().LifestyleSingleton());
+			container.Register(Component.For<IDestinationProviderArtifactIdByGuidQueryBuilder>().ImplementedBy<DestinationProviderArtifactIdByGuidQueryBuilder>().LifestyleSingleton());
+			container.Register(Component.For<IIntegrationPointByProvidersQueryBuilder>().ImplementedBy<IntegrationPointByProvidersQueryBuilder>().LifestyleSingleton());
+			container.Register(Component.For<IIntegrationPointsCompletedJobsQueryBuilder>().ImplementedBy<IntegrationPointsCompletedJobsQueryBuilder>().LifestyleSingleton());
 		}
 	}
 }
