@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		/// </summary>
 		/// <param name="model">Integration Point model to validate</param>
 		/// <returns>Validation result</returns>
-		ValidationResult Prevalidate(IntegrationPointModel model);
+		ValidationResult Prevalidate(IntegrationPointProviderValidationModel model);
 
 		/// <summary>
 		/// Performs full validation of the Integration Point model

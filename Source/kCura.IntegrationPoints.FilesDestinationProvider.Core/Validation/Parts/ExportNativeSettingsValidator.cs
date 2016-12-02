@@ -13,9 +13,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 	{
 		private readonly IExportFieldsService _exportFieldsService;
 
-		public ExportNativeSettingsValidator(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, 
-			IExportFileBuilder exportFileBuilder, IExportFieldsService exportFieldsService) 
-			: base(serializer, exportSettingsBuilder, exportFileBuilder)
+		public ExportNativeSettingsValidator(
+			ISerializer serializer,
+			IExportSettingsBuilder exportSettingsBuilder,
+			IExportFileBuilder exportFileBuilder,
+			IExportFieldsService exportFieldsService
+		) : base(serializer, exportSettingsBuilder, exportFileBuilder)
 		{
 			_exportFieldsService = exportFieldsService;
 		}
@@ -23,13 +26,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		protected override ValidationResult PerformValidation(ExportFile exportFile)
 		{
 			var validationResult = new ValidationResult();
-			if (IsRdoExportMode(exportFile))
+
+			if (IsRdoExportMode(exportFile) && exportFile.ExportNative && !FileTypeFieldExists(exportFile))
 			{
-				if (exportFile.ExportNative && !FileTypeFieldExists(exportFile))
-				{
-					validationResult = new ValidationResult(false, FileDestinationProviderValidationMessages.RDO_INVALID_EXPORT_NATIVE_OPTION);
-				}
+				validationResult.Add(FileDestinationProviderValidationMessages.RDO_INVALID_EXPORT_NATIVE_OPTION);
 			}
+
 			return validationResult;
 		}
 

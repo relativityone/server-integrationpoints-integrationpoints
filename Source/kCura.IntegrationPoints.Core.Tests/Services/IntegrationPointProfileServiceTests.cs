@@ -189,12 +189,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			Assert.AreEqual(model.ArtifactID, result, "The resulting artifact id should match.");
-			_instance.Received(1).ReadIntegrationPointProfile(Arg.Is(model.ArtifactID));
 			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Received(1)
 				.Update(Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == model.ArtifactID));
 
 			_caseServiceContext.RsapiService.SourceProviderLibrary
-				.Received(2)
+				.Received(1)
 				.Read(Arg.Is(model.SourceProvider));
 		}
 
@@ -235,8 +234,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Act
 			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve Integration Point");
-
-			_instance.Received(1).ReadIntegrationPointProfile(Arg.Is(model.ArtifactID));
 		}
 	}
 }

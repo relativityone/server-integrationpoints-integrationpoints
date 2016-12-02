@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				}
 			}
 
-			return Request.CreateResponse(HttpStatusCode.InternalServerError);
+			return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 		}
 
 		[HttpPost]

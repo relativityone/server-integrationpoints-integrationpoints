@@ -284,10 +284,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\IIntegrationPointValidationService.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
-    <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />    
+    <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Parts\NameValidator.cs" />
     <Compile Include="Validation\Parts\WorkspaceValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\FolderValidator.cs" />

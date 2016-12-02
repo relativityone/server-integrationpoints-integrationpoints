@@ -174,6 +174,7 @@
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Process\IExportSettingsBuilder.cs" />
+    <Compile Include="Services\ArtifactService.cs" />
     <Compile Include="Services\ProductionService.cs" />
     <Compile Include="Process\IVolumeInfoBuilder.cs" />
     <Compile Include="Process\VolumeInfoBuilder.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
+    <Compile Include="Validation\Parts\ArtifactValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorBase.cs" />
     <Compile Include="Validation\Parts\ExportNativeSettingsValidator.cs" />

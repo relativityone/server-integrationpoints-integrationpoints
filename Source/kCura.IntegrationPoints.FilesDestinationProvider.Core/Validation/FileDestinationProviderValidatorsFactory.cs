@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		ProductionValidator CreateProductionValidator();
 
 		ExportNativeSettingsValidator CreateExportNativeSettingsValidator();
+
+		ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName);
 	}
 
 	public class FileDestinationProviderValidatorsFactory : IFileDestinationProviderValidatorsFactory
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		private readonly IProductionService _productionService;
 		private readonly IViewService _viewService;
 		private readonly IExportFieldsService _exportFieldsService;
+		private readonly IArtifactService _artifactService;
 
 		public FileDestinationProviderValidatorsFactory(
 			ISerializer serializer,
@@ -43,7 +46,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			IRepositoryFactory repositoryFactory,
 			IProductionService productionService,
 			IViewService viewService,
-			IExportFieldsService exportFieldsService
+			IExportFieldsService exportFieldsService,
+			IArtifactService artifactService
 		)
 		{
 			_serializer = serializer;
@@ -54,6 +58,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			_productionService = productionService;
 			_viewService = viewService;
 			_exportFieldsService = exportFieldsService;
+			_artifactService = artifactService;
 		}
 
 		public ExportFileValidator CreateExportFileValidator()
@@ -84,6 +89,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		public ProductionValidator CreateProductionValidator()
 		{
 			return new ProductionValidator(_productionService);
+		}
+
+		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName)
+		{
+			return new ArtifactValidator(_artifactService, workspaceArtifactId, artifactTypeName);
 		}
 	}
 }

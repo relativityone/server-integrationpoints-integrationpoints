@@ -2,7 +2,6 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -10,7 +9,7 @@ using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public abstract class ExportFileValidatorBase : BasePartsValidator<IntegrationPointModel>
+	public abstract class ExportFileValidatorBase : BasePartsValidator<IntegrationPointProviderValidationModel>
 	{
 		private readonly ISerializer _serializer;
 		private readonly IExportSettingsBuilder _exportSettingsBuilder;
@@ -28,24 +27,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 
 		protected abstract ValidationResult PerformValidation(ExportFile exportFile);
 
-		public override ValidationResult Validate(IntegrationPointModel value)
+		public override ValidationResult Validate(IntegrationPointProviderValidationModel value)
 		{
 			var exportFile = PrepareExportFileForValidation(value);
 
 			return PerformValidation(exportFile);
 		}
 
-		protected ExportFile PrepareExportFileForValidation(IntegrationPointModel value)
+		protected ExportFile PrepareExportFileForValidation(IntegrationPointProviderValidationModel value)
 		{
 			ExportSettingsEx = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
-			DestinationSettingsEx = _serializer.Deserialize<DestinationConfiguration>(value.Destination);
+			DestinationSettingsEx = _serializer.Deserialize<DestinationConfiguration>(value.DestinationConfiguration);
 
-			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.Map);
+			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.FieldsMap);
 
 			var exportSettings = _exportSettingsBuilder.Create(ExportSettingsEx, fieldMap, DestinationSettingsEx.ArtifactTypeId);
 			return _exportFileBuilder.Create(exportSettings);
 		}
-
-
 	}
 }

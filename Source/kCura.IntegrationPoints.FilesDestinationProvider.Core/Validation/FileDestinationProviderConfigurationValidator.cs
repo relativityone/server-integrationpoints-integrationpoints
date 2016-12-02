@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using static kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
@@ -33,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID
 		);
 
-		public ValidationResult Prevalidate(IntegrationPointModel model)
+		public ValidationResult Prevalidate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
 
@@ -64,13 +66,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			{
 				case ExportType.Folder:
 				case ExportType.FolderAndSubfolders:
-					//var folderValidator = _validatorsFactory.CreateFolderValidator();
-					//result.Add(folderValidator.Validate(exportSettings));
+					if (model.ArtifactTypeId == (int)ArtifactType.Document)
+					{
+						var folderValidator = _validatorsFactory.CreateArtifactValidator(exportSettings.WorkspaceId, ArtifactTypeNames.Folder);
+						result.Add(folderValidator.Validate(exportSettings.FolderArtifactId));
+					}
 
 					var viewValidator = _validatorsFactory.CreateViewValidator();
 					result.Add(viewValidator.Validate(exportSettings));
+
 					var exportNativeSettingsValidator = _validatorsFactory.CreateExportNativeSettingsValidator();
-					result.Add(exportNativeSettingsValidator.Validate(model.ConvertToIpModel()));
+					result.Add(exportNativeSettingsValidator.Validate(model));
 					break;
 
 				case ExportType.ProductionSet:

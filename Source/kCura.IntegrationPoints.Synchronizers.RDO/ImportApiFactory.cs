@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
+using kCura.Relativity.ImportAPI.Enumeration;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -42,6 +43,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						string token = ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
 						importApi = new ExtendedImportAPI(username, token, settings.WebServiceURL);
 					}
+					// ExtendedImportAPI extends ImportAPI so the following cast is acceptable
+					Relativity.ImportAPI.ImportAPI concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
+					concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
 				}
 				else
 				{

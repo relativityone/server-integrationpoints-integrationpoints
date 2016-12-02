@@ -142,19 +142,20 @@
 			});
 
 			var mappedFieldsPromise;
-			if (self.ipModel.artifactID > 0) {
+			if (!!self.ipModel.map) {
+				var map = self.ipModel.map;
+				if (typeof (map) === 'string') {
+					map = jQuery.parseJSON(self.ipModel.map);
+				}
+				mappedFieldsPromise = map;
+			}
+			else if (self.ipModel.artifactID > 0) {
 				mappedFieldsPromise = root.data.ajax({
 					type: 'get',
 					url: root.utils.generateWebAPIURL('FieldMap', self.ipModel.artifactID)
 				}).fail(function (error) {
 					IP.message.error.raise("No mapped fields were returned from the source provider.");
 				});
-			} else if (!!self.ipModel.map) {
-				var map = self.ipModel.map;
-				if (typeof (map) === 'string') {
-					map = jQuery.parseJSON(self.ipModel.map);
-				}
-				mappedFieldsPromise = map;
 			} else {
 				mappedFieldsPromise = [];
 			}
