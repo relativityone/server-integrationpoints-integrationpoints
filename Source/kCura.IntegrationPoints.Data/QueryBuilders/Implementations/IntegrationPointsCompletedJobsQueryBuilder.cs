@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 
 		private string GetSortColumn(string sortColumnName)
 		{
-			string sortColumn = string.IsNullOrEmpty(sortColumnName)
+			string sortColumn = string.IsNullOrWhiteSpace(sortColumnName)
 				? nameof(JobHistory.DestinationWorkspace)
 				: sortColumnName;
 

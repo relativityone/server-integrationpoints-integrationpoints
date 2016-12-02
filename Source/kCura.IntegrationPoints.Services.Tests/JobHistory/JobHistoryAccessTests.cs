@@ -15,8 +15,7 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 		{
 			_jobHistoryAccess = new JobHistoryAccess(new DestinationWorkspaceParser());
 		}
-
-		[Test]
+		
 		[TestCaseSource(nameof(TestCases))]
 		public void ItShouldFilterWorkspaces(TestData testData)
 		{
