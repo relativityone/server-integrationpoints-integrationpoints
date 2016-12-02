@@ -195,6 +195,7 @@
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorBase.cs" />
     <Compile Include="Validation\Parts\ExportNativeSettingsValidator.cs" />
+    <Compile Include="Validation\Parts\FieldsMapValidator.cs" />
     <Compile Include="Validation\Parts\FileCountValidator.cs" />
     <Compile Include="Validation\Parts\ViewValidator.cs" />
     <Compile Include="Validation\Parts\PaddingValidator.cs" />
