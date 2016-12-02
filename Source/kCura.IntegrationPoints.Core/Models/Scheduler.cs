@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Models
 					date = date.AddMinutes(ticks.Minute);
 					ScheduledTime = date.Hour + ":" + date.Minute;
 				}
-				TimeZoneId = rule.TimeZoneId;
+				TimeZoneId = rule.TimeZoneId ?? TimeZoneInfo.Local.Id;  //PN: We assing server time zone when TimeZoneId is empty for compatibility reasons
 			}
 		}
 
