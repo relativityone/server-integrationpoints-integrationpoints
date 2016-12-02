@@ -151,6 +151,7 @@
     <Compile Include="Validation\Parts\ArtifactValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportNativeSettingsValidatorTests.cs" />
+    <Compile Include="Validation\Parts\FieldsMapValidatorTests.cs" />
     <Compile Include="Validation\Parts\FileCountValidatorTests.cs" />
     <Compile Include="Validation\Parts\PaddingValidatorTests.cs" />
     <Compile Include="Validation\Parts\ProductionValidatorTests.cs" />

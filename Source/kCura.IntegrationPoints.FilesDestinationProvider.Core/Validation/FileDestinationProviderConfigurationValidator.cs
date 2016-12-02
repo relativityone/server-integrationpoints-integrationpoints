@@ -90,7 +90,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 					break;
 			}
 
-			// fields / mapping
+			var fieldsMapValidator = _validatorsFactory.CreateFieldsMapValidator();
+			result.Add(fieldsMapValidator.Validate(model));
 
 			// all values match types and ranges
 
