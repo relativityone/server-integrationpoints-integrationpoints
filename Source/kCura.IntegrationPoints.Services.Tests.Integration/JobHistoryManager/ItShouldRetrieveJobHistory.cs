@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Group = kCura.IntegrationPoint.Tests.Core.Group;
+using User = kCura.IntegrationPoint.Tests.Core.User;
+using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 {
@@ -21,44 +25,67 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		private IList<TestData> _testData;
 		private int _groupId;
 		private UserModel _user;
+		private RsapiClientLibrary<Data.IntegrationPoint> _integrationPointLibrary;
+		private RsapiClientLibrary<JobHistory> _jobHistoryLibrary;
+
+		private IList<TestData> _expectedResult;
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
+
+			_integrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(Helper, SourceWorkspaceArtifactId);
+			_jobHistoryLibrary = new RsapiClientLibrary<JobHistory>(Helper, SourceWorkspaceArtifactId);
 
 			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
 			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormatedDateTimeNow}@kcura.com", new List<int> {_groupId});
 
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
 
-			_testData = TestData.Create();
+			_testData = TestData.Create(SourceWorkspaceArtifactId);
+			_expectedResult = TestData.GetExpectedData(_testData);
 
 			foreach (var testData in _testData)
 			{
-				ExecuteTestData(testData);
+				if (!testData.PreventUserAccess)
+				{
+					Group.AddGroupToWorkspace(testData.WorkspaceId, _groupId);
+				}
+
+				CreateIntegrationPointAndAddJobHistory(testData);
 			}
 		}
 
-		private void ExecuteTestData(TestData testData)
+		private void CreateIntegrationPointAndAddJobHistory(TestData testData)
 		{
-			var importTableForTagging = Import.GetImportTable(testData.DocPrefix, testData.DocsTransfered);
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTableForTagging);
-
-			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormatedDateTimeNow}", "Append Only");
-			ipModel.SourceConfiguration = CreateSourceConfigWithTargetWorkspace(testData.WorkspaceId);
-			ipModel.Destination = CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, testData.WorkspaceId);
-
-			var ip = CreateOrUpdateIntegrationPoint(ipModel);
-
-			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, testData.DocPrefix, true);
-
-			var service = Container.Resolve<IIntegrationPointService>();
-			service.RunIntegrationPoint(SourceWorkspaceArtifactId, ip.ArtifactID, 9);
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, ip.ArtifactID);
-
-			if (!testData.PreventUserAccess)
+			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{new Guid()}", "Append Only");
+			if (testData.IsLdapProvider)
 			{
-				Group.AddGroupToWorkspace(testData.WorkspaceId, _groupId);
+				integrationPointModel.SourceProvider = LdapProvider.ArtifactId;
+			}
+
+			var integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
+
+			var jobHistory = new JobHistory
+			{
+				Name = integrationPoint.Name,
+				IntegrationPoint = new[] {integrationPoint.ArtifactID},
+				BatchInstance = new Guid().ToString(),
+				JobType = JobTypeChoices.JobHistoryRun,
+				JobStatus = testData.JobHistoryStatus,
+				ItemsTransferred = testData.DocsTransfered,
+				TotalItems = testData.DocsTransfered,
+				ItemsWithErrors = 0,
+				DestinationWorkspace = testData.FullName,
+				StartTimeUTC = DateTime.Now,
+				EndTimeUTC = DateTime.Now
+			};
+
+			_jobHistoryLibrary.Create(jobHistory);
+
+			if (testData.DeletedAfterRun)
+			{
+				_integrationPointLibrary.Delete(integrationPoint.ArtifactID);
 			}
 		}
 
@@ -86,14 +113,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_testData.Sum(x => x.DocsTransfered)));
-			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_testData.Count));
-			Assert.That(jobHistory.Data.Length, Is.EqualTo(_testData.Count));
+			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransfered)));
+			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_expectedResult.Count));
+			Assert.That(jobHistory.Data.Length, Is.EqualTo(_expectedResult.Count));
 
 			foreach (var jobHistoryModel in jobHistory.Data)
 			{
-				var testData = _testData.First(x => x.FullName == jobHistoryModel.DestinationWorkspace);
-				Assert.That(jobHistoryModel.ItemsTransferred, Is.EqualTo(testData.DocsTransfered));
+				Assert.That(_expectedResult.Any(x => x.DocsTransfered == jobHistoryModel.ItemsTransferred));
 			}
 		}
 
@@ -110,11 +136,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_testData.Sum(x => x.DocsTransfered)));
-			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_testData.Count));
+			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransfered)));
+			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_expectedResult.Count));
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(1));
 
-			var expectedTestData = _testData[1];
+			var expectedTestData = _expectedResult[1];
 			Assert.That(jobHistory.Data[0].DestinationWorkspace, Is.EqualTo(expectedTestData.FullName));
 			Assert.That(jobHistory.Data[0].ItemsTransferred, Is.EqualTo(expectedTestData.DocsTransfered));
 		}
@@ -132,8 +158,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_testData.Sum(x => x.DocsTransfered)));
-			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_testData.Count));
+			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(_expectedResult.Sum(x => x.DocsTransfered)));
+			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(_expectedResult.Count));
 			Assert.That(jobHistory.Data.Length, Is.EqualTo(0));
 		}
 
@@ -150,7 +176,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 			var jobHistory = client.GetJobHistoryAsync(request).Result;
 
-			var testDataAfterPermission = _testData.Where(x => !x.PreventUserAccess).ToList();
+			var testDataAfterPermission = _expectedResult.Where(x => !x.PreventUserAccess).ToList();
 
 			Assert.That(jobHistory.TotalDocumentsPushed, Is.EqualTo(testDataAfterPermission.Sum(x => x.DocsTransfered)));
 			Assert.That(jobHistory.TotalAvailable, Is.EqualTo(testDataAfterPermission.Count));
@@ -158,8 +184,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 			foreach (var jobHistoryModel in jobHistory.Data)
 			{
-				var testData = testDataAfterPermission.First(x => x.FullName == jobHistoryModel.DestinationWorkspace);
-				Assert.That(jobHistoryModel.ItemsTransferred, Is.EqualTo(testData.DocsTransfered));
+				Assert.That(testDataAfterPermission.Any(x => x.DocsTransfered == jobHistoryModel.ItemsTransferred));
 			}
 		}
 
@@ -197,40 +222,118 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			public int WorkspaceId { get; private set; }
 			private string WorkspaceName { get; set; }
-			public string DocPrefix => WorkspaceName;
 			public int DocsTransfered { get; private set; }
 			public string FullName => $"{WorkspaceName} - {WorkspaceId}";
 			public bool PreventUserAccess { get; set; }
+			public bool DeletedAfterRun { get; set; }
+			public bool IsLdapProvider { get; set; }
+			public Choice JobHistoryStatus { get; set; }
 
-			public static IList<TestData> Create()
+			public static IList<TestData> Create(int sourceWorkspaceId)
 			{
-				var workspace1 = new TestData
+				var workspaceName = $"target_1_{Utils.FormatedDateTimeNow}";
+				var workspaceId = Workspace.CreateWorkspace(workspaceName, WorkspaceTemplates.NEW_CASE_TEMPLATE);
+
+				var workspaceNoAccessName = $"target_2_{Utils.FormatedDateTimeNow}";
+				var workspaceNoAccessId = Workspace.CreateWorkspace(workspaceNoAccessName, WorkspaceTemplates.NEW_CASE_TEMPLATE);
+
+				var testCase1 = new TestData
 				{
-					WorkspaceName = $"target_1_{Utils.FormatedDateTimeNow}",
+					WorkspaceName = workspaceNoAccessName,
+					WorkspaceId = workspaceNoAccessId,
 					DocsTransfered = 17,
+					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted,
 					PreventUserAccess = true
 				};
-				var workspace2 = new TestData
+				var testCase2 = new TestData
 				{
-					WorkspaceName = $"target_2_{Utils.FormatedDateTimeNow}",
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
 					DocsTransfered = 11,
-					PreventUserAccess = false
+					JobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors
 				};
-				var workspace3 = new TestData
+				var testCase3 = new TestData
 				{
-					WorkspaceName = $"target_3_{Utils.FormatedDateTimeNow}",
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
+					DocsTransfered = 31,
+					JobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors,
+					DeletedAfterRun = true
+				};
+				var testCase4 = new TestData
+				{
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
 					DocsTransfered = 23,
-					PreventUserAccess = false
+					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted
+				};
+				var testCase5 = new TestData
+				{
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
+					DocsTransfered = 59,
+					JobHistoryStatus = JobStatusChoices.JobHistoryStopped
+				};
+				var testCase6 = new TestData
+				{
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
+					DocsTransfered = 47,
+					JobHistoryStatus = JobStatusChoices.JobHistoryStopping
+				};
+				var testCase7 = new TestData
+				{
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
+					DocsTransfered = 41,
+					JobHistoryStatus = JobStatusChoices.JobHistoryErrorJobFailed
+				};
+				var testCase8 = new TestData
+				{
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
+					DocsTransfered = 61,
+					JobHistoryStatus = JobStatusChoices.JobHistoryPending
+				};
+				var testCase9 = new TestData
+				{
+					WorkspaceName = workspaceName,
+					WorkspaceId = workspaceId,
+					DocsTransfered = 53,
+					JobHistoryStatus = JobStatusChoices.JobHistoryProcessing
+				};
+				var testCase10 = new TestData
+				{
+					WorkspaceName = "workspace",
+					WorkspaceId = sourceWorkspaceId,
+					DocsTransfered = 29,
+					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted,
+					IsLdapProvider = true
 				};
 
-				var testData = new List<TestData> {workspace1, workspace2, workspace3};
-
-				foreach (var data in testData)
+				var testData = new List<TestData>
 				{
-					data.WorkspaceId = Workspace.CreateWorkspace(data.WorkspaceName, WorkspaceTemplates.NEW_CASE_TEMPLATE);
-				}
+					testCase1,
+					testCase2,
+					testCase3,
+					testCase4,
+					testCase5,
+					testCase6,
+					testCase7,
+					testCase8,
+					testCase9,
+					testCase10
+				};
 
 				return testData;
+			}
+
+			public static IList<TestData> GetExpectedData(IList<TestData> testData)
+			{
+				return testData.Where(x => !x.DeletedAfterRun)
+					.Where(x => !x.IsLdapProvider)
+					.Where(x => (x.JobHistoryStatus == JobStatusChoices.JobHistoryCompleted) || (x.JobHistoryStatus == JobStatusChoices.JobHistoryCompletedWithErrors))
+					.ToList();
 			}
 		}
 	}
