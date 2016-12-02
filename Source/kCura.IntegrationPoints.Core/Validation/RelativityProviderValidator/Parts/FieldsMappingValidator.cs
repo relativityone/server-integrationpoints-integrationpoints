@@ -29,11 +29,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		{
 			var result = new ValidationResult();
 
-			if (!IsRelativityProvider(value.SourceProviderIdentifier, value.DestinationProviderIdentifier))
-			{
-				return result;
-			}
-
 			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(value.SourceConfiguration);
 			var fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
 
@@ -60,12 +55,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			result.Add(ValidateAllRequiredFieldsMapped(fieldsMap, destinationWorkpaceFields));
 
 			return result;
-		}
-
-		private bool IsRelativityProvider(string sourceProviderId, string destinationProviderId)
-		{
-			return string.Equals(sourceProviderId, IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, StringComparison.CurrentCultureIgnoreCase) &&
-				   string.Equals(destinationProviderId, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(), StringComparison.CurrentCultureIgnoreCase);
 		}
 
 		private ValidationResult ValidateFieldMapped(FieldMap fieldMap)
