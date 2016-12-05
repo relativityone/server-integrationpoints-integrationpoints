@@ -38,7 +38,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			{
 				ArtifactId = 945,
 				Name = "ip_name_126",
-				SourceProvider = 962
+				SourceProvider = 962,
+				DestinationProvider = 577
 			};
 
 			_integrationPointService.GetRdo(artifactId).Returns(integrationPoint);
@@ -48,6 +49,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_integrationPointService.Received(1).GetRdo(artifactId);
 
 			Assert.That(result.SourceProvider, Is.EqualTo(integrationPoint.SourceProvider));
+			Assert.That(result.DestinationProvider, Is.EqualTo(integrationPoint.DestinationProvider));
 			Assert.That(result.ArtifactId, Is.EqualTo(integrationPoint.ArtifactId));
 			Assert.That(result.Name, Is.EqualTo(integrationPoint.Name));
 		}
@@ -73,13 +75,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			{
 				ArtifactId = 263,
 				Name = "ip_name_987",
-				SourceProvider = 764
+				SourceProvider = 764,
+				DestinationProvider = 576
 			};
 			var integrationPoint2 = new Data.IntegrationPoint
 			{
 				ArtifactId = 204,
 				Name = "ip_name_555",
-				SourceProvider = 187
+				SourceProvider = 187,
+				DestinationProvider = 422
 			};
 
 			var expectedResult = new List<Data.IntegrationPoint> {integrationPoint1, integrationPoint2};
@@ -91,7 +95,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 			Assert.That(result, Is.EquivalentTo(expectedResult).
 				Using(new Func<IntegrationPointModel, Data.IntegrationPoint, bool>(
-					(actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider.Value) && (actual.ArtifactId == expected.ArtifactId))));
+					(actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider.Value) && (actual.ArtifactId == expected.ArtifactId)
+					&& (actual.DestinationProvider == expected.DestinationProvider.Value))));
 		}
 
 		[Test]
@@ -110,6 +115,24 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			var actualResult = _integrationPointRepository.GetSourceProviderArtifactId(workspaceId, guid);
 
 			Assert.That(actualResult, Is.EqualTo(expectedSourceProviderArtifactId));
+		}
+
+		[Test]
+		public void ItShouldGetDestinationProviderArtifactId()
+		{
+			int workspaceId = 329;
+			string guid = "guid_819";
+
+			int expectedDestinationProviderArtifactId = 889;
+
+			var destinationProviderRepository = Substitute.For<IDestinationProviderRepository>();
+			_repositoryFactory.GetDestinationProviderRepository(workspaceId).Returns(destinationProviderRepository);
+
+			destinationProviderRepository.GetArtifactIdFromDestinationProviderTypeGuidIdentifier(guid).Returns(expectedDestinationProviderArtifactId);
+
+			var actualResult = _integrationPointRepository.GetDestinationProviderArtifactId(workspaceId, guid);
+
+			Assert.That(actualResult, Is.EqualTo(expectedDestinationProviderArtifactId));
 		}
 
 		[Test]
