@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			};
 		}
 
-		public static IntegrationPointProfileModel FromIntegrationPointProfileStepOneModel(IntegrationPointProfile profile)
+		public static IntegrationPointProfileModel FromIntegrationPointProfileSimpleModel(IntegrationPointProfile profile)
 		{
 			return new IntegrationPointProfileModel
 			{

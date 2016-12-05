@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		public IList<IntegrationPointProfileModel> ReadIntegrationPointProfilesStepOneModel()
 		{
 			IList<IntegrationPointProfile> integrationPointProfiles = GetALlRDOsWithBasicProfileColumns();
-			return integrationPointProfiles.Select(IntegrationPointProfileModel.FromIntegrationPointProfileStepOneModel).ToList();
+			return integrationPointProfiles.Select(IntegrationPointProfileModel.FromIntegrationPointProfileSimpleModel).ToList();
 		}
 
 		public int SaveIntegration(IntegrationPointProfileModel model)
