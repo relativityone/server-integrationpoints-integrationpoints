@@ -76,7 +76,12 @@
 	};
 	this.artifactTypeID = ko.observable().extend({ required: true });
 	this.UpdateSelectedItem = function () {
-		self.artifactTypeID(self.settings.artifactTypeID);
+
+		if (self.settings.artifactTypeID === undefined) {
+			self.artifactTypeID(parentModel.DefaultRdoTypeId);
+		} else {
+			self.artifactTypeID(self.settings.artifactTypeID);
+		}
 	}
 
 	this.isDestinationObjectDisabled = ko.observable(false);
