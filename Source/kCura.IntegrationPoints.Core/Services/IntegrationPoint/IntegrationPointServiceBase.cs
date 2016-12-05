@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return query.GetAllIntegrationPoints();
 		}
 
-		public IList<T> GetALlRDOsWithFilteredColumns()
+		public IList<T> GetALlRDOsWithBasicProfileColumns()
 		{
 			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
 			return query.GetAllIntegrationPointsProfileWithBasicColumns();
