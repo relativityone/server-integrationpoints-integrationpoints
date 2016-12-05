@@ -9,5 +9,6 @@ namespace kCura.IntegrationPoints.Web.Models
 		public int CaseUserID { get; set; }
 		public string URL { get; set; }
 		public string APIControllerName { get; set; }
+		public string ArtifactTypeName { get; set; }
 	}
 }
