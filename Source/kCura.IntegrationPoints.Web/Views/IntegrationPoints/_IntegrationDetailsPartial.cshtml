@@ -20,7 +20,7 @@
 			</div>
 			<div class="field-value">
 				<ul id="isExportType" data-bind="foreach: integrationPointTypes">
-					<li><input type="radio" data-bind="value: artifactID, checked: $parent.type"/><span data-bind="text: displayName"></span></li>
+					<li><input type="radio" data-bind="value: artifactID, checked: $parent.type, attr: {id: 'isExportTypeRadio' + artifactID}"/><label data-bind="text: displayName, attr:{for: 'isExportTypeRadio'+artifactID}"></label></li>
 				</ul>
 			</div>
 		</div>
@@ -50,8 +50,8 @@
 			</div>
 			<div class="field-value">
 				<ul id="logErrors">
-					<li><span><input id="enableLogErrorsRadioButton" value="true" name="logErrors" type="radio" data-bind="checked: logErrors" />Yes</span></li>
-					<li><span><input id="disableLogErrorsRadioButton" value="false" name="logErrors" type="radio" data-bind="checked: logErrors" />No</span></li>
+					<li><label><input id="enableLogErrorsRadioButton" value="true" name="logErrors" type="radio" data-bind="checked: logErrors" />Yes</label></li>
+					<li><label><input id="disableLogErrorsRadioButton" value="false" name="logErrors" type="radio" data-bind="checked: logErrors" />No</label></li>
 				</ul>
 			</div>
 		</div>
@@ -109,10 +109,10 @@
 		<div class="field-value" id="scheduleRulesEnabled">
 			<ul>
 				<li>
-					<input id="enableSchedulerRadioButton" type="radio" name="enable" value="true" data-bind="checked: enableScheduler" />Yes
+					<label><input id="enableSchedulerRadioButton" type="radio" name="enable" value="true" data-bind="checked: enableScheduler" />Yes</label>
 				</li>
 				<li>
-					<input id="disableSchedulerRadioButton" type="radio" name="enable" value="false" data-bind="checked: enableScheduler" />No
+					<label><input id="disableSchedulerRadioButton" type="radio" name="enable" value="false" data-bind="checked: enableScheduler" />No</label>
 				</li>
 			</ul>
 		</div>
@@ -174,8 +174,8 @@
 <script type="text/html" id="weeklySendOn">
 	<ul data-bind="foreach: days">
 		<li>
-			<input type="checkbox" data-bind="attr: { value: $data, name: $data }, checked: $parent.selectedDays" />
-			<span data-bind="text: $data"></span>
+			<input type="checkbox" data-bind="attr: { value: $data, name: $data, id: $data}, checked: $parent.selectedDays" />
+			<label data-bind="text: $data, attr:{for: $data}"></label>
 		</li>
 	</ul>
 	<div data-bind="validationMessage: selectedDays" class="icon-error legal-hold field-validation-error"></div>

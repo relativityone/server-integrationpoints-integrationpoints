@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
@@ -72,15 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 					return false;
 				}
 
-				return (
-					(x.ActualName == y.ActualName) &&
-					(x.DisplayName == y.DisplayName) &&
-					(x.FieldIdentifier == y.FieldIdentifier) &&
-					(x.FieldType == y.FieldType) 
-					//&& // those are irrelevant for export
-					//(x.IsIdentifier == y.IsIdentifier) &&
-					//(x.IsRequired == y.IsRequired)
-				);				
+				return (x.FieldIdentifier == y.FieldIdentifier);
 			}
 
 			public int GetHashCode(FieldEntry obj)

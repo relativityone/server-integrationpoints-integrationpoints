@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.QueryBuilders;
+using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -13,6 +15,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
+		private readonly ISourceProviderArtifactIdByGuidQueryBuilder _artifactIdByGuid = new SourceProviderArtifactIdByGuidQueryBuilder();
 
 		public SourceProviderRepository(IHelper helper, int workspaceArtifactId)
 		{
@@ -66,17 +69,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier)
 		{
-			int sourceProviderArtifactId;
-
-			var query = new Query<RDO>
-			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
-				Condition = new TextCondition(new Guid(SourceProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, sourceProviderGuidIdentifier),
-				Fields = new List<FieldValue>()
-				{
-					new FieldValue("Artifact ID")
-				}
-			};
+			var query = _artifactIdByGuid.Create(sourceProviderGuidIdentifier);
 
 			QueryResultSet<RDO> results = null;
 			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
@@ -90,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Source Provider: {results.Message}");
 			}
 
-			sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
+			var sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
 
 			if (sourceProviderArtifactId == 0)
 			{

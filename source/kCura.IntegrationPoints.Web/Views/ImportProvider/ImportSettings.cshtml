@@ -19,7 +19,7 @@
                                 Import Type:
                             </div>
                             <div class="field-value select2-double-width">
-                                <select class="fluid-mock-select" id="import-importType" data-bind="options:importTypes, optionsText:'name', optionsValue:'value', value:selectedImportType, optionsCaption: 'Select...' ,select2: { width: '100%' }"></select>
+                                <select class="fluid-mock-select" id="import-importType" data-bind="options:importTypes, optionsText:'Name', optionsValue:'Value', value:selectedImportType, optionsCaption: 'Select...' ,select2: { width: '100%' }"></select>
                             </div>
                         </div>
                         <div class="field-row">
@@ -65,7 +65,7 @@
             </table>
         </div>
 
-        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 'production'">
+        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 2">
             <span class="label">Production</span>
             <table style="width: 100%;">
                 <tbody>
@@ -80,7 +80,7 @@
                     </tr>
             </table>
         </div>
-        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 'document'">
+        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 0">
             <span class="label">File Encoding</span>
             <table style="width: 100%;">
                 <tbody>
@@ -173,7 +173,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 'image'">
+        <div class="card" id="card-style" data-bind="visible: selectedImportType() == 1">
             <span class="label">Image</span>
             <table style="width: 100%;">
                 <tr>
@@ -200,6 +200,7 @@
     <script src="~/Scripts/jstree.min.js"></script>
     <script src="~/Scripts/export/location-jstree-selector.js"></script>
     <script src="~/Scripts/integration-point/binding.js"></script>
+
 
     <script src="~/Scripts/Import/import-init.js"></script>
     <script src="~/Scripts/Import/import-model.js"></script>

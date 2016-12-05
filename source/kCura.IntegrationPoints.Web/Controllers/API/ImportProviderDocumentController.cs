@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Attributes;
-
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -10,10 +11,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     public class ImportProviderDocumentController : ApiController
     {
         private IFieldParserFactory _fieldParserFactory;
-        public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory)
-        {
-            _fieldParserFactory = fieldParserFactory;
-        }
+	    private IImportTypeService _importTypeService;
+		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory, IImportTypeService importTypeService)
+		{
+			_fieldParserFactory = fieldParserFactory;
+			_importTypeService = importTypeService;
+		}
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to retrieve list of Ascii Delimiters.")]
@@ -33,6 +36,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 .OrderBy(x => x.Name)
                 .Select(x => string.Format("{0} ({1})", x.Name, x.Index))));
         }
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve list for Import Types.")]
+		public IHttpActionResult GetImportTypes()
+		{
+			return Json(_importTypeService.GetImportTypes());
+	    }
 
     }
 }
