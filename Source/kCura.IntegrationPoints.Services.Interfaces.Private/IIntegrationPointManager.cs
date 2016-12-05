@@ -25,6 +25,14 @@ namespace kCura.IntegrationPoints.Services
 		Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier);
 
 		/// <summary>
+		/// Get Artifact Id of the destination provider object in the given workspace.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The Workspace artifact Id of which has installed integration point application</param>
+		/// <param name="destinationProviderGuidIdentifier">The destination provider guid identifier that we want the artifact id of</param>
+		/// <returns>The Artifact id of the destination provider specified</returns>
+		Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier);
+
+		/// <summary>
 		/// Create integration point from the given model
 		/// </summary>
 		/// <param name="request">Integration point model to create integration point object.</param>
@@ -51,7 +59,7 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace's id where the requested integration point object lives</param>
 		/// <param name="integrationPointArtifactId">the integration point's artifact id</param>
-		Task RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId);
+		Task<object> RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId);
 
 		/// <summary>
 		/// Get all available integration point objects in the workspace.

@@ -120,6 +120,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<KeywordConverter>().ImplementedBy<KeywordConverter>().LifestyleTransient());
 			container.Register(Component.For<KeywordFactory>().ImplementedBy<KeywordFactory>().LifestyleTransient());
             container.Register(Component.For<IFieldCatalogService>().ImplementedBy<FieldCatalogService>().LifestyleTransient());
+            container.Register(Component.For<IImportTypeService>().ImplementedBy<ImportTypeService>().LifestyleTransient());
         }
 	}
 }

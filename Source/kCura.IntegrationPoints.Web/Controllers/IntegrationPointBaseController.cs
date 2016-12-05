@@ -47,7 +47,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 					UserID = SessionService.UserID,
 					CaseUserID = SessionService.WorkspaceUserID,
 					URL = previousURL,
-					APIControllerName = APIControllerName
+					APIControllerName = APIControllerName,
+					ArtifactTypeName = ObjectType
 				});
 			}
 			return View("~/Views/IntegrationPoints/NotEnoughPermission.cshtml", new EditPoint {URL = previousURL});

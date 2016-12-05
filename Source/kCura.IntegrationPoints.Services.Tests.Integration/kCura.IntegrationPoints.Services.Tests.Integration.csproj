@@ -131,7 +131,7 @@
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveAllIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveIntegrationPointArtifactTypeId.cs" />
-    <Compile Include="IntegrationPointManager\ItShouldRetrieveSourceProviderGuids.cs" />
+    <Compile Include="IntegrationPointManager\ItShouldRetrieveProvidersGuids.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRunIntegrationPoint.cs" />
     <Compile Include="JobHistoryManager\ItShouldRetrieveJobHistory.cs" />
     <Compile Include="Permissions\NoWorkspacePermissionTests.cs" />

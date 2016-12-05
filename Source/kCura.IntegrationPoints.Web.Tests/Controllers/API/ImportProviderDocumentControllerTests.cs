@@ -3,10 +3,12 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Results;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -19,13 +21,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private ImportProviderDocumentController _controller;
 		private IFieldParserFactory _fieldParserFactory;
 		private IFieldParser _fieldParser;
+		private IImportTypeService _importTypeService;
 
 		[SetUp]
 		public override void SetUp()
 		{
+			_importTypeService = Substitute.For<IImportTypeService>();
 			_fieldParser = Substitute.For<IFieldParser>();
 			_fieldParserFactory = Substitute.For<IFieldParserFactory>();
-			_controller = new ImportProviderDocumentController(_fieldParserFactory);
+			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService);
 		}
 
 		[Test]
