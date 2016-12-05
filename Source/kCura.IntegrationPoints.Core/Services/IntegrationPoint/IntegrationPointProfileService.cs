@@ -43,6 +43,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return integrationPointProfiles.Select(IntegrationPointProfileModel.FromIntegrationPointProfile).ToList();
 		}
 
+		public IList<IntegrationPointProfileModel> ReadIntegrationPointProfilesStepOneModel()
+		{
+			IList<IntegrationPointProfile> integrationPointProfiles = GetALlRDOsWithBasicProfileColumns();
+			return integrationPointProfiles.Select(IntegrationPointProfileModel.FromIntegrationPointProfileSimpleModel).ToList();
+		}
+
 		public int SaveIntegration(IntegrationPointProfileModel model)
 		{
 			IntegrationPointProfile profile;
@@ -104,5 +110,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			return ReadIntegrationPointProfile(artifactId);
 		}
+		
 	}
 }

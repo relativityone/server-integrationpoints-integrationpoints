@@ -56,6 +56,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return query.GetAllIntegrationPoints();
 		}
 
+		public IList<T> GetALlRDOsWithBasicProfileColumns()
+		{
+			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
+			return query.GetAllIntegrationPointsProfileWithBasicColumns();
+			
+		}
+
 		public T GetRdo(int artifactId)
 		{
 			try
