@@ -17,6 +17,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		IEnumerable<FieldMap> GetFieldMap(int artifactId);
 		IEnumerable<string> GetRecipientEmails(int artifactId);
 		int SaveIntegration(IntegrationPointProfileModel model);
-		IList<IntegrationPointProfileModel> ReadIntegrationPointProfilesStepOneModel();
+		IList<IntegrationPointProfileModel> ReadIntegrationPointProfilesSimpleModel();
 	}
 }
