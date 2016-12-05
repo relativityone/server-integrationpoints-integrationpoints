@@ -75,8 +75,8 @@ namespace kCura.IntegrationPoints.Services
 			return
 				await
 					Execute(
-						(IIntegrationPointRepository integrationPointRepository) =>
-								integrationPointRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier), workspaceArtifactId);
+						(IProviderRepository providerRepository) =>
+								providerRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier), workspaceArtifactId);
 		}
 
 		public async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier)
@@ -84,8 +84,8 @@ namespace kCura.IntegrationPoints.Services
 			return
 				await
 					Execute(
-						(IIntegrationPointRepository integrationPointRepository) =>
-								integrationPointRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier), workspaceArtifactId);
+						(IProviderRepository providerRepository) =>
+								providerRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier), workspaceArtifactId);
 		}
 
 		public async Task<int> GetIntegrationPointArtifactTypeIdAsync(int workspaceArtifactId)

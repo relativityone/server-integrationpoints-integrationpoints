@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
+namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 {
 	[TestFixture]
 	public class ItShouldRetrieveProvidersGuids : SourceProviderTemplate
@@ -13,12 +13,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		{
 		}
 
-		private IIntegrationPointManager _client;
+		private IProviderManager _client;
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			_client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			_client = Helper.CreateAdminProxy<IProviderManager>();
 		}
 
 		public override void SuiteTeardown()
@@ -34,7 +34,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			foreach (var sourceProviderGuid in sourceProviders.Keys)
 			{
+#pragma warning disable 618
 				var sourceProviderId = _client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, sourceProviderGuid).Result;
+#pragma warning restore 618
 				Assert.That(sourceProviderId, Is.EqualTo(sourceProviders[sourceProviderGuid]));
 			}
 		}
@@ -46,7 +48,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			foreach (var destinationProviderGuid in destinationProviders.Keys)
 			{
+#pragma warning disable 618
 				var destinationProviderId = _client.GetDestinationProviderArtifactIdAsync(WorkspaceArtifactId, destinationProviderGuid).Result;
+#pragma warning restore 618
 				Assert.That(destinationProviderId, Is.EqualTo(destinationProviders[destinationProviderGuid]));
 			}
 		}

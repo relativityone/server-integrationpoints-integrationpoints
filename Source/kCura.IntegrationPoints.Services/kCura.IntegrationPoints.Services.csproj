@@ -96,6 +96,7 @@
     <Compile Include="Installers\IInstaller.cs" />
     <Compile Include="Installers\JobHistoryManagerInstaller.cs" />
     <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />
+    <Compile Include="Installers\ProviderManagerInstaller.cs" />
     <Compile Include="IntegrationPointManager.cs" />
     <Compile Include="IntegrationPointsModule.cs" />
     <Compile Include="JobHistoryManager.cs" />
@@ -119,7 +120,10 @@
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryRepository.cs" />
     <Compile Include="Repositories\IntegrationPointRepository.cs" />
+    <Compile Include="Repositories\IProviderRepository.cs" />
     <Compile Include="Repositories\JobHistoryRepository.cs" />
+    <Compile Include="ProviderManager.cs" />
+    <Compile Include="Repositories\ProviderRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">

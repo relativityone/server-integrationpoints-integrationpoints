@@ -110,7 +110,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 		public void IIntegrationPointManager_GetSourceProviderArtifactIdAsync_AccessDenied()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
+#pragma warning disable 618
 			AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString()).Result);
+#pragma warning restore 618
 		}
 
 		[Test]

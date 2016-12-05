@@ -81,6 +81,7 @@
     <Compile Include="KeplerServicePermissionTests.cs" />
     <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\JobHistoryRepositoryTests.cs" />
+    <Compile Include="Repositories\ProviderRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

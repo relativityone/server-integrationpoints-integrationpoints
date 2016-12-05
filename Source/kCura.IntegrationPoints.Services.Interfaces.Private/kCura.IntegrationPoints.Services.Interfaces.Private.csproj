@@ -91,6 +91,7 @@
     <Compile Include="IJobHistoryManager.cs" />
     <Compile Include="IIntegrationPointsModule.cs" />
     <Compile Include="IKeplerService.cs" />
+    <Compile Include="IProviderManager.cs" />
     <Compile Include="Models\DestinationConfiguration.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />
