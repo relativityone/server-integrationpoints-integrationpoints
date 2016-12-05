@@ -89,6 +89,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					return Request.CreateResponse(HttpStatusCode.OK, model);
 				}
+				return Request.CreateResponse(HttpStatusCode.NotAcceptable,model);
 			}
 
 			return Request.CreateResponse(HttpStatusCode.NotAcceptable);

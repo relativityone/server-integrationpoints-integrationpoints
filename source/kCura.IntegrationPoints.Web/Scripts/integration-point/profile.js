@@ -19,15 +19,18 @@
 		});
 		return validatedProfileModelPromise;
 	};
-	self.currentFilter = ko.observable();
 
-	self.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (type) {
+	this.currentFilter = ko.observable();
+
+	this.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (type) {
+		self.setSaveButton(false);
 		if (!!parentModel.source.sourceProvider && !!parentModel.destination.selectedDestinationType) {
 			self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
 		}
 	});
 
 	this.getProfiles = function (ipType) {
+		self.setSaveButton(false);
 		var profilePromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetByType', ipType) });
 		profilePromise.then(function (result) {
 			var profileTypes = $.map(result, function (entry) {
@@ -41,7 +44,12 @@
 		});
 	};
 
-	self.filterProfiles = ko.computed(function () {
+	this.setSaveButton = function(showFlag)
+	{
+		$.stepProgress.allowSaveProfile(showFlag);
+	}
+
+	this.filterProfiles = ko.computed(function () {
 		if (!self.currentFilter() || !self.currentFilter().source || !self.currentFilter().destination) {
 			return self.profileTypes();
 		} else {
@@ -51,14 +59,18 @@
 		}
 	});
 
-	this.publishUpdateProfile = function () {
-		var profileId = self.selectedProfile();
+	this.publishUpdateProfile = function (profileId) {
 		if (!!profileId) {
 			var promise = self.getSelectedProfilePromise(profileId);
 			promise.then(function (profile) {
 				IP.messaging.publish("loadProfile", profile);
+				self.setSaveButton(true);
 			});
 		}
 	};
+
+	this.selectedProfile.subscribe(function(profileId) {
+		self.publishUpdateProfile(profileId);
+	});
 
 };

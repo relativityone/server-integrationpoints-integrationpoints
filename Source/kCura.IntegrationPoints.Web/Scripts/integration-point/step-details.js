@@ -129,7 +129,7 @@ var IP = IP || {};
 		this.isTypeDisabled = ko.observable(false);
 		this.integrationPointTypes = ko.observableArray();
 		this.type = ko.observable().extend({ required: true });
-		this.isEdit = ko.observable();
+		this.isEdit = ko.observable(parseInt(settings.artifactID) > 0);
 		this.hasBeenRun = ko.observable();
 
 		this.notificationEmails = ko.observable().extend({
@@ -156,8 +156,6 @@ var IP = IP || {};
 				self.destinationProvider = settings.destinationProvider;
 
 				self.type(settings.type);
-
-				self.isEdit(parseInt(settings.artifactID) > 0);
 
 				var hasBeenRun = false;
 				if (settings.lastRun != null) {
@@ -194,7 +192,7 @@ var IP = IP || {};
 			self.destination.loadSettings(JSON.parse(profile.destination || "{}"));
 			self.source.loadSettings(profile);
 			self.scheduler.loadSettings(profile.scheduler);
-			$.stepProgress.allowSaveProfile();
+			IP.message.notify("Profile has been loaded");
 		};
 
 		var sourceTypePromise = root.data.ajax({ type: 'get', async: false, url: root.utils.generateWebAPIURL('SourceType') });
