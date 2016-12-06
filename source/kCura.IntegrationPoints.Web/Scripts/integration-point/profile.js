@@ -22,9 +22,12 @@
 
 	this.currentFilter = ko.observable();
 
-	this.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (type) {
+	this.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (providerType) {
 		self.setSaveButton(false);
-		if (!!parentModel.source.sourceProvider && !!parentModel.destination.selectedDestinationType) {
+		if (!providerType) {
+			self.currentFilter(undefined);//reset if providerType empty
+		}
+		else if (!!parentModel.source.sourceProvider && !!parentModel.destination.selectedDestinationType) {
 			self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
 		}
 	});
