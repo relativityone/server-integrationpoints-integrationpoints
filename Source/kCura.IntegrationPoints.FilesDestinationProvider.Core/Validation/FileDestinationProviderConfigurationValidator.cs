@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using static kCura.IntegrationPoints.Core.Models.ExportSettings;
@@ -62,6 +61,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			var workspaceValidator = _validatorsFactory.CreateWorkspaceValidator();
 			result.Add(workspaceValidator.Validate(exportSettings.WorkspaceId));
 
+			var fieldsMapValidator = _validatorsFactory.CreateFieldsMapValidator();
+			result.Add(fieldsMapValidator.Validate(model));
+
+			var settingsValidator = _validatorsFactory.CreateExportSettingsValidator(model.ArtifactTypeId);
+			result.Add(settingsValidator.Validate(exportSettings));
+
 			switch (exportSettings.TypeOfExport)
 			{
 				case ExportType.Folder:
@@ -89,11 +94,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 					result.Add(savedSearchValidator.Validate(exportSettings.SavedSearchArtifactId));
 					break;
 			}
-
-			var fieldsMapValidator = _validatorsFactory.CreateFieldsMapValidator();
-			result.Add(fieldsMapValidator.Validate(model));
-
-			// all values match types and ranges
 
 			return result;
 		}
