@@ -24,12 +24,16 @@ namespace kCura.IntegrationPoints.Services.Repositories
 
 		public IntegrationPointModel CreateIntegrationPoint(CreateIntegrationPointRequest request)
 		{
-			throw new NotImplementedException("CreateIntegrationPointAsync - Kepler Service not supported for November release.");
+			var integrationPointModel = request.ToModel();
+			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
+			return GetIntegrationPoint(artifactId);
 		}
 
 		public IntegrationPointModel UpdateIntegrationPoint(UpdateIntegrationPointRequest request)
 		{
-			throw new NotImplementedException("UpdateIntegrationPointAsync - Kepler Service not supported for November release.");
+			var integrationPointModel = request.ToModel();
+			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
+			return GetIntegrationPoint(artifactId);
 		}
 
 		public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)

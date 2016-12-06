@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 
 namespace kCura.IntegrationPoints.Services.Interfaces.Private.Extensions
 {

@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 
 namespace kCura.IntegrationPoints.Services.Repositories
 {

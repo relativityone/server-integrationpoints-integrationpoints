@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
+﻿namespace kCura.IntegrationPoints.Services
 {
 	public class ProviderModel
 	{

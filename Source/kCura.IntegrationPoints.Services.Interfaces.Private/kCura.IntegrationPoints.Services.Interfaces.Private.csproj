@@ -106,8 +106,6 @@
     <Compile Include="Requests\CreateIntegrationPointRequest.cs" />
     <Compile Include="Requests\HistoricalPromotionStatusRequest.cs" />
     <Compile Include="Requests\CurrentPromotionStatusRequest.cs" />
-    <Compile Include="Requests\IRequiredPermission.cs" />
-    <Compile Include="Requests\IValidatable.cs" />
     <Compile Include="Requests\PercentagePushedToReviewRequest.cs" />
     <Compile Include="Requests\JobHistoryRequest.cs" />
   </ItemGroup>
