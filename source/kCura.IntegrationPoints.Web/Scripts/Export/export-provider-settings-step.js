@@ -1,7 +1,6 @@
 ﻿var IP = IP || {};
 
 (function (root, ko) {
-
 	var viewModel = function (state) {
 		var self = this;
 
@@ -830,9 +829,8 @@
 				url: IP.utils.generateWebAPIURL('ExportSettingsValidation/ValidateSettings'),
 				data: JSON.stringify(model)
 			}).then(function (result) {
-
 				if (!result.isValid) {
-					var formattedMessage = result.message.replace(new RegExp('\r?\n', 'g'), '.<br />');
+					var formattedMessage = result.messages.join('\r?\n').replace(new RegExp('\r?\n', 'g'), '.<br />');
 					window.Dragon.dialogs.showConfirmWithCancelHandler({
 						message: formattedMessage,
 						title: 'Integration Point Validation',
@@ -850,7 +848,6 @@
 				} else {
 					d.resolve(true);
 				}
-
 			}).fail(function (error) {
 				d.reject(error);
 			});
