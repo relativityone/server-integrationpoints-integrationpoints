@@ -130,19 +130,19 @@ def passed = false
 	}
 
 	finally {
-		node{
+		/*node{
 			def to = emailextrecipients([
 				[$class: 'DevelopersRecipientProvider'],
 				[$class: 'RequesterRecipientProvider']
 			])
 			
 			if (!passed) {
-				/*mail body: 'https://tt-jnk-poland.testing.corp/view/All/job/IntegrationPoint_IntegrationTests', subject: 'Integration Points Integration Tests FAILED', to: 'bmollus@kcura.com,lstarzyk@kcura.com'*/
+				mail body: 'https://tt-jnk-poland.testing.corp/view/All/job/IntegrationPoint_IntegrationTests', subject: 'Integration Points Integration Tests FAILED', to: 'bmollus@kcura.com,lstarzyk@kcura.com'
 				emailext body: 'https://tt-jnk-poland.testing.corp/job/IntegrationPoints/', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Integration Points Pipeline FAILED', to: 'lstarzyk@kcura.com'
 			}
 			if (passed) {
-				/*mail body: 'https://tt-jnk-poland.testing.corp/view/All/job/IntegrationPoint_IntegrationTests', subject: 'Integration Points Integration Tests PASSED', to: 'bmollus@kcura.com,lstarzyk@kcura.com'*/
+				mail body: 'https://tt-jnk-poland.testing.corp/view/All/job/IntegrationPoint_IntegrationTests', subject: 'Integration Points Integration Tests PASSED', to: 'bmollus@kcura.com,lstarzyk@kcura.com'
 				emailext body: 'https://tt-jnk-poland.testing.corp/job/IntegrationPoints/', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Integration Points Pipeline PASSED', to: 'lstarzyk@kcura.com'
 			}
-		}
+		}*/
 	}
