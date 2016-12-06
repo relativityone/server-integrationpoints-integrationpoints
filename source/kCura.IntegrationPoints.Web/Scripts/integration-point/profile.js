@@ -15,21 +15,26 @@
 			url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetValidatedProfileModel', artifactId),
 			type: 'get'
 		}).fail(function (error) {
-			IP.message.error.raise("No exportable fields were returned from the source provider.");
+			console.log(error);
+			IP.message.error.raise("Profile not loaded. Please check Error tab for details");
 		});
 		return validatedProfileModelPromise;
 	};
+	
+	this.sourceProvider = ko.observable();
+	this.destinationProvider = ko.observable();
 
-	this.currentFilter = ko.observable();
-
-	this.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (providerType) {
+	this.subscriptionSourceProvider = IP.messaging.subscribe('SourceProviderTypeChanged', function (providerType) {
 		self.setSaveButton(false);
-		if (!providerType) {
-			self.currentFilter(undefined);//reset if providerType empty
-		}
-		else if (!!parentModel.source.sourceProvider && !!parentModel.destination.selectedDestinationType) {
-			self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
-		}
+		self.sourceProvider(providerType);
+	});
+
+	this.subscriptionDestinationProviderType = IP.messaging.subscribe('DestinationProviderTypeChanged', function (providerType) {
+		self.setSaveButton(false);;
+		self.destinationProvider(providerType);
+	});
+	this.subscriptionTransferedObject = IP.messaging.subscribe("TransferedObjectChanged", function (value) {
+		self.setSaveButton(false);
 	});
 
 	this.getProfiles = function (ipType) {
@@ -47,10 +52,13 @@
 		});
 	};
 
-	this.setSaveButton = function(showFlag)
-	{
+	this.setSaveButton = function(showFlag){
 		$.stepProgress.allowSaveProfile(showFlag);
 	}
+
+	this.currentFilter = ko.computed(function() {
+		return { source: self.sourceProvider(), destination: self.destinationProvider() };
+	});
 
 	this.filterProfiles = ko.computed(function () {
 		if (!self.currentFilter() || !self.currentFilter().source || !self.currentFilter().destination) {
@@ -65,14 +73,23 @@
 	this.publishUpdateProfile = function (profileId) {
 		if (!!profileId) {
 			var promise = self.getSelectedProfilePromise(profileId);
-			promise.then(function (profile) {
-				IP.messaging.publish("loadProfile", profile);
-				self.setSaveButton(true);
+			promise.then(function (result) {
+				IP.messaging.publish("loadProfile", result);
 			});
 		}
 	};
 
-	this.selectedProfile.subscribe(function(profileId) {
+	this.notifyUser = function (result) {
+		var isValid = result.validationResult.isValid;
+		self.setSaveButton(isValid);
+		if (isValid) {
+			IP.message.notify("Profile has been successfully loaded. Click Next to modify or Save to complete the set up.");
+		} else {
+			IP.message.notify("Profile has been loaded but requires modification. Click Next to modify the set up.");
+		}
+	};
+
+	this.selectedProfile.subscribe(function (profileId) {
 		self.publishUpdateProfile(profileId);
 	});
 
