@@ -124,9 +124,9 @@
 			};
 		})();
 
-		message.notify = function(message) {
-			root.message.info.raise(message);
-			setTimeout(function () { root.message.info.clear(); }, 3000);
+		message.notify = function (message, $container) {
+			root.message.info.raise(message, $container);
+			setTimeout(function () { root.message.info.clear($container); }, 3000);
 		} 
 
 		message.displayUnresolvedError = function (e, $container) {
