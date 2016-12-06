@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using Relativity.Kepler.Services;
 
 namespace kCura.IntegrationPoints.Services
@@ -23,5 +25,19 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="destinationProviderGuidIdentifier">The destination provider guid identifier that we want the artifact id of</param>
 		/// <returns>The Artifact id of the destination provider specified</returns>
 		Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier);
+
+		/// <summary>
+		/// Get all existing source providers
+		/// </summary>
+		/// <param name="workspaceArtifactId">The Workspace artifact Id of which has installed integration point application</param>
+		/// <returns>All source providers</returns>
+		Task<IList<ProviderModel>> GetSourceProviders(int workspaceArtifactId);
+
+		/// <summary>
+		/// Get all existing destination providers
+		/// </summary>
+		/// <param name="workspaceArtifactId">The Workspace artifact Id of which has installed integration point application</param>
+		/// <returns>All destination providers</returns>
+		Task<IList<ProviderModel>> GetDestinationProviders(int workspaceArtifactId);
 	}
 }

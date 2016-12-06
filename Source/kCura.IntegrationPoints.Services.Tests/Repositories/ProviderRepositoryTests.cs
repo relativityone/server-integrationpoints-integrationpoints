@@ -1,7 +1,13 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
+using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Repositories;
+using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -11,12 +17,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 	{
 		private ProviderRepository _providerRepository;
 		private IRepositoryFactory _repositoryFactory;
+		private IRSAPIService _rsapiService;
 
 		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_rsapiService = Substitute.For<IRSAPIService>();
 
-			_providerRepository = new ProviderRepository(_repositoryFactory);
+			_providerRepository = new ProviderRepository(_repositoryFactory, _rsapiService);
 		}
 
 		[Test]
@@ -53,6 +61,68 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			var actualResult = _providerRepository.GetDestinationProviderArtifactId(workspaceId, guid);
 
 			Assert.That(actualResult, Is.EqualTo(expectedDestinationProviderArtifactId));
+		}
+
+		[Test]
+		public void ItShouldGetAllSourceProviders()
+		{
+			var library = Substitute.For<IGenericLibrary<SourceProvider>>();
+			_rsapiService.SourceProviderLibrary.Returns(library);
+
+			var expectedQuery = new AllSourceProvidersWithNameQueryBuilder().Create();
+
+			var expectedResult = new List<SourceProvider>
+			{
+				new SourceProvider
+				{
+					ArtifactId = 369,
+					Name = "name_572"
+				},
+				new SourceProvider
+				{
+					ArtifactId = 229,
+					Name = "name_700"
+				}
+			};
+
+			library.Query(Arg.Is<Query<RDO>>(x => (x.ArtifactTypeGuid == expectedQuery.ArtifactTypeGuid) && (x.Fields.Count == expectedQuery.Fields.Count)))
+				.Returns(expectedResult);
+
+			var actualResult = _providerRepository.GetSourceProviders(521);
+
+			Assert.That(actualResult,
+				Is.EquivalentTo(expectedResult).Using(new Func<ProviderModel, SourceProvider, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactId))));
+		}
+
+		[Test]
+		public void ItShouldGetAllDestinationProviders()
+		{
+			var library = Substitute.For<IGenericLibrary<DestinationProvider>>();
+			_rsapiService.DestinationProviderLibrary.Returns(library);
+
+			var expectedQuery = new AllDestinationProvidersWithNameQueryBuilder().Create();
+
+			var expectedResult = new List<DestinationProvider>
+			{
+				new DestinationProvider
+				{
+					ArtifactId = 281,
+					Name = "name_818"
+				},
+				new DestinationProvider
+				{
+					ArtifactId = 918,
+					Name = "name_423"
+				}
+			};
+
+			library.Query(Arg.Is<Query<RDO>>(x => (x.ArtifactTypeGuid == expectedQuery.ArtifactTypeGuid) && (x.Fields.Count == expectedQuery.Fields.Count)))
+				.Returns(expectedResult);
+
+			var actualResult = _providerRepository.GetDesinationProviders(521);
+
+			Assert.That(actualResult,
+				Is.EquivalentTo(expectedResult).Using(new Func<ProviderModel, DestinationProvider, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactId))));
 		}
 	}
 }

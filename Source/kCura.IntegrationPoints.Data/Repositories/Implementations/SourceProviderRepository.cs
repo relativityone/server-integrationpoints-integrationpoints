@@ -57,12 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Source Provider: {queryResultSet.Message}");
 			}
 
-			var dto = new SourceProviderDTO()
-			{
-				ArtifactId = result.Artifact.ArtifactID,
-				Name = result.Artifact.Fields[0].ValueAsFixedLengthText,
-				Identifier = new Guid(result.Artifact.Fields[1].ValueAsFixedLengthText)
-			};
+			var dto = CreateSourceProviderDTO(result);
 
 			return dto;
 		}
@@ -91,6 +86,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			return sourceProviderArtifactId;
+		}
+
+		private static SourceProviderDTO CreateSourceProviderDTO(Result<RDO> result)
+		{
+			var dto = new SourceProviderDTO()
+			{
+				ArtifactId = result.Artifact.ArtifactID,
+				Name = result.Artifact.Fields[0].ValueAsFixedLengthText,
+				Identifier = new Guid(result.Artifact.Fields[1].ValueAsFixedLengthText)
+			};
+			return dto;
 		}
 	}
 }

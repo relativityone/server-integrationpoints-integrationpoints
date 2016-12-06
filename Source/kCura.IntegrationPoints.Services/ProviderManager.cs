@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 
@@ -43,6 +46,16 @@ namespace kCura.IntegrationPoints.Services
 				await
 					Execute((IProviderRepository providerRepository) =>
 							providerRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier), workspaceArtifactId);
+		}
+
+		public async Task<IList<ProviderModel>> GetSourceProviders(int workspaceArtifactId)
+		{
+			return await Execute((IProviderRepository providerRepository) => providerRepository.GetSourceProviders(workspaceArtifactId), workspaceArtifactId);
+		}
+
+		public async Task<IList<ProviderModel>> GetDestinationProviders(int workspaceArtifactId)
+		{
+			return await Execute((IProviderRepository providerRepository) => providerRepository.GetDesinationProviders(workspaceArtifactId), workspaceArtifactId);
 		}
 	}
 }
