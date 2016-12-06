@@ -127,13 +127,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				periodicScheduleRule.EndDate = endDate;
 			}
 			periodicScheduleRule.TimeZoneOffsetInMinute = model.Scheduler.TimeZoneOffsetInMinute;
-
-			//since we do not know what user local time is, time is passed in UTC
-			TimeSpan time;
-			if (TimeSpan.TryParse(model.Scheduler.ScheduledTime, out time))
+			periodicScheduleRule.TimeZoneId = model.Scheduler.TimeZoneId;
+			
+			TimeSpan localTime;
+			if (TimeSpan.TryParse(model.Scheduler.ScheduledTime, out localTime))
 			{
-				periodicScheduleRule.LocalTimeOfDay =
-					DateTime.UtcNow.Date.Add(new DateTime(time.Ticks, DateTimeKind.Utc).TimeOfDay).ToLocalTime().TimeOfDay;
+				periodicScheduleRule.LocalTimeOfDay = localTime;
 			}
 			ScheduleInterval interval;
 			if (Enum.TryParse(model.Scheduler.SelectedFrequency, true, out interval))

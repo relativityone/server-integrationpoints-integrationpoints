@@ -69,9 +69,9 @@ namespace kCura.IntegrationPoints.Core.Models
 					var ticks = new DateTime(rule.LocalTimeOfDay.Value.Ticks);
 					date = date.AddHours(ticks.Hour);
 					date = date.AddMinutes(ticks.Minute);
-					var time = date.ToUniversalTime();
-					ScheduledTime = time.Hour + ":" + time.Minute;
+					ScheduledTime = date.Hour + ":" + date.Minute;
 				}
+				TimeZoneId = rule.TimeZoneId ?? TimeZoneInfo.Local.Id;  //PN: We assing server time zone when TimeZoneId is empty for compatibility reasons
 			}
 		}
 
@@ -83,5 +83,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		public int Reoccur { get; set; }
 		public string ScheduledTime { get; set; }
 		public string SendOn { get; set; }
+		public string TimeZoneId { get; set; }
 	}
 }

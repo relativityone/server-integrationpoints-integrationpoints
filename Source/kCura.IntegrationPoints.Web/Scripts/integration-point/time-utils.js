@@ -55,9 +55,20 @@ IP.timeUtil = (function () {
 		return scheduleTime;
 	}
 
-	
+	function timeFormatMinutes(time) {
+		if (!time) {
+			return time;
+		}
 
-	function timeUtcToLocal(time, timeFormat) {
+		var lengthCheck = time.split(':');
+		if (lengthCheck[1].length < 2) {
+			lengthCheck[1] = "0" + lengthCheck[1];
+			time = lengthCheck[0] + ":" + lengthCheck[1];
+		}
+		return time;
+	}
+
+	function timeUtcToLocal(time) {
 
 		timeFormat = timeFormat || "hh:mm";
 		var lengthCheck = time.split(':');
@@ -94,8 +105,9 @@ IP.timeUtil = (function () {
 		utcToLocal: utcToLocal,
 		timeLocalToUtc: timeLocalToUtc,
 		utcDateToLocal: _noOp,
-		utcToAmPm: utcToTime,
-		utcToLocalAmPm : utcToLocalAmPm
+		timeToAmPm: utcToTime,
+		utcToLocalAmPm: utcToLocalAmPm,
+		formatTimeMinutes: timeFormatMinutes
 	};
 
 }());

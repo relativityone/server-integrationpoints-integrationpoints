@@ -79,8 +79,7 @@
 		}).then(function (result) {
 			vm = new viewModel();
 			if (result.scheduler && result.scheduler.scheduledTime) {
-				var time = helper.utcToLocal(result.scheduler.scheduledTime.split(':'), "HH:mm");
-				var timeSplit = time.split(':');
+				var timeSplit = result.scheduler.scheduledTime.split(':');
 				var hour = parseInt(timeSplit[0], 10);
 				if (hour > 12) {
 					result.scheduler.scheduledTime = hour - 12 + ":" + timeSplit[1];
@@ -152,14 +151,14 @@
 				var timeSplit = result.scheduler.scheduledTime.split(':');
 				var time = result.scheduler.scheduledTime;
 				if (result.scheduler.selectedTimeFormat == "AM") {
-					result.scheduler.scheduledTime = timeSplit[0] == 12 ? helper.timeLocalToUtc(0 + ':' + timeSplit[1]) : helper.timeLocalToUtc(time);
+					result.scheduler.scheduledTime = timeSplit[0] == 12 ? (0 + ':' + timeSplit[1]) : time;
 				} else {
 					var hour = 12;
 					if (parseInt(timeSplit[0], 10) < 12) {
 						hour = parseInt(timeSplit[0], 10) + 12;
 					}
 
-					result.scheduler.scheduledTime = helper.timeLocalToUtc(hour + ':' + timeSplit[1]);
+					result.scheduler.scheduledTime = hour + ':' + timeSplit[1];
 				}
 			}
 			IP.messaging.publish('saveComplete', result);

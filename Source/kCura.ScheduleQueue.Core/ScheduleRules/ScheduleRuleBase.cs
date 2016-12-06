@@ -91,7 +91,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DateTime localNow = endDateHelper.Time;
 			DateTime nextRunTimeDate = endDateHelper.StartDate.Date > localNow.Date ? endDateHelper.StartDate.Date : localNow.Date;
 
-			nextRunTimeDate = nextRunTimeDate.AddTicks(endDateHelper.LocalTimeOfDayTick % TimeSpan.FromDays(1).Ticks);
+			nextRunTimeDate = nextRunTimeDate.AddTicks(endDateHelper.TimeOfDayTick % TimeSpan.FromDays(1).Ticks);
 
 			switch (interval)
 			{
@@ -133,11 +133,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 					CheckForOverride(ref setLastDayOfMonth, ref dayOfMonth, daysToRun, occuranceInMonth);
 					if ((setLastDayOfMonth.HasValue && setLastDayOfMonth.Value) || dayOfMonth.HasValue)
 					{
-						nextRunTimeDate = GetNextScheduledMonthDayByDay(nextRunTimeDate, endDateHelper.StartDate, endDateHelper.LocalTimeOfDayTick, setLastDayOfMonth, dayOfMonth, localNow, reoccur);
+						nextRunTimeDate = GetNextScheduledMonthDayByDay(nextRunTimeDate, endDateHelper.StartDate, endDateHelper.TimeOfDayTick, setLastDayOfMonth, dayOfMonth, localNow, reoccur);
 					}
 					else
 					{
-						nextRunTimeDate = GetNextScheduledMonthDayByWeek(nextRunTimeDate, endDateHelper.StartDate, endDateHelper.LocalTimeOfDayTick, localNow, daysToRun, reoccur, occuranceInMonth);
+						nextRunTimeDate = GetNextScheduledMonthDayByWeek(nextRunTimeDate, endDateHelper.StartDate, endDateHelper.TimeOfDayTick, localNow, daysToRun, reoccur, occuranceInMonth);
 					}
 					break;
 			}
@@ -358,7 +358,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 				_timeService = timeService;
 			}
 
-			public long LocalTimeOfDayTick { get; set; }
+			public long TimeOfDayTick { get; set; }
 			public DateTime StartDate { get; set; }
 			public DateTime? EndDate { get; set; }
 			public abstract DateTime Time { get; }
