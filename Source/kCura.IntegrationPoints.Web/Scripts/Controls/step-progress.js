@@ -72,9 +72,15 @@
 		return this.options.currentStep >= this.$this.find('li').length;
 	};
 
-	var _allowSaveProfile = function () {
-		$("#back").hide();
-		$("#save").show();
+	var _allowSaveProfile = function (flag) {
+		if (flag) {
+			$("#back").hide();
+			$("#save").show();
+		} else {
+			$("#back").show();
+			$("#save").hide();
+		}
+		
 	};
 
 	$.stepProgress = $.stepProgress || {};

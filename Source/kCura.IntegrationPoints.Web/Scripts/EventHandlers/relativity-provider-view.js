@@ -141,7 +141,13 @@
 		var saveAsProfileModalViewModel = new SaveAsProfileModalViewModel(function (value) {
 			IP.data.ajax({
 				url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, value),
-				type: 'POST'
+				type: 'POST',
+				success: function() {
+					IP.message.notify("Profile has been saved", $("#customRDOWithConsoleWrapper"));
+				},
+				fail:function (error) {
+					IP.message.error.raise(error, $("#customRDOWithConsoleWrapper"));
+				}
 			});
 		});
 		var promise = Picker.create("IntegrationPoints", "saveAsProfileModal", "SaveAsProfileModal", saveAsProfileModalViewModel);
