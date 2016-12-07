@@ -192,6 +192,35 @@
 			if (typeof (save) != 'undefined') {
 				return;
 			}
+
+			//If we are the import provider we need to pass along Extracted Text/ Native path fields
+			//This will allow the provider to convert any relative paths to absolute.
+			if (model.destinationProviderGuid === "74A863B9-00EC-4BB7-9B3E-1E22323010C6") {
+				var importConfig = JSON.parse(model.sourceConfiguration);
+				var destinationConfig = JSON.parse(model.destination);
+				var fieldMap = JSON.parse(model.map);
+				if (destinationConfig.ExtractedTextFieldContainsFilePath === 'true') {
+					//get the field identifier for the source field that contians the extracted text path
+					for (var i = 0; i < fieldMap.length; i++) {
+						if (fieldMap[i].destinationField.displayName === destinationConfig.LongTextColumnThatContainsPathToFullText) {
+							$.extend(importConfig, { ExtractedTextPathFieldIdentifier: fieldMap[i].sourceField.fieldIdentifier });
+							break;
+						}
+					}
+				}
+				if (destinationConfig.importNativeFile === 'true') {
+					//get the field identifier for the source field that contians the native file path
+					for (var j = 0; j < fieldMap.length; j++) {
+						if (fieldMap[j].fieldMapType === 'NativeFilePath') {
+							$.extend(importConfig, { NativeFilePathFieldIdentifier: fieldMap[j].sourceField.fieldIdentifier });
+							break;
+						}
+					}
+				}
+
+				model.sourceConfiguration = JSON.stringify(importConfig);
+			}
+
 			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL(IP.data.params['apiControllerName']), data: JSON.stringify(model) }).then(function (result) {
 				//redirect to page!!
 				IP.unsavedChangesHandler.unregister();
