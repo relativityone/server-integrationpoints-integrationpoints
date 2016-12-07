@@ -4,17 +4,17 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
-	public class AllSourceProvidersWithNameQueryBuilder : IAllSourceProvidersWithNameQueryBuilder
+	public class AllDestinationProvidersQueryBuilder : IAllDestinationProvidersQueryBuilder
 	{
 		public Query<RDO> Create()
 		{
 			return new Query<RDO>
 			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
+				ArtifactTypeGuid = new Guid(ObjectTypeGuids.DestinationProvider),
 				Fields = new List<FieldValue>
 				{
-					new FieldValue(new Guid(SourceProviderFieldGuids.Name)),
-					new FieldValue(new Guid(SourceProviderFieldGuids.Identifier))
+					new FieldValue(new Guid(DestinationProviderFieldGuids.Name)),
+					new FieldValue(new Guid(DestinationProviderFieldGuids.Identifier))
 				}
 			};
 		}

@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Services
 {
-	public class ProviderModel : BaseModel
+	public class IntegrationPointTypeModel : BaseModel
 	{
 	}
 }

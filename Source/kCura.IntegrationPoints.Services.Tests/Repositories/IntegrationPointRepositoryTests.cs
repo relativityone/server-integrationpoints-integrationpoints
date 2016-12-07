@@ -4,7 +4,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Services.Repositories;
+using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;

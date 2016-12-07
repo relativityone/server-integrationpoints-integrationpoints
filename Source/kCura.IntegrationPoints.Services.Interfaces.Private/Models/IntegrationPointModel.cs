@@ -1,17 +1,7 @@
 ﻿namespace kCura.IntegrationPoints.Services
 {
-	public class IntegrationPointModel
+	public class IntegrationPointModel : BaseModel
 	{
-		/// <summary>
-		/// Name of the integration point object.
-		/// </summary>
-		public string Name { get; set; }
-
-		/// <summary>
-		/// Artifact Id of the integration point object.
-		/// </summary>
-		public int ArtifactId { get; set; }
-
 		/// <summary>
 		/// Artifact Id of the source provider.
 		/// </summary>

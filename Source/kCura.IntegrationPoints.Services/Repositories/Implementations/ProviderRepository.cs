@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -7,7 +6,7 @@ using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
 
-namespace kCura.IntegrationPoints.Services.Repositories
+namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
 	public class ProviderRepository : IProviderRepository
 	{
@@ -28,13 +27,13 @@ namespace kCura.IntegrationPoints.Services.Repositories
 
 		public IList<ProviderModel> GetSourceProviders(int workspaceArtifactId)
 		{
-			var sourceProviders = _rsapiService.SourceProviderLibrary.Query(new AllSourceProvidersWithNameQueryBuilder().Create());
+			var sourceProviders = _rsapiService.SourceProviderLibrary.Query(new AllSourceProvidersQueryBuilder().Create());
 			return sourceProviders.Select(x => x.ToModel()).ToList();
 		}
 
 		public IList<ProviderModel> GetDesinationProviders(int workspaceArtifactId)
 		{
-			var destinationProviders = _rsapiService.DestinationProviderLibrary.Query(new AllDestinationProvidersWithNameQueryBuilder().Create());
+			var destinationProviders = _rsapiService.DestinationProviderLibrary.Query(new AllDestinationProvidersQueryBuilder().Create());
 			return destinationProviders.Select(x => x.ToModel()).ToList();
 		}
 

@@ -2,6 +2,7 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Services.Repositories;
+using kCura.IntegrationPoints.Services.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {

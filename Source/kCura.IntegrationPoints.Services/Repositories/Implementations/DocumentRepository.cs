@@ -7,7 +7,7 @@ using Relativity.API;
 using Relativity.Services.ObjectQuery;
 using Query = Relativity.Services.ObjectQuery.Query;
 
-namespace kCura.IntegrationPoints.Services.Repositories
+namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
 	public class DocumentRepository : IDocumentRepository
 	{

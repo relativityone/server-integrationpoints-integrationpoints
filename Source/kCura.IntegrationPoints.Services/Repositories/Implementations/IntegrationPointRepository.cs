@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Services.Repositories
+namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
 	public class IntegrationPointRepository : IIntegrationPointRepository
 	{
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 		public IList<IntegrationPointModel> GetAllIntegrationPoints()
 		{
 			IList<IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
-			return integrationPoints.Select(x => x.ToIntegrationPointModel()).ToList();
+			return integrationPoints.Select(x => IntegrationPointExtensions.ToIntegrationPointModel(x)).ToList();
 		}
 
 		public int GetIntegrationPointArtifactTypeId()

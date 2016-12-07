@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders
 {
-	public interface IAllSourceProvidersWithNameQueryBuilder
+	public interface IAllIntegrationPointTypesQueryBuilder
 	{
 		Query<RDO> Create();
 	}

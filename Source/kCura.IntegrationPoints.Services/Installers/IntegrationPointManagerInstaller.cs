@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Services.Repositories;
+using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
 

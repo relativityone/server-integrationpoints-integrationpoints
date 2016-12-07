@@ -11,11 +11,11 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
-	public class ProviderManagerInstaller : IInstaller
+	public class IntegrationPointTypeManagerInstaller : IInstaller
 	{
 		private readonly List<IWindsorInstaller> _dependencies;
 
-		public ProviderManagerInstaller()
+		public IntegrationPointTypeManagerInstaller()
 		{
 			_dependencies = new List<IWindsorInstaller>
 			{
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 				var helper = k.Resolve<IHelper>();
 				return new RSAPIService(helper, workspaceId);
 			}).LifestyleTransient());
-			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
+			container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<IntegrationPointTypeRepository>().LifestyleTransient());
 
 			foreach (IWindsorInstaller dependency in _dependencies)
 			{

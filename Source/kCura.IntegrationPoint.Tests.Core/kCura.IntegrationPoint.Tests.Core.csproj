@@ -231,6 +231,7 @@
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
+    <Compile Include="Extensions\RelativityQueryExtensions.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="Folder.cs" />
