@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
     public class PreviewJobTests
     {
         private const int ColumnCount = 5;
-        private ArrayList arrList;
+        private List<object> arrList;
         private ILoadFilePreviewer _loadFilePreviewerMock;
         private PreviewJob _subjectUnderTest;
 
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             _loadFilePreviewerMock = Substitute.For<ILoadFilePreviewer>();
             _subjectUnderTest = new PreviewJob();
             _subjectUnderTest._loadFilePreviewer = _loadFilePreviewerMock;
-            arrList = new ArrayList();
+            arrList = new List<object>();
         }
 
         [Test]
