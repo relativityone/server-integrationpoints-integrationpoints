@@ -51,8 +51,6 @@ task package -depends package_initalize {
 
 task sign -precondition { ($build_type -ne 'DEV') -and ($server_type -ne 'local') } {
     foreach($o in Get-ChildItem -Path $package_directory -Recurse  -Include '*.exe', '*.dll', '*.msi') {
-        exec {
-            & $signscript @($o.FullName)
-        }
+        & $signscript @($o.FullName)
     }
 }
