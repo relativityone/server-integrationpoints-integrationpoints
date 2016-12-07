@@ -57,13 +57,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				rdoTypeId,
 				new HashSet<string>(new[]
 				{
-					Constants.Fields.Name,
-					Constants.Fields.Choices,
-					Constants.Fields.ObjectTypeArtifactTypeId,
-					Constants.Fields.FieldType,
-					Constants.Fields.FieldTypeId,
-					Constants.Fields.IsIdentifier,
-					Constants.Fields.FieldTypeName,
+					kCura.IntegrationPoints.Core.Constants.Fields.Name,
+					kCura.IntegrationPoints.Core.Constants.Fields.Choices,
+					kCura.IntegrationPoints.Core.Constants.Fields.ObjectTypeArtifactTypeId,
+					kCura.IntegrationPoints.Core.Constants.Fields.FieldType,
+					kCura.IntegrationPoints.Core.Constants.Fields.FieldTypeId,
+					kCura.IntegrationPoints.Core.Constants.Fields.IsIdentifier,
+					kCura.IntegrationPoints.Core.Constants.Fields.FieldTypeName,
 				}));
 
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -89,11 +89,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
-					if (field.Name == Constants.Fields.Name)
+					if (field.Name == kCura.IntegrationPoints.Core.Constants.Fields.Name)
 					{
 						fieldName = field.Value as string;
 					}
-					else if (field.Name == Constants.Fields.IsIdentifier)
+					else if (field.Name == kCura.IntegrationPoints.Core.Constants.Fields.IsIdentifier)
 					{
 						try
 						{

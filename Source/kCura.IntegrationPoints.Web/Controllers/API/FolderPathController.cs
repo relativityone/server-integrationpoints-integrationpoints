@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -37,16 +38,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IConfig _config;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IChoiceService _choiceService;
 
 		public FolderPathController(IRSAPIClient client,
 			IImportApiFactory importApiFactory,
 			IConfig config,
-			IRepositoryFactory repositoryFactory)
+			IRepositoryFactory repositoryFactory,
+			IChoiceService choiceService)
 		{
 			_client = client;
 			_importApiFactory = importApiFactory;
 			_config = config;
 			_repositoryFactory = repositoryFactory;
+			_choiceService = choiceService;
 		}
 
 
@@ -62,7 +66,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unabel to retrieve long text fields data.")]
+		[LogApiExceptionFilter(Message = "Unable to retrieve long text fields data.")]
 		public HttpResponseMessage GetLongTextFields()
 		{
 			IImportAPI importApi = ImportApiConfiguration();
@@ -70,6 +74,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(importApi, textFields);
 			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
+		}
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve choice fields data.")]
+		public HttpResponseMessage GetChoiceFields()
+		{
+			IImportAPI importApi = ImportApiConfiguration();
+			List<FieldEntry> choiceFields = _choiceService.GetChoiceFields(Convert.ToInt32(ArtifactType.Document));
+
+			IEnumerable<FieldEntry> choiceMappableFields = GetFieldCategory(importApi, choiceFields);
+			return Request.CreateResponse(HttpStatusCode.OK, choiceMappableFields, Configuration.Formatters.JsonFormatter);
 		}
 
 		[HttpGet]
@@ -161,23 +176,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var rdoCondition = new ObjectCondition
 			{
-				Field = "Object Type Artifact Type ID",
+				Field = Core.Constants.Fields.ObjectTypeArtifactTypeId,
 				Operator = ObjectConditionEnum.AnyOfThese,
 				Value = new List<int> { rdoTypeId }
 			};
 
 			var longTextCondition = new TextCondition
 			{
-				Field = "Field Type",
+				Field = Core.Constants.Fields.FieldType,
 				Operator = TextConditionEnum.EqualTo,
-				Value = "Long Text"
+				Value = kCura.IntegrationPoints.Data.FieldTypes.LongText
 			};
 
 			var fixedLengthTextCondition = new TextCondition
 			{
-				Field = "Field Type",
+				Field = Core.Constants.Fields.FieldType,
 				Operator = TextConditionEnum.EqualTo,
-				Value = "Fixed-Length Text"
+				Value = kCura.IntegrationPoints.Data.FieldTypes.FixedLengthText
 			};
 
 			Query query = new Query
@@ -188,7 +203,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					new Sort()
 					{
-						Field = "Name",
+						Field = Core.Constants.Fields.Name,
 						Direction = SortEnum.Ascending
 					}
 				}
@@ -202,30 +217,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				throw new Exception(result.Message);
 			}
-			List<FieldEntry> fieldEntries = ConvertToFieldEntries(result.QueryArtifacts);
-			return fieldEntries;
-		}
-
-		private List<FieldEntry> ConvertToFieldEntries(List<kCura.Relativity.Client.Artifact> artifacts)
-		{
-			List<FieldEntry> fieldEntries = new List<FieldEntry>();
-
-			foreach (kCura.Relativity.Client.Artifact artifact in artifacts)
-			{
-				foreach (kCura.Relativity.Client.Field field in artifact.Fields)
-				{
-					if (field.Name == "Name")
-					{
-						fieldEntries.Add(new FieldEntry()
-						{
-							DisplayName = field.Value as string,
-							FieldIdentifier = artifact.ArtifactID.ToString(),
-							IsRequired = false
-						});
-						break;
-					}
-				}
-			}
+			List<FieldEntry> fieldEntries = _choiceService.ConvertToFieldEntries(result.QueryArtifacts);
 			return fieldEntries;
 		}
 	}

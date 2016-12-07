@@ -9,8 +9,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ChoiceController : ApiController
 	{
-		private readonly ChoiceService _choiceService;
-		public ChoiceController(ChoiceService choiceService)
+		private readonly IChoiceService _choiceService;
+		public ChoiceController(IChoiceService choiceService)
 		{
 			_choiceService = choiceService;
 		}

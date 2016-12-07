@@ -175,6 +175,8 @@
     <Compile Include="EnumerableParser.cs" />
     <Compile Include="EnumerableParserFactory.cs" />
     <Compile Include="FieldParserFactory.cs" />
+    <Compile Include="Helpers\PreviewHelper.cs" />
+    <Compile Include="Helpers\PreviewType.cs" />
     <Compile Include="Interfaces\ILoadFilePreviewer.cs" />
     <Compile Include="Interfaces\IPreviewJobFactory.cs" />
     <Compile Include="LoadFilePreviewerWrapper.cs" />

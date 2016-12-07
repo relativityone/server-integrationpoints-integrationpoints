@@ -285,6 +285,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\IChoiceService.cs" />
     <Compile Include="Services\IImportTypeService.cs" />
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\IIntegrationPointValidationService.cs" />

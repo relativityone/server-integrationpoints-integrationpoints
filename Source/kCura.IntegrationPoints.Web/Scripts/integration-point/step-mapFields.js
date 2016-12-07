@@ -787,50 +787,7 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 
-					if (this.model.UseFolderPathInformation() == "true") {
-					    var folderPathField = "";
-						var folderPathFields = this.model.FolderPathFields();
-						for (var i = 0; i < folderPathFields.length; i++) {
-							if (folderPathFields[i].fieldIdentifier === this.model.FolderPathSourceField()) {
-								folderPathField = folderPathFields[i];
-								break;
-							}
-						}
-
-						var sourceFields = this.model.FolderPathImportProvider();
-						for (var k = 0; k < sourceFields.length; k++) {
-						    if (sourceFields[k].fieldIdentifier === this.model.FolderPathSourceField()) {
-						        folderPathField = sourceFields[k];
-						        break;
-						    }
-						}
-
-						// update fieldMapType if folderPath is in mapping field
-						var containsFolderPathInMapping = false;
-						for (var index = 0; index < map.length; index++) {
-							if (map[index].sourceField.fieldIdentifier === folderPathField.fieldIdentifier) {
-								map[index].fieldMapType = "FolderPathInformation";
-								containsFolderPathInMapping = true;
-								break;
-							}
-						}
-
-						// create folder path entry if it is not in the field
-						if (containsFolderPathInMapping === false) {
-							var entry =
-							{
-								displayName: folderPathField.actualName,
-								isIdentifier: "false",
-								fieldIdentifier: folderPathField.fieldIdentifier,
-								isRequired: "false"
-							}
-							map.push({
-								sourceField: entry,
-								destinationField: {},
-								fieldMapType: "FolderPathInformation"
-							});
-						}
-					}
+					AddFolderPathInfoToMapping(map);
 
 				    if (this.model.ExtractedTextFieldContainsFilePath() == 'true') {
 				        var longTextField = "";
@@ -879,6 +836,53 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 	};
 
+	var AddFolderPathInfoToMapping = function (map) {
+		if (step.returnModel.UseFolderPathInformation == "true") {
+			var folderPathField = "";
+			var folderPathFields = step.model.FolderPathFields();
+			for (var i = 0; i < folderPathFields.length; i++) {
+				if (folderPathFields[i].fieldIdentifier === step.model.FolderPathSourceField()) {
+					folderPathField = folderPathFields[i];
+					break;
+				}
+			}
+
+			var sourceFields = step.model.FolderPathImportProvider();
+			for (var k = 0; k < sourceFields.length; k++) {
+				if (sourceFields[k].fieldIdentifier === step.model.FolderPathSourceField()) {
+					folderPathField = sourceFields[k];
+					break;
+				}
+			}
+
+			// update fieldMapType if folderPath is in mapping field
+			var containsFolderPathInMapping = false;
+			for (var index = 0; index < map.length; index++) {
+				if (map[index].sourceField.fieldIdentifier === folderPathField.fieldIdentifier) {
+					map[index].fieldMapType = "FolderPathInformation";
+					containsFolderPathInMapping = true;
+					break;
+				}
+			}
+
+			// create folder path entry if it is not in the field
+			if (containsFolderPathInMapping === false) {
+				var entry =
+				{
+					displayName: folderPathField.actualName,
+					isIdentifier: "false",
+					fieldIdentifier: folderPathField.fieldIdentifier,
+					isRequired: "false"
+				}
+				map.push({
+					sourceField: entry,
+					destinationField: {},
+					fieldMapType: "FolderPathInformation"
+				});
+			}
+		}
+	}
+
         var step = new Step({
             url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
             templateID: 'step3'
@@ -890,11 +894,33 @@ ko.validation.insertValidationMessage = function (element) {
 	});
 	root.points.steps.push(step);
 
-    //Added to make field mapping logic available to Import provider settings page
+	//Added to make field mapping logic available to Import provider settings page
 	window.top.getCurrentIpFieldMapping = function () {
-	    step.back();
-	    return step.returnModel.map;
-	}
+		step.back();
+		var currentMapping = {};
+		currentMapping = JSON.parse(step.returnModel.map);
+		AddFolderPathInfoToMapping(currentMapping);
+		
+		return JSON.stringify(currentMapping);
+	};
+
+	window.top.getMappedChoiceFieldsPromise = function () {
+		return IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetChoiceFields') }).then(function (result) {
+			var choiceFields = [];
+			var totalChoiceFields = {};
+			totalChoiceFields = result;
+			var currentMapping = JSON.parse(step.returnModel.map);
+			for (var i = 0; i < totalChoiceFields.length; i++) {
+				for (var j = 0; j < currentMapping.length; j++) {
+					if (totalChoiceFields[i].displayName === currentMapping[j].destinationField.displayName) {
+						choiceFields.push(totalChoiceFields[i].displayName);
+						break;
+					}
+				}
+			}
+			return choiceFields;
+		});
+	};
 
 })(IP, ko);
 

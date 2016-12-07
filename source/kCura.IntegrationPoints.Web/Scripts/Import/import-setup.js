@@ -36,6 +36,13 @@
         CONFIGURATION_FRAME: CONFIGURATION_FRAME
     }
 
+	//put enum on parent so it can be accessed by both import-setup.js and import preview pop up page
+    windowObj.parent.PreviewTypeEnum = {
+    	File: 0,
+    	Errors: 1,
+    	Folders: 2
+    };
+
     var idSelector = function (name) { return '#' + name; }
     var classSelector = function (name) { return '.' + name; }
     windowObj.RelativityImport.UI.idSelector = idSelector;
@@ -175,13 +182,13 @@
         };
 
         preFile.click(function () {
-            return openPreviewWindow('file');
+            return openPreviewWindow(windowPar.PreviewTypeEnum.File);
         });
         preError.click(function () {
-            return openPreviewWindow('errors');
+        	return openPreviewWindow(windowPar.PreviewTypeEnum.Errors);
         });
         preChoice.click(function () {
-            console.log("Preview choice has been selected");
+        	return openPreviewWindow(windowPar.PreviewTypeEnum.Folders);
         });
     }
 

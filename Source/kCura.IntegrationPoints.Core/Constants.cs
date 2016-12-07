@@ -143,7 +143,19 @@ namespace kCura.IntegrationPoints.Core
 		{
 			public const string ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE = "Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
 		}
-		
+
+		public static class Fields
+		{
+			internal static string Name = "Name";
+			internal static string Choices = "Choices";
+			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
+			internal static string FieldType = "Field Type";
+			internal static string FieldTypeId = "Field Type ID";
+			internal static string FieldTypeName = "Field Type Name";
+			internal static string IsIdentifier = "Is Identifier";
+			internal static string MultipleChoice = "Multiple Choice";
+		}
+
 		public enum SourceProvider
 		{
 			Other = 0,

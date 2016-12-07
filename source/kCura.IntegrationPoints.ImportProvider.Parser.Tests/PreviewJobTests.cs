@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         {
             MockPreviewTable();
 
-            _subjectUnderTest._loadFilePreviewer.ReadFile().ReturnsForAnyArgs(arrList);
+            _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(arrList);
             _subjectUnderTest.StartRead();
             //assert that Preview Job is set to complete
             Assert.IsTrue(_subjectUnderTest.IsComplete);
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             //arrange our return value from ReadFile to include two exceptions
             arrList.Add(new Exception("test 1"));
             arrList.Add(new Exception("test 2"));
-            _subjectUnderTest._loadFilePreviewer.ReadFile().ReturnsForAnyArgs(arrList);
+            _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(arrList);
             _subjectUnderTest.StartRead();
 
             //assert that we have the expected number errors
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             
             //arrange our return value from ReadFile to include an exception column
             //this returns differently than when the entire row has an exception
-            _subjectUnderTest._loadFilePreviewer.ReadFile().ReturnsForAnyArgs(arrList);
+            _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(arrList);
             _subjectUnderTest.StartRead();
 
             //assert that we have the expected number errors and data rows
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         public void PreviewJobReturnsNoData()
         {
             //Test to make sure that PreviewJob is safely handling a situation where LoadFilePreviewer doesn't find any rows
-            _subjectUnderTest._loadFilePreviewer.ReadFile().ReturnsForAnyArgs(arrList);
+            _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(arrList);
             _subjectUnderTest.StartRead();
 
             //assert that we have the expected number errors and data rows
