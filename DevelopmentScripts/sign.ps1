@@ -1,7 +1,7 @@
 ﻿$SIGNTOOL = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.0A", "Bin", "signtool.exe")
-$sites = @("http://timestamp.verisign.com/scripts/timstamp.dll",
-           "http://timestamp.comodoca.com/authenticode",
-           "http://www2.trustcenter.de/codesigning/timestamp")
+$sites = @("http://timestamp.comodoca.com/authenticode",
+		   "http://timestamp.verisign.com/scripts/timstamp.dll",
+		   "http://tsa.starfieldtech.com")
 
 
 function SignDLL($dll) {
@@ -15,8 +15,8 @@ function SignDLL($dll) {
 		For($i =0; $i -lt 3; $i++) {
 			ForEach($site in $sites){
 				Write-Host "Attempting to sign" $dll "using" $site "..."
-				& $SIGNTOOL sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $dll
-				$signed = $?
+				$proc = start-process -filepath $SIGNTOOL -argumentlist "sign /a /t $site /d 'Relativity' /du 'http://www.kcura.com' $dll" -WindowStyle hidden -Wait -PassThru
+				$signed = ($proc.ExitCode -eq 0)
 			
 				if($signed) {
 					Write-Host "Signed" $dll "Successfully!"
