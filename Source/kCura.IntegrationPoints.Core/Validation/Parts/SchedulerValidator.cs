@@ -17,13 +17,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 		public string Key => Constants.IntegrationPointProfiles.Validation.SCHEDULE;
 
-		public const string ERROR_SCHEDULER_NOT_INITIALIZED = "Scheduler object not initialized";
-		public const string ERROR_REQUIRED_VALUE = "This field is required: ";
-		public const string ERROR_INVALID_DATE_FORMAT = "Invalid string representation of a date: ";
-		public const string ERROR_INVALID_TIME_FORMAT = "Invalid string representation of a time: ";
-		public const string ERROR_NOT_INT_RANGE = " value not in range: ";
-		public const string ERROR_INVALID_VALUE = "Invalid value for: ";
-		public const string ERROR_END_DATE_BEFORE_START_DATE = "The start date must come before the end date.";
 		public const int REOCCUR_MIN = 1, REOCCUR_MAX = 999;
 		public const int FIRST_DAY_OF_MONTH = 1, LAST_DAY_OF_MONTH = 31;
 
@@ -35,12 +28,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		public ValidationResult Validate(object value)
 		{
 			var scheduler = value as Scheduler;
+			var result = new ValidationResult();
 			if (scheduler == null)
 			{
-				throw new Exception(ERROR_SCHEDULER_NOT_INITIALIZED);
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_NOT_INITIALIZED);
+				return result;
 			}
-
-			var result = new ValidationResult();
 
 			result.Add(ValidateDates(scheduler));
 			result.Add(ValidateIntervals(scheduler));
@@ -58,11 +51,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			if (scheduler.StartDate.IsNullOrEmpty())
 			{
-				result.Add(ERROR_REQUIRED_VALUE + "StartDate");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE + "StartDate");
 			}
 			else if (!DateTime.TryParseExact(scheduler.StartDate, dateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate))
 			{
-				result.Add(ERROR_INVALID_DATE_FORMAT + scheduler.StartDate);
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_DATE_FORMAT + scheduler.StartDate);
 			}
 
 			if (!string.IsNullOrWhiteSpace(scheduler.EndDate))
@@ -70,22 +63,22 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 				DateTime endDate;
 				if (!DateTime.TryParseExact(scheduler.EndDate, dateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
 				{
-					result.Add(ERROR_INVALID_DATE_FORMAT + scheduler.EndDate);
+					result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_DATE_FORMAT + scheduler.EndDate);
 				}
 				else if (startDate > endDate)
 				{
-					result.Add(ERROR_END_DATE_BEFORE_START_DATE);
+					result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_END_DATE_BEFORE_START_DATE);
 				}
 			}
 
 			TimeSpan time;
 			if (scheduler.ScheduledTime.IsNullOrEmpty())
 			{
-				result.Add(ERROR_REQUIRED_VALUE + "ScheduledTime");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE + "ScheduledTime");
 			}
 			if (!TimeSpan.TryParseExact(scheduler.ScheduledTime, timeSpanFormats, CultureInfo.InvariantCulture, out time))
 			{
-				result.Add(ERROR_INVALID_TIME_FORMAT + scheduler.ScheduledTime);
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_TIME_FORMAT + scheduler.ScheduledTime);
 			}
 
 			return result;
@@ -97,11 +90,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			if (scheduler.SelectedFrequency.IsNullOrEmpty())
 			{
-				result.Add(ERROR_REQUIRED_VALUE + "SelectedFrequency");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE + "SelectedFrequency");
 			}
 			else if (!Enum.GetNames(typeof(ScheduleInterval)).Contains(scheduler.SelectedFrequency))
 			{
-				result.Add(ERROR_INVALID_VALUE + "SelectedFrequency");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_VALUE + "SelectedFrequency");
 			}
 
 			if (scheduler.SelectedFrequency == ScheduleInterval.Weekly.ToString())
@@ -126,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			if (weeklySendOn.SelectedDays.Count == 0)
 			{
-				result.Add(ERROR_REQUIRED_VALUE + "SelectedDays");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE + "SelectedDays");
 			}
 			else
 			{
@@ -150,7 +143,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			{
 				if (monthlySendOn.SelectedDay < FIRST_DAY_OF_MONTH || monthlySendOn.SelectedDay > LAST_DAY_OF_MONTH)
 				{
-					result.Add("DayOfMonth" + ERROR_NOT_INT_RANGE + $"({FIRST_DAY_OF_MONTH}:{LAST_DAY_OF_MONTH})");
+					result.Add("DayOfMonth" + IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_NOT_IN_RANGE + $"({FIRST_DAY_OF_MONTH}:{LAST_DAY_OF_MONTH})");
 				}
 			}
 			else if (monthlySendOn.MonthChoice == MonthlyType.Month)
@@ -159,16 +152,16 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 				if (monthlySendOn.SelectedType == null)
 				{
-					result.Add(ERROR_REQUIRED_VALUE + "SelectedType");
+					result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE + "SelectedType");
 				}
 				else if (!occurancesInMonth.Contains(monthlySendOn.SelectedType.ToString()))
 				{
-					result.Add(ERROR_INVALID_VALUE + "OccuranceInMonth");
+					result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_VALUE + "OccuranceInMonth");
 				}
 			}
 			else
 			{
-				result.Add(ERROR_INVALID_VALUE + "MonthChoice");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_VALUE + "MonthChoice");
 			}
 
 			return result;
@@ -180,12 +173,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			if (dayOfWeek.IsNullOrEmpty())
 			{
-				result.Add(ERROR_REQUIRED_VALUE + "DayOfWeek");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE + "DayOfWeek");
 			}
 
 			if (!Enum.GetNames(typeof(DayOfWeek)).Contains(dayOfWeek))
 			{
-				result.Add(ERROR_INVALID_VALUE + "DayOfWeek");
+				result.Add(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_VALUE + "DayOfWeek");
 			}
 
 			return result;
@@ -197,7 +190,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			if (scheduler.Reoccur < REOCCUR_MIN || scheduler.Reoccur > REOCCUR_MAX)
 			{
-				result.Add("Reoccur" + ERROR_NOT_INT_RANGE + $"({REOCCUR_MIN}:{REOCCUR_MAX})");
+				result.Add("Reoccur" + IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_NOT_IN_RANGE + $"({REOCCUR_MIN}:{REOCCUR_MAX})");
 			}
 
 			return result;

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
+namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
 	[TestFixture]
 	public class ArtifactValidatorTests
@@ -53,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(FileDestinationProviderValidationMessages.ARTIFACT_NOT_EXIST));
+			Assert.IsTrue(actual.Messages.First().Contains(IntegrationPointProviderValidationMessages.ARTIFACT_NOT_EXIST));
 		}
 	}
 }

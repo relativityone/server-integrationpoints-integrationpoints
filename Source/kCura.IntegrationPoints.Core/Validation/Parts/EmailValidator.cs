@@ -13,10 +13,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 		private const string _EMAIL_PATTERN = @"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[00A0D7FFF900FDCFFDF0FFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[00A0D7FFF900FDCFFDF0FFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[00A0D7FFF900FDCFFDF0FFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[00A0D7FFF900FDCFFDF0FFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[00A0D7FFF900FDCFFDF0FFEF])|(([a-z]|\d|[00A0D7FFF900FDCFFDF0FFEF])([a-z]|\d|-|\.|_|~|[00A0D7FFF900FDCFFDF0FFEF])*([a-z]|\d|[00A0D7FFF900FDCFFDF0FFEF])))\.)+(([a-z]|[00A0D7FFF900FDCFFDF0FFEF])|(([a-z]|[00A0D7FFF900FDCFFDF0FFEF])([a-z]|\d|-|\.|_|~|[00A0D7FFF900FDCFFDF0FFEF])*([a-z]|[00A0D7FFF900FDCFFDF0FFEF])))$";
 
-		public const string ERROR_INVALID_EMAIL = "E-mail format is invalid: ";
-		public const string ERROR_MISSING_EMAIL = "Missing email.";
-		public const string ERROR_VALIDATION_EXCEPTION = "Email Validation exception: ";
-
 		public ValidationResult Validate(object value)
 		{
 			var notificationEmails = value as string;
@@ -34,11 +30,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 				{
 					if (string.IsNullOrEmpty(email))
 					{
-						result.Add(ERROR_MISSING_EMAIL);
+						result.Add(IntegrationPointProviderValidationMessages.ERROR_MISSING_EMAIL);
 					}
 					else if (!IsValidEmail(email))
 					{
-						result.Add(ERROR_INVALID_EMAIL + email);
+						result.Add(IntegrationPointProviderValidationMessages.ERROR_INVALID_EMAIL + email);
 					}
 				}
 
@@ -46,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			}
 			catch (Exception ex)
 			{
-				return new ValidationResult(false, ERROR_VALIDATION_EXCEPTION + ex.Message);
+				return new ValidationResult(false, IntegrationPointProviderValidationMessages.ERROR_EMAIL_VALIDATION_EXCEPTION + ex.Message);
 			}
 		}
 

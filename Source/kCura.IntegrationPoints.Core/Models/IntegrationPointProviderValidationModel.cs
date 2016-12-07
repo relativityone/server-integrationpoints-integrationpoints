@@ -14,9 +14,12 @@ namespace kCura.IntegrationPoints.Core.Models
 			FieldsMap = model.Map;
 			SourceConfiguration = model.SourceConfiguration;
 			DestinationConfiguration = model.Destination;
+			Type = model.Type;
 		}
 
 		public int ArtifactTypeId { get; set; }
+
+		public int Type { get; set; }
 
 		public string FieldsMap { get; set; }
 

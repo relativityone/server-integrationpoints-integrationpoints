@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
+﻿using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 

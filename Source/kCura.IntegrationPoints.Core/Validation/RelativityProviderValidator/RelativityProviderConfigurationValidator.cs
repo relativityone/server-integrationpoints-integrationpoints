@@ -1,10 +1,10 @@
-﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
@@ -44,11 +44,14 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var destinationWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Destination");
 			result.Add(destinationWorkspaceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
 
-			var destinationFolderValidator = _validatorsFactory.CreateFolderValidator(destinationConfiguration.CaseArtifactId, destinationConfiguration.DestinationFolderArtifactId);
+			var destinationFolderValidator = _validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId, ArtifactTypeNames.Folder);
 			result.Add(destinationFolderValidator.Validate(destinationConfiguration.DestinationFolderArtifactId));
 
 			var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator();
 			result.Add(fieldMappingValidator.Validate(integrationModel));
+
+			var transferredObjectValidator = _validatorsFactory.CreateTransferredObjectValidator();
+			result.Add(transferredObjectValidator.Validate(destinationConfiguration.ArtifactTypeId));
 
 			return result;
 		}

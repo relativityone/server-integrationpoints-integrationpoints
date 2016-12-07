@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
@@ -47,10 +48,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			validatorsFactoryMock.CreateSavedSearchValidator(Arg.Any<int>(), Arg.Any<int>())
 				.Returns(savedSearchValidatorMock);
 
-			var destinationFolderValidatorMock = Substitute.For<FolderValidator>();
+			var artifactServiceMock = Substitute.For<IArtifactService>();
+			var destinationFolderValidatorMock = Substitute.For<ArtifactValidator>(artifactServiceMock, Arg.Any<int>(), Arg.Any<string>());
 			destinationFolderValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
-			validatorsFactoryMock.CreateFolderValidator(Arg.Any<int>(), Arg.Any<int>())
+			validatorsFactoryMock.CreateArtifactValidator(Arg.Any<int>(), Arg.Any<string>())
 				.Returns(destinationFolderValidatorMock);
 
 			var repositoryFactory = Substitute.For<IRepositoryFactory>();
@@ -59,6 +61,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateFieldsMappingValidator()
 				.Returns(fieldMappingValidatorMock);
+
+			var transferredObjectValidatorMock = Substitute.For<TransferredObjectValidator>();
+			transferredObjectValidatorMock.Validate(Arg.Any<int>())
+				.Returns(new ValidationResult());
+			validatorsFactoryMock.CreateTransferredObjectValidator()
+				.Returns(transferredObjectValidatorMock);
 
 			var validator = new RelativityProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 

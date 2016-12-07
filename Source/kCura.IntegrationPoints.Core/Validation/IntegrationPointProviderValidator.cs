@@ -50,15 +50,21 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(model.Name));
 			}
 
-			var validationModel = new IntegrationPointProviderValidationModel(model)
+			var validationModel = new IntegrationPointProviderValidationModel()
 			{
 				ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
 				SourceProviderIdentifier = sourceProvider.Identifier,
 				SourceConfiguration = model.SourceConfiguration,
 				DestinationProviderIdentifier = destinationProvider.Identifier,
 				DestinationConfiguration = model.Destination,
-				FieldsMap = model.Map
+				FieldsMap = model.Map,
+				Type = model.Type
 			};
+
+			foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.INTEGRATION_POINT_TYPE])
+			{
+				result.Add(validator.Validate(validationModel));
+			}
 
 			foreach (var validator in _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
 			{

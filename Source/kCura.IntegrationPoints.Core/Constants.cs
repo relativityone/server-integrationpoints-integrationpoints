@@ -135,6 +135,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";				
 				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
 				public const string NAME = "285F3C4A-1606-4D5A-A720-E65CE70742DD";
+				public const string INTEGRATION_POINT_TYPE = "CAAE365F-2CE7-4C6E-8C68-1BAF8037D717";
 			}
 		}
 

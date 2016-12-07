@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using NUnit.Framework;
 
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Contains(NameValidator.ERROR_INTEGRATION_POINT_EMPTY));
+			Assert.IsTrue(actual.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_NAME_EMPTY));
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 				ScheduledTime = scheduledTime,
 				SelectedFrequency = ScheduleInterval.Daily.ToString()
 			};
-			string resultMessage = SchedulerValidator.ERROR_INVALID_DATE_FORMAT + startDate;
+			string resultMessage = IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_DATE_FORMAT + startDate;
 
 			// Act
 			ValidationResult result = _instance.Validate(scheduler);
@@ -104,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 				ScheduledTime = scheduledTime,
 				SelectedFrequency = ScheduleInterval.Daily.ToString()
 			};
-			string resultMessage = SchedulerValidator.ERROR_INVALID_DATE_FORMAT + endDate;
+			string resultMessage = IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_DATE_FORMAT + endDate;
 
 			// Act
 			ValidationResult result = _instance.Validate(scheduler);
@@ -133,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Contains(SchedulerValidator.ERROR_END_DATE_BEFORE_START_DATE));
+			Assert.IsTrue(result.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_END_DATE_BEFORE_START_DATE));
 		}
 
 		[Test]
@@ -149,7 +150,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 				ScheduledTime = VALID_SCHEDULED_TIME,
 				SelectedFrequency = interval
 			};
-			string message = interval.IsNullOrEmpty() ? SchedulerValidator.ERROR_REQUIRED_VALUE : SchedulerValidator.ERROR_INVALID_VALUE;
+			string message = interval.IsNullOrEmpty() ? IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE : IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_VALUE;
 
 			// Act
 			ValidationResult result = _instance.Validate(scheduler);
@@ -205,7 +206,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(SchedulerValidator.ERROR_NOT_INT_RANGE)));
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_NOT_IN_RANGE)));
 		}
 
 		[Test]
@@ -256,8 +257,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 				SendOn = sendOn
 			};
 			string message = day.IsNullOrEmpty()
-				? SchedulerValidator.ERROR_REQUIRED_VALUE
-				: SchedulerValidator.ERROR_INVALID_VALUE;
+				? IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_REQUIRED_VALUE
+				: IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_INVALID_VALUE;
 
 			// Act
 			ValidationResult result = _instance.Validate(scheduler);
