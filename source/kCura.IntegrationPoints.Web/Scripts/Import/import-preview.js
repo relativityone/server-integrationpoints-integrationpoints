@@ -79,6 +79,7 @@
     		AsciiNewLine: settings.AsciiNewLine,
     		AsciiMultiLine: settings.AsciiMultiLine,
     		AsciiNestedValue: settings.AsciiNestedValue,
+			LineNumber: settings.LineNumber,
     		FieldMapping: $.parseJSON(fieldMapping),
     		ChoiceFields: choiceFields
     	};
