@@ -27,8 +27,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             //Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
             _loadFileReader.GetColumnNames(_config);
 
-            //TODO: check settings object to decide whether to advance one record to skip headers
-            this.Read();
+            if (_loadFileReader.HasMoreRecords && _config.FirstLineContainsHeaders)
+            {
+                _loadFileReader.AdvanceRecord();
+            }
+
+            while (_loadFileReader.HasMoreRecords && _loadFileReader.CurrentLineNumber1 < _config.StartLineNumber)
+            {
+                _loadFileReader.AdvanceRecord();
+            }
         }
 
         //Get a line stored for the current row, based on delimter settings in the _config

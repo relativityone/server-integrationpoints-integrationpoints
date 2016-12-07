@@ -31,6 +31,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
             loadFile.FilePath = settings.LoadFile;
             loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
+            loadFile.StartLineNumber = long.Parse(settings.LineNumber);
+
+            loadFile.FirstLineContainsHeaders = true;
 
             loadFile.LoadNativeFiles = false;
             loadFile.CreateFolderStructure = false;
