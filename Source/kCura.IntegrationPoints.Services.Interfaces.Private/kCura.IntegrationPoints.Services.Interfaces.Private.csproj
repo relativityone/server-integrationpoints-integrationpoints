@@ -86,6 +86,7 @@
     <Compile Include="Exceptions\InternalServerErrorException.cs" />
     <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="Extensions\IntegrationPointTypeExtensions.cs" />
+    <Compile Include="Extensions\OverwriteFieldsExtensions.cs" />
     <Compile Include="Extensions\ProviderExtensions.cs" />
     <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Models\CurrentPromotionStatusModel.cs" />
     <Compile Include="Models\IntegrationPointModel.cs" />
     <Compile Include="Models\IntegrationPointTypeModel.cs" />
+    <Compile Include="Models\OverwriteFieldsModel.cs" />
     <Compile Include="Models\PercentagePushedToReviewModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\JobHistorySummaryModel.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using Relativity.Kepler.Services;
 
 namespace kCura.IntegrationPoints.Services
@@ -69,5 +70,12 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
 		/// <returns>A list of integration point objects</returns>
 		Task<IList<IntegrationPointModel>> GetAllIntegrationPointsAsync(int workspaceArtifactId);
+
+		/// <summary>
+		/// Retrieve Overwrite Fields choices
+		/// </summary>
+		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
+		/// <returns>A list of all available choices for Overwrite Fields field</returns>
+		Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId);
 	}
 }

@@ -14,24 +14,27 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IUserInfo _userInfo;
+		private readonly IChoiceQuery _choiceQuery;
 
-		public IntegrationPointRepository(IIntegrationPointService integrationPointService, IObjectTypeRepository objectTypeRepository, IUserInfo userInfo)
+		public IntegrationPointRepository(IIntegrationPointService integrationPointService, IObjectTypeRepository objectTypeRepository, IUserInfo userInfo,
+			IChoiceQuery choiceQuery)
 		{
 			_integrationPointService = integrationPointService;
 			_objectTypeRepository = objectTypeRepository;
 			_userInfo = userInfo;
+			_choiceQuery = choiceQuery;
 		}
 
 		public IntegrationPointModel CreateIntegrationPoint(CreateIntegrationPointRequest request)
 		{
-			var integrationPointModel = request.ToModel();
+			var integrationPointModel = request.ToModel(_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)));
 			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
 			return GetIntegrationPoint(artifactId);
 		}
 
 		public IntegrationPointModel UpdateIntegrationPoint(UpdateIntegrationPointRequest request)
 		{
-			var integrationPointModel = request.ToModel();
+			var integrationPointModel = request.ToModel(_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)));
 			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
 			return GetIntegrationPoint(artifactId);
 		}
@@ -51,7 +54,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		public IList<IntegrationPointModel> GetAllIntegrationPoints()
 		{
 			IList<IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
-			return integrationPoints.Select(x => IntegrationPointExtensions.ToIntegrationPointModel(x)).ToList();
+			return integrationPoints.Select(x => x.ToIntegrationPointModel()).ToList();
 		}
 
 		public int GetIntegrationPointArtifactTypeId()

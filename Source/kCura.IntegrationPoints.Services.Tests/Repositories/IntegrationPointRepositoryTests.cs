@@ -23,8 +23,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_userInfo = Substitute.For<IUserInfo>();
+			var choiceQuery = Substitute.For<IChoiceQuery>();
 
-			_integrationPointRepository = new IntegrationPointRepository(_integrationPointService, _objectTypeRepository, _userInfo);
+			_integrationPointRepository = new IntegrationPointRepository(_integrationPointService, _objectTypeRepository, _userInfo, choiceQuery);
 		}
 
 		[Test]

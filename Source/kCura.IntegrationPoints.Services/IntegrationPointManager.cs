@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 
@@ -68,6 +69,11 @@ namespace kCura.IntegrationPoints.Services
 				await
 					Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetAllIntegrationPoints(), workspaceArtifactId)
 						.ConfigureAwait(false);
+		}
+
+		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
+		{
+			return await Execute((IChoiceRepository choiceRepository) => choiceRepository.GetOverwriteFieldChoices(), workspaceArtifactId);
 		}
 
 		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
