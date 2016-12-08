@@ -254,7 +254,13 @@
 	}, this);
 	
 	this.timeZones = ko.observableArray();
-	this.timeZoneId = ko.observable(this.options.timeZoneId).extend({ required: true });
+	this.timeZoneId = ko.observable(this.options.timeZoneId).extend({
+		required: {
+			onlyIf: function () {
+				return self.isEnabled();
+			}
+		}
+	});
 
 	this.getWindowsTimeZones = function() {
 		var promise = IP.data.ajax({
