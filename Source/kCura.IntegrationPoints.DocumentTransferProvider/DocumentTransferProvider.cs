@@ -48,6 +48,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			return fieldEntries;
 		}
 
+		private static class Fields
+		{
+			internal static string Name = "Name";
+			internal static string Choices = "Choices";
+			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
+			internal static string FieldType = "Field Type";
+			internal static string FieldTypeId = "Field Type ID";
+			internal static string FieldTypeName = "Field Type Name";
+			internal static string IsIdentifier = "Is Identifier";
+		}
+
 		private ArtifactDTO[] GetRelativityFields(int workspaceId, int rdoTypeId)
 		{
 			IRepositoryFactory repositoryFactory = ResolveDependencies<IRepositoryFactory>();
@@ -57,13 +68,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				rdoTypeId,
 				new HashSet<string>(new[]
 				{
-					kCura.IntegrationPoints.Core.Constants.Fields.Name,
-					kCura.IntegrationPoints.Core.Constants.Fields.Choices,
-					kCura.IntegrationPoints.Core.Constants.Fields.ObjectTypeArtifactTypeId,
-					kCura.IntegrationPoints.Core.Constants.Fields.FieldType,
-					kCura.IntegrationPoints.Core.Constants.Fields.FieldTypeId,
-					kCura.IntegrationPoints.Core.Constants.Fields.IsIdentifier,
-					kCura.IntegrationPoints.Core.Constants.Fields.FieldTypeName,
+					Fields.Name,
+					Fields.Choices,
+					Fields.ObjectTypeArtifactTypeId,
+					Fields.FieldType,
+					Fields.FieldTypeId,
+					Fields.IsIdentifier,
+					Fields.FieldTypeName,
 				}));
 
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -89,11 +100,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
-					if (field.Name == kCura.IntegrationPoints.Core.Constants.Fields.Name)
+					if (field.Name == Fields.Name)
 					{
 						fieldName = field.Value as string;
 					}
-					else if (field.Name == kCura.IntegrationPoints.Core.Constants.Fields.IsIdentifier)
+					else if (field.Name == Fields.IsIdentifier)
 					{
 						try
 						{
