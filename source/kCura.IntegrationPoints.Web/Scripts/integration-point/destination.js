@@ -12,6 +12,7 @@
 		self.settings = settings;
 		self.updateDestinationProvider();
 		self.UpdateSelectedItem();//TODO: refactor RDO update dependency on source
+		self.profile = settings;
 	};
 
 	this.templateID = 'ldapDestinationConfig';
