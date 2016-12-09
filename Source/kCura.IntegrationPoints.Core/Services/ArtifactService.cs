@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.Exceptions;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
+namespace kCura.IntegrationPoints.Core.Services
 {
 	public class ArtifactService : IArtifactService
 	{

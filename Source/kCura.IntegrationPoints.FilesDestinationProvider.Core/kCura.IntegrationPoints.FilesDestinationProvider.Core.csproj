@@ -174,7 +174,6 @@
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Process\IExportSettingsBuilder.cs" />
-    <Compile Include="Services\ArtifactService.cs" />
     <Compile Include="Services\ProductionService.cs" />
     <Compile Include="Process\IVolumeInfoBuilder.cs" />
     <Compile Include="Process\VolumeInfoBuilder.cs" />
