@@ -332,11 +332,12 @@ var IP = IP || {};
 				var destination = {
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					destinationProviderType: ko.toJS(guid),
-					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				};
 				if (this.model.destination.profile) {
 					destination = $.extend(this.model.destination.profile, destination);
+				} else {
+					destination.CaseArtifactId = IP.data.params['appID'];
 				}
 				this.model.destination = JSON.stringify(destination);
 				this.model.profileName = this.model.profile.selectedProfile();
