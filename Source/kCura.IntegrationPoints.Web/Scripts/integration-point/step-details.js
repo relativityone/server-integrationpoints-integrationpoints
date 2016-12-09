@@ -340,7 +340,6 @@ var IP = IP || {};
 					destination.CaseArtifactId = IP.data.params['appID'];
 				}
 				this.model.destination = JSON.stringify(destination);
-				this.model.profileName = this.model.profile.selectedProfile();
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
 				this.model.SourceProviderConfiguration = this.model.source.SourceProviderConfiguration;
