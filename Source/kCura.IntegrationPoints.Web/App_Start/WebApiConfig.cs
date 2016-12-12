@@ -230,6 +230,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ImportProviderDocumentViewData",
+				routeTemplate: "{workspaceID}/api/ImportProviderDocument/ViewData",
+				defaults: new { controller = "ImportProviderDocument", action = "ViewData" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "SearchFolder",
 				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
 				defaults: new {controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }
