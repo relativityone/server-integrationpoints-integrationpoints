@@ -271,6 +271,7 @@
 			url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZones")
 		}).then(function (winTimeZones) {
 			self.timeZones(winTimeZones);
+			self.timeZoneId(self.options.timeZoneId);
 		});
 		return promise;
 	};
@@ -291,7 +292,7 @@
 	}
 
 	this.getWindowsTimeZones().then(function() {
-		if (!self.timeZoneId()) {
+		if (!self.options.timeZoneId) {
 			self.convertIanaToWindowsTimeZone();
 		}
 	});
