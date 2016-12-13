@@ -278,6 +278,7 @@
     <Compile Include="Models\IntegrationPointModelBase.cs" />
     <Compile Include="Models\IntegrationPointProfileModel.cs" />
     <Compile Include="Models\IntegrationPointProviderValidationModel.cs" />
+    <Compile Include="Models\ProviderType.cs" />
     <Compile Include="Models\Scheduler.cs" />
     <Compile Include="Models\StoppableJobCollection.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
@@ -291,6 +292,8 @@
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\IIntegrationPointValidationService.cs" />
     <Compile Include="Services\ImportTypeService.cs" />
+    <Compile Include="Services\IProviderTypeService.cs" />
+    <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Toggles\ShowImportProviderNonDocumentTypesToggle.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
