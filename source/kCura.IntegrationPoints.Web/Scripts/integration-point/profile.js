@@ -46,9 +46,6 @@
 			});
 			self.profileTypes(profileTypes);
 			self.profiles = result;
-			if (self.settings.name) {
-				self.selectedProfile(self.settings.name);
-			}
 		});
 	};
 

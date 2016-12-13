@@ -42,7 +42,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.FieldsMap);
 
 			var exportSettings = _exportSettingsBuilder.Create(ExportSettingsEx, fieldMap, DestinationSettingsEx.ArtifactTypeId);
-			return _exportFileBuilder.Create(exportSettings);
+			var exportFile = _exportFileBuilder.Create(exportSettings);
+			// WinEDDS code expects this flag to be set for validation 
+			exportFile.ExportFullText = exportFile.ExportFullTextAsFile;
+
+			return exportFile;
 		}
 	}
 }

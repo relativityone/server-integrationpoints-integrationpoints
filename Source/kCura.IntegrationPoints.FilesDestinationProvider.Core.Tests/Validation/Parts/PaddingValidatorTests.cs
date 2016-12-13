@@ -48,7 +48,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 		{
 			// arrange
 			var exportFile = new ExportFile(artifactTypeID: 42);
-			exportFile.VolumeInfo = new WinEDDS.Exporters.VolumeInfo { VolumeStartNumber = 1, SubdirectoryStartNumber = 1 };
+			exportFile.ExportNative = true;
+			exportFile.VolumeInfo = new WinEDDS.Exporters.VolumeInfo
+			{
+				VolumeStartNumber = 1,
+				SubdirectoryStartNumber = 1,
+				CopyNativeFilesFromRepository = true
+			};
 
 			var validator = new PaddingValidator();
 
@@ -56,9 +62,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var actual = validator.Validate(exportFile, totalDocCount: 1000000);
 
 			// assert
-			// TODO: somehow make the validator to return warning
-			// Assert.IsTrue(actual.IsValid);
-			// Assert.That(actual.Messages.FirstOrDefault(), Is.Not.Null.Or.Empty);
+			Assert.IsFalse(actual.IsValid);
+			Assert.That(actual.Messages.FirstOrDefault(), Is.Not.Null.Or.Empty);
 		}
 	}
 }

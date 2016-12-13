@@ -195,7 +195,7 @@
 
 			//If we are the import provider we need to pass along Extracted Text/ Native path fields
 			//This will allow the provider to convert any relative paths to absolute.
-			if (model.destinationProviderGuid === "74A863B9-00EC-4BB7-9B3E-1E22323010C6") {
+			if (model.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636") {
 				var importConfig = JSON.parse(model.sourceConfiguration);
 				var destinationConfig = JSON.parse(model.destination);
 				var fieldMap = JSON.parse(model.map);
