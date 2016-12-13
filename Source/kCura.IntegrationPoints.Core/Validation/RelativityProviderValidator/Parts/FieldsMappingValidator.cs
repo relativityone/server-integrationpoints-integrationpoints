@@ -55,7 +55,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
 			result.Add(ValidateAllRequiredFieldsMapped(fieldsMap, destinationWorkpaceFields));
-			result.Add(ValidateSettings(sourceWorkpaceFields, destinationConfiguration));
+			result.Add(ValidateSettingsFieldOverlayBehavior(destinationConfiguration));
+			result.Add(ValidateSettingsFolderPathInformation(sourceWorkpaceFields, destinationConfiguration));
 
 			return result;
 		}
@@ -197,10 +198,10 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			return result;
 		}
 
-		private ValidationResult ValidateSettings(List<ArtifactDTO> sourceWorkpaceFields, IntegrationPointDestinationConfiguration destinationConfig)
+		private ValidationResult ValidateSettingsFieldOverlayBehavior(IntegrationPointDestinationConfiguration destinationConfig)
 		{
 			var result = new ValidationResult();
-
+			
 			if (destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly)
 			{
 				if (destinationConfig.FieldOverlayBehavior !=
@@ -208,15 +209,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 				{
 					result.Add(RelativityProviderValidationMessages.FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR);
 				}
-
-				if (destinationConfig.UseFolderPathInformation)
-				{
-					result.Add(ValidateFieldExists(destinationConfig.FolderPathSourceField, sourceWorkpaceFields,
-						RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
-				}
 			}
-			else if (destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOverlay ||
-				destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.OverlayOnly)
+			else
 			{
 				if (destinationConfig.FieldOverlayBehavior !=
 				    RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_MERGE &&
@@ -226,6 +220,30 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 				    RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT)
 				{
 					result.Add($"{RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID}{destinationConfig.FieldOverlayBehavior}");
+				}
+			}
+
+			return result;
+		}
+
+		private ValidationResult ValidateSettingsFolderPathInformation(List<ArtifactDTO> sourceWorkpaceFields, IntegrationPointDestinationConfiguration destinationConfig)
+		{
+			var result = new ValidationResult();
+
+			if (destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly ||
+			    destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOverlay)
+			{
+				if (destinationConfig.UseFolderPathInformation)
+				{
+					result.Add(ValidateFieldExists(destinationConfig.FolderPathSourceField, sourceWorkpaceFields,
+						RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
+				}
+			}
+			else
+			{
+				if (destinationConfig.UseFolderPathInformation)
+				{
+					result.Add(RelativityProviderValidationMessages.FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY);
 				}
 			}
 
