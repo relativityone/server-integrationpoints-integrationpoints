@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.ImportProvider.Parser;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider
@@ -31,6 +29,12 @@ namespace kCura.IntegrationPoints.ImportProvider
 
         public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> sourceFileLines, string options)
         {
+            //Get extracted text & native fields for relative path modifications
+            ImportProviderSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
+            string loadFileDir = Path.GetDirectoryName(settings.LoadFile);
+            bool extractedTextHasPathInfo = !string.IsNullOrEmpty(settings.ExtractedTextPathFieldIdentifier);
+            bool nativeFileHasPathInfo = !string.IsNullOrEmpty(settings.NativeFilePathFieldIdentifier);
+
             IEnumerable<string[]> enumerableParser = _enumerableParserFactory.GetEnumerableParser(sourceFileLines, options);
 
             DataTable dt = new DataTable();
@@ -44,7 +48,17 @@ namespace kCura.IntegrationPoints.ImportProvider
                 DataRow dtRow = dt.NewRow();
                 foreach (FieldEntry field in fields)
                 {
-                    dtRow[field.FieldIdentifier] = sourceRow[Int32.Parse(field.FieldIdentifier)];
+                    string colValue = sourceRow[Int32.Parse(field.FieldIdentifier)];
+                    if (((extractedTextHasPathInfo && field.FieldIdentifier == settings.ExtractedTextPathFieldIdentifier)
+                        || (nativeFileHasPathInfo && field.FieldIdentifier == settings.NativeFilePathFieldIdentifier))
+                        && !Path.IsPathRooted(colValue)) //Do not rewrite paths if column contains full path info
+                    {
+                        dtRow[field.FieldIdentifier] = Path.Combine(loadFileDir, colValue);
+                    }
+                    else
+                    {
+                        dtRow[field.FieldIdentifier] = colValue;
+                    }
                 }
                 dt.Rows.Add(dtRow);
             }

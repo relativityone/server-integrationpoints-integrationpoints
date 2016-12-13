@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain.Models;
 using NUnit.Framework;
@@ -78,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void Validate_Invalid_Emails(string emails)
 		{
 			//Arrange
-			string validationMessage = EmailValidator.ERROR_INVALID_EMAIL + emails;
+			string validationMessage = IntegrationPointProviderValidationMessages.ERROR_INVALID_EMAIL + emails;
 
 			var validator = new EmailValidator();
 
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			//Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.That(result.Messages.Contains(EmailValidator.ERROR_MISSING_EMAIL));
+			Assert.That(result.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_MISSING_EMAIL));
 		}
 
 		[Test]
@@ -123,7 +124,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			{
 				if (!isValidList[i])
 				{
-					invalidEmailList.Add($"{EmailValidator.ERROR_INVALID_EMAIL}{emailList[i].Trim()}");
+					invalidEmailList.Add($"{IntegrationPointProviderValidationMessages.ERROR_INVALID_EMAIL}{emailList[i].Trim()}");
 				}
 			}
 

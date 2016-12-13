@@ -8,7 +8,8 @@ namespace kCura.IntegrationPoints.Domain.Models
 {
     public class ImportPreviewSettings : ImportSettingsBase
     {
-        public string PreviewType { get; set; }
+        public int PreviewType { get; set; }
         public List<FieldMap> FieldMapping { get; set; }
+        public List<string> ChoiceFields { get; set; }
     }
 }

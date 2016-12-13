@@ -28,8 +28,8 @@ namespace kCura.IntegrationPoints.Core
 			public const string RELATIVITY_PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
 			public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID;
 			public const string RELATIVITY_PROVIDER_NAME = "Relativity";
-			public const string RELATIVITY_DESTINATION_PROVIDER_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
-			public const string LOAD_FILE_DESTINATION_PROVIDER_GUID = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
+			public const string RELATIVITY_DESTINATION_PROVIDER_GUID = DestinationProviders.RELATIVITY;
+			public const string LOAD_FILE_DESTINATION_PROVIDER_GUID = DestinationProviders.LOADFILE;
 			public const string FILESHARE_PROVIDER_NAME = "Load File";
 			public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
@@ -116,6 +116,19 @@ namespace kCura.IntegrationPoints.Core
 				#endregion
 
 			}
+
+			public class SourceProviders
+			{
+				public const string RELATIVITY = "423B4D43-EAE9-4E14-B767-17D629DE4BB2";
+				public const string FTP = "85120BC8-B2B9-4F05-99E9-DE37BB6C0E15";
+				public const string LDAP = "5BF1F2C2-9670-4D6E-A3E9-DBC83DB6C232";
+			}
+
+			public class DestinationProviders
+			{
+				public const string RELATIVITY = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+				public const string LOADFILE = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
+			}
 		}
 
 		public static class IntegrationPointProfiles
@@ -135,6 +148,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";				
 				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
 				public const string NAME = "285F3C4A-1606-4D5A-A720-E65CE70742DD";
+				public const string INTEGRATION_POINT_TYPE = "CAAE365F-2CE7-4C6E-8C68-1BAF8037D717";
 			}
 		}
 
@@ -142,7 +156,19 @@ namespace kCura.IntegrationPoints.Core
 		{
 			public const string ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE = "Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
 		}
-		
+
+		public static class Fields
+		{
+			internal static string Name = "Name";
+			internal static string Choices = "Choices";
+			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
+			internal static string FieldType = "Field Type";
+			internal static string FieldTypeId = "Field Type ID";
+			internal static string FieldTypeName = "Field Type Name";
+			internal static string IsIdentifier = "Is Identifier";
+			internal static string MultipleChoice = "Multiple Choice";
+		}
+
 		public enum SourceProvider
 		{
 			Other = 0,

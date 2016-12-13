@@ -19,9 +19,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
                     new SourceProvider()
                     {
                         Name = "Load File",
-                        Url = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/ImportProvider/ImportSettings"
-                        //TODO: add api controller to view the source configuration data
-                        //ViewDataUrl = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/FtpProviderAPI/view"
+                        Url = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/ImportProvider/ImportSettings",
+                        ViewDataUrl = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/ImportProviderDocument/ViewData"
                     }
                 }
             };

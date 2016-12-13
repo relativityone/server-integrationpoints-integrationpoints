@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1074540;
 		private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
 		private readonly string SourceConfiguration = "{\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + "}";
+		private readonly string DestinationConfiguration = "{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}";
 
 		private readonly int[] _fieldsArtifactId = new int[] { 1000186, 1003667, 1035368, 1038073, 1038074, 1038389, 1035395 };
 
@@ -38,11 +39,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		public void ItShouldValidateFieldMap(string fieldMap)
 		{
 			// Arrange
-			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
@@ -56,11 +57,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
 			string errorMessage = RelativityProviderValidationMessages.FIELD_MAP_DESTINATION_FIELD_NOT_MAPPED;
 
-			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
@@ -74,11 +75,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			string fieldMap = "[{\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
 			string errorMessage = RelativityProviderValidationMessages.FIELD_MAP_SOURCE_FIELD_NOT_MAPPED;
 
-			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
@@ -92,11 +93,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			string fieldMap = "[{\"fieldMapType\":\"Identifier\"}]";
 			string errorMessage = RelativityProviderValidationMessages.FIELD_MAP_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED;
 
-			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
@@ -107,11 +108,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		public void ItShouldValidateIdentifierNotMatchedCorrectly(string fieldMap)
 		{
 			// Arrange
-			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository();
 
 			// Act
-			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
@@ -123,11 +124,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		public void ItShouldValidateAllRequiredFieldsMapped(string fieldMap, string[] requiredFields)
 		{
 			// Arrange
-			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository(requiredFields.ToList());
 
 			// Act
-			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
@@ -139,11 +140,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		public void ItShouldValidateRequiredFieldsNotMapped(string fieldMap, string[] requiredFields)
 		{
 			// Arrange
-			IntegrationPointProviderValidationModel IntegrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 			MockFieldRepository(requiredFields.ToList());
 
 			// Act
-			ValidationResult result = _instance.Validate(IntegrationPointProviderValidationModel);
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
@@ -154,6 +155,102 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			}
 		}
 
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"1000186\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"1000186\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
+		public void ItShouldValidateValidSettings(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsTrue(result.IsValid);
+			Assert.IsNull(result.Messages.FirstOrDefault());
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
+		public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOnly(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Contains(RelativityProviderValidationMessages.FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR));
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"INVALID_FieldOverlayBehavior\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"INVALID_FieldOverlayBehavior\"}")]
+		public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOverlayAndOverlayOnly(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID)));
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
+		public void ItShouldValidateInvalidSettingsFolderPathInformation_OverlayOnly(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY)));
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"-1\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"-1\"}")]
+		public void ItShouldValidateInvalidSettingsFolderPathInformation(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE)));
+		}
+
 		private IntegrationPointProviderValidationModel GetFieldMapValidationObject(string fieldsMap)
 		{
 			return new IntegrationPointProviderValidationModel()
@@ -162,7 +259,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				SourceProviderIdentifier = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
 				DestinationProviderIdentifier = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
 				SourceConfiguration = SourceConfiguration,
-				DestinationConfiguration = string.Empty
+				DestinationConfiguration = DestinationConfiguration
 			};
 		}
 

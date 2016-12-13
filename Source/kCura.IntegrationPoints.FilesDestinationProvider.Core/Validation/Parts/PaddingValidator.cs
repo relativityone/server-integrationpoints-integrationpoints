@@ -28,8 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			var warningValidator = new PaddingWarningValidator();
 			var isValid = warningValidator.IsValid(value, volumeLabelPaddingWidth, subdirectoryLabelPaddingWidth);
 
-			// this validation results only in a warning
-			return new ValidationResult(true, warningValidator.ErrorMessages);
+			return new ValidationResult(isValid, warningValidator.ErrorMessages);
 		}
 	}
 }

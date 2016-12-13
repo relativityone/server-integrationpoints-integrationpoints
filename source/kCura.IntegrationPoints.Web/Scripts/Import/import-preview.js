@@ -10,8 +10,10 @@
     var settings = opener.RelativityImportPreviewSettings;
     var workspaceId = ("/" + opener.RelativityImportPreviewSettings.WorkspaceId);
     var fieldMapping = opener.top.getCurrentIpFieldMapping();
+    var choiceFieldsPromise = opener.top.getMappedChoiceFieldsPromise();
     var timerCount = 0;
     var timerRequest = true;
+    var previewTypeEnum = opener.PreviewTypeEnum;
 
     //Element names
     var ROW = 'row';
@@ -64,84 +66,89 @@
     };
     timerHandle = setInterval(timerRun, 1000);
 
-    //take the settings we need to send to the CreatePreviewJob action
-    var previewSettingsData = {
-        WorkspaceId: settings.WorkspaceId,
-        PreviewType: settings.PreviewType,
-        LoadFile: settings.LoadFile,
-        EncodingType: settings.EncodingType,
-        AsciiColumn: settings.AsciiColumn,
-        AsciiQuote: settings.AsciiQuote,
-        AsciiNewLine: settings.AsciiNewLine,
-        AsciiMultiLine: settings.AsciiMultiLine,
-        AsciiNestedValue: settings.AsciiNestedValue,
-        FieldMapping: $.parseJSON(fieldMapping)
-    };
+    choiceFieldsPromise.then(function (choiceFields) {
 
-    root.data.ajax({
-        type: "post",
-        url: root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CreatePreviewJob",
-        data: JSON.stringify(previewSettingsData),
-        dataType: 'json'
-    })
-    .done(function (data) {
-        previewJobId = data;
-        $(idSelector(PROGRESS_BAR)).css("width", percent);
-        intervalId = setInterval(
-            function () {
-                $.get(root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CheckProgress/" + previewJobId)
-                .done(function (data) {
-                    var statusMsg = $(idSelector(STATUS_MESSAGE));
-                    var progBar = $(idSelector(PROGRESS_BAR));
-                    var totalByte = $(idSelector(TOTAL_BYTES));
-                    var preFilePercent = $(idSelector(PREVIEW_FILE_PERCENT));
+    	//take the settings we need to send to the CreatePreviewJob action
+    	var previewSettingsData = {
+    		WorkspaceId: settings.WorkspaceId,
+    		PreviewType: settings.PreviewType,
+    		LoadFile: settings.LoadFile,
+    		EncodingType: settings.EncodingType,
+    		AsciiColumn: settings.AsciiColumn,
+    		AsciiQuote: settings.AsciiQuote,
+    		AsciiNewLine: settings.AsciiNewLine,
+    		AsciiMultiLine: settings.AsciiMultiLine,
+    		AsciiNestedValue: settings.AsciiNestedValue,
+			LineNumber: settings.LineNumber,
+    		FieldMapping: $.parseJSON(fieldMapping),
+    		ChoiceFields: choiceFields
+    	};
 
-                    statusMsg.html("In Process");
-                    //if we're only reading the first 1000 rows of a large file, bytes read comes back as -1
-                    //we can just show the progress as 100% in this case
-                    var percent;
+		root.data.ajax({
+			type: "post",
+			url: root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CreatePreviewJob",
+			data: JSON.stringify(previewSettingsData),
+			dataType: 'json'
+		})
+		.done(function (data) {
+			previewJobId = data;
+			$(idSelector(PROGRESS_BAR)).css("width", percent);
+			intervalId = setInterval(
+				function () {
+					$.get(root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CheckProgress/" + previewJobId)
+					.done(function (data) {
+						var statusMsg = $(idSelector(STATUS_MESSAGE));
+						var progBar = $(idSelector(PROGRESS_BAR));
+						var totalByte = $(idSelector(TOTAL_BYTES));
+						var preFilePercent = $(idSelector(PREVIEW_FILE_PERCENT));
 
-                    if (data.BytesRead != -1) {
-                        $("#total-bytes-read").html(data.BytesRead);
-                        percent = (Math.floor((data.BytesRead / data.TotalBytes) * 100) + "%");
-                    } else {
-                        percent = "100%";
-                    }
-                    progBar.css("width", percent);
-                    preFilePercent.html(percent);
-                    totalByte.html(data.TotalBytes);
+						statusMsg.html("In Process");
+						//if we're only reading the first 1000 rows of a large file, bytes read comes back as -1
+						//we can just show the progress as 100% in this case
+						var percent;
 
-                    if (data.BytesRead != -1) {
-                        $(idSelector(TOTAL_BYTE_READ)).html(data.BytesRead);
-                        percent = (data.BytesRead / data.TotalBytes) * 100;
-                    } else {
-                        percent = 100;
-                    }
-                    progBar.css("width", percent + "%");
-                    totalByte.html(data.TotalBytes);
+						if (data.BytesRead != -1) {
+							$("#total-bytes-read").html(data.BytesRead);
+							percent = (Math.floor((data.BytesRead / data.TotalBytes) * 100) + "%");
+						} else {
+							percent = "100%";
+						}
+						progBar.css("width", percent);
+						preFilePercent.html(percent);
+						totalByte.html(data.TotalBytes);
 
-                    //check if the Preview is complete
-                    if (data.IsComplete) {
-                        timerRequest = false;
-                        statusMsg.html("Completed");
-                        statusMsg.attr("class", "active-transfer-status-success");
-                        progBar.attr("class", "progress-bar-indicator progress-complete");
-                        showTableData();
-                        progBar.css("width", percent + "%");
-                        clearInterval(intervalId);
-                        GetPreviewTableData(previewJobId);
-                    }
-                    else if (data.IsFailed) {
-                        timerRequest = false;
-                        statusMsg.html("Error");
-                        statusMsg.attr("class", "active-transfer-status-failed");
-                        progBar.attr("class", "progress-bar-indicator progress-failed");
-                        progBar.css("width", "100%");
-                        clearInterval(intervalId);
-                        console.log(data.ErrorMessage);
-                    }
-                });
-            }, 2000);
+						if (data.BytesRead != -1) {
+							$(idSelector(TOTAL_BYTE_READ)).html(data.BytesRead);
+							percent = (data.BytesRead / data.TotalBytes) * 100;
+						} else {
+							percent = 100;
+						}
+						progBar.css("width", percent + "%");
+						totalByte.html(data.TotalBytes);
+
+						//check if the Preview is complete or failed
+						if (data.IsFailed) {
+							timerRequest = false;
+							statusMsg.html("Error");
+							statusMsg.attr("class", "active-transfer-status-failed");
+							progBar.attr("class", "progress-bar-indicator progress-failed");
+							progBar.css("width", "100%");
+							clearInterval(intervalId);
+							console.log(data.ErrorMessage);
+						}
+						else if (data.IsComplete) {
+							timerRequest = false;
+							statusMsg.html("Completed");
+							statusMsg.attr("class", "active-transfer-status-success");
+							progBar.attr("class", "progress-bar-indicator progress-complete");
+							showTableData();
+							progBar.css("width", percent + "%");
+							clearInterval(intervalId);
+							GetPreviewTableData(previewJobId);
+						}
+					});
+				}, 2000);
+		});
     });
 
     var GetPreviewTableData = function (jobId) {
@@ -198,7 +205,7 @@
 
                 totalRecords.text(info.recordsTotal);
 
-                (settings.PreviewType != 'errors') ? $el.text(data.ErrorRows.length) : $el.text(info.recordsTotal);
+                (settings.PreviewType != previewTypeEnum.Errors) ? $el.text(data.ErrorRows.length) : $el.text(info.recordsTotal);
             };
 
             function updateMoveNextBtn() {

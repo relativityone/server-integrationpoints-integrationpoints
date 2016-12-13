@@ -15,19 +15,30 @@
 			url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetValidatedProfileModel', artifactId),
 			type: 'get'
 		}).fail(function (error) {
-			IP.message.error.raise("No exportable fields were returned from the source provider.");
+			console.log(error);
+			IP.message.error.raise("Profile not loaded. Please check Error tab for details");
 		});
 		return validatedProfileModelPromise;
 	};
-	self.currentFilter = ko.observable();
+	
+	this.sourceProvider = ko.observable();
+	this.destinationProvider = ko.observable();
 
-	self.subscription = IP.messaging.subscribe('ProviderTypeChanged', function (type) {
-		if (!!parentModel.source.sourceProvider && !!parentModel.destination.selectedDestinationType) {
-			self.currentFilter({ source: parentModel.source.sourceProvider, destination: parentModel.destination.selectedDestinationType() });
-		}
+	this.subscriptionSourceProvider = IP.messaging.subscribe('SourceProviderTypeChanged', function (providerType) {
+		self.setSaveButton(false);
+		self.sourceProvider(providerType);
+	});
+
+	this.subscriptionDestinationProviderType = IP.messaging.subscribe('DestinationProviderTypeChanged', function (providerType) {
+		self.setSaveButton(false);;
+		self.destinationProvider(providerType);
+	});
+	this.subscriptionTransferedObject = IP.messaging.subscribe("TransferedObjectChanged", function (value) {
+		self.setSaveButton(false);
 	});
 
 	this.getProfiles = function (ipType) {
+		self.setSaveButton(false);
 		var profilePromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetByType', ipType) });
 		profilePromise.then(function (result) {
 			var profileTypes = $.map(result, function (entry) {
@@ -35,13 +46,18 @@
 			});
 			self.profileTypes(profileTypes);
 			self.profiles = result;
-			if (self.settings.name) {
-				self.selectedProfile(self.settings.name);
-			}
 		});
 	};
 
-	self.filterProfiles = ko.computed(function () {
+	this.setSaveButton = function(showFlag){
+		$.stepProgress.allowSaveProfile(showFlag);
+	}
+
+	this.currentFilter = ko.computed(function() {
+		return { source: self.sourceProvider(), destination: self.destinationProvider() };
+	});
+
+	this.filterProfiles = ko.computed(function () {
 		if (!self.currentFilter() || !self.currentFilter().source || !self.currentFilter().destination) {
 			return self.profileTypes();
 		} else {
@@ -51,14 +67,27 @@
 		}
 	});
 
-	this.publishUpdateProfile = function () {
-		var profileId = self.selectedProfile();
+	this.publishUpdateProfile = function (profileId) {
 		if (!!profileId) {
 			var promise = self.getSelectedProfilePromise(profileId);
-			promise.then(function (profile) {
-				IP.messaging.publish("loadProfile", profile);
+			promise.then(function (result) {
+				IP.messaging.publish("loadProfile", result);
 			});
 		}
 	};
+
+	this.notifyUser = function (result) {
+		var isValid = result.validationResult.isValid;
+		self.setSaveButton(isValid);
+		if (isValid) {
+			IP.message.notify("Profile has been successfully loaded. Click Next to modify or Save to complete the set up.");
+		} else {
+			IP.message.notify("Profile has been loaded but requires modification. Click Next to modify the set up.");
+		}
+	};
+
+	this.selectedProfile.subscribe(function (profileId) {
+		self.publishUpdateProfile(profileId);
+	});
 
 };

@@ -121,7 +121,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="field-row" data-bind="visible: isDocument() == 'true' && SelectedOverwrite() == 'Append Only'">
+			<div class="field-row" data-bind="visible: isDocument() == 'true' && SelectedOverwrite() != 'Overlay Only'">
 				<div class="field-label required ">Use Folder Path Information:</div>
 				<div class="field-value">
 					<ul>
@@ -137,10 +137,10 @@
 			<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
 				<div class="field-label required ">Folder Path Information:</div>
 				<div class="field-value ">
-					<div data-bind="visible: IsRelativityProvider()">
+					<div data-bind="if: IsRelativityProvider()">
 						<select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
 					</div>
-					<div data-bind="visible: !IsRelativityProvider()">
+					<div data-bind="if: !IsRelativityProvider()">
 						<select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
 					</div>
 				</div>

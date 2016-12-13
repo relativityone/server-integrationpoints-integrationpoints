@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Results;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IFieldParserFactory _fieldParserFactory;
 		private IFieldParser _fieldParser;
 		private IImportTypeService _importTypeService;
+		private ISerializer _serializer;
 
 		[SetUp]
 		public override void SetUp()
@@ -29,7 +31,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_importTypeService = Substitute.For<IImportTypeService>();
 			_fieldParser = Substitute.For<IFieldParser>();
 			_fieldParserFactory = Substitute.For<IFieldParserFactory>();
-			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService);
+			_serializer = Substitute.For<ISerializer>();
+			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService, _serializer);
 		}
 
 		[Test]

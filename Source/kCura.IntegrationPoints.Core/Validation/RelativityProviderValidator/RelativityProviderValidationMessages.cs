@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-
+﻿
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
 	public class RelativityProviderValidationMessages
@@ -15,7 +13,15 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public static readonly string FIELD_MAP_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED = "All selected fields must be mapped. Destination and Source fields not mapped.";
 		public static readonly string FIELD_MAP_SOURCE_FIELD_NOT_MAPPED = "All selected fields must be mapped. Source field not mapped to Destination: ";
 		public static readonly string FIELD_MAP_UNIQUE_IDENTIFIER_MUST_BE_MAPPED = "The unique identifier must be mapped.";
+		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID = "Invalid Overlay Behavior: ";
+		public static readonly string FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR = "For Append Only should be set \"Use Field Settings\" overlay behaior.";
+		public static readonly string FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY = "Folder Path Information should not be available for \"Overlay Only\" mode.";
+		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_MERGE = "Merge Values";
+		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_REPLACE = "Replace Values";
+		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT = "Use Field Settings";
 
 		public static readonly string WORKSPACE_INVALID_NAME = "workspace name contains an invalid character.";
+
+		public static readonly string TRANSFERRED_OBJECT_INVALIDA_TYPE = "Invalid type of Transferred Object:";
 	}
 }

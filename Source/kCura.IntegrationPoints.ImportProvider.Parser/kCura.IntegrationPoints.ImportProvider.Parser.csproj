@@ -105,9 +105,6 @@
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\kCura.OI.FileID.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\packages\kCura.Relativity.Client.9.4.302.1\lib\net45\kCura.Relativity.Client.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.310.7, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
       <Private>True</Private>
@@ -152,12 +149,6 @@
       <HintPath>..\packages\Relativity.ImportExport.9.4.310.7\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts">
-      <HintPath>..\packages\Relativity.Services.DataContracts.9.4.302.1\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces">
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.302.1\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -175,6 +166,8 @@
     <Compile Include="EnumerableParser.cs" />
     <Compile Include="EnumerableParserFactory.cs" />
     <Compile Include="FieldParserFactory.cs" />
+    <Compile Include="Helpers\PreviewHelper.cs" />
+    <Compile Include="Helpers\PreviewType.cs" />
     <Compile Include="Interfaces\ILoadFilePreviewer.cs" />
     <Compile Include="Interfaces\IPreviewJobFactory.cs" />
     <Compile Include="LoadFilePreviewerWrapper.cs" />

@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 	{
 		[TestCase(-1)]
 		[TestCase(0)]
-		public void ItShouldReturnWarningForInvalidCount(int count)
+		public void ItShouldFailValidationForInvalidCount(int count)
 		{
 			// arrange
 			var validator = new FileCountValidator();
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var actual = validator.Validate(count);
 
 			// assert
-			Assert.IsTrue(actual.IsValid);
+			Assert.IsFalse(actual.IsValid);
 			Assert.That(actual.Messages.FirstOrDefault(), Is.Not.Null.Or.Empty);
 		}
 

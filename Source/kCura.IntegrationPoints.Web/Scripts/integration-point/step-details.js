@@ -129,7 +129,7 @@ var IP = IP || {};
 		this.isTypeDisabled = ko.observable(false);
 		this.integrationPointTypes = ko.observableArray();
 		this.type = ko.observable().extend({ required: true });
-		this.isEdit = ko.observable();
+		this.isEdit = ko.observable(parseInt(settings.artifactID) > 0);
 		this.hasBeenRun = ko.observable();
 
 		this.notificationEmails = ko.observable().extend({
@@ -156,8 +156,6 @@ var IP = IP || {};
 				self.destinationProvider = settings.destinationProvider;
 
 				self.type(settings.type);
-
-				self.isEdit(parseInt(settings.artifactID) > 0);
 
 				var hasBeenRun = false;
 				if (settings.lastRun != null) {
@@ -189,12 +187,12 @@ var IP = IP || {};
 			self.profile.getProfiles(value);
 		});
 
-		this.loadProfile = function (profile) {
-			self.loadSettings(profile);
-			self.destination.loadSettings(JSON.parse(profile.destination || "{}"));
-			self.source.loadSettings(profile);
-			self.scheduler.loadSettings(profile.scheduler);
-			$.stepProgress.allowSaveProfile();
+		this.loadProfile = function (result) {
+			self.loadSettings(result.model);
+			self.destination.loadSettings(JSON.parse(result.model.destination || "{}"));
+			self.source.loadSettings(result.model);
+			self.scheduler.loadSettings(result.model.scheduler);
+			self.profile.notifyUser(result);
 		};
 
 		var sourceTypePromise = root.data.ajax({ type: 'get', async: false, url: root.utils.generateWebAPIURL('SourceType') });
@@ -307,10 +305,10 @@ var IP = IP || {};
 			this.model.map = ip.map;
 		};
 
-		IP.messaging.subscribe('loadProfile', function (profile) {
-			self.model.loadProfile(profile);
-			self.model.sourceConfiguration = profile.sourceConfiguration;
-			self.model.map = profile.map;
+		IP.messaging.subscribe("loadProfile", function (result) {
+			self.model.loadProfile(result);
+			self.model.sourceConfiguration = result.model.sourceConfiguration;
+			self.model.map = result.model.map;
 		});
 
 		this.getTemplate = function () {
@@ -330,14 +328,18 @@ var IP = IP || {};
 				this.model.destinationProvider = this.model.destination.selectedDestinationType();
 				var guid = this.model.destination.selectedDestinationTypeGuid();
 				this.model.destinationProviderGuid = guid;
-				this.model.artifactTypeID = this.model.destination.artifactTypeID(),
-				this.model.destination = JSON.stringify({
+				this.model.artifactTypeID = this.model.destination.artifactTypeID();
+				var destination = {
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					destinationProviderType: ko.toJS(guid),
-					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
-				});
-				this.model.profileName = this.model.profile.selectedProfile();
+				};
+				if (this.model.destination.profile) {
+					destination = $.extend(this.model.destination.profile, destination);
+				} else {
+					destination.CaseArtifactId = IP.data.params['appID'];
+				}
+				this.model.destination = JSON.stringify(destination);
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
 				this.model.SourceProviderConfiguration = this.model.source.SourceProviderConfiguration;

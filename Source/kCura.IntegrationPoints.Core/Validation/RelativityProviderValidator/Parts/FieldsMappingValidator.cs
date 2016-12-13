@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
@@ -30,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			var result = new ValidationResult();
 
 			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(value.SourceConfiguration);
+			var destinationConfiguration = _serializer.Deserialize<IntegrationPointDestinationConfiguration>(value.DestinationConfiguration);
 			var fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
 
 			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(sourceConfiguration.SourceWorkspaceArtifactId);
@@ -41,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			{
 				result.Add(ValidateFieldMapped(fieldMap));
 				result.Add(ValidateFieldIdentifierMappedWithAnotherIdentifier(fieldMap));
-				result.Add(ValidateFieldExist(fieldMap, sourceWorkpaceFields, destinationWorkpaceFields));
+				result.Add(ValidateMappedFieldExist(fieldMap, sourceWorkpaceFields, destinationWorkpaceFields));
 
 				if ((fieldMap.FieldMapType == FieldMapTypeEnum.Identifier) && 
 					(fieldMap.SourceField != null) &&
@@ -53,9 +55,21 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
 			result.Add(ValidateAllRequiredFieldsMapped(fieldsMap, destinationWorkpaceFields));
+			result.Add(ValidateSettingsFieldOverlayBehavior(destinationConfiguration));
+			result.Add(ValidateSettingsFolderPathInformation(sourceWorkpaceFields, destinationConfiguration));
 
 			return result;
 		}
+
+		private class IntegrationPointDestinationConfiguration
+		{
+			public int FolderPathSourceField { get; set; }
+			public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
+			public bool UseFolderPathInformation { get; set; }
+			public string FieldOverlayBehavior { get; set; }
+		}
+
+		#region Internal validators
 
 		private ValidationResult ValidateFieldMapped(FieldMap fieldMap)
 		{
@@ -94,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			return result;
 		}
 
-		private ValidationResult ValidateFieldExist(FieldMap fieldMap, List<ArtifactDTO> sourceFields, List<ArtifactDTO> destinationFields)
+		private ValidationResult ValidateMappedFieldExist(FieldMap fieldMap, List<ArtifactDTO> sourceFields, List<ArtifactDTO> destinationFields)
 		{
 			var result = new ValidationResult();
 
@@ -105,15 +119,20 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			int sourceFieldIdentifier = int.Parse(fieldMap.SourceField.FieldIdentifier);
 			int destinationFieldIdentifier = int.Parse(fieldMap.DestinationField.FieldIdentifier);
+			
+			result.Add(ValidateFieldExists(sourceFieldIdentifier, sourceFields, RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
+			result.Add(ValidateFieldExists(destinationFieldIdentifier, destinationFields, RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE));
+			
+			return result;
+		}
 
-			if (sourceFields.All(x => x.ArtifactId != sourceFieldIdentifier))
-			{
-				result.Add(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE);
-			}
+		private ValidationResult ValidateFieldExists(int fieldArtifactId, List<ArtifactDTO> fields, string validationMessage)
+		{
+			var result = new ValidationResult();
 
-			if (destinationFields.All(x => x.ArtifactId != destinationFieldIdentifier))
+			if (fields.All(x => x.ArtifactId != fieldArtifactId))
 			{
-				result.Add(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE);
+				result.Add($"{validationMessage} {fieldArtifactId}");
 			}
 
 			return result;
@@ -178,6 +197,60 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			return result;
 		}
+
+		private ValidationResult ValidateSettingsFieldOverlayBehavior(IntegrationPointDestinationConfiguration destinationConfig)
+		{
+			var result = new ValidationResult();
+			
+			if (destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly)
+			{
+				if (destinationConfig.FieldOverlayBehavior !=
+				    RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT)
+				{
+					result.Add(RelativityProviderValidationMessages.FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR);
+				}
+			}
+			else
+			{
+				if (destinationConfig.FieldOverlayBehavior !=
+				    RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_MERGE &&
+				    destinationConfig.FieldOverlayBehavior !=
+				    RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_REPLACE &&
+				    destinationConfig.FieldOverlayBehavior !=
+				    RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT)
+				{
+					result.Add($"{RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID}{destinationConfig.FieldOverlayBehavior}");
+				}
+			}
+
+			return result;
+		}
+
+		private ValidationResult ValidateSettingsFolderPathInformation(List<ArtifactDTO> sourceWorkpaceFields, IntegrationPointDestinationConfiguration destinationConfig)
+		{
+			var result = new ValidationResult();
+
+			if (destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly ||
+			    destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOverlay)
+			{
+				if (destinationConfig.UseFolderPathInformation)
+				{
+					result.Add(ValidateFieldExists(destinationConfig.FolderPathSourceField, sourceWorkpaceFields,
+						RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
+				}
+			}
+			else
+			{
+				if (destinationConfig.UseFolderPathInformation)
+				{
+					result.Add(RelativityProviderValidationMessages.FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY);
+				}
+			}
+
+			return result;
+		}
+
+#endregion
 
 		private List<ArtifactDTO> RetrieveAllFields(int workspaceId)
 		{

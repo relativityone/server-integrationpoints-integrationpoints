@@ -527,7 +527,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		[TestCase("10/01/2014 21:00:00", ScheduleInterval.Weekly, "02/23/2016", "12:31", null, 0, DaysOfWeek.Monday, null, null, 1, null, "02/29/2016")]
 		public void GetNextUTCRunDateTime_CorrectValue(string utcNowTime, ScheduleInterval interval, string startDate, string scheduledLocalTime, DateTime? endDate, int timeZoneOffSet, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDay, int? reoccur, OccuranceInMonth? occuranceInMonth, string expectedDate)
 		{
-			PeriodicScheduleRule rule = new PeriodicScheduleRule(interval, DateTime.Parse(startDate), TimeSpan.Parse(scheduledLocalTime), endDate, timeZoneOffSet, daysToRun, dayOfMonth, setLastDay, reoccur, occuranceInMonth);
+			const string timeZoneId = "UTC";
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(interval, DateTime.Parse(startDate), TimeSpan.Parse(scheduledLocalTime), endDate, timeZoneOffSet, daysToRun, dayOfMonth, setLastDay, reoccur, occuranceInMonth, timeZoneId);
 			var utcNow = DateTime.Parse(utcNowTime);
 			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
 			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
@@ -695,12 +696,12 @@ namespace kCura.ScheduleQueue.Core.Tests
 		#endregion ForwardValidOccurance
 
 		[TestCase("Tokyo Standard Time", "12:30 PM", "Central Standard Time", "9/13/2016 3:30 AM")]
-		[TestCase("Central Standard Time", "12:30 PM", "Tokyo Standard Time", "9/13/2016 6:30 PM")]
+		[TestCase("Central Standard Time", "12:30 PM", "Tokyo Standard Time", "9/13/2016 5:30 PM")]
 		[TestCase("Tokyo Standard Time", "7:30 AM", "Central Standard Time", "9/12/2016 10:30 PM")]
-		[TestCase("Central Standard Time", "11:30 PM", "Tokyo Standard Time", "9/14/2016 5:30 AM")]
+		[TestCase("Central Standard Time", "11:30 PM", "Tokyo Standard Time", "9/14/2016 4:30 AM")]
 		[TestCase("Nepal Standard Time", "10:30 PM", "Tokyo Standard Time", "9/13/2016 4:45 PM")]           //Nepal Standard Time (UTC+05:45)
 		[TestCase("AUS Central Standard Time", "8:00 AM", "Tokyo Standard Time", "9/12/2016 10:30 PM")]     //AUS Central Standard Time (UTC+09:30)
-		public void CalculateLastDayOfScheduledJob(string clientTimeZone, string clientLocalTime, string serverTimeZone, string expectedRunUtcTime)
+		public void CalculateLastDayOfScheduledDailyJob(string clientTimeZone, string clientLocalTime, string serverTimeZone, string expectedRunUtcTime)
 		{
 			DateTime date = DateTime.Parse("9/13/2016");
 
@@ -715,19 +716,120 @@ namespace kCura.ScheduleQueue.Core.Tests
 			// server time
 			TimeZoneInfo serverTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(serverTimeZone);
 			TimeSpan serverClientOffSet = clientUtcOffSet.Add(serverTimeZoneInfo.BaseUtcOffset);
-			DateTime serverLocalTime = clientTime.Add(serverClientOffSet);
+			const int serverTimeShift = -2;     //To set server time before expectedRunUtcTime
+			DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
 
-			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, date, clientlocalTime, date, (int)clientUtcOffSet.TotalMinutes)
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, date, clientlocalTime, date, (int)clientUtcOffSet.TotalMinutes, null, null, null, null, null, clientTimeZone)
 			{
 				TimeService = Substitute.For<ITimeService>()
 			};
 			rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
-			rule.TimeService.LocalTime.Returns(serverLocalTime);
+			rule.TimeZoneId = clientTimeZone;
 
 			// act
 			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
 
 			// assert
+			if (expectedRunUtcTime == null)
+			{
+				Assert.IsNull(nextRunTime);
+			}
+			else
+			{
+				Assert.IsNotNull(nextRunTime);
+				Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
+			}
+		}
+
+
+		[TestCase("Eastern Standard Time", "11:00 PM", "10/13/2016", "Eastern Standard Time", "10/20/2016 3:00 AM")]
+		[TestCase("Central Standard Time", "11:00 PM", "10/13/2016", "Central Standard Time", "10/20/2016 4:00 AM")]
+		[TestCase("Central Standard Time", "11:00 PM", "10/13/2016", "Central European Standard Time", "10/20/2016 4:00 AM")]
+		[TestCase("Central Standard Time", "3:00 AM", "10/13/2016", "Central Standard Time", "10/19/2016 8:00 AM")]
+		[TestCase("Central European Standard Time", "6:00 AM", "10/13/2016", "Central Standard Time", "10/19/2016 4:00 AM")]
+		[TestCase("Central European Standard Time", "6:00 AM", "10/13/2016", "Central European Standard Time", "10/19/2016 4:00 AM")]
+		[TestCase("Central European Standard Time", "1:00 AM", "10/13/2016", "Central European Standard Time", "10/18/2016 11:00 PM")]
+		[TestCase("Central European Standard Time", "2:00 PM", "10/13/2016", "Central European Standard Time", "10/19/2016 12:00 PM")]
+		[TestCase("Central European Standard Time", "2:00 PM", "10/13/2016", "Tokyo Standard Time", "10/19/2016 12:00 PM")]
+		[TestCase("Tokyo Standard Time", "11:00 AM", "10/13/2016", "Central European Standard Time", "10/19/2016 2:00 AM")]
+		[TestCase("Tokyo Standard Time", "11:00 AM", "10/13/2016", "Central Standard Time", "10/19/2016 2:00 AM")]
+		[TestCase("Tokyo Standard Time", "4:00 AM", "10/13/2016", "Central European Standard Time", "10/18/2016 7:00 PM")]
+		[TestCase("Tokyo Standard Time", "4:00 AM", "10/13/2016", "Central Standard Time", "10/18/2016 7:00 PM")]
+		[TestCase("GMT Standard Time", "5:00 AM", "10/13/2016", "GMT Standard Time", "10/19/2016 4:00 AM")]
+		[TestCase("UTC", "7:00 AM", "10/13/2016", "UTC", "10/19/2016 7:00 AM")]
+		[TestCase("Central European Standard Time", "5:00 AM", "11/3/2016", "Central Standard Time", "11/9/2016 4:00 AM")]
+		[TestCase("Central Standard Time", "11:00 PM", "10/27/2016", "Central Standard Time", "11/03/2016 4:00 AM")]
+		[TestCase("Central Standard Time", "11:00 PM", "11/3/2016", "Central European Standard Time", "11/10/2016 5:00 AM")]
+		[TestCase("Central European Standard Time", "6:30 AM", "10/25/2016", "Central Standard Time", "10/26/2016 4:30 AM")]
+		[TestCase("Central European Standard Time", "12:45 AM", "10/25/2016", "Central Standard Time", "10/25/2016 10:45 PM")]
+		// Daylight Saving Time (DST) changes
+		[TestCase("Central Standard Time", "11:15 PM", "03/10/2016", "Central Standard Time", "03/17/2016 4:15 AM")]    //stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;		CST → CDT change 03/12/2016 
+		[TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", "Central Standard Time", "03/29/2016 11:20 PM")]    //stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;		CET → CEST change 03/26/2016 
+		[TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", "Central Standard Time", "11/2/2016 1:25 AM")]    //stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;		CEST → CET change 10/30/2016
+		public void CalculateLastDayOfScheduledWeeklyJob(string clientTimeZone, string clientLocalTime, string clientStartDate, string serverTimeZone, string expectedRunUtcTime)
+		{
+			// arrange
+			DateTime startDate = DateTime.Parse(clientStartDate);
+			DateTime endDate = startDate.AddDays(8);
+			const DaysOfWeek dayToRun = DaysOfWeek.Wednesday;
+
+			// client time
+			TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
+			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+			DateTime clientTime = startDate.Add(clientlocalTime);
+			//For tesat purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
+			TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
+
+			// server time
+			TimeZoneInfo serverTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(serverTimeZone);
+			TimeSpan serverClientOffSet = clientUtcOffSet.Add(serverTimeZoneInfo.BaseUtcOffset);
+			const int serverTimeShift = -2;     //To set server time before expectedRunUtcTime
+			DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
+
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, startDate, clientlocalTime, endDate, (int)clientUtcOffSet.TotalMinutes, dayToRun, null, null, null, null, clientTimeZone)
+			{
+				TimeService = Substitute.For<ITimeService>()
+			};
+			rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
+
+			// act
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+
+			// assert
+			if (expectedRunUtcTime == null)
+			{
+				Assert.IsNull(nextRunTime);
+			}
+			else
+			{
+				Assert.IsNotNull(nextRunTime);
+				Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
+			}
+		}
+
+		[Test]
+		[TestCase("10/27/2016", "2:25 AM", "10/27/2016 12:25 AM")]
+		[TestCase("10/27/2016", "2:00 AM", "10/27/2016 12:00 AM")]
+		[TestCase("10/27/2016", "3:25 AM", "10/27/2016 1:25 AM")]
+		[TestCase("10/27/2016", "3:00 AM", "10/27/2016 1:00 AM")]
+		public void NextRunJobScheduledToMissingHourDueToDst(string clientStartDate, string clientLocalTime, string expectedRunUtcTime)
+		{
+			// arrange
+			const string clientTimeZone = "Central European Standard Time"; //Daylight Saving Time (DST) change: 2016 Sun, 27 Mar, 02:00 CET → CEST
+			DateTime startDate = DateTime.Parse(clientStartDate);
+			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+
+
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, startDate, clientlocalTime, startDate, 0, null, null, null, null, null, clientTimeZone)
+			{
+				TimeService = Substitute.For<ITimeService>()
+			};
+			rule.TimeService.UtcNow.Returns(startDate);
+
+			// act
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+
+			//assert
 			if (expectedRunUtcTime == null)
 			{
 				Assert.IsNull(nextRunTime);

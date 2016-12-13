@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,9 +18,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _loadFilePreviewer = new LoadFilePreviewer(loadFile, timeZoneOffset, errorsOnly, doRetryLogic);
         }
 
-        public object ReadFile()
+        public List<object> ReadFile(bool previewChoicesAndFolders)
         {
-            return _loadFilePreviewer.ReadFile("", 0);
+            int formType = 0;
+            if (previewChoicesAndFolders)
+            {
+                formType = 2;
+            }
+
+			List<object> result = new List<object>();
+			ArrayList arrs = (ArrayList)_loadFilePreviewer.ReadFile(String.Empty, formType);
+
+			return arrs.Cast<object>().ToList();
         }
 
         public void OnEventAdd(LoadFilePreviewer.OnEventEventHandler eventHandler)

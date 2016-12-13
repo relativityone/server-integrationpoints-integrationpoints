@@ -6,6 +6,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -16,6 +17,7 @@ using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -26,6 +28,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IImportApiFactory _importApiFactory;
 		private IConfig _config;
 		private IRepositoryFactory _repositoryFactory;
+		private IChoiceService _choiceService;
 
 		private HttpConfiguration _configuration;
 		private FolderPathController _instance;
@@ -37,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_importApiFactory = Substitute.For<IImportApiFactory>();
 			_config = Substitute.For<IConfig>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-
+			_choiceService = Substitute.For<IChoiceService>();
 			_configuration = Substitute.For<HttpConfiguration>();
 
 			HttpConfiguration config = new HttpConfiguration();
@@ -45,7 +48,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			HttpRouteData routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
-			_instance = new FolderPathController(_client, _importApiFactory, _config, _repositoryFactory)
+			_instance = new FolderPathController(_client, _importApiFactory, _config, _repositoryFactory, _choiceService)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request
@@ -142,6 +145,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _client.APIOptions = new APIOptions(workspaceId);
 
             IImportAPI importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
+			_choiceService.ConvertToFieldEntries(null).ReturnsForAnyArgs(new List<Contracts.Models.FieldEntry>());
 
             _config.WebApiPath
                 .Returns(webServiceUrl);

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
@@ -26,6 +25,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName);
 
 		FieldsMapValidator CreateFieldsMapValidator();
+
+		BaseExportSettingsValidator CreateExportSettingsValidator(int artifactTypeId);
 	}
 
 	public class FileDestinationProviderValidatorsFactory : IFileDestinationProviderValidatorsFactory
@@ -101,6 +102,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		public FieldsMapValidator CreateFieldsMapValidator()
 		{
 			return new FieldsMapValidator(_serializer, _exportFieldsService);
+		}
+
+		public BaseExportSettingsValidator CreateExportSettingsValidator(int artifactTypeId)
+		{
+			switch (artifactTypeId)
+			{
+				case (int)ArtifactType.Document:
+					return new DocumentExportSettingsValidator();
+
+				default:
+					return new RdoExportSettingsValidator();
+			}
 		}
 	}
 }

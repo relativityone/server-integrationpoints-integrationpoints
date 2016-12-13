@@ -24,5 +24,16 @@ namespace kCura.IntegrationPoints.Data
 			var field = _client.Repositories.Field.ReadSingle(fieldGuid);
 			return field.Choices;
 		}
+
+		public List<Artifact> GetChoicesByQuery(Query query)
+		{
+			QueryResult result = _client.Query(_client.APIOptions, query);
+			if (!result.Success)
+			{
+				throw new Exception(result.Message);
+			}
+
+			return result.QueryArtifacts;
+		}
 	}
 }

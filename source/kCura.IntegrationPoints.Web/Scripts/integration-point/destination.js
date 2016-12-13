@@ -12,6 +12,7 @@
 		self.settings = settings;
 		self.updateDestinationProvider();
 		self.UpdateSelectedItem();//TODO: refactor RDO update dependency on source
+		self.profile = settings;
 	};
 
 	this.templateID = 'ldapDestinationConfig';
@@ -42,7 +43,7 @@
 				self.rdoTypes(rdosToDisplay);
 			}
 		}
-		IP.messaging.publish("ProviderTypeChanged", self.selectedDestinationType());
+		IP.messaging.publish("DestinationProviderTypeChanged", self.selectedDestinationType());
 	});
 
 	this.destinationProviderVisible = ko.observable(false);
@@ -75,8 +76,16 @@
 		})
 	};
 	this.artifactTypeID = ko.observable().extend({ required: true });
+	this.artifactTypeID.subscribe(function(value) {
+		IP.messaging.publish("TransferedObjectChanged", value);
+	});
 	this.UpdateSelectedItem = function () {
-		self.artifactTypeID(self.settings.artifactTypeID);
+
+		if (self.settings.artifactTypeID === undefined) {
+			self.artifactTypeID(parentModel.DefaultRdoTypeId);
+		} else {
+			self.artifactTypeID(self.settings.artifactTypeID);
+		}
 	}
 
 	this.isDestinationObjectDisabled = ko.observable(false);

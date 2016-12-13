@@ -252,6 +252,50 @@
 		var date = new Date();
 		return date.getTimezoneOffset();
 	}, this);
+	
+	this.timeZones = ko.observableArray();
+	this.timeZoneId = ko.observable(this.options.timeZoneId).extend({
+		required: {
+			onlyIf: function () {
+				return self.isEnabled();
+			}
+		}
+	});
+
+	this.getWindowsTimeZones = function() {
+		var promise = IP.data.ajax({
+			contentType: "application/json",
+			dataType: "json",
+			headers: { "X-CSRF-Header": "-" },
+			type: "POST",
+			url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZones")
+		}).then(function (winTimeZones) {
+			self.timeZones(winTimeZones);
+			self.timeZoneId(self.options.timeZoneId);
+		});
+		return promise;
+	};
+
+	this.convertIanaToWindowsTimeZone = function() {
+		var promise = IP.data.ajax({
+			cache: false,
+			contentType: "application/json",
+			data: JSON.stringify({ ianaZoneId: moment.tz.guess() }),
+			dataType: "json",
+			headers: { "X-CSRF-Header": "-" },
+			type: "POST",
+			url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/ConvertIanaToWindowsTimeZone")
+		}).then(function (winTimeZone) {
+			self.timeZoneId(winTimeZone);
+		});
+		return promise;
+	}
+
+	this.getWindowsTimeZones().then(function() {
+		if (!self.options.timeZoneId) {
+			self.convertIanaToWindowsTimeZone();
+		}
+	});
 
 	this.endDate = ko.observable(this.options.endDate).extend({
 		date: {
@@ -285,7 +329,7 @@
 		}]
 	});
 
-	this.scheduledTime = ko.observable(this.options.scheduledTime).extend({
+	this.scheduledTime = ko.observable(IP.timeUtil.formatTimeMinutes(this.options.scheduledTime)).extend({
 		required: {
 			onlyIf: function () {
 				return self.isEnabled();
@@ -326,6 +370,7 @@
 		self.endDate(self.options.endDate);
 		self.scheduledTime(self.options.scheduledTime);
 		self.selectedTimeFormat(self.options.selectedTimeFormat);
+		self.timeZoneId(self.options.timeZoneId);
 	};
 
 };

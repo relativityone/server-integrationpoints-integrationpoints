@@ -81,6 +81,6 @@
 			}
 		});
 		self.selectedType.isModified(false);
-		IP.messaging.publish("ProviderTypeChanged", self.selectedType());
+		IP.messaging.publish("SourceProviderTypeChanged", !selectedValue ? undefined : self.sourceProvider);
 	});
 };

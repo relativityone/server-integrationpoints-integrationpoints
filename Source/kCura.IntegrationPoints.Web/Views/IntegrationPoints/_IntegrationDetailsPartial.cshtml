@@ -97,7 +97,6 @@
 		</div>
 		<div class="field-value">
 			<select id="apply-profile-selector" data-bind="options: filterProfiles, optionsText: 'displayName', optionsValue: 'value', value: selectedProfile, optionsCaption: 'Select...', select2: {}"></select>
-			<button id="apply-profile-button" data-bind="click: publishUpdateProfile" class="actionButtonSmall">Apply</button>
 		</div>
 	</div>
 </script>
@@ -132,7 +131,7 @@
 			</div>
 			<div class="field-value">
 				<label class="basic-padding">Every</label>
-				<input id="reoccur" class="reoccur" data-bind="value: reoccur" />
+				<input id="reoccur" class="reoccur" data-bind="value: reoccur"/>
 				<label class="basic-padding" data-bind="text: reoccurEvery"></label>
 			</div>
 		</div>
@@ -147,7 +146,7 @@
 				Start Date:
 			</div>
 			<div class="field-value">
-				<input id="scheduleRulesStartDate" class="startDate" placeholder="mm/dd/yyyy" type="text" data-bind="datepicker: startDate, value: startDate" />
+				<input id="scheduleRulesStartDate" class="startDate" placeholder="mm/dd/yyyy" type="text" data-bind="datepicker: startDate, value: startDate"/>
 			</div>
 		</div>
 		<div class="field-row">
@@ -155,18 +154,25 @@
 				End Date:
 			</div>
 			<div class="field-value">
-				<input id="scheduleRulesEndDate" class="endDate" placeholder="mm/dd/yyyy" type="text" data-bind="datepicker: endDate, value:endDate" />
+				<input id="scheduleRulesEndDate" class="endDate" placeholder="mm/dd/yyyy" type="text" data-bind="datepicker: endDate, value:endDate"/>
 			</div>
 		</div>
 		<div class="field-row">
 			<div class="field-label required">
 				Scheduled Time:
-				<span class="schedule_local"><br /><i>(local)</i></span>
 			</div>
 			<div class="field-value">
-				<input id="scheduledTime" class="time" placeholder="hh:mm 12hr" data-bind="value: scheduledTime" />
+				<input id="scheduledTime" class="time" placeholder="hh:mm 12hr" data-bind="value: scheduledTime"/>
 
 				<select id="timeFormat" data-bind="options: timeFormat, value: selectedTimeFormat, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Time Zone:
+			</div>
+			<div class="field-value">
+				<select id="timeZones" data-bind="options: timeZones, optionsText: 'DisplayName', optionsValue: 'Id', value: timeZoneId, optionsCaption: 'Select...', select2: {}"></select>
 			</div>
 		</div>
 	</div>

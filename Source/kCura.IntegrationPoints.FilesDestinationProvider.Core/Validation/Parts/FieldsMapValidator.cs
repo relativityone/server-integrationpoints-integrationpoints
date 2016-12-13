@@ -56,9 +56,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			return result;
 		}
 
-		/// <summary>
-		/// This class com
-		/// </summary>
 		private class FieldEntryEqualityComparer : IEqualityComparer<FieldEntry>
 		{
 			public bool Equals(FieldEntry x, FieldEntry y)

@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>().LifestyleTransient());
 			container.Register(Component.For<IValidator>().ImplementedBy<NameValidator>().LifestyleTransient());
 			container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>().LifestyleTransient());
+			container.Register(Component.For<IValidator>().ImplementedBy<IntegrationPointTypeValidator>().LifestyleTransient());
 
 			container.Register(Component.For<IRelativityProviderValidatorsFactory>().ImplementedBy<RelativityProviderValidatorsFactory>().LifestyleTransient());
 			container.Register(Component.For<IValidator>().ImplementedBy<RelativityProviderConfigurationValidator>().LifestyleTransient());

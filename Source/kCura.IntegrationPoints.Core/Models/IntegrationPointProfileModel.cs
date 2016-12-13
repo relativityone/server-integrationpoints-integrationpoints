@@ -51,6 +51,18 @@ namespace kCura.IntegrationPoints.Core.Models
 			};
 		}
 
+		public static IntegrationPointProfileModel FromIntegrationPointProfileSimpleModel(IntegrationPointProfile profile)
+		{
+			return new IntegrationPointProfileModel
+			{
+				ArtifactID = profile.ArtifactId,
+				Name = profile.Name,
+				SourceProvider = profile.SourceProvider.GetValueOrDefault(0),
+				DestinationProvider = profile.DestinationProvider.GetValueOrDefault(0),
+				Type = profile.Type.GetValueOrDefault(0)
+			};
+		}
+
 		public IntegrationPointProfile ToRdo(IEnumerable<Choice> choices, PeriodicScheduleRule rule)
 		{
 			var choice = choices.FirstOrDefault(x => x.Name.Equals(SelectedOverwrite));

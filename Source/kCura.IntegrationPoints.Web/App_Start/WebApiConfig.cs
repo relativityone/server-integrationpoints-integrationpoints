@@ -97,13 +97,19 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "FolderPath", action = "GetFields" }
 			);
 
-            config.Routes.MapHttpRoute(
-                name: "FolderPathGetLongTextFields",
-                routeTemplate: "{workspaceID}/api/FolderPath/GetLongTextFields",
-                defaults: new { controller = "FolderPath", action = "GetLongTextFields" }
-            );
+			config.Routes.MapHttpRoute(
+				name: "FolderPathGetLongTextFields",
+				routeTemplate: "{workspaceID}/api/FolderPath/GetLongTextFields",
+				defaults: new { controller = "FolderPath", action = "GetLongTextFields" }
+			);
 
-            config.Routes.MapHttpRoute(
+			config.Routes.MapHttpRoute(
+				name: "FolderPathGetChoiceFields",
+				routeTemplate: "{workspaceID}/api/FolderPath/GetChoiceFields",
+				defaults: new { controller = "FolderPath", action = "GetChoiceFields" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "FolderPathGetFolderCount",
 				routeTemplate: "{workspaceID}/api/FolderPath/GetFolderCount/{integrationPointArtifactId}",
 				defaults: new { controller = "FolderPath", action = "GetFolderCount", integrationPointArtifactId = RouteParameter.Optional }
@@ -221,6 +227,12 @@ namespace kCura.IntegrationPoints.Web
 				name: "ImportProviderDocumentGetImportTypes",
 				routeTemplate: "{workspaceID}/api/ImportProviderDocument/GetImportTypes",
 				defaults: new { controller = "ImportProviderDocument", action = "GetImportTypes" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "ImportProviderDocumentViewData",
+				routeTemplate: "{workspaceID}/api/ImportProviderDocument/ViewData",
+				defaults: new { controller = "ImportProviderDocument", action = "ViewData" }
 			);
 
 			config.Routes.MapHttpRoute(

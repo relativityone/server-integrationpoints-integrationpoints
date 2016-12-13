@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
+namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class ArtifactValidator : BasePartsValidator<int>
 	{
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 
 			if (artifact == null)
 			{
-				result.Add($"{_artifactTypeName} {FileDestinationProviderValidationMessages.ARTIFACT_NOT_EXIST}");
+				result.Add($"{_artifactTypeName} {IntegrationPointProviderValidationMessages.ARTIFACT_NOT_EXIST}");
 			}
 
 			return result;
