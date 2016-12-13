@@ -2,7 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
+using kCura.IntegrationPoints.Services.Extensions;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {

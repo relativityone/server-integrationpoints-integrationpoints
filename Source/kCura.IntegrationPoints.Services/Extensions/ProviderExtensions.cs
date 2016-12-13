@@ -1,6 +1,6 @@
 ﻿using kCura.IntegrationPoints.Data;
 
-namespace kCura.IntegrationPoints.Services.Interfaces.Private.Extensions
+namespace kCura.IntegrationPoints.Services.Extensions
 {
 	public static class ProviderExtensions
 	{

@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public interface ICompletedJobsHistoryRepository
 	{
-		IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<IntegrationPoint> integrationPoints);
+		IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<Data.IntegrationPoint> integrationPoints);
 	}
 }

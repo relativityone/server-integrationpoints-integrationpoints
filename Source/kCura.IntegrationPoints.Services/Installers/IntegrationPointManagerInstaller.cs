@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using kCura.Relativity.Client;
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, true));
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
 			container.Register(Component.For<IUserInfo>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>().GetAuthenticationManager().UserInfo, true));
+			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 
 			container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
@@ -60,6 +62,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<IntegrationPointRepository>().LifestyleTransient());
 			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
 			container.Register(Component.For<IChoiceRepository>().ImplementedBy<ChoiceRepository>().LifestyleTransient());
+			container.Register(Component.For<IBackwardCompatibility>().ImplementedBy<BackwardCompatibility>().LifestyleTransient());
 
 			foreach (IWindsorInstaller dependency in _dependencies)
 			{

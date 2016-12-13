@@ -4,10 +4,12 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
@@ -17,15 +19,82 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		private IIntegrationPointService _integrationPointService;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IUserInfo _userInfo;
+		private IChoiceQuery _choiceQuery;
+		private IBackwardCompatibility _backwardCompatibility;
 
 		public override void SetUp()
 		{
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_userInfo = Substitute.For<IUserInfo>();
-			var choiceQuery = Substitute.For<IChoiceQuery>();
+			_choiceQuery = Substitute.For<IChoiceQuery>();
+			_backwardCompatibility = Substitute.For<IBackwardCompatibility>();
 
-			_integrationPointRepository = new IntegrationPointRepository(_integrationPointService, _objectTypeRepository, _userInfo, choiceQuery);
+			_integrationPointRepository = new IntegrationPointRepository(_integrationPointService, _objectTypeRepository, _userInfo, _choiceQuery, _backwardCompatibility);
+		}
+
+		[Test]
+		public void ItShouldCreateIntegrationPoint()
+		{
+			var overwriteFieldsChoiceId = 934;
+			var overwriteFieldsChoiceName = "Append/Overlay";
+			var integrationPointArtifactId = 134;
+
+			var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName, integrationPointArtifactId);
+
+			_integrationPointService.SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.ArtifactID == 0)).Returns(integrationPointArtifactId);
+
+			_integrationPointRepository.CreateIntegrationPoint(createRequest);
+
+			_backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
+			_integrationPointService.Received(1).GetRdo(integrationPointArtifactId);
+		}
+
+		[Test]
+		public void ItShouldUpdateIntegrationPoint()
+		{
+			var overwriteFieldsChoiceId = 215;
+			var overwriteFieldsChoiceName = "Append/Overlay";
+			var integrationPointArtifactId = 902;
+
+			var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName, integrationPointArtifactId);
+
+			_integrationPointService.SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.ArtifactID == createRequest.IntegrationPoint.ArtifactId))
+				.Returns(integrationPointArtifactId);
+
+			_integrationPointRepository.CreateIntegrationPoint(createRequest);
+
+			_backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
+			_integrationPointService.Received(1).GetRdo(integrationPointArtifactId);
+		}
+
+		private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointArtifactId)
+		{
+			var createRequest = new UpdateIntegrationPointRequest
+			{
+				WorkspaceArtifactId = 640,
+				IntegrationPoint = new IntegrationPointModel
+				{
+					OverwriteFieldsChoiceId = overwriteFieldsChoiceId,
+					ArtifactId = 916
+				}
+			};
+
+			_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>
+			{
+				new Choice(overwriteFieldsChoiceId)
+				{
+					Name = overwriteFieldsChoiceName
+				}
+			});
+			_integrationPointService.GetRdo(integrationPointArtifactId).Returns(new Data.IntegrationPoint
+			{
+				ArtifactId = integrationPointArtifactId,
+				Name = "name_762",
+				SourceProvider = 718,
+				DestinationProvider = 715
+			});
+			return createRequest;
 		}
 
 		[Test]

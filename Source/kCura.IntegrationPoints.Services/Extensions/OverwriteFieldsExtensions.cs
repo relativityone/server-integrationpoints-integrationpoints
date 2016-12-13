@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Services.Interfaces.Private.Extensions
+namespace kCura.IntegrationPoints.Services.Extensions
 {
 	public static class OverwriteFieldsExtensions
 	{

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
+using kCura.IntegrationPoints.Services.Extensions;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations

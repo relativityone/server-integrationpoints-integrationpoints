@@ -47,6 +47,10 @@
     <Reference Include="kCura.IntegrationPoints">
       <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.IntegrationPoints.Domain, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\kCura.IntegrationPoints.Domain.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
@@ -91,6 +95,14 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DocumentManager.cs" />
+    <Compile Include="Extensions\IntegrationPointExtensions.cs" />
+    <Compile Include="Extensions\IntegrationPointModelExtensions.cs" />
+    <Compile Include="Extensions\IntegrationPointTypeExtensions.cs" />
+    <Compile Include="Extensions\OverwriteFieldsExtensions.cs" />
+    <Compile Include="Extensions\ProviderExtensions.cs" />
+    <Compile Include="Extensions\SheduleModelExtensions.cs" />
+    <Compile Include="Helpers\BackwardCompatibility.cs" />
+    <Compile Include="Helpers\IBackwardCompatibility.cs" />
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
     <Compile Include="Installers\IInstaller.cs" />
@@ -117,6 +129,8 @@
     <Compile Include="JobHistory\RelativityIntegrationPointsRepository.cs" />
     <Compile Include="JobHistory\WorkspaceManager.cs" />
     <Compile Include="KeplerServiceBase.cs" />
+    <Compile Include="Models\RelativityProviderDestinationConfigurationBackwardCompatibility.cs" />
+    <Compile Include="Models\RelativityProviderSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Repositories\Implementations\ChoiceRepository.cs" />
     <Compile Include="Repositories\IChoiceRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointTypeRepository.cs" />

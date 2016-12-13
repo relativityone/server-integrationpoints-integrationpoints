@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			int integrationPointId = 142123;
 
 			Assert.That(() => _client.GetIntegrationPointAsync(WorkspaceArtifactId, integrationPointId).Wait(),
-				Throws.TypeOf<AggregateException>().With.InnerException.With.Message.EqualTo($"The requested object with artifact id {integrationPointId} does not exist."));
+				Throws.TypeOf<AggregateException>().With.InnerException.With.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
 		}
 	}
 }

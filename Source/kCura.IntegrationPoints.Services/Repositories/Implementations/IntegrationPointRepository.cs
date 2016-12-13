@@ -4,7 +4,8 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
+using kCura.IntegrationPoints.Services.Extensions;
+using kCura.IntegrationPoints.Services.Helpers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
@@ -15,28 +16,42 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IUserInfo _userInfo;
 		private readonly IChoiceQuery _choiceQuery;
+		private readonly IBackwardCompatibility _backwardCompatibility;
 
 		public IntegrationPointRepository(IIntegrationPointService integrationPointService, IObjectTypeRepository objectTypeRepository, IUserInfo userInfo,
-			IChoiceQuery choiceQuery)
+			IChoiceQuery choiceQuery, IBackwardCompatibility backwardCompatibility)
 		{
 			_integrationPointService = integrationPointService;
 			_objectTypeRepository = objectTypeRepository;
 			_userInfo = userInfo;
 			_choiceQuery = choiceQuery;
+			_backwardCompatibility = backwardCompatibility;
 		}
 
 		public IntegrationPointModel CreateIntegrationPoint(CreateIntegrationPointRequest request)
 		{
-			var integrationPointModel = request.ToModel(_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)));
-			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
-			return GetIntegrationPoint(artifactId);
+			request.IntegrationPoint.ArtifactId = 0;
+			return SaveIntegrationPoint(request);
 		}
 
 		public IntegrationPointModel UpdateIntegrationPoint(UpdateIntegrationPointRequest request)
 		{
-			var integrationPointModel = request.ToModel(_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)));
+			return SaveIntegrationPoint(request);
+		}
+
+		private IntegrationPointModel SaveIntegrationPoint(CreateIntegrationPointRequest request)
+		{
+			var overwriteFieldsName = GetOverwriteFieldsName(request.IntegrationPoint.OverwriteFieldsChoiceId);
+			_backwardCompatibility.FixIncompatibilities(request.IntegrationPoint, overwriteFieldsName);
+			var integrationPointModel = request.IntegrationPoint.ToCoreModel(overwriteFieldsName);
 			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
 			return GetIntegrationPoint(artifactId);
+		}
+
+		private string GetOverwriteFieldsName(int overwriteFieldsId)
+		{
+			//TODO remove this hack when IntegrationPointModel will start using ChoiceId instead of ChoiceName
+			return _choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)).First(x => x.ArtifactID == overwriteFieldsId).Name;
 		}
 
 		public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
