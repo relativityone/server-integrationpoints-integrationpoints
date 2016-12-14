@@ -368,8 +368,10 @@
 		}
 		self.startDate(self.options.startDate);
 		self.endDate(self.options.endDate);
-		self.scheduledTime(self.options.scheduledTime);
-		self.selectedTimeFormat(self.options.selectedTimeFormat);
+		var convertedTimeTo12H = IP.timeUtil.convert24HourTo12Hour(self.options.scheduledTime);
+
+		self.scheduledTime(convertedTimeTo12H.time);
+		self.selectedTimeFormat(convertedTimeTo12H.timeFormat);
 		self.timeZoneId(self.options.timeZoneId);
 	};
 
