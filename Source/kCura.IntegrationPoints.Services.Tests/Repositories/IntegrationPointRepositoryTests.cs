@@ -76,7 +76,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				IntegrationPoint = new IntegrationPointModel
 				{
 					OverwriteFieldsChoiceId = overwriteFieldsChoiceId,
-					ArtifactId = 916
+					ArtifactId = 916,
+					ScheduleRule = new ScheduleModel
+					{
+						EnableScheduler = false
+					}
 				}
 			};
 
