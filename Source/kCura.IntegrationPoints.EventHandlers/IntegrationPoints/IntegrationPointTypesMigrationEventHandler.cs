@@ -33,9 +33,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			get
 			{
-				var caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
-				var typeService = new IntegrationPointTypeService(Helper, caseServiceContext);
-				return _integrationPointTypeInstaller ?? (_integrationPointTypeInstaller = new IntegrationPointTypeInstaller(caseServiceContext, typeService, Logger));
+				if (_integrationPointTypeInstaller == null)
+				{
+					var caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
+					var typeService = new IntegrationPointTypeService(Helper, caseServiceContext);
+					_integrationPointTypeInstaller = new IntegrationPointTypeInstaller(caseServiceContext, typeService, Logger);
+				}
+				return _integrationPointTypeInstaller;
 			}
 			set { _integrationPointTypeInstaller = value; }
 		}
