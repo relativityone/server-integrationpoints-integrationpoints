@@ -97,6 +97,36 @@ IP.timeUtil = (function () {
 		return '';
 	}
 
+	function convert24HourTo12Hour(time) {
+		var timeSplit = time.split(':');
+		var scheduledTimeFormat;
+		var scheduledTime;
+
+		var hour = parseInt(timeSplit[0], 10);
+		if (hour > 12) {
+			scheduledTime = hour - 12 + ":" + timeSplit[1];
+			scheduledTimeFormat = 'PM';
+		} else if (hour === 12) {
+			scheduledTime = 12 + ":" + timeSplit[1];
+			scheduledTimeFormat = 'PM';
+		} else {
+			if (hour === 0) {
+				hour = 12;
+			}
+			scheduledTime = hour + ":" + timeSplit[1];
+			scheduledTimeFormat = 'AM';
+		}
+
+		scheduledTime = timeFormatMinutes(scheduledTime);
+
+		var convertedTime = {
+			time: scheduledTime,
+			timeFormat: scheduledTimeFormat
+		};
+
+		return convertedTime;
+	}
+
 	var _noOp = function (time) {
 		return time;
 	};
@@ -107,7 +137,8 @@ IP.timeUtil = (function () {
 		utcDateToLocal: _noOp,
 		timeToAmPm: utcToTime,
 		utcToLocalAmPm: utcToLocalAmPm,
-		formatTimeMinutes: timeFormatMinutes
+		formatTimeMinutes: timeFormatMinutes,
+		convert24HourTo12Hour: convert24HourTo12Hour
 	};
 
 }());
