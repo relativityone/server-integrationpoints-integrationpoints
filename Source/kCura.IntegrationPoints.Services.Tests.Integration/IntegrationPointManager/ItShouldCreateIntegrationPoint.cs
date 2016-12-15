@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using Newtonsoft.Json;
@@ -31,18 +32,30 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		}
 
 		[Test]
-		public void ItShouldCreateRelativityIntegrationPoint()
+		[TestCase(false, false, false, "a421248620@kcura.com", "Use Field Settings", "Overlay Only")]
+		[TestCase(true, true, true, "", "Use Field Settings", "Append Only")]
+		[TestCase(false, false, false, null, "Replace Values", "Append/Overlay")]
+		[TestCase(false, false, false, "a937467@kcura.com", "Merge Values", "Append/Overlay")]
+		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
+			string fieldOverlayBehavior, string overwriteFieldsChoices)
 		{
-			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append Only");
+			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
+
+			var folderPathSourceField = 0;
+			if (useFolderPathInformation)
+			{
+				var artifactFieldDtos = RepositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId).RetrieveLongTextFieldsAsync((int) ArtifactType.Document).Result;
+				folderPathSourceField = artifactFieldDtos[0].ArtifactId;
+			}
 
 			var expectedDestinationConfiguration = new RelativityProviderDestinationConfiguration
 			{
 				ArtifactTypeID = (int) ArtifactType.Document,
 				CaseArtifactId = TargetWorkspaceArtifactId,
-				ImportNativeFile = false,
-				UseFolderPathInformation = false,
-				FolderPathSourceField = 0,
-				FieldOverlayBehavior = "Use Field Settings",
+				ImportNativeFile = importNativeFile,
+				UseFolderPathInformation = useFolderPathInformation,
+				FolderPathSourceField = folderPathSourceField,
+				FieldOverlayBehavior = fieldOverlayBehavior,
 				DestinationFolderArtifactId = GetRootFolder()
 			};
 			var expectedSourceConfiguration = new RelativityProviderSourceConfiguration
@@ -53,9 +66,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			var expectedIntegrationPointModel = new IntegrationPointModel
 			{
 				ArtifactId = 0,
-				EmailNotificationRecipients = "a421248620@kcura.com",
-				LogErrors = true,
-				Name = "integrationpoint_565",
+				EmailNotificationRecipients = emailNotificationRecipients,
+				LogErrors = logErrors,
+				Name = $"relativity_{Utils.FormatedDateTimeNow}",
 				SourceProvider = GetSourceProviderArtifactId(Constants.IntegrationPoints.SourceProviders.RELATIVITY),
 				DestinationProvider = GetDestinationProviderArtifactId(Constants.IntegrationPoints.DestinationProviders.RELATIVITY),
 				DestinationConfiguration = expectedDestinationConfiguration,
@@ -81,7 +94,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			Assert.That(actualIntegrationPoint.SourceProvider, Is.EqualTo(expectedIntegrationPointModel.SourceProvider));
 			Assert.That(actualIntegrationPoint.DestinationProvider, Is.EqualTo(expectedIntegrationPointModel.DestinationProvider));
-			Assert.That(actualIntegrationPoint.EmailNotificationRecipients, Is.EqualTo(expectedIntegrationPointModel.EmailNotificationRecipients));
+			Assert.That(actualIntegrationPoint.EmailNotificationRecipients, Is.EqualTo(expectedIntegrationPointModel.EmailNotificationRecipients ?? string.Empty));
 			Assert.That(actualIntegrationPoint.EnableScheduler, Is.EqualTo(expectedIntegrationPointModel.ScheduleRule.EnableScheduler));
 			Assert.That(actualIntegrationPoint.LogErrors, Is.EqualTo(expectedIntegrationPointModel.LogErrors));
 			Assert.That(actualIntegrationPoint.Name, Is.EqualTo(expectedIntegrationPointModel.Name));
