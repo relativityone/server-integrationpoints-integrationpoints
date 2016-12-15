@@ -841,6 +841,37 @@ namespace kCura.ScheduleQueue.Core.Tests
 			}
 		}
 
+		[Test]
+		[TestCase("01/01/2017", "08:50 PM", "1/1/2017 7:50 PM")]
+		public void NextRunJobScheduledToFirstDayOfMonth(string clientStartDate, string clientLocalTime, string expectedRunUtcTime)
+		{
+			// arrange
+			const string clientTimeZone = "Central European Standard Time"; //Daylight Saving Time (DST) change: 2016 Sun, 27 Mar, 02:00 CET → CEST
+			DateTime startDate = DateTime.Parse(clientStartDate);
+			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+
+
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, startDate, clientlocalTime, startDate, 0, DaysOfWeek.Day, null, null, null, OccuranceInMonth.First, clientTimeZone)
+			{
+				TimeService = Substitute.For<ITimeService>()
+			};
+			rule.TimeService.UtcNow.Returns(startDate);
+
+			// act
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+
+			//assert
+			if (expectedRunUtcTime == null)
+			{
+				Assert.IsNull(nextRunTime);
+			}
+			else
+			{
+				Assert.IsNotNull(nextRunTime);
+				Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
+			}
+		}
+
 		//server ahead
 
 		[TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, null, null, null, null)]

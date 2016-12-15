@@ -371,9 +371,9 @@ ko.validation.insertValidationMessage = function (element) {
 		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
 		var mapTypes = {
-			identifier: 1,
-			parent: 2,
-			native: 3
+			identifier: 'Identifier',
+			parent: 'FolderPathInformation',
+			native: 'NativeFilePath'
 		};
 		var mapHelper = (function () {
 			function find(fields, fieldMapping, key, func) {
@@ -465,7 +465,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 
 				$.each(mapping, function () {
-					if (this.fieldMapType == 3 && artifactTypeId == 10) {
+				    if (this.fieldMapType == mapTypes.native && artifactTypeId == 10) {
 						self.importNativeFile("true");
 						self.nativeFilePathValue(this.sourceField.displayName);
 						return false;
@@ -837,7 +837,7 @@ ko.validation.insertValidationMessage = function (element) {
 	};
 
 	var AddFolderPathInfoToMapping = function (map) {
-		if (step.returnModel.UseFolderPathInformation == "true") {
+		if (step.model.UseFolderPathInformation() == "true") {
 			var folderPathField = "";
 			var folderPathFields = step.model.FolderPathFields();
 			for (var i = 0; i < folderPathFields.length; i++) {

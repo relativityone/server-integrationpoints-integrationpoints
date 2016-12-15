@@ -140,7 +140,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		/// <returns></returns>
 		private DaysOfWeek? AdjustDaysShiftBetweenLocalAndUtc(DateTime clientTime, DateTime clientTimeUtc)
 		{
-			if (StartDate == null || LocalTimeOfDay == null || DaysToRun == null) return DaysToRun;
+			if (StartDate == null || LocalTimeOfDay == null || DaysToRun == null || DaysToRun == DaysOfWeek.Day || DaysToRun == DaysOfWeek.All)
+			{
+				return DaysToRun;
+			}
 
 			List<DayOfWeek> selectedDays = DaysOfWeekConverter.FromDaysOfWeek(DaysToRun.GetValueOrDefault());
 			List<DayOfWeek> adjustedDays = new List<DayOfWeek>();

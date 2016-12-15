@@ -148,7 +148,10 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			}
 			else if (monthlySendOn.MonthChoice == MonthlyType.Month)
 			{
-				result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString()));
+				if (monthlySendOn.SelectedDayOfTheMonth.ToString() != DaysOfWeek.Day.ToString())
+				{
+					result.Add(ValidateDayOfWeek(monthlySendOn.SelectedDayOfTheMonth.ToString()));
+				}
 
 				if (monthlySendOn.SelectedType == null)
 				{
