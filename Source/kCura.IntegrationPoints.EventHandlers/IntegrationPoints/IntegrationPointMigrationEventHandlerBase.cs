@@ -22,22 +22,5 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return _workspaceTemplateServiceContext;
 			}
 		}
-
-		protected virtual List<SourceProvider> GetSourceProvidersFromPreviousWorkspace()
-		{
-			Query<RDO> query = new Query<RDO>();
-			query.Fields = GetAllSourceProviderFields();
-
-			List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RsapiService.SourceProviderLibrary.Query(query);
-
-			return sourceProviderRdos ?? new List<SourceProvider>();
-		}
-
-		private List<Relativity.Client.DTOs.FieldValue> GetAllSourceProviderFields()
-		{
-			List<Relativity.Client.DTOs.FieldValue> fields = BaseRdo.GetFieldMetadata(typeof (Data.SourceProvider)).Select(pair => new Relativity.Client.DTOs.FieldValue(pair.Value.FieldGuid)).ToList();
-			return fields;
-		} 
-
 	}
 }

@@ -837,7 +837,7 @@ ko.validation.insertValidationMessage = function (element) {
 	};
 
 	var AddFolderPathInfoToMapping = function (map) {
-		if (step.returnModel.UseFolderPathInformation == "true") {
+		if (step.model.UseFolderPathInformation() == "true") {
 			var folderPathField = "";
 			var folderPathFields = step.model.FolderPathFields();
 			for (var i = 0; i < folderPathFields.length; i++) {

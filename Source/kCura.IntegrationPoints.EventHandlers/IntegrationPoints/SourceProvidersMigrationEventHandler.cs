@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
+using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -43,6 +46,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}).ToList();
 
 			return results;
+		}
+
+		protected virtual List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
+		{
+			Query<RDO> query = new Query<RDO>();
+			query.Fields = GetAllSourceProviderFields();
+
+			List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RsapiService.SourceProviderLibrary.Query(query);
+
+			return sourceProviderRdos ?? new List<Data.SourceProvider>();
+		}
+
+		private List<Relativity.Client.DTOs.FieldValue> GetAllSourceProviderFields()
+		{
+			List<Relativity.Client.DTOs.FieldValue> fields = BaseRdo.GetFieldMetadata(typeof(Data.SourceProvider)).Select(pair => new Relativity.Client.DTOs.FieldValue(pair.Value.FieldGuid)).ToList();
+			return fields;
 		}
 
 		/// Even private class needs a Guid :(. SAMO - 02/08/2016
