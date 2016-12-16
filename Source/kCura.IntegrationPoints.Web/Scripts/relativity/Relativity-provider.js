@@ -106,14 +106,47 @@
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
-		self.TargetFolder = ko.observable(state.TargetFolder);
+		self.TargetFolder = ko.observable();
+
+		self.getFolderFullName = function (currentFolder, folderId) {
+			if (currentFolder.id === folderId) {
+				return currentFolder.text;
+			} else {
+				for (var i = 0; i < currentFolder.children.length; i++) {
+					var childFolderPath = self.getFolderFullName(currentFolder.children[i], folderId);
+					if (childFolderPath !== "") {
+						return currentFolder.text + "/" + childFolderPath;
+					}
+				}
+			}
+			return "";
+		};
+
+		self.setDestinationFolder = function (folderArtifactId, destinationWorkspaceId) {
+			if (!folderArtifactId) {
+				return;
+			}
+
+			IP.data.ajax({
+				type: "get",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId)
+			})
+				.then(function (result) {
+					self.TargetFolder(self.getFolderFullName(result, folderArtifactId));
+				})
+				.fail(function (error) {
+					IP.frameMessaging().dFrame.IP.message.error.raise(error);
+				});
+		}
+
+		self.setDestinationFolder(state.FolderArtifactId, state.TargetWorkspaceArtifactId);
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value !== undefined) {
 				self.getFolderAndSubFolders(value);
 			}
 		});
-
+		
 		self.getFolderAndSubFolders = function (destinationWorkspaceId) {
 			IP.data.ajax({
 				type: "get",
@@ -130,19 +163,6 @@
 			});
 		};
 
-		self.getFolderFullName = function (currentFolder, folderId) {
-			if (currentFolder.id === folderId) {
-				return currentFolder.text;
-			} else {
-				for (var i = 0; i < currentFolder.children.length; i++) {
-					var childFolderPath = self.getFolderFullName(currentFolder.children[i], folderId);
-					if (childFolderPath !== "") {
-						return currentFolder.text + "/" + childFolderPath;
-					}
-				}
-			}
-			return "";
-		};
 
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
@@ -263,8 +283,7 @@
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
-				"FolderArtifactId": self.FolderArtifactId(),
-				TargetFolder: self.TargetFolder()
+				"FolderArtifactId": self.FolderArtifactId()
 			}
 		}
 	}

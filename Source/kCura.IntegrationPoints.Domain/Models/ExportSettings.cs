@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public int SavedSearchArtifactId { set; get; }
 		public string SavedSearch { set; get; }
 		public int FolderArtifactId { get; set; }
+		public string TargetFolder { get; set; }
 		public int ViewId { get; set; }
 		public string ViewName { set; get; }
 		public int ProductionId { get; set; }
