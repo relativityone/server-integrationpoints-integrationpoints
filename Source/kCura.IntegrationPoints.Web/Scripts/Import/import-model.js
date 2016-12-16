@@ -47,6 +47,17 @@
 
         self.fileContainsColumn = ko.observable("true");
 
+		//image/production import knockout bindings for Numbering section.
+        self.loadFilePageIdSelected = ko.observable();
+        self.autoNumberPagesSelected = ko.observable();
+	    self.copyFilesToDocumentRepository = ko.observable();
+
+        self.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
+        self.SelectedOverwrite = ko.observable(self.SelectedOverwrite || 'Append Only');
+
+	    self.overlayIdentifiers = ko.observableArray([]);
+        self.productionSets = ko.observableArray([]);
+
         self.asciiDelimiters = ko.observableArray([]);
         self.setAsciiDelimiters = function (data) {
             self.asciiDelimiters(data);

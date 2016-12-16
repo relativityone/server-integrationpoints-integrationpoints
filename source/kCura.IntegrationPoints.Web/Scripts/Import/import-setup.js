@@ -322,4 +322,15 @@
             assignAsciiDropDownDefault(array);
         }
     });
+
+	$.ajax({
+		url: root.utils.generateWebAPIURL("Production/GetProductionsForImport"),
+		type: "GET",
+		data: {
+			sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+		},
+		success: function(data) {
+			windowObj.RelativityImport.koModel.productionSets(data);
+		}
+	});
 })(this, IP);

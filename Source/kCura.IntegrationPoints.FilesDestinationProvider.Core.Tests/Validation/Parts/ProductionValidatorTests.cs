@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var production = new ProductionDTO { ArtifactID = productionId.ToString() };
 
 			var productionServiceMock = Substitute.For<IProductionService>();
-			productionServiceMock.GetProductions(Arg.Any<int>())
+			productionServiceMock.GetProductionsForExport(Arg.Any<int>())
 				.Returns(new[] { production });
 
 			var validator = new ProductionValidator(productionServiceMock);
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var productionId = 42;
 
 			var productionServiceMock = Substitute.For<IProductionService>();
-			productionServiceMock.GetProductions(Arg.Any<int>())
+			productionServiceMock.GetProductionsForExport(Arg.Any<int>())
 				.Returns(Enumerable.Empty<ProductionDTO>());
 
 			var validator = new ProductionValidator(productionServiceMock);

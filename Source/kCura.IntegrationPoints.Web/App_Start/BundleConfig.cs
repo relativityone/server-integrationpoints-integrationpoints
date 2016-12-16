@@ -65,6 +65,13 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/export/export-provider-settings-step.js"
 			));
 
+			bundles.Add(new ScriptBundle("~/bundles/importProvider").Include(
+				"~/Scripts/Import/import-init.js",
+				"~/Scripts/Import/import-model.js",
+				"~/Scripts/Import/import-setup.js",
+				"~/Scripts/Import/import-provider-settings-step.js"
+			));
+
 			bundles.Add(new ScriptBundle("~/bundles/grid").Include(
 				"~/Scripts/grid/dragon-utils.js",
 				"~/Scripts/i18n/grid.locale-en.js",
