@@ -45,5 +45,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			_baseServiceContext.AppArtifactID = appArtifactId;
 			return new ProductionManager();
 		}
+
+		public DataSet RetrieveImportEligibleByContextArtifactID(int caseContextArtifactID)
+		{
+			return new DataSet();
+		}
 	}
 }
