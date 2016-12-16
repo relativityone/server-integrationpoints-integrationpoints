@@ -4,7 +4,7 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
-	public class AllSourceProvidersQueryBuilder : IAllSourceProvidersQueryBuilder
+	public class AllSourceProvidersQueryBuilder
 	{
 		public Query<RDO> Create()
 		{

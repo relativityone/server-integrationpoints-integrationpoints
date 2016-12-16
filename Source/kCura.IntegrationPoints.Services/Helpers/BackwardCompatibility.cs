@@ -3,16 +3,19 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Services.Models;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Helpers
 {
 	public class BackwardCompatibility : IBackwardCompatibility
 	{
 		private readonly IProviderTypeService _providerTypeService;
+		private readonly IAPILog _apiLog;
 
-		public BackwardCompatibility(IProviderTypeService providerTypeService)
+		public BackwardCompatibility(IProviderTypeService providerTypeService, IHelper helper)
 		{
 			_providerTypeService = providerTypeService;
+			_apiLog = helper.GetLoggerFactory().GetLogger().ForContext<BackwardCompatibility>();
 		}
 
 		public void FixIncompatibilities(IntegrationPointModel integrationPointModel, string overwriteFieldsName)
@@ -37,6 +40,7 @@ namespace kCura.IntegrationPoints.Services.Helpers
 			}
 			catch (Exception e)
 			{
+				_apiLog.LogError(e, "Error occured during Relativity Provider configuration deserialization.");
 				throw new ArgumentException("Invalid configuration for Relativity Provider specified.", e);
 			}
 
