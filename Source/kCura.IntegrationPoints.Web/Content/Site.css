@@ -531,3 +531,13 @@ select option.hover
 	clear: both;
 	height: 0;
 }
+
+select option {
+	width: 100%;
+    text-overflow: ellipsis;
+	overflow-x: hidden;
+}
+
+.fixedColumn { 
+	width: 250px; 
+}

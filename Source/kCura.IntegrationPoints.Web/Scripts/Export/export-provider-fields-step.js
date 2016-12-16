@@ -20,11 +20,15 @@
 		self.onDOMLoaded = function () {
 			self.exportSource.InitializeLocationSelector();
 		};
+
+		self.setTitle = function (option, item) {
+			option.title = item.name;
+		}
 	};
 
 	var stepModel = function (settings) {
 		var self = this;
-
+		
 		self.settings = settings;
 		self.template = ko.observable();
 		self.hasTemplate = false;

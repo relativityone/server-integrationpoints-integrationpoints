@@ -10,51 +10,41 @@
 			</div>
 			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
 			<div class="table" id="mapFields">
-				<div>
-					<select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource"></select>
+				<div class="cell fixedColumn">
+					<select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource, optionsAfterRender: setTitle"></select>
 				</div>
 				<div class="cell selection map-move">
-					<div>
-						<a href="#" id="add-all-source-fields" class="icon-move-last" data-bind="click: addSourceToMapped"></a>
-						<a href="#" id="add-source-field" class="icon-move-next" data-bind="click: addToMappedSource"></a>
-						<a href="#" id="remove-source-field" class="icon-move-previous" data-bind="click: addToSourceField"></a>
-						<a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addAlltoSourceField"></a>
-					</div>
+					<a href="#" id="add-all-source-fields" class="icon-move-last" data-bind="click: addSourceToMapped"></a>
+					<a href="#" id="add-source-field" class="icon-move-next" data-bind="click: addToMappedSource"></a>
+					<a href="#" id="remove-source-field" class="icon-move-previous" data-bind="click: addToSourceField"></a>
+					<a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addAlltoSourceField"></a>
 				</div>
-				<div class="cell">
-					<select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name', doubleClick: addToSourceField "></select>
+				<div class="cell fixedColumn">
+					<select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name', doubleClick: addToSourceField, optionsAfterRender: setTitle "></select>
 				</div>
 				<div class="cell selection map-move">
-					<div>
-						<a href="#" id="attributeFieldTop" class="icon-move-to-top" data-bind="click: moveMappedSourceTop"></a>
-						<a href="#" id="attribute-field-up" class="icon-move-up" data-bind="click: moveMappedSourceUp"></a>
-						<a href="#" id="attribute-field-down" class="icon-move-down" data-bind="click: moveMappedSourceDown"></a>
-						<a href="#" id="attributeFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedSourceBottom"></a>
-					</div>
+					<a href="#" id="attributeFieldTop" class="icon-move-to-top" data-bind="click: moveMappedSourceTop"></a>
+					<a href="#" id="attribute-field-up" class="icon-move-up" data-bind="click: moveMappedSourceUp"></a>
+					<a href="#" id="attribute-field-down" class="icon-move-down" data-bind="click: moveMappedSourceDown"></a>
+					<a href="#" id="attributeFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedSourceBottom"></a>
 				</div>
 				<div class="cell selection map-move">
-					<div>
-						<a href="#" id="workspaceFieldTop" class="icon-move-to-top" data-bind="click: moveMappedWorkspaceTop"></a>
-						<a href="#" id="workspace-field-up" class="icon-move-up" data-bind="click: moveMappedWorkspaceUp"></a>
-						<a href="#" id="workspace-field-down" class="icon-move-down" data-bind="click: moveMappedWorkspaceDown"></a>
-						<a href="#" id="workspaceFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedWorkspaceBottom"></a>
-					</div>
+					<a href="#" id="workspaceFieldTop" class="icon-move-to-top" data-bind="click: moveMappedWorkspaceTop"></a>
+					<a href="#" id="workspace-field-up" class="icon-move-up" data-bind="click: moveMappedWorkspaceUp"></a>
+					<a href="#" id="workspace-field-down" class="icon-move-down" data-bind="click: moveMappedWorkspaceDown"></a>
+					<a href="#" id="workspaceFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedWorkspaceBottom"></a>
 				</div>
-				<div class="cell">
-					<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField" multiple="multiple"></select>
+				<div class="cell fixedColumn">
+					<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField, optionsAfterRender: setTitle" multiple="multiple"></select>
 				</div>
 				<div class="cell selection map-move">
-					<div>
-						<a href="#" id="add-all-workspace-fields" class="icon-move-first" data-bind="click: addAllWorkspaceFields"></a>
-						<a href="#" id="add-workspace-field" class="icon-move-previous" data-bind="click: addSelectFields"></a>
-						<a href="#" id="remove-workspace-field" class="icon-move-next" data-bind="click: addToWorkspaceField"></a>
-						<a href="#" id="remove-all-workspace-fields" class="icon-move-last" data-bind="click: addAlltoWorkspaceField"></a>
-					</div>
+					<a href="#" id="add-all-workspace-fields" class="icon-move-first" data-bind="click: addAllWorkspaceFields"></a>
+					<a href="#" id="add-workspace-field" class="icon-move-previous" data-bind="click: addSelectFields"></a>
+					<a href="#" id="remove-workspace-field" class="icon-move-next" data-bind="click: addToWorkspaceField"></a>
+					<a href="#" id="remove-all-workspace-fields" class="icon-move-last" data-bind="click: addAlltoWorkspaceField"></a>
 				</div>
-				<div class="cell">
-					<div class="cell">
-						<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: workspaceFieldSelected, optionsText: 'name', doubleClick: addSelectFields" multiple="multiple"></select>
-					</div>
+				<div class="cell fixedColumn">
+					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: workspaceFieldSelected, optionsText: 'name', doubleClick: addSelectFields, optionsAfterRender: setTitle" multiple="multiple"></select>
 				</div>
 			</div>
 		</div>

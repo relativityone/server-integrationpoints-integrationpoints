@@ -147,6 +147,11 @@ ko.validation.insertValidationMessage = function (element) {
 	}
 	var viewModel = function (model) {
 		var self = this;
+
+		self.setTitle = function (option, item) {
+			option.title = item.name;
+		}
+
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
 		var artifactTypeId = JSON.parse(model.destination).artifactTypeID;

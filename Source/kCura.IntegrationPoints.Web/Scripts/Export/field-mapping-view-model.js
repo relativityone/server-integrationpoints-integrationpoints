@@ -1,6 +1,10 @@
 ﻿var FieldMappingViewModel = function () {
 	var self = this;
 
+	self.setTitle = function (options, item) {
+		options.title = item.displayName;
+	};
+
 	self.availableFields = ko.observableArray([]);
 	self.selectedAvailableFields = ko.observableArray([]);
 

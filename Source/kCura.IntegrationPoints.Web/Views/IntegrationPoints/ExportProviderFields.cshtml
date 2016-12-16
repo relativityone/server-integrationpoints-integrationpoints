@@ -52,7 +52,7 @@
 		<div class="table" id="selectFields">
 			<div class="cell">
 				<div class="field-label" style="padding: 5px; text-align: left;">Source Fields:</div>
-				<select id="available-fields" class="list-box" name="available-field" data-bind="options: availableFields, selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField, disable: $parent.HasBeenRun" multiple="multiple"></select>
+				<select id="available-fields" class="list-box" name="available-field" data-bind="options: availableFields, selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField, disable: $parent.HasBeenRun, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
 			<div class="cell selection map-move">
 				<div data-bind="visible: !$parent.HasBeenRun()">
@@ -64,7 +64,7 @@
 			</div>
 			<div class="cell">
 				<div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields:</div>
-				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, disable: $parent.HasBeenRun" multiple="multiple"></select>
+				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, disable: $parent.HasBeenRun, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
 			<div class="cell selection map-move">
 				<div data-bind="visible: !$parent.HasBeenRun()">
