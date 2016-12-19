@@ -78,23 +78,6 @@
 			type: 'Get'
 		}).then(function (result) {
 			vm = new viewModel();
-			if (result.scheduler && result.scheduler.scheduledTime) {
-				var timeSplit = result.scheduler.scheduledTime.split(':');
-				var hour = parseInt(timeSplit[0], 10);
-				if (hour > 12) {
-					result.scheduler.scheduledTime = hour - 12 + ":" + timeSplit[1];
-					result.scheduler.selectedTimeFormat = 'PM';
-				} else if (hour === 12) {
-					result.scheduler.scheduledTime = 12 + ":" + timeSplit[1];
-					result.scheduler.selectedTimeFormat = 'PM';
-				} else {
-					if (hour === 0) {
-						hour = 12;
-					}
-					result.scheduler.scheduledTime = hour + ":" + timeSplit[1];
-					result.scheduler.selectedTimeFormat = 'AM';
-				}
-			}
 			vm.goToStep(0, result);
 			artifactID = result.artifactID;
 			ko.applyBindings(vm, document.getElementById('pointBody'));

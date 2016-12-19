@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public static readonly string FIELD_MAP_UNIQUE_IDENTIFIER_MUST_BE_MAPPED = "The unique identifier must be mapped.";
 		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID = "Invalid Overlay Behavior: ";
 		public static readonly string FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR = "For Append Only should be set \"Use Field Settings\" overlay behaior.";
+		public static readonly string FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY = "Folder Path Information should not be available for \"Overlay Only\" mode.";
 		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_MERGE = "Merge Values";
 		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_REPLACE = "Replace Values";
 		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT = "Use Field Settings";

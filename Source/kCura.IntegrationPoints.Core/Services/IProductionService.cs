@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public interface IProductionService
 	{
-		IEnumerable<ProductionDTO> GetProductions(int workspaceArtifactID);
+		IEnumerable<ProductionDTO> GetProductionsForExport(int workspaceArtifactID);
+		IEnumerable<ProductionDTO> GetProductionsForImport(int workspaceArtifactId);
 	}
 }

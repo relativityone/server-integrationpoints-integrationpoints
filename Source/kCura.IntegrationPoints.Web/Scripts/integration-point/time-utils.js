@@ -55,19 +55,6 @@ IP.timeUtil = (function () {
 		return scheduleTime;
 	}
 
-	function timeFormatMinutes(time) {
-		if (!time) {
-			return time;
-		}
-
-		var lengthCheck = time.split(':');
-		if (lengthCheck[1].length < 2) {
-			lengthCheck[1] = "0" + lengthCheck[1];
-			time = lengthCheck[0] + ":" + lengthCheck[1];
-		}
-		return time;
-	}
-
 	function timeUtcToLocal(time) {
 
 		timeFormat = timeFormat || "hh:mm";
@@ -84,8 +71,7 @@ IP.timeUtil = (function () {
 
 		return time;
 	}
-
-
+	
 	function timeLocalToUtc(time) {
 
 		var localTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
@@ -95,6 +81,22 @@ IP.timeUtil = (function () {
 			return tempDateTime.getUTCHours() + ":" + tempDateTime.getUTCMinutes();
 		}
 		return '';
+	}
+
+	function convert24HourTo12Hour(time) {
+		if (time == null) {
+			return null;
+		}
+
+		return moment(time, "H:m").isValid() ? moment(time, "H:m").format("h:mm") : null;
+	}
+
+	function getPostOrAnteMeridiemFromTime(time) {
+		if (time == null) {
+			return null;
+		}
+
+		return moment(time, "H:m").isValid() ? moment(time, "H:m").format("A") : null;
 	}
 
 	var _noOp = function (time) {
@@ -107,7 +109,8 @@ IP.timeUtil = (function () {
 		utcDateToLocal: _noOp,
 		timeToAmPm: utcToTime,
 		utcToLocalAmPm: utcToLocalAmPm,
-		formatTimeMinutes: timeFormatMinutes
+		convert24HourTo12Hour: convert24HourTo12Hour,
+		getPostOrAnteMeridiemFromTime: getPostOrAnteMeridiemFromTime
 	};
 
 }());

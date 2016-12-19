@@ -75,11 +75,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.Core.Jobs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Analytics.Core.Jobs.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Analytics.Core.Jobs.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Application.Utility, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Application.Utility.dll</HintPath>
+    <Reference Include="Application.Utility, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Application.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AutoMapper, Version=4.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
@@ -99,7 +99,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="dtSearchNetApi4, Version=1.0.4166.40099, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\dtSearchNetApi4.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\dtSearchNetApi4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Dynamitey, Version=1.0.2.0, Culture=neutral, PublicKeyToken=cbf53ea3aeb972c6, processorArchitecture=MSIL">
@@ -115,19 +115,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FParsec, Version=0.9.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\FParsec.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\FParsec.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FParsecCS, Version=0.9.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\FParsecCS.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\FParsecCS.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\FreeImageNET.dll</HintPath>
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\FreeImageNET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\FSharp.Core.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.3.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
@@ -135,15 +135,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Ionic.Zip, Version=1.8.4.28, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\Ionic.Zip.dll</HintPath>
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\Ionic.Zip.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCuraCore.9.4.371.60\lib\net45\itextsharp.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.4.394.58\lib\net45\itextsharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Agent, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.Agent.9.4.371.60\lib\net45\kCura.Agent.dll</HintPath>
+    <Reference Include="kCura.Agent, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.Agent.9.4.394.58\lib\net45\kCura.Agent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Config, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
@@ -158,52 +158,52 @@
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Assembly.Analysis, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.Assembly.Analysis.dll</HintPath>
+    <Reference Include="kCura.Assembly.Analysis, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.Assembly.Analysis.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Config, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Config.9.4.371.60\lib\net45\kCura.Config.dll</HintPath>
+    <Reference Include="kCura.Config, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Config.9.4.394.58\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Crypto, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Crypto.9.4.371.60\lib\net45\kCura.Crypto.dll</HintPath>
+    <Reference Include="kCura.Crypto, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Crypto.9.4.394.58\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.Data.9.4.371.60\lib\net45\kCura.Data.dll</HintPath>
+    <Reference Include="kCura.Data, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.Data.9.4.394.58\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data.RowDataGateway, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Data.RowDataGateway.9.4.371.60\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+    <Reference Include="kCura.Data.RowDataGateway, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Data.RowDataGateway.9.4.394.58\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.EDDS.DocumentCompareGateway, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
+    <Reference Include="kCura.EDDS.DocumentCompareGateway, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.EventHandler, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.4.371.60\lib\net45\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.EventHandler.9.4.394.58\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.HTMLSanitizer, Version=0.0.21.7, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.HTMLSanitizer.0.0.21.7\lib\kCura.HTMLSanitizer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Image.Viewer, Version=9.4.371.60, Culture=neutral, PublicKeyToken=78cb9311e6f3ec3a, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.Image.Viewer.dll</HintPath>
+    <Reference Include="kCura.Image.Viewer, Version=9.4.394.58, Culture=neutral, PublicKeyToken=78cb9311e6f3ec3a, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.Image.Viewer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.ImageValidator, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.ImageValidator.dll</HintPath>
+    <Reference Include="kCura.ImageValidator, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.ImageValidator.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCuraCore.9.4.371.60\lib\net45\kCura.Injection.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.4.394.58\lib\net45\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.kCanvas, Version=8.0.0.0, Culture=neutral, PublicKeyToken=f8fcd18179f8fdff, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.kCanvas.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.kCanvas.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.LongPath, Version=1.0.8.2, Culture=neutral, processorArchitecture=MSIL">
@@ -211,63 +211,63 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=3698d9cc89824494, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Notification, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCuraCore.9.4.371.60\lib\net45\kCura.Notification.dll</HintPath>
+    <Reference Include="kCura.Notification, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.394.58\lib\net45\kCura.Notification.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.OI.FileID, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.OI.FileID.dll</HintPath>
+    <Reference Include="kCura.OI.FileID, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.OI.FileID.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Print, Version=9.4.371.60, Culture=neutral, PublicKeyToken=2cc1b8ab562ca316, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.Print.dll</HintPath>
+    <Reference Include="kCura.Print, Version=9.4.394.58, Culture=neutral, PublicKeyToken=2cc1b8ab562ca316, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.Print.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
+    <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.ImportAPI, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.Relativity.ImportAPI.dll</HintPath>
+    <Reference Include="kCura.Relativity.ImportAPI, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.Relativity.ImportAPI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.ImportAPI.Extension, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
+    <Reference Include="kCura.Relativity.ImportAPI.Extension, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.SearchProvider, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\kCura.SearchProvider.dll</HintPath>
+    <Reference Include="kCura.SearchProvider, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\kCura.SearchProvider.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Utility, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCuraCore.9.4.371.60\lib\net45\kCura.Utility.dll</HintPath>
+    <Reference Include="kCura.Utility, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.4.394.58\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Utility.MassAssign, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCuraCore.9.4.371.60\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+    <Reference Include="kCura.Utility.MassAssign, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCuraCore.9.4.394.58\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Windows.Forms, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.Windows.Forms.dll</HintPath>
+    <Reference Include="kCura.Windows.Forms, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.Windows.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Windows.Process, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.Windows.Process.dll</HintPath>
+    <Reference Include="kCura.Windows.Process, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.Windows.Process.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.WinEDDS, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.WinEDDS.dll</HintPath>
+    <Reference Include="kCura.WinEDDS, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.WinEDDS.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
+    <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -323,7 +323,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Mono.Cecil.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Mono.Cecil.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
@@ -358,84 +358,84 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.4.371.60\lib\net45\Relativity.dll</HintPath>
+    <Reference Include="Relativity, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.4.394.58\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.APIHelper, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.APIHelper.dll</HintPath>
+    <Reference Include="Relativity.APIHelper, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.APIHelper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ApplicationBase, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.ApplicationBase.dll</HintPath>
+    <Reference Include="Relativity.ApplicationBase, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.ApplicationBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ApplicationBase.InvariantApi, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.ApplicationBase.InvariantApi.dll</HintPath>
+    <Reference Include="Relativity.ApplicationBase.InvariantApi, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.ApplicationBase.InvariantApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Applications.Serialization, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Applications.Serialization.dll</HintPath>
+    <Reference Include="Relativity.Applications.Serialization, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Applications.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.AssistedReview.Utility, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.AssistedReview.Utility.dll</HintPath>
+    <Reference Include="Relativity.AssistedReview.Utility, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.AssistedReview.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Authentication, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Authentication.dll</HintPath>
+    <Reference Include="Relativity.Authentication, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Authentication.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Authentication.Interfaces, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Conversion, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Conversion.dll</HintPath>
+    <Reference Include="Relativity.Conversion, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Conversion.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Core.dll</HintPath>
+    <Reference Include="Relativity.Core, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Core.Api.dll</HintPath>
+    <Reference Include="Relativity.Core.Api, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Core.Api.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api.Contracts, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
+    <Reference Include="Relativity.Core.Api.Contracts, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Core.Api.Contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
+    <Reference Include="Relativity.Core.Api.QueryParser, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Core.Api.QueryParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.CustomPages, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.CustomPages.dll</HintPath>
+    <Reference Include="Relativity.CustomPages, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.CustomPages.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Data, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Data.9.4.371.60\lib\net45\Relativity.Data.dll</HintPath>
+    <Reference Include="Relativity.Data, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.Data.9.4.394.58\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataGrid, Version=10.3.1.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.DataGrid.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataGrid.Logging, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.DataGrid.Logging.dll</HintPath>
+    <Reference Include="Relativity.DataGrid.Logging, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.DataGrid.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Eca, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Eca.dll</HintPath>
+    <Reference Include="Relativity.Eca, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Eca.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Infrastructure, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Infrastructure.dll</HintPath>
+    <Reference Include="Relativity.Infrastructure, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.264, Culture=neutral, processorArchitecture=MSIL">
@@ -450,12 +450,24 @@
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.300\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ProcessingBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.ProcessingBase.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.1.38, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.1\lib\net45\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SDK.Services.Query, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.1.38, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.1\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.1.38, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.1\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.ProcessingBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.ProcessingBase.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.SDK.Services.Query, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.16.1, Culture=neutral, processorArchitecture=MSIL">
@@ -466,8 +478,8 @@
       <HintPath>..\packages\Relativity.SecretCatalog.AzureKeyVault.1.0.16\lib\Relativity.SecretCatalog.AzureKeyVault.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.4.371.60, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
+    <Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.4.394.58, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -479,19 +491,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus.Utilities, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.ServiceBus.Utilities.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.ServiceBus.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.371.60\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.394.58\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.264, Culture=neutral, processorArchitecture=MSIL">
@@ -506,16 +518,16 @@
       <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.74\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection.Factory, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.MetricsCollection.Factory, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Toggles, Version=9.4.371.60, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.4.371.60\lib\net45\Relativity.Telemetry.Toggles.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.Toggles, Version=9.4.394.58, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityCore.9.4.394.58\lib\net45\Relativity.Telemetry.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
@@ -638,8 +650,8 @@
   <PropertyGroup>
     <PreBuildEvent>$(ProjectDir)\BuildPropertiesScrubber.exe $(ProjectDir)dependencies.prop $(ProjectDir)packages.config</PreBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\RelativityCore.9.4.371.60\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.4.371.60\build\RelativityCore.targets')" />
-  <Import Project="..\packages\Relativity.ImportExport.9.4.371.60\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.371.60\build\Relativity.ImportExport.targets')" />
+  <Import Project="..\packages\RelativityCore.9.4.394.58\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.4.394.58\build\RelativityCore.targets')" />
+  <Import Project="..\packages\Relativity.ImportExport.9.4.394.58\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.4.394.58\build\Relativity.ImportExport.targets')" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
 $(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)kCura.Image.Viewer.dll" "$(ProjectDir)..\..\lib\kCura.Image.Viewer.dll"

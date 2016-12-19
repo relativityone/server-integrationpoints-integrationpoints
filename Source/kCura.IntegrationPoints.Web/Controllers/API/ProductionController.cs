@@ -18,12 +18,21 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to retrieve production list.")]
-		public HttpResponseMessage GetProductions(int sourceWorkspaceArtifactId)
+		[LogApiExceptionFilter(Message = "Unable to retrieve export production list.")]
+		public HttpResponseMessage GetProductionsForExport(int sourceWorkspaceArtifactId)
 		{
-			var productions = _productionService.GetProductions(sourceWorkspaceArtifactId);
+			var productions = _productionService.GetProductionsForExport(sourceWorkspaceArtifactId);
 
 			return Request.CreateResponse(HttpStatusCode.OK, productions.OrderBy(x => x.DisplayName));
+		}
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve import production list.")]
+		public HttpResponseMessage GetProductionsForImport(int sourceWorkspaceArtifactId)
+		{
+			var productions = _productionService.GetProductionsForImport(sourceWorkspaceArtifactId);
+
+			return Request.CreateResponse(HttpStatusCode.OK, productions.Where(y => !string.IsNullOrEmpty(y.DisplayName)).OrderBy(y => y.DisplayName));
 		}
 	}
 }

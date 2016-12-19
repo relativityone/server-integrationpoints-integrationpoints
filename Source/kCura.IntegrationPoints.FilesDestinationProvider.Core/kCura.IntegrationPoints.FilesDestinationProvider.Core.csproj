@@ -133,6 +133,18 @@
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
+	<Reference Include="Relativity.OAuth2Client.IdentityModel">
+      <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+	  <Private>True</Private>
+    </Reference>
+	<Reference Include="Relativity.OAuth2Client">
+      <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.dll</HintPath>
+	  <Private>True</Private>
+    </Reference>
+	<Reference Include="Relativity.OAuth2Client.Interfaces">
+      <HintPath>..\packages\$(Relativity_OAuth2Client_Interfaces)\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+	  <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web.Services" />

@@ -26,6 +26,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		public DataSet RetrieveProducedByContextArtifactID(int caseContextArtifactID)
 		{
 			return InitProductionManager(caseContextArtifactID).ExternalRetrieveProduced(_baseServiceContext, _userPermissionsMatrix);
+
+	}
+		public DataSet RetrieveImportEligibleByContextArtifactID(int caseContextArtifactID)
+		{
+			return InitProductionManager(caseContextArtifactID).ExternalRetrieveImportEligible(_baseServiceContext);
 		}
 
 		public object[][] RetrieveBatesByProductionAndDocument(int caseContextArtifactID, int[] productionIds, int[] documentIds)

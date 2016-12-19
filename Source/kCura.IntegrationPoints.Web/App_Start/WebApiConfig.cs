@@ -253,6 +253,17 @@ namespace kCura.IntegrationPoints.Web
 				defaults: new { controller = "RdoFilter", action = "GetAllViewableRdos" }
 			);
 
+			config.Routes.MapHttpRoute(
+				name: "ProductionGetProductionsForImport",
+				routeTemplate: "{workspaceID}/api/Production/GetProductionsForImport",
+				defaults: new { controller = "Production", action = "GetProductionsForImport" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "ProductionGetProductionsForExport",
+				routeTemplate: "{workspaceID}/api/Production/GetProductionsForExport",
+				defaults: new { controller = "Production", action = "GetProductionsForExport" }
+			);
 
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",

@@ -161,6 +161,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
 		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
 		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"1000186\"}")]
 		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
 		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
 		public void ItShouldValidateValidSettings(string destinationConfig)
@@ -177,6 +178,77 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			// Assert
 			Assert.IsTrue(result.IsValid);
 			Assert.IsNull(result.Messages.FirstOrDefault());
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
+		public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOnly(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Contains(RelativityProviderValidationMessages.FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR));
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"INVALID_FieldOverlayBehavior\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"INVALID_FieldOverlayBehavior\"}")]
+		public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOverlayAndOverlayOnly(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID)));
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
+		public void ItShouldValidateInvalidSettingsFolderPathInformation_OverlayOnly(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY)));
+		}
+
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"-1\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"-1\"}")]
+		public void ItShouldValidateInvalidSettingsFolderPathInformation(string destinationConfig)
+		{
+			// Arrange
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+			MockFieldRepository();
+
+			// Act
+			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE)));
 		}
 
 		private IntegrationPointProviderValidationModel GetFieldMapValidationObject(string fieldsMap)

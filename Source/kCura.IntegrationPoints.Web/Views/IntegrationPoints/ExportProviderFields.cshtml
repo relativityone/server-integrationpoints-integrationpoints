@@ -50,7 +50,7 @@
 		<div class="label">Columns To Export</div>
 		<div data-bind="validationMessage: mappedFields" class="icon-error legal-hold field-validation-error"></div>
 		<div class="table" id="selectFields">
-			<div class="cell">
+			<div class="cell fixedColumn">
 				<div class="field-label" style="padding: 5px; text-align: left;">Source Fields:</div>
 				<select id="available-fields" class="list-box" name="available-field" data-bind="options: availableFields, selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField, disable: $parent.HasBeenRun, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
@@ -62,7 +62,7 @@
 					<a href="#" id="remove-all-fields" class="icon-move-first" data-bind="click: removeAllFields"></a>
 				</div>
 			</div>
-			<div class="cell">
+			<div class="cell fixedColumn">
 				<div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields:</div>
 				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, disable: $parent.HasBeenRun, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>

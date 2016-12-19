@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
@@ -21,14 +22,26 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_serviceManagerProvider = serviceManagerProvider;
 		}
 
-		public IEnumerable<ProductionDTO> GetProductions(int workspaceArtifactID)
+		public IEnumerable<ProductionDTO> GetProductionsForExport(int workspaceArtifactID)
 		{
 			var productionManager = _serviceManagerProvider.Create<IProductionManager, ProductionManagerFactory>();
-
 			var dt = productionManager.RetrieveProducedByContextArtifactID(workspaceArtifactID).Tables[0];
 
+			return CreateProductionsCollection(dt);
+		}
+
+		public IEnumerable<ProductionDTO> GetProductionsForImport(int workspaceArtifactId)
+		{
+			var productionManager = _serviceManagerProvider.Create<IProductionManager, ProductionManagerFactory>();
+			var dt = productionManager.RetrieveImportEligibleByContextArtifactID(workspaceArtifactId).Tables[0];
+
+			return CreateProductionsCollection(dt);
+		}
+
+		private IEnumerable<ProductionDTO> CreateProductionsCollection(DataTable table)
+		{
 			var result = new List<ProductionDTO>();
-			foreach (DataRow row in dt.Rows)
+			foreach (DataRow row in table.Rows)
 			{
 				result.Add(new ProductionDTO
 				{

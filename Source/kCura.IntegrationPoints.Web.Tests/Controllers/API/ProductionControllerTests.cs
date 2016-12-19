@@ -42,9 +42,41 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			var expectedResult = new List<ProductionDTO> {production1, production2};
 
 			var productions = new List<ProductionDTO> {production2, production1};
-			_service.GetProductions(0).ReturnsForAnyArgs(productions);
+			_service.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
 
-			var responseMessage = _controller.GetProductions(0);
+			var responseMessage = _controller.GetProductionsForExport(0);
+			var actualResult = ExtractResponse(responseMessage);
+
+			CollectionAssert.AreEqual(expectedResult, actualResult);
+		}
+
+		[Test]
+		public void ItShouldReturnImportProductions()
+		{
+			var production1 = new ProductionDTO
+			{
+				ArtifactID = "1",
+				DisplayName = "A"
+			};
+			var production2 = new ProductionDTO
+			{
+				ArtifactID = "2",
+				DisplayName = "B"
+			};
+
+			var production3 = new ProductionDTO
+			{
+				ArtifactID = "0",
+				DisplayName = string.Empty
+			};
+
+			//It will sort alphabetically and filter out the empty production
+			var expectedResult = new List<ProductionDTO> { production1, production2 };
+
+			var productions = new List<ProductionDTO> { production2, production1, production3 };
+			_service.GetProductionsForImport(0).ReturnsForAnyArgs(productions);
+
+			var responseMessage = _controller.GetProductionsForImport(0);
 			var actualResult = ExtractResponse(responseMessage);
 
 			CollectionAssert.AreEqual(expectedResult, actualResult);
@@ -66,9 +98,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			var expectedResult = new List<ProductionDTO> { production1, production2 };
 
 			var productions = new List<ProductionDTO> { production2, production1 };
-			_service.GetProductions(0).ReturnsForAnyArgs(productions);
+			_service.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
 
-			var responseMessage = _controller.GetProductions(0);
+			var responseMessage = _controller.GetProductionsForExport(0);
 			var actualResult = ExtractResponse(responseMessage);
 
 			CollectionAssert.AreEqual(expectedResult, actualResult);

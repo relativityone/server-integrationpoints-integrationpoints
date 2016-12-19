@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var production = _productionService.GetProductions(value.WorkspaceId)
+			var production = _productionService.GetProductionsForExport(value.WorkspaceId)
 				.FirstOrDefault(x => x.ArtifactID.Equals(value.ProductionId.ToString()));
 
 			if (production == null)

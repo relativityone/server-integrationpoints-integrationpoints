@@ -84,6 +84,14 @@
       <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
@@ -117,6 +125,7 @@
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\ConsoleBuilderTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\FolderPathInformationTests.cs" />
+    <Compile Include="IntegrationPoints\Helpers\RelativityProviderSourceConfigurationTests.cs" />
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
     <Compile Include="MassOperations\MassCopyIntegrationPointHelper.cs" />
     <Compile Include="MassOperations\IntegrationPointMassCopyTests.cs" />

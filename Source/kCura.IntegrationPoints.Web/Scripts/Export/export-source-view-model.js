@@ -333,7 +333,7 @@ var ExportSourceViewModel = function (state) {
 				if (typeof (self.Cache.ProductionsResult) === 'undefined') {
 					var productionSetsPromise = IP.data.ajax({
 						type: "get",
-						url: IP.utils.generateWebAPIURL("Production/Productions"),
+						url: IP.utils.generateWebAPIURL("Production/GetProductionsForExport"),
 						data: {
 							sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
 						}
