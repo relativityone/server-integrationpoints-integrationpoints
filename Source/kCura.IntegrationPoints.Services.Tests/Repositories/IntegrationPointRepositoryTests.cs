@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
@@ -182,6 +183,30 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_objectTypeRepository.Received(1).RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
 
 			Assert.That(actualResult, Is.EqualTo(expectedArtifactTypeId));
+		}
+
+
+		[Test]
+		public void ItShouldRetrieveAllOverwriteFieldChoices()
+		{
+			var expectedChoices = new List<Choice>
+			{
+				new Choice(756)
+				{
+					Name = "name_653"
+				},
+				new Choice(897)
+				{
+					Name = "name_466"
+				}
+			};
+
+			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(expectedChoices);
+
+			var actualChoicesModels = _integrationPointRepository.GetOverwriteFieldChoices();
+
+			Assert.That(actualChoicesModels,
+				Is.EquivalentTo(expectedChoices).Using(new Func<OverwriteFieldsModel, Choice, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactID))));
 		}
 	}
 }

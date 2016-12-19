@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
 		{
-			return await Execute((IChoiceRepository choiceRepository) => choiceRepository.GetOverwriteFieldChoices(), workspaceArtifactId);
+			return await Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetOverwriteFieldChoices(), workspaceArtifactId);
 		}
 
 		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)

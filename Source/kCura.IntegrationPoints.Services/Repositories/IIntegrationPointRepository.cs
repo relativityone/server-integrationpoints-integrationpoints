@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 
 namespace kCura.IntegrationPoints.Services.Repositories
 {
@@ -10,5 +11,6 @@ namespace kCura.IntegrationPoints.Services.Repositories
 		object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId);
 		IList<IntegrationPointModel> GetAllIntegrationPoints();
 		int GetIntegrationPointArtifactTypeId();
+		IList<OverwriteFieldsModel> GetOverwriteFieldChoices();
 	}
 }

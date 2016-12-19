@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Extensions;
 using kCura.IntegrationPoints.Services.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		private string GetOverwriteFieldsName(int overwriteFieldsId)
 		{
 			//TODO remove this hack when IntegrationPointModel will start using ChoiceId instead of ChoiceName
-			return _choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)).First(x => x.ArtifactID == overwriteFieldsId).Name;
+			return GetOverwriteFieldChoices().First(x => x.ArtifactId == overwriteFieldsId).Name;
 		}
 
 		public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
@@ -75,6 +76,12 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		public int GetIntegrationPointArtifactTypeId()
 		{
 			return _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
+		}
+
+		public IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
+		{
+			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
+			return choices.Select(x => x.ToModel()).ToList();
 		}
 	}
 }
