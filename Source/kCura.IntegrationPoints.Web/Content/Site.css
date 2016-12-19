@@ -534,7 +534,7 @@ select option.hover
 
 select option {
 	width: 100%;
-    text-overflow: ellipsis;
+	text-overflow: ellipsis;
 	overflow-x: hidden;
 }
 
