@@ -93,7 +93,6 @@
     <Compile Include="IKeplerService.cs" />
     <Compile Include="IProviderManager.cs" />
     <Compile Include="Models\BaseModel.cs" />
-    <Compile Include="Models\DestinationConfiguration.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />
     <Compile Include="Models\CurrentPromotionStatusModel.cs" />
