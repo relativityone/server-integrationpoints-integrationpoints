@@ -329,7 +329,7 @@
 		}]
 	});
 
-	this.scheduledTime = ko.observable(IP.timeUtil.formatTimeMinutes(this.options.scheduledTime)).extend({
+	this.scheduledTime = ko.observable().extend({
 		required: {
 			onlyIf: function () {
 				return self.isEnabled();
@@ -342,8 +342,19 @@
 			}
 		}
 	});
-	this.timeFormat = ko.observableArray(['AM', 'PM']);//
-	this.selectedTimeFormat = ko.observable(this.options.selectedTimeFormat);
+	if (this.options.selectedTimeFormat == null && this.options.scheduledTime != null) {
+		this.scheduledTime(IP.timeUtil.convert24HourTo12Hour(this.options.scheduledTime));
+	} else if (this.options.scheduledTime != null) {
+		this.scheduledTime(this.options.scheduledTime);
+	}
+
+	this.timeFormat = ko.observableArray(['AM', 'PM']);
+	this.selectedTimeFormat = ko.observable();
+	if (this.options.selectedTimeFormat == null && this.options.scheduledTime != null) {
+		this.selectedTimeFormat(IP.timeUtil.getPostOrAnteMeridiemFromTime(this.options.scheduledTime));
+	} else if (this.options.scheduledTime != null) {
+		this.selectedTimeFormat(this.options.selectedTimeFormat);
+	}
 
 	this.loadSettings = function (settings) {
 		self.options = $.extend({}, {
@@ -368,11 +379,8 @@
 		}
 		self.startDate(self.options.startDate);
 		self.endDate(self.options.endDate);
-		var convertedTimeTo12H = IP.timeUtil.convert24HourTo12Hour(self.options.scheduledTime);
-
-		self.scheduledTime(convertedTimeTo12H.time);
-		self.selectedTimeFormat(convertedTimeTo12H.timeFormat);
+		self.scheduledTime(IP.timeUtil.convert24HourTo12Hour(self.options.scheduledTime));
+		self.selectedTimeFormat(IP.timeUtil.getPostOrAnteMeridiemFromTime(self.options.scheduledTime));
 		self.timeZoneId(self.options.timeZoneId);
 	};
-
 };
