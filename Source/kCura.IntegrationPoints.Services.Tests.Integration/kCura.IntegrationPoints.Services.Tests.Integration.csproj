@@ -49,6 +49,10 @@
     <Reference Include="Castle.Windsor, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>	
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -128,10 +132,13 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
+    <Compile Include="IntegrationPointManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveAllIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveIntegrationPointArtifactTypeId.cs" />
-    <Compile Include="IntegrationPointManager\ItShouldRetrieveProvidersGuids.cs" />
+    <Compile Include="IntegrationPointTypeManager\IntegrationPointTypeManagerTests.cs" />
+    <Compile Include="ProviderManager\ProviderManagerTests.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRunIntegrationPoint.cs" />
     <Compile Include="JobHistoryManager\ItShouldRetrieveJobHistory.cs" />
     <Compile Include="Permissions\NoWorkspacePermissionTests.cs" />
@@ -157,6 +164,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj">
       <Project>{6571b092-1582-4fec-9101-f510e7e573bc}</Project>

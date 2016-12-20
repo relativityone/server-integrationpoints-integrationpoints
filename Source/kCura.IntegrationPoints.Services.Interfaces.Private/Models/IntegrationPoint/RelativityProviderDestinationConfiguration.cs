@@ -1,19 +1,19 @@
 ﻿namespace kCura.IntegrationPoints.Services
 {
-	public class DestinationConfiguration
+	public class RelativityProviderDestinationConfiguration
 	{
-		public string Provider { get; set; }
-
-		public int ArtifactTypeId { get; set; }
-
+		public int ArtifactTypeID { get; set; }
+		
 		public int CaseArtifactId { get; set; }
-
+		
+		public int DestinationFolderArtifactId { get; set; }
+		
 		public bool ImportNativeFile { get; set; }
 
 		public bool UseFolderPathInformation { get; set; }
 
+		public int FolderPathSourceField { get; set; }
+		
 		public string FieldOverlayBehavior { get; set; }
-
-		public string ImportOverwriteMode { get; set; }
 	}
 }

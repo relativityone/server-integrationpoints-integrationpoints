@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns>SourceProviderDTO object</returns>
 		SourceProviderDTO Read(int artifactId);
 
-
 		/// <summary>
 		///     Gets the Source Provider artifact id given a guid identifier
 		/// </summary>

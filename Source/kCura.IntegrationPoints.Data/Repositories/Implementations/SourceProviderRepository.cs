@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
@@ -29,7 +28,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
 				Condition = new WholeNumberCondition(new Guid(Domain.Constants.SOURCEPROVIDER_ARTIFACTID_FIELD), NumericConditionEnum.EqualTo, artifactId),
-				Fields = new List<FieldValue>()
+				Fields = new List<FieldValue>
 				{
 					new FieldValue(new Guid(SourceProviderFieldGuids.Name)),
 					new FieldValue(new Guid(SourceProviderFieldGuids.Identifier))
@@ -52,19 +51,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			Result<RDO> result = queryResultSet.Results.FirstOrDefault();
-			if (!queryResultSet.Success || result == null)
+			if (!queryResultSet.Success || (result == null))
 			{
 				throw new Exception($"Unable to retrieve Source Provider: {queryResultSet.Message}");
 			}
 
-			var dto = new SourceProviderDTO()
-			{
-				ArtifactId = result.Artifact.ArtifactID,
-				Name = result.Artifact.Fields[0].ValueAsFixedLengthText,
-				Identifier = new Guid(result.Artifact.Fields[1].ValueAsFixedLengthText)
-			};
-
-			return dto;
+			return CreateSourceProviderDTO(result);
 		}
 
 		public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier)
@@ -91,6 +83,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			return sourceProviderArtifactId;
+		}
+
+		private static SourceProviderDTO CreateSourceProviderDTO(Result<RDO> result)
+		{
+			return new SourceProviderDTO
+			{
+				ArtifactId = result.Artifact.ArtifactID,
+				Name = result.Artifact.Fields[0].ValueAsFixedLengthText,
+				Identifier = new Guid(result.Artifact.Fields[1].ValueAsFixedLengthText)
+			};
 		}
 	}
 }

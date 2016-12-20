@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Services.JobHistory;
-using kCura.IntegrationPoints.Services.Repositories;
+using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {

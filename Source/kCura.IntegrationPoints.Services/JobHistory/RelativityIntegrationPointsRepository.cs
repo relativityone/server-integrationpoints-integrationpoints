@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			_destinationProviderArtifactIdByGuidQueryBuilder = destinationProviderArtifactIdByGuidQueryBuilder;
 		}
 
-		public List<IntegrationPoint> RetrieveRelativityIntegrationPoints(int workspaceId)
+		public List<Data.IntegrationPoint> RetrieveRelativityIntegrationPoints(int workspaceId)
 		{
 			var sourceProvider = RetrieveRelativitySourceProvider(workspaceId);
 			var destinationProvider = RetrieveRelativityDestinationProvider(workspaceId);
@@ -32,10 +32,10 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			return integrationPoints;
 		}
 
-		private List<IntegrationPoint> RetrieveIntegrationPoints(int workspaceId, List<SourceProvider> sourceProvider, List<DestinationProvider> destinationProvider)
+		private List<Data.IntegrationPoint> RetrieveIntegrationPoints(int workspaceId, List<SourceProvider> sourceProvider, List<DestinationProvider> destinationProvider)
 		{
 			Query<RDO> integrationPointsQuery = _integrationPointByProvidersQueryBuilder.CreateQuery(sourceProvider[0].ArtifactId, destinationProvider[0].ArtifactId);
-			return _libraryFactory.Create<IntegrationPoint>(workspaceId).Query(integrationPointsQuery);
+			return _libraryFactory.Create<Data.IntegrationPoint>(workspaceId).Query(integrationPointsQuery);
 		}
 
 		private List<DestinationProvider> RetrieveRelativityDestinationProvider(int workspaceId)

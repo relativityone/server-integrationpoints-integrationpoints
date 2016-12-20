@@ -84,32 +84,34 @@
     </Compile>
     <Compile Include="Exceptions\InsufficientPermissionException.cs" />
     <Compile Include="Exceptions\InternalServerErrorException.cs" />
-    <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />
+    <Compile Include="IIntegrationPointTypeManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
     <Compile Include="IIntegrationPointsModule.cs" />
     <Compile Include="IKeplerService.cs" />
-    <Compile Include="Models\DestinationConfiguration.cs" />
+    <Compile Include="IProviderManager.cs" />
+    <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />
     <Compile Include="Models\CurrentPromotionStatusModel.cs" />
-    <Compile Include="Models\IntegrationPointModel.cs" />
+    <Compile Include="Models\IntegrationPoint\IntegrationPointModel.cs" />
+    <Compile Include="Models\IntegrationPoint\IntegrationPointTypeModel.cs" />
+    <Compile Include="Models\IntegrationPoint\OverwriteFieldsModel.cs" />
+    <Compile Include="Models\IntegrationPoint\ScheduleModel.cs" />
     <Compile Include="Models\PercentagePushedToReviewModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\JobHistorySummaryModel.cs" />
+    <Compile Include="Models\IntegrationPoint\ProviderModel.cs" />
+    <Compile Include="Models\IntegrationPoint\RelativityProviderDestinationConfiguration.cs" />
+    <Compile Include="Models\IntegrationPoint\RelativityProviderSourceConfiguration.cs" />
     <Compile Include="Requests\UpdateIntegrationPointRequest.cs" />
     <Compile Include="Requests\CreateIntegrationPointRequest.cs" />
     <Compile Include="Requests\HistoricalPromotionStatusRequest.cs" />
     <Compile Include="Requests\CurrentPromotionStatusRequest.cs" />
-    <Compile Include="Requests\IRequiredPermission.cs" />
-    <Compile Include="Requests\IValidatable.cs" />
     <Compile Include="Requests\PercentagePushedToReviewRequest.cs" />
     <Compile Include="Requests\JobHistoryRequest.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
@@ -121,6 +123,7 @@
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"

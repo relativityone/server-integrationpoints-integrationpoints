@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories;
+using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Installers

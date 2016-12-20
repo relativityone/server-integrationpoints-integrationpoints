@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			_integrationPointsCompletedJobsQueryBuilder = integrationPointsCompletedJobsQueryBuilder;
 		}
 
-		public IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<IntegrationPoint> integrationPoints)
+		public IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<Data.IntegrationPoint> integrationPoints)
 		{
 			var sortDescending = (request.SortDescending != null) && request.SortDescending.Value;
 			var integrationPointsIds = integrationPoints.Select(x => x.ArtifactId).ToList();

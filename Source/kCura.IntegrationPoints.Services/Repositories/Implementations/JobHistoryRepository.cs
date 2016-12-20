@@ -3,7 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.JobHistory;
 
-namespace kCura.IntegrationPoints.Services.Repositories
+namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
 	public class JobHistoryRepository : IJobHistoryRepository
 	{
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Services.Repositories
 				return new JobHistorySummaryModel();
 			}
 
-			List<IntegrationPoint> integrationPoints = _relativityIntegrationPointsRepository.RetrieveRelativityIntegrationPoints(request.WorkspaceArtifactId);
+			List<Data.IntegrationPoint> integrationPoints = _relativityIntegrationPointsRepository.RetrieveRelativityIntegrationPoints(request.WorkspaceArtifactId);
 
 			IList<JobHistoryModel> queryResult = _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, integrationPoints);
 

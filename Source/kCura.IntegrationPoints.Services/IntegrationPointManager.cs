@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 
@@ -70,13 +71,18 @@ namespace kCura.IntegrationPoints.Services
 						.ConfigureAwait(false);
 		}
 
+		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
+		{
+			return await Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetOverwriteFieldChoices(), workspaceArtifactId);
+		}
+
 		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
 		{
 			return
 				await
 					Execute(
-						(IIntegrationPointRepository integrationPointRepository) =>
-								integrationPointRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier), workspaceArtifactId);
+						(IProviderRepository providerRepository) =>
+								providerRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier), workspaceArtifactId);
 		}
 
 		public async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier)
@@ -84,8 +90,8 @@ namespace kCura.IntegrationPoints.Services
 			return
 				await
 					Execute(
-						(IIntegrationPointRepository integrationPointRepository) =>
-								integrationPointRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier), workspaceArtifactId);
+						(IProviderRepository providerRepository) =>
+								providerRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier), workspaceArtifactId);
 		}
 
 		public async Task<int> GetIntegrationPointArtifactTypeIdAsync(int workspaceArtifactId)

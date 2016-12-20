@@ -122,6 +122,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IFieldCatalogService>().ImplementedBy<FieldCatalogService>().LifestyleTransient());
 			container.Register(Component.For<IImportTypeService>().ImplementedBy<ImportTypeService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>().LifestyleTransient());
+			container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>().LifestyleTransient());
 		}
 	}
 }

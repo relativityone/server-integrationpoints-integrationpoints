@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using Relativity.Kepler.Services;
 
 namespace kCura.IntegrationPoints.Services
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="workspaceArtifactId">The Workspace artifact Id of which has installed integration point application</param>
 		/// <param name="sourceProviderGuidIdentifier">The source provider guid identifier that we want the artifact id of</param>
 		/// <returns>The Artifact id of the source provider specified</returns>
+		[Obsolete("Use ProviderManager instead")]
 		Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier);
 
 		/// <summary>
@@ -30,6 +32,7 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="workspaceArtifactId">The Workspace artifact Id of which has installed integration point application</param>
 		/// <param name="destinationProviderGuidIdentifier">The destination provider guid identifier that we want the artifact id of</param>
 		/// <returns>The Artifact id of the destination provider specified</returns>
+		[Obsolete("Use ProviderManager instead")]
 		Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier);
 
 		/// <summary>
@@ -67,5 +70,12 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
 		/// <returns>A list of integration point objects</returns>
 		Task<IList<IntegrationPointModel>> GetAllIntegrationPointsAsync(int workspaceArtifactId);
+
+		/// <summary>
+		/// Retrieve Overwrite Fields choices
+		/// </summary>
+		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
+		/// <returns>A list of all available choices for Overwrite Fields field</returns>
+		Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId);
 	}
 }
