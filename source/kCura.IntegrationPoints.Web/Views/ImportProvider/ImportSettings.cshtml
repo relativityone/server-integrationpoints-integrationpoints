@@ -57,7 +57,10 @@
 								Start Line:
 							</div>
 							<div class="field-value">
-								<input id="import-columnname-numbers" type="number" min="0" value="1" data-bind="value: startLine" />
+								<input id="import-columnname-numbers" type="number" min="1" value="1" data-bind="value: startLine" />
+								<div class="import-validation-errors-container">
+									<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: startLine"></span>
+								</div>
 							</div>
 						</div>
 					</td>
