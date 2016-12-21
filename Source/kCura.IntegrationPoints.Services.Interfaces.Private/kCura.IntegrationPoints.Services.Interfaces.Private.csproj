@@ -98,6 +98,8 @@
     <Compile Include="Models\CurrentPromotionStatusModel.cs" />
     <Compile Include="Models\IntegrationPoint\IntegrationPointModel.cs" />
     <Compile Include="Models\IntegrationPoint\IntegrationPointTypeModel.cs" />
+    <Compile Include="Models\IntegrationPoint\LoadFileExportDestinationConfiguration.cs" />
+    <Compile Include="Models\IntegrationPoint\LoadFileExportSourceConfiguration.cs" />
     <Compile Include="Models\IntegrationPoint\OverwriteFieldsModel.cs" />
     <Compile Include="Models\IntegrationPoint\ScheduleModel.cs" />
     <Compile Include="Models\PercentagePushedToReviewModel.cs" />

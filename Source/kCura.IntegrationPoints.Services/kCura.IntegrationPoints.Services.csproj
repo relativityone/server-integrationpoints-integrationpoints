@@ -47,6 +47,10 @@
     <Reference Include="kCura.IntegrationPoints">
       <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.IntegrationPoints.Contracts, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.IntegrationPoints.Domain, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\kCura.IntegrationPoints.Domain.dll</HintPath>
@@ -129,6 +133,8 @@
     <Compile Include="JobHistory\RelativityIntegrationPointsRepository.cs" />
     <Compile Include="JobHistory\WorkspaceManager.cs" />
     <Compile Include="KeplerServiceBase.cs" />
+    <Compile Include="Models\LoadFileExportDestinationConfigurationBackwardCompatibility.cs" />
+    <Compile Include="Models\LoadFileExportSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderDestinationConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Repositories\IIntegrationPointTypeRepository.cs" />
