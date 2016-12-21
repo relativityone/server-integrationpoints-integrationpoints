@@ -49,7 +49,7 @@
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
+      <HintPath>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Domain, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
