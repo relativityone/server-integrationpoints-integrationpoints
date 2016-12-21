@@ -164,21 +164,33 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
 		{
-			IntegrationPointModel integrationModel = new IntegrationPointModel
-			{
-				Destination = CreateDestinationConfig(overwriteMode),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = name + DateTime.Now,
-				SelectedOverwrite = overwrite,
-				Scheduler = new Scheduler() { EnableScheduler = false },
-				Map = CreateDefaultFieldMap(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
-			};
-
+			IntegrationPointModel integrationModel = new IntegrationPointModel();
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
 			return integrationModel;
+		}
+
+		protected IntegrationPointProfileModel CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		{
+			IntegrationPointProfileModel integrationModel = new IntegrationPointProfileModel();
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
+			return integrationModel;
+		}
+
+		private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		{
+			modelBase.Destination = CreateDestinationConfig(overwriteMode);
+			modelBase.DestinationProvider = DestinationProvider.ArtifactId;
+			modelBase.SourceProvider = RelativityProvider.ArtifactId;
+			modelBase.SourceConfiguration = CreateDefaultSourceConfig();
+			modelBase.LogErrors = true;
+			modelBase.Name = name + DateTime.Now;
+			modelBase.SelectedOverwrite = overwrite;
+			modelBase.Scheduler = new Scheduler() { EnableScheduler = false };
+			modelBase.Map = CreateDefaultFieldMap();
+			modelBase.Type =
+				Container.Resolve<IIntegrationPointTypeService>()
+					.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
+					.ArtifactId;
 		}
 
 		protected IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)

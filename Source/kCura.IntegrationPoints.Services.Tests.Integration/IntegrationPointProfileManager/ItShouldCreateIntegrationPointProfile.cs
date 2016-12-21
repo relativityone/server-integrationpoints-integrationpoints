@@ -4,21 +4,21 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
+namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
 	[TestFixture]
-	public class ItShouldCreateIntegrationPoint : RelativityProviderTemplate
+	public class ItShouldCreateIntegrationPointProfile : RelativityProviderTemplate
 	{
-		public ItShouldCreateIntegrationPoint() : base($"create_s_{Utils.FormatedDateTimeNow}", $"create_d_{Utils.FormatedDateTimeNow}")
+		public ItShouldCreateIntegrationPointProfile() : base($"create_s_{Utils.FormatedDateTimeNow}", $"create_d_{Utils.FormatedDateTimeNow}")
 		{
 		}
 
-		private IIntegrationPointManager _client;
+		private IIntegrationPointProfileManager _client;
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			_client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			_client = Helper.CreateAdminProxy<IIntegrationPointProfileManager>();
 		}
 
 		public override void SuiteTeardown()
@@ -41,12 +41,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				TargetWorkspaceArtifactId,
 				importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList());
 
-			var createdIntegrationPointProfile = _client.CreateIntegrationPointAsync(createRequest).Result;
+			var createdIntegrationPointProfile = _client.CreateIntegrationPointProfileAsync(createRequest).Result;
 
-			var actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPointProfile.ArtifactId);
+			var actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointProfileLibrary.Read(createdIntegrationPointProfile.ArtifactId);
 			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
-			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel, new IntegrationPointFieldGuidsConstants());
+			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel, new IntegrationPointProfileFieldGuidsConstants());
 		}
 	}
 }

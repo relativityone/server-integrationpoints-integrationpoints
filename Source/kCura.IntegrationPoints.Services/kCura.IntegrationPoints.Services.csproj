@@ -111,6 +111,7 @@
     <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />
     <Compile Include="Installers\ProviderManagerInstaller.cs" />
     <Compile Include="IntegrationPointManager.cs" />
+    <Compile Include="IntegrationPointProfileManager.cs" />
     <Compile Include="IntegrationPointsModule.cs" />
     <Compile Include="IntegrationPointTypeManager.cs" />
     <Compile Include="JobHistoryManager.cs" />
@@ -131,13 +132,16 @@
     <Compile Include="KeplerServiceBase.cs" />
     <Compile Include="Models\RelativityProviderDestinationConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderSourceConfigurationBackwardCompatibility.cs" />
+    <Compile Include="Repositories\IIntegrationPointProfileRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\DocumentRepository.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryRepository.cs" />
+    <Compile Include="Repositories\Implementations\IntegrationPointBaseRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointTypeRepository.cs" />
+    <Compile Include="Repositories\Implementations\IntegrationPointProfileRepository.cs" />
     <Compile Include="Repositories\IProviderRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryRepository.cs" />
     <Compile Include="ProviderManager.cs" />

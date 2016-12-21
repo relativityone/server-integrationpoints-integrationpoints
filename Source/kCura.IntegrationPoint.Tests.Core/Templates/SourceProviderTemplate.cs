@@ -150,6 +150,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
 			return newModel;
 		}
+		protected IntegrationPointProfileModel CreateOrUpdateIntegrationPointProfile(IntegrationPointProfileModel model)
+		{
+			IIntegrationPointProfileService service = Container.Resolve<IIntegrationPointProfileService>();
+
+			int integrationPointArtifactId = service.SaveIntegration(model);
+
+			IntegrationPoints.Data.IntegrationPointProfile rdo = service.GetRdo(integrationPointArtifactId);
+			IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
+			return newModel;
+		}
 
 		protected IDictionary<string, Tuple<string, string>> GetAuditDetailsFieldValues(Audit audit, HashSet<string> fieldNames)
 		{

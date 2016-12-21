@@ -5,20 +5,21 @@ using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
+namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
 {
+	[TestFixture]
 	public class ItShouldeRetrieveOverwriteFieldsChoices : SourceProviderTemplate
 	{
 		public ItShouldeRetrieveOverwriteFieldsChoices() : base($"choices_{Utils.FormatedDateTimeNow}")
 		{
 		}
 
-		private IIntegrationPointManager _client;
+		private IIntegrationPointProfileManager _client;
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			_client = Helper.CreateAdminProxy<IIntegrationPointManager>();
+			_client = Helper.CreateAdminProxy<IIntegrationPointProfileManager>();
 		}
 
 		public override void SuiteTeardown()
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		[Test]
 		public void Execute()
 		{
-			var expectedChoices = ChoicesHelper.GetAllChoiceUsingFieldGuid(IntegrationPointFieldGuids.OverwriteFields, WorkspaceArtifactId, Helper);
+			var expectedChoices = ChoicesHelper.GetAllChoiceUsingFieldGuid(IntegrationPointProfileFieldGuids.OverwriteFields, WorkspaceArtifactId, Helper);
 
 			var overwriteFieldModels = _client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result;
 
