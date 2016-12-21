@@ -14,6 +14,15 @@ https://einstein.kcura.com/display/TAL/Pipeline+Reporting
 */
 //endregion
 
+type = 'DEV'
+build = "NULL"
+invariantbuild = "NULL"
+installing_relativity = 'true'
+installing_analytics = 'true'
+installing_invariant = 'true'
+installing_datagrid = 'true'
+
+
 //region GlobalVariables
 installing_relativity = (installing_relativity == 'true') ? true : false
 installing_analytics = (installing_analytics == 'true') ? true : false
