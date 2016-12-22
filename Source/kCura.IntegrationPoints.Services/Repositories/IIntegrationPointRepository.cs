@@ -12,5 +12,6 @@ namespace kCura.IntegrationPoints.Services.Repositories
 		IList<IntegrationPointModel> GetAllIntegrationPoints();
 		int GetIntegrationPointArtifactTypeId();
 		IList<OverwriteFieldsModel> GetOverwriteFieldChoices();
+		IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactId, string integrationPointName);
 	}
 }

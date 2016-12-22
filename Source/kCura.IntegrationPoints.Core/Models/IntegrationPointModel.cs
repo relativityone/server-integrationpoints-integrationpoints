@@ -78,5 +78,24 @@ namespace kCura.IntegrationPoints.Core.Models
 				Map = ip.FieldMappings
 			};
 		}
+
+		public static IntegrationPointModel FromIntegrationPointProfile(IntegrationPointProfile profile, string integrationPointName)
+		{
+			return new IntegrationPointModel
+			{
+				Name = integrationPointName,
+				SelectedOverwrite = profile.OverwriteFields == null ? string.Empty : profile.OverwriteFields.Name,
+				SourceProvider = profile.SourceProvider.GetValueOrDefault(0),
+				Destination = profile.DestinationConfiguration,
+				SourceConfiguration = profile.SourceConfiguration,
+				DestinationProvider = profile.DestinationProvider.GetValueOrDefault(0),
+				Type = profile.Type.GetValueOrDefault(0),
+				Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
+				NotificationEmails = profile.EmailNotificationRecipients ?? string.Empty,
+				LogErrors = profile.LogErrors.GetValueOrDefault(false),
+				NextRun = profile.NextScheduledRuntimeUTC,
+				Map = profile.FieldMappings
+			};
+		}
 	}
 }

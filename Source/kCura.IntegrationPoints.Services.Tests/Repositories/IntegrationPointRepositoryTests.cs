@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -18,6 +19,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 	{
 		private IntegrationPointRepository _integrationPointRepository;
 		private IIntegrationPointService _integrationPointService;
+		private IIntegrationPointProfileService _integrationPointProfileService;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IUserInfo _userInfo;
 		private IChoiceQuery _choiceQuery;
@@ -26,12 +28,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		public override void SetUp()
 		{
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
+			_integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_userInfo = Substitute.For<IUserInfo>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_backwardCompatibility = Substitute.For<IBackwardCompatibility>();
 
-			_integrationPointRepository = new IntegrationPointRepository(_integrationPointService, _objectTypeRepository, _userInfo, _choiceQuery, _backwardCompatibility);
+			_integrationPointRepository = new IntegrationPointRepository(_integrationPointService, _objectTypeRepository, _userInfo, _choiceQuery, _backwardCompatibility,
+				_integrationPointProfileService);
 		}
 
 		[Test]
@@ -207,6 +211,47 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 			Assert.That(actualChoicesModels,
 				Is.EquivalentTo(expectedChoices).Using(new Func<OverwriteFieldsModel, Choice, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactID))));
+		}
+
+		[Test]
+		public void ItShouldCreateIntegrationPointBasedOnProfile()
+		{
+			int profileArtifactId = 565952;
+			string integrationPointName = "ip_name_425";
+			int artifactId = 131510;
+
+			var profile = new IntegrationPointProfile
+			{
+				OverwriteFields = new Choice(179935),
+				SourceProvider = 237,
+				DestinationConfiguration = "641627",
+				SourceConfiguration = "391908",
+				DestinationProvider = 363,
+				Type = 840,
+				EnableScheduler = false,
+				ScheduleRule = string.Empty,
+				EmailNotificationRecipients = "420590",
+				LogErrors = false,
+				NextScheduledRuntimeUTC = DateTime.MaxValue,
+				FieldMappings = "266304",
+				Name = "ip_159"
+			};
+			var integrationPoint = new Data.IntegrationPoint
+			{
+				Name = "ip_671",
+				SourceProvider = 743,
+				DestinationProvider = 846
+			};
+
+			_integrationPointProfileService.GetRdo(profileArtifactId).Returns(profile);
+			_integrationPointService.SaveIntegration(Arg.Any<Core.Models.IntegrationPointModel>()).Returns(artifactId);
+			_integrationPointService.GetRdo(artifactId).Returns(integrationPoint);
+
+			_integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName);
+
+			_integrationPointProfileService.Received(1).GetRdo(profileArtifactId);
+			_integrationPointService.Received(1).SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.Name == integrationPointName && x.ArtifactID == 0));
+			_integrationPointService.Received(1).GetRdo(artifactId);
 		}
 	}
 }
