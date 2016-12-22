@@ -130,15 +130,15 @@ stage('Get Server') {
 def build_tests(String server_name, String domain, String session_id, String relativity_branch, String automation_branch, Boolean installing_invariant, Boolean installing_datagrid) {
     try {
     	parallel (
-			RIP_Integration_Tests: {build job: 'Parameterized.NUnit', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'branch', value: env.BRANCH_NAME),
-    			string(name: 'assembly', value: 'lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration'),
-    			string(name: 'tests_to_skip', value: '0'),
-    			string(name: 'repository', value: 'integrationpoints')]},
+			//RIP_Integration_Tests: {build job: 'Parameterized.NUnit', parameters: [
+    		//	[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
+    		//	string(name: 'session_id', value: session_id),
+    		//	string(name: 'SERVER', value: server_name),
+    		//	string(name: 'DOMAIN', value: domain),
+    		//	string(name: 'branch', value: env.BRANCH_NAME),
+    		//	string(name: 'assembly', value: 'lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration'),
+    		//	string(name: 'tests_to_skip', value: '0'),
+    		//	string(name: 'repository', value: 'integrationpoints')]},
     		RIP_System_Tests: {build job: 'test.Parameterized.Robot', parameters: [
     			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
     			string(name: 'session_id', value: session_id),
