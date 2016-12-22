@@ -18,5 +18,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		public static readonly string SETTINGS_TEXTFILES_UNKNOWN_PRECEDENCE = "Selected text files precedence is invalid.";
 		public static readonly string SETTINGS_TEXTFILES_UNKNOWN_SUBDIR_PREFIX = "Selected text files subdirectory prefix is invalid.";
 		public static readonly string SETTINGS_UNKNOWN_LOCATION = "Selected export location is unknown.";
+		public static readonly string EXPORT_PRODUCTION_NO_VIEW = "User does not have permission to view selected Production.";
+		public static readonly string EXPORT_FOLDER_NO_VIEW = "User does not have permission to view selected Folder.";
+
 	}
 }

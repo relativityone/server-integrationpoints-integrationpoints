@@ -157,6 +157,7 @@
     <Compile Include="Validation\Parts\ProductionValidatorTests.cs" />
     <Compile Include="Validation\Parts\RdoExportSettingsValidatorTests.cs" />
     <Compile Include="Validation\Parts\ViewValidatorTests.cs" />
+    <Compile Include="Validation\PermissionValidatorTests.cs" />
     <Compile Include="Validation\ProviderConfigurationValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>

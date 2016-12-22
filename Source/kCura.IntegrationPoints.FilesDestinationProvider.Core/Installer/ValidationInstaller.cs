@@ -5,6 +5,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
@@ -23,6 +24,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 				.Named($"{nameof(FileDestinationProviderConfigurationValidator)}+{nameof(IValidator)}")
 				.LifestyleTransient()
 			);
-        }
+
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<PermissionValidator>().LifestyleTransient());
+		}
     }
 }

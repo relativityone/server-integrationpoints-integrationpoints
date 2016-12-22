@@ -49,7 +49,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Contains(IntegrationPointProviderValidationMessages.SAVED_SEARCH_NOT_EXIST));
+			Assert.IsTrue(actual.Messages.Contains(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS));
+		}
+
+		[Test]
+		public void ItShouldFailForNotPublicSavedSearch()
+		{
+			// arrange
+			var savedSearch = new SavedSearchDTO() { Owner = "owner" };
+
+			var savedSearchRepositoryMock = Substitute.For<ISavedSearchRepository>();
+			savedSearchRepositoryMock.RetrieveSavedSearch()
+				.Returns(savedSearch);
+
+			var validator = new SavedSearchValidator(savedSearchRepositoryMock);
+
+			// act
+			var actual = validator.Validate(0);
+
+			// assert
+			Assert.IsFalse(actual.IsValid);
+			Assert.IsTrue(actual.Messages.Contains(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NOT_PUBLIC));
 		}
 	}
 }

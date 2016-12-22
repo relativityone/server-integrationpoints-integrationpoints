@@ -248,6 +248,7 @@
     <Compile Include="Models\BaseField.cs" />
     <Compile Include="Models\BaseFields.cs" />
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="PermissionValidatorTestsBase.cs" />
     <Compile Include="Placeholder.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="ProductionDataSource.cs" />

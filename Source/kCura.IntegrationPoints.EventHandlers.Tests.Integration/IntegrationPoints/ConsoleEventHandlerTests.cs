@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -37,7 +38,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
-			
+			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
+
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
 			{
 				new Field(1, "Name", "Name", 1, 1, 1, false, false, new FieldValue(_ARTIFACT_NAME), null)
@@ -46,7 +48,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_instance =
 				new EventHandlers.IntegrationPoints.ConsoleEventHandler(
-					new ButtonStateBuilder(_integrationPointManager, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository),
+					new ButtonStateBuilder(_integrationPointManager, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator),
 					_onClickEventHelper, new ConsoleBuilder())
 				{
 					ActiveArtifact = activeArtifact,
@@ -78,6 +80,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private IErrorManager _errorManager;
 		private IJobHistoryManager _jobHistoryManager;
 		private IPermissionRepository _permissionRepository;
+		private IIntegrationPointPermissionValidator _permissionValidator;
 
 		private ConsoleEventHandler _instance;
 
@@ -155,11 +158,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				ViewErrorsLinkVisible = hasViewErrorsPermissions
 			};
 
-			_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(
-				new PermissionCheckDTO
-				{
-					ErrorMessages = hasViewErrorsPermissions ? null : viewErrorMessages
-				});
+			_permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(
+				new ValidationResult(hasViewErrorsPermissions ? null : viewErrorMessages));
 
 			_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			Console console = _instance.GetConsole(ConsoleEventHandler.PageEvent.Load);
 
 			// ASSERT
-			_integrationPointManager.Received(1).UserHasPermissionToViewErrors(_APPLICATION_ID);
+			_permissionValidator.Received(1).ValidateViewErrors(_APPLICATION_ID);
 
 			Assert.IsNotNull(console);
 			if (hasViewErrorsPermissions)
@@ -288,7 +288,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
-			_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(new PermissionCheckDTO());
+			_permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(new ValidationResult());
 
 			StoppableJobCollection stoppableJobCollection = null;
 

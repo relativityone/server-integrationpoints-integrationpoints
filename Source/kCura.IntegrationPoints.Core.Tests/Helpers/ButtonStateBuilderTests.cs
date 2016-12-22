@@ -3,9 +3,12 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Constants = kCura.IntegrationPoints.Core.Constants;
@@ -22,8 +25,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_queueManager = Substitute.For<IQueueManager>();
 			_stateManager = Substitute.For<IStateManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
+			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 
-			_buttonStateBuilder = new ButtonStateBuilder(_integrationPointManager, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository);
+			_buttonStateBuilder = new ButtonStateBuilder(_integrationPointManager, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator);
 		}
 
 		private IIntegrationPointManager _integrationPointManager;
@@ -31,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private IQueueManager _queueManager;
 		private IStateManager _stateManager;
 		private IPermissionRepository _permissionRepository;
+		private IIntegrationPointPermissionValidator _permissionValidator;
 
 		private ButtonStateBuilder _buttonStateBuilder;
 
@@ -52,10 +57,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			{
 				HasErrors = hasErrors
 			});
-			_integrationPointManager.UserHasPermissionToViewErrors(applicationArtifactId).Returns(new PermissionCheckDTO
-			{
-				ErrorMessages = hasErrorViewPermission ? null : new[] {"error"}
-			});
+
+			_permissionValidator.ValidateViewErrors(applicationArtifactId).Returns(
+				hasErrorViewPermission ? new ValidationResult() : new ValidationResult(new[] { "error" }));
+
 			_integrationPointManager.GetSourceProvider(applicationArtifactId, Arg.Any<IntegrationPointDTO>()).Returns(sourceProvider);
 
 			_queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId).Returns(hasJobsExecutingOrInQueue);

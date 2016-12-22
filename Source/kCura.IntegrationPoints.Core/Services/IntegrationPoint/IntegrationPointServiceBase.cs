@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -27,6 +29,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		protected IChoiceQuery ChoiceQuery;
 		protected IManagerFactory ManagerFactory;
 		protected IIntegrationPointProviderValidator IntegrationModelValidator;
+		protected IIntegrationPointPermissionValidator _permissionValidator;
+
 		protected static readonly object Lock = new object();
 
 		protected abstract string UnableToSaveFormat { get; }
@@ -39,7 +43,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointBaseFieldGuidsConstants guidsConstants,
-			IIntegrationPointProviderValidator integrationModelValidator)
+			IIntegrationPointProviderValidator integrationModelValidator,
+			IIntegrationPointPermissionValidator permissionValidator)
 		{
 			Serializer = serializer;
 			Context = context;
@@ -47,6 +52,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			ManagerFactory = managerFactory;
 			_guidsConstants = guidsConstants;
 			IntegrationModelValidator = integrationModelValidator;
+			_permissionValidator = permissionValidator;
 			ContextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 
@@ -207,6 +213,26 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return destinationProvider;
 		}
 
+		protected IntegrationPointType GetIntegrationPointType(int? integrationPointTypeArtifactId)
+		{
+			if (!integrationPointTypeArtifactId.HasValue)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_INTEGRATION_POINT_TYPE_SPECIFIED);
+			}
+
+			IntegrationPointType integrationPointType = null;
+			try
+			{
+				integrationPointType = Context.RsapiService.IntegrationPointTypeLibrary.Read(integrationPointTypeArtifactId.Value);
+			}
+			catch (Exception e)
+			{
+				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_TYPE, e);
+			}
+
+			return integrationPointType;
+		}
+
 		protected void ValidateConfigurationWhenUpdatingObject(IntegrationPointModelBase model, IntegrationPointModelBase existingModel)
 		{
 			// check that only fields that are allowed to be changed are changed
@@ -279,6 +305,32 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			};
 
 			errorManager.Create(new[] { error });
+		}
+
+		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType)
+		{
+			ValidationResult validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType);
+
+			if (!validationResult.IsValid)
+			{
+				throw new IntegrationPointProviderValidationException(validationResult);
+			}
+
+			ValidationResult permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider, integrationPointType);
+
+			if (Context.EddsUserID == 0)
+			{
+				permissionCheck.Add(Constants.IntegrationPoints.NO_USERID);
+			}
+
+			if (!permissionCheck.IsValid)
+			{
+				CreateRelativityError(
+					Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
+					$"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.Messages)}");
+
+				throw new PermissionException(Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
+			}
 		}
 	}
 }

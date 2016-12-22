@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
@@ -23,8 +22,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			ISerializer serializer,
 			IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory,
-			IIntegrationPointProviderValidator integrationModelValidator)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator)
+			IIntegrationPointProviderValidator integrationModelValidator,
+			IIntegrationPointPermissionValidator permissionValidator)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator, permissionValidator)
 		{
 		}
 
@@ -61,25 +61,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				rule = ConvertModelToScheduleRule(model);
 				profile = model.ToRdo(choices, rule);
 
+				var integrationProfilePointModel = IntegrationPointProfileModel.FromIntegrationPointProfile(profile);
+
 				SourceProvider sourceProvider = GetSourceProvider(profile.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(profile.DestinationProvider);
+				IntegrationPointType integrationPointType = GetIntegrationPointType(profile.Type);
 
-				var validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider);
-				if (!validationResult.IsValid)
-				{
-					throw new IntegrationPointProviderValidationException(validationResult);
-				}
-
-				//TODO create CheckForProviderAdditionalPermissions for IP Profile
-				//if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
-				//	destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
-				//{
-				//	CheckForProviderAdditionalPermissions(integrationPoint, Constants.SourceProvider.Relativity, Context.EddsUserID);
-				//}
-				//else
-				//{
-				//	CheckForProviderAdditionalPermissions(integrationPoint, Constants.SourceProvider.Other, Context.EddsUserID);
-				//}
+				RunValidation(integrationProfilePointModel, sourceProvider, destinationProvider, integrationPointType);
 
 				//save RDO
 				if (profile.ArtifactId > 0)
@@ -110,6 +98,5 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			return ReadIntegrationPointProfile(artifactId);
 		}
-		
 	}
 }

@@ -10,27 +10,16 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
-	public class IntegrationPointProviderValidator : IIntegrationPointProviderValidator
+	public class IntegrationPointProviderValidator : BaseIntegrationPointValidator<IValidator>, IIntegrationPointProviderValidator
 	{
-		private readonly ILookup<string, IValidator> _validatorsMap;
-		private readonly ISerializer _serializer;
-
-		public static string GetProviderValidatorKey(string sourceProviderId, string destinationProviderId)
-		{
-			return $"{sourceProviderId.ToUpper()}+{destinationProviderId.ToUpper()}";
-		}
-
 		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, ISerializer serializer)
-		{
-			_validatorsMap = validators.ToLookup(x => x.Key);
-			_serializer = serializer;
+			: base(validators, serializer)
+		{			
 		}
 
-		public ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider)
+		public override ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType)
 		{
 			var result = new ValidationResult();
-
-			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
 			if (model.Scheduler.EnableScheduler)
 			{
@@ -50,16 +39,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(model.Name));
 			}
 
-			var validationModel = new IntegrationPointProviderValidationModel()
-			{
-				ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
-				SourceProviderIdentifier = sourceProvider.Identifier,
-				SourceConfiguration = model.SourceConfiguration,
-				DestinationProviderIdentifier = destinationProvider.Identifier,
-				DestinationConfiguration = model.Destination,
-				FieldsMap = model.Map,
-				Type = model.Type
-			};
+			var validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType);
 
 			foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.INTEGRATION_POINT_TYPE])
 			{

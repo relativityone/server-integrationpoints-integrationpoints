@@ -4,8 +4,7 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
-	public interface IIntegrationPointProviderValidator
+	public interface IIntegrationPointProviderValidator : IIntegrationPointValidator
 	{
-		ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider);
 	}
 }
