@@ -56,5 +56,13 @@ namespace kCura.IntegrationPoints.Services
 		{
 			return await Execute((IIntegrationPointProfileRepository repository) => repository.GetOverwriteFieldChoices(), workspaceArtifactId);
 		}
+
+		public async Task<IntegrationPointModel> CreateIntegrationPointProfileFromIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId, string profileName)
+		{
+			return
+				await
+					Execute((IIntegrationPointProfileRepository repository) => repository.CreateIntegrationPointProfileFromIntegrationPoint(integrationPointArtifactId, profileName),
+						workspaceArtifactId);
+		}
 	}
 }

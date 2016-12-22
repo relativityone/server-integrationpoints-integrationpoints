@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Extensions;
@@ -11,15 +12,17 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
 	public class IntegrationPointProfileRepository : IntegrationPointBaseRepository, IIntegrationPointProfileRepository
 	{
+		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IIntegrationPointProfileService _integrationPointProfileService;
 		private readonly IChoiceQuery _choiceQuery;
 
 		public IntegrationPointProfileRepository(IBackwardCompatibility backwardCompatibility, IIntegrationPointProfileService integrationPointProfileService,
-			IChoiceQuery choiceQuery)
+			IChoiceQuery choiceQuery, IIntegrationPointService integrationPointService)
 			: base(backwardCompatibility)
 		{
 			_integrationPointProfileService = integrationPointProfileService;
 			_choiceQuery = choiceQuery;
+			_integrationPointService = integrationPointService;
 		}
 
 		public IntegrationPointModel CreateIntegrationPointProfile(CreateIntegrationPointRequest request)
@@ -57,6 +60,15 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		{
 			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
 			return choices.Select(x => x.ToModel()).ToList();
+		}
+
+		public IntegrationPointModel CreateIntegrationPointProfileFromIntegrationPoint(int integrationPointArtifactId, string profileName)
+		{
+			var integrationPoint = _integrationPointService.GetRdo(integrationPointArtifactId);
+			var integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
+
+			var artifactId = _integrationPointProfileService.SaveIntegration(integrationPointProfileModel);
+			return GetIntegrationPointProfile(artifactId);
 		}
 	}
 }

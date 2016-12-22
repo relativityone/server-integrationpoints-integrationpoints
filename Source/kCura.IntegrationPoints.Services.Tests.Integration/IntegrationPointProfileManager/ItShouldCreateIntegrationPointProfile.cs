@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointProfileManager
@@ -46,7 +47,32 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			var actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointProfileLibrary.Read(createdIntegrationPointProfile.ArtifactId);
 			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
-			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel, new IntegrationPointProfileFieldGuidsConstants());
+			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel,
+				new IntegrationPointProfileFieldGuidsConstants());
+		}
+
+		[Test]
+		public void ItShouldCreateProfileBasedOnIntegrationPoint()
+		{
+			string profileName = "profile_name_507";
+
+			var integrationPoint = CreateOrUpdateIntegrationPoint(CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "ip_name", "Append Only"));
+
+			var integrationPointProfileModel =
+				_client.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, profileName).Result;
+
+			var actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointProfileLibrary.Read(integrationPointProfileModel.ArtifactId);
+
+			Assert.That(actualIntegrationPointProfile.Name, Is.EqualTo(profileName));
+			Assert.That(actualIntegrationPointProfile.SourceProvider, Is.EqualTo(integrationPoint.SourceProvider));
+			Assert.That(actualIntegrationPointProfile.DestinationProvider, Is.EqualTo(integrationPoint.DestinationProvider));
+			Assert.That(actualIntegrationPointProfile.DestinationConfiguration, Is.EqualTo(integrationPoint.Destination));
+			Assert.That(actualIntegrationPointProfile.SourceConfiguration, Is.EqualTo(integrationPoint.SourceConfiguration));
+			Assert.That(actualIntegrationPointProfile.EmailNotificationRecipients, Is.EqualTo(integrationPoint.NotificationEmails));
+			Assert.That(actualIntegrationPointProfile.EnableScheduler, Is.EqualTo(integrationPoint.Scheduler.EnableScheduler));
+			Assert.That(actualIntegrationPointProfile.FieldMappings, Is.EqualTo(integrationPoint.Map));
+			Assert.That(actualIntegrationPointProfile.Type, Is.EqualTo(integrationPoint.Type));
+			Assert.That(actualIntegrationPointProfile.LogErrors, Is.EqualTo(integrationPoint.LogErrors));
 		}
 	}
 }
