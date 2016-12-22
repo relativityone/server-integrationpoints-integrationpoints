@@ -130,7 +130,16 @@ stage('Get Server') {
 def build_tests(String server_name, String domain, String session_id, String relativity_branch, String automation_branch, Boolean installing_invariant, Boolean installing_datagrid) {
     try {
     	parallel (
-    		RIP: {build job: 'test.Parameterized.Robot', parameters: [
+			RIP_Integration_Tests: {build job: 'Parameterized.NUnit', parameters: [
+    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
+    			string(name: 'session_id', value: session_id),
+    			string(name: 'SERVER', value: server_name),
+    			string(name: 'DOMAIN', value: domain),
+    			string(name: 'branch', value: env.BRANCH_NAME),
+    			string(name: 'assembly', value: 'lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration'),
+    			string(name: 'tests_to_skip', value: '0'),
+    			string(name: 'repository', value: 'integrationpoints')]},
+    		RIP_System_Tests: {build job: 'test.Parameterized.Robot', parameters: [
     			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
     			string(name: 'session_id', value: session_id),
     			string(name: 'SERVER', value: server_name),
@@ -139,17 +148,7 @@ def build_tests(String server_name, String domain, String session_id, String rel
     			string(name: 'RelativityType', value: '"NULL"'),
     			string(name: 'branch', value: automation_branch),
     			string(name: 'config_file', value: 'Config/smokeTests.cfg'),
-    			string(name: 'SUITE', value: 'Relativity.Applications.RelativityIntegrationPoints.SmokeTests')]},
-    		PivotWidgets: {build job: 'test.Parameterized.Robot', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'RelativityBuild', value: '"NULL"'),
-    			string(name: 'RelativityType', value: '"NULL"'),
-    			string(name: 'branch', value: automation_branch),
-    			string(name: 'extra_args', value: '--include testtype.ci'),
-    			string(name: 'SUITE', value: 'Relativity.Platform.FluidUI.PivotWidgets')]}
+    			string(name: 'SUITE', value: 'Relativity.Applications.RelativityIntegrationPoints.SmokeTests')]}
     	)
     } finally {
 	    // These jobs still delete the lib folder at startup, any robot tests running after will break :(
@@ -319,6 +318,18 @@ try {
     			string(name: 'branch', value: 'tag_setup_tests'),
     			string(name: 'username', value: 'relativity.admin@kcura.com'),
     			string(name: 'SUITE', value: 'Relativity.RelativitySetup')], propagate: false
+				
+			build job: 'test.Parameterized.Robot', parameters: [
+    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
+    			string(name: 'session_id', value: session_id),
+    			string(name: 'SERVER', value: server_name),
+    			string(name: 'DOMAIN', value: domain),
+    			string(name: 'RelativityBuild', value: '"NULL"'),
+    			string(name: 'RelativityType', value: '"NULL"'),
+    			string(name: 'branch', value: automation_branch),
+    			string(name: 'config_file', value: 'Config/smokeTests.cfg'),
+				string(name: 'extra_args', value: '--variable BRANCH='+env.BRANCH_NAME),
+    			string(name: 'SUITE', value: 'Automation.PostInstall.InstallApps.UpdateRIPApp')], propagate: false	
 	    }
 	    
 	    if (installing_invariant) {
