@@ -79,8 +79,8 @@
 										Numbering:
 									</div>
 									<div class="field-value">
-										<input type="radio" name="imageProductionNumbering" value="1" data bind="checked: loadFilePageIdSelected" /> Use load file page IDs<br />
-										<input type="radio" name="imageProductionNumbering" value="2" data-bind="checked: autoNumberPagesSelected" /> Auto-number pages
+										<input type="radio" name="imageProductionNumbering" value="false" data-bind="checked: autoNumberPages" /> Use load file page IDs<br />
+										<input type="radio" name="imageProductionNumbering" value="true" data-bind="checked: autoNumberPages" /> Auto-number pages
 									</div>
 								</div>
 								<div class="field-row">
@@ -96,18 +96,18 @@
 											<select id="overlay-identifier" data-bind="options: overlayIdentifiers, optionsText: 'DisplayName',optionsValue:'ArtifactID', select2: {}"></select>
 										</div>
 									</div>
-									<div class="field-row">
-										<div class="field-label required">Copy Files to Document Repository:</div>
-										<div class="field-value">
-											<input type="radio" name="copyFilesToDocumentRepo" value="true" data bind="checked: copyFilesToDocumentRepository" /> Yes<br />
-											<input type="radio" name="copyFilesToDocumentRepo" value="false" data-bind="checked: copyFilesToDocumentRepository" /> No
-										</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label required">Copy Files to Document Repository:</div>
+									<div class="field-value">
+										<input type="radio" name="copyFilesToDocumentRepo" value="true" data-bind="checked: copyFilesToDocumentRepository" /> Yes<br />
+										<input type="radio" name="copyFilesToDocumentRepo" value="false" data-bind="checked: copyFilesToDocumentRepository" /> No
 									</div>
-									<div class="field-row">
-										<div class="field-label required">File Repository:</div>
-										<div class="field-value">
-											<select id="overlay-identifier" data-bind=" select2: {}"></select>
-										</div>
+								</div>
+								<div class="field-row" data-bind="visible: copyFilesToDocumentRepository() == 'true'">
+									<div class="field-label required">File Repository:</div>
+									<div class="field-value">
+										<select id="overlay-identifier" data-bind=" select2 {}"></select>
 									</div>
 								</div>
 								<div class="field-row" data-bind="visible: selectedImportType() == 2">

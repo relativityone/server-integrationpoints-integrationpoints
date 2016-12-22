@@ -83,6 +83,24 @@
 		
 	};
 
+	var _showButtons = function (showBack, showNext, showSave) {
+		$('#back').prop('disabled', !showBack);
+
+		if (showNext) {
+			$('#next').show();
+		}
+		else {
+			$('#next').hide();
+		}
+
+		if (showSave) {
+			$('#save').show();
+		}
+		else {
+			$('#save').hide();
+		}
+	}
+
 	$.stepProgress = $.stepProgress || {};
 
 	$.extend($.stepProgress, {
@@ -91,7 +109,8 @@
 		back: _back,
 		goToStep: _goToStep,
 		last: _isLast,
-		allowSaveProfile: _allowSaveProfile
+		allowSaveProfile: _allowSaveProfile,
+		showButtons: _showButtons
 	});
 
 	$.fn.stepProgress = function (options) {

@@ -143,13 +143,13 @@
     };
 
     windowObj.RelativityImport.checkValueForImportType = function () {
+
         var chosenType = windowObj.RelativityImport.koModel.selectedImportType();
-        if (chosenType === 'image') {
-            windowObj.RelativityImport.disablePreviewButton(false);
-        } else if (chosenType === 'production') {
-            windowObj.RelativityImport.disablePreviewButton(false);
-        } else {
+        if (chosenType === windowObj.RelativityImport.ImportTypeEnum.Document) {
             windowObj.RelativityImport.disablePreviewButton(true);
+        }
+        else {
+            windowObj.RelativityImport.disablePreviewButton(false);
         };
     };
 
