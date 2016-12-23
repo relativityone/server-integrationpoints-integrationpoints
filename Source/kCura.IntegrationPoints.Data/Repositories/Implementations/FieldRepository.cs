@@ -38,6 +38,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_fieldManager = new Lazy<IFieldManagerImplementation>(() => new FieldManagerImplementation());
 		}
 
+		public ArtifactFieldDTO[] RetrieveBeginBatesFields()
+		{
+			kCura.Data.DataView batesFields = FieldQuery.RetrievePotentialBeginBatesFields(_baseContext);
+			DataTable table = batesFields.Table;
+
+			List<ArtifactFieldDTO> artifactFields = new List<ArtifactFieldDTO>();
+			foreach (DataRow row in table.Rows)
+			{
+				ArtifactFieldDTO dto = new ArtifactFieldDTO();
+				dto.ArtifactId = int.Parse(row["ArtifactID"].ToString());
+				dto.Name = row["DisplayName"].ToString();
+				dto.FieldType = row["FieldTypeID"].ToString();
+
+				artifactFields.Add(dto);
+			}
+
+			return artifactFields.ToArray();
+		} 
+
 		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeId)
 		{
 			const string longTextFieldName = "Long Text";

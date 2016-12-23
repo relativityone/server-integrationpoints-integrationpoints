@@ -12,6 +12,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	/// </summary>
 	public interface IFieldRepository
 	{
+
+		/// <summary>
+		/// Retrieves the potential begin bates fields
+		/// </summary>
+		/// <returns>An array of ArtifactFieldDTOs</returns>
+		ArtifactFieldDTO[] RetrieveBeginBatesFields();
+
 		/// <summary>
 		/// Retrieves the long text fields for an rdo
 		/// </summary>

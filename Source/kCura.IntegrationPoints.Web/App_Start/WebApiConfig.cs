@@ -236,6 +236,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ImportProviderGetOverlayIdentifierFields",
+				routeTemplate: "{workspaceID}/api/ImportProviderImage/GetOverlayIdentifierFields",
+				defaults: new { controller = "ImportProviderImage", action = "GetOverlayIdentifierFields" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "SearchFolder",
 				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
 				defaults: new {controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }

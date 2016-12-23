@@ -333,4 +333,15 @@
 			windowObj.RelativityImport.koModel.productionSets(data);
 		}
 	});
+
+	$.ajax({
+		type: 'GET',
+		url: IP.utils.generateWebAPIURL('ImportProviderImage/GetOverlayIdentifierFields'),
+		data: {
+			workspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+		},
+		success: function (data) {
+			windowObj.RelativityImport.koModel.overlayIdentifiers(data);
+		}
+	});
 })(this, IP);

@@ -159,7 +159,7 @@
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -215,6 +215,7 @@
     <Compile Include="Controllers\API\FieldCatalogControllerTests.cs" />
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
+    <Compile Include="Controllers\API\ImportProviderImageControllerTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />

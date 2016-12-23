@@ -63,6 +63,8 @@
 		self.SelectedOverwrite = ko.observable(self.SelectedOverwrite || 'Append Only');
 
 		self.overlayIdentifiers = ko.observableArray([]);
+		self.selectedOverlayIdentifier = ko.observable();
+
 		self.productionSets = ko.observableArray([]);
 
 
