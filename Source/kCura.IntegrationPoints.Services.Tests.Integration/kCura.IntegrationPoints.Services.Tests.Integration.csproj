@@ -49,7 +49,7 @@
     <Reference Include="Castle.Windsor, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
-    </Reference>	
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -132,11 +132,17 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Helpers\ChoicesHelper.cs" />
+    <Compile Include="Helpers\IntegrationPointBaseHelper.cs" />
     <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
     <Compile Include="IntegrationPointManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveAllIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveIntegrationPointArtifactTypeId.cs" />
+    <Compile Include="IntegrationPointProfileManager\ItShouldCreateIntegrationPointProfile.cs" />
+    <Compile Include="IntegrationPointProfileManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
+    <Compile Include="IntegrationPointProfileManager\ItShouldHandleRetrievingNoIntegrationPointProfiles.cs" />
+    <Compile Include="IntegrationPointProfileManager\ItShouldRetrieveAllIntegrationPointProfiles.cs" />
     <Compile Include="IntegrationPointTypeManager\IntegrationPointTypeManagerTests.cs" />
     <Compile Include="ProviderManager\ProviderManagerTests.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRunIntegrationPoint.cs" />

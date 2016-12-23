@@ -77,5 +77,14 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
 		/// <returns>A list of all available choices for Overwrite Fields field</returns>
 		Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId);
+
+		/// <summary>
+		/// Create integration point based on existing integration point profile
+		/// </summary>
+		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
+		/// <param name="profileArtifactId">Artifact ID of profile which will be used to create integration point</param>
+		/// <param name="integrationPointName">Integration point's name</param>
+		/// <returns></returns>
+		Task<IntegrationPointModel> CreateIntegrationPointFromProfileAsync(int workspaceArtifactId, int profileArtifactId, string integrationPointName);
 	}
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
-using Newtonsoft.Json;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
-using Relativity;
-using Relativity.Services.Folder;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -41,112 +38,39 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		{
 			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
 
-			var folderPathSourceField = 0;
-			if (useFolderPathInformation)
-			{
-				var artifactFieldDtos = RepositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId).RetrieveLongTextFieldsAsync((int) ArtifactType.Document).Result;
-				folderPathSourceField = artifactFieldDtos[0].ArtifactId;
-			}
+			var createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId,
+				TargetWorkspaceArtifactId,
+				importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList());
 
-			var expectedDestinationConfiguration = new RelativityProviderDestinationConfiguration
-			{
-				ArtifactTypeID = (int) ArtifactType.Document,
-				CaseArtifactId = TargetWorkspaceArtifactId,
-				ImportNativeFile = importNativeFile,
-				UseFolderPathInformation = useFolderPathInformation,
-				FolderPathSourceField = folderPathSourceField,
-				FieldOverlayBehavior = fieldOverlayBehavior,
-				DestinationFolderArtifactId = GetRootFolder()
-			};
-			var expectedSourceConfiguration = new RelativityProviderSourceConfiguration
-			{
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
-				SavedSearchArtifactId = SavedSearchArtifactId
-			};
-			var expectedIntegrationPointModel = new IntegrationPointModel
-			{
-				ArtifactId = 0,
-				EmailNotificationRecipients = emailNotificationRecipients,
-				LogErrors = logErrors,
-				Name = $"relativity_{Utils.FormatedDateTimeNow}",
-				SourceProvider = GetSourceProviderArtifactId(Constants.IntegrationPoints.SourceProviders.RELATIVITY),
-				DestinationProvider = GetDestinationProviderArtifactId(Constants.IntegrationPoints.DestinationProviders.RELATIVITY),
-				DestinationConfiguration = expectedDestinationConfiguration,
-				SourceConfiguration = expectedSourceConfiguration,
-				FieldMappings = GetDefaultFieldMap().ToList(),
-				Type = GetTypeArtifactId(Constants.IntegrationPoints.IntegrationPointTypes.ExportName),
-				OverwriteFieldsChoiceId = overwriteFieldsModel.ArtifactId,
-				ScheduleRule = new ScheduleModel
-				{
-					EnableScheduler = false
-				}
-			};
+			var createdIntegrationPointProfile = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			var createRequest = new CreateIntegrationPointRequest
-			{
-				WorkspaceArtifactId = SourceWorkspaceArtifactId,
-				IntegrationPoint = expectedIntegrationPointModel
-			};
+			var actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPointProfile.ArtifactId);
+			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
-			var createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
-
-			var actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPoint.ArtifactId);
-
-			Assert.That(actualIntegrationPoint.SourceProvider, Is.EqualTo(expectedIntegrationPointModel.SourceProvider));
-			Assert.That(actualIntegrationPoint.DestinationProvider, Is.EqualTo(expectedIntegrationPointModel.DestinationProvider));
-			Assert.That(actualIntegrationPoint.EmailNotificationRecipients, Is.EqualTo(expectedIntegrationPointModel.EmailNotificationRecipients ?? string.Empty));
-			Assert.That(actualIntegrationPoint.EnableScheduler, Is.EqualTo(expectedIntegrationPointModel.ScheduleRule.EnableScheduler));
-			Assert.That(actualIntegrationPoint.LogErrors, Is.EqualTo(expectedIntegrationPointModel.LogErrors));
-			Assert.That(actualIntegrationPoint.Name, Is.EqualTo(expectedIntegrationPointModel.Name));
-			Assert.That(actualIntegrationPoint.Type, Is.EqualTo(expectedIntegrationPointModel.Type));
-			Assert.That(actualIntegrationPoint.OverwriteFields.ArtifactID, Is.EqualTo(expectedIntegrationPointModel.OverwriteFieldsChoiceId));
-
-			var actualSourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>(actualIntegrationPoint.SourceConfiguration);
-			Assert.That(actualSourceConfiguration.SourceWorkspaceArtifactId, Is.EqualTo(expectedSourceConfiguration.SourceWorkspaceArtifactId));
-			Assert.That(actualSourceConfiguration.SavedSearchArtifactId, Is.EqualTo(expectedSourceConfiguration.SavedSearchArtifactId));
-
-			var actualDestinationConfiguration = JsonConvert.DeserializeObject<RelativityProviderDestinationConfiguration>(actualIntegrationPoint.DestinationConfiguration);
-			Assert.That(actualDestinationConfiguration.ArtifactTypeID, Is.EqualTo(expectedDestinationConfiguration.ArtifactTypeID));
-			Assert.That(actualDestinationConfiguration.CaseArtifactId, Is.EqualTo(expectedDestinationConfiguration.CaseArtifactId));
-			Assert.That(actualDestinationConfiguration.DestinationFolderArtifactId, Is.EqualTo(expectedDestinationConfiguration.DestinationFolderArtifactId));
-			Assert.That(actualDestinationConfiguration.FieldOverlayBehavior, Is.EqualTo(expectedDestinationConfiguration.FieldOverlayBehavior));
-			Assert.That(actualDestinationConfiguration.FolderPathSourceField, Is.EqualTo(expectedDestinationConfiguration.FolderPathSourceField));
-			Assert.That(actualDestinationConfiguration.ImportNativeFile, Is.EqualTo(expectedDestinationConfiguration.ImportNativeFile));
-			Assert.That(actualDestinationConfiguration.UseFolderPathInformation, Is.EqualTo(expectedDestinationConfiguration.UseFolderPathInformation));
-
-			Assert.That(actualIntegrationPoint.FieldMappings, Is.EqualTo(JsonConvert.SerializeObject(expectedIntegrationPointModel.FieldMappings)));
+			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel, new IntegrationPointFieldGuidsConstants());
 		}
 
-		private int GetRootFolder()
+		[Test]
+		public void ItShouldCreateIntegrationPointBasedOnProfile()
 		{
-			using (var folderManager = Helper.CreateAdminProxy<IFolderManager>())
-			{
-				return folderManager.GetWorkspaceRootAsync(SourceWorkspaceArtifactId).Result.ArtifactID;
-			}
-		}
+			string integrationPointName = "ip_name_234";
 
-		private int GetTypeArtifactId(string typeName)
-		{
-			using (var typeClient = Helper.CreateAdminProxy<IIntegrationPointTypeManager>())
-			{
-				return typeClient.GetIntegrationPointTypes(SourceWorkspaceArtifactId).Result.First(x => x.Name == typeName).ArtifactId;
-			}
-		}
+			var profile = CreateOrUpdateIntegrationPointProfile(CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "profile_name", "Append Only"));
 
-		private int GetSourceProviderArtifactId(string guid)
-		{
-			using (var providerClient = Helper.CreateAdminProxy<IProviderManager>())
-			{
-				return providerClient.GetSourceProviderArtifactIdAsync(SourceWorkspaceArtifactId, guid).Result;
-			}
-		}
+			var integrationPointModel = _client.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactId, profile.ArtifactID, integrationPointName).Result;
 
-		private int GetDestinationProviderArtifactId(string guid)
-		{
-			using (var providerClient = Helper.CreateAdminProxy<IProviderManager>())
-			{
-				return providerClient.GetDestinationProviderArtifactIdAsync(SourceWorkspaceArtifactId, guid).Result;
-			}
+			var actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactId);
+
+			Assert.That(actualIntegrationPoint.Name, Is.EqualTo(integrationPointName));
+			Assert.That(actualIntegrationPoint.SourceProvider, Is.EqualTo(profile.SourceProvider));
+			Assert.That(actualIntegrationPoint.DestinationProvider, Is.EqualTo(profile.DestinationProvider));
+			Assert.That(actualIntegrationPoint.DestinationConfiguration, Is.EqualTo(profile.Destination));
+			Assert.That(actualIntegrationPoint.SourceConfiguration, Is.EqualTo(profile.SourceConfiguration));
+			Assert.That(actualIntegrationPoint.EmailNotificationRecipients, Is.EqualTo(profile.NotificationEmails));
+			Assert.That(actualIntegrationPoint.EnableScheduler, Is.EqualTo(profile.Scheduler.EnableScheduler));
+			Assert.That(actualIntegrationPoint.FieldMappings, Is.EqualTo(profile.Map));
+			Assert.That(actualIntegrationPoint.Type, Is.EqualTo(profile.Type));
+			Assert.That(actualIntegrationPoint.LogErrors, Is.EqualTo(profile.LogErrors));
 		}
 	}
 }

@@ -9,10 +9,6 @@ namespace kCura.IntegrationPoints.Core.Models
 {
 	public class IntegrationPointProfileModel : IntegrationPointModelBase
 	{
-		internal IntegrationPointProfileModel()
-		{
-		}
-
 		public static IntegrationPointProfileModel FromIntegrationPoint(IntegrationPoint ip, string name)
 		{
 			return new IntegrationPointProfileModel

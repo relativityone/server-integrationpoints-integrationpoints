@@ -12,9 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.Relativity.Client;
 using Relativity.Services.Field;
+using Relativity.Services.Folder;
 using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -90,7 +92,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
 		{
-			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId}}}";
+			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId},\"FolderArtifactId\":{GetRootFolder(Helper, targetWorkspaceId)}}}";
 		}
 
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
@@ -111,7 +113,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				FieldOverlayBehavior = "Use Field Settings",
 				RelativityUsername = SharedVariables.RelativityUserName,
 				RelativityPassword = SharedVariables.RelativityPassword,
-				DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6"
+				DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
+				DestinationFolderArtifactId = GetRootFolder(Helper, targetWorkspaceId)
 			};
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
@@ -164,21 +167,41 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
 		{
-			IntegrationPointModel integrationModel = new IntegrationPointModel
-			{
-				Destination = CreateDestinationConfig(overwriteMode),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = name + DateTime.Now,
-				SelectedOverwrite = overwrite,
-				Scheduler = new Scheduler() { EnableScheduler = false },
-				Map = CreateDefaultFieldMap(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
-			};
-
+			IntegrationPointModel integrationModel = new IntegrationPointModel();
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
 			return integrationModel;
+		}
+
+		protected IntegrationPointProfileModel CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		{
+			IntegrationPointProfileModel integrationModel = new IntegrationPointProfileModel();
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
+			return integrationModel;
+		}
+
+		private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		{
+			modelBase.Destination = CreateDestinationConfig(overwriteMode);
+			modelBase.DestinationProvider = DestinationProvider.ArtifactId;
+			modelBase.SourceProvider = RelativityProvider.ArtifactId;
+			modelBase.SourceConfiguration = CreateDefaultSourceConfig();
+			modelBase.LogErrors = true;
+			modelBase.Name = name + DateTime.Now;
+			modelBase.SelectedOverwrite = overwrite;
+			modelBase.Scheduler = new Scheduler() { EnableScheduler = false };
+			modelBase.Map = CreateDefaultFieldMap();
+			modelBase.Type =
+				Container.Resolve<IIntegrationPointTypeService>()
+					.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
+					.ArtifactId;
+		}
+
+		private static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)
+		{
+			using (var folderManager = helper.CreateAdminProxy<IFolderManager>())
+			{
+				return folderManager.GetWorkspaceRootAsync(workspaceArtifactId).Result.ArtifactID;
+			}
 		}
 
 		protected IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
