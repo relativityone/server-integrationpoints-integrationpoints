@@ -188,7 +188,7 @@ try {
 
 	node('buildslave') {
 
-		stage('Checkout Integration Points') {
+		stage('IP Build & UnitTests') {
 						
 			dir('C:/SourceCode') {
 				bat 'powershell.exe "taskkill /f /im msbuild.exe /T /fi \'IMAGENAME eq msbuild.exe\'"'
@@ -205,17 +205,11 @@ try {
 						[[credentialsId : 'TalosCI (bitbucket)',
 							url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
 			}		
-		}
-
-		stage('Build') {
 			
 			dir('C:/SourceCode/integrationpoints') {
 				bat 'powershell.exe "& {./build.ps1 release; exit $lastexitcode}"'
 			}			
-		}
-		
-		stage('Unit Tests') {
-			
+
 			dir('C:/SourceCode/integrationpoints') {
 				bat 'powershell.exe "& {./build.ps1 -test -skip; exit $lastexitcode}"'
 			}			
