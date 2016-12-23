@@ -185,6 +185,44 @@ def build_tests(String server_name, String domain, String session_id, String rel
 }
 
 try {
+
+	node('buildslave') {
+
+		stage('Checkout Integration Points') {
+						
+			dir('C:/SourceCode') {
+				bat 'powershell.exe "taskkill /f /im msbuild.exe /T /fi \'IMAGENAME eq msbuild.exe\'"'
+
+				checkout([$class : 'GitSCM',
+						branches : [[name : env.BRANCH_NAME]],
+						doGenerateSubmoduleConfigurations : false,
+						extensions :
+						[[$class : 'CleanBeforeCheckout'],
+							[$class : 'RelativeTargetDirectory',
+								relativeTargetDir : 'integrationpoints']],
+						submoduleCfg : [],
+						userRemoteConfigs :
+						[[credentialsId : 'TalosCI (bitbucket)',
+							url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
+			}		
+		}
+
+		stage('Build') {
+			
+			dir('C:/SourceCode/integrationpoints') {
+				bat 'powershell.exe "& {./build.ps1 release; exit $lastexitcode}"'
+			}			
+		}
+		
+		stage('Unit Tests') {
+			
+			dir('C:/SourceCode/integrationpoints') {
+				bat 'powershell.exe "& {./build.ps1 -test -skip; exit $lastexitcode}"'
+			}			
+		}
+
+	}
+
     stage('Install RAID') {
     	parallel Deploy: {
     		build job: "Reporting.RegisterEvent", parameters: [
