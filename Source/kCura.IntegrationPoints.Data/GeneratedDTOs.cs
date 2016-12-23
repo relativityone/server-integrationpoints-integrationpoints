@@ -314,6 +314,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.Type), value);
 			}
 		}
+		[DynamicField(IntegrationPointFields.Credentials, IntegrationPointFieldGuids.Credentials, FieldTypes.LongText)]
+		public string Credentials
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.Credentials));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointFieldGuids.Credentials), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(IntegrationPointFields.Name, IntegrationPointFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
