@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -18,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public PermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer) : base(serializer)
+		public PermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper) : base(serializer, contextHelper)
 		{
 			_repositoryFactory = repositoryFactoryFactory;
 		}
@@ -28,10 +24,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-		
-			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-
-			var permissionRepository = _repositoryFactory.GetPermissionRepository(sourceConfiguration.SourceWorkspaceArtifactId);
+			
+			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
 			if (!permissionRepository.UserHasPermissionToAccessWorkspace())
 			{
@@ -69,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_INSTANCE_VIEW);
 			}
-			
+
 			return result;
 		}
 	}

@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(_SOURCE_PROVIDER_GUID, _validationModel.SourceProviderArtifactId, ArtifactPermission.View).Returns(sourceProviderInstanceViewPermission);
 
 			// ACT
-			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer);
+			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 			ValidationResult validationResult = permissionValidator.Validate(_validationModel);
 
 			// ASSERT	

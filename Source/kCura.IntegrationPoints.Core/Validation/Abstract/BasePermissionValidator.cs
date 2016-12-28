@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Models;
 
-namespace kCura.IntegrationPoints.Core.Validation.Parts
+namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
 	public abstract class BasePermissionValidator : BasePartsValidator<IntegrationPointProviderValidationModel>, IPermissionValidator
 	{
-		protected readonly ISerializer _serializer;
+		protected readonly ISerializer Serializer;
+		protected readonly IServiceContextHelper ContextHelper;
 
-		protected BasePermissionValidator(ISerializer serializer)
+		protected BasePermissionValidator(ISerializer serializer, IServiceContextHelper contextHelper)
 		{
-			_serializer = serializer;
+			Serializer = serializer;
+			ContextHelper = contextHelper;
 		}
 	}
 }

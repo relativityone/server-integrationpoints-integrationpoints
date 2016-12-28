@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			_serializer.Deserialize<ExportUsingSavedSearchSettings>(_validationModel.SourceConfiguration).Returns(exportSettings);
 
-			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer);
+			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
 			// act
 			var validationResult = permissionValidator.Validate(_validationModel);
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			_serializer.Deserialize<ExportUsingSavedSearchSettings>(_validationModel.SourceConfiguration).Returns(exportSettings);
 
-			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer);
+			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
 			// act
 			var validationResult = permissionValidator.Validate(_validationModel);
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			_serializer.Deserialize<ExportUsingSavedSearchSettings>(_validationModel.SourceConfiguration).Returns(exportSettings);
 
-			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer);
+			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
 			// act
 			var validationResult = permissionValidator.Validate(_validationModel);

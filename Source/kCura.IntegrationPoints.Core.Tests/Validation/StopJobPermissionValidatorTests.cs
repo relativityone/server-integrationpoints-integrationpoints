@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, INTEGRATION_POINT_ID, ArtifactPermission.Edit).Returns(canEditIntegrationPoint);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is<Guid>(guid => guid == new Guid(ObjectTypeGuids.JobHistory)), ArtifactPermission.Edit).Returns(canEditJobHistory);
 
-			var stopJobPermissionValidator = new StopJobPermissionValidator(_repositoryFactory, _serializer);
+			var stopJobPermissionValidator = new StopJobPermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
 			// act
 			var validationResult = stopJobPermissionValidator.Validate(_validationModel);

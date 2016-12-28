@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit).Returns(instanceEdit);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(typeCreate);
 
-			var savePermissionValidator = new SavePermissionValidator(_repositoryFactory, _serializer);
+			var savePermissionValidator = new SavePermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
 			if (isNew)
 			{

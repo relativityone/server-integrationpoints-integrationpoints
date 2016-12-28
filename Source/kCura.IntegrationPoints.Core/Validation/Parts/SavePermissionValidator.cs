@@ -1,26 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class SavePermissionValidator : BasePermissionValidator
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
-		public SavePermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer) : base(serializer)
+
+		public SavePermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper)
+			: base(serializer, contextHelper)
 		{
 			_repositoryFactory = repositoryFactoryFactory;
 		}
+
 		public override string Key => Constants.IntegrationPoints.Validation.SAVE;
 
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
@@ -29,9 +27,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
 
-			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-
-			var permissionRepository = _repositoryFactory.GetPermissionRepository(sourceConfiguration.SourceWorkspaceArtifactId);
+			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
 			if (model.ArtifactId > 0) // IP exists -- Edit permissions check
 			{

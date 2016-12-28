@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data;
 using NSubstitute;
 using NUnit.Framework;
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(destinationRdoPermissions);
 			_sourcePermissionRepository.UserCanEditDocuments().Returns(sourceDocumentEditPermissions);
 
-			var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_repositoryFactory, _serializer);
+			var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
 			// act
 			var validationResult = relativityProviderPermissionValidator.Validate(_validationModel);

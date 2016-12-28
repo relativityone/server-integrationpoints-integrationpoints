@@ -4,6 +4,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -46,6 +47,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		protected IPermissionRepository _sourcePermissionRepository;
 		protected IPermissionRepository _destinationPermissionRepository;
 		protected ISerializer _serializer;
+		protected IServiceContextHelper ServiceContextHelper;
 		protected IntegrationPointProviderValidationModel _validationModel;
 
 		[SetUp]
@@ -54,6 +56,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_sourcePermissionRepository = Substitute.For<IPermissionRepository>();
 			_destinationPermissionRepository = Substitute.For<IPermissionRepository>();
+			ServiceContextHelper = Substitute.For<IServiceContextHelper>();
+			ServiceContextHelper.WorkspaceID.Returns(_SOURCE_WORKSPACE_ID);
 			_repositoryFactory.GetPermissionRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_sourcePermissionRepository);
 			_repositoryFactory.GetPermissionRepository(Arg.Is(_DESTINATION_WORKSPACE_ID)).Returns(_destinationPermissionRepository);
 			_serializer = Substitute.For<ISerializer>();
