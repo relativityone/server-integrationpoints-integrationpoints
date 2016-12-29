@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using AutoMapper;
+using kCura.IntegrationPoints.Core.Models;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Services.Extensions
@@ -21,17 +22,12 @@ namespace kCura.IntegrationPoints.Services.Extensions
 
 		private static void SetProperties(this IntegrationPointModelBase modelBase, IntegrationPointModel model, string overwriteFieldsName)
 		{
-			modelBase.ArtifactID = model.ArtifactId;
-			modelBase.DestinationProvider = model.DestinationProvider;
-			modelBase.SourceProvider = model.SourceProvider;
-			modelBase.Name = model.Name;
+			Mapper.Map(model, modelBase);
 			modelBase.SourceConfiguration = JsonConvert.SerializeObject(model.SourceConfiguration);
 			modelBase.Destination = JsonConvert.SerializeObject(model.DestinationConfiguration);
-			modelBase.LogErrors = model.LogErrors;
 			modelBase.Map = JsonConvert.SerializeObject(model.FieldMappings);
 			modelBase.NotificationEmails = model.EmailNotificationRecipients;
-			modelBase.Scheduler = model.ScheduleRule.ToScheduler();
-			modelBase.Type = model.Type;
+			modelBase.Scheduler = Mapper.Map<Scheduler>(model.ScheduleRule);
 			modelBase.SelectedOverwrite = overwriteFieldsName;
 		}
 	}

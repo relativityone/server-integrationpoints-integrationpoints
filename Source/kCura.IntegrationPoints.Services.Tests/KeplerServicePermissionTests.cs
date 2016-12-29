@@ -85,6 +85,6 @@ namespace kCura.IntegrationPoints.Services.Tests
 			base.CheckPermissions(workspaceId);
 		}
 
-		protected override IInstaller Installer { get; }
+		protected override Installer Installer { get; }
 	}
 }

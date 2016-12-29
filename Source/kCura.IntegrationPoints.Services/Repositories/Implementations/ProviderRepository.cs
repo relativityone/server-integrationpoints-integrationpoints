@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Services.Extensions;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
@@ -28,13 +28,13 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		public IList<ProviderModel> GetSourceProviders(int workspaceArtifactId)
 		{
 			var sourceProviders = _rsapiService.SourceProviderLibrary.Query(new AllSourceProvidersQueryBuilder().Create());
-			return sourceProviders.Select(x => x.ToModel()).ToList();
+			return sourceProviders.Select(Mapper.Map<ProviderModel>).ToList();
 		}
 
 		public IList<ProviderModel> GetDesinationProviders(int workspaceArtifactId)
 		{
 			var destinationProviders = _rsapiService.DestinationProviderLibrary.Query(new AllDestinationProvidersQueryBuilder().Create());
-			return destinationProviders.Select(x => x.ToModel()).ToList();
+			return destinationProviders.Select(Mapper.Map<ProviderModel>).ToList();
 		}
 
 		public int GetDestinationProviderArtifactId(int workspaceArtifactId, string destinationProviderGuidIdentifier)

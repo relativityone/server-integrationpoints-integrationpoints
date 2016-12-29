@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
-	public class JobHistoryManagerInstaller : IInstaller
+	public class JobHistoryManagerInstaller : Installer
 	{
 		private readonly List<IWindsorInstaller> _dependencies;
 
@@ -22,7 +22,9 @@ namespace kCura.IntegrationPoints.Services.Installers
 			};
 		}
 
-		public void Install(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
+
+		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
 		{
 			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, true));
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
@@ -35,11 +37,6 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IJobHistoryRepository>().ImplementedBy<JobHistoryRepository>().LifestyleTransient());
 			container.Register(Component.For<IRelativityIntegrationPointsRepository>().ImplementedBy<RelativityIntegrationPointsRepository>().LifestyleTransient());
 			container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
-
-			foreach (IWindsorInstaller dependency in _dependencies)
-			{
-				dependency.Install(container, store);
-			}
 		}
 	}
 }

@@ -11,7 +11,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
-	public class IntegrationPointTypeManagerInstaller : IInstaller
+	public class IntegrationPointTypeManagerInstaller : Installer
 	{
 		private readonly List<IWindsorInstaller> _dependencies;
 
@@ -24,18 +24,15 @@ namespace kCura.IntegrationPoints.Services.Installers
 			};
 		}
 
-		public void Install(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
+
+		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
 		{
 			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, true));
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 
 			container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<IntegrationPointTypeRepository>().LifestyleTransient());
-
-			foreach (IWindsorInstaller dependency in _dependencies)
-			{
-				dependency.Install(container, store);
-			}
 		}
 	}
 }

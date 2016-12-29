@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Services
 {
 	public class IntegrationPointProfileManager : KeplerServiceBase, IIntegrationPointProfileManager
 	{
-		private IInstaller _installer;
+		private Installer _installer;
 
 		internal IntegrationPointProfileManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
 		{
@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 		}
 
-		protected override IInstaller Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
+		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
 
 		public void Dispose()
 		{

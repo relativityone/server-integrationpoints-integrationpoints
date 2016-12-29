@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
 			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
-			return choices.Select(x => x.ToModel()).ToList();
+			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
 		}
 
 		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactId, string integrationPointName)

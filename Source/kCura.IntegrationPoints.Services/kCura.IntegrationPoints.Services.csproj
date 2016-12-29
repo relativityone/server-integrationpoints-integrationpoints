@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\$(AutoMapper)\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Castle_Core)\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
@@ -101,15 +105,11 @@
     <Compile Include="DocumentManager.cs" />
     <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="Extensions\IntegrationPointModelExtensions.cs" />
-    <Compile Include="Extensions\IntegrationPointTypeExtensions.cs" />
-    <Compile Include="Extensions\OverwriteFieldsExtensions.cs" />
-    <Compile Include="Extensions\ProviderExtensions.cs" />
-    <Compile Include="Extensions\SheduleModelExtensions.cs" />
     <Compile Include="Helpers\BackwardCompatibility.cs" />
     <Compile Include="Helpers\IBackwardCompatibility.cs" />
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
-    <Compile Include="Installers\IInstaller.cs" />
+    <Compile Include="Installers\Installer.cs" />
     <Compile Include="Installers\IntegrationPointTypeManagerInstaller.cs" />
     <Compile Include="Installers\JobHistoryManagerInstaller.cs" />
     <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />

@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Services
 {
 	public class IntegrationPointManager : KeplerServiceBase, IIntegrationPointManager
 	{
-		private IInstaller _installer;
+		private Installer _installer;
 
 		/// <summary>
 		///     For testing purposes only
@@ -111,6 +111,6 @@ namespace kCura.IntegrationPoints.Services
 						workspaceArtifactId);
 		}
 
-		protected override IInstaller Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
+		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
 	}
 }

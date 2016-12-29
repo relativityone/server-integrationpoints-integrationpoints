@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Services
 {
 	public class IntegrationPointTypeManager : KeplerServiceBase, IIntegrationPointTypeManager
 	{
-		private IInstaller _installer;
+		private Installer _installer;
 
 		/// <summary>
 		///     For testing purposes only
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 		}
 
-		protected override IInstaller Installer => _installer ?? (_installer = new IntegrationPointTypeManagerInstaller());
+		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointTypeManagerInstaller());
 
 		public void Dispose()
 		{
