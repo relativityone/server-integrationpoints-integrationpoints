@@ -40,7 +40,8 @@ namespace kCura.IntegrationPoints.Core.Models
 				HasErrors = HasErrors,
 				EmailNotificationRecipients =
 					string.Join("; ", (NotificationEmails ?? string.Empty).Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
-				LastRuntimeUTC = LastRun
+				LastRuntimeUTC = LastRun,
+				Credentials = string.Empty
 			};
 
 			if (point.EnableScheduler.GetValueOrDefault(false))
