@@ -14,7 +14,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
-	public class IntegrationPointManagerInstaller : IInstaller
+	public class IntegrationPointManagerInstaller : Installer
 	{
 		private readonly List<IWindsorInstaller> _dependencies;
 
@@ -29,7 +29,9 @@ namespace kCura.IntegrationPoints.Services.Installers
 			};
 		}
 
-		public void Install(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
+
+		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
 		{
 			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, true));
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
@@ -61,13 +63,9 @@ namespace kCura.IntegrationPoints.Services.Installers
 
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper.GetServicesManager()));
 			container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<IntegrationPointRepository>().LifestyleTransient());
+			container.Register(Component.For<IIntegrationPointProfileRepository>().ImplementedBy<IntegrationPointProfileRepository>().LifestyleTransient());
 			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
 			container.Register(Component.For<IBackwardCompatibility>().ImplementedBy<BackwardCompatibility>().LifestyleTransient());
-
-			foreach (IWindsorInstaller dependency in _dependencies)
-			{
-				dependency.Install(container, store);
-			}
 		}
 	}
 }

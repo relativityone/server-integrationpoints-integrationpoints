@@ -1,6 +1,8 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -14,28 +16,30 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 		private readonly IPermissionRepository _permissionRepository;
 		private readonly IQueueManager _queueManager;
 		private readonly IStateManager _stateManager;
+		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 
 		public ButtonStateBuilder(IIntegrationPointManager integrationPointManager, IQueueManager queueManager, IJobHistoryManager jobHistoryManager, IStateManager stateManager,
-			IPermissionRepository permissionRepository)
+			IPermissionRepository permissionRepository, IIntegrationPointPermissionValidator permissionValidator)
 		{
 			_integrationPointManager = integrationPointManager;
 			_queueManager = queueManager;
 			_jobHistoryManager = jobHistoryManager;
 			_stateManager = stateManager;
 			_permissionRepository = permissionRepository;
+			_permissionValidator = permissionValidator;
 		}
 
 		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
 		{
 			IntegrationPointDTO integrationPointDto = _integrationPointManager.Read(applicationArtifactId, integrationPointArtifactId);
 
-			PermissionCheckDTO jobHistoryErrorViewPermissionCheck = _integrationPointManager.UserHasPermissionToViewErrors(applicationArtifactId);
+			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
 
 			Constants.SourceProvider sourceProvider = _integrationPointManager.GetSourceProvider(applicationArtifactId, integrationPointDto);
 			
 			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile), ArtifactPermission.Create);
 
-			bool canViewErrors = jobHistoryErrorViewPermissionCheck.Success;
+			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
 			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
 			bool integrationPointIsStoppable = IntegrationPointIsStoppable(applicationArtifactId, integrationPointArtifactId);
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);

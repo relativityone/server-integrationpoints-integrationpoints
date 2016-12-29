@@ -40,6 +40,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\$(AutoMapper)\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="BCrypt.Net, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
       <HintPath>..\packages\$(BCrypt-Official)\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
@@ -295,12 +299,22 @@
     <Compile Include="Services\IProviderTypeService.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Toggles\ShowImportProviderNonDocumentTypesToggle.cs" />
+    <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
+    <Compile Include="Validation\Abstract\IIntegrationPointPermissionValidator.cs" />
+    <Compile Include="Validation\Abstract\IIntegrationPointValidator.cs" />
+    <Compile Include="Validation\IntegrationPointPermissionValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
+    <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
+    <Compile Include="Validation\Parts\ImportPermissionValidator.cs" />
     <Compile Include="Validation\Parts\ArtifactValidator.cs" />
     <Compile Include="Validation\Parts\IntegrationPointTypeValidator.cs" />
     <Compile Include="Validation\Parts\NameValidator.cs" />
+    <Compile Include="Validation\Parts\PermissionValidator.cs" />
+    <Compile Include="Validation\Parts\SavePermissionValidator.cs" />
+    <Compile Include="Validation\Parts\StopJobPermissionValidator.cs" />
+    <Compile Include="Validation\Parts\ViewErrorsPermissionValidator.cs" />
     <Compile Include="Validation\Parts\WorkspaceValidator.cs" />
     <Compile Include="Validation\Parts\SavedSearchValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderWorkspaceValidator.cs" />
@@ -422,6 +436,7 @@
     <Compile Include="Validation\RelativityProviderValidator\Parts\FieldsMappingValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidator.cs" />
     <Compile Include="Validation\Parts\SchedulerValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationMessages.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidatorsFactory.cs" />
   </ItemGroup>

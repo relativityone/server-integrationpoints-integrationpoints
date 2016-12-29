@@ -110,7 +110,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			_caseServiceContext = caseServiceContext;
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), serializer);
-			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator);
+			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), serializer);
+
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, 
+				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator);
 		}
 
 		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)

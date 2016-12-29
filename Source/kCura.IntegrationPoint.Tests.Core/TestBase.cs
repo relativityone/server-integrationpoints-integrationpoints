@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using AutoMapper;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		[OneTimeSetUp]
 		public virtual void FixtureSetUp()
 		{
+			Mapper.Initialize(x => x.CreateMissingTypeMaps = true);
 			SetUp();
 		}
 

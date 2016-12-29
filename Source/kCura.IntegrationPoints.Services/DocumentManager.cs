@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Services
 	/// </summary>
 	public class DocumentManager : KeplerServiceBase, IDocumentManager
 	{
-		private IInstaller _installer;
+		private Installer _installer;
 
 		/// <summary>
 		///     For testing purposes only
@@ -53,6 +53,6 @@ namespace kCura.IntegrationPoints.Services
 					Execute((IDocumentRepository documentRepository) => documentRepository.GetHistoricalPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
 		}
 
-		protected override IInstaller Installer => _installer ?? (_installer = new DocumentManagerInstaller());
+		protected override Installer Installer => _installer ?? (_installer = new DocumentManagerInstaller());
 	}
 }

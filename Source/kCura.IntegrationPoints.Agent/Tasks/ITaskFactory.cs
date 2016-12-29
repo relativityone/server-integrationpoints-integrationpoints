@@ -226,8 +226,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobTracker jobTracker = new JobTracker(jobResourceTracker);
 				IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _helper, _serializer, jobTracker);
 				IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), _serializer);
+				IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), _serializer);
 
-				integrationPointService = new IntegrationPointService(_helper, _caseServiceContext, _contextContainerFactory, _serializer, choiceQuery, jobManager, _jobHistoryService, _managerFactory, ipValidator);
+				integrationPointService = new IntegrationPointService(_helper, _caseServiceContext, _contextContainerFactory, _serializer, 
+					choiceQuery, jobManager, _jobHistoryService, _managerFactory, ipValidator, permissionValidator);
 			}
 			else
 			{

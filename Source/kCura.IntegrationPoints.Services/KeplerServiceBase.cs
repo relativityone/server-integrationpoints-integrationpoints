@@ -96,6 +96,6 @@ namespace kCura.IntegrationPoints.Services
 			return container;
 		}
 
-		protected abstract IInstaller Installer { get; }
+		protected abstract Installer Installer { get; }
 	}
 }

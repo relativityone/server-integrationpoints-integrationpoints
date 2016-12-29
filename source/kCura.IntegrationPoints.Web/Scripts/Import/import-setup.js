@@ -143,13 +143,13 @@
     };
 
     windowObj.RelativityImport.checkValueForImportType = function () {
+
         var chosenType = windowObj.RelativityImport.koModel.selectedImportType();
-        if (chosenType === 'image') {
-            windowObj.RelativityImport.disablePreviewButton(false);
-        } else if (chosenType === 'production') {
-            windowObj.RelativityImport.disablePreviewButton(false);
-        } else {
+        if (chosenType === windowObj.RelativityImport.ImportTypeEnum.Document) {
             windowObj.RelativityImport.disablePreviewButton(true);
+        }
+        else {
+            windowObj.RelativityImport.disablePreviewButton(false);
         };
     };
 
@@ -331,6 +331,17 @@
 		},
 		success: function(data) {
 			windowObj.RelativityImport.koModel.productionSets(data);
+		}
+	});
+
+	$.ajax({
+		type: 'GET',
+		url: IP.utils.generateWebAPIURL('ImportProviderImage/GetOverlayIdentifierFields'),
+		data: {
+			workspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+		},
+		success: function (data) {
+			windowObj.RelativityImport.koModel.overlayIdentifiers(data);
 		}
 	});
 })(this, IP);

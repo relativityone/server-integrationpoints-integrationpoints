@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Core.Installers
@@ -25,6 +26,16 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IValidator>().ImplementedBy<RelativityProviderConfigurationValidator>().LifestyleTransient());
 
 			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderValidator>().LifestyleTransient());
+
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<ImportPermissionValidator>().LifestyleTransient());
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<PermissionValidator>().LifestyleTransient());
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<SavePermissionValidator>().LifestyleTransient());
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<StopJobPermissionValidator>().LifestyleTransient());
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<ViewErrorsPermissionValidator>().LifestyleTransient());
+
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<RelativityProviderPermissionValidator>().LifestyleTransient());
+
+			container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>().LifestyleTransient());
 		}
 	}
 }

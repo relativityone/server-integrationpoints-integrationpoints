@@ -36,8 +36,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory,
-			IIntegrationPointProviderValidator integrationModelValidator)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(), integrationModelValidator)
+			IIntegrationPointProviderValidator integrationModelValidator,
+			IIntegrationPointPermissionValidator permissionValidator)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(), 
+				  integrationModelValidator, permissionValidator)
 		{
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
@@ -87,27 +89,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				rule = ConvertModelToScheduleRule(model);
 				integrationPoint = model.ToRdo(choices, rule);
 
+				var integrationPointModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
+
 				SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
+				IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-				ValidationResult validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider);
-				
-				if (!validationResult.IsValid)
-				{
-					throw new IntegrationPointProviderValidationException(validationResult);
-				}
-
-				TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
-
-				if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
-					destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
-				{
-					CheckForProviderAdditionalPermissions(integrationPoint, Constants.SourceProvider.Relativity, Context.EddsUserID);
-				}
-				else
-				{
-					CheckForProviderAdditionalPermissions(integrationPoint, Constants.SourceProvider.Other, Context.EddsUserID);
-				}
+				RunValidation(integrationPointModel, sourceProvider, destinationProvider, integrationPointType);
 
 				//save RDO
 				if (integrationPoint.ArtifactId > 0)
@@ -118,6 +106,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				{
 					integrationPoint.ArtifactId = Context.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Create(integrationPoint);
 				}
+
+				TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
 
 				if (integrationPoint.EnableScheduler.GetValueOrDefault(false))
 				{
@@ -248,13 +238,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		private void CheckStopPermission(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			IIntegrationPointManager manager = ManagerFactory.CreateIntegrationPointManager(ContextContainer);
-			PermissionCheckDTO result = manager.UserHasPermissionToStopJob(workspaceArtifactId, integrationPointArtifactId);
-			if (!result.Success)
+			Data.IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+			SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
+			DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
+			IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
+
+			ValidationResult result = _permissionValidator.ValidateStop(IntegrationPointModel.FromIntegrationPoint(integrationPoint),
+				sourceProvider, destinationProvider, integrationPointType);
+
+			if (!result.IsValid)
 			{
 				CreateRelativityError(
 					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					$"User is missing the following permissions:{Environment.NewLine}{String.Join(Environment.NewLine, result.ErrorMessages)}");
+					$"User is missing the following permissions:{Environment.NewLine}{String.Join(Environment.NewLine, result.Messages)}");
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
 			}
@@ -346,23 +342,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				throw new Exception(Constants.IntegrationPoints.NO_USERID);
 			}
 
-			IIntegrationPointManager integrationPointManager = ManagerFactory.CreateIntegrationPointManager(ContextContainer);
-			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
+			IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-			Constants.SourceProvider sourceProviderEnum = Constants.SourceProvider.Other;
-			if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) &&
-				destinationProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID))
-			{
-				sourceProviderEnum = Constants.SourceProvider.Relativity;
-			}
+			ValidationResult validationResult = _permissionValidator.Validate(IntegrationPointModel.FromIntegrationPoint(integrationPoint), 
+				sourceProvider, destinationProvider, integrationPointType);
 
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(workspaceArtifactId, integrationPointDto, sourceProviderEnum);
-
-			if (!permissionCheck.Success)
+			if (!validationResult.IsValid)
 			{
 				CreateRelativityError(
 					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}");
+					$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, validationResult.Messages)}");
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
 			}
@@ -429,31 +418,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				jobTaskType = TaskType.ExportManager;
 			}
 			return jobTaskType;
-		}
-
-		private void CheckForProviderAdditionalPermissions(Data.IntegrationPoint integrationPoint, Constants.SourceProvider providerType, int userId)
-		{
-			IIntegrationPointManager integrationPointManager = ManagerFactory.CreateIntegrationPointManager(ContextContainer);
-			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
-
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToSaveIntegrationPoint(Context.WorkspaceID, integrationPointDto, providerType);
-
-			if (userId == 0)
-			{
-				var errorMessages = new List<string>(permissionCheck.ErrorMessages ?? new string[0]);
-				errorMessages.Add(Constants.IntegrationPoints.NO_USERID);
-
-				permissionCheck.ErrorMessages = errorMessages.ToArray();
-			}
-
-			if (!permissionCheck.Success)
-			{
-				CreateRelativityError(
-					Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
-					$"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}");
-
-				throw new PermissionException(Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
-			}
 		}
 
 		private void CheckForOtherJobsExecutingOrInQueue(TaskType taskType, int workspaceArtifactId, int integrationPointArtifactId)

@@ -15,6 +15,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Core.Api.Contracts.Shared.Validator;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
@@ -38,6 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IntegrationPointProfile _integrationPointProfile;
 		private SourceProvider _sourceProvider;
 		private IIntegrationPointProviderValidator _integrationModelValidator;
+		private IIntegrationPointPermissionValidator _permissionValidator;
 		private IntegrationPointProfileService _instance;
 		private IChoiceQuery _choiceQuery;
 
@@ -52,9 +54,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
+			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
-			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>()).Returns(new ValidationResult());
+			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
 
 			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(
 				_helper,
@@ -63,7 +66,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_serializer,
 				_choiceQuery,
 				_managerFactory,
-				_integrationModelValidator
+				_integrationModelValidator,
+				_permissionValidator
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();
@@ -94,6 +98,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Read(_integrationPointProfileArtifactId)
 				.Returns(_integrationPointProfile);
 			_caseServiceContext.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
+
+			_integrationModelValidator.Validate(
+				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
+				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+
+			_permissionValidator.Validate(
+				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
+				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+
+			_permissionValidator.ValidateSave(
+				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
+				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
 		}
 
 		[TestCase(true)]

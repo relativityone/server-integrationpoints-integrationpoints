@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string NO_PERMISSION_TO_IMPORT_TARGETWORKSPACE = "User does not have permission to import in the target workspace.";
 			public const string NO_SOURCE_PROVIDER_SPECIFIED = "A source provider was not specified for the integration point. Please create a new integration point.";
 			public const string NO_DESTINATION_PROVIDER_SPECIFIED = "A destination provider was not specified for the integration point. Please create a new integration point.";
+			public const string NO_INTEGRATION_POINT_TYPE_SPECIFIED = "Integration point type was not specified. Please create a new integration point.";
 			public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 			public const string RELATIVITY_CUSTOMPAGE_GUID = "dcf6e9d1-22b6-4da3-98f6-41381e93c30c";
 			public const string RELATIVITY_PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
@@ -38,6 +39,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT = "Unable to retrieve Integration Point.";
 			public const string UNABLE_TO_RETRIEVE_SOURCE_PROVIDER = "Unable to retrieve Source Provider.";
 			public const string UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER = "Unable to retrieve Destination Provider.";
+			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT_TYPE = "Unable to retrieve Integration Point Type.";
 			public const string UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE = "Unable to run this Integration Point. Please contact your system administrator.";
 			public const string UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to run Integration Point.";
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE = "Unable to retry this Integration Point. Please contact your system administrator.";
@@ -90,8 +92,6 @@ namespace kCura.IntegrationPoints.Core
 				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE = "User does not have permissions to save an Integration Point.";
 				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX = "User does not have the following permissions required to save an Integration Point:";
 				public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
-				public const string EXPORT_PRODUCTION_NO_VIEW = "User does not have permission to view selected Production.";
-				public const string EXPORT_FOLDER_NO_VIEW = "User does not have permission to view selected Folder.";
 			}
 
 			public class Telemetry
@@ -128,6 +128,14 @@ namespace kCura.IntegrationPoints.Core
 			{
 				public const string RELATIVITY = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 				public const string LOADFILE = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
+			}
+
+			public static class Validation
+			{
+				public const string INTEGRATION_POINT = "7C6930C3-E272-4AA2-A49C-A7DA68F16C67";
+				public const string SAVE = "F5588DFB-A2AE-46B2-BE02-E1C87AD2F186";
+				public const string VIEW_ERRORS = "C4BADAD9-BA4C-4C8F-9792-AE27882AEB47";
+				public const string STOP = "CB71C18F-E7E1-4BCC-B4B7-8C91BEB234D2";
 			}
 		}
 

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -10,6 +11,11 @@ using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using Microsoft.AspNet.SignalR;
@@ -39,8 +45,12 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			var queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 			var jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			var stateManager = _managerFactory.CreateStateManager();
+			var repositoryFactory = new RepositoryFactory(ConnectionHelper.Helper());
 
-			_buttonStateBuilder = new ButtonStateBuilder(_integrationPointManager, queueManager, jobHistoryManager, stateManager, permissionRepository);
+			IIntegrationPointPermissionValidator permissionValidator =
+				new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new JSONSerializer());
+
+			_buttonStateBuilder = new ButtonStateBuilder(_integrationPointManager, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator);
 		}
 
 		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory,

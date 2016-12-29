@@ -87,6 +87,7 @@
     <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />
+    <Compile Include="IIntegrationPointProfileManager.cs" />
     <Compile Include="IIntegrationPointTypeManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
     <Compile Include="IIntegrationPointsModule.cs" />

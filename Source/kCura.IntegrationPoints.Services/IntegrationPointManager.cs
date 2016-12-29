@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Services
 {
 	public class IntegrationPointManager : KeplerServiceBase, IIntegrationPointManager
 	{
-		private IInstaller _installer;
+		private Installer _installer;
 
 		/// <summary>
 		///     For testing purposes only
@@ -76,6 +76,15 @@ namespace kCura.IntegrationPoints.Services
 			return await Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetOverwriteFieldChoices(), workspaceArtifactId);
 		}
 
+		public async Task<IntegrationPointModel> CreateIntegrationPointFromProfileAsync(int workspaceArtifactId, int profileArtifactId, string integrationPointName)
+		{
+			return
+				await
+					Execute(
+						(IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName),
+						workspaceArtifactId);
+		}
+
 		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
 		{
 			return
@@ -102,6 +111,6 @@ namespace kCura.IntegrationPoints.Services
 						workspaceArtifactId);
 		}
 
-		protected override IInstaller Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
+		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
 	}
 }

@@ -52,17 +52,17 @@
       <HintPath>..\packages\$(kCura_Apps_Common_Data)\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.OAuth2Client.IdentityModel">
+    <Reference Include="Relativity.OAuth2Client.IdentityModel">
       <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
-	  <Private>True</Private>
+      <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.OAuth2Client">
+    <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.dll</HintPath>
-	  <Private>True</Private>
+      <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.OAuth2Client.Interfaces">
+    <Reference Include="Relativity.OAuth2Client.Interfaces">
       <HintPath>..\packages\$(Relativity_OAuth2Client_Interfaces)\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
-	  <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
@@ -320,6 +320,7 @@
     <Compile Include="Controllers\API\FieldCatalogController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentController.cs" />
+    <Compile Include="Controllers\API\ImportProviderImageController.cs" />
     <Compile Include="Controllers\API\IntegrationPointProfilesAPIController.cs" />
     <Compile Include="Controllers\API\IntegrationPointTypesController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />

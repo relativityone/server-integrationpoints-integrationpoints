@@ -40,6 +40,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\$(AutoMapper)\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
       <HintPath>..\packages\$(BCrypt-Official)\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
@@ -248,6 +252,7 @@
     <Compile Include="Models\BaseField.cs" />
     <Compile Include="Models\BaseFields.cs" />
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="PermissionValidatorTestsBase.cs" />
     <Compile Include="Placeholder.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="ProductionDataSource.cs" />

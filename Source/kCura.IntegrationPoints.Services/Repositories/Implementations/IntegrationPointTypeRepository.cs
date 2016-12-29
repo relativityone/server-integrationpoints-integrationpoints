@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
-using kCura.IntegrationPoints.Services.Extensions;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		{
 			var query = new AllIntegrationPointTypesQueryBuilder().Create();
 			var types = _rsapiService.IntegrationPointTypeLibrary.Query(query);
-			return types.Select(x => x.ToModel()).ToList();
+			return Enumerable.ToList(types.Select(Mapper.Map<IntegrationPointTypeModel>));
 		}
 	}
 }

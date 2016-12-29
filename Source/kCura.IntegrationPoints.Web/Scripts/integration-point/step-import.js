@@ -55,8 +55,16 @@
 				var $frame = $('#' + frameName).attr('src', self.source);
 				$frame.iFrameResize({ heightCalculationMethod: 'max' }).load(function () {
 					self.frameBus = IP.frameMessaging({ destination: window[frameName].contentWindow || window[frameName].frameElement.contentWindow });
-					var state = stepCache[self.stepKey];
-					self.frameBus.publish('load', state);
+					
+					//for ImportProvider, pass along full model to our second step
+					if (self.model.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636") {
+						self.frameBus.publish('loadFullState', self.model);
+					}
+					else {
+						var state = stepCache[self.stepKey];
+						self.frameBus.publish('load', state);
+					}
+
 				});
 			});
 		};
@@ -77,6 +85,18 @@
 				stepCache[self.model.source.selectedType] = self.model.sourceConfiguration;
 				d.resolve(self.model);
 			});
+
+			this.bus.subscribe('saveCompleteImage', function (data) {
+				var fullModel = JSON.parse(data);
+				self.model.SelectedOverwrite = fullModel.SelectedOverwrite;
+				self.model.Map = '[]';
+				self.model.sourceConfiguration = fullModel.sourceConfiguration;
+				self.model.destination = fullModel.destination;
+
+				stepCache[self.model.source.selectedType] = self.model.sourceConfiguration;
+				d.resolve(self.model);
+			});
+
 			this.bus.subscribe('saveError', function (error) {
 				d.reject(error);
 			});

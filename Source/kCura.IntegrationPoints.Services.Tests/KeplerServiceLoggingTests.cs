@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Services.Tests
 			return base.Execute(a, workspaceId);
 		}
 
-		protected override IInstaller Installer { get; }
+		protected override Installer Installer { get; }
 
 		protected override IWindsorContainer GetDependenciesContainer(int workspaceArtifactId)
 		{

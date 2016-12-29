@@ -44,6 +44,15 @@ namespace kCura.IntegrationPoints.Domain.Models
 		}
 
 		/// <summary>
+		/// Constructor, sets validation messages
+		/// </summary>
+		/// <param name="messages">Validation messages</param>
+		public ValidationResult(IEnumerable<string> messages)
+		{
+			AddRange(messages);
+		}
+
+		/// <summary>
 		/// Validation result
 		/// </summary>
 		public bool IsValid { get; set; }
@@ -67,7 +76,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 
 			IsValid &= validationResult.IsValid;
 
-			_messages.AddRange(validationResult.Messages.Where(x => !String.IsNullOrWhiteSpace(x)));
+			AddRange(validationResult.Messages);
 		}
 
 		/// <summary>
@@ -85,6 +94,17 @@ namespace kCura.IntegrationPoints.Domain.Models
 			IsValid = false;
 
 			_messages.Add(message);
+		}
+
+		private void AddRange(IEnumerable<string> messages)
+		{
+			if (messages != null)
+			{
+				foreach (var message in messages)
+				{
+					Add(message);
+				}
+			}			
 		}
 	}
 }

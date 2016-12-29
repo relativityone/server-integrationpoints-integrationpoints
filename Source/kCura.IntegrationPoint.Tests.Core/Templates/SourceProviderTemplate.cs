@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 
 #pragma warning disable 618
-			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };
+			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller(), new ValidationInstaller() };
 #pragma warning restore 618
 
 			foreach (IWindsorInstaller dependency in dependencies)
@@ -148,6 +148,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			IntegrationPoints.Data.IntegrationPoint rdo = service.GetRdo(integrationPointArtifactId);
 			IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
+			return newModel;
+		}
+		protected IntegrationPointProfileModel CreateOrUpdateIntegrationPointProfile(IntegrationPointProfileModel model)
+		{
+			IIntegrationPointProfileService service = Container.Resolve<IIntegrationPointProfileService>();
+
+			int integrationPointArtifactId = service.SaveIntegration(model);
+
+			IntegrationPoints.Data.IntegrationPointProfile rdo = service.GetRdo(integrationPointArtifactId);
+			IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
 			return newModel;
 		}
 

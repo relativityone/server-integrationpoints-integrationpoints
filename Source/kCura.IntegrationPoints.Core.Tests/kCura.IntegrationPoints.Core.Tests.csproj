@@ -289,14 +289,21 @@
     <Compile Include="Telemetry\TelemetryMangerTest.cs" />
     <Compile Include="Validation\ArtifactValidatorTests.cs" />
     <Compile Include="Validation\IntegrationPointTypeValidatorTests.cs" />
+    <Compile Include="Validation\ImportPermissionValidatorTests.cs" />
+    <Compile Include="Validation\IntegrationPointPermissionValidatorTests.cs" />
+    <Compile Include="Validation\PermissionValidatorTests.cs" />
     <Compile Include="Validation\NameValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\FieldMappingsValidatorTest.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderPermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\SavedSearchValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\TransferredObjectValidatorTests.cs" />
+    <Compile Include="Validation\SavePermissionValidatorTests.cs" />
     <Compile Include="Validation\SchedulerValidatorTest.cs" />
     <Compile Include="Validation\EmailValidatorTest.cs" />
     <Compile Include="Validation\RelativityProviderValidator\WorkspaceValidatorTests.cs" />
+    <Compile Include="Validation\StopJobPermissionValidatorTests.cs" />
+    <Compile Include="Validation\ViewErrorsPermissionValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

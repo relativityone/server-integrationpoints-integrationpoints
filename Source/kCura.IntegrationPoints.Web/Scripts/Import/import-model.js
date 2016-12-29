@@ -1,5 +1,6 @@
 ﻿'use strict';
 (function (windowObj, root, ko) {
+
 	ko.validation.rules.pattern.message = 'Invalid.';
 	ko.validation.registerExtenders();
 
@@ -16,11 +17,7 @@
 		return target;
 	};
 
-	var ImportTypeEnum = {
-		Document: 0,
-		Image: 1,
-		Production: 2
-	};
+	var ImportTypeEnum = windowObj.RelativityImport.ImportTypeEnum;
 
 	var viewModel = function () {
 		var self = this;
@@ -30,6 +27,9 @@
 			self.selectedImportType(data);
 		}
 
+		self.selectedImportType.subscribe(function (data) {
+			IP.frameMessaging().publish('importType', data);
+		});
 
 		self.importTypes = ko.observableArray([]);
 		$.getJSON(root.utils.generateWebAPIURL("/ImportProviderDocument/GetImportTypes"), function (data) {
@@ -55,17 +55,20 @@
 
 		self.fileContainsColumn = ko.observable("true");
 
-		//image/production import knockout bindings for Numbering section.
-		self.loadFilePageIdSelected = ko.observable();
-		self.autoNumberPagesSelected = ko.observable();
-		self.copyFilesToDocumentRepository = ko.observable();
+		//image/production import knockout bindings
+		self.autoNumberPages = ko.observable("false");
+		self.copyFilesToDocumentRepository = ko.observable("true");
 
 		self.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
 		self.SelectedOverwrite = ko.observable(self.SelectedOverwrite || 'Append Only');
 
 		self.overlayIdentifiers = ko.observableArray([]);
+		self.selectedOverlayIdentifier = ko.observable();
+
 		self.productionSets = ko.observableArray([]);
 
+
+		//delimiters for document import
 		self.asciiDelimiters = ko.observableArray([]);
 		self.setAsciiDelimiters = function (data) {
 			self.asciiDelimiters(data);

@@ -669,10 +669,20 @@ ko.validation.insertValidationMessage = function (element) {
 			this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
-		this.getTemplate = function () {
 
+		var relativityImportType;
+		IP.frameMessaging().subscribe('importType', function (importType) {
+			relativityImportType = importType;
+		});
+
+		this.getTemplate = function () {
+			// If import provider and non-document type, we want to skip the field mapping step
+		    if (this.returnModel.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636" &&
+				relativityImportType !== 0) {
+				return;
+			};
 			self.settings.url=
-			IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3');
+				IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3');
 			self.settings.templateID = "step3";
 
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
@@ -781,6 +791,15 @@ ko.validation.insertValidationMessage = function (element) {
 						for (var i = 0; i < allSourceField.length; i++) {
 							if (allSourceField[i].name === this.model.nativeFilePathValue()) {
 								nativePathField = allSourceField[i];
+
+								//If we are the import provider, we need to take the identifier and put it in the source config
+								//This will allow the provider to convert any relative paths to absolute.
+								if (this.returnModel.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636") {
+									var importConfig = JSON.parse(this.returnModel.sourceConfiguration);
+									$.extend(importConfig, { NativeFilePathFieldIdentifier: nativePathField.identifer });
+									this.returnModel.sourceConfiguration = JSON.stringify(importConfig);
+								}
+								break;
 							}
 						}
 						if (nativePathField !== "") {
@@ -794,16 +813,16 @@ ko.validation.insertValidationMessage = function (element) {
 
 					AddFolderPathInfoToMapping(map);
 
-				    if (this.model.ExtractedTextFieldContainsFilePath() == 'true') {
-				        var longTextField = "";
-				        var longTextFields = this.model.MappedLongTextFields();
-				        for (var j = 0; j < longTextFields.length; j++) {
-				            if (longTextFields[j].displayName === this.model.LongTextColumnThatContainsPathToFullText()) {
-				                longTextField = longTextFields[j];
-				                break;
-				            }
-				        }
-				    }
+					if (this.model.ExtractedTextFieldContainsFilePath() == 'true') {
+						var longTextField = "";
+						var longTextFields = this.model.MappedLongTextFields();
+						for (var j = 0; j < longTextFields.length; j++) {
+							if (longTextFields[j].displayName === this.model.LongTextColumnThatContainsPathToFullText()) {
+								longTextField = longTextFields[j];
+								break;
+							}
+						}
+					}
 
 					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
 					_destination.importNativeFile = this.model.importNativeFile();
@@ -824,6 +843,22 @@ ko.validation.insertValidationMessage = function (element) {
 				this.bus.subscribe('saveError', function (error) {
 					d.reject(error);
 				});
+
+				//If we are the import provider, we need to take the identifier and put it in the source config
+				//This will allow the provider to convert any relative paths to absolute.
+				if (this.returnModel.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636") {
+					if (_destination.ExtractedTextFieldContainsFilePath === 'true') {
+						var importConfig = JSON.parse(this.returnModel.sourceConfiguration);
+						//get the field identifier for the source field that contians the extracted text path
+						for (var i = 0; i < map.length; i++) {
+							if (map[i].destinationField.displayName === _destination.LongTextColumnThatContainsPathToFullText) {
+								$.extend(importConfig, { ExtractedTextPathFieldIdentifier: map[i].sourceField.fieldIdentifier });
+								break;
+							}
+						}
+						this.returnModel.sourceConfiguration = JSON.stringify(importConfig);
+					}
+				}
 
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
@@ -905,7 +940,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var currentMapping = {};
 		currentMapping = JSON.parse(step.returnModel.map);
 		AddFolderPathInfoToMapping(currentMapping);
-		
+
 		return JSON.stringify(currentMapping);
 	};
 

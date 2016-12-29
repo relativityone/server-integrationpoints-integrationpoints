@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -11,48 +12,41 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
-	public class IntegrationPointRepository : IIntegrationPointRepository
+	public class IntegrationPointRepository : IntegrationPointBaseRepository, IIntegrationPointRepository
 	{
+		private readonly IChoiceQuery _choiceQuery;
 		private readonly IIntegrationPointService _integrationPointService;
+		private readonly IIntegrationPointProfileService _integrationPointProfileService;
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IUserInfo _userInfo;
-		private readonly IChoiceQuery _choiceQuery;
-		private readonly IBackwardCompatibility _backwardCompatibility;
 
 		public IntegrationPointRepository(IIntegrationPointService integrationPointService, IObjectTypeRepository objectTypeRepository, IUserInfo userInfo,
-			IChoiceQuery choiceQuery, IBackwardCompatibility backwardCompatibility)
+			IChoiceQuery choiceQuery, IBackwardCompatibility backwardCompatibility, IIntegrationPointProfileService integrationPointProfileService) : base(backwardCompatibility)
 		{
+			_choiceQuery = choiceQuery;
+			_integrationPointProfileService = integrationPointProfileService;
 			_integrationPointService = integrationPointService;
 			_objectTypeRepository = objectTypeRepository;
 			_userInfo = userInfo;
-			_choiceQuery = choiceQuery;
-			_backwardCompatibility = backwardCompatibility;
 		}
 
 		public IntegrationPointModel CreateIntegrationPoint(CreateIntegrationPointRequest request)
 		{
 			request.IntegrationPoint.ArtifactId = 0;
-			return SaveIntegrationPoint(request);
+			var artifactId = SaveIntegrationPoint(request);
+			return GetIntegrationPoint(artifactId);
 		}
 
 		public IntegrationPointModel UpdateIntegrationPoint(UpdateIntegrationPointRequest request)
 		{
-			return SaveIntegrationPoint(request);
-		}
-
-		private IntegrationPointModel SaveIntegrationPoint(CreateIntegrationPointRequest request)
-		{
-			var overwriteFieldsName = GetOverwriteFieldsName(request.IntegrationPoint.OverwriteFieldsChoiceId);
-			_backwardCompatibility.FixIncompatibilities(request.IntegrationPoint, overwriteFieldsName);
-			var integrationPointModel = request.IntegrationPoint.ToCoreModel(overwriteFieldsName);
-			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
+			var artifactId = SaveIntegrationPoint(request);
 			return GetIntegrationPoint(artifactId);
 		}
 
-		private string GetOverwriteFieldsName(int overwriteFieldsId)
+		public override int Save(IntegrationPointModel model, string overwriteFieldsName)
 		{
-			//TODO remove this hack when IntegrationPointModel will start using ChoiceId instead of ChoiceName
-			return GetOverwriteFieldChoices().First(x => x.ArtifactId == overwriteFieldsId).Name;
+			var integrationPointModel = model.ToCoreModel(overwriteFieldsName);
+			return _integrationPointService.SaveIntegration(integrationPointModel);
 		}
 
 		public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
@@ -78,10 +72,19 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			return _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
 		}
 
-		public IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
+		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
 			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
-			return choices.Select(x => x.ToModel()).ToList();
+			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
+		}
+
+		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactId, string integrationPointName)
+		{
+			var profile = _integrationPointProfileService.GetRdo(profileArtifactId);
+			var integrationPointModel = Core.Models.IntegrationPointModel.FromIntegrationPointProfile(profile, integrationPointName);
+
+			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
+			return GetIntegrationPoint(artifactId);
 		}
 	}
 }

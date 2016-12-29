@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Managers
 {
@@ -12,6 +13,12 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="fieldArtifactId">The artifact id of the field</param>
 		/// <returns>The artifact view field id if found, <code>NULL</code> otherwise</returns>
 		int? RetrieveArtifactViewFieldId(int workspaceArtifactId, int fieldArtifactId);
+
+		/// <summary>
+		/// Retrieves the potential begin bates fields
+		/// </summary>
+		/// <returns>An array of ArtifactFieldDTOs</returns>
+		ArtifactFieldDTO[] RetrieveBeginBatesFields(int workspaceArtifactId);
 	}
 
 
