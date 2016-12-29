@@ -10,78 +10,85 @@ using System.Text;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Services.Tests.Integration")]
+
 namespace kCura.IntegrationPoints.Security
 {
-    internal class DefaultEncryptionManager : IEncryptionManager
-    {
-        //TODO: this does not belong here, we need to wait until we have a more permanent solution from the portland team
-        private readonly string Salt =
-                    "w2hwalh15uj8k0qvahvdgab6q,57cb-m2.wrcim1n9u0rmr2o6dbmltkqz4,9o9l45od67nt-5p0j5ig3gnmqj.behtq.hvraq34m01u7rng85vatzjr5bcu1,584n6j60b1ukshawur9jlz4brcvflhbi6rl1ef628u6k6ix1p8uqk9435mu9ap5-9,-bv64-j1ru0s2ccu6uj5ryo,711deef550da-ks38ffa,-tv9";
-        private readonly int KeyLength = 24;
-        private readonly int InjectionLength = 16;
+	internal class DefaultEncryptionManager : IEncryptionManager
+	{
+		//TODO: this does not belong here, we need to wait until we have a more permanent solution from the portland team
+		private readonly string Salt =
+			"w2hwalh15uj8k0qvahvdgab6q,57cb-m2.wrcim1n9u0rmr2o6dbmltkqz4,9o9l45od67nt-5p0j5ig3gnmqj.behtq.hvraq34m01u7rng85vatzjr5bcu1,584n6j60b1ukshawur9jlz4brcvflhbi6rl1ef628u6k6ix1p8uqk9435mu9ap5-9,-bv64-j1ru0s2ccu6uj5ryo,711deef550da-ks38ffa,-tv9";
 
-        //'<summary>
-        //'Returns a two dimensional byte array.
-        //'result[0] contains the key vector generated from the salt.
-        //'result[1] contains the injection vector generated from the salt.
-        //'</summary>
-        //'<returns></returns>
-        private byte[][] GenerateVectors()
-        {
-            byte[][] result = new byte[3][];
+		private readonly int KeyLength = 24;
+		private readonly int InjectionLength = 16;
 
-            byte[] saltBytes = new ASCIIEncoding().GetBytes(Salt);
+		//'<summary>
+		//'Returns a two dimensional byte array.
+		//'result[0] contains the key vector generated from the salt.
+		//'result[1] contains the injection vector generated from the salt.
+		//'</summary>
+		//'<returns></returns>
+		private byte[][] GenerateVectors()
+		{
+			byte[][] result = new byte[3][];
 
-            result[0] = new byte[KeyLength];
-            result[1] = new byte[InjectionLength];
+			byte[] saltBytes = new ASCIIEncoding().GetBytes(Salt);
 
-            Array.Copy(saltBytes, 0, result[0], 0, KeyLength);
-            Array.Copy(saltBytes, KeyLength, result[1], 0, InjectionLength);
+			result[0] = new byte[KeyLength];
+			result[1] = new byte[InjectionLength];
 
-            return result;
-        }
+			Array.Copy(saltBytes, 0, result[0], 0, KeyLength);
+			Array.Copy(saltBytes, KeyLength, result[1], 0, InjectionLength);
 
-        public string Decrypt(string encryptedText)
-        {
-            if (string.IsNullOrEmpty(encryptedText))
-                return string.Empty;
+			return result;
+		}
 
-            byte[][] vectors = GenerateVectors();
-            var crypto = new TripleDESCryptoServiceProvider();
-            ICryptoTransform decryptor = crypto.CreateDecryptor(vectors[0], vectors[1]);
+		public string Decrypt(string encryptedText)
+		{
+			if (string.IsNullOrWhiteSpace(encryptedText))
+			{
+				return string.Empty;
+			}
 
-            byte[] cipher = Convert.FromBase64String(encryptedText);
-            MemoryStream memoryStream = new System.IO.MemoryStream(cipher);
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+			byte[][] vectors = GenerateVectors();
+			var crypto = new TripleDESCryptoServiceProvider();
+			ICryptoTransform decryptor = crypto.CreateDecryptor(vectors[0], vectors[1]);
 
-            byte[] decryptedText = new byte[cipher.Length + 1];
-            int textLength = cryptoStream.Read(decryptedText, 0, decryptedText.Length);
+			byte[] cipher = Convert.FromBase64String(encryptedText);
+			MemoryStream memoryStream = new MemoryStream(cipher);
+			CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
 
-            memoryStream.Close();
-            cryptoStream.Close();
+			byte[] decryptedText = new byte[cipher.Length + 1];
+			int textLength = cryptoStream.Read(decryptedText, 0, decryptedText.Length);
 
-            return (new ASCIIEncoding()).GetString(decryptedText, 0, textLength);
-        }
+			memoryStream.Close();
+			cryptoStream.Close();
 
-        public string Encrypt(string text)
-        {
-            if (string.IsNullOrEmpty(text))
-                return string.Empty;
+			return new ASCIIEncoding().GetString(decryptedText, 0, textLength);
+		}
 
-            byte[][] vectors = GenerateVectors();
-            var crypto = new TripleDESCryptoServiceProvider();
-            ICryptoTransform encryptor = crypto.CreateEncryptor(vectors[0], vectors[1]);
-            MemoryStream memoryStream = new System.IO.MemoryStream();
-            CryptoStream CryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+		public string Encrypt(string text)
+		{
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return string.Empty;
+			}
 
-            byte[] encodedText = new ASCIIEncoding().GetBytes(text);
-            CryptoStream.Write(encodedText, 0, encodedText.Length);
-            CryptoStream.FlushFinalBlock();
+			byte[][] vectors = GenerateVectors();
+			var crypto = new TripleDESCryptoServiceProvider();
+			ICryptoTransform encryptor = crypto.CreateEncryptor(vectors[0], vectors[1]);
+			MemoryStream memoryStream = new MemoryStream();
+			CryptoStream CryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
 
-            CryptoStream.Close();
-            memoryStream.Close();
+			byte[] encodedText = new ASCIIEncoding().GetBytes(text);
+			CryptoStream.Write(encodedText, 0, encodedText.Length);
+			CryptoStream.FlushFinalBlock();
 
-            return Convert.ToBase64String(memoryStream.ToArray());
-        }
-    }
+			CryptoStream.Close();
+			memoryStream.Close();
+
+			return Convert.ToBase64String(memoryStream.ToArray());
+		}
+	}
 }

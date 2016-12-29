@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
@@ -71,6 +73,41 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Assert.That(actualIntegrationPoint.FieldMappings, Is.EqualTo(profile.Map));
 			Assert.That(actualIntegrationPoint.Type, Is.EqualTo(profile.Type));
 			Assert.That(actualIntegrationPoint.LogErrors, Is.EqualTo(profile.LogErrors));
+		}
+
+		[Test]
+		public void ItShouldCreateIntegrationPointWithEncryptedCredentials()
+		{
+			string username = "username_933";
+			string password = "password_729";
+
+			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
+
+			var createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId,
+				TargetWorkspaceArtifactId, false, true, false, string.Empty, "Use Field Settings", overwriteFieldsModel,
+				GetDefaultFieldMap().ToList());
+
+			createRequest.IntegrationPoint.Credentials = new Credentials
+			{
+				Username = username,
+				Password = password
+			};
+
+			var integrationPointModel = _client.CreateIntegrationPointAsync(createRequest).Result;
+
+			var actualCredentials =
+				Helper.GetDBContext(SourceWorkspaceArtifactId)
+					.ExecuteSqlStatementAsScalar<string>($"SELECT Credentials FROM [IntegrationPoint] WHERE ArtifactID = {integrationPointModel.ArtifactId}");
+
+			var expectedCredentails = new DefaultEncryptionManager().Encrypt(JsonConvert.SerializeObject(createRequest.IntegrationPoint.Credentials));
+
+			Assert.That(actualCredentials, Is.EqualTo(expectedCredentails));
+		}
+
+		private class Credentials
+		{
+			public string Username { get; set; }
+			public string Password { get; set; }
 		}
 	}
 }

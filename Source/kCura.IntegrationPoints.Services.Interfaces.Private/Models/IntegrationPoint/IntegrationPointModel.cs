@@ -23,5 +23,6 @@ namespace kCura.IntegrationPoints.Services
 		public string EmailNotificationRecipients { get; set; }
 		public int Type { get; set; }
 		public int OverwriteFieldsChoiceId { get; set; }
+		public object Credentials { get; set; }
 	}
 }

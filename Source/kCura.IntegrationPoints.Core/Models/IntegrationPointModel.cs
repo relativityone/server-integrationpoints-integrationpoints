@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Core.Models
 	{
 		public DateTime? LastRun { get; set; }
 		public bool? HasErrors { get; set; }
+		public string Credentials { get; set; }
 
 		public IntegrationPointModel()
 		{
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Models
 				EmailNotificationRecipients =
 					string.Join("; ", (NotificationEmails ?? string.Empty).Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
 				LastRuntimeUTC = LastRun,
-				Credentials = string.Empty
+				Credentials = Credentials
 			};
 
 			if (point.EnableScheduler.GetValueOrDefault(false))
@@ -76,7 +77,8 @@ namespace kCura.IntegrationPoints.Core.Models
 				HasErrors = ip.HasErrors.GetValueOrDefault(false),
 				LastRun = ip.LastRuntimeUTC,
 				NextRun = ip.NextScheduledRuntimeUTC,
-				Map = ip.FieldMappings
+				Map = ip.FieldMappings,
+				Credentials = ip.Credentials
 			};
 		}
 
