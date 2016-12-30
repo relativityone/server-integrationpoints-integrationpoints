@@ -30,10 +30,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
-
-            if (json.DestinationProviderType != null && json.DestinationProviderType.ToLower() == "load file")
-                return _container.Kernel.Resolve<IDataSynchronizer>(typeof(ExportSynchroznizer).AssemblyQualifiedName);
-
+			
             if (json.Provider != null && json.Provider.ToLower() == "relativity")
 			{ 
 				IRSAPIClient client = _container.Resolve<IRSAPIClient>();
