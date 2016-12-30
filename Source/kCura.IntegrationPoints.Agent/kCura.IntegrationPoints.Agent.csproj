@@ -160,17 +160,17 @@
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.OAuth2Client.IdentityModel">
+    <Reference Include="Relativity.OAuth2Client.IdentityModel">
       <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
-	  <Private>True</Private>
+      <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.OAuth2Client">
+    <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.dll</HintPath>
-	  <Private>True</Private>
+      <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.OAuth2Client.Interfaces">
+    <Reference Include="Relativity.OAuth2Client.Interfaces">
       <HintPath>..\packages\$(Relativity_OAuth2Client_Interfaces)\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
-	  <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -201,6 +201,7 @@
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />
     <Compile Include="Tasks\TaskComponentSelector.cs" />
+    <Compile Include="Validation\IntegrationPointPermissionEmptyValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderEmptyValidator.cs" />
   </ItemGroup>
   <ItemGroup>
