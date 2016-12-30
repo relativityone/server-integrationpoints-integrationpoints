@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 importDataReader.Setup(fieldMaps);
                 IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-                if (dataSynchronizer is RdoSynchronizerBase)
+                if (dataSynchronizer is RdoSynchronizer)
                 {
                     ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
                     settings.OnBehalfOfUserId = job.SubmittedBy;

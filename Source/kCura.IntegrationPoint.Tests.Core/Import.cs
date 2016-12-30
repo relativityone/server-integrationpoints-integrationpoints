@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string settings = JsonConvert.SerializeObject(setting);
-			RdoSynchronizerPush pusher = new RdoSynchronizerPush(null, factory, helper);
+			RdoSynchronizer pusher = new RdoSynchronizer(null, factory, helper);
 
 			FieldMap mapIdentifier = new FieldMap
 			{

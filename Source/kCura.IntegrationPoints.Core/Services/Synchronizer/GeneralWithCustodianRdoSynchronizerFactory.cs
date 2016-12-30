@@ -40,8 +40,8 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				{
 					{"fieldQuery", new RelativityFieldQuery(client, helper)},
 				};
-				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizerPush).AssemblyQualifiedName, dict);
-				RdoSynchronizerPush syncBase = (RdoSynchronizerPush) synchronizer;
+				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizer).AssemblyQualifiedName, dict);
+				RdoSynchronizer syncBase = (RdoSynchronizer) synchronizer;
 				syncBase.SourceProvider = SourceProvider;
 				return syncBase;
 			}
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 					s.TaskJobSubmitter = TaskJobSubmitter;
 					return s;
 				default:
-					return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerPull).AssemblyQualifiedName);
+					return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizer).AssemblyQualifiedName);
 			}
 		}
 	}
