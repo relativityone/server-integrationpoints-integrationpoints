@@ -227,7 +227,6 @@
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
     <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
-    <Compile Include="Repositories\Implementations\ResourcePoolRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiRdoRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
@@ -256,7 +255,6 @@
     <Compile Include="Repositories\IPermissionRepository.cs" />
     <Compile Include="Repositories\IRelativityAuditRepository.cs" />
     <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
-    <Compile Include="Repositories\IResourcePoolRepository.cs" />
     <Compile Include="Repositories\IRdoRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />

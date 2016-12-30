@@ -343,6 +343,7 @@ var IP = IP || {};
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
 				this.model.SourceProviderConfiguration = this.model.source.SourceProviderConfiguration;
+				this.model.IntegrationPointTypeIdentifier = this.model.getSelectedType(this.model.type(), function (item, artifactID) { return item.artifactID === artifactID }).value;
 				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();

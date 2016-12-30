@@ -176,12 +176,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns a class implementing the IResourcePoolRepository interface.
-		/// </summary>
-		/// <returns>A class implementing the IResourcePoolRepository interface.</returns>
-		IResourcePoolRepository GetResourcePoolRepository();
-
-		/// <summary>
 		/// Returns a class implementing the IRdoRepository interface.
 		/// </summary>
 		/// <returns>A class implementing the IRdoRepository interface.</returns>

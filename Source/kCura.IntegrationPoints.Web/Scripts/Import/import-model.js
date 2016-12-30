@@ -99,30 +99,30 @@
 			self.selectedNestedValueAsciiDelimiter(data);
 		};
 
-		self.ProcessingSourceLocationArtifactId = 0;
+		// self.ProcessingSourceLocationArtifactId = 0;
 
-		self.ProcessingSourceLocationList = ko.observableArray([]);
+		//self.ProcessingSourceLocationList = ko.observableArray([]);
 
 		self.HasBeenRun = ko.observable(false);
 
-		self.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
-			required: true,
-			deferValidation: true
-		});
+		// self.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
+		// 	required: true,
+		// 	deferValidation: true
+		// });
 
 		self.Fileshare = ko.observable().extend({
 			required: true,
 			deferValidation: true
 		});
 
-		self.GetSelectedProcessingSourceLocationPath = function (artifactId) {
-			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
-				if (item.artifactId === artifactId) {
-					return item;
-				}
-			});
-			return selectedPath;
-		};
+		//self.GetSelectedProcessingSourceLocationPath = function (artifactId) {
+		//	var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
+		//		if (item.artifactId === artifactId) {
+		//			return item;
+		//		}
+		//	});
+		//	return selectedPath;
+		//};
 
 		self.DataFileEncodingTypeValue = "Select...";
 

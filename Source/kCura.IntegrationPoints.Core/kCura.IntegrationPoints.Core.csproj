@@ -262,13 +262,11 @@
     <Compile Include="Managers\Implementations\NullableStopJobManager.cs" />
     <Compile Include="Managers\Implementations\ObjectTypeManager.cs" />
     <Compile Include="Managers\Implementations\QueueManager.cs" />
-    <Compile Include="Managers\Implementations\ResourcePoolManager.cs" />
     <Compile Include="Managers\Implementations\SourceProviderManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
     <Compile Include="Managers\Implementations\SourceJobManager.cs" />
     <Compile Include="Managers\Implementations\StateManager.cs" />
     <Compile Include="Managers\Implementations\WorkspaceManager.cs" />
-    <Compile Include="Managers\IResourcePoolManager.cs" />
     <Compile Include="Managers\ISourceProviderManager.cs" />
     <Compile Include="Managers\IQueueManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
@@ -291,7 +289,9 @@
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\ArtifactService.cs" />
+    <Compile Include="Services\DataTransferLocationService.cs" />
     <Compile Include="Services\IChoiceService.cs" />
+    <Compile Include="Services\IDataTransferLocationService.cs" />
     <Compile Include="Services\IImportTypeService.cs" />
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\IIntegrationPointValidationService.cs" />

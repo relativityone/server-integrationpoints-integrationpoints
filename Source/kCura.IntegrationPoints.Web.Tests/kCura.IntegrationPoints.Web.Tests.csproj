@@ -223,7 +223,6 @@
     <Compile Include="Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Controllers\LdapControllerTests.cs" />
     <Compile Include="Controllers\RelativityControllerTests.cs" />
-    <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
     <Compile Include="Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />

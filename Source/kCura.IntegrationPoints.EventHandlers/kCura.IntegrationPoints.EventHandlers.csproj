@@ -143,11 +143,11 @@
       <HintPath>..\packages\$(Relativity_Data)\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.Interfaces, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -168,10 +168,12 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
     <Compile Include="Installers\SetIntegrationPointType.cs" />
+    <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointTypeInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
