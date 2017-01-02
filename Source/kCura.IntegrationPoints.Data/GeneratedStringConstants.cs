@@ -72,11 +72,11 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class DocumentFieldGuids 
 	{
-		public const string MarkupSetPrimary = @"d3dee793-d86d-49e5-bab5-b7e130359135";
+		public const string MarkupSetPrimary = @"b9b8964b-92f9-4d34-bd8a-69e303821db5";
 		public const string Batch = @"d7a9d9fd-68fc-4c85-ad44-ba524a0ca872";
-		public const string BatchBatchSet = @"8c3ea95d-6c72-4463-8696-1b6859c0e00e";
-		public const string BatchAssignedTo = @"3e62303c-b955-4a93-b82a-894ce40b5563";
-		public const string BatchStatus = @"70e1751f-4f6b-4c1d-abd7-8a6328750175";
+		public const string BatchBatchSet = @"de165970-de80-4c1e-90e3-8dd330b8138a";
+		public const string BatchAssignedTo = @"81c45cf6-71e8-443c-ab82-877651aa5be4";
+		public const string BatchStatus = @"478d3913-f243-4e43-93ad-c95935e71657";
 		public const string RelativityDestinationCase = @"8980c2fa-0d33-4686-9a97-ea9d6f0b4196";
 		public const string JobHistory = @"97bc12fa-509b-4c75-8413-6889387d8ef6";
 		public const string ControlNumber = @"2a3f1212-c8ca-4fa9-ad6b-f76c97f05438";
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string EmailNotificationRecipients = @"EmailNotificationRecipients";
 		public const string HasErrors = @"Has Errors";
 		public const string Type = @"Type";
-		public const string Credentials = @"Credentials";
+		public const string SecuredConfiguration = @"Secured Configuration";
 		public const string Name = @"Name";
 	}
 
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string EmailNotificationRecipients = @"1bac59db-f7bf-48e0-91d4-18cf09ff0e39";
 		public const string HasErrors = @"a9853e55-0ba0-43d8-a766-747a61471981";
 		public const string Type = @"e646016e-5df6-4440-b218-18a00926d002";
-		public const string Credentials = @"4329c8ae-0a74-474c-bdb3-362a44f52167";
+		public const string SecuredConfiguration = @"48b0a4cb-bc21-45b5-b124-76ae27e03c42";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
 	}
 

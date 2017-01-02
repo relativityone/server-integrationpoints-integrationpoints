@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			foreach (var integrationPoint in objs)
 			{
-				integrationPoint.Credentials = _encryptionManager.Encrypt(integrationPoint.Credentials);
+				integrationPoint.SecuredConfiguration = _encryptionManager.Encrypt(integrationPoint.SecuredConfiguration);
 			}
 			return base.Create(objs);
 		}
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Data
 		public override List<IntegrationPoint> Read(IEnumerable<int> artifactIds)
 		{
 			var result = base.Read(artifactIds);
-			result.ForEach(x => x.Credentials = _encryptionManager.Decrypt(x.Credentials));
+			result.ForEach(x => x.SecuredConfiguration = _encryptionManager.Decrypt(x.SecuredConfiguration));
 			return result;
 		}
 
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			foreach (var integrationPoint in objs)
 			{
-				integrationPoint.Credentials = _encryptionManager.Encrypt(integrationPoint.Credentials);
+				integrationPoint.SecuredConfiguration = _encryptionManager.Encrypt(integrationPoint.SecuredConfiguration);
 			}
 			return base.Update(objs);
 		}
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Data
 		public override List<IntegrationPoint> Query(Query<RDO> q, int pageSize = 0)
 		{
 			var result = base.Query(q, pageSize);
-			result.ForEach(x => x.Credentials = _encryptionManager.Decrypt(x.Credentials));
+			result.ForEach(x => x.SecuredConfiguration = _encryptionManager.Decrypt(x.SecuredConfiguration));
 			return result;
 		}
 	}

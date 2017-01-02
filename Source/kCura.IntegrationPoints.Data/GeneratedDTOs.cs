@@ -314,16 +314,16 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.Type), value);
 			}
 		}
-		[DynamicField(IntegrationPointFields.Credentials, IntegrationPointFieldGuids.Credentials, FieldTypes.LongText)]
-		public string Credentials
+		[DynamicField(IntegrationPointFields.SecuredConfiguration, IntegrationPointFieldGuids.SecuredConfiguration, FieldTypes.LongText)]
+		public string SecuredConfiguration
 		{
 			get
 			{
-				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.Credentials));
+				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.SecuredConfiguration));
 			}
 			set
 			{
-				SetField<string>(new System.Guid(IntegrationPointFieldGuids.Credentials), value);
+				SetField<string>(new System.Guid(IntegrationPointFieldGuids.SecuredConfiguration), value);
 			}
 		}
 		public const int NameFieldLength = 255;

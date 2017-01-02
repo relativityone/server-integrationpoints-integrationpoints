@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				OverwriteFields = new Choice(1000) { Name = "AppendOnly" },
 				ScheduleRule = String.Empty,
 				Type = _integrationPointTypeArtifactId,
-				Credentials = string.Empty
+				SecuredConfiguration = string.Empty
 			};
 			_sourceProvider = new SourceProvider();
 			_destinationProvider = new DestinationProvider();

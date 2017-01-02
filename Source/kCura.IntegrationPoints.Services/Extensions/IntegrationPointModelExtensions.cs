@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Services.Extensions
 		{
 			var result = new Core.Models.IntegrationPointModel();
 			result.SetProperties(model, overwriteFieldsName);
-			result.Credentials = JsonConvert.SerializeObject(model.Credentials);
+			result.SecuredConfiguration = JsonConvert.SerializeObject(model.SecuredConfiguration);
 			return result;
 		}
 

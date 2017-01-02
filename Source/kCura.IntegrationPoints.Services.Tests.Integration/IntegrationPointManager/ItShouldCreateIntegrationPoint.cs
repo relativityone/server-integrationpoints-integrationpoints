@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				TargetWorkspaceArtifactId, false, true, false, string.Empty, "Use Field Settings", overwriteFieldsModel,
 				GetDefaultFieldMap().ToList());
 
-			createRequest.IntegrationPoint.Credentials = new Credentials
+			createRequest.IntegrationPoint.SecuredConfiguration = new Credentials
 			{
 				Username = username,
 				Password = password
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				Helper.GetDBContext(SourceWorkspaceArtifactId)
 					.ExecuteSqlStatementAsScalar<string>($"SELECT Credentials FROM [IntegrationPoint] WHERE ArtifactID = {integrationPointModel.ArtifactId}");
 
-			var expectedCredentails = new DefaultEncryptionManager().Encrypt(JsonConvert.SerializeObject(createRequest.IntegrationPoint.Credentials));
+			var expectedCredentails = new DefaultEncryptionManager().Encrypt(JsonConvert.SerializeObject(createRequest.IntegrationPoint.SecuredConfiguration));
 
 			Assert.That(actualCredentials, Is.EqualTo(expectedCredentails));
 		}
