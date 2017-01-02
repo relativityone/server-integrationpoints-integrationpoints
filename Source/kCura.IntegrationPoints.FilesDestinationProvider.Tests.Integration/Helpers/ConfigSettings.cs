@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		#region Fields
 
 		private const string _SAVEDSEARCH_ARTIFACT_NAME_KEY = "SavedSearchArtifactName";
+		private const string _PRODUCTION_ARTIFACT_NAME_KEY = "ProductionArtifactName";
 		private const string _VIEW_ARTIFACT_NAME_KEY = "ViewArtifactName";
 		private const string _ADDITIONAL_FIELD_NAMES_KEY = "AdditionalFieldNames";
 		private const string _DESTINATION_PATH_KEY = "DestinationPath";
@@ -39,6 +40,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		public DocumentsTestData DocumentsTestData { get; set; }
 
 		public string SavedSearchArtifactName { get; } = ConfigurationManager.AppSettings[_SAVEDSEARCH_ARTIFACT_NAME_KEY];
+
+		public string ProductionArtifactName { get; } = ConfigurationManager.AppSettings[_PRODUCTION_ARTIFACT_NAME_KEY];
 
 		public string ViewName { get; } = ConfigurationManager.AppSettings[_VIEW_ARTIFACT_NAME_KEY];
 

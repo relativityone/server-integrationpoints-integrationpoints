@@ -25,6 +25,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 
 			container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>());
 			container.Register(Component.For<IVolumeInfoBuilder>().ImplementedBy<VolumeInfoBuilder>());
+			container.Register(Component.For<IExportedObjectBuilder>().ImplementedBy<ExportedObjectBuilder>());
+			container.Register(Component.For<IExportedArtifactNameRepository>().ImplementedBy<ExportedArtifactNameRepository>());
 			container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>());
 			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
 			container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>());

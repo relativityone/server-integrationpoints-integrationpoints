@@ -135,15 +135,15 @@
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel">
       <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
-    <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\packages\$(Relativity_OAuth2Client)\lib\net45\Relativity.OAuth2Client.dll</HintPath>
-    <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Interfaces">
       <HintPath>..\packages\$(Relativity_OAuth2Client_Interfaces)\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
-    <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -162,6 +162,8 @@
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
+    <Compile Include="Helpers\ExportedArtifactNameRepository.cs" />
+    <Compile Include="Helpers\IExportedArtifactNameRepository.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
     <Compile Include="Installer\ValidationInstaller.cs" />
@@ -175,6 +177,8 @@
     <Compile Include="Logging\LoggingMediatorFactory.cs" />
     <Compile Include="Logging\StatisticsLoggingMediator.cs" />
     <Compile Include="Process\DelimitersBuilder.cs" />
+    <Compile Include="Process\ExportedObjectBuilder.cs" />
+    <Compile Include="Process\IExportedObjectBuilder.cs" />
     <Compile Include="Services\ExportFieldsService.cs" />
     <Compile Include="Process\ExportFileBuilder.cs" />
     <Compile Include="Process\ExportFileHelper.cs" />
