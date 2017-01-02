@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Email;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
@@ -50,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobHistoryErrorService _jobHistoryErrorService;
 		private IContextContainer _contextContainer;
 		private IQueueManager _queueManager;
+		private IServiceManagerProvider _serviceManagerProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -70,6 +72,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_agentService = Substitute.For<IAgentService>();
 			_jobService = Substitute.For<IJobService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
+			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
 			var apiLog = Substitute.For<IAPILog>();
 
 			_contextContainer = Substitute.For<IContextContainer>();
@@ -224,6 +227,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IWindsorContainer windsorContainer = new WindsorContainer();
 			windsorContainer.Register(Component.For<IIntegrationPointService>().Instance(_integrationPointService));
 			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
+			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());

@@ -137,6 +137,7 @@
     <Compile Include="Logging\StatisticsLoggingMediatorTest.cs" />
     <Compile Include="Process\DefaultExportSettingsFactory.cs" />
     <Compile Include="Process\DelimitersBuilderTests.cs" />
+    <Compile Include="Process\ExportedObjectBuilderTests.cs" />
     <Compile Include="Process\ExportFileBuilderTests.cs" />
     <Compile Include="Process\ExportSettingsBuilderTests.cs" />
     <Compile Include="Process\ViewFieldInfoMockFactory.cs" />

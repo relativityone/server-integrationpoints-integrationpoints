@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private const string _READ_PRODUCTION_SERVICE =
 			_PRODUCTION_SERVICE_URL_BASE + "/ReadSingleAsync";
 
-		public static int Create(int workspaceId)
+		public static int Create(int workspaceId, string productionName)
 		{
 			var json =
 				$@"
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 								""StartNumberingOnSecondPage"":false
 						}},								
 						""ShouldCopyInstanceOnWorkspaceCreate"": false,
-						""Name"": ""TestProduction""
+						""Name"": ""{productionName}""
 					}}
 				}}";
 

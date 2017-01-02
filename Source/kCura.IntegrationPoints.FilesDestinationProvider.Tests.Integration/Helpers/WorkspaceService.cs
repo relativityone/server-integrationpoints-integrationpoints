@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			}
 		}
 
-		internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
+		internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId, string savedSearchName)
 		{
 			var fields = defaultFields
 				.Select(x => new FieldRef(x.DisplayName))
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 			var search = new KeywordSearch
 			{
-				Name = _SAVED_SEARCH_NAME,
+				Name = savedSearchName,
 				ArtifactTypeID = (int) ArtifactType.Document,
 				SearchContainer = new SearchContainerRef(folderArtifactId),
 				Fields = fields
@@ -75,14 +75,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			return SavedSearch.Create(workspaceId, search);
 		}
 
-		internal int CreateProduction(int workspaceArtifactId, int savedSearchId)
+		internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
+		{
+			return CreateSavedSearch(defaultFields, additionalFields, workspaceId, _SAVED_SEARCH_NAME);
+		}
+
+		internal int CreateProduction(int workspaceArtifactId, int savedSearchId, string productionName)
 		{
 			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory,
 				@"TestData\DefaultPlaceholder.tif");
 
 			var placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
 
-			var productionId = Production.Create(workspaceArtifactId);
+			var productionId = Production.Create(workspaceArtifactId, productionName);
 
 			var placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileData);
 			ProductionDataSource.CreateDataSourceWithPlaceholder(workspaceArtifactId, productionId, savedSearchId, "WhenNoImageExists", placeholderId);

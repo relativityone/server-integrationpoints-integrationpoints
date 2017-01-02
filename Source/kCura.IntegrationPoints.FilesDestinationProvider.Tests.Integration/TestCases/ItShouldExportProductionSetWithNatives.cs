@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ProductionId = _configSettings.ProductionArtifactId;
-			settings.ProductionName = "production_name";
 			settings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
 			settings.ExportNativesToFileNamedFrom = ExportSettings.NativeFilenameFromType.Identifier;
 
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
-			var expectedDataFileName = $"{ExportSettings.ProductionName}_export.dat";
+			var expectedDataFileName = $"{_configSettings.ProductionArtifactName}_export.dat";
 			var dataFiles = directory.EnumerateFiles(expectedDataFileName);
 			Assert.That(dataFiles.Any());
 
