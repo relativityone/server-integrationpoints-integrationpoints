@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			var actualCredentials =
 				Helper.GetDBContext(SourceWorkspaceArtifactId)
-					.ExecuteSqlStatementAsScalar<string>($"SELECT Credentials FROM [IntegrationPoint] WHERE ArtifactID = {integrationPointModel.ArtifactId}");
+					.ExecuteSqlStatementAsScalar<string>($"SELECT SecuredConfiguration FROM [IntegrationPoint] WHERE ArtifactID = {integrationPointModel.ArtifactId}");
 
 			var expectedCredentails = new DefaultEncryptionManager().Encrypt(JsonConvert.SerializeObject(createRequest.IntegrationPoint.SecuredConfiguration));
 
