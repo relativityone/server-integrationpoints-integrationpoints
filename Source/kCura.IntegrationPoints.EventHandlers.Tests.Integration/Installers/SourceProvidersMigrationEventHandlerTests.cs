@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
@@ -34,12 +37,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		{
 			// arrange
 			_providersStub = new List<SourceProvider>();
+			this.Logger = Substitute.For<IAPILog>();
+
+			Response actual = Execute();
 
 			// act & assert
-			Assert.Throws<Exception>(() =>
-			{
-				Execute();
-			}, "No Source Providers passed.");
+			Assert.IsNotNull(actual);
+			Assert.IsFalse(actual.Success);
+			this.Logger.Received(1).LogError(Arg.Any<Exception>(), "Failed to migrate Source Provider.");
 		}
 
 		[Test]

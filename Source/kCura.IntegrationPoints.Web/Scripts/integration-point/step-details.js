@@ -41,11 +41,7 @@ IP.emailUtils = (function () {
 ko.validation.rules["time"] = {
 	validator: function (value) {
 		if (value !== undefined) {
-			var date = Date.parseExact(value, "HH:mm") || Date.parseExact(value, "H:mm");
-			if (value != null && value.split(':')[0] > 12) {
-				return false;
-			}
-			return !!date;
+			return IP.timeUtil.isValidMilitaryTime(value);
 		}
 		return true;
 	},

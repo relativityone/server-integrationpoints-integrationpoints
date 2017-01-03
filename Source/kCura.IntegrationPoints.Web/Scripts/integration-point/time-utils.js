@@ -1,116 +1,95 @@
 ﻿var IP = IP || {};
 IP.timeUtil = (function () {
 
-	function isValidDate(d) {
-		if (Object.prototype.toString.call(d) !== "[object Date]")
+	var dateFormat = "MM/DD/YYYY";
+	var dateTimeFormat = "MM/DD/YYYY h:mm A";
+	var format24H = "H:m";
+	var militaryFormat = "h:mm A";
+
+	function isValidMilitaryTime(militaryTime) {
+		if (!militaryTime) {
 			return false;
-		return !isNaN(d.getTime());
+		}
+
+		return moment(militaryTime, "h:mm", true).isValid();
 	}
 
-	function utcToLocal(dateText, dateFormat) {
-		var temp = new Date();
-		var inDateMod = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), dateText[0], dateText[1]);
-		if (!isValidDate(inDateMod)) {
-			return dateText;
+	function isValidDate(date, format) {
+		if (!date) {
+			return false;
 		}
-		var offSet = inDateMod.getTimezoneOffset();
-		if (offSet < 0) {
-			inDateMod.setMinutes(inDateMod.getMinutes() + offSet);
-		} else {
-			inDateMod.setMinutes(inDateMod.getMinutes() - offSet);
+
+		if (!format) {
+			format = dateFormat;
 		}
-		return inDateMod.toString(dateFormat);
+
+		return moment(date, format, true).isValid();
 	}
-	function utcToTime(time) {
-		if (time === '') {
-			return '';
+
+	function isTodayOrInTheFuture(date, format) {
+		if (!date) {
+			return false;
 		}
-		var timeSplit = time.split(':');
+
+		if (!format) {
+			format = dateFormat;
+		}
 		
-		if (timeSplit[0] < 12) {
-			if (parseInt(timeSplit[0], 10) === 0) {
-				timeSplit[0] = 12;
-			}
-			timeSplit[0] = timeSplit[0] < 10 ? "0" + timeSplit[0] : timeSplit[0];
-			timeSplit[1] = timeSplit[1] < 10 ? "0" + timeSplit[1]  : timeSplit[1];
-			return timeSplit.join(':') + " AM";
-		}
-		timeSplit[0] = parseInt(timeSplit[0]) - 12;
-		if (parseInt(timeSplit[0], 10) === 0) {
-			timeSplit[0] = 12;
-		}
-		timeSplit[0] = timeSplit[0] < 10 ? "0" + timeSplit[0] : timeSplit[0];
-		timeSplit[1] = timeSplit[1] < 10 ? "0" + timeSplit[1]  : timeSplit[1];
-		return timeSplit.join(':') + " PM";
+		var today = moment();
+		var future = moment(date, format);
+
+		return !future.isBefore(today, 'day');
 	}
-	function utcToLocalAmPm(time) {
+
+	function format24HourToMilitaryTime(time, formatMilitary) {
+		if (!time) {
+			return "";
+		}
+		if (!formatMilitary) {
+			formatMilitary = "h:mm";
+		}
 		
-		var scheduleTime = "";
-		var timeSplit = utcToLocal(time.split(':'), "HH:mm").split(':');
-		if ((timeSplit[0] - 12) >= 1) {
-			scheduleTime = timeSplit[0] - 12 + ":" + timeSplit[1] + " PM";
-		} else {
-			scheduleTime = (timeSplit[0].length==2)  + ":" + timeSplit[1] + ' AM';
-		}
-		return scheduleTime;
+		return moment(time, format24H).isValid() ? moment(time, format24H).format(formatMilitary) : "";
 	}
 
-	function timeUtcToLocal(time) {
-
-		timeFormat = timeFormat || "hh:mm";
-		var lengthCheck = time.split(':');
-		if (lengthCheck[0].length < 2) {
-			lengthCheck[0] = "0" + lengthCheck[0];
-			time = lengthCheck[0] + ":" + lengthCheck[1];
+	function formatMilitaryTimeTo24HourTime(time, anteOrPostMeridiem) {
+		if (!time || !anteOrPostMeridiem) {
+			return "";
 		}
-		if (lengthCheck[1].length < 2) {
-			lengthCheck[1] = "0" + lengthCheck[1];
-			time = lengthCheck[0] + ":" + lengthCheck[1];
-		}
-		var currentTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
+		
+		time = time + " " + anteOrPostMeridiem;
 
-		return time;
-	}
-	
-	function timeLocalToUtc(time) {
-
-		var localTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
-		if (localTime) {
-			var temp = new Date();
-			var tempDateTime = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), localTime.getHours(), localTime.getMinutes(), localTime.getSeconds());
-			return tempDateTime.getUTCHours() + ":" + tempDateTime.getUTCMinutes();
-		}
-		return '';
+		return moment(time, militaryFormat).isValid() ? moment(time, militaryFormat).format(format24H) : "";
 	}
 
-	function convert24HourTo12Hour(time) {
-		if (time == null) {
-			return null;
+	function formatDateTime(dateTime, format) {
+		if (!dateTime) {
+			return "";
 		}
 
-		return moment(time, "H:m").isValid() ? moment(time, "H:m").format("h:mm") : null;
-	}
-
-	function getPostOrAnteMeridiemFromTime(time) {
-		if (time == null) {
-			return null;
+		if (!format) {
+			format = dateTimeFormat;
 		}
 
-		return moment(time, "H:m").isValid() ? moment(time, "H:m").format("A") : null;
+		return moment(dateTime).isValid() ? moment(dateTime).format(format) : "";
 	}
 
-	var _noOp = function (time) {
-		return time;
-	};
+	function getLocalIanaTimeZoneId() {
+		return moment.tz.guess();
+	}
 
 	return {
-		utcToLocal: utcToLocal,
-		timeLocalToUtc: timeLocalToUtc,
-		utcDateToLocal: _noOp,
-		timeToAmPm: utcToTime,
-		utcToLocalAmPm: utcToLocalAmPm,
-		convert24HourTo12Hour: convert24HourTo12Hour,
-		getPostOrAnteMeridiemFromTime: getPostOrAnteMeridiemFromTime
+		anteMeridiem: "AM",
+		postMeridiem: "PM",
+		dateFormat: dateFormat,
+		dateTimeFormat: dateTimeFormat,
+		getLocalIanaTimeZoneId: getLocalIanaTimeZoneId,
+		format24HourToMilitaryTime: format24HourToMilitaryTime,
+		formatMilitaryTimeTo24HourTime: formatMilitaryTimeTo24HourTime,
+		formatDateTime: formatDateTime,
+		isValidMilitaryTime: isValidMilitaryTime,
+		isValidDate: isValidDate,
+		isTodayOrInTheFuture: isTodayOrInTheFuture
 	};
 
 }());

@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 			}
 		}
 
-		private static int GetTypeArtifactId(ITestHelper helper, int workspaceArtifactId, string typeName)
+		public static int GetTypeArtifactId(ITestHelper helper, int workspaceArtifactId, string typeName)
 		{
 			using (var typeClient = helper.CreateAdminProxy<IIntegrationPointTypeManager>())
 			{
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 			}
 		}
 
-		private static int GetSourceProviderArtifactId(string guid, int workspaceArtifactId, ITestHelper helper)
+		public static int GetSourceProviderArtifactId(string guid, int workspaceArtifactId, ITestHelper helper)
 		{
 			using (var providerClient = helper.CreateAdminProxy<IProviderManager>())
 			{
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 			}
 		}
 
-		private static int GetDestinationProviderArtifactId(string guid, int workspaceArtifactId, ITestHelper helper)
+		public static int GetDestinationProviderArtifactId(string guid, int workspaceArtifactId, ITestHelper helper)
 		{
 			using (var providerClient = helper.CreateAdminProxy<IProviderManager>())
 			{

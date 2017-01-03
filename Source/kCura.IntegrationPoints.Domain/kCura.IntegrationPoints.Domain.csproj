@@ -225,6 +225,7 @@
     <Compile Include="Models\JsTreeItemDTO.cs" />
     <Compile Include="Models\ErrorDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />
+    <Compile Include="Models\ProcessingSourceLocationDTO.cs" />
     <Compile Include="Models\ValidationResult.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />

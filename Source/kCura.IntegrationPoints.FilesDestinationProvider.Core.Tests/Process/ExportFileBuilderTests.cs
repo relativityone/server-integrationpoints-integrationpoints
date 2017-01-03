@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 	[TestFixture]
 	public class ExportFileBuilderTests : TestBase
 	{
+		private IExportedObjectBuilder _exportedObjectBuilder;
 		private ExportFileBuilder _exportFileBuilder;
 		private ExportSettings _exportSettings;
 
@@ -22,7 +23,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		public override void SetUp()
 		{
 			_exportSettings = DefaultExportSettingsFactory.Create();
-			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>(), Substitute.For<IVolumeInfoBuilder>());
+			_exportedObjectBuilder = Substitute.For<IExportedObjectBuilder>();
+			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>(), Substitute.For<IVolumeInfoBuilder>(), _exportedObjectBuilder);
 		}
 
 		[Test]
@@ -84,7 +86,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings.ExportNatives = true;
 
-			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.ImageFileType)).Cast<ExportSettings.ImageFileType>().Max() + 1;
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageFileType)).Cast<ExportSettings.ImageFileType>().Max() + 1;
 			_exportSettings.ImageType = incorrectEnumValue;
 
 			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
@@ -121,7 +123,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings.ExportNatives = true;
 
-			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
 			_exportSettings.SelectedImageDataFileFormat = incorrectEnumValue;
 
 			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
@@ -141,7 +143,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldThrowExceptionForUnknownDataFileFormat()
 		{
-			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.DataFileFormat)).Cast<ExportSettings.DataFileFormat>().Max() + 1;
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.DataFileFormat)).Cast<ExportSettings.DataFileFormat>().Max() + 1;
 			_exportSettings.OutputDataFileFormat = incorrectEnumValue;
 
 			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
@@ -233,7 +235,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[TestCase(ExportSettings.ProductionPrecedenceType.Original, false, true)]
 		[TestCase(ExportSettings.ProductionPrecedenceType.Produced, true, true)]
 		[TestCase(ExportSettings.ProductionPrecedenceType.Produced, false, false)]
-		public void ItShouldSetOriginalProductionAccordingly(ExportSettings.ProductionPrecedenceType productionPrecedenceType, bool includeOriginalImage, bool outputShouldIncludeOrigImage)
+		public void ItShouldSetOriginalProductionAccordingly(ExportSettings.ProductionPrecedenceType productionPrecedenceType, bool includeOriginalImage,
+			bool outputShouldIncludeOrigImage)
 		{
 			_exportSettings.ProductionPrecedence = productionPrecedenceType;
 			_exportSettings.IncludeOriginalImages = includeOriginalImage;
@@ -260,7 +263,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldSetSelectedProductionPrecedence()
 		{
-			var productionPrecedenceList = new List<ProductionDTO>()
+			var productionPrecedenceList = new List<ProductionDTO>
 			{
 				new ProductionDTO
 				{
@@ -282,7 +285,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			Assert.That(productionPrecedenceList.Count, Is.EqualTo(exportFile.ImagePrecedence.Length));
 
-			Assert.True(productionPrecedenceList.All(x => exportFile.ImagePrecedence.Any(y => y.Display == x.DisplayName && y.Value == x.ArtifactID)));
+			Assert.True(productionPrecedenceList.All(x => exportFile.ImagePrecedence.Any(y => (y.Display == x.DisplayName) && (y.Value == x.ArtifactID))));
 		}
 
 		[Test(Description = "For Production export we have to set Production Precedence as Production Set artifact id")]
@@ -290,6 +293,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
 			_exportSettings.ProductionId = 12345;
+
+			_exportedObjectBuilder.When(x => x.SetExportedObjectIdAndName(Arg.Any<ExportSettings>(), Arg.Any<ExportFile>()))
+				.Do(y => y.Arg<ExportFile>().ArtifactID = _exportSettings.ProductionId);
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
@@ -306,73 +312,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
 			Assert.True(exportFile.ExportNative);
-		}
-
-		[Test]
-		public void ItShouldSetSavedSearchSettings()
-		{
-			_exportSettings.TypeOfExport = ExportSettings.ExportType.SavedSearch;
-			_exportSettings.SavedSearchArtifactId = 834;
-			_exportSettings.SavedSearchName = "saved_search_name_327";
-
-			var exportFile = _exportFileBuilder.Create(_exportSettings);
-
-			Assert.That(exportFile.ArtifactID, Is.EqualTo(_exportSettings.SavedSearchArtifactId));
-			Assert.That(exportFile.LoadFilesPrefix, Is.EqualTo(_exportSettings.SavedSearchName));
-		}
-
-		[Test]
-		[TestCase(ExportSettings.ExportType.Folder)]
-		[TestCase(ExportSettings.ExportType.FolderAndSubfolders)]
-		public void ItShouldSetFolderSettings(ExportSettings.ExportType exportType)
-		{
-			_exportSettings.TypeOfExport = exportType;
-			_exportSettings.FolderArtifactId = 972;
-			_exportSettings.ViewId = 171;
-			_exportSettings.ViewName = "view_name_803";
-
-			var exportFile = _exportFileBuilder.Create(_exportSettings);
-
-			Assert.That(exportFile.ArtifactID, Is.EqualTo(_exportSettings.FolderArtifactId));
-			Assert.That(exportFile.ViewID, Is.EqualTo(_exportSettings.ViewId));
-			Assert.That(exportFile.LoadFilesPrefix, Is.EqualTo(_exportSettings.ViewName));
-		}
-
-		[Test]
-		public void ItShouldSetProductionSettings()
-		{
-			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
-			_exportSettings.ProductionId = 763;
-			_exportSettings.ProductionName = "production_name_965";
-			_exportSettings.ExportNativesToFileNamedFrom = ExportSettings.NativeFilenameFromType.Identifier;
-
-			var exportFile = _exportFileBuilder.Create(_exportSettings);
-
-			Assert.That(exportFile.ArtifactID, Is.EqualTo(_exportSettings.ProductionId));
-			Assert.That(exportFile.LoadFilesPrefix, Is.EqualTo(_exportSettings.ProductionName));
-		}
-
-		[Test]
-		[TestCase(null, ExportNativeWithFilenameFrom.Identifier)]
-		[TestCase(ExportSettings.NativeFilenameFromType.Identifier, ExportNativeWithFilenameFrom.Identifier)]
-		[TestCase(ExportSettings.NativeFilenameFromType.Production, ExportNativeWithFilenameFrom.Production)]
-		public void ItShouldSetNativeFilenameFromAccordingly(ExportSettings.NativeFilenameFromType? givenSetting, ExportNativeWithFilenameFrom expectedSetting)
-		{
-			_exportSettings.ExportNativesToFileNamedFrom = givenSetting;
-
-			var exportFile = _exportFileBuilder.Create(_exportSettings);
-
-			Assert.That(exportFile.ExportNativesToFileNamedFrom, Is.EqualTo(expectedSetting));
-		}
-
-		[Test]
-		public void ItShouldThrowExpectionForUnknownExportNativeWithFilenameFrom()
-		{
-			_exportSettings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
-			_exportSettings.ExportNativesToFileNamedFrom = Enum.GetValues(typeof(ExportSettings.NativeFilenameFromType)).Cast<ExportSettings.NativeFilenameFromType>().Max() + 1;
-
-			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
-				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ExportSettings.NativeFilenameFromType ({_exportSettings.ExportNativesToFileNamedFrom})"));
 		}
 
 		[Test]

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;

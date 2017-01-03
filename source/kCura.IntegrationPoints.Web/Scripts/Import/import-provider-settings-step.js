@@ -15,9 +15,8 @@
             AsciiQuote: windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(),
             AsciiNewLine: windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(),
             AsciiMultiLine: windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(),
-            AsciiNestedValue: windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter()
-            // ,
-            // ProcessingSourceLocation: windowObj.RelativityImport.koModel.ProcessingSourceLocation()
+            AsciiNestedValue: windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(),
+            ProcessingSourceLocation: windowObj.RelativityImport.koModel.ProcessingSourceLocation()
         };
 
         console.log(model);

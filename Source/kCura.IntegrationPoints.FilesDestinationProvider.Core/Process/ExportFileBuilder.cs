@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.WinEDDS;
 using Relativity;
 
@@ -16,11 +14,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		public const string ORIGINAL_PRODUCTION_PRECEDENCE_VALUE_TEXT = "-1";
 		private readonly IDelimitersBuilder _delimitersBuilder;
 		private readonly IVolumeInfoBuilder _volumeInfoBuilder;
+		private readonly IExportedObjectBuilder _exportedObjectBuilder;
 
-		public ExportFileBuilder(IDelimitersBuilder delimitersBuilder, IVolumeInfoBuilder volumeInfoBuilder)
+		public ExportFileBuilder(IDelimitersBuilder delimitersBuilder, IVolumeInfoBuilder volumeInfoBuilder, IExportedObjectBuilder exportedObjectBuilder)
 		{
 			_delimitersBuilder = delimitersBuilder;
 			_volumeInfoBuilder = volumeInfoBuilder;
+			_exportedObjectBuilder = exportedObjectBuilder;
 		}
 
 		public ExportFile Create(ExportSettings exportSettings)
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			exportFile.TypeOfExport = ParseExportType(exportSettings.TypeOfExport);
 
-			SetExportedObjectIdAndName(exportSettings, exportFile);
+			_exportedObjectBuilder.SetExportedObjectIdAndName(exportSettings, exportFile);
 
 			SetStartDocumentNumber(exportSettings, exportFile);
 
@@ -58,30 +58,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			SetImagePrecedence(exportSettings, exportFile);
 
 			return exportFile;
-		}
-
-		private static void SetExportedObjectIdAndName(ExportSettings exportSettings, ExportFile exportFile)
-		{
-			exportFile.ExportNativesToFileNamedFrom = ParseNativesFilenameFromType(exportSettings.ExportNativesToFileNamedFrom);
-			switch (exportSettings.TypeOfExport)
-			{
-				case ExportSettings.ExportType.SavedSearch:
-					exportFile.ArtifactID = exportSettings.SavedSearchArtifactId;
-					exportFile.LoadFilesPrefix = exportSettings.SavedSearchName;
-					break;
-				case ExportSettings.ExportType.Folder:
-				case ExportSettings.ExportType.FolderAndSubfolders:
-					exportFile.ArtifactID = exportSettings.FolderArtifactId;
-					exportFile.ViewID = exportSettings.ViewId;
-					exportFile.LoadFilesPrefix = exportSettings.ViewName;
-					break;
-				case ExportSettings.ExportType.ProductionSet:
-					exportFile.ArtifactID = exportSettings.ProductionId;
-					exportFile.LoadFilesPrefix = exportSettings.ProductionName;
-					break;
-				default:
-					throw new InvalidEnumArgumentException($"Unknown ExportSettings.ExportType ({exportSettings.TypeOfExport})");
-			}
 		}
 
 		private void SetImagePrecedence(ExportSettings exportSettings, ExportFile exportFile)
@@ -263,24 +239,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					return ExportFile.ExportedFilePathType.Prefix;
 				default:
 					throw new InvalidEnumArgumentException($"Unknown ExportSettings.FilePathType ({filePath})");
-			}
-		}
-
-		private static ExportNativeWithFilenameFrom ParseNativesFilenameFromType(ExportSettings.NativeFilenameFromType? exportSettingsExportNativesToFileNamedFrom)
-		{
-			if (!exportSettingsExportNativesToFileNamedFrom.HasValue)
-			{
-				// We can't return ExportNativeWithFilenameFrom.Select as this will couse issues in RDC Export code
-				return ExportNativeWithFilenameFrom.Identifier;
-			}
-			switch (exportSettingsExportNativesToFileNamedFrom)
-			{
-				case ExportSettings.NativeFilenameFromType.Identifier:
-					return ExportNativeWithFilenameFrom.Identifier;
-				case ExportSettings.NativeFilenameFromType.Production:
-					return ExportNativeWithFilenameFrom.Production;
-				default:
-					throw new InvalidEnumArgumentException($"Unknown ExportSettings.NativeFilenameFromType ({exportSettingsExportNativesToFileNamedFrom})");
 			}
 		}
 	}

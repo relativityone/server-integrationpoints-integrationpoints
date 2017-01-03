@@ -226,8 +226,10 @@
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IButtonStateBuilder.cs" />
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
+    <Compile Include="Helpers\IFolderTreeProvider.cs" />
     <Compile Include="Helpers\Implementations\ButtonStateBuilder.cs" />
     <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
+    <Compile Include="Helpers\Implementations\FolderTreeProvider.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
     <Compile Include="Helpers\Implementations\ArtifactTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\SavedSearchesTreeCreator.cs" />
@@ -262,11 +264,13 @@
     <Compile Include="Managers\Implementations\NullableStopJobManager.cs" />
     <Compile Include="Managers\Implementations\ObjectTypeManager.cs" />
     <Compile Include="Managers\Implementations\QueueManager.cs" />
+    <Compile Include="Managers\Implementations\ResourcePoolManager.cs" />
     <Compile Include="Managers\Implementations\SourceProviderManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
     <Compile Include="Managers\Implementations\SourceJobManager.cs" />
     <Compile Include="Managers\Implementations\StateManager.cs" />
     <Compile Include="Managers\Implementations\WorkspaceManager.cs" />
+    <Compile Include="Managers\IResourcePoolManager.cs" />
     <Compile Include="Managers\ISourceProviderManager.cs" />
     <Compile Include="Managers\IQueueManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
@@ -416,7 +420,6 @@
     <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
-    <Compile Include="Services\Synchronizer\ExportDestinationSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />
     <Compile Include="Services\Synchronizer\RdoSynchronizerProvider.cs" />

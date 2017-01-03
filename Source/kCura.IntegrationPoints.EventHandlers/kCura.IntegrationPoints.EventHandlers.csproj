@@ -193,7 +193,6 @@
     <Compile Include="IntegrationPoints\Helpers\Scripts\ImportProvidersScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScriptsFactory.cs" />
-    <Compile Include="IntegrationPoints\Helpers\Scripts\LoadFileProviderScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\RelativityProviderScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ScriptsHelper.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPageInteractionEventHandler.cs" />

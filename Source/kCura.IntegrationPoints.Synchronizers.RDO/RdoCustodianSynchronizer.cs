@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RdoCustodianSynchronizer : RdoSynchronizerPull
+	public class RdoCustodianSynchronizer : RdoSynchronizer
 	{
 		private const string LDAPMapFullNameFieldName = "CustomFullName";
 

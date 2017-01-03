@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 		public override IList<string> LinkedScripts()
 		{
 			var result = base.LinkedScripts();
+			result.Add("/Scripts/moment.js");
 			result.Add("/Scripts/EventHandlers/relativity-provider-view.js");
 			return result;
 		}

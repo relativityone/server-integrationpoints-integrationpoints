@@ -218,6 +218,7 @@
     <Compile Include="Controllers\API\ImportProviderImageControllerTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
+    <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />
     <Compile Include="Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Controllers\FolderPathControllerTests.cs" />

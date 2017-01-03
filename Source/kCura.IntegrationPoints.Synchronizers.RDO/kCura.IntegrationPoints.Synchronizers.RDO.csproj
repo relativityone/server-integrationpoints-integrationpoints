@@ -130,10 +130,10 @@
       <HintPath>..\packages\$(Relativity_Data)\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-		<Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
-			<HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
-			<Private>True</Private>
-		</Reference>
+    <Reference Include="Relativity.API, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_API)\lib\net45\Relativity.API.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -149,13 +149,10 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ExportSynchroznizer.cs" />
     <Compile Include="ImportAPI\RelativityReaderDecorator.cs" />
     <Compile Include="RdoFieldSynchronizerBase.cs" />
-    <Compile Include="RdoSynchronizerPull.cs" />
     <Compile Include="IImportApiFactory.cs" />
     <Compile Include="IRelativityFieldQuery.cs" />
-    <Compile Include="RdoSynchronizerPush.cs" />
     <Compile Include="EmbeddedAssembly.cs" />
     <Compile Include="ImportApiFactory.cs" />
     <Compile Include="ImportOverlayBehaviorEnum.cs" />
@@ -168,7 +165,7 @@
     <Compile Include="ImportSettings.cs" />
     <Compile Include="NativeFileImportService.cs" />
     <Compile Include="RdoCustodianSynchronizer.cs" />
-    <Compile Include="RdoSynchronizerBase.cs" />
+    <Compile Include="RdoSynchronizer.cs" />
     <Compile Include="RelativityFieldQuery.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>

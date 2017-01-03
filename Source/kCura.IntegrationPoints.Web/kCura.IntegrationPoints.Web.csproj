@@ -209,6 +209,10 @@
       <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.264, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
@@ -323,6 +327,8 @@
     <Compile Include="Controllers\API\ImportProviderImageController.cs" />
     <Compile Include="Controllers\API\IntegrationPointProfilesAPIController.cs" />
     <Compile Include="Controllers\API\IntegrationPointTypesController.cs" />
+    <Compile Include="Controllers\API\ResourcePoolController.cs" />
+    <Compile Include="Controllers\SummaryPageController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
@@ -362,14 +368,17 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GridModelFactory.cs" />
+    <Compile Include="Helpers\SummaryPageSelector.cs" />
     <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
     <Compile Include="IRelativityUrlHelper.cs" />
     <Compile Include="Models\EditPoint.cs" />
+    <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />
     <Compile Include="Models\IntegrationPointTypeModel.cs" />
     <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="ISessionService.cs" />
+    <Compile Include="Models\LdapProviderSummaryPageSettingsModel.cs" />
     <Compile Include="Models\SavedSearchModel.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="Models\SourceTypeModel.cs" />
@@ -513,18 +522,22 @@
       <Link>Content\fonts\fluid-ui.woff</Link>
     </Content>
     <None Include="Properties\PublishProfiles\default.pubxml" />
-    <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
+    <Content Include="Scripts\EventHandlers\integration-points-summary-page-view.js" />
     <Content Include="Scripts\Export\export-source-view-model.js" />
+    <Content Include="Scripts\Export\export-summary-page.js" />
+    <Content Include="Scripts\ftpProvider\ftp-provider-summary-page.js" />
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
+    <Content Include="Scripts\integration-point\scheduler-summary-page.js" />
     <Content Include="Scripts\integration-point\source.js" />
     <Content Include="Scripts\integration-point\destination.js" />
     <Content Include="Scripts\integration-point\picker.js" />
     <Content Include="Scripts\integration-point\save-as-profile-modal-vm.js" />
     <Content Include="Scripts\integration-point\choice.js" />
     <Content Include="Scripts\integration-point\scheduler.js" />
+    <Content Include="Scripts\ldap\ldap-provider-summary-page.js" />
     <Content Include="Scripts\moment-timezone-utils.js" />
     <Content Include="Scripts\moment-timezone-with-data-2010-2020.js" />
     <Content Include="Scripts\moment-timezone-with-data-2010-2020.min.js" />
@@ -536,10 +549,11 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\RelativityProvider\relativity-provider-summary-page.js" />
+    <Content Include="Scripts\ThirdPartyProviders\third-party-provider-summary-page.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
-    <Content Include="Scripts\EventHandlers\export-details-view.js" />
     <Content Include="Scripts\Export\export-enums.js" />
     <Content Include="Scripts\Export\export-provider-settings-step.js" />
     <Content Include="Scripts\Export\export-provider-fields-step.js" />
@@ -566,7 +580,7 @@
     <Content Include="Scripts\jstree.min.js" />
     <Content Include="Scripts\knockout-3.4.0.debug.js" />
     <Content Include="Scripts\knockout-3.4.0.js" />
-    <Content Include="Scripts\relativity\Relativity-provider.js" />
+    <Content Include="Scripts\RelativityProvider\Relativity-provider.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
     <Content Include="Scripts\EventHandlers\integration-points-view-destination.js" />
     <Content Include="Scripts\frame-messaging.js" />
@@ -759,13 +773,18 @@
     <Content Include="Views\IntegrationPoints\RelativityProviderConfiguration.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderFields.cshtml" />
     <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
-    <Content Include="Views\Fileshare\ExportDetails.cshtml" />
+    <Content Include="Views\Fileshare\LoadFileProviderSummaryPage.cshtml" />
     <Content Include="Views\Fileshare\SavedSearchPicker.cshtml" />
     <Content Include="Views\Fileshare\ListPicker.cshtml" />
     <Content Include="Views\IntegrationPoints\ExportProviderSettings.cshtml" />
     <Content Include="Views\ImportProvider\ImportSettings.cshtml" />
     <Content Include="Views\ImportProvider\ImportPreview.cshtml" />
     <Content Include="Views\IntegrationPoints\SaveAsProfileModal.cshtml" />
+    <Content Include="Views\RelativityProvider\RelativityProviderSummaryPage.cshtml" />
+    <Content Include="Views\LdapProvider\LdapProviderSummaryPage.cshtml" />
+    <Content Include="Views\FtpProvider\FtpProviderSummaryPage.cshtml" />
+    <Content Include="Views\IntegrationPoints\SchedulerSummaryPage.cshtml" />
+    <Content Include="Views\ThirdPartyProviders\ThirdPartyProviderSummaryPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

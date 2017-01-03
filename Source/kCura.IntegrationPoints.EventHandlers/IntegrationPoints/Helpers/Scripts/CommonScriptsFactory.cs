@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using kCura.EventHandler;
+﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -24,40 +23,27 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 			_caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
 		}
 
+		//TODO: Refactor loaded scripts and extract common parts
 		public ICommonScripts Create(EventHandlerBase eventHandlerBase)
 		{
 			int sourceProviderId = (int) eventHandlerBase.ActiveArtifact.Fields[_fieldsConstants.SourceProvider].Value.Value;
 			var sourceProviderArtifact = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(sourceProviderId);
 
-			int destinationProviderId = (int) eventHandlerBase.ActiveArtifact.Fields[_fieldsConstants.DestinationProvider].Value.Value;
-			var destinationProviderArtifact = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(destinationProviderId);
-
 			if (sourceProviderArtifact.Name == Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
 			{
-				if (destinationProviderArtifact.Name == Constants.IntegrationPoints.FILESHARE_PROVIDER_NAME)
-				{
-					return CreateForLoadFile(eventHandlerBase);
-				}
-				return CreateForRelativity(eventHandlerBase);
+				return CreateForExportProviders(eventHandlerBase);
 			}
-			return CreateForDefault(eventHandlerBase);
+			return CreateForImportProviders(eventHandlerBase);
 		}
 
-		private ICommonScripts CreateForLoadFile(EventHandlerBase eventHandler)
-		{
-			return new LoadFileProviderScripts(new ScriptsHelper(eventHandler, _caseServiceContext, _fieldsConstants, _apiControllerName), _guidsConstants,
-				new WorkspaceNameValidator(eventHandler.Helper),
-				new FolderPathInformation(eventHandler.Helper.GetDBContext(eventHandler.Helper.GetActiveCaseID())));
-		}
-
-		private ICommonScripts CreateForRelativity(EventHandlerBase eventHandler)
+		private ICommonScripts CreateForExportProviders(EventHandlerBase eventHandler)
 		{
 			return new RelativityProviderScripts(new ScriptsHelper(eventHandler, _caseServiceContext, _fieldsConstants, _apiControllerName), _guidsConstants,
 				new WorkspaceNameValidator(eventHandler.Helper),
 				new FolderPathInformation(eventHandler.Helper.GetDBContext(eventHandler.Helper.GetActiveCaseID())));
 		}
 
-		private ICommonScripts CreateForDefault(EventHandlerBase eventHandler)
+		private ICommonScripts CreateForImportProviders(EventHandlerBase eventHandler)
 		{
 			return new ImportProvidersScripts(new ScriptsHelper(eventHandler, _caseServiceContext, _fieldsConstants, _apiControllerName), _guidsConstants);
 		}

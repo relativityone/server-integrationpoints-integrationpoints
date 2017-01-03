@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -9,6 +10,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
+using kCura.Relativity.Client;
 using kCura.Vendor.Castle.MicroKernel.Registration;
 using kCura.Vendor.Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using kCura.Vendor.Castle.Windsor;
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			RegisterLoggingClasses(windsorContainer);
 			RegisterJobManagers(windsorContainer);
 			RegisterConfig(configSettings, windsorContainer);
+			RegisterRSAPIClient(windsorContainer);
 
 			windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
 			windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
@@ -38,6 +41,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IHelper>().Instance(Substitute.For<IHelper>()).LifestyleTransient());
 
 			return windsorContainer;
+		}
+
+		private static void RegisterRSAPIClient(WindsorContainer windsorContainer)
+		{
+			windsorContainer.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
+			{
+				Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
+				return new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+			}));
 		}
 
 		private static void RegisterConfig(ConfigSettings configSettings, WindsorContainer windsorContainer)

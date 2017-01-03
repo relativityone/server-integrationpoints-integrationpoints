@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		#endregion Constructors
 
-		public List<TTreeItem> GetChildren(string path, bool isRoot, bool includeFiles = false)
+		public virtual List<TTreeItem> GetChildren(string path, bool isRoot, bool includeFiles = false)
 		{
 			if (!CanAccessFolder(path, isRoot))
 			{

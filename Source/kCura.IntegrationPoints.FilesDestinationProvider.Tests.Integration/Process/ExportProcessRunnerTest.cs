@@ -9,17 +9,20 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.Relativity.Client;
 using kCura.Vendor.Castle.Windsor;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity;
 using Relativity.API;
+using ArtifactType = Relativity.ArtifactType;
+using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
 using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
@@ -31,8 +34,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 	{
 		#region Fields
 
-		private readonly string[] _defaultFields = { "Control Number", "File Name", "Issue Designation" };
-		private static readonly ConfigSettings _configSettings = new ConfigSettings { WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss") };
+		private readonly string[] _defaultFields = {"Control Number", "File Name", "Issue Designation"};
+		private static readonly ConfigSettings _configSettings = new ConfigSettings {WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")};
 
 		private ExportProcessRunner _instanceUnderTest;
 		private WorkspaceService _workspaceService;
@@ -52,7 +55,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
 			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
-			
+
 			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
 
 			_configSettings.LongTextField = fields.FirstOrDefault(x => x.DisplayName == _configSettings.LongTextFieldName);
@@ -62,7 +65,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				: fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
 			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields,
-				_configSettings.WorkspaceId);
+				_configSettings.WorkspaceId, _configSettings.SavedSearchArtifactName);
+
 
 			_configSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
@@ -70,7 +74,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
 
-			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId);
+			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId,
+				_configSettings.ProductionArtifactName);
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
@@ -99,7 +104,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new CaseManagerFactory(),
 				new SearchManagerFactory(),
 				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper),
-				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder()),
+				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
+					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))),
 				helper,
 				jobStats
 			);
@@ -121,7 +127,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 
 		[TestCaseSource(nameof(ExportTestCaseSource))]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[Category(Constants.SMOKE_TEST)]
 		public void RunTestCase(IExportTestCase testCase)
 		{
 			// Arrange
@@ -138,7 +144,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[Category(Constants.SMOKE_TEST)]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
 			// Arrange

@@ -190,6 +190,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new RelativityAuditRepository(baseServiceContext);
 		}
 
+		public IResourcePoolRepository GetResourcePoolRepository()
+		{
+			return new ResourcePoolRepository(_helper);
+		}
+
 		public IRdoRepository GetRdoRepository(int workspaceArtifactId)
 		{
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId);

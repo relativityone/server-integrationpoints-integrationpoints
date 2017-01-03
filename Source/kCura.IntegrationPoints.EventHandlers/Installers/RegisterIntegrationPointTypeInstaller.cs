@@ -40,6 +40,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		public override Response Execute()
 		{
+			var response = new Response
+			{
+				Success = true,
+				Message = "Created or updated successfully."
+			};
+
 			try
 			{
 				var types = new Dictionary<Guid, string>
@@ -52,18 +58,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			catch (Exception e)
 			{
 				LogCreatingIntegrationPointTypesError(e);
-				return new Response
-				{
-					Exception = e,
-					Message = e.Message,
-					Success = false
-				};
+				response.Exception = e;
+				response.Message = e.Message;
+				response.Success = false;
 			}
-			return new Response
-			{
-				Message = "Created or updated successfully.",
-				Success = true
-			};
+			return response;
 		}
 
 		#region Logging
