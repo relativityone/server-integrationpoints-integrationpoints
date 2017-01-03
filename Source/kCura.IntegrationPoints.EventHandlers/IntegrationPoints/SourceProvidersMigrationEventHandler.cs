@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		internal IImportService Importer;
 		private IAPILog _logger;
 
-		internal IAPILog Logger
+		public IAPILog Logger
 		{
 			get { return _logger ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>()); }
 			set { _logger = value; }
