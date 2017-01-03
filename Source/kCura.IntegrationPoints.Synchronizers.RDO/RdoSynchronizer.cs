@@ -21,7 +21,7 @@ using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public abstract class RdoSynchronizerBase : IDataSynchronizer, IBatchReporter, IEmailBodyData
+	public class RdoSynchronizer : IDataSynchronizer, IBatchReporter, IEmailBodyData
 	{
 		private readonly IImportApiFactory _factory;
 		private readonly IHelper _helper;
@@ -42,12 +42,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private string _webApiPath;
 
-		protected RdoSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IHelper helper)
+		public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IHelper helper)
 		{
 			FieldQuery = fieldQuery;
 			_factory = factory;
 			_helper = helper;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizerBase>();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
 		}
 
 		private ImportSettings ImportSettings { get; set; }
