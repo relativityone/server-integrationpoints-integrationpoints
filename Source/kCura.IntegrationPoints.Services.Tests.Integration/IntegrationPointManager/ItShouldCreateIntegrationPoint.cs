@@ -4,6 +4,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -42,12 +44,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				TargetWorkspaceArtifactId,
 				importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList());
 
-			var createdIntegrationPointProfile = _client.CreateIntegrationPointAsync(createRequest).Result;
+			var createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			var actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPointProfile.ArtifactId);
+			var actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPoint.ArtifactId);
 			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
-			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel, new IntegrationPointFieldGuidsConstants());
+			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPoint, expectedIntegrationPointModel, new IntegrationPointFieldGuidsConstants());
 		}
 
 		[Test]
@@ -71,6 +73,85 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Assert.That(actualIntegrationPoint.FieldMappings, Is.EqualTo(profile.Map));
 			Assert.That(actualIntegrationPoint.Type, Is.EqualTo(profile.Type));
 			Assert.That(actualIntegrationPoint.LogErrors, Is.EqualTo(profile.LogErrors));
+		}
+
+		[Test]
+		public void ItShouldCreateExportToLoadFileIntegrationPoint()
+		{
+			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
+
+			var sourceConfiguration = new LoadFileExportSourceConfiguration
+			{
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				SavedSearchArtifactId = SavedSearchArtifactId
+			};
+
+			var destinationConfiguration = new LoadFileExportDestinationConfiguration
+			{
+				ArtifactTypeId = (int)ArtifactType.Document,
+				AppendOriginalFileName = false,
+				DataFileEncodingType = "UTF-16",
+				ExportFullTextAsFile = false,
+				ExportImages = false,
+				ExportMultipleChoiceFieldsAsNested = false,
+				ExportNatives = false,
+				ExportType = "SavedSearch",
+				StartExportAtRecord = 1,
+				Fileshare = "\\localhost\\Export",
+				IncludeOriginalImages = false,
+				OverwriteFiles = true,
+				FilePath = "Relative",
+				SelectedDataFileFormat = "Concordance",
+				SelectedImageDataFileFormat = "Opticon",
+				SelectedImageFileType = "SinglePage",
+				SubdirectoryDigitPadding = 3,
+				SubdirectoryImagePrefix = "IMG",
+				SubdirectoryMaxFiles = 500,
+				SubdirectoryNativePrefix = "NATIVE",
+				SubdirectoryStartNumber = 1,
+				SubdirectoryTextPrefix = "TEXT",
+				TextFileEncodingType = "",
+				UserPrefix = "",
+				VolumeDigitPadding = 2,
+				VolumeMaxSize = 4400,
+				VolumePrefix = "VOL",
+				VolumeStartNumber = 1,
+				IncludeNativeFilesPath = false
+			};
+			var integrationPointModel = new IntegrationPointModel
+			{
+				Name = "export_lf_ip",
+				DestinationProvider =
+					IntegrationPointBaseHelper.GetDestinationProviderArtifactId(Constants.IntegrationPoints.DestinationProviders.LOADFILE, SourceWorkspaceArtifactId, Helper),
+				SourceProvider = IntegrationPointBaseHelper.GetSourceProviderArtifactId(Constants.IntegrationPoints.SourceProviders.RELATIVITY, SourceWorkspaceArtifactId, Helper),
+				Type = IntegrationPointBaseHelper.GetTypeArtifactId(Helper, SourceWorkspaceArtifactId, "Export"),
+				DestinationConfiguration = destinationConfiguration,
+				SourceConfiguration = sourceConfiguration,
+				EmailNotificationRecipients = string.Empty,
+				FieldMappings = GetDefaultFieldMap().ToList(),
+				LogErrors = true,
+				OverwriteFieldsChoiceId = overwriteFieldsModel.ArtifactId,
+				ScheduleRule = new ScheduleModel
+				{
+					EnableScheduler = false
+				}
+			};
+			var createRequest = new CreateIntegrationPointRequest
+			{
+				WorkspaceArtifactId = SourceWorkspaceArtifactId,
+				IntegrationPoint = integrationPointModel
+			};
+
+			var createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
+
+			var actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPoint.ArtifactId);
+			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
+
+			Assert.That(expectedIntegrationPointModel.Name, Is.EqualTo(actualIntegrationPoint.Name));
+			Assert.That(expectedIntegrationPointModel.DestinationProvider, Is.EqualTo(actualIntegrationPoint.DestinationProvider));
+			Assert.That(expectedIntegrationPointModel.SourceProvider, Is.EqualTo(actualIntegrationPoint.SourceProvider));
+			Assert.That(expectedIntegrationPointModel.Type, Is.EqualTo(actualIntegrationPoint.Type));
+			Assert.That(expectedIntegrationPointModel.LogErrors, Is.EqualTo(actualIntegrationPoint.LogErrors));
 		}
 	}
 }
