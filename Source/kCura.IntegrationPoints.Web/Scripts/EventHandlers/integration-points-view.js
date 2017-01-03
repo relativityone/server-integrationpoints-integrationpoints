@@ -79,19 +79,7 @@
 		});
 	};
 
-	var _convertUTCToLocal = function () {
-
-	};
-
-	var config = {
-		time: {
-			longDate: Date.CultureInfo.formatPatterns.shortDate + ' ' + Date.CultureInfo.formatPatterns.shortTime
-		}
-	};
 	IP.redirect.set(document.URL);
-
-	IP.config = IP.config || {};
-	IP.config.time = config.time;
 
 	$(function () {
 		var $editButtons = $(":contains('Edit')").closest('a');
@@ -102,14 +90,6 @@
 				});
 			}
 		}
-	});
-	$(function () {
-		$.each(IP.nextTimeid || [], function () {
-			var $el = $('input[faartifactid="' + this + '"]').siblings('.dynamicViewFieldValue');
-			var text = $el.text();
-			var result = IP.timeUtil.utcDateToLocal(text, config.time.longDate);
-			$el.text(result);
-		});
 	});
 
 })(IP);
@@ -163,9 +143,9 @@ $(function () {
 
 	};
 
-    var ruleFieldId = IP.params['scheduleRuleId'];
-    var $field = IP.utils.getViewField(ruleFieldId).siblings('.dynamicViewFieldValue');
-    $field.text('');
+	var ruleFieldId = IP.params['scheduleRuleId'];
+	var $field = IP.utils.getViewField(ruleFieldId).siblings('.dynamicViewFieldValue');
+	$field.text('');
 
 	var populateSummarySchedulingTabPromise = function(result) {
 		var windowsTimeZones = result;
@@ -217,7 +197,7 @@ $(function () {
 								}
 							});
 					}
-					obj.push({ key: 'Scheduled Time', value: IP.timeUtil.timeToAmPm(result.scheduledTime || '') + (timeZone ? '; ' + timeZone.DisplayName : '') });
+					obj.push({ key: 'Scheduled Time', value: IP.timeUtil.format24HourToMilitaryTime(result.scheduledTime, "h:mm A") + (timeZone ? "; " + timeZone.DisplayName : "") });
 					IP.utils.createFields($field, obj);
 				},
 				function() {

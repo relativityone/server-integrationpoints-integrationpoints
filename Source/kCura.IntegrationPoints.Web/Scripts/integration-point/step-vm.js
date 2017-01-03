@@ -150,18 +150,7 @@
 
 		var proceedToSaveComplete = function (result) {
 			if (result.scheduler && result.scheduler.scheduledTime) {
-				var timeSplit = result.scheduler.scheduledTime.split(':');
-				var time = result.scheduler.scheduledTime;
-				if (result.scheduler.selectedTimeFormat == "AM") {
-					result.scheduler.scheduledTime = timeSplit[0] == 12 ? (0 + ':' + timeSplit[1]) : time;
-				} else {
-					var hour = 12;
-					if (parseInt(timeSplit[0], 10) < 12) {
-						hour = parseInt(timeSplit[0], 10) + 12;
-					}
-
-					result.scheduler.scheduledTime = hour + ':' + timeSplit[1];
-				}
+				result.scheduler.scheduledTime = IP.timeUtil.formatMilitaryTimeTo24HourTime(result.scheduler.scheduledTime, result.scheduler.selectedTimeMeridiem);
 			}
 			IP.messaging.publish('saveComplete', result);
 		}
