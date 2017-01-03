@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
@@ -42,11 +44,16 @@ namespace kCura.IntegrationPoints.Services
 			return await Task.Run(() => true).ConfigureAwait(false);
 		}
 
+		protected IPermissionRepository GetPermissionRepository(int workspaceId)
+		{
+			return _permissionRepositoryFactory.Create(global::Relativity.API.Services.Helper, workspaceId);
+		}
+
 		protected void CheckPermissions(int workspaceId)
 		{
 			try
 			{
-				var permissionRepository = _permissionRepositoryFactory.Create(global::Relativity.API.Services.Helper, workspaceId);
+				var permissionRepository = GetPermissionRepository(workspaceId);
 				if (permissionRepository.UserHasPermissionToAccessWorkspace() &&
 					permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View))
 				{
@@ -57,6 +64,29 @@ namespace kCura.IntegrationPoints.Services
 			{
 				_logger.LogError(e, _PERMISSIONS_ERROR);
 			}
+			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
+		}
+
+		protected void SafePermissionCheck(Action checkPermission)
+		{
+			try
+			{
+				checkPermission();
+			}
+			catch (InsufficientPermissionException)
+			{
+				throw;
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error occured during permission check.");
+				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
+			}
+		}
+
+		protected void LogAndThrowInsufficientPermissionException(string endpointName, IList<string> missingPermissions)
+		{
+			_logger.LogError($"User doesn't have permission to access endpoint {endpointName}. Missing permissions {string.Join(", ", missingPermissions)}.");
 			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
 		}
 

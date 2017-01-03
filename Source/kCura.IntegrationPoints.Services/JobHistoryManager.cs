@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -26,7 +29,36 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
-			return await Execute((IJobHistoryRepository jobHistoryRepository) => jobHistoryRepository.GetJobHistory(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			CheckJobHistoryPermissions(request.WorkspaceArtifactId);
+			using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+			{
+				IJobHistoryRepository jobHistoryRepository = container.Resolve<IJobHistoryRepository>();
+				return await Task.Run(() => jobHistoryRepository.GetJobHistory(request));
+			}
+		}
+
+		private void CheckJobHistoryPermissions(int workspaceId)
+		{
+			SafePermissionCheck(() =>
+			{
+				var permissionRepository = GetPermissionRepository(workspaceId);
+				bool hasAccesToWorkspace = permissionRepository.UserHasPermissionToAccessWorkspace();
+				bool hasAccesToViewJobHistory = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+				if (hasAccesToWorkspace && hasAccesToViewJobHistory)
+				{
+					return;
+				}
+				IList<string> missingPermissions = new List<string>();
+				if (!hasAccesToWorkspace)
+				{
+					missingPermissions.Add("Workspace");
+				}
+				if (!hasAccesToViewJobHistory)
+				{
+					missingPermissions.Add("JobHistory - View");
+				}
+				LogAndThrowInsufficientPermissionException(nameof(GetJobHistoryAsync), missingPermissions);
+			});
 		}
 
 		public void Dispose()

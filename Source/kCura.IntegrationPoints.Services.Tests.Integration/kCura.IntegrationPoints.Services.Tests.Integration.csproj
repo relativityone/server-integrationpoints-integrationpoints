@@ -134,6 +134,7 @@
     </Compile>
     <Compile Include="Helpers\ChoicesHelper.cs" />
     <Compile Include="Helpers\IntegrationPointBaseHelper.cs" />
+    <Compile Include="Helpers\PermissionsHelper.cs" />
     <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
     <Compile Include="IntegrationPointManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="IntegrationPointProfileManager\ItShouldHandleRetrievingNoIntegrationPointProfiles.cs" />
     <Compile Include="IntegrationPointProfileManager\ItShouldRetrieveAllIntegrationPointProfiles.cs" />
     <Compile Include="IntegrationPointTypeManager\IntegrationPointTypeManagerTests.cs" />
+    <Compile Include="JobHistoryManager\JobHistoryPermissionTests.cs" />
     <Compile Include="ProviderManager\ProviderManagerTests.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRunIntegrationPoint.cs" />
     <Compile Include="JobHistoryManager\ItShouldRetrieveJobHistory.cs" />
