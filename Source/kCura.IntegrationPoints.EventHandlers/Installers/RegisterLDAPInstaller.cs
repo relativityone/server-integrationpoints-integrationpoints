@@ -10,10 +10,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[Guid("02ec5d64-208a-44fb-a5e3-c3a1103e7da7")]
 	public class RegisterLDAPInstaller : SourceProviderInstaller.IntegrationPointSourceProviderInstaller
 	{
-		public RegisterLDAPInstaller()
-		{
-		}
-
 		public override System.Collections.Generic.IDictionary<System.Guid, SourceProviderInstaller.SourceProvider>
 			GetSourceProviders()
 		{

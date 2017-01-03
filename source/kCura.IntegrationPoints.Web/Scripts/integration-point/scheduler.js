@@ -226,13 +226,11 @@
 					return true;
 				}
 				if (value) {
-					var date = Date.parseExact(value, "M/dd/yyyy");
-					if (date == null) {
+					if (!IP.timeUtil.isValidDate(value, IP.timeUtil.dateFormat)) {
 						return false;
 					}
-					var currentDate = new Date();
-					currentDate.setHours(0, 0, 0, 0);
-					if (date.compareTo(currentDate) >= 0) {
+
+					if (IP.timeUtil.isTodayOrInTheFuture(value)) {
 						return true;
 					}
 				}
@@ -280,7 +278,7 @@
 		var promise = IP.data.ajax({
 			cache: false,
 			contentType: "application/json",
-			data: JSON.stringify({ ianaZoneId: moment.tz.guess() }),
+			data: JSON.stringify({ ianaZoneId: IP.timeUtil.getLocalIanaTimeZoneId() }),
 			dataType: "json",
 			headers: { "X-CSRF-Header": "-" },
 			type: "POST",
@@ -305,8 +303,7 @@
 		validation: [{
 			validator: function (value) {
 				if (value) {
-					var date = Date.parseExact(value, "M/dd/yyyy");
-					if (date == null) {
+					if (!IP.timeUtil.isValidDate(value, IP.timeUtil.dateFormat)) {
 						return false;
 					}
 				}
@@ -329,7 +326,16 @@
 		}]
 	});
 
-	this.scheduledTime = ko.observable().extend({
+	this.getScheduledTime = function () {
+		if (self.options.selectedTimeMeridiem == null && self.options.scheduledTime != null) {
+			return IP.timeUtil.format24HourToMilitaryTime(self.options.scheduledTime, "h:mm");
+		} else if (self.options.scheduledTime != null) {
+			return self.options.scheduledTime;
+		}
+		return "";
+	}
+
+	this.scheduledTime = ko.observable(this.getScheduledTime()).extend({
 		required: {
 			onlyIf: function () {
 				return self.isEnabled();
@@ -342,19 +348,18 @@
 			}
 		}
 	});
-	if (this.options.selectedTimeFormat == null && this.options.scheduledTime != null) {
-		this.scheduledTime(IP.timeUtil.convert24HourTo12Hour(this.options.scheduledTime));
-	} else if (this.options.scheduledTime != null) {
-		this.scheduledTime(this.options.scheduledTime);
+
+	this.getScheduledTimeMeridiem = function () {
+		if (self.options.selectedTimeMeridiem == null && self.options.scheduledTime != null) {
+			return IP.timeUtil.format24HourToMilitaryTime(self.options.scheduledTime, "A");
+		} else if (self.options.scheduledTime != null) {
+			return self.options.selectedTimeMeridiem;
+		}
+		return IP.timeUtil.anteMeridiem;
 	}
 
-	this.timeFormat = ko.observableArray(['AM', 'PM']);
-	this.selectedTimeFormat = ko.observable();
-	if (this.options.selectedTimeFormat == null && this.options.scheduledTime != null) {
-		this.selectedTimeFormat(IP.timeUtil.getPostOrAnteMeridiemFromTime(this.options.scheduledTime));
-	} else if (this.options.scheduledTime != null) {
-		this.selectedTimeFormat(this.options.selectedTimeFormat);
-	}
+	this.timeMeridiem = ko.observableArray([IP.timeUtil.anteMeridiem, IP.timeUtil.postMeridiem]);
+	this.selectedTimeMeridiem = ko.observable(this.getScheduledTimeMeridiem());
 
 	this.loadSettings = function (settings) {
 		self.options = $.extend({}, {
@@ -363,24 +368,26 @@
 			sendOn: {}
 		}, settings);
 		self.enableScheduler((self.options.enableScheduler === "true" || self.options.enableScheduler === true).toString());
-		self.reoccur(self.options.reoccur);
-		if (self.options.selectedFrequency === null) {
-			self.options.selectedFrequency = undefined;
+		if (self.enableScheduler() === "true") {
+			self.reoccur(self.options.reoccur);
+			if (self.options.selectedFrequency === null) {
+				self.options.selectedFrequency = undefined;
+			}
+			self.selectedFrequency(self.options.selectedFrequency);
+			var state = self.getSendOn();
+			if (state.templateID === "weeklySendOn") {
+				console.log(state);
+				var sendOnWeekly = new SendOnWeekly(state);
+				self.sendOn(sendOnWeekly);
+			} else if (state.templateID === "monthlySendOn") {
+				var sendOnMonthly = new SendOnMonthly(state);
+				self.sendOn(sendOnMonthly);
+			}
+			self.startDate(self.options.startDate);
+			self.endDate(self.options.endDate);
+			self.scheduledTime(IP.timeUtil.format24HourToMilitaryTime(self.options.scheduledTime, "h:mm"));
+			self.selectedTimeMeridiem(IP.timeUtil.format24HourToMilitaryTime(self.options.scheduledTime, "A"));
+			self.timeZoneId(self.options.timeZoneId);
 		}
-		self.selectedFrequency(self.options.selectedFrequency);
-		var state = self.getSendOn();
-		if (state.templateID === "weeklySendOn") {
-			console.log(state);
-			var sendOnWeekly = new SendOnWeekly(state);
-			self.sendOn(sendOnWeekly);
-		} else if (state.templateID === "monthlySendOn") {
-			var sendOnMonthly = new SendOnMonthly(state);
-			self.sendOn(sendOnMonthly);
-		}
-		self.startDate(self.options.startDate);
-		self.endDate(self.options.endDate);
-		self.scheduledTime(IP.timeUtil.convert24HourTo12Hour(self.options.scheduledTime));
-		self.selectedTimeFormat(IP.timeUtil.getPostOrAnteMeridiemFromTime(self.options.scheduledTime));
-		self.timeZoneId(self.options.timeZoneId);
 	};
 };

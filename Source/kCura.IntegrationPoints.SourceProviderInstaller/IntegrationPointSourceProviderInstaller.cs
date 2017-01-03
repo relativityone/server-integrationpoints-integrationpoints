@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -46,6 +47,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		protected IntegrationPointSourceProviderInstaller()
 		{
+		}
+
+		private IAPILog _logger;
+
+		internal IAPILog Logger
+		{
+			get { return _logger ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointSourceProviderInstaller>()); }
+			set { _logger = value; }
 		}
 
 		private ICaseServiceContext _caseContext;
@@ -126,30 +135,32 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// Runs when the event handler is called during the installation of the data source provider.
 		/// </summary>
 		/// <returns>An object of type Response, which frequently contains a message.</returns>
-		public override sealed Response Execute()
+		public sealed override Response Execute()
 		{
-			bool isSuccess = false;
-			Exception ex = null;
+			var response = new Response
+			{
+				Success = true,
+				Message = "Created or updated successfully."
+			};
+
 			try
 			{
 				OnRaisePostInstallPreExecuteEvent();
 				InstallSourceProvider(GetSourceProviders());
-				isSuccess = true;
 			}
 			catch (Exception e)
 			{
-				ex = e;
-				isSuccess = false;
-				throw Utils.GetNonCustomException(e);
+				LogIntegrationPointEventHandlerInstallError(e);
+				response.Exception = e;
+				response.Success = false;
+				response.Message = e.Message;
 			}
 			finally
 			{
-				OnRaisePostInstallPostExecuteEvent(isSuccess, ex);
+				OnRaisePostInstallPostExecuteEvent(response.Success, response.Exception);
 			}
-			return new Response
-			{
-				Success = isSuccess
-			};
+
+			return response;
 		}
 
 		private void InstallSourceProvider(IDictionary<Guid, SourceProvider> providers)
@@ -192,5 +203,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			if (RaisePostInstallPostExecuteEvent != null)
 				RaisePostInstallPostExecuteEvent(isInstalled, ex);
 		}
+
+		#region Logging
+
+		private void LogIntegrationPointEventHandlerInstallError(Exception e)
+		{
+			Logger.LogError(e, "Failed to install Integration Point Event Handler.");
+		}
+
+		#endregion
 	}
 }
