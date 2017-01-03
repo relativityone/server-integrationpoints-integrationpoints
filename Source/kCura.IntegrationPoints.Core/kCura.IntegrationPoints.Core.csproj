@@ -416,7 +416,6 @@
     <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
-    <Compile Include="Services\Synchronizer\ExportDestinationSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />
     <Compile Include="Services\Synchronizer\RdoSynchronizerProvider.cs" />
