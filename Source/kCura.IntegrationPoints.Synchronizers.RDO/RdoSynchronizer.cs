@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Newtonsoft.Json;
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class RdoSynchronizer : IDataSynchronizer, IBatchReporter, IEmailBodyData
 	{
 		private readonly IImportApiFactory _factory;
+		private readonly IImportJobFactory _jobFactory;
 		private readonly IHelper _helper;
 		private readonly IAPILog _logger;
 
@@ -42,10 +44,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private string _webApiPath;
 
-		public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IHelper helper)
+		public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
 		{
 			FieldQuery = fieldQuery;
 			_factory = factory;
+			_jobFactory = jobFactory;
 			_helper = helper;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
 		}
@@ -190,10 +193,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			IntializeImportJob(fieldMap, options);
 
-			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
-			IDataReader sourceReader = new RelativityReaderDecorator(data, fieldMaps);
-
-			_importService.KickOffImport(sourceReader);
+			_importService.KickOffImport(data);
 
 			WaitUntilTheJobIsDone();
 		}
@@ -295,7 +295,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			LogInitializingImportService();
 
-			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager(), nativeFileImportService, _factory, _helper);
+			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager(), nativeFileImportService, _factory, _jobFactory, _helper);
 			importService.OnBatchComplete += Finish;
 			importService.OnDocumentError += ItemError;
 			importService.OnJobError += JobError;

@@ -18,7 +18,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -38,6 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IAPILog _logger;
 		private readonly JobStatisticsService _statisticsService;
 		private IEnumerable<IBatchStatus> _batchStatus;
+		private IDataReaderWrapperFactory _dataReaderWrapperFactory;
 
 		public SyncWorker(
 			ICaseServiceContext caseServiceContext,
@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IBatchStatus> statuses,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
+			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService) :
 			this(caseServiceContext,
@@ -64,6 +65,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				statuses,
 				statisticsService,
 				managerFactory,
+				dataReaderWrapperFactory,
 				contextContainerFactory,
 				jobService, true)
 		{
@@ -81,6 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IBatchStatus> statuses,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
+			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService, bool isStoppable) :
 			base(caseServiceContext,
@@ -99,6 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 			_isStoppable = isStoppable;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncWorker>();
+			_dataReaderWrapperFactory = dataReaderWrapperFactory;
 		}
 
 		public IEnumerable<IBatchStatus> BatchStatus
@@ -134,29 +138,35 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			JobStopManager?.ThrowIfStopRequested();
 
+			IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+			//Obtain settings for destination configuration
+			ImportSettings destinationSettings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
+
+			//Make non-Relativity providers log the document RDOs' created by/modified by field as the user who submitted the job.
+			//(Adjustment only needs to be made before IDataSynchronizer.SyncData)
+			if (dataSynchronizer is RdoSynchronizer)
+			{
+				destinationSettings.OnBehalfOfUserId = job.SubmittedBy;
+				destinationConfiguration = Serializer.Serialize(destinationSettings);
+			}
+
+			//Extract source fields from field map
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-            using (ImportDataReader importDataReader = new ImportDataReader(
-                    sourceProvider,
-                    sourceFields,
-                    entryIDs,
-                    sourceConfiguration))
-            {
-                importDataReader.Setup(fieldMaps);
-                IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-                if (dataSynchronizer is RdoSynchronizer)
-                {
-                    ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
-                    settings.OnBehalfOfUserId = job.SubmittedBy;
-                    destinationConfiguration = Serializer.Serialize(settings);
-                }
-
-                SetupSubscriptions(dataSynchronizer, job);
-
-                JobStopManager?.ThrowIfStopRequested();
-
-                dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
-            }
+			using (IDataReader sourceData = _dataReaderWrapperFactory.GetWrappedDataReader(
+				sourceProvider,
+				fieldMaps,
+				sourceFields,
+				destinationSettings,
+				entryIDs,
+				sourceConfiguration
+				))
+			{
+				SetupSubscriptions(dataSynchronizer, job);
+				JobStopManager?.ThrowIfStopRequested();
+				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+			}
 		}
 
 		protected virtual void ExecuteTask(Job job)

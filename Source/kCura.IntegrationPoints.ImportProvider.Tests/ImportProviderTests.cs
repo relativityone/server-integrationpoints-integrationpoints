@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
             IEnumerator<string> tdEnum = testData.GetEnumerator();
             tdEnum.MoveNext();
 
-            _fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
+            _fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
             _fieldParser.GetFields().Returns(testData);
 
             ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory);
@@ -68,13 +68,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
             char quoteDelimiter = '"';
 
             //Subsitute config so test can use GetFields
-            _fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
+            _fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
             _fieldParser.GetFields().Returns(testHeaders);
 
             //Subsitute config so test can use GetData
             IEnumerable<string> tdJoinedRows = testData.Select(x => string.Join(recordDelimiter.ToString(), x));
             EnumerableParser tdEnumerableParser = new EnumerableParser(tdJoinedRows, recordDelimiter, quoteDelimiter);
-            _enumerableParserFactory.GetEnumerableParser(null, string.Empty).ReturnsForAnyArgs(tdEnumerableParser);
+            _enumerableParserFactory.GetEnumerableParser(null, null).ReturnsForAnyArgs(tdEnumerableParser);
 
             ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory);
             IEnumerable<FieldEntry> ipFields = ip.GetFields(string.Empty);

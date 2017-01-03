@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var helper = Substitute.For<IHelper>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
 			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
+			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
 			{
 				ArtifactTypeID = 1,
@@ -61,7 +63,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 	  });
 
 			//ACT
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 			var str = JsonConvert.SerializeObject(options);
 			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
 			//ASSERT
@@ -77,6 +79,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var helper = Substitute.For<IHelper>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
 			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
+			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
 			{
 				ArtifactTypeID = 1,
@@ -101,7 +104,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+
 			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
 
 			//ASSERT
@@ -120,6 +124,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var helper = Substitute.For<IHelper>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
+			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
 			//
 			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
@@ -141,7 +146,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+
 			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
 
 			//ASSERT
@@ -156,6 +162,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var helper = Substitute.For<IHelper>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
 			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
+			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
 			{
 				ArtifactTypeID = 1,
@@ -182,7 +189,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+
 			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
 
 			//ASSERT
@@ -481,8 +489,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var relativityFieldQuery = NSubstitute.Substitute.For<IRelativityFieldQuery>();
 			var importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
 			var importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
+			var jobFactory = Substitute.For<IImportJobFactory>();
 			var helper = Substitute.For<IHelper>();
-			var rdoSynchronizerPush = new RdoSynchronizer(relativityFieldQuery, importApiFactory, helper);
+			var rdoSynchronizerPush = new RdoSynchronizer(relativityFieldQuery, importApiFactory, jobFactory, helper);
 
 			int artifactTypeId = 123;
 			int caseArtifactId = 456;
@@ -516,7 +525,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 	public class TestRdoSynchronizer : RdoSynchronizer
 	{
 		public TestRdoSynchronizer()
-		  : base(null, null, Substitute.For<IHelper>())
+		  : base(null, null, Substitute.For<IImportJobFactory>(), Substitute.For<IHelper>())
 		{
 			WebAPIPath = kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH;
 			DisableNativeLocationValidation = false;
@@ -538,7 +547,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 	{
 		private WorkspaceRef _workspaceRef;
 		public mockSynchronizer(WorkspaceRef workspaceRef)
-		  : base(null, null, Substitute.For<IHelper>())
+		  : base(null, null, Substitute.For<IImportJobFactory>(), Substitute.For<IHelper>())
 		{
 			WebAPIPath = "WebAPIPath";
 			DisableNativeLocationValidation = false;
