@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -11,6 +12,7 @@ using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -21,13 +23,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly ISettingsManager _settingsManager;
         private IDataProviderFactory _providerFactory;
         private readonly IHelper _helper;
+	    private readonly ISerializer _serializer;
 
-        public FtpProviderAPIController(IEncryptionManager securityManager, ISettingsManager settingsManager, IDataProviderFactory providerFactory, IHelper helper)
+        public FtpProviderAPIController(IEncryptionManager securityManager, ISettingsManager settingsManager, IDataProviderFactory providerFactory, IHelper helper, ISerializer serializer)
         {
             _securityManager = securityManager;
             _settingsManager = settingsManager;
             _providerFactory = providerFactory;
 	        _helper = helper;
+	        _serializer = serializer;
         }
 
         [HttpPost]
@@ -65,17 +69,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage GetViewFields([FromBody] object data)
         {
             Settings settings = _settingsManager.ConvertFromEncryptedString(data.ToString());
-            var model = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("Host", settings.Host),
-                new KeyValuePair<string, string>("Port", settings.Port.ToString()),
-                new KeyValuePair<string, string>("Protocol", settings.Protocol),
-                new KeyValuePair<string, string>("Username", settings.Username ?? string.Empty),
-                new KeyValuePair<string, string>("Password", "******"),
-                new KeyValuePair<string, string>("Filename Prefix", settings.Filename_Prefix),
-                new KeyValuePair<string, string>("Timezone Offset", settings.Timezone_Offset.ToString())
-            };
-            return Request.CreateResponse(HttpStatusCode.OK, model);
+			FtpProviderSummaryPageSettingsModel model = new FtpProviderSummaryPageSettingsModel(settings);
+	        string serializedModel = _serializer.Serialize(model);
+            return Request.CreateResponse(HttpStatusCode.OK, serializedModel);
         }
     }
 }

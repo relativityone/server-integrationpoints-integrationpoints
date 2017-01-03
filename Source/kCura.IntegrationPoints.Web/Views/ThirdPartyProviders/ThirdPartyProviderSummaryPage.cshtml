@@ -1,0 +1,90 @@
+﻿@{
+	ViewBag.Title = "Settings";
+}
+
+<link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
+
+
+<table id="summaryPage" class="innerTabTable">
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Name:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: name"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Log Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table><tr></tr></table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Has Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Overwrite:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: overwriteMode"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Email Notification Recipients:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">SourceProvider:</td>
+					<td class="dynamicViewFieldValue breakWord" data-bind="text: sourceProviderName"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Destination RDO:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: destinationRdoName"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName" id="sourceConfigurationContainer"></td>
+					<td class="dynamicViewFieldValue"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<script src="~/Scripts/ThirdPartyProviders/third-party-provider-summary-page.js"></script>

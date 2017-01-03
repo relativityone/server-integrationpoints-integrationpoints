@@ -1,0 +1,120 @@
+﻿@{
+	ViewBag.Title = "Settings";
+}
+
+<link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
+
+
+<table id="summaryPage" class="innerTabTable">
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Name:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: name"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Log Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table><tr></tr></table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Has Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Overwrite:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: overwriteMode"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Email Notification Recipients:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">SourceProvider:</td>
+					<td class="dynamicViewFieldValue breakWord" data-bind="text: sourceProviderName"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Destination RDO:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: destinationRdoName"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Target Folder:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: targetFolder"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Source Workspace:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: sourceWorkspace"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Target Workspace:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: targetWorkspace"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Saved Search:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: savedSearch"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<script src="~/Scripts/RelativityProvider/relativity-provider-summary-page.js"></script>
