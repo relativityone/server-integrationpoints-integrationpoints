@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data
 			{
 				if (typeof(T) == typeof(IntegrationPoint))
 				{
-					_genericLibraries.Add(typeof(T), new IntegrationPointRsapiClientLibrary(_helper, _workspaceArtifactId, _encryptionManager));
+					_genericLibraries.Add(typeof(T), new EncryptingRsapiClientLibrary(_helper, _workspaceArtifactId, _encryptionManager));
 				}
 				else
 				{

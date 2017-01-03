@@ -5,11 +5,11 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class IntegrationPointRsapiClientLibrary : RsapiClientLibrary<IntegrationPoint>
+	public class EncryptingRsapiClientLibrary : RsapiClientLibrary<IntegrationPoint>
 	{
 		private readonly IEncryptionManager _encryptionManager;
 
-		public IntegrationPointRsapiClientLibrary(IHelper helper, int workspaceArtifactId, IEncryptionManager encryptionManager) : base(helper, workspaceArtifactId)
+		public EncryptingRsapiClientLibrary(IHelper helper, int workspaceArtifactId, IEncryptionManager encryptionManager) : base(helper, workspaceArtifactId)
 		{
 			_encryptionManager = encryptionManager;
 		}

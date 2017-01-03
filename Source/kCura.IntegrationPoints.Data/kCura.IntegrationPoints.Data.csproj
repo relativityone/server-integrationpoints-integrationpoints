@@ -185,7 +185,7 @@
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IntegrationPointBaseQuery.cs" />
-    <Compile Include="IntegrationPointRsapiClientLibrary.cs" />
+    <Compile Include="EncryptingRsapiClientLibrary.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
