@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -34,23 +36,70 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
-			return
-				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetPercentagePushedToReview(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			CheckDocumentManagerPermissions(request.WorkspaceArtifactId, nameof(GetPercentagePushedToReviewAsync));
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var documentRepository = container.Resolve<IDocumentRepository>();
+					return await Task.Run(() => documentRepository.GetPercentagePushedToReview(request)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetPercentagePushedToReviewAsync), e);
+				throw internalServerException;
+			}
 		}
 
 		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
-			return
-				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetCurrentPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			CheckDocumentManagerPermissions(request.WorkspaceArtifactId, nameof(GetCurrentPromotionStatusAsync));
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var documentRepository = container.Resolve<IDocumentRepository>();
+					return await Task.Run(() => documentRepository.GetCurrentPromotionStatus(request)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetCurrentPromotionStatusAsync), e);
+				throw internalServerException;
+			}
 		}
 
 		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			return
-				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetHistoricalPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			CheckDocumentManagerPermissions(request.WorkspaceArtifactId, nameof(GetHistoricalPromotionStatusAsync));
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var documentRepository = container.Resolve<IDocumentRepository>();
+					return await Task.Run(() => documentRepository.GetHistoricalPromotionStatus(request)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetHistoricalPromotionStatusAsync), e);
+				throw internalServerException;
+			}
+		}
+
+		private void CheckDocumentManagerPermissions(int workspaceId, string endpointName)
+		{
+			SafePermissionCheck(() =>
+			{
+				var permissionRepository = GetPermissionRepository(workspaceId);
+				bool hasWorkspaceAccess = permissionRepository.UserHasPermissionToAccessWorkspace();
+				if (hasWorkspaceAccess)
+				{
+					return;
+				}
+				LogAndThrowInsufficientPermissionException(endpointName, new List<string> {"Workspace"});
+			});
 		}
 
 		protected override Installer Installer => _installer ?? (_installer = new DocumentManagerInstaller());

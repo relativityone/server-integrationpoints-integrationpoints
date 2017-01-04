@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 			var permissionRepositoryFactory = Substitute.For<IPermissionRepositoryFactory>();
 			permissionRepositoryFactory.Create(Arg.Any<IHelper>(), _WORKSPACE_ID).Returns(_permissionRepository);
 
-			_jobHistoryManager = new JobHistoryManagerContainerMocked(_logger, permissionRepositoryFactory, _container);
+			_jobHistoryManager = new JobHistoryManagerWithContainerMock(_logger, permissionRepositoryFactory, _container);
 		}
 
 		[Test]
@@ -105,23 +105,23 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 			var jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
 			_container.Resolve<IJobHistoryRepository>().Returns(jobHistoryRepository);
 
+			var expectedResult = new JobHistorySummaryModel();
+
 			var jobHistoryRequest = new JobHistoryRequest
 			{
 				WorkspaceArtifactId = _WORKSPACE_ID
 			};
-			_jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait();
+			jobHistoryRepository.GetJobHistory(jobHistoryRequest).Returns(expectedResult);
+
+			var actualResult = _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result;
 
 			jobHistoryRepository.Received(1).GetJobHistory(jobHistoryRequest);
-		}
 
-		private void MockValidPermissions()
-		{
-			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
-			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(true);
+			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
 		[Test]
-		public void ItShouldInterceptAndHideException()
+		public void ItShouldHideException()
 		{
 			MockValidPermissions();
 
@@ -165,19 +165,25 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 
 			_logger.Received(1).LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetJobHistoryAsync");
 		}
+
+		private void MockValidPermissions()
+		{
+			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
+			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(true);
+		}
 	}
 
-	internal class JobHistoryManagerContainerMocked : JobHistoryManager
+	internal class JobHistoryManagerWithContainerMock : JobHistoryManager
 	{
 		private readonly IWindsorContainer _windsorContainer;
 
-		public JobHistoryManagerContainerMocked(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer windsorContainer)
+		public JobHistoryManagerWithContainerMock(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer windsorContainer)
 			: base(logger, permissionRepositoryFactory)
 		{
 			_windsorContainer = windsorContainer;
 		}
 
-		public JobHistoryManagerContainerMocked(ILog logger, IWindsorContainer windsorContainer) : base(logger)
+		public JobHistoryManagerWithContainerMock(ILog logger, IWindsorContainer windsorContainer) : base(logger)
 		{
 			_windsorContainer = windsorContainer;
 		}

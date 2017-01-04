@@ -35,39 +35,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 		protected abstract void SetPermissions();
 		
 		[Test]
-		public void IDocumentManager_GetCurrentPromotionStatusAsync_AccessDenied()
-		{
-			CurrentPromotionStatusRequest request = new CurrentPromotionStatusRequest
-			{
-				WorkspaceArtifactId = WorkspaceArtifactId
-			};
-			var client = Helper.CreateUserProxy<IDocumentManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetCurrentPromotionStatusAsync(request).Result);
-		}
-
-		[Test]
-		public void IDocumentManager_GetHistoricalPromotionStatusAsync_AccessDenied()
-		{
-			HistoricalPromotionStatusRequest request = new HistoricalPromotionStatusRequest
-			{
-				WorkspaceArtifactId = WorkspaceArtifactId
-			};
-			var client = Helper.CreateUserProxy<IDocumentManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetHistoricalPromotionStatusAsync(request).Result);
-		}
-
-		[Test]
-		public void IDocumentManager_GetPercentagePushedToReviewAsync_AccessDenied()
-		{
-			PercentagePushedToReviewRequest request = new PercentagePushedToReviewRequest
-			{
-				WorkspaceArtifactId = WorkspaceArtifactId
-			};
-			var client = Helper.CreateUserProxy<IDocumentManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetPercentagePushedToReviewAsync(request).Result);
-		}
-
-		[Test]
 		public void IIntegrationPointManager_CreateIntegrationPointAsync_AccessDenied()
 		{
 			CreateIntegrationPointRequest request = new CreateIntegrationPointRequest

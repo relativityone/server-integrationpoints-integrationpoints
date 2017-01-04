@@ -79,6 +79,7 @@
     <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
     <Compile Include="KeplerServiceLoggingTests.cs" />
     <Compile Include="KeplerServicePermissionTests.cs" />
+    <Compile Include="Managers\DocumentManagerTests.cs" />
     <Compile Include="Managers\JobHistoryManagerTests.cs" />
     <Compile Include="Repositories\IntegrationPointProfileRepositoryTests.cs" />
     <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
