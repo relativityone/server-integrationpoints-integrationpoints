@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator<JsTreeItemDTO>>();
 			_dataTransferLocationServiceMock = Substitute.For<IDataTransferLocationService>();
 
-			_dataTransferLocationServiceMock.GetRootLocationFor(_WKSP_ID).Returns(_ROOT_PATH);
+			_dataTransferLocationServiceMock.GetWorkspaceFileLocationRootPath(_WKSP_ID).Returns(_ROOT_PATH);
 			_dataTransferLocationServiceMock.GetDefaultRelativeLocationFor(_ipType).Returns(_IP_TYPE_PATH);
 
 
@@ -55,21 +55,33 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 				Id = Path.Combine(path, _FOLDER_NAME)
 			};
 
+			root.Children = new List<JsTreeItemDTO>
+			{
+				folder
+			};
+
 			_directoryTreeCreatorMock.GetChildren(path, true).Returns(new List<JsTreeItemDTO>
 			{
-				root,
-				folder
+				root
 			});
 
 			string expectedFolderPath = Path.Combine(_IP_TYPE_PATH, _FOLDER_NAME);
 
 			List<JsTreeItemDTO> treeItems = _subjectUnderTest.GetChildren(string.Empty, true, _WKSP_ID, _ipType);
 
-			Assert.That(treeItems.Count, Is.EqualTo(2));
-			Assert.That(!treeItems.Any(item => item.Id.Contains(path) || item.Text.Contains(path) ));
+			Assert.That(treeItems.Count, Is.EqualTo(1));
+			JsTreeItemDTO rootTreeItem = treeItems.First();
 
-			Assert.That(treeItems.Any(item => item.Id.Contains(_IP_TYPE_PATH)));
-			Assert.That(treeItems.Any(item => item.Id.Contains(expectedFolderPath)));
+			Assert.That(!rootTreeItem.Id.Contains(path) && !rootTreeItem.Text.Contains(path) );
+			// We expect Id always point to valid Url Path -> only Text property should be allow to append special characters/variables in the prefix, eg: "%Fileshare Path%", ".\"
+			Assert.That(!rootTreeItem.Id.StartsWith(RelativePathDirectoryTreeCreator<JsTreeItemDTO>.FILESHARE_PLACEHOLDER_PREFIX));
+			Assert.That(rootTreeItem.Text.StartsWith(RelativePathDirectoryTreeCreator<JsTreeItemDTO>.FILESHARE_PLACEHOLDER_PREFIX));
+
+			Assert.That(rootTreeItem.Children.Count, Is.EqualTo(1));
+
+			JsTreeItemDTO folderTreeItem = rootTreeItem.Children.First();
+			Assert.That(folderTreeItem.Id, Is.EqualTo(expectedFolderPath));
+			Assert.That(folderTreeItem.Text, Is.EqualTo(_FOLDER_NAME));
 		}
 	}
 }

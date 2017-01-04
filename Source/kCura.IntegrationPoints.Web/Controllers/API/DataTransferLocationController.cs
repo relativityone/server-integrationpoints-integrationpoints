@@ -15,15 +15,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class DataTransferLocationController : ApiController
 	{
-		private readonly IDataTransferLocationService _dataTransferLocationService;
 		private readonly IRepositoryFactory _respositoryFactory;
-		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
+		private readonly IRelativePathDirectoryTreeCreator<JsTreeItemDTO> _relativePathDirectoryTreeCreator;
+		private readonly IDataTransferLocationService _dataTransferLocationService;
 
-		public DataTransferLocationController(IDataTransferLocationService dataTransferLocationService, IRepositoryFactory respositoryFactory, IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator)
+		public DataTransferLocationController(IRepositoryFactory respositoryFactory, 
+			IRelativePathDirectoryTreeCreator<JsTreeItemDTO> relativePathDirectoryTreeCreator, IDataTransferLocationService dataTransferLocationService)
 		{
-			_dataTransferLocationService = dataTransferLocationService;
 			_respositoryFactory = respositoryFactory;
-			_directoryTreeCreator = directoryTreeCreator;
+			_relativePathDirectoryTreeCreator = relativePathDirectoryTreeCreator;
+			_dataTransferLocationService = dataTransferLocationService;
 		}
 
 		[HttpPost]
@@ -32,14 +33,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			if (HasPermissions(workspaceId))
 			{
-				if (String.IsNullOrWhiteSpace(path))
-				{
-					path = _dataTransferLocationService.GetLocationFor(workspaceId, integrationPointTypeIdentifier);
-				}
-
-				List<JsTreeItemDTO> tree = _directoryTreeCreator.GetChildren(path, isRoot, includeFiles);
+				List<JsTreeItemDTO> tree = _relativePathDirectoryTreeCreator.GetChildren(path, isRoot, workspaceId, integrationPointTypeIdentifier, includeFiles);
 
 				return Request.CreateResponse(HttpStatusCode.OK, tree);
+			}
+
+			return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to retrieve data transfer root location.")]
+		public HttpResponseMessage GetRoot(int workspaceId, Guid integrationPointTypeIdentifier)
+		{
+			if (HasPermissions(workspaceId))
+			{
+				string relativeDataTransferLocation = _dataTransferLocationService.GetDefaultRelativeLocationFor(integrationPointTypeIdentifier);
+
+				return Request.CreateResponse(HttpStatusCode.OK, relativeDataTransferLocation);
 			}
 
 			return new HttpResponseMessage(HttpStatusCode.Unauthorized);

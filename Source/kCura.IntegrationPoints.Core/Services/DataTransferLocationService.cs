@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void CreateForAllTypes(int workspaceArtifactId)
 		{
-			string rootPath = GetWorkspaceRootPath(workspaceArtifactId);
+			string rootPath = GetDestinationFolderRootPath(workspaceArtifactId);
 
 			CreateDirectoryIfNotExists(rootPath);
 
@@ -47,14 +46,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			return Path.Combine(_PARENT_FOLDER, type.Name);
 		}
 
-		public string GetRootLocationFor(int workspaceArtifactId)
-		{
-			return GetWorkspaceRootPath(workspaceArtifactId);
-		}
-
 		public string GetLocationFor(int workspaceArtifactId, Guid integrationPointTypeIdentifier)
 		{
-			string rootPath = GetWorkspaceRootPath(workspaceArtifactId);
+			string rootPath = GetDestinationFolderRootPath(workspaceArtifactId);
 
 			IntegrationPointType type = _integrationPointTypeService.GetIntegrationPointType(integrationPointTypeIdentifier);
 
@@ -69,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public string VerifyAndPrepare(int workspaceArtifactId, string path)
 		{
-			string rootPath = GetWorkspaceRootPath(workspaceArtifactId);
+			string rootPath = GetDestinationFolderRootPath(workspaceArtifactId);
 
 			// remove previous root from path...
 			if (Path.IsPathRooted(path))
@@ -88,6 +82,19 @@ namespace kCura.IntegrationPoints.Core.Services
 			return path;
 		}
 
+		public string GetWorkspaceFileLocationRootPath(int workspaceArtifactId)
+		{
+			Workspace workspace = GetWorkspace(workspaceArtifactId);
+
+			if (workspace == null)
+			{
+				LogMissingWorkspaceError(workspaceArtifactId);
+				throw new Exception(nameof(CreateForAllTypes));
+			}
+			return Path.Combine(workspace.DefaultFileLocation.Name,
+				String.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
+		}
+
 		private Workspace GetWorkspace(int workspaceId)
 		{
 			using (IRSAPIClient rsApiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
@@ -97,21 +104,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private string GetWorkspaceRootPath(int workspaceArtifactId)
+		private string GetDestinationFolderRootPath(int workspaceArtifactId)
 		{
-			Workspace workspace = GetWorkspace(workspaceArtifactId);
+			string workspaceFileLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
 
-			if (workspace == null)
-			{
-				LogMissingWorkspaceError(workspaceArtifactId);
-				throw new Exception(nameof(CreateForAllTypes));
-			}
-
-			return Path.Combine(
-				workspace.DefaultFileLocation.Name,
-				String.Format(_WORKSPACE_FOLDER_FORMAT, workspace.ArtifactID),
-				_PARENT_FOLDER
-			);
+			return Path.Combine(workspaceFileLocation, _PARENT_FOLDER);
 		}
 
 		private void CreateDirectoryIfNotExists(string path)
