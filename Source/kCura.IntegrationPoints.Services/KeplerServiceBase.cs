@@ -79,15 +79,21 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Error occured during permission check.");
+				_logger.LogError(e, _PERMISSIONS_ERROR);
 				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 			}
 		}
 
 		protected void LogAndThrowInsufficientPermissionException(string endpointName, IList<string> missingPermissions)
 		{
-			_logger.LogError($"User doesn't have permission to access endpoint {endpointName}. Missing permissions {string.Join(", ", missingPermissions)}.");
+			_logger.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", endpointName, string.Join(", ", missingPermissions));
 			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
+		}
+
+		protected InternalServerErrorException LogAndReturnInternalServerErrorException(string endpointName, Exception e)
+		{
+			_logger.LogError(e, "Error occurred during request processing in {endpointName}.", endpointName);
+			return new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST);
 		}
 
 		protected Task<TResult> Execute<TResult, TParameter>(Func<TParameter, TResult> funcToExecute, int workspaceId)

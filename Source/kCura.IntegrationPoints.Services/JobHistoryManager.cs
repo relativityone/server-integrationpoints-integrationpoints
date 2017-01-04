@@ -30,10 +30,18 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
 			CheckJobHistoryPermissions(request.WorkspaceArtifactId);
-			using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+			try
 			{
-				IJobHistoryRepository jobHistoryRepository = container.Resolve<IJobHistoryRepository>();
-				return await Task.Run(() => jobHistoryRepository.GetJobHistory(request));
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					IJobHistoryRepository jobHistoryRepository = container.Resolve<IJobHistoryRepository>();
+					return await Task.Run(() => jobHistoryRepository.GetJobHistory(request)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetJobHistoryAsync), e);
+				throw internalServerException;
 			}
 		}
 
