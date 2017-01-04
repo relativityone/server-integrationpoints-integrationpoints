@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -32,8 +34,44 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IList<IntegrationPointTypeModel>> GetIntegrationPointTypes(int workspaceArtifactId)
 		{
-			return
-				await Execute((IIntegrationPointTypeRepository integrationPointTypeRepository) => integrationPointTypeRepository.GetIntegrationPointTypes(), workspaceArtifactId);
+			CheckIntegrationPointTypePermissions(workspaceArtifactId);
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointTypeRepository = container.Resolve<IIntegrationPointTypeRepository>();
+					return await Task.Run(() => integrationPointTypeRepository.GetIntegrationPointTypes()).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetIntegrationPointTypes), e);
+				throw internalServerException;
+			}
+		}
+
+		private void CheckIntegrationPointTypePermissions(int workspaceId)
+		{
+			SafePermissionCheck(() =>
+			{
+				var permissionRepository = GetPermissionRepository(workspaceId);
+				bool hasWorkspaceAccess = permissionRepository.UserHasPermissionToAccessWorkspace();
+				bool hasIntegrationPointTypeAccess = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPointType), ArtifactPermission.View);
+				if (hasWorkspaceAccess && hasIntegrationPointTypeAccess)
+				{
+					return;
+				}
+				IList<string> missingPermissions = new List<string>();
+				if (!hasWorkspaceAccess)
+				{
+					missingPermissions.Add("Workspace");
+				}
+				if (!hasIntegrationPointTypeAccess)
+				{
+					missingPermissions.Add("IntegrationPointType - View");
+				}
+				LogAndThrowInsufficientPermissionException(nameof(GetIntegrationPointTypes), missingPermissions);
+			});
 		}
 	}
 }

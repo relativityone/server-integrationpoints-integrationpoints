@@ -1,37 +1,14 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.Services.Tests.Integration.Permissions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 {
-	public class JobHistoryPermissionTests : SourceProviderTemplate
+	public class JobHistoryPermissionTests : KeplerServicePermissionsTestsBase
 	{
-		private UserModel _userModel;
-		private int _groupId;
-
-		public JobHistoryPermissionTests() : base($"jobhistory_{Utils.FormatedDateTimeNow}")
-		{
-		}
-
-		public override void TestSetup()
-		{
-			base.TestSetup();
-			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
-			_userModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@kcura.com", new List<int> {_groupId});
-		}
-
-		public override void TestTeardown()
-		{
-			base.TestTeardown();
-			Group.DeleteGroup(_groupId);
-			User.DeleteUser(_userModel.ArtifactId);
-		}
-
 		[Test]
 		public void MissingWorkspacePermission()
 		{
@@ -39,16 +16,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
-			var client = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			var client = Helper.CreateUserProxy<IJobHistoryManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
 		[Test]
 		public void MissingJobHistoryViewPermission()
 		{
-			Group.AddGroupToWorkspace(WorkspaceArtifactId, _groupId);
+			Group.AddGroupToWorkspace(WorkspaceArtifactId, GroupId);
 
-			var permissions = Permission.GetGroupPermissions(WorkspaceArtifactId, _groupId);
+			var permissions = Permission.GetGroupPermissions(WorkspaceArtifactId, GroupId);
 			var permissionsForJobHistory = permissions.ObjectPermissions.FindPermission(ObjectTypes.JobHistory);
 			permissionsForJobHistory.ViewSelected = false;
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
@@ -57,7 +34,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
-			var client = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
+			var client = Helper.CreateUserProxy<IJobHistoryManager>(UserModel.EmailAddress);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 	}
