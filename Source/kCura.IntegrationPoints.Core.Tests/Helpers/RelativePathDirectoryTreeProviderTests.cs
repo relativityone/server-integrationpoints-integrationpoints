@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
 		private IDataTransferLocationService _dataTransferLocationServiceMock;
 
-		private RelativePathDirectoryTreeProvider<JsTreeItemDTO> _subjectUnderTest;
+		private RelativePathDirectoryTreeCreator<JsTreeItemDTO> _subjectUnderTest;
 
 		public override void SetUp()
 		{
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_dataTransferLocationServiceMock.GetDefaultRelativeLocationFor(_ipType).Returns(_IP_TYPE_PATH);
 
 
-			_subjectUnderTest = new RelativePathDirectoryTreeProvider<JsTreeItemDTO>(_directoryTreeCreatorMock, _dataTransferLocationServiceMock);
+			_subjectUnderTest = new RelativePathDirectoryTreeCreator<JsTreeItemDTO>(_directoryTreeCreatorMock, _dataTransferLocationServiceMock);
 		}
 
 		[Test]

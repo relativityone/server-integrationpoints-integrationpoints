@@ -226,10 +226,10 @@
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IButtonStateBuilder.cs" />
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
-    <Compile Include="Helpers\IRelativePathDirectoryTreeProvider.cs" />
+    <Compile Include="Helpers\IRelativePathDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\ButtonStateBuilder.cs" />
     <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
-    <Compile Include="Helpers\Implementations\RelativePathDirectoryTreeProvider.cs" />
+    <Compile Include="Helpers\Implementations\RelativePathDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
     <Compile Include="Helpers\Implementations\ArtifactTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\SavedSearchesTreeCreator.cs" />
