@@ -40,6 +40,18 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
+		public string GetDefaultRelativeLocationFor(Guid integrationPointTypeIdentifier)
+		{
+			IntegrationPointType type = _integrationPointTypeService.GetIntegrationPointType(integrationPointTypeIdentifier);
+
+			return Path.Combine(_PARENT_FOLDER, type.Name);
+		}
+
+		public string GetRootLocationFor(int workspaceArtifactId)
+		{
+			return GetWorkspaceRootPath(workspaceArtifactId);
+		}
+
 		public string GetLocationFor(int workspaceArtifactId, Guid integrationPointTypeIdentifier)
 		{
 			string rootPath = GetWorkspaceRootPath(workspaceArtifactId);

@@ -24,6 +24,20 @@ namespace kCura.IntegrationPoints.Core.Services
 		string GetLocationFor(int workspaceArtifactId, Guid integrationPointTypeArtifactId);
 
 		/// <summary>
+		/// Returns workspace root path for Integration Point Type
+		/// </summary>
+		/// <param name="workspaceArtifactId">Workspace ID</param>
+		/// <returns>Path as string</returns>
+		string GetRootLocationFor(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns workspace root path for Integration Point Type
+		/// </summary>
+		/// <param name="integrationPointTypeIdentifier">Integration Point Type</param>
+		/// <returns>Path as string</returns>
+		string GetDefaultRelativeLocationFor(Guid integrationPointTypeIdentifier);
+
+		/// <summary>
 		/// Verifies and prepares all necessary folders
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace ID</param>

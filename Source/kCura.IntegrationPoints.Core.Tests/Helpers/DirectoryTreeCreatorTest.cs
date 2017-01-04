@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private const string _SUB_FOLDER_2 = @"2";
 
         private const string _SUB_FILE_1 = @"FILE1.txt";
-        private const string _SUB_FILE_2 = @"FILE2.txt";
 
         private readonly string _subFolderAPath = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A);
 		private readonly string _subFolderA1Path = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A, _SUB_FOLDER_1);
