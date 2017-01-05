@@ -181,11 +181,13 @@
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointTypeInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigrationHelper.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\FolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigrationHelper.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderDestinationConfiguration.cs" />

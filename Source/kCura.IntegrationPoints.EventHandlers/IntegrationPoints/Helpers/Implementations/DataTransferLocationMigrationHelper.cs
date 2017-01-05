@@ -15,12 +15,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_serializer = serializer;
 		}
 
-		public string GetUpdatedSourceConfiguration(Data.IntegrationPoint integrationPoint, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
+		public string GetUpdatedSourceConfiguration(string sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
 		{
-			Dictionary<string, object> sourceConfiguration = DeserializeSourceConfigurationString(integrationPoint.SourceConfiguration);
-			UpdateDataTransferLocation(sourceConfiguration, processingSourceLocations, newDataTransferLocationRoot);
+			Dictionary<string, object> sourceConfigurationDictionary = DeserializeSourceConfigurationString(sourceConfiguration);
+			UpdateDataTransferLocation(sourceConfigurationDictionary, processingSourceLocations, newDataTransferLocationRoot);
 
-			return SerializeSourceConfiguration(sourceConfiguration);
+			return SerializeSourceConfiguration(sourceConfigurationDictionary);
+		}
+
+		private Dictionary<string, object> DeserializeSourceConfigurationString(string sourceConfiguration)
+		{
+			return _serializer.Deserialize<Dictionary<string, object>>(sourceConfiguration);
 		}
 
 		public void UpdateDataTransferLocation(IDictionary<string, object> sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
@@ -30,11 +35,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			string newPath = Path.Combine(newDataTransferLocationRoot, exportDestinationFolder);
 
 			sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] = newPath;
-		}
-
-		private Dictionary<string, object> DeserializeSourceConfigurationString(string sourceConfiguration)
-		{
-			return _serializer.Deserialize<Dictionary<string, object>>(sourceConfiguration);
 		}
 
 		private string SerializeSourceConfiguration(Dictionary<string, object> sourceConfiguration)
@@ -54,7 +54,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 				if (currentExportLocation.StartsWith(processingSourceLocation, StringComparison.Ordinal))
 				{
-					return currentExportLocation.Substring(processingSourceLocation.Length);
+					string exportDestinationFolder = currentExportLocation.Substring(processingSourceLocation.Length);
+
+					//In case exportDestinationFolder contains '\\' characters in front we need to trim it.
+					//If path2 does not include a root, the result is a concatenation of the two paths, with an intervening separator character. 
+					//If path2 includes a root, path2 is returned.
+					return exportDestinationFolder.TrimStart('/', '\\');
 				}
 			}
 
