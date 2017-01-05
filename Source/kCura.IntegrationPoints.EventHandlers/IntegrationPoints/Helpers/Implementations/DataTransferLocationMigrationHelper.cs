@@ -23,6 +23,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return SerializeSourceConfiguration(sourceConfigurationDictionary);
 		}
 
+		private Dictionary<string, object> DeserializeSourceConfigurationString(string sourceConfiguration)
+		{
+			return _serializer.Deserialize<Dictionary<string, object>>(sourceConfiguration);
+		}
+
 		public void UpdateDataTransferLocation(IDictionary<string, object> sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
 		{
 			string currentPath = sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] as string;
@@ -30,11 +35,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			string newPath = Path.Combine(newDataTransferLocationRoot, exportDestinationFolder);
 
 			sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] = newPath;
-		}
-
-		private Dictionary<string, object> DeserializeSourceConfigurationString(string sourceConfiguration)
-		{
-			return _serializer.Deserialize<Dictionary<string, object>>(sourceConfiguration);
 		}
 
 		private string SerializeSourceConfiguration(Dictionary<string, object> sourceConfiguration)
