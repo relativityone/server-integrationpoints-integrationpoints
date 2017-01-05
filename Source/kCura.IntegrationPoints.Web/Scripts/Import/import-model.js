@@ -32,10 +32,6 @@
 		});
 
 		self.importTypes = ko.observableArray([]);
-		$.getJSON(root.utils.generateWebAPIURL("/ImportProviderDocument/GetImportTypes"), function (data) {
-			self.importTypes(data);
-			self.setSelectedImportType(ImportTypeEnum.Document);
-		});
 
 		self.populateFileColumnHeaders = ko.observable();
 		self.setPopulateFileColumnHeaders = function (data) {

@@ -101,6 +101,11 @@
     //An event raised when the host page has loaded the current settings page.
     //Arriving at the custom settings page; either from hitting Back from field mapping, or Next from the first RIP screen
     message.subscribe('loadFullState', function (fullModel) {
+
+    	//look at fullModel.artifactTypeID to get destination object
+    	var isRdoImport = fullModel.artifactTypeID !== fullModel.DefaultRdoTypeId;
+    	windowObj.RelativityImport.GetImportTypes(isRdoImport);
+
     	var model = fullModel.sourceConfiguration;
     	windowObj.RelativityImport.FullIPModel = fullModel;
         //closing preview btn if the user opens the btn and then goes back to step2 from step 3

@@ -45,9 +45,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve list for Import Types.")]
-		public IHttpActionResult GetImportTypes()
+		public IHttpActionResult GetImportTypes(bool isRdo = false)
 		{
-			return Json(_importTypeService.GetImportTypes());
+			return Json(_importTypeService.GetImportTypes(isRdo));
 		}
 
 		[HttpPost]

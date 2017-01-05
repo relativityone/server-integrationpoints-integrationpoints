@@ -260,6 +260,15 @@
 
     windowObj.RelativityImport.enableLocation(false);
 
+	//Create a function so that this can be triggered when we get the full model and can check if the destination object is an RDO or not
+    windowObj.RelativityImport.GetImportTypes = function (isRdo) {
+    	var getImportTypesUrl = root.utils.generateWebAPIURL("/ImportProviderDocument/GetImportTypes") + '?isRdo=' + isRdo;
+    	$.getJSON(getImportTypesUrl, function (data) {
+    		windowObj.RelativityImport.koModel.importTypes(data);
+    		windowObj.RelativityImport.koModel.setSelectedImportType(windowObj.RelativityImport.ImportTypeEnum.Document);
+    	});
+    };
+
     windowObj.RelativityImport.getDirectories = function () {
         var reloadTree = function (params, onSuccess, onFail) {
             var isRoot = params.id === '#';

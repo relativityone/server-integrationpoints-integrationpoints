@@ -137,7 +137,7 @@
 			</div>
 		</div>
 		<br/>
-		<div data-bind="visible: !IsRelativityProvider()">
+		<div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
 			<span class="label title">Extracted Text</span>
 			<div class="identifier">
 				<div class="field-row">
