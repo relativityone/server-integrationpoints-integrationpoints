@@ -83,33 +83,67 @@
 		updateHeaders();
 	});
 
-	var populateCachedState = function () {
-		var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
-		var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
-		var importType = windowObj.RelativityImport.GetCachedUiModel.ImportType;
-		var lineNumber = windowObj.RelativityImport.GetCachedUiModel.LineNumber;
-		var encodingType = windowObj.RelativityImport.GetCachedUiModel.EncodingType;
-		var asciiColumn = windowObj.RelativityImport.GetCachedUiModel.AsciiColumn;
-		var asciiQuote = windowObj.RelativityImport.GetCachedUiModel.AsciiQuote;
-		var asciiNewLine = windowObj.RelativityImport.GetCachedUiModel.AsciiNewLine;
-		var asciiMultiLine = windowObj.RelativityImport.GetCachedUiModel.AsciiMultiLine;
-		var asciiNestedValue = windowObj.RelativityImport.GetCachedUiModel.AsciiNestedValue;
-		var hasColumnName = windowObj.RelativityImport.GetCachedUiModel.HasColumnName;
+	windowObj.RelativityImport.closePreviewBtn = function () {
+		windowObj.parent.$(idSelector(BUTTON_UL)).hide();
+	};
 
-		windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
-		windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
-		windowObj.RelativityImport.koModel.selectedImportType(importType);
-		windowObj.RelativityImport.koModel.startLine(lineNumber);
-		windowObj.RelativityImport.koModel.DataFileEncodingType(encodingType);
-		windowObj.RelativityImport.koModel.selectedColumnAsciiDelimiter(asciiColumn);
-		windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(asciiQuote);
-		windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(asciiNewLine);
-		windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(asciiMultiLine);
-		windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(asciiNestedValue);
-		windowObj.RelativityImport.koModel.fileContainsColumn(hasColumnName);
+	var populateCachedState = function () {
+		//Parent
+		var lineNumber = windowObj.RelativityImport.GetCachedUiModel.LineNumber;
+		var importType = windowObj.RelativityImport.GetCachedUiModel.ImportType;
+		var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
+		var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
+
+		var ImportTypeEnum = windowObj.RelativityImport.ImportTypeEnum;
+
+		if (importType === ImportTypeEnum.Document) {
+			//Document
+			var encodingType = windowObj.RelativityImport.GetCachedUiModel.EncodingType;
+			var asciiColumn = windowObj.RelativityImport.GetCachedUiModel.AsciiColumn;
+			var asciiQuote = windowObj.RelativityImport.GetCachedUiModel.AsciiQuote;
+			var asciiNewLine = windowObj.RelativityImport.GetCachedUiModel.AsciiNewLine;
+			var asciiMultiLine = windowObj.RelativityImport.GetCachedUiModel.AsciiMultiLine;
+			var asciiNestedValue = windowObj.RelativityImport.GetCachedUiModel.AsciiNestedValue;
+			var hasColumnName = windowObj.RelativityImport.GetCachedUiModel.HasColumnName;
+
+			//Document repopulate model
+			windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
+			windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
+			windowObj.RelativityImport.koModel.selectedImportType(importType);
+			windowObj.RelativityImport.koModel.startLine(lineNumber);
+			windowObj.RelativityImport.koModel.DataFileEncodingType(encodingType);
+			windowObj.RelativityImport.koModel.selectedColumnAsciiDelimiter(asciiColumn);
+			windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(asciiQuote);
+			windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(asciiNewLine);
+			windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(asciiMultiLine);
+			windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(asciiNestedValue);
+			windowObj.RelativityImport.koModel.fileContainsColumn(hasColumnName);
+		} else {
+
+			//ImageProduction
+			var autoNumberImages = windowObj.RelativityImport.GetCachedUiModel.AutoNumberImages;
+			var selectedOverwrite = windowObj.RelativityImport.GetCachedUiModel.SelectedOverwrite;
+			var extractedTextFieldContainsFilePath = windowObj.RelativityImport.GetCachedUiModel.ExtractedTextFieldContainsFilePath;
+			var overlayIdentifier = windowObj.RelativityImport.GetCachedUiModel.OverlayIdentifier;
+			var extractedTextFileEncoding = windowObj.RelativityImport.GetCachedUiModel.ExtractedTextFileEncoding;
+			var copyFilesToDocumentRepo = windowObj.RelativityImport.GetCachedUiModel.CopyFilesToDocumentRepository;
+
+			//ImageProduction repopulate model
+			windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
+			windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
+			windowObj.RelativityImport.koModel.startLine(lineNumber);
+			windowObj.RelativityImport.koModel.selectedImportType(importType);
+			windowObj.RelativityImport.koModel.autoNumberPages(autoNumberImages);
+			windowObj.RelativityImport.koModel.SelectedOverwrite(selectedOverwrite);
+			windowObj.RelativityImport.koModel.selectedOverlayIdentifier(overlayIdentifier);
+			windowObj.RelativityImport.koModel.ExtractedTextFieldContainsFilePath(extractedTextFieldContainsFilePath);
+			windowObj.RelativityImport.koModel.ExtractedTextFileEncoding(extractedTextFileEncoding);
+			windowObj.RelativityImport.koModel.copyFilesToDocumentRepository(copyFilesToDocumentRepo);
+		}
 	};
 
 	windowObj.RelativityImport.checkValueForImportType = function () {
+
 		var chosenType = windowObj.RelativityImport.koModel.selectedImportType();
 		if (chosenType === windowObj.RelativityImport.ImportTypeEnum.Document) {
 			windowObj.parent.RelativityImport.PreviewOptions.disablePreviewButton(true);
@@ -122,7 +156,6 @@
 	windowObj.RelativityImport.koModel.selectedImportType.subscribe(function () {
 		windowObj.RelativityImport.checkValueForImportType();
 	});
-
 
 	windowObj.parent.RelativityImport.PreviewOptions.UI.addSiteCss = function () {
 		windowPar.$(idSelector(CONFIGURATION_FRAME)).css({ "min-width": '900px' });
@@ -145,7 +178,7 @@
 	windowObj.RelativityImport.enableLoadModal = function (bool) {
 		var $el = windowObj.parent.$(idSelector(BODY_CONTAINER));
 		var overlay =
-            "<div class='" + MODAL_OVERLAY + "'></div>";
+			"<div class='" + MODAL_OVERLAY + "'></div>";
 
 		if (bool) {
 			$el.after(overlay); windowObj.parent.$(classSelector(MODAL_OVERLAY)).after("<div class='" + MODAL_GRPHIC + "'></div>");
@@ -231,7 +264,7 @@
 			$.each(data, function (index, value) {
 				array.push({ "asciiID": (index + 1), "asciiText": value })
 			}
-            );
+			);
 			windowObj.RelativityImport.koModel.setAsciiDelimiters(array);
 			assignAsciiDropDownDefault(array);
 		}

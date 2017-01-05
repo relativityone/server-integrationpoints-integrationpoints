@@ -1,45 +1,80 @@
 ﻿'use strict';
 (function (windowObj, root, ko) {
-    //Create a new communication object that talks to the host page.
+	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging();
 	var ImportTypeEnum = windowObj.RelativityImport.ImportTypeEnum;
-    var currentSettingsFromUi = function () {
-        var model = {
-            WorkspaceId: windowObj.RelativityImport.WorkspaceId,
-            ImportType: windowObj.RelativityImport.koModel.selectedImportType(),
-            HasColumnName: windowObj.RelativityImport.koModel.fileContainsColumn(),
-            LineNumber: windowObj.RelativityImport.koModel.startLine(),
-            LoadFile: windowObj.RelativityImport.koModel.Fileshare(),
-            EncodingType: windowObj.RelativityImport.koModel.DataFileEncodingType(),
-            AsciiColumn: windowObj.RelativityImport.koModel.selectedColumnAsciiDelimiter(),
-            AsciiQuote: windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(),
-            AsciiNewLine: windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(),
-            AsciiMultiLine: windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(),
-            AsciiNestedValue: windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(),
-            ProcessingSourceLocation: windowObj.RelativityImport.koModel.ProcessingSourceLocation()
-        };
+	var currentImportType = windowObj.RelativityImport.koModel.selectedImportType();
+	// used for all models
+	var currentLoadFileSettings = function () {
+		var model = {
+			WorkspaceId: windowObj.RelativityImport.WorkspaceId,
+			ImportType: windowObj.RelativityImport.koModel.selectedImportType(),
+			ProcessingSourceLocation: windowObj.RelativityImport.koModel.ProcessingSourceLocation(),
+			LoadFile: windowObj.RelativityImport.koModel.Fileshare(),
+			LineNumber: windowObj.RelativityImport.koModel.startLine()
+		}
+		return model;
+	}
 
-        console.log(model);
-        return model;
-    };
+	var documentModel = function () {
+		var loadFileModel = currentLoadFileSettings();
+		var model = {
 
-	var currentImageSettingsFromUi = function () {
+			WorkspaceId: loadFileModel.WorkspaceId,
+			ImportType: loadFileModel.ImportType,
+			ProcessingSourceLocation: loadFileModel.ProcessingSourceLocation,
+			LoadFile: loadFileModel.LoadFile,
+			LineNumber: loadFileModel.LineNumber,
+			HasColumnName: windowObj.RelativityImport.koModel.fileContainsColumn(),
+			EncodingType: windowObj.RelativityImport.koModel.DataFileEncodingType(),
+			AsciiColumn: windowObj.RelativityImport.koModel.selectedColumnAsciiDelimiter(),
+			AsciiQuote: windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(),
+			AsciiNewLine: windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(),
+			AsciiMultiLine: windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(),
+			AsciiNestedValue: windowObj.RelativityImport.koModel.selectedNestedValueAsciiDelimiter(),
+		};
+		return model;
+	};
+
+	var imageProductionModel = function () {
+		var loadFileModel = currentLoadFileSettings();
 		var importType = windowObj.RelativityImport.koModel.selectedImportType();
-		var imageImport = 'true';
-		var forProduction = 'false';
+		var imageImport = true;
+		var forProduction = false;
 		if (importType === ImportTypeEnum.Production) {
-			forProduction = 'true';
+			forProduction = true;
+		}
+
+		//a valid encoding is needed so that the provider doesn't crash
+		var etFileEncoding = "UTF-8";
+		if(windowObj.RelativityImport.koModel.ExtractedTextFieldContainsFilePath() === 'true') {
+			etFileEncoding = windowObj.RelativityImport.koModel.ExtractedTextFileEncoding();
 		}
 
 		var model = {
 			ImageImport: imageImport,
 			ForProduction: forProduction,
+			ProductionArtifactId: windowObj.RelativityImport.koModel.selectedProductionSets(),
 			AutoNumberImages: windowObj.RelativityImport.koModel.autoNumberPages(),
-			SelectedOverwrite: windowObj.RelativityImport.koModel.SelectedOverwrite()
-		};
+			SelectedOverwrite: windowObj.RelativityImport.koModel.SelectedOverwrite(),
+			OverlayIdentifier: windowObj.RelativityImport.koModel.selectedOverlayIdentifier(),
+			ExtractedTextFieldContainsFilePath: windowObj.RelativityImport.koModel.ExtractedTextFieldContainsFilePath(),
+			ExtractedTextFileEncoding: etFileEncoding,
+			CopyFilesToDocumentRepository: windowObj.RelativityImport.koModel.copyFilesToDocumentRepository()
 
+			// Todo: Create data-bind for "File Repository". Once created add ko observable to model
+		};
+		//console.log(model);
 		return model;
 	};
+
+	$("#import-importType").on("click", function () {
+		if (currentImportType === ImportTypeEnum.Document) {
+			documentModel();
+		} else {
+			imageProductionModel();
+		}
+	});
 
 	var validationCheck = function (self) {
 		var results = windowObj.RelativityImport.koErrors();
@@ -49,11 +84,12 @@
 			$('.import-validation-error').append(windowObj.RelativityImport.koErrors.showAllMessages());
 
 		} else {
-			var current = currentSettingsFromUi();
+			var current = documentModel();
 			var stringified = JSON.stringify(current);
 			//if we are an image import, make sure other setting get into destination configuration.
-			if (current.ImportType !== ImportTypeEnum.Document) {
-				$.extend(current, currentImageSettingsFromUi());
+
+			if (currentLoadFileSettings().ImportType !== ImportTypeEnum.Document) {
+				$.extend(current, imageProductionModel());
 
 				var fullModel = windowObj.RelativityImport.FullIPModel;
 
@@ -62,7 +98,7 @@
 				fullModel.map = '[]';
 				fullModel.SelectedOverwrite = current.SelectedOverwrite;
 
-				$.extend(destinationConfig, currentImageSettingsFromUi());
+				$.extend(destinationConfig, imageProductionModel());
 				fullModel.destination = JSON.stringify(destinationConfig);
 				fullModel.sourceConfiguration = JSON.stringify(current);
 				self.publish("saveState", stringified);
@@ -76,23 +112,23 @@
 			windowObj.parent.RelativityImport.PreviewOptions.disablePreviewButton(false);
 			IP.frameMessaging().dFrame.IP.message.error.clear();
 		}
-	};
+	}; 
 
-    windowObj.parent.RelativityImport.GetCurrentUiModel = currentSettingsFromUi;
+	windowObj.parent.RelativityImport.GetCurrentUiModel = documentModel;
 
     //An event raised when the user has clicked the Next or Save button.
     //Leaving the custom settings page and going to field mapping screen.
     message.subscribe('submit', function () {
         //Execute save logic that persists the root.
     	validationCheck(this);
-	    windowObj.parent.RelativityImport.CurrentUiModel = currentSettingsFromUi();
+    	windowObj.parent.RelativityImport.CurrentUiModel = documentModel();
     });
 
     //An event raised when a user clicks the Back button.
     //Leaving the custom settings page and going back to the first RIP screen
     message.subscribe('back', function () {
         //Execute save logic that persists the root.
-        var current = currentSettingsFromUi();
+    	var current = documentModel();
         var stringified = JSON.stringify(current);
         this.publish("saveState", stringified);
 
@@ -114,7 +150,7 @@
     	windowObj.RelativityImport.FullIPModel = fullModel;
 
         //closing preview btn if the user opens the btn and then goes back to step2 from step 3
-        var $el = currentSettingsFromUi();
+    	var $el = currentLoadFileSettings();
         if ($el.ImportType === ImportTypeEnum.Document) { windowObj.parent.RelativityImport.PreviewOptions.closePreviewBtn(); };
 
         if (!!model) {

@@ -21,6 +21,9 @@
 							</div>
 							<div class="field-value select2-double-width">
 								<select class="fluid-mock-select" id="import-importType" data-bind="options:importTypes, optionsText:'Name', optionsValue:'Value', value:selectedImportType, optionsCaption: 'Select...' ,select2: { width: '100%' }"></select>
+								<div class="import-validation-errors-container">
+									<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: selectedImportType"></span>
+								</div>
 							</div>
 						</div>
 						<div class="field-row">
@@ -88,6 +91,9 @@
 									<div class="field-label required">Import Mode:</div>
 									<div class="field-value">
 										<select id="overwrite" data-bind="options: OverwriteOptions, value: SelectedOverwrite, optionsCaption: 'Select...', select2: {}"></select>
+										<div class="import-validation-errors-container">
+											<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: SelectedOverwrite"></span>
+										</div>
 									</div>
 								</div>
 								<div id="overlayOptions" data-bind="visible: SelectedOverwrite() == 'Overlay Only'">
@@ -95,6 +101,9 @@
 										<div class="field-label required">Overlay Identifer:</div>
 										<div class="field-value">
 											<select id="overlay-identifier" data-bind="options: overlayIdentifiers, optionsText: 'Name',optionsValue:'ArtifactId', value:selectedOverlayIdentifier, select2: {}"></select>
+											<div class="import-validation-errors-container">
+												<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: selectedOverlayIdentifier"></span>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -108,13 +117,42 @@
 								<div class="field-row" data-bind="visible: copyFilesToDocumentRepository() == 'true'">
 									<div class="field-label required">File Repository:</div>
 									<div class="field-value">
-										<select id="overlay-identifier" data-bind=" select2 {}"></select>
+										<select id="overlay-identifier" @*data-bind="options: ,select2 {}*@"></select>
+									</div>
+								</div>
+								<div data-bind="visible: selectedImportType() == 1">
+									<div class="field-row">
+										<div class="field-label required ">Load Extracted Text:</div>
+										<div class="field-value">
+											<ul>
+												<li>
+													<label><input id="extracted-text-radio-0" type="radio" name="import_extractedTextLocation" value="true" data-bind="checked: ExtractedTextFieldContainsFilePath">Yes</label>
+												</li>
+												<li>
+													<label><input id="extracted-text-radio-1" type="radio" name="import_extractedTextLocation" value="false" data-bind="checked: ExtractedTextFieldContainsFilePath">No</label>
+												</li>
+											</ul>
+										</div>
+									</div>
+									<div data-bind="visible: ExtractedTextFieldContainsFilePath() == 'true'">
+										<div class="field-row">
+											<div class="field-label required ">Encoding for undetectable files:</div>
+											<div class="field-value ">
+												<select id="encodings" data-bind="options: ExtractedTextFileEncodingList, value: ExtractedTextFileEncoding, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+												<div class="import-validation-errors-container">
+													<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: ExtractedTextFileEncoding"></span>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
 								<div class="field-row" data-bind="visible: selectedImportType() == 2">
 									<div class="field-label required">Production:</div>
 									<div class="field-value">
-										<select id="production-sets" data-bind="options: productionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...' , select2: {}"></select>
+										<select id="production-sets" data-bind="options: productionSets, optionsText: 'displayName', value: selectedProductionSets , optionsValue: 'artifactID', optionsCaption: 'Select...' , select2: {}"></select>
+										<div class="import-validation-errors-container">
+											<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: selectedProductionSets"></span>
+										</div>
 									</div>
 								</div>
 							</td>
