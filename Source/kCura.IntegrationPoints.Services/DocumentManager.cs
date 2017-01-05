@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -21,8 +22,9 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory)
-			: base(logger, permissionRepositoryFactory)
+		/// <param name="container"></param>
+		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 
@@ -47,8 +49,8 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetPercentagePushedToReviewAsync), e);
-				throw internalServerException;
+				LogException(nameof(GetPercentagePushedToReviewAsync), e);
+				throw CreateInternalServerErrorException();
 			}
 		}
 
@@ -65,8 +67,8 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetCurrentPromotionStatusAsync), e);
-				throw internalServerException;
+				LogException(nameof(GetCurrentPromotionStatusAsync), e);
+				throw CreateInternalServerErrorException();
 			}
 		}
 
@@ -83,8 +85,8 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetHistoricalPromotionStatusAsync), e);
-				throw internalServerException;
+				LogException(nameof(GetHistoricalPromotionStatusAsync), e);
+				throw CreateInternalServerErrorException();
 			}
 		}
 

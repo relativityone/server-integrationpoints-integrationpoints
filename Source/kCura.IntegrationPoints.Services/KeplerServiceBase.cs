@@ -22,18 +22,25 @@ namespace kCura.IntegrationPoints.Services
 		private readonly IPermissionRepositoryFactory _permissionRepositoryFactory;
 
 		/// <summary>
+		///     This container is used only for testing purposes
+		/// </summary>
+		private readonly IWindsorContainer _container;
+
+		/// <summary>
 		///     Since we cannot register any dependencies for Kepler Service we have to create separate constructors for runtime
 		///     and for testing
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory)
+		/// <param name="container"></param>
+		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
 		{
 			_permissionRepositoryFactory = permissionRepositoryFactory;
 			_logger = logger;
+			_container = container;
 		}
 
-		protected KeplerServiceBase(ILog logger) : this(logger, new PermissionRepositoryFactory())
+		protected KeplerServiceBase(ILog logger) : this(logger, new PermissionRepositoryFactory(), null)
 		{
 		}
 
@@ -86,13 +93,18 @@ namespace kCura.IntegrationPoints.Services
 
 		protected void LogAndThrowInsufficientPermissionException(string endpointName, IList<string> missingPermissions)
 		{
-			_logger.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", endpointName, string.Join(", ", missingPermissions));
+			_logger.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", endpointName,
+				string.Join(", ", missingPermissions));
 			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
 		}
 
-		protected InternalServerErrorException LogAndReturnInternalServerErrorException(string endpointName, Exception e)
+		protected void LogException(string endpointName, Exception e)
 		{
 			_logger.LogError(e, "Error occurred during request processing in {endpointName}.", endpointName);
+		}
+
+		protected InternalServerErrorException CreateInternalServerErrorException()
+		{
 			return new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST);
 		}
 
@@ -127,6 +139,10 @@ namespace kCura.IntegrationPoints.Services
 
 		protected virtual IWindsorContainer GetDependenciesContainer(int workspaceArtifactId)
 		{
+			if (_container != null)
+			{
+				return _container;
+			}
 			IWindsorContainer container = new WindsorContainer();
 			Installer.Install(container, new DefaultConfigurationStore(), workspaceArtifactId);
 			return container;

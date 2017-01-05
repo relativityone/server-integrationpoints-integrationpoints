@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
@@ -17,7 +18,9 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		internal IntegrationPointManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
+		/// <param name="container"></param>
+		internal IntegrationPointManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 

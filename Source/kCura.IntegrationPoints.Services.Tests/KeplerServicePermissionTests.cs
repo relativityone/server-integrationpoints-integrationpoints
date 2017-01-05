@@ -1,4 +1,5 @@
 ﻿using System;
+using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Services.Tests
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			var permissionRepositoryFactory = Substitute.For<IPermissionRepositoryFactory>();
 			permissionRepositoryFactory.Create(Arg.Any<IHelper>(), Arg.Any<int>()).Returns(_permissionRepository);
-			_keplerServiceBase = new KeplerService(_logger, permissionRepositoryFactory);
+			_keplerServiceBase = new KeplerService(_logger, permissionRepositoryFactory, Substitute.For<IWindsorContainer>());
 		}
 
 		[Test]
@@ -72,7 +73,8 @@ namespace kCura.IntegrationPoints.Services.Tests
 
 	internal class KeplerService : KeplerServiceBase
 	{
-		public KeplerService(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
+		public KeplerService(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 

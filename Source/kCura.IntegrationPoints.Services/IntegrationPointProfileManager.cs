@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
@@ -12,7 +13,8 @@ namespace kCura.IntegrationPoints.Services
 	{
 		private Installer _installer;
 
-		internal IntegrationPointProfileManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
+		internal IntegrationPointProfileManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 
@@ -57,7 +59,8 @@ namespace kCura.IntegrationPoints.Services
 			return await Execute((IIntegrationPointProfileRepository repository) => repository.GetOverwriteFieldChoices(), workspaceArtifactId);
 		}
 
-		public async Task<IntegrationPointModel> CreateIntegrationPointProfileFromIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId, string profileName)
+		public async Task<IntegrationPointModel> CreateIntegrationPointProfileFromIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId,
+			string profileName)
 		{
 			return
 				await

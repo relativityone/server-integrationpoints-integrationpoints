@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
@@ -18,7 +19,9 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		internal IntegrationPointTypeManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
+		/// <param name="container"></param>
+		internal IntegrationPointTypeManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 
@@ -45,8 +48,8 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				var internalServerException = LogAndReturnInternalServerErrorException(nameof(GetIntegrationPointTypes), e);
-				throw internalServerException;
+				LogException(nameof(GetIntegrationPointTypes), e);
+				throw CreateInternalServerErrorException();
 			}
 		}
 
@@ -68,7 +71,7 @@ namespace kCura.IntegrationPoints.Services
 				}
 				if (!hasIntegrationPointTypeAccess)
 				{
-					missingPermissions.Add("IntegrationPointType - View");
+					missingPermissions.Add($"{ObjectTypes.IntegrationPointType} - View");
 				}
 				LogAndThrowInsufficientPermissionException(nameof(GetIntegrationPointTypes), missingPermissions);
 			});

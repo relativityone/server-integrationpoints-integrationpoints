@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 			var permissionRepositoryFactory = Substitute.For<IPermissionRepositoryFactory>();
 			permissionRepositoryFactory.Create(Arg.Any<IHelper>(), _WORKSPACE_ID).Returns(_permissionRepository);
 
-			_documentManager = new DocumentManagerWithContainerMock(_logger, permissionRepositoryFactory, _container);
+			_documentManager = new DocumentManager(_logger, permissionRepositoryFactory, _container);
 		}
 
 		[Test]
@@ -206,27 +206,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 				.LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetHistoricalPromotionStatusAsync");
 			_logger.Received(1)
 				.LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetPercentagePushedToReviewAsync");
-		}
-	}
-
-	internal class DocumentManagerWithContainerMock : DocumentManager
-	{
-		private readonly IWindsorContainer _windsorContainer;
-
-		public DocumentManagerWithContainerMock(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer windsorContainer)
-			: base(logger, permissionRepositoryFactory)
-		{
-			_windsorContainer = windsorContainer;
-		}
-
-		public DocumentManagerWithContainerMock(ILog logger, IWindsorContainer windsorContainer) : base(logger)
-		{
-			_windsorContainer = windsorContainer;
-		}
-
-		protected override IWindsorContainer GetDependenciesContainer(int workspaceArtifactId)
-		{
-			return _windsorContainer;
 		}
 	}
 }

@@ -96,17 +96,13 @@ namespace kCura.IntegrationPoints.Services.Tests
 
 	internal class KeplerServiceToTestExecute : KeplerServiceBase
 	{
-		private readonly IWindsorContainer _container;
-
 		public KeplerServiceToTestExecute(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
-			: base(logger, permissionRepositoryFactory)
+			: base(logger, permissionRepositoryFactory, container)
 		{
-			_container = container;
 		}
 
-		public KeplerServiceToTestExecute(ILog logger, IWindsorContainer container) : base(logger)
+		public KeplerServiceToTestExecute(ILog logger) : base(logger)
 		{
-			_container = container;
 		}
 
 		public new Task<T> Execute<T, TT>(Func<TT, T> a, int workspaceId)
@@ -115,10 +111,5 @@ namespace kCura.IntegrationPoints.Services.Tests
 		}
 
 		protected override Installer Installer { get; }
-
-		protected override IWindsorContainer GetDependenciesContainer(int workspaceArtifactId)
-		{
-			return _container;
-		}
 	}
 }

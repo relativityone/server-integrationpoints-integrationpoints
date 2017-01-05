@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 			var permissionRepositoryFactory = Substitute.For<IPermissionRepositoryFactory>();
 			permissionRepositoryFactory.Create(Arg.Any<IHelper>(), _WORKSPACE_ID).Returns(_permissionRepository);
 
-			_jobHistoryManager = new JobHistoryManagerWithContainerMock(_logger, permissionRepositoryFactory, _container);
+			_jobHistoryManager = new JobHistoryManager(_logger, permissionRepositoryFactory, _container);
 		}
 
 		[Test]
@@ -170,27 +170,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		{
 			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
 			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(true);
-		}
-	}
-
-	internal class JobHistoryManagerWithContainerMock : JobHistoryManager
-	{
-		private readonly IWindsorContainer _windsorContainer;
-
-		public JobHistoryManagerWithContainerMock(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer windsorContainer)
-			: base(logger, permissionRepositoryFactory)
-		{
-			_windsorContainer = windsorContainer;
-		}
-
-		public JobHistoryManagerWithContainerMock(ILog logger, IWindsorContainer windsorContainer) : base(logger)
-		{
-			_windsorContainer = windsorContainer;
-		}
-
-		protected override IWindsorContainer GetDependenciesContainer(int workspaceArtifactId)
-		{
-			return _windsorContainer;
 		}
 	}
 }

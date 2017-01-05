@@ -155,6 +155,7 @@
     <Compile Include="Permissions\KeplerServiceMissingPermissionTests.cs" />
     <Compile Include="Permissions\NoIntegrationPointViewPermissionTests.cs" />
     <Compile Include="Helpers\Utils.cs" />
+    <Compile Include="ProviderManager\ProviderPermissionTests.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
