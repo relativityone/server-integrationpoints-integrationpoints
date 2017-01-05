@@ -52,18 +52,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					return string.Empty;
 				}
 
-				int startIndex = currentExportLocation.IndexOf(processingSourceLocation, StringComparison.Ordinal);
-
-				if (startIndex == -1)
+				if (currentExportLocation.StartsWith(processingSourceLocation, StringComparison.Ordinal))
 				{
-					//ProcessingSourceLocation not found within currentExportLocation
-					continue;
+					return currentExportLocation.Substring(processingSourceLocation.Length);
 				}
-
-				int exportLocationStartIndex = startIndex + processingSourceLocation.Length + 1;
-				string exportLocation = currentExportLocation.Substring(exportLocationStartIndex);
-
-				return exportLocation;
 			}
 
 			return string.Empty;

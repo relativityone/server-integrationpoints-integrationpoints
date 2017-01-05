@@ -188,6 +188,46 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
+		private int GetRelativitySourceProviderArtifactId()
+		{
+			try
+			{
+				return SourceProviderRepository.GetArtifactIdFromSourceProviderTypeGuidIdentifier(Constants.IntegrationPoints.SourceProviders.RELATIVITY);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Failed to retrieve Relativity Source Provider ArtifactId");
+				throw;
+			}
+		}
+
+		private int GetLoadFileDestinationProviderArtifactId()
+		{
+			try
+			{
+				return DestinationProviderRepository.GetArtifactIdFromDestinationProviderTypeGuidIdentifier(Constants.IntegrationPoints.DestinationProviders.LOADFILE);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Failed to retrieve LoadFile Destination Provider ArtifactId");
+				throw;
+			}
+		}
+
+		private IList<Data.IntegrationPoint> GetAllExportIntegrationPoints(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
+		{
+			try
+			{
+				Query<RDO> query = BuildIntegrationPointsQuery(relativitySourceProviderArtifactId, loadFileDestinationProviderArtifactId);
+				return IntegrationPointLibrary.Query(query);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Failed to retrieve Integration Points data");
+				throw;
+			}
+		}
+
 		private void MigrateDestinationLocationPaths(IList<Data.IntegrationPoint> integrationPoints)
 		{
 			IList<string> processingSourceLocations = GetProcessingSourceLocationsForCurrentWorkspace();
@@ -202,32 +242,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private int GetRelativitySourceProviderArtifactId()
-		{
-			try
-			{
-				return SourceProviderRepository.GetArtifactIdFromSourceProviderTypeGuidIdentifier(Constants.IntegrationPoints.SourceProviders.RELATIVITY);
-			}
-			catch (Exception)
-			{
-				Logger.LogError("Failed to retrieve Relativity Source Provider ArtifactId");
-				throw;
-			}
-		}
-
-		private int GetLoadFileDestinationProviderArtifactId()
-		{
-			try
-			{
-				return DestinationProviderRepository.GetArtifactIdFromDestinationProviderTypeGuidIdentifier(Constants.IntegrationPoints.DestinationProviders.LOADFILE);
-			}
-			catch (Exception)
-			{
-				Logger.LogError("Failed to retrieve LoadFile Destination Provider ArtifactId");
-				throw;
-			}
-		}
-
 		private IList<string> GetProcessingSourceLocationsForCurrentWorkspace()
 		{
 			IList<ProcessingSourceLocationDTO> processingSourceLocationDtos = ResourcePoolManager.GetProcessingSourceLocation(Helper.GetActiveCaseID());
@@ -239,38 +253,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return DataTransferLocationService.GetDefaultRelativeLocationFor(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
 		}
 
-		private IList<Data.IntegrationPoint> GetAllExportIntegrationPoints(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
-		{
-			try
-			{
-				Query<RDO> query = BuildIntegrationPointsQuery(relativitySourceProviderArtifactId, loadFileDestinationProviderArtifactId);
-				IList<Data.IntegrationPoint> integrationPoints = IntegrationPointLibrary.Query(query);
-
-				if (!integrationPoints.Any())
-				{
-					return new List<Data.IntegrationPoint>();
-				}
-
-				return integrationPoints;
-			}
-			catch (Exception)
-			{
-				Logger.LogError("Failed to retrieve Integration Points data");
-				throw;
-			}
-		}
-
 		private Query<RDO> BuildIntegrationPointsQuery(int relativitySourceProviderArtifactId,
 			int loadFileDestinationProviderArtifactId)
 		{
-			var condition1 = new WholeNumberCondition()
+			var sourceProviderCondition = new WholeNumberCondition()
 			{
 				Field = IntegrationPointFields.SourceProvider,
 				Operator = NumericConditionEnum.EqualTo,
 				Value = new List<int>() {relativitySourceProviderArtifactId}
 			};
 
-			var condition2 = new WholeNumberCondition()
+			var destinationProviderCondition = new WholeNumberCondition()
 			{
 				Field = IntegrationPointFields.DestinationProvider,
 				Operator = NumericConditionEnum.EqualTo,
@@ -284,7 +277,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 						.Values.ToList()
 						.Select(field => new FieldValue(field.FieldGuid))
 						.ToList(),
-				Condition = new CompositeCondition(condition1, CompositeConditionEnum.And, condition2)
+				Condition = new CompositeCondition(sourceProviderCondition, CompositeConditionEnum.And, destinationProviderCondition)
 			};
 			return query;
 		}
