@@ -24,11 +24,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		string GetLocationFor(int workspaceArtifactId, Guid integrationPointTypeArtifactId);
 
 		/// <summary>
-		/// Returns workspace root path for Integration Point Type
+		/// Returns workspace fileshare root path
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace ID</param>
 		/// <returns>Path as string</returns>
-		string GetRootLocationFor(int workspaceArtifactId);
+		string GetWorkspaceFileLocationRootPath(int workspaceArtifactId);
 
 		/// <summary>
 		/// Returns workspace root path for Integration Point Type

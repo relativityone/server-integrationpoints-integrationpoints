@@ -194,6 +194,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetRoot",
+				routeTemplate: "{workspaceID}/api/DataTransferLocation/GetRoot/{integrationPointTypeIdentifier}",
+				defaults: new { controller = "DataTransferLocation", action = "GetRoot" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "GetViewsByWorkspaceAndArtifactType",
 				routeTemplate: "{workspaceID}/api/WorkspaceView/GetViews/{artifactTypeId}",
 				defaults: new { controller = "WorkspaceView", action = "GetViewsByWorkspaceAndArtifactType" }

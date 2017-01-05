@@ -17,6 +17,20 @@
 			required: true
 		});
 
+		self.rootDataTransferLocation = "";
+
+		this.loadRootDataTransferLocation = function () {
+			root.data.ajax({
+				type: "post",
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", state.integrationPointTypeIdentifier)
+			}).then(function (result) {
+				self.rootDataTransferLocation = result;
+			}).fail(function (error) {
+				IP.message.error.raise("Can not retrieve data transfer location root path");
+			});
+		}
+
 		this.getDirectories = function () {
 			var reloadTree = function (params, onSuccess, onFail) {
 				var $locationErrorContainer = $("#processingLocationErrorContainer");
@@ -25,7 +39,7 @@
 				var isRoot = params.id === '#';
 				var path = params.id;
 				if (isRoot) {
-					path = self.Fileshare();
+					path = self.rootDataTransferLocation;
 				}
 
 				root.data.ajax({
@@ -57,6 +71,7 @@
 				});
 
 				self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
+				self.loadRootDataTransferLocation();
 				self.getDirectories();
 			}
 		};
