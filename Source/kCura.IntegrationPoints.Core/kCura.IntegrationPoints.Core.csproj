@@ -300,6 +300,8 @@
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\IIntegrationPointValidationService.cs" />
     <Compile Include="Services\ImportTypeService.cs" />
+    <Compile Include="Services\IntegrationPoint\IIntegrationPointServiceFactory.cs" />
+    <Compile Include="Services\IntegrationPoint\IntegrationPointServiceFactory.cs" />
     <Compile Include="Services\IProviderTypeService.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Toggles\ShowImportProviderNonDocumentTypesToggle.cs" />
