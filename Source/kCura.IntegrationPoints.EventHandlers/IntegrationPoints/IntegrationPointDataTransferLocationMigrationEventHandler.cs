@@ -235,7 +235,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			foreach (var integrationPoint in integrationPoints)
 			{
-				var updatedSourceConfigurationString = DataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint, processingSourceLocations, newDataTransferLocationRoot);
+				var updatedSourceConfigurationString =
+					DataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint.SourceConfiguration,
+						processingSourceLocations, newDataTransferLocationRoot);
 				integrationPoint.SourceConfiguration = updatedSourceConfigurationString;
 
 				IntegrationPointLibrary.Update(integrationPoint);

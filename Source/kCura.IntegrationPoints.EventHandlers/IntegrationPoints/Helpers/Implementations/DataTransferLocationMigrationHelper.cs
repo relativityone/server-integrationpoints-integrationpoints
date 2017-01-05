@@ -15,12 +15,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_serializer = serializer;
 		}
 
-		public string GetUpdatedSourceConfiguration(Data.IntegrationPoint integrationPoint, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
+		public string GetUpdatedSourceConfiguration(string sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
 		{
-			Dictionary<string, object> sourceConfiguration = DeserializeSourceConfigurationString(integrationPoint.SourceConfiguration);
-			UpdateDataTransferLocation(sourceConfiguration, processingSourceLocations, newDataTransferLocationRoot);
+			Dictionary<string, object> sourceConfigurationDictionary = DeserializeSourceConfigurationString(sourceConfiguration);
+			UpdateDataTransferLocation(sourceConfigurationDictionary, processingSourceLocations, newDataTransferLocationRoot);
 
-			return SerializeSourceConfiguration(sourceConfiguration);
+			return SerializeSourceConfiguration(sourceConfigurationDictionary);
 		}
 
 		public void UpdateDataTransferLocation(IDictionary<string, object> sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
