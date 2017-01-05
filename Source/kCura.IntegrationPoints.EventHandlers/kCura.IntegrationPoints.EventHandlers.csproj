@@ -155,6 +155,10 @@
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="kCura.LongPath, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_LongPath)\lib\net45\kCura.LongPath.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
