@@ -5,21 +5,23 @@ using System.Runtime.InteropServices;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using Console = System.Console;
 using Constants = kCura.IntegrationPoints.Core.Constants;
+using FieldValue = kCura.Relativity.Client.DTOs.FieldValue;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -28,17 +30,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[RunOnce(true)]
 	public class IntegrationPointDataTransferLocationMigrationEventHandler : PostInstallEventHandler
 	{
-		private IDataTransferLocationService _dataTransferLocationService;
-		private IDestinationProviderRepository _destinationProviderRepository;
-		private IIntegrationPointServiceFactory _integrationPointServiceFactory;
-		private IIntegrationPointService _integrationPointService;
 		private IAPILog _logger;
+		private IDestinationProviderRepository _destinationProviderRepository;
 		private ISourceProviderRepository _sourceProviderRepository;
-		private ISerializer _serializer;
-		private IResourcePoolManager _resourcePoolManager;
 		private IRepositoryFactory _repositoryFactory;
-		private IIntegrationPointRepository _integrationPointRepository;
 		private IDataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
+		private ICaseServiceContext _serviceContext;
+		private IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
+		private IDataTransferLocationService _dataTransferLocationService;
+		private IResourcePoolManager _resourcePoolManager;
 
 		internal IAPILog Logger
 		{
@@ -53,48 +53,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		internal IDataTransferLocationService DataTransferLocationService
+		internal IRepositoryFactory RepositoryFactory
 		{
 			get
 			{
-				if (_dataTransferLocationService == null)
+				if (_repositoryFactory == null)
 				{
-					var context = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
-					IIntegrationPointTypeService typeService = new IntegrationPointTypeService(Helper, context);
-
-					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService);
+					_repositoryFactory = new RepositoryFactory(Helper);
 				}
 
-				return _dataTransferLocationService;
-			}
-		}
-
-		internal IIntegrationPointServiceFactory IntegrationPointServiceFactory
-		{
-			get
-			{
-				if (_integrationPointServiceFactory == null)
-				{
-					RsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);
-					IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID(), rsapiClientFactory);
-					_integrationPointServiceFactory = new IntegrationPointServiceFactory(Helper.GetActiveCaseID(), Helper,
-						serviceContextHelper, Serializer, RepositoryFactory, rsapiClientFactory);
-				}
-
-				return _integrationPointServiceFactory;
-			}
-		}
-
-		internal IIntegrationPointService IntegrationPointService
-		{
-			get
-			{
-				if (_integrationPointService == null)
-				{
-					_integrationPointService = IntegrationPointServiceFactory.Create();
-				}
-
-				return _integrationPointService;
+				return _repositoryFactory;
 			}
 		}
 
@@ -124,20 +92,61 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		internal ISerializer Serializer
+		internal IDataTransferLocationMigrationHelper DataTransferLocationMigrationHelper
 		{
 			get
 			{
-				if (_serializer == null)
+				if (_dataTransferLocationMigrationHelper == null)
 				{
-					_serializer = new JSONSerializer();
+					ISerializer serializer = new JSONSerializer();
+					_dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(serializer);
 				}
 
-				return _serializer;
+				return _dataTransferLocationMigrationHelper;
 			}
 		}
 
-		internal IResourcePoolManager ResourcePoolManager
+		internal ICaseServiceContext CaseServiceContext
+		{
+			get
+			{
+				if (_serviceContext == null)
+				{
+					_serviceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
+				}
+
+				return _serviceContext;
+			}
+		}
+
+		internal IGenericLibrary<Data.IntegrationPoint> IntegrationPointLibrary
+		{
+			get
+			{
+				if (_integrationPointLibrary == null)
+				{
+					_integrationPointLibrary = CaseServiceContext.RsapiService.GetGenericLibrary<Data.IntegrationPoint>();
+				}
+
+				return _integrationPointLibrary;
+			}
+		}
+
+		private IDataTransferLocationService DataTransferLocationService
+		{
+			get
+			{
+				if (_dataTransferLocationService == null)
+				{
+					IIntegrationPointTypeService typeService = new IntegrationPointTypeService(Helper, CaseServiceContext);
+					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService);
+				}
+
+				return _dataTransferLocationService;
+			}
+		}
+
+		private IResourcePoolManager ResourcePoolManager
 		{
 			get
 			{
@@ -147,46 +156,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				}
 
 				return _resourcePoolManager;
-			}
-		}
-
-		internal IRepositoryFactory RepositoryFactory
-		{
-			get
-			{
-				if (_repositoryFactory == null)
-				{
-					_repositoryFactory = new RepositoryFactory(Helper);
-				}
-
-				return _repositoryFactory;
-			}
-		}
-
-		internal IIntegrationPointRepository IntegrationPointRepository
-		{
-			get
-			{
-				if (_integrationPointRepository == null)
-				{
-					_integrationPointRepository = RepositoryFactory.GetIntegrationPointRepository(Helper.GetActiveCaseID());
-				}
-
-				return _integrationPointRepository;
-			}
-		}
-
-		internal IDataTransferLocationMigrationHelper DataTransferLocationMigrationHelper
-		{
-			get
-			{
-				if (_dataTransferLocationMigrationHelper == null)
-				{
-					_dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(Helper.GetActiveCaseID(),
-						DataTransferLocationService, ResourcePoolManager, Serializer);
-				}
-
-				return _dataTransferLocationMigrationHelper;
 			}
 		}
 
@@ -221,14 +190,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private void MigrateDestinationLocationPaths(IList<Data.IntegrationPoint> integrationPoints)
 		{
+			IList<string> processingSourceLocations = GetProcessingSourceLocationsForCurrentWorkspace();
+			string newDataTransferLocationRoot = GetNewDataTransferLocationRoot();
+
 			foreach (var integrationPoint in integrationPoints)
 			{
-				var updatedSourceConfigurationString = DataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint);
+				var updatedSourceConfigurationString = DataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint, processingSourceLocations, newDataTransferLocationRoot);
+				integrationPoint.SourceConfiguration = updatedSourceConfigurationString;
 
-				IntegrationPointModel model = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
-				model.SourceConfiguration = updatedSourceConfigurationString;
-
-				IntegrationPointService.SaveIntegration(model);
+				IntegrationPointLibrary.Update(integrationPoint);
 			}
 		}
 
@@ -258,27 +228,65 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
+		private IList<string> GetProcessingSourceLocationsForCurrentWorkspace()
+		{
+			IList<ProcessingSourceLocationDTO> processingSourceLocationDtos = ResourcePoolManager.GetProcessingSourceLocation(Helper.GetActiveCaseID());
+			return processingSourceLocationDtos.Select(x => x.Location).ToList();
+		}
+
+		private string GetNewDataTransferLocationRoot()
+		{
+			return DataTransferLocationService.GetDefaultRelativeLocationFor(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
+		}
+
 		private IList<Data.IntegrationPoint> GetAllExportIntegrationPoints(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
 		{
 			try
 			{
-				IList<Data.IntegrationPoint> integrationPoints = IntegrationPointService.GetAllRDOs();
+				Query<RDO> query = BuildIntegrationPointsQuery(relativitySourceProviderArtifactId, loadFileDestinationProviderArtifactId);
+				IList<Data.IntegrationPoint> integrationPoints = IntegrationPointLibrary.Query(query);
 
 				if (!integrationPoints.Any())
 				{
 					return new List<Data.IntegrationPoint>();
 				}
 
-				return integrationPoints.Where(ip =>
-						ip.SourceProvider.HasValue && ip.SourceProvider.Value == relativitySourceProviderArtifactId &&
-						ip.DestinationProvider.HasValue && ip.DestinationProvider.Value == loadFileDestinationProviderArtifactId)
-					.ToList();
+				return integrationPoints;
 			}
 			catch (Exception)
 			{
 				Logger.LogError("Failed to retrieve Integration Points data");
 				throw;
 			}
+		}
+
+		private Query<RDO> BuildIntegrationPointsQuery(int relativitySourceProviderArtifactId,
+			int loadFileDestinationProviderArtifactId)
+		{
+			var condition1 = new WholeNumberCondition()
+			{
+				Field = IntegrationPointFields.SourceProvider,
+				Operator = NumericConditionEnum.EqualTo,
+				Value = new List<int>() {relativitySourceProviderArtifactId}
+			};
+
+			var condition2 = new WholeNumberCondition()
+			{
+				Field = IntegrationPointFields.DestinationProvider,
+				Operator = NumericConditionEnum.EqualTo,
+				Value = new List<int>() {loadFileDestinationProviderArtifactId}
+			};
+
+			Query<RDO> query = new Query<RDO>()
+			{
+				Fields =
+					BaseRdo.GetFieldMetadata(typeof(Data.IntegrationPoint))
+						.Values.ToList()
+						.Select(field => new FieldValue(field.FieldGuid))
+						.ToList(),
+				Condition = new CompositeCondition(condition1, CompositeConditionEnum.And, condition2)
+			};
+			return query;
 		}
 	}
 }

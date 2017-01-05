@@ -1,46 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
 	public class DataTransferLocationMigrationHelper : IDataTransferLocationMigrationHelper
 	{
 		private const string SOURCECONFIGURATION_FILESHARE_KEY = "Fileshare";
-
-		private readonly int _workspaceArtifactId;
 		private readonly ISerializer _serializer;
-		private readonly IResourcePoolManager _resourcePoolManager;
-		private readonly IDataTransferLocationService _dataTransferLocationService;
 
-		public DataTransferLocationMigrationHelper(int workspaceArtifactId, IDataTransferLocationService dataTransferLocationService, IResourcePoolManager resourcePoolManager, ISerializer serializer)
+		public DataTransferLocationMigrationHelper(ISerializer serializer)
 		{
-			_workspaceArtifactId = workspaceArtifactId;
 			_serializer = serializer;
-			_resourcePoolManager = resourcePoolManager;
-			_dataTransferLocationService = dataTransferLocationService;
 		}
 
-		public string GetUpdatedSourceConfiguration(Data.IntegrationPoint integrationPoint)
+		public string GetUpdatedSourceConfiguration(Data.IntegrationPoint integrationPoint, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
 		{
 			Dictionary<string, object> sourceConfiguration = DeserializeSourceConfigurationString(integrationPoint.SourceConfiguration);
-			UpdateDataTransferLocation(sourceConfiguration);
+			UpdateDataTransferLocation(sourceConfiguration, processingSourceLocations, newDataTransferLocationRoot);
 
 			return SerializeSourceConfiguration(sourceConfiguration);
 		}
 
-		public void UpdateDataTransferLocation(Dictionary<string, object> sourceConfiguration)
+		public void UpdateDataTransferLocation(IDictionary<string, object> sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
 		{
 			string currentPath = sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] as string;
-			IList<string> processingSourceLocations = GetProcessingSourceLocationsForCurrentWorkspace();
 			string exportDestinationFolder = ExtractExportDestinationFolder(processingSourceLocations, currentPath);
-			string newDataTransferLocationRoot = _dataTransferLocationService.GetDefaultRelativeLocationFor(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
 			string newPath = Path.Combine(newDataTransferLocationRoot, exportDestinationFolder);
 
 			sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] = newPath;
@@ -54,12 +40,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private string SerializeSourceConfiguration(Dictionary<string, object> sourceConfiguration)
 		{
 			return _serializer.Serialize(sourceConfiguration);
-		}
-
-		private IList<string> GetProcessingSourceLocationsForCurrentWorkspace()
-		{
-			IList<ProcessingSourceLocationDTO> processingSourceLocationDtos = _resourcePoolManager.GetProcessingSourceLocation(_workspaceArtifactId);
-			return processingSourceLocationDtos.Select(x => x.Location).ToList();
 		}
 
 		private string ExtractExportDestinationFolder(IList<string> processingSourceLocations, string currentExportLocation)
