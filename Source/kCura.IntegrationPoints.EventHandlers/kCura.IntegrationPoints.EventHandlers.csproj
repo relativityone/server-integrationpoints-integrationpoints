@@ -181,9 +181,11 @@
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointTypeInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigrationHelper.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\FolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigrationHelper.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderDestinationConfiguration.cs" />
@@ -199,6 +201,7 @@
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScriptsFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\RelativityProviderScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ScriptsHelper.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointDataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePageInteractionEventHandler.cs" />
