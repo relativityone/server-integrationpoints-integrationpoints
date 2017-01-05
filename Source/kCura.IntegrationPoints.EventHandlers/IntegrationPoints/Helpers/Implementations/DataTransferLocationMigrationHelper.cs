@@ -54,7 +54,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 				if (currentExportLocation.StartsWith(processingSourceLocation, StringComparison.Ordinal))
 				{
-					return currentExportLocation.Substring(processingSourceLocation.Length);
+					string exportDestinationFolder = currentExportLocation.Substring(processingSourceLocation.Length);
+
+					//In case exportDestinationFolder contains '\\' characters in front we need to trim it.
+					//If path2 does not include a root, the result is a concatenation of the two paths, with an intervening separator character. 
+					//If path2 includes a root, path2 is returned.
+					return exportDestinationFolder.TrimStart('/', '\\');
 				}
 			}
 

@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private IDataTransferLocationService DataTransferLocationService
+		internal IDataTransferLocationService DataTransferLocationService
 		{
 			get
 			{
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private IResourcePoolManager ResourcePoolManager
+		internal IResourcePoolManager ResourcePoolManager
 		{
 			get
 			{
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		private IDataTransferLocationMigration DataTransferLocationMigration
+		internal IDataTransferLocationMigration DataTransferLocationMigration
 		{
 			get
 			{
