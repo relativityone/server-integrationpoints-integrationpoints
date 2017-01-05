@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> <ResultsResource>
+    <DataReaderLines>
+        <DataReaderLine>REL000001,\\example\file\path1_1,1</DataReaderLine>
+        <DataReaderLine>REL000002,\\example\file\path1_2,1</DataReaderLine>
+        <DataReaderLine>REL000003,\\example\file\path2_1,2</DataReaderLine>
+        <DataReaderLine>REL000004,\\example\file\path2_2,2</DataReaderLine>
+        <DataReaderLine>REL000005,\\example\file\path3_1,3</DataReaderLine>
+        <DataReaderLine>REL000006,\\example\file\path3_2,3</DataReaderLine>
+    </DataReaderLines>
+</ResultsResource>

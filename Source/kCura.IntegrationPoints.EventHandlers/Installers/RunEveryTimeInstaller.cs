@@ -15,7 +15,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	{
 		public override Response Execute()
 		{
-			var response = new Response {Success = true};
+			var response = new Response
+			{
+				Success = true,
+				Message = "Created or updated successfully."
+			};
+
 			try
 			{
 				new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(Helper.GetDBContext(Helper.GetActiveCaseID()))).Run();

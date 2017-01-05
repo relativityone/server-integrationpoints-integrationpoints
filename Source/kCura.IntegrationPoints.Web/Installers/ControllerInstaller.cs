@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Helpers;
 using kCura.Relativity.Client;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -69,6 +70,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 				})).LifestyleTransient());
 
 			container.Register(Component.For<IHtmlSanitizerManager>().ImplementedBy<HtmlSanitizerManager>().LifestyleSingleton());
+			container.Register(Component.For<SummaryPageSelector>().ImplementedBy<SummaryPageSelector>().LifestyleSingleton());
 		}
 	}
 }

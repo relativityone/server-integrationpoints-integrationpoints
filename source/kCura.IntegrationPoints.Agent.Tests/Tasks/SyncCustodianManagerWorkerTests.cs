@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IContextContainerFactory _contextContainerFactory;
 		private IJobService _jobService;
 		private IJobManager _jobManager;
+		private IDataReaderWrapperFactory _dataReaderWrapperFactory;
 
 		private SyncCustodianManagerWorker _instance;
 
@@ -103,6 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
+			_dataReaderWrapperFactory = Substitute.For<IDataReaderWrapperFactory>();
 
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
@@ -124,6 +126,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_managerQueueService,
 				_statisticsService,
 				_managerFactory,
+				_dataReaderWrapperFactory,
 				_contextContainerFactory,
 				_jobService,
 				_repositoryFactory
@@ -309,7 +312,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -342,7 +345,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
 			task.GetType().GetField("_destinationConfiguration", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, jsonParam2);
 
 			//ACT

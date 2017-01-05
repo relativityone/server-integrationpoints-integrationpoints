@@ -1,0 +1,130 @@
+﻿@{
+	ViewBag.Title = "Settings";
+}
+
+<link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
+
+
+<table id="summaryPage" class="innerTabTable">
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Name:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: name"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Log Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table><tr></tr></table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Has Errors:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Overwrite:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: overwriteMode"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Email Notification Recipients:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">SourceProvider:</td>
+					<td class="dynamicViewFieldValue breakWord" data-bind="text: sourceProviderName"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Connection Path:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: connectionPath"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Object Filter String:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: objectFilterString"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Authentication:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: authenticationMode"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Username:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: userName"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Password:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: password"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Import Nested Items:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: importNestedItems"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<script src="~/Scripts/ldap/ldap-provider-summary-page.js"></script>

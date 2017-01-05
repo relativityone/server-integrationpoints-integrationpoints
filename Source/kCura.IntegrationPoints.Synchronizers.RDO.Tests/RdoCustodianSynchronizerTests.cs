@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		private IRSAPIClient _rsapiClient;
 		private IHelper _helper;
 		private RelativityFieldQuery _fieldQuery;
-
+		private IImportJobFactory _importJobFactory;
 
 		public static ImportApiFactory GetMockAPI(RelativityFieldQuery query)
 		{
@@ -50,6 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			base.FixtureSetUp();
 
 			_settings = JsonConvert.SerializeObject(new ImportSettings());
+			_importJobFactory = new ImportJobFactory();
 		}
 
 		[SetUp]
@@ -82,7 +84,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _helper));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
 			var fields = sync.GetFields(_settings);
 
 
@@ -114,7 +116,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _helper));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
 			var fields = sync.GetFields(_settings);
 
 
@@ -145,7 +147,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _helper));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
 			var fields = sync.GetFields(_settings).ToList();
 
 

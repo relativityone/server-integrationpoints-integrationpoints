@@ -51,7 +51,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 				"/Scripts/jquery.signalR-2.2.0.js",
 				"/signalr/hubs",
 				"/Scripts/hubs/integrationPointHub.js",
-				"/Scripts/EventHandlers/integration-points-view-destination.js"
+				"/Scripts/EventHandlers/integration-points-view-destination.js",
+				"/Scripts/EventHandlers/integration-points-summary-page-view.js"
 			};
 		}
 

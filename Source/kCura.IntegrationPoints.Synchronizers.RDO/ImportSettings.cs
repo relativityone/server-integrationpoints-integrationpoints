@@ -146,6 +146,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
+		public bool AutoNumberImages { get; set; }
+		public bool ProductionImport { get; set; }
+		public bool ImageImport { get; set; }
+		public int ProductionArtifactId { get; set; }
+
 		#endregion "Public Properties"
 
 		#region "Internal Properties"

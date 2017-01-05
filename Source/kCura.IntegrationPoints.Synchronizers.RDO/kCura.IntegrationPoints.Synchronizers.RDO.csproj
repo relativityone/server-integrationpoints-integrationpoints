@@ -150,6 +150,17 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ImportAPI\RelativityReaderDecorator.cs" />
+    <Compile Include="JobImport\IImportJobFactory.cs" />
+    <Compile Include="JobImport\IImportSettingsBaseBuilder.cs" />
+    <Compile Include="JobImport\IJobImport.cs" />
+    <Compile Include="JobImport\Implementations\ImageDataTableHelper.cs" />
+    <Compile Include="JobImport\Implementations\ImageImportSettingsBuilder.cs" />
+    <Compile Include="JobImport\Implementations\ImageJobImport.cs" />
+    <Compile Include="JobImport\Implementations\ImportJobFactory.cs" />
+    <Compile Include="JobImport\Implementations\ImportSettingsBaseBuilder.cs" />
+    <Compile Include="JobImport\Implementations\JobImport.cs" />
+    <Compile Include="JobImport\Implementations\NativeImportSettingsBuilder.cs" />
+    <Compile Include="JobImport\Implementations\NativeJobImport.cs" />
     <Compile Include="RdoFieldSynchronizerBase.cs" />
     <Compile Include="IImportApiFactory.cs" />
     <Compile Include="IRelativityFieldQuery.cs" />

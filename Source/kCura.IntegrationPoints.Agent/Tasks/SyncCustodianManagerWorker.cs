@@ -62,12 +62,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerQueueService managerQueueService,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
+			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
 			IRepositoryFactory repositoryFactory)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer,
 				appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
-				jobManager, null, statisticsService, managerFactory,
+				jobManager, null, statisticsService, managerFactory, dataReaderWrapperFactory,
 				contextContainerFactory, jobService, false)
 		{
 			_managerQueueService = managerQueueService;

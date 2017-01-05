@@ -4,9 +4,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 using kCura.Relativity.Client.DTOs;
+using kCura.Utility;
 using Relativity.API;
 using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
@@ -17,18 +19,32 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
 		internal IImportService Importer;
+		private IAPILog _logger;
+
+		public IAPILog Logger
+		{
+			get { return _logger ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>()); }
+			set { _logger = value; }
+		}
 
 		public override Response Execute()
 		{
-			List<SourceProviderInstaller.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-			SourceProvidersMigration migrationJob = new SourceProvidersMigration(sourceProviders, Helper, Importer);
-			migrationJob.Execute();
-
-			return new Response
+			try
 			{
-				Success = true,
-				Message = "Successfully migrate source providers."
-			};
+				List<SourceProviderInstaller.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
+				SourceProvidersMigration migrationJob = new SourceProvidersMigration(sourceProviders, Helper, Importer);
+				return migrationJob.Execute();
+			}
+			catch (Exception e)
+			{
+				LogSourceProviderMigrationError(e);
+				return new Response
+				{
+					Message = e.Message,
+					Exception = e,
+					Success = false
+				};
+			}
 		}
 
 		private List<SourceProviderInstaller.SourceProvider> GetSourceProvidersToInstall()
@@ -83,5 +99,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return _sourceProviders.ToDictionary(provider => provider.GUID);
 			}
 		}
+
+		#region Logging
+
+		private void LogSourceProviderMigrationError(Exception e)
+		{
+			Logger.LogError(e, "Failed to migrate Source Provider.");
+		}
+
+		#endregion
 	}
 }

@@ -250,6 +250,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BatchManagerTests.cs" />
+    <Compile Include="ImageDataTableHelperTests.cs" />
     <Compile Include="ImportServiceTests.cs" />
     <Compile Include="ImportSettingsTests.cs" />
     <Compile Include="RdoCustodianSynchronizerTests.cs" />
