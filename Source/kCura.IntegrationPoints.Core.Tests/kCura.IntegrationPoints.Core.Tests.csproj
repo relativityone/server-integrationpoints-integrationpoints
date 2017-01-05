@@ -240,6 +240,7 @@
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
     <Compile Include="Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Managers\WorkspaceManagerTests.cs" />
+    <Compile Include="Services\DataTransferLocationServiceTests.cs" />
     <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />

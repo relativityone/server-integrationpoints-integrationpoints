@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using SystemInterface.IO;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -20,17 +21,19 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IHelper _helper;
 
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
+		private readonly IDirectory _directoryService;
 
 		#endregion //Fields
 
 		#region Constructors
 
-		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService)
+		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService)
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationService>();
 
 			_integrationPointTypeService = integrationPointTypeService;
+			_directoryService = directoryService;
 		}
 
 		#endregion //Constructors
@@ -54,21 +57,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			IntegrationPointType type = _integrationPointTypeService.GetIntegrationPointType(integrationPointTypeIdentifier);
 
 			return Path.Combine(_PARENT_FOLDER, type.Name);
-		}
-
-		public string GetLocationFor(int workspaceArtifactId, Guid integrationPointTypeIdentifier)
-		{
-			string rootPath = GetDestinationFolderRootPath(workspaceArtifactId);
-
-			IntegrationPointType type = _integrationPointTypeService.GetIntegrationPointType(integrationPointTypeIdentifier);
-
-			string path = Path.Combine(rootPath, type.Name);
-
-			// TODO figure out what to do in case of the Import types if path does not exists
-			// for now we will create it however there won't be anything to import...
-			CreateDirectoryIfNotExists(path);
-
-			return path;
 		}
 
 		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
@@ -101,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				String.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
 		}
 
-		private Workspace GetWorkspace(int workspaceId)
+		protected virtual Workspace GetWorkspace(int workspaceId)
 		{
 			using (IRSAPIClient rsApiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
 			{
@@ -119,11 +107,11 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CreateDirectoryIfNotExists(string path)
 		{
-			if (!Directory.Exists(path))
+			if (!_directoryService.Exists(path))
 			{
 				LogMissingDirectoryCreation(path);
 
-				Directory.CreateDirectory(path);
+				_directoryService.CreateDirectory(path);
 			}
 		}
 
