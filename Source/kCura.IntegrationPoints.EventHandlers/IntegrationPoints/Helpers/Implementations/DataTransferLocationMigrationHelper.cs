@@ -81,8 +81,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				}
 
 				int exportLocationStartIndex = startIndex + processingSourceLocation.Length + 1;
-				int length = currentExportLocation.Length - processingSourceLocation.Length;
-				string exportLocation = currentExportLocation.Substring(exportLocationStartIndex, length);
+				string exportLocation = currentExportLocation.Substring(exportLocationStartIndex);
 
 				return exportLocation;
 			}

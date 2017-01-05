@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
+using Console = System.Console;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -222,77 +223,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			foreach (var integrationPoint in integrationPoints)
 			{
-				var updatedSourceConfigurationString = _dataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint);
+				var updatedSourceConfigurationString = DataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint);
 
 				IntegrationPointModel model = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
 				model.SourceConfiguration = updatedSourceConfigurationString;
 
-				//IntegrationPointService.SaveIntegration(model);
+				IntegrationPointService.SaveIntegration(model);
 			}
 		}
-
-		//private string GetUpdatedSourceConfiguration(Data.IntegrationPoint integrationPoint)
-		//{
-		//	Dictionary<string, object> sourceConfiguration = DeserializeSourceConfigurationString(integrationPoint.SourceConfiguration);
-		//	UpdateDataTransferLocation(sourceConfiguration);
-
-		//	return SerializeSourceConfiguration(sourceConfiguration);
-		//}
-
-		//private Dictionary<string, object> DeserializeSourceConfigurationString(string sourceConfiguration)
-		//{
-		//	return Serializer.Deserialize<Dictionary<string, object>>(sourceConfiguration);
-		//}
-
-		//private string SerializeSourceConfiguration(Dictionary<string, object> sourceConfiguration)
-		//{
-		//	return Serializer.Serialize(sourceConfiguration);
-		//}
-
-		//private void UpdateDataTransferLocation(Dictionary<string, object> sourceConfiguration)
-		//{
-		//	string currentPath = sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] as string; ;
-		//	IList<string> processingSourceLocations = GetProcessingSourceLocationsForCurrentWorkspace();
-		//	string exportDestinationFolder = ExtractExportDestinationFolder(processingSourceLocations, currentPath);
-		//	string newDataTransferLocationRoot = DataTransferLocationService.GetDefaultRelativeLocationFor(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
-		//	string newPath = Path.Combine(newDataTransferLocationRoot, exportDestinationFolder);
-
-		//	sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] = newPath;
-		//}
-
-		//private IList<string> GetProcessingSourceLocationsForCurrentWorkspace()
-		//{
-		//	IList<ProcessingSourceLocationDTO> processingSourceLocationDtos = ResourcePoolManager.GetProcessingSourceLocation(Helper.GetActiveCaseID());
-		//	return processingSourceLocationDtos.Select(x => x.Location).ToList();
-		//}
-
-		//private string ExtractExportDestinationFolder(IList<string> processingSourceLocations, string currentExportLocation)
-		//{
-		//	foreach (var processingSourceLocation in processingSourceLocations)
-		//	{
-		//		if (processingSourceLocation == currentExportLocation)
-		//		{
-		//			//This means that previous Export was done to root of Processing Source Location therefore new destination folder is also root of new Data Transfer Location
-		//			return string.Empty;
-		//		}
-
-		//		int startIndex = currentExportLocation.IndexOf(processingSourceLocation, StringComparison.Ordinal);
-
-		//		if (startIndex == -1)
-		//		{
-		//			//ProcessingSourceLocation not found within currentExportLocation
-		//			continue;
-		//		}
-
-		//		int exportLocationStartIndex = startIndex + processingSourceLocation.Length + 1;
-		//		int length = currentExportLocation.Length - processingSourceLocation.Length;
-		//		string exportLocation = currentExportLocation.Substring(exportLocationStartIndex, length);
-
-		//		return exportLocation;
-		//	}
-
-		//	return string.Empty;
-		//}
 
 		private int GetRelativitySourceProviderArtifactId()
 		{
@@ -322,39 +260,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private IList<Data.IntegrationPoint> GetAllExportIntegrationPoints(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
 		{
-			IList<Data.IntegrationPoint> integrationPoints = IntegrationPointService.GetAllRDOs();
+			try
+			{
+				IList<Data.IntegrationPoint> integrationPoints = IntegrationPointService.GetAllRDOs();
 
-			return integrationPoints.Where(ip =>
+				if (!integrationPoints.Any())
+				{
+					return new List<Data.IntegrationPoint>();
+				}
+
+				return integrationPoints.Where(ip =>
 						ip.SourceProvider.HasValue && ip.SourceProvider.Value == relativitySourceProviderArtifactId &&
 						ip.DestinationProvider.HasValue && ip.DestinationProvider.Value == loadFileDestinationProviderArtifactId)
-						.ToList();
+					.ToList();
+			}
+			catch (Exception)
+			{
+				Logger.LogError("Failed to retrieve Integration Points data");
+				throw;
+			}
 		}
-
-		//private IIntegrationPointService CreateIntegrationPointService()
-		//{
-		//	RsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);
-		//	IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID(), rsapiClientFactory);
-		//	ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
-		//	IWorkspaceRepository workspaceRepository = RepositoryFactory.GetWorkspaceRepository();
-		//	IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
-		//	IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
-		//	IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
-		//	IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-		//	IJobService jobService = new JobService(agentService, Helper);
-		//	IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
-		//	IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
-		//	JobResourceTracker jobResourceTracker = new JobResourceTracker(RepositoryFactory, workspaceDbContext);
-		//	JobTracker jobTracker = new JobTracker(jobResourceTracker);
-		//	IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, Serializer, jobTracker);
-		//	IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository, Helper, Serializer);
-		//	IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-		//	IManagerFactory managerFactory = new ManagerFactory(Helper);
-
-		//	IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), Serializer);
-		//	IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), Serializer);
-
-		//	return new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, Serializer,
-		//		choiceQuery, jobManager, jobHistoryService, managerFactory, ipValidator, permissionValidator);
-		//}
 	}
 }
