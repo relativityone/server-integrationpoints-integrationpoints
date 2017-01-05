@@ -42,7 +42,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace ID</param>
 		/// <param name="path">Path to be used</param>
+		/// <param name="providerType">provider type guid (Export/Import)</param>
 		/// <returns>Verified path</returns>
-		string VerifyAndPrepare(int workspaceArtifactId, string path);
+		string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType);
 	}
 }

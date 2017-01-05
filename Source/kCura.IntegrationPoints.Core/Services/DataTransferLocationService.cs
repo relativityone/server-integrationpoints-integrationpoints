@@ -11,6 +11,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class DataTransferLocationService : IDataTransferLocationService
 	{
+		#region Fields
+
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
 		private const string _PARENT_FOLDER = "DataTransfer";
 
@@ -19,6 +21,10 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
 
+		#endregion //Fields
+
+		#region Constructors
+
 		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService)
 		{
 			_helper = helper;
@@ -26,6 +32,10 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			_integrationPointTypeService = integrationPointTypeService;
 		}
+
+		#endregion //Constructors
+
+		#region Methods
 
 		public void CreateForAllTypes(int workspaceArtifactId)
 		{
@@ -61,25 +71,21 @@ namespace kCura.IntegrationPoints.Core.Services
 			return path;
 		}
 
-		public string VerifyAndPrepare(int workspaceArtifactId, string path)
+		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
 		{
-			string rootPath = GetDestinationFolderRootPath(workspaceArtifactId);
-
-			// remove previous root from path...
-			if (Path.IsPathRooted(path))
+			// Get the give provider type path eg: DataTransfer\Export
+			string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
+			
+			// First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
+			if (!path.StartsWith(providerTypeRelativePathPrefix))
 			{
-				// Path.GetPathRoot() returns whole path as root 
-				var root = path.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-				path = path.Substring(root.Length + 2);
+				throw new Exception($"Provided realtive path '{path}' does not match the correct destination folder!");
 			}
+			// Get physical path for destination folder eg: \\localhost\FileShare\EDDS123456\Export\SomeFolder
+			string destinationFolderPhysicalPath = Path.Combine(GetWorkspaceFileLocationRootPath(workspaceArtifactId), path);
 
-			// ...and append a proper one
-			path = Path.Combine(rootPath, path);
-
-			CreateDirectoryIfNotExists(path);
-
-			return path;
+			CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
+			return destinationFolderPhysicalPath;
 		}
 
 		public string GetWorkspaceFileLocationRootPath(int workspaceArtifactId)
@@ -134,5 +140,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		}
 
 		#endregion
+
+		#endregion //Methods
 	}
 }
