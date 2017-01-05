@@ -30,7 +30,7 @@
 		if (importType === ImportTypeEnum.Production) {
 			forProduction = 'true';
 		}
-		
+
 		var model = {
 			ImageImport: imageImport,
 			ForProduction: forProduction,
@@ -54,7 +54,7 @@
 			//if we are an image import, make sure other setting get into destination configuration.
 			if (current.ImportType !== ImportTypeEnum.Document) {
 				$.extend(current, currentImageSettingsFromUi());
-				
+
 				var fullModel = windowObj.RelativityImport.FullIPModel;
 
 				var destinationConfig = JSON.parse(fullModel.destination);
@@ -73,18 +73,19 @@
 				self.publish('saveComplete', stringified);
 			}
 
-			windowObj.RelativityImport.disablePreviewButton(false);
+			windowObj.parent.RelativityImport.PreviewOptions.disablePreviewButton(false);
 			IP.frameMessaging().dFrame.IP.message.error.clear();
 		}
 	};
 
-    windowObj.RelativityImport.GetCurrentUiModel = currentSettingsFromUi;
+    windowObj.parent.RelativityImport.GetCurrentUiModel = currentSettingsFromUi;
 
     //An event raised when the user has clicked the Next or Save button.
     //Leaving the custom settings page and going to field mapping screen.
     message.subscribe('submit', function () {
         //Execute save logic that persists the root.
-        validationCheck(this);
+    	validationCheck(this);
+	    windowObj.parent.RelativityImport.CurrentUiModel = currentSettingsFromUi();
     });
 
     //An event raised when a user clicks the Back button.
@@ -95,7 +96,10 @@
         var stringified = JSON.stringify(current);
         this.publish("saveState", stringified);
 
-        windowObj.RelativityImport.UI.removeCustomDropdown();
+		//Revert CSS back to normal
+        windowObj.parent.RelativityImport.PreviewOptions.UI.UndoRepositionProgressButtons();
+
+        windowObj.parent.RelativityImport.PreviewOptions.UI.removePreviewButton();
     });
 
     //An event raised when the host page has loaded the current settings page.
@@ -108,22 +112,29 @@
 
     	var model = fullModel.sourceConfiguration;
     	windowObj.RelativityImport.FullIPModel = fullModel;
+
         //closing preview btn if the user opens the btn and then goes back to step2 from step 3
         var $el = currentSettingsFromUi();
-        if ($el.ImportType === ImportTypeEnum.Document) { windowObj.RelativityImport.closePreviewBtn(); };
+        if ($el.ImportType === ImportTypeEnum.Document) { windowObj.parent.RelativityImport.PreviewOptions.closePreviewBtn(); };
 
         if (!!model) {
             windowObj.RelativityImport.GetCachedUiModel = JSON.parse(model);
         };
 
-        // adding horizontal scroll
-        windowObj.RelativityImport.UI.addSiteCss();
+        //Adding horizontal scroll to entire child div
+        windowObj.parent.RelativityImport.PreviewOptions.UI.addSiteCss();
 
-        if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.RelativityImport.UI.Elements.CUSTOM_BUTTON)).length < 1) {
-            windowObj.RelativityImport.UI.initCustomDropdown();
+        if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.parent.RelativityImport.PreviewOptions.UI.Elements.CUSTOM_BUTTON)).length === 0) {
+
+			//Create custom btn - Preview Options
+        	windowObj.parent.RelativityImport.PreviewOptions.UI.initCustomDropdown();
+
+        	//Overwritting the CSS for the progressbuttons for Preview Options
+        	windowObj.parent.RelativityImport.PreviewOptions.UI.repositionProgressButtons();
+
+        	//Disable preview options btn on step2
+        	windowObj.parent.RelativityImport.PreviewOptions.disablePreviewButton(true);
         };
-
-        //TODO: Populate UI with values from model object
     });
 
 })(this, IP, ko);
