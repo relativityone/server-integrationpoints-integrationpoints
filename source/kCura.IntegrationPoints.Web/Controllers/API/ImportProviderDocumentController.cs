@@ -35,8 +35,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve load file headers.")]
 		public IHttpActionResult LoadFileHeaders([FromBody] string settings)
 		{
+			ImportProviderSettings providerSettings = _serializer.Deserialize<ImportProviderSettings>(settings);
 			return Ok(string.Join(new string(new char[] { (char)13, (char)10 }),
-				_fieldParserFactory.GetFieldParser(settings).GetFields()
+				_fieldParserFactory.GetFieldParser(providerSettings).GetFields()
 				.Select((name, i) => new { Name = name, Index = i + 1 })
 				.OrderBy(x => x.Name)
 				.Select(x => string.Format("{0} ({1})", x.Name, x.Index))));
@@ -44,9 +45,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve list for Import Types.")]
-		public IHttpActionResult GetImportTypes()
+		public IHttpActionResult GetImportTypes(bool isRdo = false)
 		{
-			return Json(_importTypeService.GetImportTypes());
+			return Json(_importTypeService.GetImportTypes(isRdo));
 		}
 
 		[HttpPost]

@@ -101,6 +101,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string EmailNotificationRecipients = @"EmailNotificationRecipients";
 		public const string HasErrors = @"Has Errors";
 		public const string Type = @"Type";
+		public const string SecuredConfiguration = @"Secured Configuration";
 		public const string Name = @"Name";
 	}
 
@@ -121,6 +122,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string EmailNotificationRecipients = @"1bac59db-f7bf-48e0-91d4-18cf09ff0e39";
 		public const string HasErrors = @"a9853e55-0ba0-43d8-a766-747a61471981";
 		public const string Type = @"e646016e-5df6-4440-b218-18a00926d002";
+		public const string SecuredConfiguration = @"48b0a4cb-bc21-45b5-b124-76ae27e03c42";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
 	}
 
@@ -487,12 +489,12 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class IntegrationPointProfileTabGuids
 	{
-		public const string Profile = @"0ac27fca-a6fe-425b-87f0-afb12e40563a";
+		public const string IntegrationPointProfile = @"0ac27fca-a6fe-425b-87f0-afb12e40563a";
 	}
 
 	public partial class IntegrationPointProfileTabs
 	{
-		public const string Profile = @"Profile";
+		public const string IntegrationPointProfile = @"Integration Point Profile";
 	}
 
 	#endregion

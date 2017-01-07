@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ExportProcessRunner exportProcessRunner,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
+			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IJobService jobService,
 			IDataTransferLocationService dataTransferLocationService
 		) : base(
@@ -54,6 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			statuses,
 			statisticsService,
 			managerFactory,
+			dataReaderWrapperFactory,
 			contextContainerFactory,
 			jobService)
 		{

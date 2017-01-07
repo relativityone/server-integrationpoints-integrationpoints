@@ -89,6 +89,12 @@ var LocationJSTreeSelector = function () {
 			'core': {
 				'data': function (obj, callback) {
 					var ajaxSuccess = function (returnData) {
+						//will open the root folder in jstree for both export and import
+						$(self.domSelectorSettings.browserTreeSelector).on('ready.jstree', function () {
+							$(self.domSelectorSettings.browserTreeSelector).jstree('select_node', 'ul > li:first');
+							var selectedNode = $(self.domSelectorSettings.browserTreeSelector).jstree("get_selected");
+							$(self.domSelectorSettings.browserTreeSelector).jstree("open_node", selectedNode, false, true);
+						});
 						$.each(returnData, function (index, value) {
 							if (value.icon && value.icon === "jstree-root-folder") {
 								$.each(value.children, function (index, child) {
@@ -126,6 +132,10 @@ var LocationJSTreeSelector = function () {
 				self.SelectedNode = data.node.text;
 				self.domSelectorSettings.onNodeSelectedEventHandler(data.node);
 				self.setTreeVisibility(false);
+			}
+			//allows for the jsTree for import to expand on folder click
+			if (self.domSelectorSettings.selectFilesOnly) {
+				data.instance.toggle_node(data.node);
 			}
 		});
 	};

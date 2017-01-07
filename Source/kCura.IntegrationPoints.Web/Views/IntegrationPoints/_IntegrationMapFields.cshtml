@@ -137,11 +137,11 @@
 			</div>
 		</div>
 		<br/>
-		<div data-bind="visible: !IsRelativityProvider()">
-			<span class="label title">Extracted Text</span>
-			<div class="identifier">
+		<div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
+			<span class="extracted-label">Extracted Text</span>
+			<div class="margin-top-8px">
 				<div class="field-row">
-					<div class="field-label required ">Cell contains file location:</div>
+					<div class="field-label required ">Cell Contains File Location:</div>
 					<div class="field-value">
 						<ul>
 							<li>

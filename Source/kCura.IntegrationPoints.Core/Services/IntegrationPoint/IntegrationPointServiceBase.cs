@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			var model = GetModel(artifactId);
 			var fields = Serializer.Deserialize<List<FieldMap>>(model.Map);
-			return fields.First(x => x.FieldMapType == FieldMapTypeEnum.Identifier).SourceField;
+			return fields.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
 		}
 
 		public IEnumerable<string> GetRecipientEmails(int artifactId)

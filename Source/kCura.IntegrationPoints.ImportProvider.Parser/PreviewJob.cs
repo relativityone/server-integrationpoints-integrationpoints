@@ -18,110 +18,110 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Helpers;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.ImportProvider.Parser.Tests")]
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class PreviewJob : IPreviewJob
-    {
-        internal bool _errorsOnly;
-        internal bool _foldersAndChoices;
-        internal LoadFile _loadFile;
+	public class PreviewJob : IPreviewJob
+	{
+		internal bool _errorsOnly;
+		internal bool _foldersAndChoices;
+		internal LoadFile _loadFile;
 
-        public PreviewJob()
-        {
-            IsComplete = false;
-            IsFailed = false;
-            _errorsOnly = false;
-            _foldersAndChoices = false;       
-        }
+		public PreviewJob()
+		{
+			IsComplete = false;
+			IsFailed = false;
+			_errorsOnly = false;
+			_foldersAndChoices = false;	   
+		}
 
-        public void Init(LoadFile loadFile, ImportPreviewSettings settings)
-        {
-            _loadFile = loadFile;
-            if (settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Errors)
-            {
-                _errorsOnly = true;
-            }
-            else if(settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Folders)
-            {                
-                _foldersAndChoices = true;
-            }
+		public void Init(LoadFile loadFile, ImportPreviewSettings settings)
+		{
+			_loadFile = loadFile;
+			if (settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Errors)
+			{
+				_errorsOnly = true;
+			}
+			else if(settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Folders)
+			{				
+				_foldersAndChoices = true;
+			}
 
-            //Create obj
-            LoadFileReader temp = new kCura.WinEDDS.LoadFileReader(_loadFile, false);
+			//Create obj
+			LoadFileReader temp = new kCura.WinEDDS.LoadFileReader(_loadFile, false);
 
-            //set up field mapping to extract all fields with reader
-            string[] cols = temp.GetColumnNames(_loadFile);
-            int colIdx = 0;
-            foreach (string colName in cols)
-            {
-                FieldMap currentField = settings.FieldMapping.Where(f => f.SourceField.DisplayName == colName).FirstOrDefault();
-                //Make sure that the current column exists in the fieldMapping object and has a destination mapped or is a folderInfo mapping
-                if (ShouldFieldBeIncludedInPreview(currentField))
-                {
-                    string docFieldName;
-                    int docFieldIdentifier;
+			//set up field mapping to extract all fields with reader
+			string[] cols = temp.GetColumnNames(_loadFile);
+			int colIdx = 0;
+			foreach (string colName in cols)
+			{
+				FieldMap currentField = settings.FieldMapping.Where(f => f.SourceField.DisplayName == colName).FirstOrDefault();
+				//Make sure that the current column exists in the fieldMapping object and has a destination mapped or is a folderInfo mapping
+				if (ShouldFieldBeIncludedInPreview(currentField))
+				{
+					string docFieldName;
+					int docFieldIdentifier;
 					int fieldCategory = GetFieldCategory(currentField);
 					int fieldTypeId = GetFieldTypeId(currentField, settings.ChoiceFields);
 
-                    docFieldName = (currentField.DestinationField.DisplayName != null) ? currentField.DestinationField.DisplayName : currentField.SourceField.DisplayName;
-                    docFieldIdentifier = (!String.IsNullOrEmpty(currentField.DestinationField.FieldIdentifier)) ? int.Parse(currentField.DestinationField.FieldIdentifier): int.Parse(currentField.SourceField.FieldIdentifier);
+					docFieldName = (currentField.DestinationField.DisplayName != null) ? currentField.DestinationField.DisplayName : currentField.SourceField.DisplayName;
+					docFieldIdentifier = (!String.IsNullOrEmpty(currentField.DestinationField.FieldIdentifier)) ? int.Parse(currentField.DestinationField.FieldIdentifier): int.Parse(currentField.SourceField.FieldIdentifier);
 
-                    DocumentField newDocField = new DocumentField(docFieldName, docFieldIdentifier, fieldTypeId, fieldCategory, -1, -1, -1, false,
-                        kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
+					DocumentField newDocField = new DocumentField(docFieldName, docFieldIdentifier, fieldTypeId, fieldCategory, -1, -1, -1, false,
+						kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
 
-                    //The column index we give here determines which column in the load file gets mapped to this Doc Field
-                    LoadFileFieldMap.LoadFileFieldMapItem newfieldMapItem = new LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
+					//The column index we give here determines which column in the load file gets mapped to this Doc Field
+					LoadFileFieldMap.LoadFileFieldMapItem newfieldMapItem = new LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
 
-                    _loadFile.FieldMap.Add(newfieldMapItem);
-                }
-                colIdx++;
-            }
+					_loadFile.FieldMap.Add(newfieldMapItem);
+				}
+				colIdx++;
+			}
 
-            _loadFilePreviewer = new LoadFilePreviewerWrapper(_loadFile, 0, _errorsOnly, false);
-        }
+			_loadFilePreviewer = new LoadFilePreviewerWrapper(_loadFile, 0, _errorsOnly, false);
+		}
 
-        public void StartRead()
-        {
-            try
-            {
-                _loadFilePreviewer.OnEventAdd(OnPreviewerProgress);
-                List<object> arrs = _loadFilePreviewer.ReadFile(_foldersAndChoices);
-                ImportPreviewTable preview = new ImportPreviewTable();
+		public void StartRead()
+		{
+			try
+			{
+				_loadFilePreviewer.OnEventAdd(OnPreviewerProgress);
+				List<object> arrs = _loadFilePreviewer.ReadFile(_foldersAndChoices);
+				ImportPreviewTable preview = new ImportPreviewTable();
 
-                if (_foldersAndChoices)
-                {
+				if (_foldersAndChoices)
+				{
 					PreviewHelper previewHelper = new PreviewHelper();
-                    preview = previewHelper.BuildFoldersAndChoices(arrs, _loadFile.PreviewCodeCount);
-                }
-                else
-                {
+					preview = previewHelper.BuildFoldersAndChoices(arrs, _loadFile.PreviewCodeCount);
+				}
+				else
+				{
 					preview = BuildPreviewTable(arrs);
-                }
+				}
 
-                IsComplete = true;
-                PreviewTable = preview;
-            }
-            catch (Exception ex)
-            {
-                IsFailed = true;
-                ErrorMessage = ex.Message;
-            }
-        }
+				IsComplete = true;
+				PreviewTable = preview;
+			}
+			catch (Exception ex)
+			{
+				IsFailed = true;
+				ErrorMessage = ex.Message;
+			}
+		}
 
-        private void OnPreviewerProgress(kCura.WinEDDS.LoadFilePreviewer.EventArgs e)
-        {
-            if (e.Type == LoadFilePreviewer.EventType.Complete)
-            {
-                IsComplete = true;
-            }
-            BytesRead = e.BytesRead;
-            TotalBytes = e.TotalBytes;
-            StepSize = e.StepSize;
-        }
+		private void OnPreviewerProgress(kCura.WinEDDS.LoadFilePreviewer.EventArgs e)
+		{
+			if (e.Type == LoadFilePreviewer.EventType.Complete)
+			{
+				IsComplete = true;
+			}
+			BytesRead = e.BytesRead;
+			TotalBytes = e.TotalBytes;
+			StepSize = e.StepSize;
+		}
 
-        public void DisposePreviewJob()
-        {
-            _loadFilePreviewer.OnEventRemove(OnPreviewerProgress);            
-        }
-        
+		public void DisposePreviewJob()
+		{
+			_loadFilePreviewer.OnEventRemove(OnPreviewerProgress);			
+		}
+		
 		private ImportPreviewTable BuildPreviewTable(List<object> arrs)
 		{
 			ImportPreviewTable preview = new ImportPreviewTable();
@@ -228,14 +228,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 					(currentField.FieldMapType == FieldMapTypeEnum.FolderPathInformation && _foldersAndChoices))));
 		}
 
-        internal ILoadFilePreviewer _loadFilePreviewer;
-        public ImportPreviewTable PreviewTable { get; private set; }
+		internal ILoadFilePreviewer _loadFilePreviewer;
+		public ImportPreviewTable PreviewTable { get; private set; }
 		
-        public bool IsComplete { get; internal set; }
-        public bool IsFailed { get; internal set; }
-        public string ErrorMessage { get; internal set;}
-        public long TotalBytes { get; internal set; }
-        public long BytesRead { get; internal set; }
-        public long StepSize { get; internal set; }
-    }
+		public bool IsComplete { get; internal set; }
+		public bool IsFailed { get; internal set; }
+		public string ErrorMessage { get; internal set;}
+		public long TotalBytes { get; internal set; }
+		public long BytesRead { get; internal set; }
+		public long StepSize { get; internal set; }
+	}
 }

@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IManagerFactory managerFactory,
 			IIntegrationPointProviderValidator integrationModelValidator,
 			IIntegrationPointPermissionValidator permissionValidator)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(), 
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(),
 				  integrationModelValidator, permissionValidator)
 		{
 			_jobService = jobService;
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			catch (IntegrationPointProviderValidationException validationException)
 			{
 				CreateRelativityError(
-					Constants.IntegrationPoints.UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED, 
+					Constants.IntegrationPoints.UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED,
 					String.Join(Environment.NewLine, validationException.Result.Messages)
 				);
 
@@ -344,7 +344,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-			ValidationResult validationResult = _permissionValidator.Validate(IntegrationPointModel.FromIntegrationPoint(integrationPoint), 
+			ValidationResult validationResult = _permissionValidator.Validate(IntegrationPointModel.FromIntegrationPoint(integrationPoint),
 				sourceProvider, destinationProvider, integrationPointType);
 
 			if (!validationResult.IsValid)

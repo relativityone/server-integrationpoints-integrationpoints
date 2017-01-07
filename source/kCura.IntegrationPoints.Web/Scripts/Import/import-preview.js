@@ -80,14 +80,17 @@
     		AsciiMultiLine: settings.AsciiMultiLine,
     		AsciiNestedValue: settings.AsciiNestedValue,
 			LineNumber: settings.LineNumber,
-    		FieldMapping: $.parseJSON(fieldMapping),
-    		ChoiceFields: choiceFields
+    		FieldMapping: $.parseJSON(fieldMapping)
     	};
+
+		//Stringifying the choiceFields array separately and appending, otherwise it stringifies the whole PreviewSettingsData object incorrectly in IE
+    	var stringifiedData = JSON.stringify(previewSettingsData);
+    	stringifiedData = stringifiedData.slice(0, -1) + ',"ChoiceFields":' + JSON.stringify(choiceFields) + '}';
 
 		root.data.ajax({
 			type: "post",
 			url: root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CreatePreviewJob",
-			data: JSON.stringify(previewSettingsData),
+			data: stringifiedData,
 			dataType: 'json'
 		})
 		.done(function (data) {

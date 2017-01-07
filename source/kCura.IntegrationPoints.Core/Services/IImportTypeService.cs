@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public interface IImportTypeService
 	{
-		List<ImportType> GetImportTypes();
+		List<ImportType> GetImportTypes(bool isRdo);
 	}
 }
