@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			List<string> sortedHeaders = new List<string>(testHeaders);
 			sortedHeaders.Sort();
 
-			_fieldParserFactory.GetFieldParser("").ReturnsForAnyArgs(_fieldParser);
+			_fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
 			_fieldParser.GetFields().Returns(testHeaders);
 
 

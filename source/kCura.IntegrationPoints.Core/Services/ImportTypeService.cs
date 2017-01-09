@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_toggleProvider = toggleProvider;
 		}
 
-		public List<ImportType> GetImportTypes()
+		public List<ImportType> GetImportTypes(bool isRdo)
 		{
 			bool isShowImportProviderToggleEnabled = _toggleProvider.IsEnabled<ShowImportProviderNonDocumentTypesToggle>();
 
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			importTypes.Add(new ImportType("Document Load File", ImportType.ImportTypeValue.Document));
 
-			if (!isShowImportProviderToggleEnabled) { return importTypes; }
+			if (!isShowImportProviderToggleEnabled || isRdo) { return importTypes; }
 
 			importTypes.Add(new ImportType("Image Load File", ImportType.ImportTypeValue.Image));
 			importTypes.Add(new ImportType("Production Load File", ImportType.ImportTypeValue.Production));

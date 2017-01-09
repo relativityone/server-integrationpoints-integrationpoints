@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 					ICaseServiceContext context = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
 					IIntegrationPointTypeService typeService = new IntegrationPointTypeService(Helper, context);
 
-					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService);
+					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService, new LongPathDirectory());
 				}
 
 				return _dataTransferLocationService;

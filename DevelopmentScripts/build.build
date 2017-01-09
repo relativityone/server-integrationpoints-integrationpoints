@@ -89,6 +89,7 @@
 			
 			<!-- secondary dlls -->
 			<arg line='"${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45\SystemInterface.dll"'/>
+			<arg line='"${source.packages.directory}\kCura.LongPath.1.0.8\lib\net45\kCura.LongPath.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\FreeImageNET.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\Ionic.Zip.dll"' />

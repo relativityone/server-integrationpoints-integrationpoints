@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		void AddRow(Dictionary<string, object> fields);
 		bool PushBatchIfFull(bool forcePush);
 		void Initialize();
-		void CleanUp();
 		void KickOffImport(IDataReader dataSource);
 		ImportSettings Settings { get; }
 	}

@@ -16,14 +16,6 @@ namespace kCura.IntegrationPoints.Core.Services
 		void CreateForAllTypes(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns root path for Integration Point Type
-		/// </summary>
-		/// <param name="workspaceArtifactId">Workspace ID</param>
-		/// <param name="integrationPointTypeArtifactId">Integration Point Type</param>
-		/// <returns>Path as string</returns>
-		string GetLocationFor(int workspaceArtifactId, Guid integrationPointTypeArtifactId);
-
-		/// <summary>
 		/// Returns workspace fileshare root path
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace ID</param>

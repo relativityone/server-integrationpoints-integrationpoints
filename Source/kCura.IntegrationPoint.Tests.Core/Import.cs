@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var helper = NSubstitute.Substitute.For<IHelper>();
 			ISystemEventLoggingService systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
 			ImportApiFactory factory = new ImportApiFactory(helper, systemEventLoggingService);
+			ImportJobFactory jobFactory = new ImportJobFactory();
 			ImportSettings setting = new ImportSettings()
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
@@ -32,7 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string settings = JsonConvert.SerializeObject(setting);
-			RdoSynchronizer pusher = new RdoSynchronizer(null, factory, helper);
+			RdoSynchronizer pusher = new RdoSynchronizer(null, factory, jobFactory, helper);
 
 			FieldMap mapIdentifier = new FieldMap
 			{

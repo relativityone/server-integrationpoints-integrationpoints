@@ -217,10 +217,12 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="Factories\IDataReaderWrapperFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
     <Compile Include="Factories\IManagerFactory.cs" />
+    <Compile Include="Factories\Implementations\DataReaderWrapperFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />

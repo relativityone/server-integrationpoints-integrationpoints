@@ -529,6 +529,7 @@
     <Content Include="Scripts\ftpProvider\ftp-provider-summary-page.js" />
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
+    <Content Include="Scripts\Import\import-preview-options-btn.js" />
     <Content Include="Scripts\integration-point\profile.js" />
     <Content Include="Scripts\integration-point\scheduler-summary-page.js" />
     <Content Include="Scripts\integration-point\source.js" />

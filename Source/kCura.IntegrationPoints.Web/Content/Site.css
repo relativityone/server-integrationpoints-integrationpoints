@@ -304,17 +304,20 @@ ul li .day-select
 {
     margin-left: 44.398%;
     min-width: 76px;
+	outline: none !important;
 }
 
 .leftSide-field
 {
 	padding-bottom: 10px;
+	font-weight: bold;
 }
 
 .rightSide-field
 {
 	padding-bottom: 10px;
-	margin-left: 44%;
+	margin-left: 42%;
+	font-weight: bold;
 }
 .source-field, .rightSide-field.reverse
 {
@@ -538,6 +541,22 @@ select option {
 	overflow-x: hidden;
 }
 
-.fixedColumn { 
-	width: 250px; 
+.fixedColumn {
+	width: 250px;
+}
+
+/*step3 map fields btns*/
+#add-all-source-fields, #add-source-field, #remove-source-field, #remove-all-source-fields ,#attributeFieldTop, #attribute-field-up, #attribute-field-down, #attributeFieldBottom, #workspaceFieldTop, #workspace-field-up, #workspace-field-down, #workspaceFieldBottom, #add-all-workspace-fields, #add-workspace-field, #remove-workspace-field, #remove-all-workspace-fields {
+	text-decoration: none !important;
+}
+
+.extracted-label {
+	color: #333333;
+    text-transform: uppercase;
+    font-weight: 400;
+    text-indent: 15px;
+}
+
+.margin-top-8px {
+	margin-top: 8px;
 }

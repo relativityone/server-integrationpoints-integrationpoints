@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity;
 using Constants = kCura.IntegrationPoints.Core.Constants;
@@ -74,7 +76,35 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Assert.That(actualIntegrationPoint.Type, Is.EqualTo(profile.Type));
 			Assert.That(actualIntegrationPoint.LogErrors, Is.EqualTo(profile.LogErrors));
 		}
+		[Test]
+		public void ItShouldCreateIntegrationPointWithEncryptedCredentials()
+		{
+			string username = "username_933";
+			string password = "password_729";
 
+			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
+
+			var createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId,
+				TargetWorkspaceArtifactId, false, true, false, string.Empty, "Use Field Settings", overwriteFieldsModel,
+				GetDefaultFieldMap().ToList());
+
+			createRequest.IntegrationPoint.SecuredConfiguration = new Credentials
+			{
+				Username = username,
+				Password = password
+			};
+
+			var integrationPointModel = _client.CreateIntegrationPointAsync(createRequest).Result;
+
+			var actualCredentials =
+				Helper.GetDBContext(SourceWorkspaceArtifactId)
+					.ExecuteSqlStatementAsScalar<string>($"SELECT SecuredConfiguration FROM [IntegrationPoint] WHERE ArtifactID = {integrationPointModel.ArtifactId}");
+
+			var expectedCredentails = new DefaultEncryptionManager().Encrypt(JsonConvert.SerializeObject(createRequest.IntegrationPoint.SecuredConfiguration));
+
+			Assert.That(actualCredentials, Is.EqualTo(expectedCredentails));
+		}
+		
 		[Test]
 		public void ItShouldCreateExportToLoadFileIntegrationPoint()
 		{
@@ -152,6 +182,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Assert.That(expectedIntegrationPointModel.SourceProvider, Is.EqualTo(actualIntegrationPoint.SourceProvider));
 			Assert.That(expectedIntegrationPointModel.Type, Is.EqualTo(actualIntegrationPoint.Type));
 			Assert.That(expectedIntegrationPointModel.LogErrors, Is.EqualTo(actualIntegrationPoint.LogErrors));
+		}
+
+		private class Credentials
+		{
+			public string Username { get; set; }
+			public string Password { get; set; }
 		}
 	}
 }
