@@ -175,7 +175,6 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DataReaderFactory.cs" />
-    <Compile Include="Domain\OpticonInfo.cs" />
     <Compile Include="EnumerableParser.cs" />
     <Compile Include="EnumerableParserFactory.cs" />
     <Compile Include="FieldParserFactory.cs" />
@@ -221,6 +220,7 @@
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"

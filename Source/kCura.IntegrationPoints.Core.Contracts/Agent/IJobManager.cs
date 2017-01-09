@@ -16,7 +16,8 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		SendEmailWorker,
 		ExportService,
         ExportManager,
-		ExportWorker
+		ExportWorker,
+		ImageSyncManager
 	}
 
 	public interface IJobManager

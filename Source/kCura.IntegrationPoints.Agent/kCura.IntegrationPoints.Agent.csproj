@@ -194,6 +194,7 @@
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
     <Compile Include="Tasks\ExportServiceManager.cs" />
+    <Compile Include="Tasks\ImageSyncManager.cs" />
     <Compile Include="Tasks\SendEmailManager.cs" />
     <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />

@@ -4,14 +4,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
-
 using NUnit.Framework;
-
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.ImportProvider.Parser.Domain;
-
 using kCura.WinEDDS;
-using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests.Integration
 {

@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ISendable>().ImplementedBy<SMTP>().DependsOn(Dependency.OnValue<EmailConfiguration>(container.Resolve<IRelativityConfigurationFactory>().GetConfiguration())));
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
+			container.Register(Component.For<ImageSyncManager>().ImplementedBy<ImageSyncManager>().LifestyleTransient());
 			container.Register(Component.For<ExportServiceManager>().ImplementedBy<ExportServiceManager>().LifestyleTransient());
 			container.Register(Component.For<SyncCustodianManagerWorker>().ImplementedBy<SyncCustodianManagerWorker>().LifestyleTransient());
 			container.Register(Component.For<CreateErrorRdo>().ImplementedBy<CreateErrorRdo>().LifestyleTransient());

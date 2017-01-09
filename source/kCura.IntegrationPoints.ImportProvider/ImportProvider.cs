@@ -5,7 +5,6 @@ using System.IO;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.ImportProvider.Parser.Domain;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider

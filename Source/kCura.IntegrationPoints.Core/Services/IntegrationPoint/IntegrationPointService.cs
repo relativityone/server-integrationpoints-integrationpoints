@@ -396,7 +396,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			lock (Lock)
 			{
 				// If the Relativity provider is selected, we need to create an export task
-				TaskType jobTaskType = GetJobTaskType(sourceProvider, destinationProvider);
+				TaskType jobTaskType = GetJobTaskType(sourceProvider, destinationProvider, integrationPoint.SourceConfiguration);
 
 				CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
@@ -406,9 +406,20 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 		}
 
-		private TaskType GetJobTaskType(SourceProvider sourceProvider, DestinationProvider destinationProvider)
+		private TaskType GetJobTaskType(SourceProvider sourceProvider, DestinationProvider destinationProvider, string sourceConfiguration = null)
 		{
-			TaskType jobTaskType =
+
+			TaskType jobTaskType;
+			if (!string.IsNullOrEmpty(sourceConfiguration))
+			{
+				jobTaskType = CheckImageTaskType(sourceConfiguration);
+				if(jobTaskType == TaskType.ImageSyncManager)
+				{
+					return jobTaskType;
+				}
+			}
+
+			jobTaskType =
 				sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 					? TaskType.ExportService
 					: TaskType.SyncManager;
@@ -417,6 +428,26 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				jobTaskType = TaskType.ExportManager;
 			}
+			return jobTaskType;
+		}
+
+		private TaskType CheckImageTaskType(string sourceConfiguration)
+		{
+			TaskType jobTaskType = TaskType.None;
+			try
+			{
+				ImportProviderSettings settings = Serializer.Deserialize<ImportProviderSettings>(sourceConfiguration);
+				int importType = int.Parse(settings.ImportType);
+				if (importType != (int)ImportType.ImportTypeValue.Document)
+				{
+					jobTaskType = TaskType.ImageSyncManager;
+				}
+			}
+			catch (Exception)
+			{
+				_helper.GetLoggerFactory().GetLogger().LogInformation("Integration Point could not be parsed in CheckImageTaskType(). Continuing normal flow.");
+			}
+
 			return jobTaskType;
 		}
 
