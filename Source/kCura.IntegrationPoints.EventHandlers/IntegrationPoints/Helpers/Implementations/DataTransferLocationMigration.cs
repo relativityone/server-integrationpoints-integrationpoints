@@ -90,12 +90,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private void MigrateDestinationLocationPaths(IList<Data.IntegrationPoint> integrationPoints)
 		{
+			if (!integrationPoints.Any())
+			{
+				return;
+			}
+
 			IList<string> processingSourceLocations = GetProcessingSourceLocationsForCurrentWorkspace();
 			string newDataTransferLocationRoot = GetNewDataTransferLocationRoot();
 
 			foreach (var integrationPoint in integrationPoints)
 			{
-				var updatedSourceConfigurationString =
+				string updatedSourceConfigurationString =
 					_dataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint.SourceConfiguration,
 						processingSourceLocations, newDataTransferLocationRoot);
 				integrationPoint.SourceConfiguration = updatedSourceConfigurationString;
