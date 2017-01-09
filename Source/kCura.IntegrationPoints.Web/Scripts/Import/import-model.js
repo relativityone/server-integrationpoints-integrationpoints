@@ -30,6 +30,13 @@
 		}
 
 		self.selectedImportType.subscribe(function (data) {
+			windowObj.parent.RelativityImport.PreviewOptions.closePreviewBtn();
+			if (data !== ImportTypeEnum.Document) {
+				windowObj.parent.RelativityImport.PreviewOptions.ShowOnlyErrorsOptionForImportType(true);
+			} else {
+				windowObj.parent.RelativityImport.PreviewOptions.ShowOnlyErrorsOptionForImportType(false);
+			}
+
 			IP.frameMessaging().publish('importType', data);
 			self.setSelectedImportType(data);
 		});
