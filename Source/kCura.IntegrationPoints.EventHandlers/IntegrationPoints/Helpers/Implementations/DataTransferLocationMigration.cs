@@ -100,6 +100,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 			foreach (var integrationPoint in integrationPoints)
 			{
+				UpdateIntegrationPoint(integrationPoint, processingSourceLocations, newDataTransferLocationRoot);
+			}
+		}
+
+		private void UpdateIntegrationPoint(Data.IntegrationPoint integrationPoint, IList<string> processingSourceLocations,
+			string newDataTransferLocationRoot)
+		{
+			try
+			{
 				string updatedSourceConfigurationString =
 					_dataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint.SourceConfiguration,
 						processingSourceLocations, newDataTransferLocationRoot);
@@ -107,17 +116,39 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 				_integrationPointLibrary.Update(integrationPoint);
 			}
+			catch (Exception ex)
+			{
+				var errorMessage = $"Failed to migrate Integration Point: {integrationPoint.Name} with ArtifactId: {integrationPoint.ArtifactId}";
+				_logger.LogError(ex, errorMessage);
+				throw new InvalidOperationException(errorMessage, ex);
+			}
 		}
 
 		private IList<string> GetProcessingSourceLocationsForCurrentWorkspace()
 		{
-			IList<ProcessingSourceLocationDTO> processingSourceLocationDtos = _resourcePoolManager.GetProcessingSourceLocation(_helper.GetActiveCaseID());
-			return processingSourceLocationDtos.Select(x => x.Location).ToList();
+			try
+			{
+				IList<ProcessingSourceLocationDTO> processingSourceLocationDtos = _resourcePoolManager.GetProcessingSourceLocation(_helper.GetActiveCaseID());
+				return processingSourceLocationDtos.Select(x => x.Location).ToList();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to retrieve Processing Source Locations for Workspace: {workspaceId}", _helper.GetActiveCaseID());
+				throw;
+			}
 		}
 
 		private string GetNewDataTransferLocationRoot()
 		{
-			return _dataTransferLocationService.GetDefaultRelativeLocationFor(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
+			try
+			{
+				return _dataTransferLocationService.GetDefaultRelativeLocationFor(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to retrieve default relative location for integration point");
+				throw;
+			}
 		}
 
 		private Query<RDO> BuildIntegrationPointsQuery(int relativitySourceProviderArtifactId,
