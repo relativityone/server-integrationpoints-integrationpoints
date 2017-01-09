@@ -9,14 +9,30 @@ namespace kCura.IntegrationPoints.Core.Helpers
 {
 	public class LongPathDirectory : IDirectory
 	{
+		/// <summary>
+		/// LongPath class does not support for retrieve DirectoryInfo structure so this method will always return null value!
+		/// </summary>
+		/// <param name="path">long path</param>
+		/// <returns>null</returns>
 		public IDirectoryInfo CreateDirectory(string path)
 		{
-			throw new NotImplementedException();
+			LongPath.LongPath.CreateDirectory(path);
+
+			// That's bad but we can use directly DirectoryInfo class as it will throw exception on long path.
+			return null;
+
 		}
 
+		/// <summary>
+		/// LongPath class does not support for retrieve DirectoryInfo structure so this method will always return null value!
+		/// </summary>
+		/// <param name="path">long path</param>
+		/// <param name="directorySecurity">will not be used</param>
+		/// <returns>null</returns>
 		public IDirectoryInfo CreateDirectory(string path, IDirectorySecurity directorySecurity)
 		{
-			throw new NotImplementedException();
+			LongPath.LongPath.CreateDirectory(path);
+			return null;
 		}
 
 		public void Delete(string path)
