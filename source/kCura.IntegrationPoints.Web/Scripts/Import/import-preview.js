@@ -1,16 +1,27 @@
 ﻿var IP = IP || {};
 
 (function (root, opener) {
-    var idSelector = function (name) { return '#' + name; }
-    var classSelector = function (name) { return '.' + name; }
-    var previewJobId = -1;
-    var intervalId = -1;
-    var percent = 0;
-    var timerHandle;
-    var settings = opener.RelativityImportPreviewSettings;
-    var workspaceId = ("/" + opener.RelativityImportPreviewSettings.WorkspaceId);
-    var fieldMapping = opener.top.getCurrentIpFieldMapping();
-    var choiceFieldsPromise = opener.top.getMappedChoiceFieldsPromise();
+	var idSelector = function (name) { return '#' + name; }
+	var classSelector = function (name) { return '.' + name; }
+	var previewJobId = -1;
+	var intervalId = -1;
+	var percent = 0;
+	var timerHandle;
+	var importTypeEnum = { Document: 0, Image: 1, Production: 2 };
+	var settings = opener.RelativityImportPreviewSettings;
+	var workspaceId = ("/" + opener.RelativityImportPreviewSettings.WorkspaceId);
+	var fieldMapping;
+	var choiceFieldsPromise;
+	//If we are an ImageImport, we will create an empty choiceFields promise and use an empty fieldMap, otherwise we'll use the real functions on the 3rd step
+	if (settings.ImportType !== importTypeEnum.Document) {
+			fieldMapping = '[]';
+			var promise = {};
+			promise.then = function (method) { return method() };
+			choiceFieldsPromise = promise;
+		} else {
+		fieldMapping = opener.top.getCurrentIpFieldMapping();
+		choiceFieldsPromise = opener.top.getMappedChoiceFieldsPromise();
+	}
     var timerCount = 0;
     var timerRequest = true;
     var previewTypeEnum = opener.PreviewTypeEnum;
@@ -80,14 +91,17 @@
     		AsciiMultiLine: settings.AsciiMultiLine,
     		AsciiNestedValue: settings.AsciiNestedValue,
 			LineNumber: settings.LineNumber,
-    		FieldMapping: $.parseJSON(fieldMapping),
-    		ChoiceFields: choiceFields
+    		FieldMapping: $.parseJSON(fieldMapping)
     	};
+
+		//Stringifying the choiceFields array separately and appending, otherwise it stringifies the whole PreviewSettingsData object incorrectly in IE
+    	var stringifiedData = JSON.stringify(previewSettingsData);
+    	stringifiedData = stringifiedData.slice(0, -1) + ',"ChoiceFields":' + JSON.stringify(choiceFields) + '}';
 
 		root.data.ajax({
 			type: "post",
 			url: root.utils.getBaseURL() + workspaceId + "/api/ImportPreview/CreatePreviewJob",
-			data: JSON.stringify(previewSettingsData),
+			data: stringifiedData,
 			dataType: 'json'
 		})
 		.done(function (data) {

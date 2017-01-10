@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -21,8 +22,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private IDictionary<string, string> _custodianManagerMap;
 
-		public RdoCustodianSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IHelper helper)
-			: base(fieldQuery, factory, helper)
+		public RdoCustodianSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
+			: base(fieldQuery, factory, jobFactory, helper)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoCustodianSynchronizer>();
 		}

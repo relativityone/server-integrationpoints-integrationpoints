@@ -13,49 +13,52 @@
 			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
 		}
 
-		this.ProcessingSourceLocationList = ko.observableArray([]);
-
-		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation || 0;
-
-		this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
+		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
 		});
 
-		this.ProcessingSourceLocation.isModified(false);
+		self.rootDataTransferLocation = "";
 
-		self.getSelectedProcessingSourceLocationPath = function (artifactId) {
-			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
-				if (item.artifactId === artifactId) {
-					return item;
-				}
+		this.loadRootDataTransferLocation = function () {
+			root.data.ajax({
+				type: "post",
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", state.integrationPointTypeIdentifier)
+			}).then(function (result) {
+				self.rootDataTransferLocation = result;
+			}).fail(function (error) {
+				IP.message.error.raise("Can not retrieve data transfer location root path");
 			});
-			return selectedPath;
-		};
+		}
 
-		this.updateProcessingSourceLocation = function (value) {
-			self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
-			if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
-			{
-				self.Fileshare(undefined);
-				self.Fileshare.isModified(false);
-			}
+		this.getDirectories = function () {
+			var reloadTree = function (params, onSuccess, onFail) {
+				var $locationErrorContainer = $("#processingLocationErrorContainer");
+				IP.message.error.clear($locationErrorContainer);
+
+				var isRoot = params.id === '#';
+				var path = params.id;
+				if (isRoot) {
+					path = self.rootDataTransferLocation;
+				}
+
+				root.data.ajax({
+					type: "post",
+					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+					url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", state.integrationPointTypeIdentifier) + "?isRoot=" + isRoot,
+					data: { '': path }
+				}).then(function (result) {
+					onSuccess(result);
+				}).fail(function (error) {
+					onFail(error);
+					IP.message.error.raise(error, $locationErrorContainer);
+				});
+			};
 
 			if (self.locationSelector) {
-				self.locationSelector.clear();
+				self.locationSelector.reloadWithRoot(reloadTree);
 			}
-
-			self.getDirectories();
-
-			self.locationSelector.toggle(!!value);
 		};
-
-		this.Fileshare = ko.observable(state.Fileshare).extend({
-			required: {
-				onlyIf: function () {
-					return self.ProcessingSourceLocation();
-				}
-			}
-		});
 
 		this.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
@@ -67,35 +70,9 @@
 					onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
 				});
 
-				self.locationSelector.toggle(!!self.ProcessingSourceLocation());
-			}
-
-			self.ProcessingSourceLocation.isModified(false);
-		};
-
-		this.getDirectories = function () {
-			var reloadTree = function (params, onSuccess, onFail) {
-				var $locationErrorContainer = $("#processingLocationErrorContainer");
-				var isRoot = params.id === '#';
-				var path = params.id;
-				if (isRoot) {
-					path = self.ProcessingSourceLocationPath;
-				}
-				IP.message.error.clear($locationErrorContainer);
-				root.data.ajax({
-					type: "post",
-					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-					url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot),
-					data: { '': path }
-				}).then(function (result) {
-					onSuccess(result);
-				}).fail(function (error) {
-					onFail(error);
-					IP.message.error.raise(error, $locationErrorContainer);
-				});
-			};
-			if (self.locationSelector) {
-				self.locationSelector.reloadWithRoot(reloadTree);
+				self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
+				self.loadRootDataTransferLocation();
+				self.getDirectories();
 			}
 		};
 
@@ -664,7 +641,6 @@
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"FilePath": self.FilePath(),
 				"Fileshare": self.Fileshare(),
-				"ProcessingSourceLocation": self.ProcessingSourceLocation(),
 				"ImagePrecedence": self.ImagePrecedence(),
 				"IncludeOriginalImages": self.IncludeOriginalImages(),
 				"MultiValueSeparator": self.MultiValueSeparator(),
@@ -726,39 +702,11 @@
 			{
 				hasBeenRun: ip.hasBeenRun,
 				artifactTypeId: ip.artifactTypeID,
-				defaultRdoTypeId: ip.DefaultRdoTypeId
+				defaultRdoTypeId: ip.DefaultRdoTypeId,
+				integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier
 			}));
+
 			self.model.errors = ko.validation.group(self.model);
-
-			var processingSourceLocationListPromise = root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
-				data: {
-					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-				}
-			}).fail(function (error) {
-				IP.message.error.raise("No processing source locations were returned from source provider");
-			});
-
-			root.data.deferred()
-				.all([processingSourceLocationListPromise])
-				.then(function (result) {
-					self.model.ProcessingSourceLocationList(result[0]);
-					self.model.ProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
-					self.model.ProcessingSourceLocation.isModified(false);
-
-					if (!self.model.HasBeenRun()) {
-						if (self.model.ProcessingSourceLocationArtifactId > 0) {
-							self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId)
-						}
-
-						self.model.ProcessingSourceLocation.subscribe(function (value) {
-							if (value != undefined) {
-								self.model.updateProcessingSourceLocation(value);
-							}
-						});
-					}
-				});
 		};
 
 		self.submit = function () {

@@ -185,6 +185,7 @@
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IntegrationPointBaseQuery.cs" />
+    <Compile Include="EncryptingRsapiClientLibrary.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
@@ -200,7 +201,9 @@
     <Compile Include="QueryBuilders\Implementations\IntegrationPointsCompletedJobsQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
+    <Compile Include="Repositories\Implementations\ResourcePoolRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlWorkspacesRepository.cs" />
+    <Compile Include="Repositories\IResourcePoolRepository.cs" />
     <Compile Include="Repositories\IWorkspacesRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
     <Compile Include="Models\AuditElement.cs" />
@@ -227,7 +230,6 @@
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
     <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
-    <Compile Include="Repositories\Implementations\ResourcePoolRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiRdoRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
@@ -256,7 +258,6 @@
     <Compile Include="Repositories\IPermissionRepository.cs" />
     <Compile Include="Repositories\IRelativityAuditRepository.cs" />
     <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
-    <Compile Include="Repositories\IResourcePoolRepository.cs" />
     <Compile Include="Repositories\IRdoRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
@@ -333,6 +334,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="RSAPIServiceGetLibrary.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
@@ -414,6 +416,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

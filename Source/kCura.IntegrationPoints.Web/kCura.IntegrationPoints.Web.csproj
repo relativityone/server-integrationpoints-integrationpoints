@@ -327,6 +327,7 @@
     <Compile Include="Controllers\API\ImportProviderImageController.cs" />
     <Compile Include="Controllers\API\IntegrationPointProfilesAPIController.cs" />
     <Compile Include="Controllers\API\IntegrationPointTypesController.cs" />
+    <Compile Include="Controllers\API\ResourcePoolController.cs" />
     <Compile Include="Controllers\SummaryPageController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
@@ -347,7 +348,7 @@
     <Compile Include="Controllers\API\JobController.cs" />
     <Compile Include="Controllers\API\LdapController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
-    <Compile Include="Controllers\API\ResourcePoolController.cs" />
+    <Compile Include="Controllers\API\DataTransferLocationController.cs" />
     <Compile Include="Controllers\API\SavedSearchFinderController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\DestinationTypeController.cs" />
@@ -528,6 +529,7 @@
     <Content Include="Scripts\ftpProvider\ftp-provider-summary-page.js" />
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
+    <Content Include="Scripts\Import\import-preview-options-btn.js" />
     <Content Include="Scripts\integration-point\profile.js" />
     <Content Include="Scripts\integration-point\scheduler-summary-page.js" />
     <Content Include="Scripts\integration-point\source.js" />

@@ -183,6 +183,7 @@
     <Compile Include="Interfaces\ILoadFilePreviewer.cs" />
     <Compile Include="Interfaces\IPreviewJobFactory.cs" />
     <Compile Include="LoadFilePreviewerWrapper.cs" />
+    <Compile Include="OpticonDataReader.cs" />
     <Compile Include="PreviewJob.cs" />
     <Compile Include="PreviewJobFactory.cs" />
     <Compile Include="Interfaces\IDataReaderFactory.cs" />
@@ -219,6 +220,7 @@
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"

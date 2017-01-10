@@ -140,6 +140,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						CheckForSynchronization(typeof(ExportWorker), job, integrationPointDto, agentBase);
 						return Container.Resolve<ExportWorker>();
 
+					case TaskType.ImageSyncManager:
+						CheckForSynchronization(typeof(ImageSyncManager), job, integrationPointDto, agentBase);
+						return Container.Resolve<ImageSyncManager>();
 					default:
 						LogUnknownTaskTypeError(taskType);
 						return null;

@@ -176,15 +176,27 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetProcessingSourceLocationSubItems",
+				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocationSubItems/{isRoot}",
+				defaults: new { controller = "ResourcePool", action = "GetSubItems" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "SavedSearchesTree",
 				routeTemplate: "{workspaceID}/api/SavedSearchesTree/{workspaceArtifactId}",
 				defaults: new { controller = "SavedSearchesTree", action = "Get" }
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetProcessingSourceLocationSubItems",
-				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocationSubItems/{isRoot}",
-				defaults: new { controller = "ResourcePool", action = "GetSubItems" }
+				name: "GetStructure",
+				routeTemplate: "{workspaceID}/api/DataTransferLocation/GetStructure/{integrationPointTypeIdentifier}",
+				defaults: new { controller = "DataTransferLocation", action = "GetStructure" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetRoot",
+				routeTemplate: "{workspaceID}/api/DataTransferLocation/GetRoot/{integrationPointTypeIdentifier}",
+				defaults: new { controller = "DataTransferLocation", action = "GetRoot" }
 			);
 
 			config.Routes.MapHttpRoute(
@@ -244,7 +256,7 @@ namespace kCura.IntegrationPoints.Web
 			config.Routes.MapHttpRoute(
 				name: "SearchFolder",
 				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
-				defaults: new {controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }
+				defaults: new { controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }
 			);
 
 			config.Routes.MapHttpRoute(

@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data
 			return Create(new List<T> { obj }).First();
 		}
 
-		public List<int> Create(IEnumerable<T> objs)
+		public virtual List<int> Create(IEnumerable<T> objs)
 		{
 			var localList = objs.ToList();
 			if (!localList.Any())
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Data
 			return Read(new List<int> { artifactId }).First();
 		}
 
-		public List<T> Read(IEnumerable<int> artifactIds)
+		public virtual List<T> Read(IEnumerable<int> artifactIds)
 		{
 			var local = artifactIds.ToList();
 			if (!local.Any())
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data
 			return Update(new List<T> { obj });
 		}
 
-		public bool Update(IEnumerable<T> objs)
+		public virtual bool Update(IEnumerable<T> objs)
 		{
 			var localList = objs.ToList();
 			if (!localList.Any())
@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.Data
 			throw new NotImplementedException();
 		}
 
-		public List<T> Query(Query<RDO> q, int pageSize = 0)
+		public virtual List<T> Query(Query<RDO> q, int pageSize = 0)
 		{
 			if (!q.ArtifactTypeGuid.HasValue)
 			{

@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class LoadFileBase
-    {
-        protected kCura.WinEDDS.LoadFileReader _loadFileReader;
-        protected kCura.WinEDDS.LoadFile _config;
+	public class LoadFileBase
+	{
+		protected kCura.WinEDDS.LoadFileReader _loadFileReader;
+		protected kCura.WinEDDS.LoadFile _config;
 
-        protected LoadFileBase(kCura.WinEDDS.LoadFile loadFile)
-        {
-            Init(loadFile);
-        }
+		protected LoadFileBase(kCura.WinEDDS.LoadFile loadFile)
+		{
+			Init(loadFile);
+		}
 
-        private void Init(kCura.WinEDDS.LoadFile loadFile)
-        {
-            _config = loadFile;
-            _loadFileReader = new kCura.WinEDDS.LoadFileReader(_config, false);
-        }
-    }
+		private void Init(kCura.WinEDDS.LoadFile loadFile)
+		{
+			_config = loadFile;
+			_loadFileReader = new kCura.WinEDDS.LoadFileReader(_config, false);
+		}
+	}
 }

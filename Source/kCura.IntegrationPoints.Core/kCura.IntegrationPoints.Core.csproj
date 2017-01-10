@@ -217,17 +217,21 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="Factories\IDataReaderWrapperFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
     <Compile Include="Factories\IManagerFactory.cs" />
+    <Compile Include="Factories\Implementations\DataReaderWrapperFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IButtonStateBuilder.cs" />
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
+    <Compile Include="Helpers\IRelativePathDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\ButtonStateBuilder.cs" />
     <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
+    <Compile Include="Helpers\Implementations\RelativePathDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
     <Compile Include="Helpers\Implementations\ArtifactTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\SavedSearchesTreeCreator.cs" />
@@ -291,7 +295,9 @@
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\ArtifactService.cs" />
+    <Compile Include="Services\DataTransferLocationService.cs" />
     <Compile Include="Services\IChoiceService.cs" />
+    <Compile Include="Services\IDataTransferLocationService.cs" />
     <Compile Include="Services\IImportTypeService.cs" />
     <Compile Include="Services\IArtifactService.cs" />
     <Compile Include="Services\IIntegrationPointValidationService.cs" />

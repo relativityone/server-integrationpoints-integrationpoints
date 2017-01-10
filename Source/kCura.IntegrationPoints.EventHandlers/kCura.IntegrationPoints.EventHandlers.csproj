@@ -151,6 +151,14 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+	<Reference Include="kCura.LongPath, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(kCura_LongPath)\lib\net45\kCura.LongPath.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
@@ -168,16 +176,22 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
     <Compile Include="Installers\SetIntegrationPointType.cs" />
+    <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointTypeInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigration.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigrationHelper.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\FolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigrationHelper.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IDataTransferLocationMigration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderDestinationConfiguration.cs" />
@@ -193,6 +207,7 @@
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScriptsFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\RelativityProviderScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ScriptsHelper.cs" />
+    <Compile Include="IntegrationPoints\IntegrationPointDataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePageInteractionEventHandler.cs" />

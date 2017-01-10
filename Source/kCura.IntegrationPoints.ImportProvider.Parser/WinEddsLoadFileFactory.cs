@@ -8,37 +8,42 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class WinEddsLoadFileFactory : IWinEddsLoadFileFactory
-    {
-        ICredentialProvider _credentialProvider;
-        public WinEddsLoadFileFactory(ICredentialProvider credentialProvider)
-        {
-            _credentialProvider = credentialProvider;
-        }
+	public class WinEddsLoadFileFactory : IWinEddsLoadFileFactory
+	{
+		ICredentialProvider _credentialProvider;
+		public WinEddsLoadFileFactory(ICredentialProvider credentialProvider)
+		{
+			_credentialProvider = credentialProvider;
+		}
 
-        public LoadFile GetLoadFile(ImportSettingsBase settings)
-        {
-            WinEDDS.Config.WebServiceURL = (new WebApiConfig()).GetWebApiUrl;
-            NetworkCredential cred = _credentialProvider.Authenticate(new System.Net.CookieContainer());
+		public LoadFile GetLoadFile(ImportSettingsBase settings)
+		{
+			WinEDDS.Config.WebServiceURL = (new WebApiConfig()).GetWebApiUrl;
+			NetworkCredential cred = _credentialProvider.Authenticate(new System.Net.CookieContainer());
 
-            NativeSettingsFactory factory = new NativeSettingsFactory(cred, settings.WorkspaceId);
-            LoadFile loadFile = factory.ToLoadFile();
+			NativeSettingsFactory factory = new NativeSettingsFactory(cred, settings.WorkspaceId);
+			LoadFile loadFile = factory.ToLoadFile();
 
-            loadFile.RecordDelimiter = (char)settings.AsciiColumn;
-            loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
-            loadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
-            loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
-            loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
-            loadFile.FilePath = settings.LoadFile;
-            loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
-            loadFile.StartLineNumber = long.Parse(settings.LineNumber);
+			loadFile.RecordDelimiter = (char)settings.AsciiColumn;
+			loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
+			loadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
+			loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
+			loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
+			loadFile.FilePath = settings.LoadFile;
+			loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
+			loadFile.StartLineNumber = long.Parse(settings.LineNumber);
 
-            loadFile.FirstLineContainsHeaders = true;
+			loadFile.FirstLineContainsHeaders = true;
 
-            loadFile.LoadNativeFiles = false;
-            loadFile.CreateFolderStructure = false;
+			loadFile.LoadNativeFiles = false;
+			loadFile.CreateFolderStructure = false;
 
-            return loadFile;
-        }
-    }
+			return loadFile;
+		}
+
+		public ImageLoadFile GetImageLoadFile(ImportSettingsBase settings)
+		{
+			return new ImageLoadFile { FileName = settings.LoadFile };
+		}
+	}
 }

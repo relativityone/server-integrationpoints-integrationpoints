@@ -22,20 +22,26 @@
 	var viewModel = function () {
 		var self = this;
 
-		self.selectedImportType = ko.observable();
-		self.setSelectedImportType = function(data) {
+		self.selectedImportType = ko.observable().extend({
+			required: true
+		});
+		self.setSelectedImportType = function (data) {
 			self.selectedImportType(data);
 		}
 
 		self.selectedImportType.subscribe(function (data) {
+			windowObj.parent.RelativityImport.PreviewOptions.closePreviewBtn();
+			if (data !== ImportTypeEnum.Document) {
+				windowObj.parent.RelativityImport.PreviewOptions.ShowOnlyErrorsOptionForImportType(true);
+			} else {
+				windowObj.parent.RelativityImport.PreviewOptions.ShowOnlyErrorsOptionForImportType(false);
+			}
+
 			IP.frameMessaging().publish('importType', data);
+			self.setSelectedImportType(data);
 		});
 
 		self.importTypes = ko.observableArray([]);
-		$.getJSON(root.utils.generateWebAPIURL("/ImportProviderDocument/GetImportTypes"), function (data) {
-			self.importTypes(data);
-			self.setSelectedImportType(ImportTypeEnum.Document);
-		});
 
 		self.populateFileColumnHeaders = ko.observable();
 		self.setPopulateFileColumnHeaders = function (data) {
@@ -60,13 +66,28 @@
 		self.copyFilesToDocumentRepository = ko.observable("true");
 
 		self.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
-		self.SelectedOverwrite = ko.observable(self.SelectedOverwrite || 'Append Only');
+		self.SelectedOverwrite = ko.observable(self.SelectedOverwrite || 'Append Only').extend({
+			required: true
+		});
 
 		self.overlayIdentifiers = ko.observableArray([]);
-		self.selectedOverlayIdentifier = ko.observable();
+		self.selectedOverlayIdentifier = ko.observable().extend({
+			required: {
+				onlyIf: function() {
+					return self.SelectedOverwrite() === "Overlay Only";
+				}
+			}
+		});
 
 		self.productionSets = ko.observableArray([]);
-
+		self.selectedProductionSets = "Select...";
+		self.selectedProductionSets = ko.observable().extend({
+			required: {
+				onlyIf: function() {
+					return self.selectedImportType() === ImportTypeEnum.Production;
+				}
+			}
+		});
 
 		//delimiters for document import
 		self.asciiDelimiters = ko.observableArray([]);
@@ -133,7 +154,7 @@
 		//Populate file encoding dropdown
 		self.FileEncodingTypeList = ko.observableArray([]);
 		self._UpdateFileEncodingTypeList = function () {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+			$.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
 				function Group(label, children) {
 					this.label = ko.observable(label);
 					this.children = ko.observableArray(children);
@@ -160,13 +181,25 @@
 				//self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
 
 				self.FileEncodingTypeList([new Group("", [new Option("Unicode (UTF-8)", "utf-8")]), new Group("Favorite", favorite), new Group("Others", others)]);
+				self.ExtractedTextFileEncodingList(result);
 
 				self.DataFileEncodingType(self.DataFileEncodingTypeValue);
 				self.DataFileEncodingType.isModified(false);
 			});
-		}
-		self._UpdateFileEncodingTypeList();
+		}	
 
+		self.ExtractedTextFieldContainsFilePath = ko.observable("false");
+
+		self.ExtractedTextFileEncoding = ko.observable().extend({
+			required: {
+				onlyIf: function() {
+					return self.selectedImportType() === ImportTypeEnum.Image && self.ExtractedTextFieldContainsFilePath() === "true";
+				}
+			}
+		});
+		self.ExtractedTextFileEncodingList = ko.observableArray([]);
+
+		self._UpdateFileEncodingTypeList();
 	}
 	windowObj.RelativityImport.koModel = new viewModel();
 	windowObj.RelativityImport.koErrors = ko.validation.group(windowObj.RelativityImport.koModel);

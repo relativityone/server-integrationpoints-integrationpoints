@@ -236,8 +236,11 @@
     </Compile>
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
+    <Compile Include="Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Managers\WorkspaceManagerTests.cs" />
+    <Compile Include="Services\DataTransferLocationServiceTests.cs" />
     <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />
@@ -268,7 +271,6 @@
     <Compile Include="Managers\NullableStopJobManagerTests.cs" />
     <Compile Include="Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Managers\QueueManagerTests.cs" />
-    <Compile Include="Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Managers\SourceJobManagerTests.cs" />
     <Compile Include="Managers\SourceWorkspaceManagerTests.cs" />
     <Compile Include="Managers\StateManagerTests.cs" />

@@ -16,19 +16,10 @@ var objTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 var tabTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
 string nameSpaceName = "kCura.IntegrationPoints.Data"; 
 #>
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Relativity.API;
-
 namespace kCura.IntegrationPoints.Data
 {
 	public partial class RSAPIService : IRSAPIService
 	{
-		private readonly IDictionary<Type, object> _genericLibraries;
-		private readonly IHelper _helper;
-		private readonly int _workspaceArtifactId;
-
 	<#
 	foreach  (ObjectTypeDTO objType in objTypes)
 	{
@@ -37,21 +28,5 @@ namespace kCura.IntegrationPoints.Data
 	<#
 	}
 	#>
-
-		public IGenericLibrary<T> GetGenericLibrary<T>() where T : BaseRdo, new()
-		{
-			if (!_genericLibraries.ContainsKey(typeof(T)))
-			{
-				_genericLibraries.Add(typeof(T), new RsapiClientLibrary<T>(_helper, _workspaceArtifactId));
-			}
-			return (IGenericLibrary<T>) _genericLibraries[typeof(T)];
-		}
-
-		public RSAPIService(IHelper helper, int workspaceArtifactId)
-		{
-			_genericLibraries = new ConcurrentDictionary<Type, object>();
-			_helper = helper;
-			_workspaceArtifactId = workspaceArtifactId;
-		}
 	}
 }

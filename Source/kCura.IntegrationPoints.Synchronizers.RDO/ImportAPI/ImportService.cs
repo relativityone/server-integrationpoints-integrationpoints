@@ -5,10 +5,10 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.Relativity.DataReaderClient;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Relativity.API;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -17,10 +17,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
 		private readonly BatchManager _batchManager;
 		private readonly IImportApiFactory _factory;
+		private readonly IImportJobFactory _jobFactory;
 		private readonly Dictionary<string, int> _inputMappings;
 		private readonly IAPILog _logger;
 
-		private Workspace _currentWorkspace;
 		private Dictionary<int, Field> _idToFieldDictionary;
 		private IExtendedImportAPI _importApi;
 		private int _itemsErrored;
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private int _totalRowsWithErrors;
 
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService,
-			IImportApiFactory factory, IHelper helper)
+			IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 			Settings = settings;
@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			_inputMappings = fieldMappings;
 			NativeFileImportService = nativeFileImportService;
 			_factory = factory;
+			_jobFactory = jobFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportService>();
 			if (_batchManager != null)
 			{
@@ -49,18 +50,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public NativeFileImportService NativeFileImportService { get; }
 
 		private Dictionary<string, Field> FieldMappings { get; set; }
-
-		private Workspace CurrentWorkspace
-		{
-			get
-			{
-				if (_currentWorkspace == null)
-				{
-					_currentWorkspace = _importApi.Workspaces().First(x => x.ArtifactID.Equals(Settings.CaseArtifactId));
-				}
-				return _currentWorkspace;
-			}
-		}
 
 		public event StatusUpdate OnStatusUpdate;
 		public event BatchCompleted OnBatchComplete;
@@ -130,68 +119,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return isFull;
 		}
 
-		public void CleanUp()
-		{
-		}
-
 		public virtual void KickOffImport(IDataReader dataReader)
 		{
 			LogSettingUpImportJob();
-			ImportBulkArtifactJob importJob;
-			if (Settings.ArtifactTypeId == (int) ArtifactType.Document)
-			{
-				importJob = _importApi.NewNativeDocumentImportJob(Settings.OnBehalfOfUserToken);
-			}
-			else
-			{
-				importJob = _importApi.NewObjectImportJob(Settings.ArtifactTypeId);
-			}
+			IJobImport importJob = _jobFactory.Create(_importApi, Settings, dataReader);
 
-			importJob.SourceData.SourceData = dataReader;
-			importJob.Settings.ArtifactTypeId = Settings.ArtifactTypeId;
-			importJob.Settings.AuditLevel = Settings.AuditLevel;
-			importJob.Settings.CaseArtifactId = Settings.CaseArtifactId;
-			importJob.Settings.DestinationFolderArtifactID =  GetDestinationFolderArtifactId(Settings.DestinationFolderArtifactId);
-			importJob.Settings.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter;
-			importJob.Settings.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository;
-			importJob.Settings.DisableControlNumberCompatibilityMode = Settings.DisableControlNumberCompatibilityMode;
-			importJob.Settings.DisableExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck;
-			importJob.Settings.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation;
-			importJob.Settings.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation;
-			importJob.Settings.DisableNativeValidation = Settings.DisableNativeValidation;
-			importJob.Settings.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = Settings.ExtractedTextFieldContainsFilePath;                       
-
-			// only set if the extracted file map links to extracted text location
-			if (Settings.ExtractedTextFieldContainsFilePath)
-			{
-				importJob.Settings.ExtractedTextEncoding = Settings.ExtractedTextEncoding;
-                importJob.Settings.LongTextColumnThatContainsPathToFullText = Settings.LongTextColumnThatContainsPathToFullText;
-            }
-
-			importJob.Settings.FileNameColumn = Settings.FileNameColumn;
-			importJob.Settings.FileSizeColumn = Settings.FileSizeColumn;
-			importJob.Settings.FileSizeMapped = Settings.FileSizeMapped;
-			importJob.Settings.FolderPathSourceFieldName = Settings.FolderPathSourceFieldName;
-			importJob.Settings.IdentityFieldId = Settings.IdentityFieldId;
-			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; //Have to pass in MaxValue - 1 because of how the ImportAPI validation works -AJK 10-July-2012
-			importJob.Settings.MultiValueDelimiter = Settings.MultiValueDelimiter;
-			importJob.Settings.NativeFileCopyMode = Settings.NativeFileCopyMode;
-			importJob.Settings.NativeFilePathSourceFieldName = Settings.NativeFilePathSourceFieldName;
-			importJob.Settings.NestedValueDelimiter = Settings.NestedValueDelimiter;
-			importJob.Settings.OIFileIdColumnName = Settings.OIFileIdColumnName;
-			importJob.Settings.OIFileIdMapped = Settings.OIFileIdMapped;
-			importJob.Settings.OIFileTypeColumnName = Settings.OIFileTypeColumnName;
-			importJob.Settings.ObjectFieldIdListContainsArtifactId = Settings.ObjectFieldIdListContainsArtifactId;
-			importJob.Settings.OverwriteMode = Settings.OverwriteMode;
-			importJob.Settings.OverlayBehavior = Settings.OverlayBehavior;
-			importJob.Settings.ParentObjectIdSourceFieldName = Settings.ParentObjectIdSourceFieldName;
-			importJob.Settings.SendEmailOnLoadCompletion = Settings.SendEmailOnLoadCompletion;
-			importJob.Settings.StartRecordNumber = Settings.StartRecordNumber;
-			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
+			//Assign events
 			importJob.OnComplete += ImportJob_OnComplete;
 			importJob.OnFatalException += ImportJob_OnComplete;
-
 			// DO NOT MOVE THIS INTO A METHOD
 			// ILmerge on our build server will fail - SAMO 6/1/2016
 			importJob.OnError += row =>
@@ -372,15 +307,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 					_itemsTransferred = 0;
 				}
 			}
-		}
-
-		private int GetDestinationFolderArtifactId(int folderArtifactId)
-		{
-			if (CurrentWorkspace != null && folderArtifactId == 0)
-			{
-				folderArtifactId = Settings.ArtifactTypeId == (int) ArtifactType.Document ? CurrentWorkspace.RootFolderID : CurrentWorkspace.RootArtifactID;
-			}
-			return folderArtifactId;
 		}
 
 		#region Logging
