@@ -167,7 +167,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					else if (monthlySendOn.MonthChoice == MonthlyType.Month)
 					{
 						periodicScheduleRule.DaysToRun = monthlySendOn.SelectedDayOfTheMonth;
-						periodicScheduleRule.SetLastDayOfMonth = monthlySendOn.SelectedType == OccuranceInMonth.Last;
 						periodicScheduleRule.OccuranceInMonth = monthlySendOn.SelectedType;
 					}
 					break;

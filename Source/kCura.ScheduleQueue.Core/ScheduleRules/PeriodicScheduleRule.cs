@@ -107,6 +107,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DateTime clientTimeUtc = clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes);
 
 			DaysOfWeek? daysToRunUtc = AdjustDaysShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
+			int? dayOfMonth = AdjustDayOfMonthsShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
 
 			endDateHelper = new UtcEndDate(TimeService);
 
@@ -116,7 +117,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			endDateHelper.TimeOfDayTick = clientTimeUtc.Ticks % TimeSpan.FromDays(1).Ticks;
 			
 			DateTime? nextRunTimeUtc = GetNextRunTimeByInterval(Interval, endDateHelper,
-				daysToRunUtc, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
+				daysToRunUtc, dayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
 
 			return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo, clientUtcOffset);
 		}
@@ -132,6 +133,46 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			TimeSpan nextRunTimeUtcOffSet = clientTimeZoneInfo.GetUtcOffset((DateTime) nextRunTimeUtc);
 			nextRunTimeUtc = nextRunTimeUtc.Value.AddMinutes(clientUtcOffset.TotalMinutes - nextRunTimeUtcOffSet.TotalMinutes);
 			return nextRunTimeUtc;
+		}
+
+
+		private int? AdjustDayOfMonthsShiftBetweenLocalAndUtc(DateTime clientTime, DateTime clientTimeUtc)
+		{
+			if (StartDate == null || LocalTimeOfDay == null || DayOfMonth == null)
+			{
+				return DayOfMonth;
+			}
+
+			int? dayOfMonth = DayOfMonth;
+
+			if (clientTime.DayOfWeek == clientTimeUtc.AddDays(-1).DayOfWeek)
+			{
+				dayOfMonth = GetNextDayOfMonth(DayOfMonth);
+			}
+			if (clientTime.DayOfWeek == clientTimeUtc.AddDays(1).DayOfWeek)
+			{
+				dayOfMonth = GetPreviousDayOfMonth(DayOfMonth);
+			}
+
+			return dayOfMonth;
+		}
+
+		private static int? GetNextDayOfMonth(int? dayOfMonth)
+		{
+			const int firstDaysInMonth = 1;
+			const int lastDaysInMonth = 31;
+			int? nextDay = dayOfMonth + 1;
+
+			return nextDay > lastDaysInMonth ? firstDaysInMonth : nextDay;
+		}
+
+		private static int? GetPreviousDayOfMonth(int? dayOfMonth)
+		{
+			const int firstDaysInMonth = 1;
+			const int lastDaysInMonth = 31;
+			int? nextDay = dayOfMonth - 1;
+
+			return nextDay < firstDaysInMonth ? lastDaysInMonth : nextDay;
 		}
 
 		/// <summary>
