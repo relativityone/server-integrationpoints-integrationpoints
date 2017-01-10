@@ -193,8 +193,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			IntializeImportJob(fieldMap, options);
 
-			_importService.KickOffImport(data);
-
+			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+			if (fieldMaps.Length > 0)
+			{
+				IDataReader sourceReader = new RelativityReaderDecorator(data, fieldMaps);
+				_importService.KickOffImport(sourceReader);
+			}
+			else
+			{
+				_importService.KickOffImport(data);
+			}
+			
 			WaitUntilTheJobIsDone();
 		}
 
