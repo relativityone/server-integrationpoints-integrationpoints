@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return _serializer.Deserialize<Dictionary<string, object>>(sourceConfiguration);
 		}
 
-		public void UpdateDataTransferLocation(IDictionary<string, object> sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
+		private void UpdateDataTransferLocation(IDictionary<string, object> sourceConfiguration, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
 		{
 			string currentPath = sourceConfiguration[SOURCECONFIGURATION_FILESHARE_KEY] as string;
 			string exportDestinationFolder = ExtractExportDestinationFolder(processingSourceLocations, currentPath);
