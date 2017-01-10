@@ -135,6 +135,7 @@
     <Compile Include="Helpers\ChoicesHelper.cs" />
     <Compile Include="Helpers\IntegrationPointBaseHelper.cs" />
     <Compile Include="Helpers\PermissionsHelper.cs" />
+    <Compile Include="IntegrationPointManager\IntegrationPointPermissionTests.cs" />
     <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
     <Compile Include="IntegrationPointManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />

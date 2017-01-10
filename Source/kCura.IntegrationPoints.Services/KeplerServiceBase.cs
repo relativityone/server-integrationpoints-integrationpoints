@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Services
 		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
 		{
 			_permissionRepositoryFactory = permissionRepositoryFactory;
-			_logger = logger;
+			Logger = logger;
 			_container = container;
 		}
 
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 		}
 
-		private readonly ILog _logger;
+		protected readonly ILog Logger;
 
 		public async Task<bool> PingAsync()
 		{
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, _PERMISSIONS_ERROR);
+				Logger.LogError(e, _PERMISSIONS_ERROR);
 			}
 			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
 		}
@@ -86,21 +86,21 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, _PERMISSIONS_ERROR);
+				Logger.LogError(e, _PERMISSIONS_ERROR);
 				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 			}
 		}
 
 		protected void LogAndThrowInsufficientPermissionException(string endpointName, IList<string> missingPermissions)
 		{
-			_logger.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", endpointName,
+			Logger.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", endpointName,
 				string.Join(", ", missingPermissions));
 			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
 		}
 
 		protected void LogException(string endpointName, Exception e)
 		{
-			_logger.LogError(e, "Error occurred during request processing in {endpointName}.", endpointName);
+			Logger.LogError(e, "Error occurred during request processing in {endpointName}.", endpointName);
 		}
 
 		protected InternalServerErrorException CreateInternalServerErrorException()
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Services
 						}
 						catch (Exception e)
 						{
-							_logger.LogError(e, "{}", typeof(TParameter));
+							Logger.LogError(e, "{}", typeof(TParameter));
 							throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 						}
 					});
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "{}", typeof(TParameter));
+				Logger.LogError(e, "{}", typeof(TParameter));
 				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 			}
 		}

@@ -71,8 +71,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		}
 
 		[Test]
-		[TestCase(false, false, "Workspace, JobHistory - View")]
-		[TestCase(true, false, "JobHistory - View")]
+		[TestCase(false, false, "Workspace, Job History - View")]
+		[TestCase(true, false, "Job History - View")]
 		[TestCase(false, true, "Workspace")]
 		public void ItShouldLogDenyingAccess(bool workspaceAccess, bool jobHistoryAccess, string missingPermissions)
 		{

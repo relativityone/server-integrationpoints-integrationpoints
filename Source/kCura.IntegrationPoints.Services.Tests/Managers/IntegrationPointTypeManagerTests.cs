@@ -65,8 +65,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		}
 
 		[Test]
-		[TestCase(false, false, "Workspace, IntegrationPointType - View")]
-		[TestCase(true, false, "IntegrationPointType - View")]
+		[TestCase(false, false, "Workspace, Integration Point Type - View")]
+		[TestCase(true, false, "Integration Point Type - View")]
 		[TestCase(false, true, "Workspace")]
 		public void ItShouldLogDenyingAccess(bool workspaceAccess, bool integrationPointTypeAccess, string missingPermissions)
 		{

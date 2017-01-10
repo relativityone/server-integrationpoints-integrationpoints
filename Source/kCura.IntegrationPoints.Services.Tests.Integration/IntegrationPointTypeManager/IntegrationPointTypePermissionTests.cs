@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTyp
 		public void MissingWorkspacePermission()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointTypeManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointTypes(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointTypes(WorkspaceArtifactId).Wait());
 		}
 
 		[Test]
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTyp
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
 			var client = Helper.CreateUserProxy<IIntegrationPointTypeManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointTypes(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointTypes(WorkspaceArtifactId).Wait());
 		}
 	}
 }

@@ -42,28 +42,28 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointAsync(request).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointAsync(request).Wait());
 		}
 
 		[Test]
 		public void IIntegrationPointManager_GetAllIntegrationPointsAsync_AccessDenied()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Wait());
 		}
 
 		[Test]
 		public void IIntegrationPointManager_GetIntegrationPointArtifactTypeIdAsync_AccessDenied()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointArtifactTypeIdAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointArtifactTypeIdAsync(WorkspaceArtifactId).Wait());
 		}
 
 		[Test]
 		public void IIntegrationPointManager_GetIntegrationPointAsync_AccessDenied()
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointAsync(WorkspaceArtifactId, 1).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointAsync(WorkspaceArtifactId, 1).Wait());
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 		{
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
 #pragma warning disable 618
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString()).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString()).Wait());
 #pragma warning restore 618
 		}
 
@@ -82,7 +82,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 			PermissionsHelper.AssertPermissionErrorMessage(() =>
 			{
 				client.RunIntegrationPointAsync(WorkspaceArtifactId, 1).Wait();
-				return null;
 			});
 		}
 
@@ -94,7 +93,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.UpdateIntegrationPointAsync(request).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.UpdateIntegrationPointAsync(request).Wait());
 		}
 	}
 }

@@ -80,6 +80,7 @@
     <Compile Include="KeplerServiceLoggingTests.cs" />
     <Compile Include="KeplerServicePermissionTests.cs" />
     <Compile Include="Managers\DocumentManagerTests.cs" />
+    <Compile Include="Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointTypeManagerTests.cs" />
     <Compile Include="Managers\JobHistoryManagerTests.cs" />
     <Compile Include="Managers\ProviderManagerTests.cs" />
