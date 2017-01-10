@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Services.Installers;
@@ -38,7 +37,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
-			CheckDocumentManagerPermissions(request.WorkspaceArtifactId, nameof(GetPercentagePushedToReviewAsync));
+			CheckPermissions(nameof(GetPercentagePushedToReviewAsync), request.WorkspaceArtifactId);
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -56,7 +55,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
-			CheckDocumentManagerPermissions(request.WorkspaceArtifactId, nameof(GetCurrentPromotionStatusAsync));
+			CheckPermissions(nameof(GetCurrentPromotionStatusAsync), request.WorkspaceArtifactId);
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -74,7 +73,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			CheckDocumentManagerPermissions(request.WorkspaceArtifactId, nameof(GetHistoricalPromotionStatusAsync));
+			CheckPermissions(nameof(GetHistoricalPromotionStatusAsync), request.WorkspaceArtifactId);
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -88,20 +87,6 @@ namespace kCura.IntegrationPoints.Services
 				LogException(nameof(GetHistoricalPromotionStatusAsync), e);
 				throw CreateInternalServerErrorException();
 			}
-		}
-
-		private void CheckDocumentManagerPermissions(int workspaceId, string endpointName)
-		{
-			SafePermissionCheck(() =>
-			{
-				var permissionRepository = GetPermissionRepository(workspaceId);
-				bool hasWorkspaceAccess = permissionRepository.UserHasPermissionToAccessWorkspace();
-				if (hasWorkspaceAccess)
-				{
-					return;
-				}
-				LogAndThrowInsufficientPermissionException(endpointName, new List<string> {"Workspace"});
-			});
 		}
 
 		protected override Installer Installer => _installer ?? (_installer = new DocumentManagerInstaller());

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
@@ -36,7 +37,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> CreateIntegrationPointAsync(CreateIntegrationPointRequest request)
 		{
-			CheckIntegrationPointPermissions(request.WorkspaceArtifactId, ArtifactPermission.Create, nameof(CreateIntegrationPointAsync));
+			CheckPermissions(nameof(CreateIntegrationPointAsync), request.WorkspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Create)});
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -54,7 +56,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> UpdateIntegrationPointAsync(UpdateIntegrationPointRequest request)
 		{
-			CheckIntegrationPointPermissions(request.WorkspaceArtifactId, ArtifactPermission.Edit, nameof(UpdateIntegrationPointAsync));
+			CheckPermissions(nameof(UpdateIntegrationPointAsync), request.WorkspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)});
 			try
 			{
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -72,7 +75,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> GetIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			CheckIntegrationPointPermissions(workspaceArtifactId, ArtifactPermission.View, nameof(GetIntegrationPointAsync));
+			CheckPermissions(nameof(GetIntegrationPointAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -90,7 +94,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<object> RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			CheckIntegrationPointPermissions(workspaceArtifactId, ArtifactPermission.Edit, nameof(RunIntegrationPointAsync));
+			CheckPermissions(nameof(RunIntegrationPointAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -108,7 +113,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IList<IntegrationPointModel>> GetAllIntegrationPointsAsync(int workspaceArtifactId)
 		{
-			CheckIntegrationPointPermissions(workspaceArtifactId, ArtifactPermission.View, nameof(GetAllIntegrationPointsAsync));
+			CheckPermissions(nameof(GetAllIntegrationPointsAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -126,7 +132,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
 		{
-			CheckIntegrationPointPermissions(workspaceArtifactId, ArtifactPermission.View, nameof(GetOverwriteFieldsChoicesAsync));
+			CheckPermissions(nameof(GetOverwriteFieldsChoicesAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -144,7 +151,12 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> CreateIntegrationPointFromProfileAsync(int workspaceArtifactId, int profileArtifactId, string integrationPointName)
 		{
-			CheckCreateIntegrationPointFromProfilePermissions(workspaceArtifactId);
+			CheckPermissions(nameof(CreateIntegrationPointFromProfileAsync), workspaceArtifactId,
+				new[]
+				{
+					new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Create),
+					new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)
+				});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -162,7 +174,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<int> GetIntegrationPointArtifactTypeIdAsync(int workspaceArtifactId)
 		{
-			CheckIntegrationPointPermissions(workspaceArtifactId, ArtifactPermission.View, nameof(GetIntegrationPointArtifactTypeIdAsync));
+			CheckPermissions(nameof(GetIntegrationPointArtifactTypeIdAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -186,61 +199,6 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier)
 		{
 			return await new ProviderManager(Logger).GetDestinationProviderArtifactIdAsync(workspaceArtifactId, destinationProviderGuidIdentifier).ConfigureAwait(false);
-		}
-
-		private void CheckIntegrationPointPermissions(int workspaceId, ArtifactPermission artifactPermission, string endpointName)
-		{
-			SafePermissionCheck(() =>
-			{
-				var permissionRepository = GetPermissionRepository(workspaceId);
-				bool hasWorkspaceAccess = permissionRepository.UserHasPermissionToAccessWorkspace();
-				bool hasIntegrationPointAddAccess = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), artifactPermission);
-
-				if (hasWorkspaceAccess && hasIntegrationPointAddAccess)
-				{
-					return;
-				}
-				IList<string> missingPermissions = new List<string>();
-				if (!hasWorkspaceAccess)
-				{
-					missingPermissions.Add("Workspace");
-				}
-				if (!hasIntegrationPointAddAccess)
-				{
-					missingPermissions.Add($"{ObjectTypes.IntegrationPoint} - {artifactPermission}");
-				}
-				LogAndThrowInsufficientPermissionException(endpointName, missingPermissions);
-			});
-		}
-
-		private void CheckCreateIntegrationPointFromProfilePermissions(int workspaceId)
-		{
-			SafePermissionCheck(() =>
-			{
-				var permissionRepository = GetPermissionRepository(workspaceId);
-				bool hasWorkspaceAccess = permissionRepository.UserHasPermissionToAccessWorkspace();
-				bool hasIntegrationPointAddAccess = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.Create);
-				bool hasProfileViewAccess = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPointProfile), ArtifactPermission.View);
-
-				if (hasWorkspaceAccess && hasIntegrationPointAddAccess && hasProfileViewAccess)
-				{
-					return;
-				}
-				IList<string> missingPermissions = new List<string>();
-				if (!hasWorkspaceAccess)
-				{
-					missingPermissions.Add("Workspace");
-				}
-				if (!hasIntegrationPointAddAccess)
-				{
-					missingPermissions.Add($"{ObjectTypes.IntegrationPoint} - {ArtifactPermission.Create}");
-				}
-				if (!hasProfileViewAccess)
-				{
-					missingPermissions.Add($"{ObjectTypes.IntegrationPointProfile} - {ArtifactPermission.View}");
-				}
-				LogAndThrowInsufficientPermissionException(nameof(CreateIntegrationPointFromProfileAsync), missingPermissions);
-			});
 		}
 
 		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -37,7 +38,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
 		{
-			CheckSourceProviderPermissions(workspaceArtifactId, nameof(GetSourceProviderArtifactIdAsync));
+			CheckPermissions(nameof(GetSourceProviderArtifactIdAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.SourceProvider, ObjectTypes.SourceProvider, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -55,7 +57,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier)
 		{
-			CheckDestinationProviderPermissions(workspaceArtifactId, nameof(GetDestinationProviderArtifactIdAsync));
+			CheckPermissions(nameof(GetDestinationProviderArtifactIdAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.DestinationProvider, ObjectTypes.DestinationProvider, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -73,7 +76,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IList<ProviderModel>> GetSourceProviders(int workspaceArtifactId)
 		{
-			CheckSourceProviderPermissions(workspaceArtifactId, nameof(GetSourceProviders));
+			CheckPermissions(nameof(GetSourceProviders), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.SourceProvider, ObjectTypes.SourceProvider, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -91,7 +95,8 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IList<ProviderModel>> GetDestinationProviders(int workspaceArtifactId)
 		{
-			CheckDestinationProviderPermissions(workspaceArtifactId, nameof(GetDestinationProviders));
+			CheckPermissions(nameof(GetDestinationProviders), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.DestinationProvider, ObjectTypes.DestinationProvider, ArtifactPermission.View)});
 			try
 			{
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -105,54 +110,6 @@ namespace kCura.IntegrationPoints.Services
 				LogException(nameof(GetDestinationProviders), e);
 				throw CreateInternalServerErrorException();
 			}
-		}
-
-		private void CheckSourceProviderPermissions(int workspaceId, string endpointName)
-		{
-			SafePermissionCheck(() =>
-			{
-				var permissionRepository = GetPermissionRepository(workspaceId);
-				bool hasWorkspaceAccess = permissionRepository.UserHasPermissionToAccessWorkspace();
-				bool hasSourceProviderViewAccess = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.SourceProvider), ArtifactPermission.View);
-				if (hasWorkspaceAccess && hasSourceProviderViewAccess)
-				{
-					return;
-				}
-				IList<string> missingPermissions = new List<string>();
-				if (!hasWorkspaceAccess)
-				{
-					missingPermissions.Add("Workspace");
-				}
-				if (!hasSourceProviderViewAccess)
-				{
-					missingPermissions.Add($"{ObjectTypes.SourceProvider} - View");
-				}
-				LogAndThrowInsufficientPermissionException(endpointName, missingPermissions);
-			});
-		}
-
-		private void CheckDestinationProviderPermissions(int workspaceId, string endpointName)
-		{
-			SafePermissionCheck(() =>
-			{
-				var permissionRepository = GetPermissionRepository(workspaceId);
-				bool hasWorkspaceAccess = permissionRepository.UserHasPermissionToAccessWorkspace();
-				bool hasDestinationProviderViewAccess = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.DestinationProvider), ArtifactPermission.View);
-				if (hasWorkspaceAccess && hasDestinationProviderViewAccess)
-				{
-					return;
-				}
-				IList<string> missingPermissions = new List<string>();
-				if (!hasWorkspaceAccess)
-				{
-					missingPermissions.Add("Workspace");
-				}
-				if (!hasDestinationProviderViewAccess)
-				{
-					missingPermissions.Add($"{ObjectTypes.DestinationProvider} - View");
-				}
-				LogAndThrowInsufficientPermissionException(endpointName, missingPermissions);
-			});
 		}
 	}
 }
