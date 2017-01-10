@@ -107,12 +107,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 				WorkspaceArtifactId = _WORKSPACE_ID
 			};
 			var documentRepository = Substitute.For<IDocumentRepository>();
-			documentRepository.GetPercentagePushedToReview(request).Returns(expectedResult);
+			documentRepository.GetPercentagePushedToReviewAsync(request).Returns(expectedResult);
 			_container.Resolve<IDocumentRepository>().Returns(documentRepository);
 
 			var actualResult = _documentManager.GetPercentagePushedToReviewAsync(request).Result;
 
-			documentRepository.Received(1).GetPercentagePushedToReview(request);
+			documentRepository.Received(1).GetPercentagePushedToReviewAsync(request);
 
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
@@ -129,12 +129,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 				WorkspaceArtifactId = _WORKSPACE_ID
 			};
 			var documentRepository = Substitute.For<IDocumentRepository>();
-			documentRepository.GetCurrentPromotionStatus(request).Returns(expectedResult);
+			documentRepository.GetCurrentPromotionStatusAsync(request).Returns(expectedResult);
 			_container.Resolve<IDocumentRepository>().Returns(documentRepository);
 
 			var actualResult = _documentManager.GetCurrentPromotionStatusAsync(request).Result;
 
-			documentRepository.Received(1).GetCurrentPromotionStatus(request);
+			documentRepository.Received(1).GetCurrentPromotionStatusAsync(request);
 
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
@@ -151,12 +151,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 				WorkspaceArtifactId = _WORKSPACE_ID
 			};
 			var documentRepository = Substitute.For<IDocumentRepository>();
-			documentRepository.GetHistoricalPromotionStatus(request).Returns(expectedResult);
+			documentRepository.GetHistoricalPromotionStatusAsync(request).Returns(expectedResult);
 			_container.Resolve<IDocumentRepository>().Returns(documentRepository);
 
 			var actualResult = _documentManager.GetHistoricalPromotionStatusAsync(request).Result;
 
-			documentRepository.Received(1).GetHistoricalPromotionStatus(request);
+			documentRepository.Received(1).GetHistoricalPromotionStatusAsync(request);
 
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
@@ -169,9 +169,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 			var expectedException = new ArgumentException();
 
 			var documentRepository = Substitute.For<IDocumentRepository>();
-			documentRepository.GetCurrentPromotionStatus(Arg.Any<CurrentPromotionStatusRequest>()).Throws(expectedException);
-			documentRepository.GetHistoricalPromotionStatus(Arg.Any<HistoricalPromotionStatusRequest>()).Throws(expectedException);
-			documentRepository.GetPercentagePushedToReview(Arg.Any<PercentagePushedToReviewRequest>()).Throws(expectedException);
+			documentRepository.GetCurrentPromotionStatusAsync(Arg.Any<CurrentPromotionStatusRequest>()).Throws(expectedException);
+			documentRepository.GetHistoricalPromotionStatusAsync(Arg.Any<HistoricalPromotionStatusRequest>()).Throws(expectedException);
+			documentRepository.GetPercentagePushedToReviewAsync(Arg.Any<PercentagePushedToReviewRequest>()).Throws(expectedException);
 
 			_container.Resolve<IDocumentRepository>().Returns(documentRepository);
 

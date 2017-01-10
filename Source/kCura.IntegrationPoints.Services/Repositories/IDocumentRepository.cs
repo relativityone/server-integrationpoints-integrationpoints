@@ -1,9 +1,11 @@
-﻿namespace kCura.IntegrationPoints.Services.Repositories
+﻿using System.Threading.Tasks;
+
+namespace kCura.IntegrationPoints.Services.Repositories
 {
 	public interface IDocumentRepository
 	{
-		CurrentPromotionStatusModel GetCurrentPromotionStatus(CurrentPromotionStatusRequest request);
-		HistoricalPromotionStatusSummaryModel GetHistoricalPromotionStatus(HistoricalPromotionStatusRequest request);
-		PercentagePushedToReviewModel GetPercentagePushedToReview(PercentagePushedToReviewRequest request);
+		Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request);
+		Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request);
+		Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request);
 	}
 }

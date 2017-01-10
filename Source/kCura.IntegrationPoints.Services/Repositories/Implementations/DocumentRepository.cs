@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		private static readonly int[] _viewPermission = {1};
 
-		public PercentagePushedToReviewModel GetPercentagePushedToReview(PercentagePushedToReviewRequest request)
+		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
 			string destinationWorkspaceDisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
 
@@ -32,10 +33,15 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 				Fields = new[] {destinationWorkspaceDisplayName}
 			};
 
-			ObjectQueryResultSet totalDocumentsResultSet =
-				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
-			ObjectQueryResultSet totalDocumentsPushedToReviewResultSet =
-				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsPushedToReviewQuery, 1, 1, _viewPermission, string.Empty).Result;
+			Task<ObjectQueryResultSet> totalDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsQuery, 1, 1,
+				_viewPermission,
+				string.Empty);
+			Task<ObjectQueryResultSet> totalDocumentsPushedToReviewTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID,
+				totalDocumentsPushedToReviewQuery, 1, 1,
+				_viewPermission, string.Empty);
+
+			ObjectQueryResultSet totalDocumentsResultSet = await totalDocumentsTask;
+			ObjectQueryResultSet totalDocumentsPushedToReviewResultSet = await totalDocumentsPushedToReviewTask;
 
 			if (!totalDocumentsResultSet.Success)
 			{
@@ -54,7 +60,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			return model;
 		}
 
-		public CurrentPromotionStatusModel GetCurrentPromotionStatus(CurrentPromotionStatusRequest request)
+		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
 			string promotedDisplayName = GetDisplayName(request.WorkspaceArtifactId, _PROMOTE_GUID);
 			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
@@ -81,14 +87,19 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 				Fields = new[] {destinationWorkspacedisplayName}
 			};
 
-			ObjectQueryResultSet totalUntaggedDocumentsResultSet =
-				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalUntaggedDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
-			ObjectQueryResultSet totalIncludedDocumentsResultSet =
-				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalIncludedDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
-			ObjectQueryResultSet totalExcludedDocumentsResultSet =
-				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalExcludedDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
-			ObjectQueryResultSet totalPushedToReviewDocumentsResultSet =
-				objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalPushedToReviewDocumentsQuery, 1, 1, _viewPermission, string.Empty).Result;
+			var totalUntaggedDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalUntaggedDocumentsQuery, 1, 1,
+				_viewPermission, string.Empty);
+			var totalIncludedDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalIncludedDocumentsQuery, 1, 1,
+				_viewPermission, string.Empty);
+			var totalExcludedDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalExcludedDocumentsQuery, 1, 1,
+				_viewPermission, string.Empty);
+			var totalPushedToReviewTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalPushedToReviewDocumentsQuery, 1, 1,
+				_viewPermission, string.Empty);
+
+			ObjectQueryResultSet totalUntaggedDocumentsResultSet = await totalUntaggedDocumentsTask;
+			ObjectQueryResultSet totalIncludedDocumentsResultSet = await totalIncludedDocumentsTask;
+			ObjectQueryResultSet totalExcludedDocumentsResultSet = await totalExcludedDocumentsTask;
+			ObjectQueryResultSet totalPushedToReviewDocumentsResultSet = await totalPushedToReviewTask;
 
 			if (!totalUntaggedDocumentsResultSet.Success)
 			{
@@ -120,10 +131,10 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			return model;
 		}
 
-		public HistoricalPromotionStatusSummaryModel GetHistoricalPromotionStatus(HistoricalPromotionStatusRequest request)
+		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			HistoricalPromotionStatusModel currentPromotionStatus = GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
-			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
+			HistoricalPromotionStatusModel currentPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
+			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
 
 			bool currentPromotionStatusUpdated = false;
 			DateTime currentDate = currentPromotionStatus.Date.Date;
@@ -150,10 +161,10 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			return model;
 		}
 
-		private HistoricalPromotionStatusModel GetCurrentDocumentModelAsync(int workspaceId)
+		private async Task<HistoricalPromotionStatusModel> GetCurrentDocumentModelAsync(int workspaceId)
 		{
 			CurrentPromotionStatusRequest request = new CurrentPromotionStatusRequest {WorkspaceArtifactId = workspaceId};
-			CurrentPromotionStatusModel currentPromotionStatus = GetCurrentPromotionStatus(request);
+			CurrentPromotionStatusModel currentPromotionStatus = await GetCurrentPromotionStatusAsync(request);
 
 			HistoricalPromotionStatusModel model = new HistoricalPromotionStatusModel
 			{
@@ -165,14 +176,14 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			return model;
 		}
 
-		private IList<HistoricalPromotionStatusModel> GetHistoricalDocumentModelAsync(int workspaceId)
+		private async Task<IList<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
 		{
 			IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(workspaceId);
 
 			List<HistoricalPromotionStatusModel> historicalModels = new List<HistoricalPromotionStatusModel>();
 			using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
 			{
-				while (reader.Read())
+				while (await reader.ReadAsync())
 				{
 					HistoricalPromotionStatusModel historicalModel = new HistoricalPromotionStatusModel
 					{

@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Services
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
 				{
 					var documentRepository = container.Resolve<IDocumentRepository>();
-					return await Task.Run(() => documentRepository.GetPercentagePushedToReview(request)).ConfigureAwait(false);
+					return await documentRepository.GetPercentagePushedToReviewAsync(request).ConfigureAwait(false);
 				}
 			}
 			catch (Exception e)
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Services
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
 				{
 					var documentRepository = container.Resolve<IDocumentRepository>();
-					return await Task.Run(() => documentRepository.GetCurrentPromotionStatus(request)).ConfigureAwait(false);
+					return await documentRepository.GetCurrentPromotionStatusAsync(request).ConfigureAwait(false);
 				}
 			}
 			catch (Exception e)
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Services
 				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
 				{
 					var documentRepository = container.Resolve<IDocumentRepository>();
-					return await Task.Run(() => documentRepository.GetHistoricalPromotionStatus(request)).ConfigureAwait(false);
+					return await documentRepository.GetHistoricalPromotionStatusAsync(request).ConfigureAwait(false);
 				}
 			}
 			catch (Exception e)
