@@ -15,10 +15,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 		{
 			var client = Helper.CreateUserProxy<IProviderManager>(UserModel.EmailAddress);
 
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviders(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviders(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviders(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviders(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
 		}
 
 		[Test]
@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
 			var client = Helper.CreateUserProxy<IProviderManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviders(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviders(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetSourceProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
 		}
 
 		[Test]
@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
 			var client = Helper.CreateUserProxy<IProviderManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviders(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviders(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetDestinationProviderArtifactIdAsync(WorkspaceArtifactId, Guid.NewGuid().ToString()).Result);
 		}
 	}
 }

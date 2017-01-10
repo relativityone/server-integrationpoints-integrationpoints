@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			var client = Helper.CreateUserProxy<IJobHistoryManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
 		[Test]
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				WorkspaceArtifactId = WorkspaceArtifactId
 			};
 			var client = Helper.CreateUserProxy<IJobHistoryManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 	}
 }

@@ -16,17 +16,17 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointAsync(new CreateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
+			}).Result);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.UpdateIntegrationPointAsync(new UpdateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 707325, "ip_532").Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointArtifactTypeIdAsync(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointAsync(WorkspaceArtifactId, 882287).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.RunIntegrationPointAsync(WorkspaceArtifactId, 906221).Wait());
+			}).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 707325, "ip_532").Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointArtifactTypeIdAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointAsync(WorkspaceArtifactId, 882287).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.RunIntegrationPointAsync(WorkspaceArtifactId, 906221).Result);
 		}
 
 		[Test]
@@ -40,10 +40,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointAsync(WorkspaceArtifactId, 706302).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointArtifactTypeIdAsync(WorkspaceArtifactId).Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointAsync(WorkspaceArtifactId, 706302).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointsAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointArtifactTypeIdAsync(WorkspaceArtifactId).Result);
 		}
 
 		[Test]
@@ -60,8 +60,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointAsync(new CreateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 209703, "ip_665").Wait());
+			}).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 209703, "ip_665").Result);
 		}
 
 		[Test]
@@ -78,8 +78,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.UpdateIntegrationPointAsync(new UpdateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.RunIntegrationPointAsync(WorkspaceArtifactId, 896501).Wait());
+			}).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.RunIntegrationPointAsync(WorkspaceArtifactId, 896501).Result);
 		}
 
 		[Test]
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
 			var client = Helper.CreateUserProxy<IIntegrationPointManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 334478, "ip_163").Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointFromProfileAsync(WorkspaceArtifactId, 334478, "ip_163").Result);
 		}
 	}
 }

@@ -16,15 +16,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileAsync(new CreateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
+			}).Result);
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.UpdateIntegrationPointProfileAsync(new UpdateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceArtifactId, 144554, "ip_121").Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointProfilesAsync(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointProfileAsync(WorkspaceArtifactId, 378660).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Wait());
+			}).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceArtifactId, 144554, "ip_121").Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointProfilesAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointProfileAsync(WorkspaceArtifactId, 378660).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result);
 		}
 
 		[Test]
@@ -38,9 +38,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
 			var client = Helper.CreateUserProxy<IIntegrationPointProfileManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointProfileAsync(WorkspaceArtifactId, 181276).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointProfilesAsync(WorkspaceArtifactId).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetIntegrationPointProfileAsync(WorkspaceArtifactId, 181276).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetAllIntegrationPointProfilesAsync(WorkspaceArtifactId).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetOverwriteFieldsChoicesAsync(WorkspaceArtifactId).Result);
 		}
 
 		[Test]
@@ -57,8 +57,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileAsync(new CreateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceArtifactId, 414974, "ip_266").Wait());
+			}).Result);
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceArtifactId, 414974, "ip_266").Result);
 		}
 
 		[Test]
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.UpdateIntegrationPointProfileAsync(new UpdateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = WorkspaceArtifactId
-			}).Wait());
+			}).Result);
 		}
 
 		[Test]
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			Permission.SavePermission(WorkspaceArtifactId, permissions);
 
 			var client = Helper.CreateUserProxy<IIntegrationPointProfileManager>(UserModel.EmailAddress);
-			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceArtifactId, 518923, "ip_584").Wait());
+			PermissionsHelper.AssertPermissionErrorMessage(() => client.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceArtifactId, 518923, "ip_584").Result);
 		}
 	}
 }
