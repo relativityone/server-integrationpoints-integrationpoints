@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 						entryIDs,
 						sourceConfiguration);
 				importDataReader.Setup(fieldMaps);
-				return new RelativityReaderDecorator(importDataReader, fieldMaps);
+				return importDataReader;
 			}
 		}
 	}
