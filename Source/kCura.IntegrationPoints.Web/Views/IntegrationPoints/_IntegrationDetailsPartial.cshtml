@@ -187,18 +187,25 @@
 	<div data-bind="validationMessage: selectedDays" class="icon-error legal-hold field-validation-error"></div>
 </script>
 <script type="text/html" id="monthlySendOn">
-	<ul>
-		<li class="field-row">
-			<input id="monthly" type="radio" name="monthly" value="2" data-bind="checked: monthChoice" />Day<select id="day-select" class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
-			of the month
-			<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
-		</li>
-		<li class="field-row">
-			<input id="days" type="radio" name="monthly" value="1" data-bind="checked: monthChoice" />The
-			<select id="dayType" data-bind="options: dayTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
-			<select id="dayOfMonth" data-bind="options: daysOfMonthComputed, optionsText: 'displayName', optionsValue: 'value', value: selectedDayOfTheMonth, select2: {}"></select>
-			of the month.
-		</li>
-	</ul>
+	<div class="field-value">
+		<label class="basic-padding">Day</label>
+			<select id="day-select" class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
+		<label class="basic-padding">of the month</label>
+		<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
+	</div>
+		@* Disabled because of incorrect calculations for second day of month *@
+		@*<ul>
+				<li class="field-row">
+				<input id="monthly" type="radio" name="monthly" value="2" data-bind="checked: monthChoice" />Day<select id="day-select" class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
+				of the month
+				<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
+			</li>
+			<li class="field-row">
+				<input id="days" type="radio" name="monthly" value="1" data-bind="checked: monthChoice" />The
+				<select id="dayType" data-bind="options: dayTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
+				<select id="dayOfMonth" data-bind="options: daysOfMonthComputed, optionsText: 'displayName', optionsValue: 'value', value: selectedDayOfTheMonth, select2: {}"></select>
+				of the month.
+			</li>
+			</ul>*@
 	<div data-bind="validationMessage: monthChoice" class="icon-error legal-hold field-validation-error"></div>
 </script>

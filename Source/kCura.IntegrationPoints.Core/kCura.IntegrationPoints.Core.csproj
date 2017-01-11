@@ -304,7 +304,6 @@
     <Compile Include="Services\ImportTypeService.cs" />
     <Compile Include="Services\IProviderTypeService.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
-    <Compile Include="Toggles\ShowImportProviderNonDocumentTypesToggle.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointPermissionValidator.cs" />

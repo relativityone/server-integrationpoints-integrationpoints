@@ -57,6 +57,7 @@ namespace kCura.IntegrationPoints.Data
 			catch (FieldNotFoundException)
 			{
 				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+				//Any access to missing field will throw FieldNotFoundException
 			}
 		}
 
