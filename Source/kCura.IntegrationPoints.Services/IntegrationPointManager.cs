@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Windsor;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
@@ -17,7 +21,9 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		internal IntegrationPointManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
+		/// <param name="container"></param>
+		internal IntegrationPointManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 
@@ -31,84 +37,168 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> CreateIntegrationPointAsync(CreateIntegrationPointRequest request)
 		{
-			return
-				await
-					Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.CreateIntegrationPoint(request), request.WorkspaceArtifactId)
-						.ConfigureAwait(false);
+			CheckPermissions(nameof(CreateIntegrationPointAsync), request.WorkspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Create)});
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.CreateIntegrationPoint(request)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(CreateIntegrationPointAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<IntegrationPointModel> UpdateIntegrationPointAsync(UpdateIntegrationPointRequest request)
 		{
-			return
-				await
-					Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.UpdateIntegrationPoint(request), request.WorkspaceArtifactId)
-						.ConfigureAwait(false);
+			CheckPermissions(nameof(UpdateIntegrationPointAsync), request.WorkspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)});
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.UpdateIntegrationPoint(request)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(UpdateIntegrationPointAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<IntegrationPointModel> GetIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			return
-				await
-					Execute(
-						(IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetIntegrationPoint(integrationPointArtifactId),
-						workspaceArtifactId).ConfigureAwait(false);
+			CheckPermissions(nameof(GetIntegrationPointAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.GetIntegrationPoint(integrationPointArtifactId)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetIntegrationPointAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<object> RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			return
-				await
-					Execute(
-						(IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId),
-						workspaceArtifactId);
+			CheckPermissions(nameof(RunIntegrationPointAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(RunIntegrationPointAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<IList<IntegrationPointModel>> GetAllIntegrationPointsAsync(int workspaceArtifactId)
 		{
-			return
-				await
-					Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetAllIntegrationPoints(), workspaceArtifactId)
-						.ConfigureAwait(false);
+			CheckPermissions(nameof(GetAllIntegrationPointsAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.GetAllIntegrationPoints()).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetAllIntegrationPointsAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
 		{
-			return await Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetOverwriteFieldChoices(), workspaceArtifactId);
+			CheckPermissions(nameof(GetOverwriteFieldsChoicesAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.GetOverwriteFieldChoices()).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetOverwriteFieldsChoicesAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<IntegrationPointModel> CreateIntegrationPointFromProfileAsync(int workspaceArtifactId, int profileArtifactId, string integrationPointName)
 		{
-			return
-				await
-					Execute(
-						(IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName),
-						workspaceArtifactId);
-		}
-
-		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
-		{
-			return
-				await
-					Execute(
-						(IProviderRepository providerRepository) =>
-								providerRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier), workspaceArtifactId);
-		}
-
-		public async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier)
-		{
-			return
-				await
-					Execute(
-						(IProviderRepository providerRepository) =>
-								providerRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier), workspaceArtifactId);
+			CheckPermissions(nameof(CreateIntegrationPointFromProfileAsync), workspaceArtifactId,
+				new[]
+				{
+					new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Create),
+					new PermissionModel(ObjectTypeGuids.IntegrationPointProfile, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)
+				});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(CreateIntegrationPointFromProfileAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<int> GetIntegrationPointArtifactTypeIdAsync(int workspaceArtifactId)
 		{
-			return
-				await
-					Execute((IIntegrationPointRepository integrationPointRepository) => integrationPointRepository.GetIntegrationPointArtifactTypeId(),
-						workspaceArtifactId);
+			CheckPermissions(nameof(GetIntegrationPointArtifactTypeIdAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.GetIntegrationPointArtifactTypeId()).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetIntegrationPointArtifactTypeIdAsync), e);
+				throw CreateInternalServerErrorException();
+			}
+		}
+
+		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
+		{
+			return await new ProviderManager(Logger).GetSourceProviderArtifactIdAsync(workspaceArtifactId, sourceProviderGuidIdentifier).ConfigureAwait(false);
+		}
+
+		public async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier)
+		{
+			return await new ProviderManager(Logger).GetDestinationProviderArtifactIdAsync(workspaceArtifactId, destinationProviderGuidIdentifier).ConfigureAwait(false);
 		}
 
 		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());

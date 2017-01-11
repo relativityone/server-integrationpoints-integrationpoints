@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
@@ -20,77 +20,105 @@ namespace kCura.IntegrationPoints.Services
 		private readonly IPermissionRepositoryFactory _permissionRepositoryFactory;
 
 		/// <summary>
+		///     This container is used only for testing purposes
+		/// </summary>
+		private readonly IWindsorContainer _container;
+
+		/// <summary>
 		///     Since we cannot register any dependencies for Kepler Service we have to create separate constructors for runtime
 		///     and for testing
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory)
+		/// <param name="container"></param>
+		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
 		{
 			_permissionRepositoryFactory = permissionRepositoryFactory;
-			_logger = logger;
+			Logger = logger;
+			_container = container;
 		}
 
-		protected KeplerServiceBase(ILog logger) : this(logger, new PermissionRepositoryFactory())
+		protected KeplerServiceBase(ILog logger) : this(logger, new PermissionRepositoryFactory(), null)
 		{
 		}
 
-		private readonly ILog _logger;
+		protected readonly ILog Logger;
 
 		public async Task<bool> PingAsync()
 		{
 			return await Task.Run(() => true).ConfigureAwait(false);
 		}
 
-		protected void CheckPermissions(int workspaceId)
+		protected void SafePermissionCheck(Action checkPermission)
 		{
 			try
 			{
-				var permissionRepository = _permissionRepositoryFactory.Create(global::Relativity.API.Services.Helper, workspaceId);
-				if (permissionRepository.UserHasPermissionToAccessWorkspace() &&
-					permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View))
-				{
-					return;
-				}
+				checkPermission();
+			}
+			catch (InsufficientPermissionException)
+			{
+				throw;
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, _PERMISSIONS_ERROR);
-			}
-			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
-		}
-
-		protected Task<TResult> Execute<TResult, TParameter>(Func<TParameter, TResult> funcToExecute, int workspaceId)
-		{
-			CheckPermissions(workspaceId);
-			try
-			{
-				using (var container = GetDependenciesContainer(workspaceId))
-				{
-					TParameter parameter = container.Resolve<TParameter>();
-					return Task.Run(() =>
-					{
-						try
-						{
-							return funcToExecute(parameter);
-						}
-						catch (Exception e)
-						{
-							_logger.LogError(e, "{}", typeof(TParameter));
-							throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
-						}
-					});
-				}
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "{}", typeof(TParameter));
+				Logger.LogError(e, _PERMISSIONS_ERROR);
 				throw new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST, e);
 			}
 		}
 
+		protected void CheckPermissions(string endpointName, int workspaceId)
+		{
+			CheckPermissions(endpointName, workspaceId, new List<PermissionModel>());
+		}
+
+		protected void CheckPermissions(string endpointName, int workspaceId, IEnumerable<PermissionModel> permissionsToCheck)
+		{
+			SafePermissionCheck(() =>
+			{
+				var permissionRepository = _permissionRepositoryFactory.Create(global::Relativity.API.Services.Helper, workspaceId);
+				var missingPermissions = new List<string>();
+				if (!permissionRepository.UserHasPermissionToAccessWorkspace())
+				{
+					missingPermissions.Add("Workspace");
+				}
+				foreach (var permissionModel in permissionsToCheck)
+				{
+					if (!permissionRepository.UserHasArtifactTypePermission(new Guid(permissionModel.ObjectTypeGuid), permissionModel.ArtifactPermission))
+					{
+						missingPermissions.Add($"{permissionModel.ObjectTypeName} - {permissionModel.ArtifactPermission}");
+					}
+				}
+				if (missingPermissions.Count == 0)
+				{
+					return;
+				}
+				LogAndThrowInsufficientPermissionException(endpointName, missingPermissions);
+			});
+		}
+
+		protected void LogAndThrowInsufficientPermissionException(string endpointName, IList<string> missingPermissions)
+		{
+			Logger.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", endpointName,
+				string.Join(", ", missingPermissions));
+			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
+		}
+
+		protected void LogException(string endpointName, Exception e)
+		{
+			Logger.LogError(e, "Error occurred during request processing in {endpointName}.", endpointName);
+		}
+
+		protected InternalServerErrorException CreateInternalServerErrorException()
+		{
+			return new InternalServerErrorException(_ERROR_OCCURRED_DURING_REQUEST);
+		}
+
 		protected virtual IWindsorContainer GetDependenciesContainer(int workspaceArtifactId)
 		{
+			if (_container != null)
+			{
+				return _container;
+			}
 			IWindsorContainer container = new WindsorContainer();
 			Installer.Install(container, new DefaultConfigurationStore(), workspaceArtifactId);
 			return container;

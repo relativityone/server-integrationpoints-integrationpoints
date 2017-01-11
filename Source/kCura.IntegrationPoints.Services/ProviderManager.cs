@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Windsor;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -16,7 +20,9 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		internal ProviderManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
+		/// <param name="container"></param>
+		internal ProviderManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 
@@ -32,28 +38,78 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
 		{
-			return
-				await
-					Execute((IProviderRepository providerRepository) =>
-							providerRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier), workspaceArtifactId);
+			CheckPermissions(nameof(GetSourceProviderArtifactIdAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.SourceProvider, ObjectTypes.SourceProvider, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var providerRepository = container.Resolve<IProviderRepository>();
+					return await Task.Run(() => providerRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetSourceProviderArtifactIdAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<int> GetDestinationProviderArtifactIdAsync(int workspaceArtifactId, string destinationProviderGuidIdentifier)
 		{
-			return
-				await
-					Execute((IProviderRepository providerRepository) =>
-							providerRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier), workspaceArtifactId);
+			CheckPermissions(nameof(GetDestinationProviderArtifactIdAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.DestinationProvider, ObjectTypes.DestinationProvider, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var providerRepository = container.Resolve<IProviderRepository>();
+					return await Task.Run(() => providerRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetDestinationProviderArtifactIdAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<IList<ProviderModel>> GetSourceProviders(int workspaceArtifactId)
 		{
-			return await Execute((IProviderRepository providerRepository) => providerRepository.GetSourceProviders(workspaceArtifactId), workspaceArtifactId);
+			CheckPermissions(nameof(GetSourceProviders), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.SourceProvider, ObjectTypes.SourceProvider, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var providerRepository = container.Resolve<IProviderRepository>();
+					return await Task.Run(() => providerRepository.GetSourceProviders(workspaceArtifactId)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetSourceProviders), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<IList<ProviderModel>> GetDestinationProviders(int workspaceArtifactId)
 		{
-			return await Execute((IProviderRepository providerRepository) => providerRepository.GetDesinationProviders(workspaceArtifactId), workspaceArtifactId);
+			CheckPermissions(nameof(GetDestinationProviders), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.DestinationProvider, ObjectTypes.DestinationProvider, ArtifactPermission.View)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var providerRepository = container.Resolve<IProviderRepository>();
+					return await Task.Run(() => providerRepository.GetDesinationProviders(workspaceArtifactId)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetDestinationProviders), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 	}
 }

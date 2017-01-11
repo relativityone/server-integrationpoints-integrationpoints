@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Castle.Windsor;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -16,7 +20,9 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		internal IntegrationPointTypeManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory) : base(logger, permissionRepositoryFactory)
+		/// <param name="container"></param>
+		internal IntegrationPointTypeManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 
@@ -32,8 +38,23 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<IList<IntegrationPointTypeModel>> GetIntegrationPointTypes(int workspaceArtifactId)
 		{
-			return
-				await Execute((IIntegrationPointTypeRepository integrationPointTypeRepository) => integrationPointTypeRepository.GetIntegrationPointTypes(), workspaceArtifactId);
+			CheckPermissions(nameof(GetIntegrationPointTypes), workspaceArtifactId, new[]
+			{
+				new PermissionModel(ObjectTypeGuids.IntegrationPointType, ObjectTypes.IntegrationPointType, ArtifactPermission.View)
+			});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointTypeRepository = container.Resolve<IIntegrationPointTypeRepository>();
+					return await Task.Run(() => integrationPointTypeRepository.GetIntegrationPointTypes()).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetIntegrationPointTypes), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 	}
 }
