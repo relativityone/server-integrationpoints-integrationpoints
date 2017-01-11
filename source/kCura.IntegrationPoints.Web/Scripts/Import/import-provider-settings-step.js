@@ -45,7 +45,7 @@
 			forProduction = true;
 		}
 
-		//a valid encoding is needed so that the provider doesn't crash
+		//a valid encoding is needed to instantiate the ImportSettings object
 		var etFileEncoding = "UTF-8";
 		if(windowObj.RelativityImport.koModel.ExtractedTextFieldContainsFilePath() === 'true') {
 			etFileEncoding = windowObj.RelativityImport.koModel.ExtractedTextFileEncoding();
@@ -56,15 +56,18 @@
 			ForProduction: forProduction,
 			ProductionArtifactId: windowObj.RelativityImport.koModel.selectedProductionSets(),
 			AutoNumberImages: windowObj.RelativityImport.koModel.autoNumberPages(),
-			SelectedOverwrite: windowObj.RelativityImport.koModel.SelectedOverwrite(),
-			OverlayIdentifier: windowObj.RelativityImport.koModel.selectedOverlayIdentifier(),
+			ImportOverwriteMode: ko.toJS(windowObj.RelativityImport.koModel.SelectedOverwrite).replace('/', '').replace(' ', ''),
+			IdentityFieldId: windowObj.RelativityImport.koModel.selectedOverlayIdentifier(),
 			ExtractedTextFieldContainsFilePath: windowObj.RelativityImport.koModel.ExtractedTextFieldContainsFilePath(),
 			ExtractedTextFileEncoding: etFileEncoding,
-			CopyFilesToDocumentRepository: windowObj.RelativityImport.koModel.copyFilesToDocumentRepository()
-
-			// Todo: Create data-bind for "File Repository". Once created add ko observable to model
+			CopyFilesToDocumentRepository: windowObj.RelativityImport.koModel.copyFilesToDocumentRepository(),
+			SelectedCaseFileRepoPath: windowObj.RelativityImport.koModel.selectedRepo()
 		};
-		//console.log(model);
+
+		if (model.CopyFilesToDocumentRepository === 'true') {
+			model.ImportNativeFileCopyMode = 'CopyFiles';
+		}
+
 		return model;
 	};
 
@@ -96,7 +99,7 @@
 				var destinationConfig = JSON.parse(fullModel.destination);
 				//Also put these values on the destination config
 				fullModel.map = '[]';
-				fullModel.SelectedOverwrite = current.SelectedOverwrite;
+				fullModel.SelectedOverwrite = windowObj.RelativityImport.koModel.SelectedOverwrite();
 
 				$.extend(destinationConfig, imageProductionModel());
 				fullModel.destination = JSON.stringify(destinationConfig);

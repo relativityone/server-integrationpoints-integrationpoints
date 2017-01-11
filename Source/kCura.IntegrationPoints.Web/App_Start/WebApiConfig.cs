@@ -254,6 +254,18 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ImportProviderGetFileRepositories",
+				routeTemplate: "{workspaceID}/api/ImportProviderImage/GetFileRepositories",
+				defaults: new { controller = "ImportProviderImage", action = "GetFileRepositories" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "ImportProviderGetDefaultFileRepo",
+				routeTemplate: "{workspaceID}/api/ImportProviderImage/GetDefaultFileRepo",
+				defaults: new { controller = "ImportProviderImage", action = "GetDefaultFileRepo" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "SearchFolder",
 				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
 				defaults: new { controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }

@@ -115,10 +115,23 @@
 									</div>
 								</div>
 								<div class="field-row" data-bind="visible: copyFilesToDocumentRepository() == 'true'">
-									<div class="field-label required">File Repository:</div>
-									<div class="field-value">
-										<select id="overlay-identifier" @*data-bind="options: ,select2 {}*@"></select>
-									</div>
+									<table>
+										<tr>
+											<th>
+												<div class="field-label required">File Repository:</div>
+												<div class="field-value">
+													<select id="overlay-identifier" data-bind="options:fileRepositories, value:selectedRepo, select2: {}"></select>
+												</div>
+											</th>
+											<th>
+												<div class="default-fileRepo-container">
+													<div class="button generic" id="btnDefaultFileRepo">
+														<span>Default</span>
+													</div>
+												</div>
+											</th>
+										</tr>
+									</table>
 								</div>
 								<div data-bind="visible: selectedImportType() == 1">
 									<div class="field-row">

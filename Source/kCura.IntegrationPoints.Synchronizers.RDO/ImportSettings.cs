@@ -129,6 +129,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool SendEmailOnLoadCompletion { get; set; }
 
+		public string SelectedCaseFileRepoPath { get; set; }
+
 		public int StartRecordNumber { get; set; }
 
 		public string WebServiceURL { get; set; }
