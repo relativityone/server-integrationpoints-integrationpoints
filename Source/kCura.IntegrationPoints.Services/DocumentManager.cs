@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -19,8 +21,9 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
-		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory)
-			: base(logger, permissionRepositoryFactory)
+		/// <param name="container"></param>
+		internal DocumentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
 
@@ -34,23 +37,56 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
-			return
-				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetPercentagePushedToReview(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			CheckPermissions(nameof(GetPercentagePushedToReviewAsync), request.WorkspaceArtifactId);
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var documentRepository = container.Resolve<IDocumentRepository>();
+					return await documentRepository.GetPercentagePushedToReviewAsync(request).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetPercentagePushedToReviewAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
-			return
-				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetCurrentPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			CheckPermissions(nameof(GetCurrentPromotionStatusAsync), request.WorkspaceArtifactId);
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var documentRepository = container.Resolve<IDocumentRepository>();
+					return await documentRepository.GetCurrentPromotionStatusAsync(request).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetCurrentPromotionStatusAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			return
-				await
-					Execute((IDocumentRepository documentRepository) => documentRepository.GetHistoricalPromotionStatus(request), request.WorkspaceArtifactId).ConfigureAwait(false);
+			CheckPermissions(nameof(GetHistoricalPromotionStatusAsync), request.WorkspaceArtifactId);
+			try
+			{
+				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				{
+					var documentRepository = container.Resolve<IDocumentRepository>();
+					return await documentRepository.GetHistoricalPromotionStatusAsync(request).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetHistoricalPromotionStatusAsync), e);
+				throw CreateInternalServerErrorException();
+			}
 		}
 
 		protected override Installer Installer => _installer ?? (_installer = new DocumentManagerInstaller());
