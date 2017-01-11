@@ -53,6 +53,21 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return Manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel, progress);
 		}
 
+		public Task<ObjectQueryUniqueFieldValuesResult> QueryUniqueFieldValuesAsync(int workspaceId, int artifactTypeId, string fieldName)
+		{
+			return Manager.QueryUniqueFieldValuesAsync(workspaceId, artifactTypeId, fieldName);
+		}
+
+		public Task<ObjectQueryUniqueFieldValuesResult> QueryUniqueFieldValuesAsync(int workspaceId, int artifactTypeId, string fieldName, CancellationToken cancel)
+		{
+			return Manager.QueryUniqueFieldValuesAsync(workspaceId, artifactTypeId, fieldName, cancel);
+		}
+
+		public Task<ObjectQueryUniqueFieldValuesResult> QueryUniqueFieldValuesAsync(int workspaceId, int artifactTypeId, string fieldName, IProgress<ProgressReport> progress)
+		{
+			return Manager.QueryUniqueFieldValuesAsync(workspaceId, artifactTypeId, fieldName, progress);
+		}
+
 		public Task<ObjectQueryUniqueFieldValuesResult> QueryUniqueFieldValuesAsync(int workspaceId, int artifactTypeId, string fieldName, CancellationToken cancel,
 			IProgress<ProgressReport> progress)
 		{
