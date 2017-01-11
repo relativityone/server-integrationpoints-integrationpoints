@@ -67,7 +67,9 @@
 		this.selectedDay = ko.observable(this.currentState.selectedDay);
 		this.selectedType = ko.observable(this.currentState.selectedType);
 		this.selectedDayOfTheMonth = ko.observable(this.currentState.selectedDayOfTheMonth);
-		this.monthChoice = ko.observable(this.currentState.monthChoice);
+		//Disabled because of incorrect calculations for second day of month
+		//this.monthChoice = ko.observable(this.currentState.monthChoice.toString());	
+		this.monthChoice = ko.observable("2");
 
 		this.overflowMessage = ko.computed(function () {
 			return 'For months containing fewer than ' + self.selectedDay() + ' days, Relativity will attempt to initiate the job on the last day of the month';

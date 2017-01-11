@@ -15,11 +15,13 @@ namespace kCura.IntegrationPoints.Web
 		private readonly WebClientFactory _factory;
 		private const string USER_HEADER_VALUE = "X-IP-USERID";
 		private const string CASEUSER_HEADER_VALUE = "X-IP-CASEUSERID";
-		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, WebClientFactory factory)
+		private ISessionService _sessionService;
+		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, WebClientFactory factory, ISessionService sessionService)
 		{
 			this.helper = helper;
 			this.customPageServices = services;
 			_factory = factory;
+			_sessionService = sessionService;
 		}
 
 		private ICPHelper helper { get; set; }
@@ -38,7 +40,12 @@ namespace kCura.IntegrationPoints.Web
 		}
 		public int GetEddsUserID()
 		{
-			return GetRequestNumericValueByKey(USER_HEADER_VALUE);
+			var result = GetRequestNumericValueByKey(USER_HEADER_VALUE);
+			if (result == 0)
+			{
+				result = _sessionService.UserID;
+			}
+			return result;
 		}
 		public int GetWorkspaceUserID()
 		{

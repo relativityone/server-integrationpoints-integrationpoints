@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Security;
+using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
@@ -18,7 +20,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			foreach (var integrationPoint in objs)
 			{
-				integrationPoint.SecuredConfiguration = _encryptionManager.Encrypt(integrationPoint.SecuredConfiguration);
+				IgnoreMissingSecuredConfiguration(() => EncryptSecuredConfiguration(integrationPoint));
 			}
 			return base.Create(objs);
 		}
@@ -26,7 +28,7 @@ namespace kCura.IntegrationPoints.Data
 		public override List<IntegrationPoint> Read(IEnumerable<int> artifactIds)
 		{
 			var result = base.Read(artifactIds);
-			result.ForEach(x => x.SecuredConfiguration = _encryptionManager.Decrypt(x.SecuredConfiguration));
+			result.ForEach(DecryptSecuredConfiguration);
 			return result;
 		}
 
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			foreach (var integrationPoint in objs)
 			{
-				integrationPoint.SecuredConfiguration = _encryptionManager.Encrypt(integrationPoint.SecuredConfiguration);
+				IgnoreMissingSecuredConfiguration(() => EncryptSecuredConfiguration(integrationPoint));
 			}
 			return base.Update(objs);
 		}
@@ -42,8 +44,31 @@ namespace kCura.IntegrationPoints.Data
 		public override List<IntegrationPoint> Query(Query<RDO> q, int pageSize = 0)
 		{
 			var result = base.Query(q, pageSize);
-			result.ForEach(x => x.SecuredConfiguration = _encryptionManager.Decrypt(x.SecuredConfiguration));
+			result.ForEach(x => IgnoreMissingSecuredConfiguration(() => DecryptSecuredConfiguration(x)));
 			return result;
+		}
+
+		private void IgnoreMissingSecuredConfiguration(Action action)
+		{
+			try
+			{
+				action();
+			}
+			catch (FieldNotFoundException)
+			{
+				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+				//Any access to missing field will throw FieldNotFoundException
+			}
+		}
+
+		private void EncryptSecuredConfiguration(IntegrationPoint rdo)
+		{
+			rdo.SecuredConfiguration = _encryptionManager.Encrypt(rdo.SecuredConfiguration);
+		}
+
+		private void DecryptSecuredConfiguration(IntegrationPoint rdo)
+		{
+			rdo.SecuredConfiguration = _encryptionManager.Decrypt(rdo.SecuredConfiguration);
 		}
 	}
 }

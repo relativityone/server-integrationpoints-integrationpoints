@@ -54,13 +54,30 @@
 
 	//Helper Method for changing the CSS for the preview options btn
 	windowObj.RelativityImport.PreviewOptions.disablePreviewButton = function (bool) {
+		windowObj.$(idSelector(CUSTOM_BUTTON)).off("click");
+
 		if (bool) {
 			windowObj.$(classSelector(SHOWN)).css({ 'pointer-events': 'none' });
 			windowObj.$(classSelector(SHOWN)).addClass('disableDiv');
-			windowObj.$(idSelector(CUSTOM_BUTTON)).off("click");
 		} else {
 			windowObj.$(classSelector(SHOWN)).css({ 'pointer-events': '' });
 			windowObj.$(classSelector(SHOWN)).removeClass('disableDiv');
+			previewOptionsEvent();
+		}
+	};
+
+	//Helper method for disabling the Preview Optinions' for Image and Production
+	windowObj.RelativityImport.PreviewOptions.ShowOnlyErrorsOptionForImportType = function (bool) {
+		if (bool) {
+			windowObj.$(idSelector(PREVIEW_CHOICE_LI)).hide();
+			windowObj.$(idSelector(PREVIEW_FILE_LI)).hide();
+
+			windowObj.$(idSelector(CUSTOM_BUTTON)).off("click");
+
+		} else {
+			windowObj.$(idSelector(PREVIEW_CHOICE_LI)).show();
+			windowObj.$(idSelector(PREVIEW_FILE_LI)).show();
+
 			previewOptionsEvent();
 		}
 	};
@@ -74,6 +91,10 @@
 		var openPreviewWindow = function(previewType) {
 			windowObj.RelativityImportPreviewSettings = {};
 			windowObj.RelativityImportPreviewSettings = windowObj.RelativityImport.CurrentUiModel;
+			//if this is undefined it means that we're still on the 2nd page and trying to preview an Image
+			if (!windowObj.RelativityImportPreviewSettings) {
+				windowObj.RelativityImportPreviewSettings = windowObj.RelativityImport.GetCurrentUiModel();
+			}
 			$.extend(windowObj.RelativityImportPreviewSettings, { PreviewType: previewType });
 			windowObj.$(idSelector(BUTTON_UL)).slideUp();
 

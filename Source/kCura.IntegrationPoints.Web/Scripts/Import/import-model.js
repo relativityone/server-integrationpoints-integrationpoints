@@ -30,6 +30,13 @@
 		}
 
 		self.selectedImportType.subscribe(function (data) {
+			windowObj.parent.RelativityImport.PreviewOptions.closePreviewBtn();
+			if (data !== ImportTypeEnum.Document) {
+				windowObj.parent.RelativityImport.PreviewOptions.ShowOnlyErrorsOptionForImportType(true);
+			} else {
+				windowObj.parent.RelativityImport.PreviewOptions.ShowOnlyErrorsOptionForImportType(false);
+			}
+
 			IP.frameMessaging().publish('importType', data);
 			self.setSelectedImportType(data);
 		});
@@ -147,7 +154,7 @@
 		//Populate file encoding dropdown
 		self.FileEncodingTypeList = ko.observableArray([]);
 		self._UpdateFileEncodingTypeList = function () {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+			$.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
 				function Group(label, children) {
 					this.label = ko.observable(label);
 					this.children = ko.observableArray(children);
@@ -174,12 +181,12 @@
 				//self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
 
 				self.FileEncodingTypeList([new Group("", [new Option("Unicode (UTF-8)", "utf-8")]), new Group("Favorite", favorite), new Group("Others", others)]);
+				self.ExtractedTextFileEncodingList(result);
 
 				self.DataFileEncodingType(self.DataFileEncodingTypeValue);
 				self.DataFileEncodingType.isModified(false);
 			});
-		}
-		self._UpdateFileEncodingTypeList();
+		}	
 
 		self.ExtractedTextFieldContainsFilePath = ko.observable("false");
 
@@ -190,14 +197,9 @@
 				}
 			}
 		});
-
 		self.ExtractedTextFileEncodingList = ko.observableArray([]);
-		if (self.ExtractedTextFileEncodingList.length === 0) {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
-				self.ExtractedTextFileEncodingList(result);
-			});
-		}
 
+		self._UpdateFileEncodingTypeList();
 	}
 	windowObj.RelativityImport.koModel = new viewModel();
 	windowObj.RelativityImport.koErrors = ko.validation.group(windowObj.RelativityImport.koModel);

@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		protected IManagerFactory ManagerFactory;
 		protected IIntegrationPointProviderValidator IntegrationModelValidator;
 		protected IIntegrationPointPermissionValidator _permissionValidator;
+		protected IHelper _helper;
 
 		protected static readonly object Lock = new object();
 
@@ -53,6 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_guidsConstants = guidsConstants;
 			IntegrationModelValidator = integrationModelValidator;
 			_permissionValidator = permissionValidator;
+			_helper = helper;
 			ContextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 
@@ -165,7 +167,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					else if (monthlySendOn.MonthChoice == MonthlyType.Month)
 					{
 						periodicScheduleRule.DaysToRun = monthlySendOn.SelectedDayOfTheMonth;
-						periodicScheduleRule.SetLastDayOfMonth = monthlySendOn.SelectedType == OccuranceInMonth.Last;
 						periodicScheduleRule.OccuranceInMonth = monthlySendOn.SelectedType;
 					}
 					break;

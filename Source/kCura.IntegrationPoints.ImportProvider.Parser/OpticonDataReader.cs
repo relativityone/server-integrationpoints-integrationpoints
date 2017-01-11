@@ -2,7 +2,7 @@
 using kCura.WinEDDS.Api;
 using System;
 using System.Data;
-using kCura.IntegrationPoints.ImportProvider.Parser.Domain;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {

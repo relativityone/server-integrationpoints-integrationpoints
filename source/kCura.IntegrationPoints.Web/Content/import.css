@@ -116,6 +116,7 @@
 #preFile, #preErrors, #preChoice {
 	height: 20px;
 	padding-left: 5px;
+	padding-top: 2px;
 	text-align: start;
 }
 
@@ -126,6 +127,7 @@
 #importCustomButton {
 	margin: 0;
 	text-align: left;
+	z-index: 2;
 }
 
 .flex-container {
@@ -166,6 +168,6 @@
 	background: #dadada;
 }
 	.disableDiv:hover {
-		background-color: #dadada;
-		background: #dadada;
+		background-color: #dadada !important;
+		background: #dadada !important;
 	}
