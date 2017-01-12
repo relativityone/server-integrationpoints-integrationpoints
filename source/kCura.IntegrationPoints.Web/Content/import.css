@@ -1,3 +1,12 @@
+.default-fileRepo-container {
+	width: 82px;
+}
+
+#btnDefaultFileRepo {
+	text-align: center;
+	padding-top: 5px;
+	height: 28px;
+}
 ﻿.importPreviewDropdownItem {
 	padding-bottom: 5px;
 	padding-left: 10px;
@@ -171,3 +180,4 @@
 		background-color: #dadada !important;
 		background: #dadada !important;
 	}
+

@@ -64,6 +64,8 @@
 		//image/production import knockout bindings
 		self.autoNumberPages = ko.observable("false");
 		self.copyFilesToDocumentRepository = ko.observable("true");
+		self.fileRepositories = ko.observableArray([]);
+		self.selectedRepo = ko.observable();
 
 		self.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
 		self.SelectedOverwrite = ko.observable(self.SelectedOverwrite || 'Append Only').extend({

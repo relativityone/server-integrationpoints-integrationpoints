@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain;
+using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 using Relativity.Core;
 using Relativity.Core.Service;
@@ -129,6 +130,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool SendEmailOnLoadCompletion { get; set; }
 
+		public string SelectedCaseFileRepoPath { get; set; }
+
 		public int StartRecordNumber { get; set; }
 
 		public string WebServiceURL { get; set; }
@@ -180,6 +183,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			get { return (kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)this.ImportAuditLevel; }
 		}
+
+		[JsonIgnore]
+		public bool MoveDocumentsInAppendOverlayMode => OverwriteMode == OverwriteModeEnum.AppendOverlay && !String.IsNullOrEmpty(FolderPathSourceFieldName);
+
 		#endregion "Internal Properties"
 	}
 }

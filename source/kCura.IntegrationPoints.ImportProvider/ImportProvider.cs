@@ -102,6 +102,7 @@ namespace kCura.IntegrationPoints.ImportProvider
 
 		private IDataReader GetDataForImage(ImportProviderSettings settings, IEnumerable<string> sourceFileLines)
 		{
+			string loadFileDir = Path.GetDirectoryName(settings.LoadFile);
 			IEnumerable<string[]> enumerableParser = _enumerableParserFactory.GetEnumerableParser(sourceFileLines, settings);
 			DataTable dt = new DataTable();
 			dt.Columns.Add(OpticonInfo.BATES_NUMBER_FIELD_NAME);
@@ -112,7 +113,15 @@ namespace kCura.IntegrationPoints.ImportProvider
 			{
 				DataRow dtRow = dt.NewRow();
 				dtRow[OpticonInfo.BATES_NUMBER_FIELD_NAME] = sourceRow[OpticonInfo.BATES_NUMBER_FIELD_INDEX];
-				dtRow[OpticonInfo.FILE_LOCATION_FIELD_NAME] = sourceRow[OpticonInfo.FILE_LOCATION_FIELD_INDEX];
+				string fileLocationColumnValue = sourceRow[OpticonInfo.FILE_LOCATION_FIELD_INDEX];
+				//Account for relative paths in the load file
+				if (!Path.IsPathRooted(fileLocationColumnValue)) {
+					dtRow[OpticonInfo.FILE_LOCATION_FIELD_NAME] = Path.Combine(loadFileDir, fileLocationColumnValue);
+				}
+				else
+				{
+					dtRow[OpticonInfo.FILE_LOCATION_FIELD_NAME] = fileLocationColumnValue;
+				}
 				dtRow[OpticonInfo.DOCUMENT_ID_FIELD_NAME] = sourceRow[OpticonInfo.DOCUMENT_ID_FIELD_INDEX];
 				dt.Rows.Add(dtRow);
 			}

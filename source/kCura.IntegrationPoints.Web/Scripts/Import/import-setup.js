@@ -87,6 +87,17 @@
 		windowObj.parent.$(idSelector(BUTTON_UL)).hide();
 	};
 
+	//Convert between the format that it needs to be in when saved and the display format in the dropdown
+	var convertToDisplayText = function (overwriteMode) {
+		if (overwriteMode === 'AppendOnly') {
+			return 'Append Only';
+		} else if (overwriteMode === 'OverlayOnly') {
+			return 'Overlay Only';
+		} else if (overwriteMode === 'AppendOverlay') {
+			return 'Append/Overlay';
+		}
+	}
+
 	var populateCachedState = function () {
 		//Parent
 		var lineNumber = windowObj.RelativityImport.GetCachedUiModel.LineNumber;
@@ -122,11 +133,12 @@
 
 			//ImageProduction
 			var autoNumberImages = windowObj.RelativityImport.GetCachedUiModel.AutoNumberImages;
-			var selectedOverwrite = windowObj.RelativityImport.GetCachedUiModel.SelectedOverwrite;
+			var selectedOverwrite = windowObj.RelativityImport.GetCachedUiModel.ImportOverwriteMode;
 			var extractedTextFieldContainsFilePath = windowObj.RelativityImport.GetCachedUiModel.ExtractedTextFieldContainsFilePath;
 			var overlayIdentifier = windowObj.RelativityImport.GetCachedUiModel.OverlayIdentifier;
 			var extractedTextFileEncoding = windowObj.RelativityImport.GetCachedUiModel.ExtractedTextFileEncoding;
 			var copyFilesToDocumentRepo = windowObj.RelativityImport.GetCachedUiModel.CopyFilesToDocumentRepository;
+			var selectedCaseFileRepoPath = windowObj.RelativityImport.GetCachedUiModel.SelectedCaseFileRepoPath;
 
 			//ImageProduction repopulate model
 			windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
@@ -134,11 +146,12 @@
 			windowObj.RelativityImport.koModel.startLine(lineNumber);
 			windowObj.RelativityImport.koModel.selectedImportType(importType);
 			windowObj.RelativityImport.koModel.autoNumberPages(autoNumberImages);
-			windowObj.RelativityImport.koModel.SelectedOverwrite(selectedOverwrite);
+			windowObj.RelativityImport.koModel.SelectedOverwrite(convertToDisplayText(selectedOverwrite));
 			windowObj.RelativityImport.koModel.selectedOverlayIdentifier(overlayIdentifier);
 			windowObj.RelativityImport.koModel.ExtractedTextFieldContainsFilePath(extractedTextFieldContainsFilePath);
 			windowObj.RelativityImport.koModel.ExtractedTextFileEncoding(extractedTextFileEncoding);
 			windowObj.RelativityImport.koModel.copyFilesToDocumentRepository(copyFilesToDocumentRepo);
+			windowObj.RelativityImport.koModel.selectedRepo(selectedCaseFileRepoPath);
 		}
 	};
 
@@ -290,5 +303,34 @@
 		success: function (data) {
 			windowObj.RelativityImport.koModel.overlayIdentifiers(data);
 		}
+	});
+
+	windowObj.RelativityImport.setDefaultFileRepo = function () {
+		$.ajax({
+			type: 'GET',
+			url: IP.utils.generateWebAPIURL('ImportProviderImage/GetDefaultFileRepo'),
+			data: {
+				workspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+			},
+			success: function (data) {
+				windowObj.RelativityImport.koModel.selectedRepo(data);
+			}
+		})
+	};
+
+	$.ajax({
+		type: 'GET',
+		url: IP.utils.generateWebAPIURL('ImportProviderImage/GetFileRepositories'),
+		data: {
+			workspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+		},
+		success: function (data) {
+			windowObj.RelativityImport.koModel.fileRepositories(data);
+			windowObj.RelativityImport.setDefaultFileRepo();
+		}
+	});
+
+	$('#btnDefaultFileRepo').click(function () {
+		windowObj.RelativityImport.setDefaultFileRepo();
 	});
 })(this, IP);
