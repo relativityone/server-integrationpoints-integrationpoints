@@ -32,9 +32,9 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 				return new JobHistorySummaryModel();
 			}
 
-			List<IntegrationPoint> integrationPoints = _relativityIntegrationPointsRepository.RetrieveRelativityIntegrationPoints(request.WorkspaceArtifactId);
+			List<int> integrationPointIds = _relativityIntegrationPointsRepository.RetrieveRelativityIntegrationPointsIds(request.WorkspaceArtifactId);
 
-			IList<JobHistoryModel> queryResult = _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, integrationPoints);
+			IList<JobHistoryModel> queryResult = _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, integrationPointIds);
 
 			IList<JobHistoryModel> jobHistories = _jobHistoryAccess.Filter(queryResult, workspacesWithAccess);
 

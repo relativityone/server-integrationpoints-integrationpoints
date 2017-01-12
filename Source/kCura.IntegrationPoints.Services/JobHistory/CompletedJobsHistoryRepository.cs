@@ -17,11 +17,10 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			_integrationPointsCompletedJobsQueryBuilder = integrationPointsCompletedJobsQueryBuilder;
 		}
 
-		public IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<Data.IntegrationPoint> integrationPoints)
+		public IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<int> integrationPointIds)
 		{
 			var sortDescending = (request.SortDescending != null) && request.SortDescending.Value;
-			var integrationPointsIds = integrationPoints.Select(x => x.ArtifactId).ToList();
-			Query<RDO> query = _integrationPointsCompletedJobsQueryBuilder.CreateQuery(request.SortColumnName, sortDescending, integrationPointsIds);
+			Query<RDO> query = _integrationPointsCompletedJobsQueryBuilder.CreateQuery(request.SortColumnName, sortDescending, integrationPointIds);
 
 			IGenericLibrary<Data.JobHistory> library = _libraryFactory.Create<Data.JobHistory>(request.WorkspaceArtifactId);
 			IList<Data.JobHistory> queryResult = library.Query(query);
