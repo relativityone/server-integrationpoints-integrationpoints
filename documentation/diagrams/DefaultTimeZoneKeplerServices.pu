@@ -1,0 +1,53 @@
+@startuml
+
+actor User
+User -> Browser : Enable Scheduler
+
+Browser -> TimeZoneManager : GetWindowsTimeZones()
+
+Browser <- TimeZoneManager : List containing all the Windows Time Zone objects
+
+note left of TimeZoneManager
+  Time Zone object contains
+  Windows Time Zone id and display name
+end note
+
+Browser -> Browser : Populate Time Zone combobox by Windows Time Zone objects
+
+Browser -> Browser : Detect IANA Time Zone Id
+
+note right of Browser
+  Used Moment.js library to guess
+  client IANA Time Zone id.
+end note
+
+Browser -> TimeZoneManager : ConvertIanaToWindowsTimeZone(ianaZoneId)
+
+note right of TimeZoneManager
+  IANA Time Zone Id mapped to
+  a single Windows Time Zone.
+  Used NodaTime library which contains
+  an embedded copy of the CLDR mappings.
+end note
+
+TimeZoneManager -> Browser : Windows Time Zone id
+
+Browser -> Browser : Set Time Zone combobox by client local Windows Time Zone id
+
+User -> Browser : Save Integration Point
+
+Browser -> IntegrationPointModel : Save Integration Point Model
+
+note right of Browser
+  Model contains selected
+  Windows Time Zone id
+end note
+
+IntegrationPointModel -> IntegrationPointModel : GetNextUTCRunDateTime()
+
+note right of IntegrationPointModel
+  Calculations based on saved
+  Windows Time Zone id
+end note
+
+@enduml
