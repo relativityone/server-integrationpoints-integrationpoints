@@ -41,14 +41,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				SortDescending = true
 			};
 			var workspaces = new List<int> {1, 2, 3};
-			var integrationPoints = new List<Data.IntegrationPoint>();
+			var integrationPoints = new List<int>();
 			var queryResult = new List<JobHistoryModel>();
 			var filteredJobHistories = new List<JobHistoryModel>();
 
 			var expectedResult = new JobHistorySummaryModel();
 
 			_workspaceManager.GetIdsOfWorkspacesUserHasPermissionToView().Returns(workspaces);
-			_relativityIntegrationPointsRepository.RetrieveRelativityIntegrationPoints(request.WorkspaceArtifactId).Returns(integrationPoints);
+			_relativityIntegrationPointsRepository.RetrieveRelativityIntegrationPointsIds(request.WorkspaceArtifactId).Returns(integrationPoints);
 			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, integrationPoints).Returns(queryResult);
 			_jobHistoryAccess.Filter(queryResult, workspaces).Returns(filteredJobHistories);
 			_summaryModelBuilder.Create(request.Page, request.PageSize, filteredJobHistories).Returns(expectedResult);
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 			_jobHistoryRepository.GetJobHistory(new JobHistoryRequest());
 
-			_relativityIntegrationPointsRepository.Received(0).RetrieveRelativityIntegrationPoints(Arg.Any<int>());
+			_relativityIntegrationPointsRepository.Received(0).RetrieveRelativityIntegrationPointsIds(Arg.Any<int>());
 		}
 	}
 }

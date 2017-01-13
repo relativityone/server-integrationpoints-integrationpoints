@@ -132,7 +132,7 @@
     <Compile Include="JobHistory\JobHistoryAccess.cs" />
     <Compile Include="JobHistory\LibraryFactory.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilder.cs" />
-    <Compile Include="JobHistory\RelativityIntegrationPointsRepository.cs" />
+    <Compile Include="JobHistory\RelativityIntegrationPointsRepositoryAdminAccess.cs" />
     <Compile Include="JobHistory\WorkspaceManager.cs" />
     <Compile Include="KeplerServiceBase.cs" />
     <Compile Include="Models\LoadFileExportDestinationConfigurationBackwardCompatibility.cs" />
