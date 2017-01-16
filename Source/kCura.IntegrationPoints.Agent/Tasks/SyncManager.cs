@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IGuidService _guidService;
-		protected readonly IIntegrationPointService _integrationPointService;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobManager _jobManager;
@@ -44,6 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		protected readonly IContextContainerFactory ContextContainerFactory;
 
+		protected readonly IIntegrationPointService IntegrationPointService;
 		protected readonly IHelper Helper;
 		protected readonly IManagerFactory ManagerFactory;
 		protected readonly ISerializer Serializer;
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobManager = jobManager;
 			_jobService = jobService;
 			Helper = helper;
-			_integrationPointService = integrationPointService;
+			IntegrationPointService = integrationPointService;
 			Serializer = serializer;
 			_guidService = guidService;
 			_jobHistoryService = jobHistoryService;
@@ -125,8 +125,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				FieldEntry idField = _integrationPointService.GetIdentifierFieldEntry(IntegrationPoint.ArtifactId);
-				string options = _integrationPointService.GetSourceOptions(IntegrationPoint.ArtifactId);
+				FieldEntry idField = IntegrationPointService.GetIdentifierFieldEntry(IntegrationPoint.ArtifactId);
+				string options = IntegrationPointService.GetSourceOptions(IntegrationPoint.ArtifactId);
 				IDataReader idReader = provider.GetBatchableIds(idField, options);
 
 				JobStopManager?.ThrowIfStopRequested();
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 				}
 
-				IntegrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+				IntegrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
 				if (IntegrationPoint.SourceProvider == 0)
 				{
 					LogUnknownSourceProvider(job);
