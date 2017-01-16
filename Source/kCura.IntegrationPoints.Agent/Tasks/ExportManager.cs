@@ -90,10 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override int BatchTask(Job job, IEnumerable<string> batchIDs)
 		{
-			IIntegrationPointManager integrationPointManager = ManagerFactory
-				.CreateIntegrationPointManager(ContextContainerFactory.CreateContextContainer(Helper));
-
-			IntegrationPointDTO integrationPoint = integrationPointManager.Read(job.WorkspaceID, job.RelatedObjectArtifactID);
+			var integrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{

@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IManagerFactory _managerFactoryMock;
 		private ISerializer _serializerMock;
 		private IExportInitProcessService _exportInitProcessService;
+		private IIntegrationPointService _integrationPointService;
 
 		private readonly Job _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, 7, TaskType.ExportWorker,
 				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
@@ -53,12 +54,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializerMock = Substitute.For<ISerializer>();
 			_exportInitProcessService = Substitute.For<IExportInitProcessService>();
 
+			_integrationPointService = Substitute.For<IIntegrationPointService>();
+
 			_instanceToTest = new ExportManager(Substitute.For<ICaseServiceContext>(),
 				Substitute.For<IDataProviderFactory>(),
 				_jobManagerMock,
 				Substitute.For<IJobService>(),
 				_helperMock,
-				Substitute.For<IIntegrationPointService>(),
+				_integrationPointService,
 				_serializerMock,
 				Substitute.For<IGuidService>(),
 				Substitute.For<IJobHistoryService>(),
@@ -76,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			// Arrange
 			const int artifactTypeId = 1;
-			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
 			{
 				SourceConfiguration = "Source Configuration",
 				DestinationConfiguration = $"{{ArtifactTypeId: {artifactTypeId}}}"
@@ -87,14 +90,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 
 			IContextContainer contextContainerMock = Substitute.For<IContextContainer>();
-			IIntegrationPointManager integrationPointManagerMock = Substitute.For<IIntegrationPointManager>();
 
-			integrationPointManagerMock.Read(_job.WorkspaceID, _job.RelatedObjectArtifactID).Returns(integrationPointDto);
+			_integrationPointService.GetRdo(_job.RelatedObjectArtifactID).Returns(integrationPoint);
 			_exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration, artifactTypeId).Returns(totalSavedSearchCount);
 
 			_contextContainerFactoryMock.CreateContextContainer(_helperMock).Returns(contextContainerMock);
-			_managerFactoryMock.CreateIntegrationPointManager(contextContainerMock).Returns(integrationPointManagerMock);
-			_serializerMock.Deserialize<ExportUsingSavedSearchSettings>(integrationPointDto.SourceConfiguration)
+			_serializerMock.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration)
 				.Returns(sourceConfiguration);
 
 			// Act

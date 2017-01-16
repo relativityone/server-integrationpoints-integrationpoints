@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IGuidService _guidService;
-		private readonly IIntegrationPointService _integrationPointService;
+		protected readonly IIntegrationPointService _integrationPointService;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobManager _jobManager;

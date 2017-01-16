@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Domain.Models;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Managers
 {
@@ -7,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <summary>
 		///     Returns a set of booleans that convey the button state of the console buttons for all providers.
 		/// </summary>
-		/// <param name="sourceProvider">Source provider type.</param>
+		/// <param name="providerType">Type of Integration Point Provider</param>
 		/// <param name="hasJobsExecutingOrInQueue">If the current Integration Point has jobs running or queued up.</param>
 		/// <param name="hasErrors">If the Integration Point has errors or not.</param>
 		/// <param name="hasErrorViewPermissions">If the user can view Job History and Job History Error objects</param>
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		///     A collection of booleans which explain the button state of the buttons on the console for the Relativity
 		///     Provider.
 		/// </returns>
-		ButtonStateDTO GetButtonState(Constants.SourceProvider sourceProvider, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
+		ButtonStateDTO GetButtonState(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
 			bool hasStoppableJobs, bool hasProfileAddPermission);
 	}
 }
