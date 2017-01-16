@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;

@@ -2,7 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 {
