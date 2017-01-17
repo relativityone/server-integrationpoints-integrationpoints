@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		protected readonly IContextContainerFactory ContextContainerFactory;
 
-		protected readonly IIntegrationPointService IntegrationPointService;
+		protected IIntegrationPointService IntegrationPointService { get; }
 		protected readonly IHelper Helper;
 		protected readonly IManagerFactory ManagerFactory;
 		protected readonly ISerializer Serializer;
