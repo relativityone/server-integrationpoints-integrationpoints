@@ -60,7 +60,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private SourceProvider _sourceProvider;
 		private DestinationProvider _destinationProvider;
 		private IntegrationPointType _integrationPointType;
-		private IIntegrationPointManager _integrationPointManager;
 		private IErrorManager _errorManager;
 		private IJobHistoryManager _jobHistoryManager;
 		private IntegrationPointService _instance;
@@ -87,7 +86,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
-			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
@@ -124,7 +122,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_repositoryFactory.GetPermissionRepository(_sourceWorkspaceArtifactId).Returns(_sourcePermissionRepository);
 			_repositoryFactory.GetPermissionRepository(_targetWorkspaceArtifactId).Returns(_targetPermissionRepository);
-			_managerFactory.CreateIntegrationPointManager(Arg.Is(_contextContainer)).Returns(_integrationPointManager);
 			_managerFactory.CreateErrorManager(Arg.Is(_contextContainer)).Returns(_errorManager);
 			_managerFactory.CreateJobHistoryManager(Arg.Is(_contextContainer)).Returns(_jobHistoryManager);
 
@@ -1072,10 +1069,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
 			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
 			_caseServiceManager.RsapiService.IntegrationPointTypeLibrary.Read(Arg.Is(model.Type)).Returns(integrationPointType);
-
-			_managerFactory.CreateIntegrationPointManager(_contextContainer)
-				.Returns(_integrationPointManager);
-
+			
 			string[] errorMessages = { "Oh", "no" };
 
 			_permissionValidator.ValidateSave(
@@ -1179,10 +1173,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
 			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
 			_caseServiceManager.RsapiService.IntegrationPointTypeLibrary.Read(Arg.Is(model.Type)).Returns(integrationPointType);
-
-			_managerFactory.CreateIntegrationPointManager(_contextContainer)
-				.Returns(_integrationPointManager);
-
+			
 			_permissionValidator.ValidateSave(
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
@@ -1269,10 +1260,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
 			_caseServiceManager.RsapiService.DestinationProviderLibrary.Read(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
 			_caseServiceManager.RsapiService.IntegrationPointTypeLibrary.Read(Arg.Is(model.Type)).Returns(integrationPointType);
-
-			_managerFactory.CreateIntegrationPointManager(_contextContainer)
-				.Returns(_integrationPointManager);
-
+			
 			_permissionValidator.ValidateSave(
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),

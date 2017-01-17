@@ -264,7 +264,6 @@
     <Compile Include="Managers\ErrorManagerTests.cs" />
     <Compile Include="Managers\JobStopManagerTests.cs" />
     <Compile Include="Managers\FieldManagerTests.cs" />
-    <Compile Include="Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Keywords\KeywordConverterTests.cs" />
     <Compile Include="Managers\JobHistoryErrorManagerTests.cs" />
     <Compile Include="Managers\JobHistoryManagerTests.cs" />

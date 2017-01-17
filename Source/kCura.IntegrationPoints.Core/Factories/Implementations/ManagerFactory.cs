@@ -29,11 +29,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new FieldManager(CreateRepositoryFactory(contextContainer));
 		}
 
-		public IIntegrationPointManager CreateIntegrationPointManager(IContextContainer contextContainer)
-		{
-			return new IntegrationPointManager(CreateRepositoryFactory(contextContainer));
-		}
-
 		public IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer)
 		{
 			return new JobHistoryManager(CreateRepositoryFactory(contextContainer), _helper);

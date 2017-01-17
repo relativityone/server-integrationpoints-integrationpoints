@@ -31,6 +31,11 @@
 				var stopClick = onClickEvents.StopOnClickEvent;
 				$(consoleContainer.find(":contains('" + RUN + "')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDestructive").attr("onClick", stopClick).attr("title", STOP).html(STOP);
 			} else {
+				var stopButton = $(consoleContainer.find(":contains('" + STOP + "')"));
+				if (stopButton.length === 0) {
+					var runButton = $(consoleContainer.find(":contains('" + RUN + "')"));
+					runButton.attr("title", STOP).html(STOP);
+				}
 				$(consoleContainer.find(":contains('" + STOP + "')")).removeClass("consoleButtonDestructive").addClass("consoleButtonDisabled").removeAttr('onClick');
 			}
 

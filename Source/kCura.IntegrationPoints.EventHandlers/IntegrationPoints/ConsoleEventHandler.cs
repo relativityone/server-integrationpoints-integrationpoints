@@ -65,7 +65,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (_buttonStateBuilder == null)
 				{
 					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
-					IIntegrationPointManager integrationPointManager = ManagerFactory.CreateIntegrationPointManager(contextContainer);
 					IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
 					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
 					IStateManager stateManager = ManagerFactory.CreateStateManager();
@@ -73,7 +72,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IIntegrationPointPermissionValidator permissionValidator =
 						new IntegrationPointPermissionValidator(new[] {new ViewErrorsPermissionValidator(repositoryFactory)}, new JSONSerializer());
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
-					_buttonStateBuilder = new ButtonStateBuilder(integrationPointManager, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator);
+					IRSAPIService rsapiService = new RSAPIService(Helper, Helper.GetActiveCaseID());
+					IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
+					_buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, rsapiService);
 				}
 				return _buttonStateBuilder;
 			}

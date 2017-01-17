@@ -11,39 +11,42 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
 	public class ButtonStateBuilder : IButtonStateBuilder
 	{
-		private readonly IIntegrationPointManager _integrationPointManager;
+		private readonly IProviderTypeService _providerTypeService;
+		private readonly IRSAPIService _rsapiService;
 		private readonly IJobHistoryManager _jobHistoryManager;
 		private readonly IPermissionRepository _permissionRepository;
 		private readonly IQueueManager _queueManager;
 		private readonly IStateManager _stateManager;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 
-		public ButtonStateBuilder(IIntegrationPointManager integrationPointManager, IQueueManager queueManager, IJobHistoryManager jobHistoryManager, IStateManager stateManager,
-			IPermissionRepository permissionRepository, IIntegrationPointPermissionValidator permissionValidator)
+		public ButtonStateBuilder(IProviderTypeService providerTypeService, IQueueManager queueManager, IJobHistoryManager jobHistoryManager,
+			IStateManager stateManager,
+			IPermissionRepository permissionRepository, IIntegrationPointPermissionValidator permissionValidator, IRSAPIService rsapiService)
 		{
-			_integrationPointManager = integrationPointManager;
+			_providerTypeService = providerTypeService;
 			_queueManager = queueManager;
 			_jobHistoryManager = jobHistoryManager;
 			_stateManager = stateManager;
 			_permissionRepository = permissionRepository;
 			_permissionValidator = permissionValidator;
+			_rsapiService = rsapiService;
 		}
 
 		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
 		{
-			IntegrationPointDTO integrationPointDto = _integrationPointManager.Read(applicationArtifactId, integrationPointArtifactId);
+			var integrationPoint = _rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			var providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 
 			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
 
-			Constants.SourceProvider sourceProvider = _integrationPointManager.GetSourceProvider(applicationArtifactId, integrationPointDto);
-			
-			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile), ArtifactPermission.Create);
+			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
+				ArtifactPermission.Create);
 
 			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
 			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
-			bool integrationPointIsStoppable = IntegrationPointIsStoppable(applicationArtifactId, integrationPointArtifactId);
-			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			ButtonStateDTO buttonState = _stateManager.GetButtonState(sourceProvider, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
+			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType, applicationArtifactId, integrationPointArtifactId);
+			bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
+			ButtonStateDTO buttonState = _stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
 				integrationPointIsStoppable, hasAddProfilePermission);
 			return buttonState;
 		}
@@ -53,8 +56,12 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return _queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
 		}
 
-		private bool IntegrationPointIsStoppable(int applicationArtifactId, int integrationPointArtifactId)
+		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId)
 		{
+			if (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile)
+			{
+				return false;
+			}
 			StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId);
 			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
 			return integrationPointIsStoppable;
