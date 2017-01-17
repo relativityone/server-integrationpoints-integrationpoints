@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -65,11 +66,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
-			IRepositoryFactory repositoryFactory)
+			IRepositoryFactory repositoryFactory,
+			IProviderTypeService providerTypeService)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer,
 				appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
 				jobManager, null, statisticsService, managerFactory, dataReaderWrapperFactory,
-				contextContainerFactory, jobService, false)
+				contextContainerFactory, jobService, providerTypeService)
 		{
 			_managerQueueService = managerQueueService;
 			_repositoryFactory = repositoryFactory;
