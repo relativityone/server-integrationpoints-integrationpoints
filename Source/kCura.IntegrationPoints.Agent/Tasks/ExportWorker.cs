@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -24,19 +25,44 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	{
 		#region Constructor
 
-		public ExportWorker(ICaseServiceContext caseServiceContext, IHelper helper,
-			IDataProviderFactory dataProviderFactory, ISerializer serializer,
-			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory, IJobHistoryService jobHistoryService,
-			JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IJobManager jobManager, IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService, ExportProcessRunner exportProcessRunner, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory,
-			IJobService jobService)
-			: base(
-				caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorServiceProvider.JobHistoryErrorService, jobManager, statuses, statisticsService, managerFactory, contextContainerFactory, jobService
-			)
+		public ExportWorker(
+			ICaseServiceContext caseServiceContext,
+			IHelper helper,
+			IDataProviderFactory dataProviderFactory,
+			ISerializer serializer,
+			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+			IJobHistoryService jobHistoryService,
+			JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider,
+			IJobManager jobManager,
+			IEnumerable<IBatchStatus> statuses,
+			JobStatisticsService statisticsService,
+			ExportProcessRunner exportProcessRunner,
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainerFactory,
+			IDataReaderWrapperFactory dataReaderWrapperFactory,
+			IJobService jobService,
+			IDataTransferLocationService dataTransferLocationService,
+			IProviderTypeService providerTypeService
+		) : base(
+			caseServiceContext,
+			helper,
+			dataProviderFactory,
+			serializer,
+			appDomainRdoSynchronizerFactoryFactory,
+			jobHistoryService,
+			jobHistoryErrorServiceProvider.JobHistoryErrorService,
+			jobManager,
+			statuses,
+			statisticsService,
+			managerFactory,
+			dataReaderWrapperFactory,
+			contextContainerFactory,
+			jobService,
+			providerTypeService)
 		{
 			_exportProcessRunner = exportProcessRunner;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
+			_dataTransferLocationService = dataTransferLocationService;
 		}
 
 		#endregion //Constructor
@@ -45,6 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private readonly ExportProcessRunner _exportProcessRunner;
 		private readonly IAPILog _logger;
+		private readonly IDataTransferLocationService _dataTransferLocationService;
 
 		#endregion //Fields
 
@@ -65,6 +92,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			var sourceSettings = DeserializeSourceSettings(sourceConfiguration, job);
 			var destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
+
+			PrepareDestinationLocation(sourceSettings);
 
 			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId, job);
 		}
@@ -95,6 +124,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		private void PrepareDestinationLocation(ExportUsingSavedSearchSettings settings)
+		{
+			try
+			{
+				settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID, settings.Fileshare,
+					Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
+			}
+			catch (Exception e)
+			{
+				LogDataTransferLocationPreparationError(settings?.Fileshare, e);
+			}
+		}
+
 		#endregion //Methods
 
 		#region Logging
@@ -107,6 +149,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void LogDeserializationOfDestinationSettingsError(Job job, string destinationSettings, Exception e)
 		{
 			_logger.LogError(e, "Failed to deserialize destination settings ({DestinationSettings}) for job {JobId}.", destinationSettings, job.JobId);
+		}
+
+		private void LogDataTransferLocationPreparationError(string path, Exception e)
+		{
+			_logger.LogError(e, "Failed to create transfer location'sdirectory structure", path);
 		}
 
 		#endregion

@@ -12,6 +12,8 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -38,6 +40,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IAPILog _logger;
 		private readonly JobStatisticsService _statisticsService;
 		private IEnumerable<IBatchStatus> _batchStatus;
+		private IDataReaderWrapperFactory _dataReaderWrapperFactory;
+		private IProviderTypeService _providerTypeService;
 
 		public SyncWorker(
 			ICaseServiceContext caseServiceContext,
@@ -51,8 +55,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IBatchStatus> statuses,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
+			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService) :
+			IJobService jobService, IProviderTypeService providerTypeService) :
 			this(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -64,8 +69,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				statuses,
 				statisticsService,
 				managerFactory,
+				dataReaderWrapperFactory,
 				contextContainerFactory,
-				jobService, true)
+				jobService, true, providerTypeService)
 		{
 		}
 
@@ -81,8 +87,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IBatchStatus> statuses,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
+			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, bool isStoppable) :
+			IJobService jobService, bool isStoppable, IProviderTypeService providerTypeService) :
 			base(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -98,7 +105,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			BatchStatus = statuses;
 			_statisticsService = statisticsService;
 			_isStoppable = isStoppable;
+			_providerTypeService = providerTypeService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncWorker>();
+			_dataReaderWrapperFactory = dataReaderWrapperFactory;
 		}
 
 		public IEnumerable<IBatchStatus> BatchStatus
@@ -134,29 +143,55 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			JobStopManager?.ThrowIfStopRequested();
 
+			IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+			//Obtain settings for destination configuration
+			ImportSettings destinationSettings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
+
+			//Make non-Relativity providers log the document RDOs' created by/modified by field as the user who submitted the job.
+			//(Adjustment only needs to be made before IDataSynchronizer.SyncData)
+			if (dataSynchronizer is RdoSynchronizer)
+			{
+				destinationSettings.OnBehalfOfUserId = job.SubmittedBy;
+				destinationConfiguration = Serializer.Serialize(destinationSettings);
+			}
+
+			//Extract source fields from field map
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-            using (ImportDataReader importDataReader = new ImportDataReader(
-                    sourceProvider,
-                    sourceFields,
-                    entryIDs,
-                    sourceConfiguration))
-            {
-                importDataReader.Setup(fieldMaps);
-                IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
-                if (dataSynchronizer is RdoSynchronizerBase)
-                {
-                    ImportSettings settings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
-                    settings.OnBehalfOfUserId = job.SubmittedBy;
-                    destinationConfiguration = Serializer.Serialize(settings);
-                }
+			var providerType = _providerTypeService.GetProviderType(sourceProviderRdo.ArtifactId, destinationProvider.ArtifactId);
 
-                SetupSubscriptions(dataSynchronizer, job);
+			if (providerType == ProviderType.ImportLoadFile)
+			{
+				using (IDataReader sourceDataReader = _dataReaderWrapperFactory.GetWrappedDataReader(
+					sourceProvider,
+					fieldMaps,
+					sourceFields,
+					destinationSettings,
+					entryIDs,
+					sourceConfiguration))
+				{
+					SetupSubscriptions(dataSynchronizer, job);
+					JobStopManager?.ThrowIfStopRequested();
 
-                JobStopManager?.ThrowIfStopRequested();
+					dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
+					IEnumerable<IDictionary<FieldEntry, object>> data = GetSourceData(sourceFields, sourceDataReader);
+					dataSynchronizer.SyncData(data, fieldMaps, destinationConfiguration);
+				}
+			}
+			else 
+			{
+				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
+				{
+					SetupSubscriptions(dataSynchronizer, job);
 
-                dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
-            }
+					IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+
+					JobStopManager?.ThrowIfStopRequested();
+
+					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+				}
+			}
 		}
 
 		protected virtual void ExecuteTask(Job job)

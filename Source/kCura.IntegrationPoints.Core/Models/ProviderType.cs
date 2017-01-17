@@ -6,6 +6,7 @@
 		LoadFile,
 		FTP,
 		LDAP,
+		ImportLoadFile,
 		Other
 	}
 }
