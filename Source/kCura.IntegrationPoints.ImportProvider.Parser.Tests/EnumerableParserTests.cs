@@ -73,13 +73,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		[Test]
 		public void ParsesUnprintableDelimiterData()
 		{
-            char quoteDelimiter = (char)(new Random()).Next(1, 32);
-            char recordDelimiter;
-            do
-            {
-                recordDelimiter = (char)(new Random()).Next(1, 32);
-            } while (recordDelimiter == quoteDelimiter);
-            BasicParsingHelper(recordDelimiter, quoteDelimiter);
+			char quoteDelimiter = (char)(new Random()).Next(1, 32);
+			char recordDelimiter;
+			do
+			{
+				recordDelimiter = (char)(new Random()).Next(1, 32);
+			} while (recordDelimiter == quoteDelimiter);
+			BasicParsingHelper(recordDelimiter, quoteDelimiter);
 		}
 	}
 }
