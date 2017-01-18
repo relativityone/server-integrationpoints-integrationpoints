@@ -248,7 +248,6 @@
     <Compile Include="Managers\IJobStopManager.cs" />
     <Compile Include="Managers\IErrorManager.cs" />
     <Compile Include="Managers\IFieldManager.cs" />
-    <Compile Include="Managers\IIntegrationPointManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\SourceObjectBatchUpdateManager.cs" />
@@ -260,7 +259,6 @@
     <Compile Include="Managers\Implementations\JobStopManager.cs" />
     <Compile Include="Managers\Implementations\ErrorManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
-    <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
     <Compile Include="Managers\Implementations\JobHistoryManager.cs" />
     <Compile Include="Managers\Implementations\JobHistoryErrorManager.cs" />
     <Compile Include="Managers\Implementations\NullableStopJobManager.cs" />

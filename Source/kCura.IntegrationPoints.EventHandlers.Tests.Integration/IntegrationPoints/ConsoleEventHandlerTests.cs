@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		public void SetUp()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
+			_providerTypeService = Substitute.For<IProviderTypeService>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_helperClassFactory = Substitute.For<IHelperClassFactory>();
 			_contextContainer = Substitute.For<IContextContainer>();
@@ -39,6 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
+			_rsapiService = Substitute.For<IRSAPIService>();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
 			{
@@ -48,7 +50,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_instance =
 				new EventHandlers.IntegrationPoints.ConsoleEventHandler(
-					new ButtonStateBuilder(_integrationPointManager, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator),
+					new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator, _rsapiService),
 					_onClickEventHelper, new ConsoleBuilder())
 				{
 					ActiveArtifact = activeArtifact,
@@ -68,8 +70,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private const string _RETRY_ENDPOINT = "IP.retryJob";
 		private const string _STOP_ENDPOINT = "IP.stopJob";
 
+		private IRSAPIService _rsapiService;
 		private IManagerFactory _managerFactory;
-		private IIntegrationPointManager _integrationPointManager;
+		private IProviderTypeService _providerTypeService;
 		private IContextContainerFactory _contextContainerFactory;
 		private IHelperClassFactory _helperClassFactory;
 		private IContextContainer _contextContainer;
@@ -101,16 +104,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			bool hasProfileAddPermission)
 		{
 			// ARRANGE
-			var integrationPointDto = new IntegrationPointDTO
+			var integrationPoint = new Data.IntegrationPoint
 			{
 				HasErrors = true,
-				SourceProvider = 8392
+				SourceProvider = 8392,
+				DestinationProvider = 437
 			};
 
 			string[] viewErrorMessages = {Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW};
-			Constants.SourceProvider sourceProvider = Constants.SourceProvider.Relativity;
+			ProviderType providerType = ProviderType.Relativity;
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 			_managerFactory.CreateStateManager().Returns(_stateManager);
 			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
 			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
@@ -119,9 +122,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
 
-			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
-			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
-				.Returns(sourceProvider);
+			_rsapiService.IntegrationPointLibrary.Read(_ARTIFACT_ID).Returns(integrationPoint);
+			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
 
 			StoppableJobCollection stoppableJobCollection = null;
 
@@ -164,9 +166,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
 			_stateManager.GetButtonState(
-					Constants.SourceProvider.Relativity,
+					ProviderType.Relativity, 
 					hasJobsExecutingOrInQueue,
-					integrationPointDto.HasErrors.Value,
+					integrationPoint.HasErrors.Value,
 					hasViewErrorsPermissions,
 					hasStoppableJobs,
 					hasProfileAddPermission)
@@ -188,9 +190,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			onClickEvents = new OnClickEventDTO
 			{
 				RunOnClickEvent = actionButtonOnClickEvent,
-				RetryErrorsOnClickEvent = integrationPointDto.HasErrors.Value && !hasJobsExecutingOrInQueue ? $"{_RETRY_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})" : string.Empty,
+				RetryErrorsOnClickEvent = integrationPoint.HasErrors.Value && !hasJobsExecutingOrInQueue ? $"{_RETRY_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})" : string.Empty,
 				ViewErrorsOnClickEvent =
-					integrationPointDto.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : string.Empty,
+					integrationPoint.HasErrors.Value && hasViewErrorsPermissions ? "Really long string" : string.Empty,
 				StopOnClickEvent = actionButtonOnClickEvent
 			};
 
@@ -248,7 +250,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			Assert.AreEqual(_RETRY_ERRORS, retryErrorsButton.DisplayText);
 			Assert.AreEqual(buttonStates.RetryErrorsButtonEnabled, retryErrorsButton.Enabled);
 			Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
-			Assert.AreEqual(!hasJobsExecutingOrInQueue && integrationPointDto.HasErrors.Value ? $"{_RETRY_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})" : string.Empty,
+			Assert.AreEqual(!hasJobsExecutingOrInQueue && integrationPoint.HasErrors.Value ? $"{_RETRY_ENDPOINT}({_ARTIFACT_ID},{_APPLICATION_ID})" : string.Empty,
 				retryErrorsButton.OnClickEvent);
 
 			if (hasViewErrorsPermissions)
@@ -262,21 +264,29 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		}
 
 		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[TestCase(true, true)]
-		[TestCase(true, false)]
-		[TestCase(false, false)]
-		public void GetConsole_NonRelativityProvider_GoldFlow(bool hasJobsExecutingOrInQueue, bool hasStoppableJobs)
+		[TestCase(true, true, ProviderType.FTP)]
+		[TestCase(true, true, ProviderType.LDAP)]
+		[TestCase(true, true, ProviderType.LoadFile)]
+		[TestCase(true, true, ProviderType.Other)]
+		[TestCase(true, false, ProviderType.FTP)]
+		[TestCase(true, false, ProviderType.LDAP)]
+		[TestCase(true, false, ProviderType.LoadFile)]
+		[TestCase(true, false, ProviderType.Other)]
+		[TestCase(false, false, ProviderType.FTP)]
+		[TestCase(false, false, ProviderType.LDAP)]
+		[TestCase(false, false, ProviderType.LoadFile)]
+		[TestCase(false, false, ProviderType.Other)]
+		public void GetConsole_NonRelativityProvider_GoldFlow(bool hasJobsExecutingOrInQueue, bool hasStoppableJobs, ProviderType providerType)
 		{
 			// ARRANGE
-			var integrationPointDto = new IntegrationPointDTO
+			var integrationPoint = new Data.IntegrationPoint
 			{
 				HasErrors = true,
-				SourceProvider = 8392
+				SourceProvider = 8392,
+				DestinationProvider = 243
 			};
-
-			Constants.SourceProvider sourceProvider = Constants.SourceProvider.Other;
+			
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 			_managerFactory.CreateStateManager().Returns(_stateManager);
 			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
 			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
@@ -285,9 +295,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
-			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
-				.Returns(sourceProvider);
+			_rsapiService.IntegrationPointLibrary.Read(_ARTIFACT_ID).Returns(integrationPoint);
+			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
+
 			_permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(new ValidationResult());
 
 			StoppableJobCollection stoppableJobCollection = null;
@@ -321,7 +331,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				RetryErrorsButtonEnabled = false
 			};
 
-			_stateManager.GetButtonState(Constants.SourceProvider.Other, hasJobsExecutingOrInQueue, true, true, hasStoppableJobs, true).Returns(buttonStates);
+			_stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, true, true, hasStoppableJobs, true).Returns(buttonStates);
 
 			string actionButtonOnClickEvent;
 			if (!hasJobsExecutingOrInQueue)

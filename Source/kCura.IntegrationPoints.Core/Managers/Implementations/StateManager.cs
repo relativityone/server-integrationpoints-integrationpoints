@@ -1,18 +1,19 @@
-﻿using kCura.IntegrationPoints.Domain.Models;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class StateManager : IStateManager
 	{
-		public ButtonStateDTO GetButtonState(Constants.SourceProvider sourceProvider, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
+		public ButtonStateDTO GetButtonState(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
 			bool hasStoppableJobs, bool hasProfileAddPermission)
 		{
 			bool runButtonEnabled = IsRunButtonEnable(hasJobsExecutingOrInQueue);
-			bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(sourceProvider, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermissions);
-			bool retryErrorsButtonEnabled = IsRetryErrorsButtonEnabled(sourceProvider, hasJobsExecutingOrInQueue, hasErrors);
+			bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermissions);
+			bool retryErrorsButtonEnabled = IsRetryErrorsButtonEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors);
 			bool stopButtonEnabled = IsStopButtonEnabled(hasStoppableJobs);
-			bool viewErrorsLinkVisible = IsViewErrorsLinkVisible(sourceProvider, hasErrorViewPermissions);
-			bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(sourceProvider);
+			bool viewErrorsLinkVisible = IsViewErrorsLinkVisible(providerType, hasErrorViewPermissions);
+			bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(providerType);
 			bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
 
 			return new ButtonStateDTO
@@ -32,14 +33,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return !hasJobsExecutingOrInQueue;
 		}
 
-		private bool IsViewErrorsLinkEnabled(Constants.SourceProvider sourceProvider, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions)
+		private bool IsViewErrorsLinkEnabled(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions)
 		{
-			return (sourceProvider == Constants.SourceProvider.Relativity) && !hasJobsExecutingOrInQueue && hasErrors && hasErrorViewPermissions;
+			return (providerType == ProviderType.Relativity) && !hasJobsExecutingOrInQueue && hasErrors && hasErrorViewPermissions;
 		}
 
-		private bool IsRetryErrorsButtonEnabled(Constants.SourceProvider sourceProvider, bool hasJobsExecutingOrInQueue, bool hasErrors)
+		private bool IsRetryErrorsButtonEnabled(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors)
 		{
-			return (sourceProvider == Constants.SourceProvider.Relativity) && !hasJobsExecutingOrInQueue && hasErrors;
+			return (providerType == ProviderType.Relativity) && !hasJobsExecutingOrInQueue && hasErrors;
 		}
 
 		private bool IsStopButtonEnabled(bool hasStoppableJobs)
@@ -47,14 +48,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return hasStoppableJobs;
 		}
 
-		private bool IsViewErrorsLinkVisible(Constants.SourceProvider sourceProvider, bool hasErrorViewPermissions)
+		private bool IsViewErrorsLinkVisible(ProviderType providerType, bool hasErrorViewPermissions)
 		{
-			return (sourceProvider == Constants.SourceProvider.Relativity) && hasErrorViewPermissions;
+			return (providerType == ProviderType.Relativity) && hasErrorViewPermissions;
 		}
 
-		private bool IsRetryErrorsButtonVisible(Constants.SourceProvider sourceProvider)
+		private bool IsRetryErrorsButtonVisible(ProviderType providerType)
 		{
-			return sourceProvider == Constants.SourceProvider.Relativity;
+			return providerType == ProviderType.Relativity;
 		}
 
 		private bool IsSaveAsProfileButtonVisible(bool hasProfileAddPermission)

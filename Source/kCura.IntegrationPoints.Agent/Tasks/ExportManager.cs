@@ -5,13 +5,11 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -90,10 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override int BatchTask(Job job, IEnumerable<string> batchIDs)
 		{
-			IIntegrationPointManager integrationPointManager = ManagerFactory
-				.CreateIntegrationPointManager(ContextContainerFactory.CreateContextContainer(Helper));
-
-			IntegrationPointDTO integrationPoint = integrationPointManager.Read(job.WorkspaceID, job.RelatedObjectArtifactID);
+			var integrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{

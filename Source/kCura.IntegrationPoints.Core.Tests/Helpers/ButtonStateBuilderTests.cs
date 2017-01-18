@@ -3,15 +3,13 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
@@ -20,17 +18,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		[SetUp]
 		public override void SetUp()
 		{
-			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
+			_providerTypeService = Substitute.For<IProviderTypeService>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_stateManager = Substitute.For<IStateManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
+			_rsapiService = Substitute.For<IRSAPIService>();
 
-			_buttonStateBuilder = new ButtonStateBuilder(_integrationPointManager, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator);
+			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator,
+				_rsapiService);
 		}
 
-		private IIntegrationPointManager _integrationPointManager;
+		private IRSAPIService _rsapiService;
+		private IProviderTypeService _providerTypeService;
 		private IJobHistoryManager _jobHistoryManager;
 		private IQueueManager _queueManager;
 		private IStateManager _stateManager;
@@ -39,29 +40,36 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
 		private ButtonStateBuilder _buttonStateBuilder;
 
-		[TestCase(Constants.SourceProvider.Relativity, true, true, true, true, true)]
-		[TestCase(Constants.SourceProvider.Other, true, true, true, true, true)]
-		[TestCase(Constants.SourceProvider.Relativity, false, true, true, true, true)]
-		[TestCase(Constants.SourceProvider.Relativity, true, false, true, true, true)]
-		[TestCase(Constants.SourceProvider.Relativity, true, true, false, true, true)]
-		[TestCase(Constants.SourceProvider.Relativity, true, true, true, false, true)]
-		[TestCase(Constants.SourceProvider.Relativity, true, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, true, true)]
+		[TestCase(ProviderType.Other, true, true, true, true, true)]
+		[TestCase(ProviderType.FTP, true, true, true, true, true)]
+		[TestCase(ProviderType.LDAP, true, true, true, true, true)]
+		[TestCase(ProviderType.LoadFile, true, true, true, true, true)]
+		[TestCase(ProviderType.Relativity, false, true, true, true, true)]
+		[TestCase(ProviderType.Relativity, true, false, true, true, true)]
+		[TestCase(ProviderType.Relativity, true, true, false, true, true)]
+		[TestCase(ProviderType.Relativity, true, true, true, false, true)]
+		[TestCase(ProviderType.Relativity, true, true, true, true, false)]
 		[Test]
-		public void BuildButtonState_GoldWorkflow(Constants.SourceProvider sourceProvider, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue, bool hasStoppableJobs,
+		public void BuildButtonState_GoldWorkflow(ProviderType providerType, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue, bool hasStoppableJobs,
 			bool hasErrors, bool hasAddProfilePermission)
 		{
 			int applicationArtifactId = 501;
 			int integrationPointArtifactId = 229;
+			int sourceProviderArtifactId = 841;
+			int destinationProviderArtifactId = 273;
 
-			_integrationPointManager.Read(applicationArtifactId, integrationPointArtifactId).Returns(new IntegrationPointDTO
+			_rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId).Returns(new Data.IntegrationPoint
 			{
-				HasErrors = hasErrors
+				HasErrors = hasErrors,
+				SourceProvider = sourceProviderArtifactId,
+				DestinationProvider = destinationProviderArtifactId
 			});
 
 			_permissionValidator.ValidateViewErrors(applicationArtifactId).Returns(
-				hasErrorViewPermission ? new ValidationResult() : new ValidationResult(new[] { "error" }));
+				hasErrorViewPermission ? new ValidationResult() : new ValidationResult(new[] {"error"}));
 
-			_integrationPointManager.GetSourceProvider(applicationArtifactId, Arg.Any<IntegrationPointDTO>()).Returns(sourceProvider);
+			_providerTypeService.GetProviderType(sourceProviderArtifactId, destinationProviderArtifactId).Returns(providerType);
 
 			_queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId).Returns(hasJobsExecutingOrInQueue);
 
@@ -74,7 +82,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
 			_buttonStateBuilder.CreateButtonState(applicationArtifactId, integrationPointArtifactId);
 
-			_stateManager.Received(1).GetButtonState(sourceProvider, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermission, hasStoppableJobs, hasAddProfilePermission);
+			bool hasTrulyStoppableJobs = hasStoppableJobs && (providerType == ProviderType.Relativity || providerType == ProviderType.LoadFile);
+
+			_stateManager.Received(1).GetButtonState(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermission, hasTrulyStoppableJobs, hasAddProfilePermission);
 		}
 	}
 }

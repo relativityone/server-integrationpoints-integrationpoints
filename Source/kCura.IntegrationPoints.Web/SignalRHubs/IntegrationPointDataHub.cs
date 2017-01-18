@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
@@ -32,9 +33,10 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private static SortedDictionary<string, IntegrationPointDataHubInput> _tasks;
 		private static Timer _updateTimer;
 		private readonly IButtonStateBuilder _buttonStateBuilder;
+		private readonly IRSAPIService _rsapiService;
+		private readonly IProviderTypeService _providerTypeService;
 		private readonly IContextContainer _contextContainer;
 		private readonly IHelperClassFactory _helperClassFactory;
-		private readonly IIntegrationPointManager _integrationPointManager;
 		private readonly int _intervalBetweentasks = 100;
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
@@ -49,8 +51,9 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			IIntegrationPointPermissionValidator permissionValidator =
 				new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new JSONSerializer());
-
-			_buttonStateBuilder = new ButtonStateBuilder(_integrationPointManager, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator);
+			_rsapiService = new RSAPIService(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
+			_providerTypeService = new ProviderTypeService(_rsapiService);
+			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, _rsapiService);
 		}
 
 		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory,
@@ -59,7 +62,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_contextContainer = contextContainer;
 			_helperClassFactory = helperClassFactory;
 			_managerFactory = managerFactory;
-			_integrationPointManager = managerFactory.CreateIntegrationPointManager(_contextContainer);
 
 			if (_tasks == null)
 			{
@@ -102,22 +104,23 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					foreach (var key in _tasks.Keys)
 					{
 						IntegrationPointDataHubInput input = _tasks[key];
-						IntegrationPointDTO integrationPointDTO = _integrationPointManager.Read(input.WorkspaceId, input.ArtifactId);
+						IntegrationPoint integrationPoint = _rsapiService.IntegrationPointLibrary.Read(input.ArtifactId);
 
-						Core.Constants.SourceProvider sourceProvider = _integrationPointManager.GetSourceProvider(input.WorkspaceId, integrationPointDTO);
-						bool sourceProviderIsRelativity = sourceProvider == Core.Constants.SourceProvider.Relativity;
+						ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
+							integrationPoint.DestinationProvider.Value);
+						bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
 
 						IntegrationPointModel model = new IntegrationPointModel
 						{
-							HasErrors = integrationPointDTO.HasErrors,
-							LastRun = integrationPointDTO.LastRuntimeUTC,
-							NextRun = integrationPointDTO.NextScheduledRuntimeUTC
+							HasErrors = integrationPoint.HasErrors,
+							LastRun = integrationPoint.LastRuntimeUTC,
+							NextRun = integrationPoint.NextScheduledRuntimeUTC
 						};
 
 						IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
 
 						var buttonStates = _buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
-						var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId, integrationPointDTO.Name, buttonStates);
+						var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId, integrationPoint.Name, buttonStates);
 
 						Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
 
