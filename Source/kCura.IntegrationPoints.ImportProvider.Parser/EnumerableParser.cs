@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private IEnumerator<string> _sourceFileEnumerator;
 		private char _columnDelimiter;
 		private char _quoteDelimiter;
-		private string _regex;
 		private List<string> _current;
 		private bool _hasNext;
 
@@ -52,7 +51,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			_columnDelimiter = columnDelimiter;
 			_quoteDelimiter = quoteDelimiter;
 			_hasNext = true;
-			_regex = BuildRegex(columnDelimiter, quoteDelimiter);
 			ResetEnumerator();
 		}
 
@@ -81,8 +79,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			bool rv = _hasNext;
 			if (rv)
 			{
-				_current = (from Match m in Regex.Matches(_sourceFileEnumerator.Current, _regex)
-							select m.ToString().Trim(_quoteDelimiter)).ToList();
+				updateCurrent();
 				_hasNext = _sourceFileEnumerator.MoveNext();
 			}
 			return rv;
@@ -104,26 +101,30 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			_hasNext = _sourceFileEnumerator.MoveNext();
 		}
 
-		private string BuildRegex(char columnDelimiter, char quoteDelimiter)
+		private void updateCurrent()
 		{
-			//Example regex for:
-			//	quote delimiter:   "   ==> ASCII 34 (0x22)
-			//	column delimiter:  ,   ==> ASCII 44 (0x2c)
-			//	[\x22].+?[\x22]|[^\x2c]+
-
-			string quoteHex = ((int)quoteDelimiter).ToString("x2");
-			string colHex = ((int)columnDelimiter).ToString("x2");
-
-			return string.Concat(new string[] {
-				@"[\x",
-				quoteHex,
-				@"].+?[\x",
-				quoteHex,
-				@"]|[^",
-				@"\x",
-				colHex,
-				@"]+"
-			});
+			_current = new List<string>();
+			string tmp = string.Empty;
+			string sourceLine = _sourceFileEnumerator.Current;
+			bool inQuotes = false;
+			for (int i = 0; i < sourceLine.Length; i++)
+			{
+				char cur = sourceLine[i];
+				if (cur == _quoteDelimiter)
+				{
+					inQuotes = !inQuotes;
+				}
+				else if (!inQuotes && cur == _columnDelimiter)
+				{
+					_current.Add(tmp);
+					tmp = string.Empty;
+				}
+				else
+				{
+					tmp += cur;
+				}
+			}
+			_current.Add(tmp);
 		}
 	}
 }
