@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received().CommitErrors();
 			EnsureToUpdateTheStopStateBackToNone();
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received().CommitErrors();
 			EnsureToUpdateTheStopStateBackToNone();
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received().CommitErrors();
 			EnsureToUpdateTheStopStateBackToNone();
@@ -240,7 +240,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
 			_jobHistoryErrorService.Received().CommitErrors();
