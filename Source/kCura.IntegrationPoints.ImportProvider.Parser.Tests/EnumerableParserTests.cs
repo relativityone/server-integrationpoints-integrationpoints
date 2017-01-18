@@ -15,17 +15,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 		}
 
-		private static int MAX_ROWS = 5;
+		private static int TEST_ROWS = 5;
+		private static int TEST_COLS = 5;
 
-		private static int MAX_COLS = 5;
-
-		private static IEnumerable<string> BasicTestDataHelper(char delimiter, int rows, int columns)
+		private static IEnumerable<string> BasicTestDataHelper(char delimiter, char quoteDelimiter, int rows, int columns)
 		{
 			List<string> rv = new List<string>();
-			rv.Add(string.Join(delimiter.ToString(), Enumerable.Range(0, columns).Select((i) => string.Format("field-{0}", i))));
+			rv.Add(string.Join(delimiter.ToString(), Enumerable.Range(0, columns).Select((i) =>
+				quoteDelimiter + ((i == columns - 1) ? string.Empty : string.Format("field-{0}", i)) + quoteDelimiter
+				)));
 			foreach (int row in Enumerable.Range(0, rows))
 			{
-				rv.Add(string.Join(delimiter.ToString(), Enumerable.Range(0, columns).Select((i) => string.Format("r{0}v{1}", row, i))));
+				rv.Add(string.Join(delimiter.ToString(), Enumerable.Range(0, columns).Select((i) =>
+				quoteDelimiter + ((i == columns - 1) ? string.Empty : string.Format("r{0}v{1}", row, i)) + quoteDelimiter
+				)));
 			}
 			return rv;
 		}
@@ -33,10 +36,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private void BasicParsingHelper(char recordDelimiter, char quoteDelimiter)
 		{
 			string[] separator = new string[] { recordDelimiter.ToString() };
-			Random randGen = new Random();
-			int rows = randGen.Next(MAX_ROWS);
-			int cols = randGen.Next(MAX_COLS);
-			IEnumerable<string> testData = BasicTestDataHelper(recordDelimiter, rows, cols);
+			IEnumerable<string> testData = BasicTestDataHelper(recordDelimiter, quoteDelimiter, TEST_ROWS, TEST_COLS);
 
 			EnumerableParser ep = new EnumerableParser(testData, recordDelimiter, quoteDelimiter);
 
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 				string currentTestData = testDataEnum.Current;
 				testDataEnum.MoveNext();
 
-				string[] tdCols = currentTestData.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+				string[] tdCols = currentTestData.Split(separator, StringSplitOptions.None).Select(x => x.Trim(quoteDelimiter)).ToArray();
 				Assert.AreEqual(currentEpOutput.Length, tdCols.Length);
 				int tdIdx = 0;
 				foreach (string epColumn in currentEpOutput)
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             do
             {
                 recordDelimiter = (char)(new Random()).Next(1, 32);
-            } while (recordDelimiter != quoteDelimiter);
+            } while (recordDelimiter == quoteDelimiter);
             BasicParsingHelper(recordDelimiter, quoteDelimiter);
 		}
 	}
