@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.FtpProvider.Parser;
 using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
 using Relativity.API;
 using Renci.SshNet.Common;
+using Constants = kCura.IntegrationPoints.FtpProvider.Helpers.Constants;
 
 namespace kCura.IntegrationPoints.FtpProvider
 {
@@ -191,8 +192,11 @@ namespace kCura.IntegrationPoints.FtpProvider
 			//must contain the same columns in the same order as it was initially when Integration Point was saved
 			string expectedColumns = string.Join(parserOptions.Delimiters[0], settings.ColumnList.Select(x => x.FieldIdentifier).ToList());
 
-			if (!expectedColumns.Equals(columns, StringComparison.InvariantCultureIgnoreCase))
+			string fixedColumns = string.Join(",", columns.Split(',').Select(item => item.Trim().TrimStart('"').TrimEnd('"')));
+
+			if (!expectedColumns.Equals(fixedColumns, StringComparison.InvariantCultureIgnoreCase))
 			{
+				LogValidatingColumnsError(columns, expectedColumns);
 				LogValidatingColumnsError(columns, expectedColumns);
 				throw new Exceptions.ColumnsMissmatchExcepetion();
 			}
