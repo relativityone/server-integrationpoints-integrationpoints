@@ -841,6 +841,54 @@ namespace kCura.ScheduleQueue.Core.Tests
 			}
 		}
 
+		[TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 1, "Central Standard Time", "06/02/2016 1:15 AM")]
+		[TestCase("Central European Standard Time", "01:45 AM", "05/01/2016", 1, "Central Standard Time", "04/30/2016 11:45 PM")]
+		[TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 31, "Central Standard Time", "06/01/2016 1:15 AM")]
+		[TestCase("Central Standard Time", "08:15 PM", "02/05/2016", 31, "Central Standard Time", "03/01/2016 2:15 AM")]
+		[TestCase("Central Standard Time", "11:15 PM", "03/10/2016", 17, "Central Standard Time", "03/18/2016 4:15 AM")]    //stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;		CST → CDT change 03/12/2016 
+		[TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", 29, "Central Standard Time", "03/28/2016 11:20 PM")]    //stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;		CET → CEST change 03/26/2016 
+		[TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", 2, "Central Standard Time", "11/2/2016 1:25 AM")]    //stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;		CEST → CET change 10/30/2016
+		public void CalculateLastDayOfScheduledMonthlyJob(string clientTimeZone, string clientLocalTime, string clientStartDate, int? dayOfMonth,
+			string serverTimeZone, string expectedRunUtcTime)
+		{
+			// arrange
+			DateTime startDate = DateTime.Parse(clientStartDate);
+			DateTime endDate = startDate.AddYears(1);
+			
+			// client time
+			TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
+			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+			DateTime clientTime = startDate.Add(clientlocalTime);
+			//For tesat purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
+			TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
+
+			// server time
+			TimeZoneInfo serverTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(serverTimeZone);
+			TimeSpan serverClientOffSet = clientUtcOffSet.Add(serverTimeZoneInfo.BaseUtcOffset);
+			const int serverTimeShift = -2;     //To set server time before expectedRunUtcTime
+			DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
+
+			var rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, startDate, clientlocalTime, endDate, 0, null, dayOfMonth, null, null, null, clientTimeZone)
+			{
+				TimeService = Substitute.For<ITimeService>()
+			};
+			rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
+			
+			// act
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+
+			// assert
+			if (expectedRunUtcTime == null)
+			{
+				Assert.IsNull(nextRunTime);
+			}
+			else
+			{
+				Assert.IsNotNull(nextRunTime);
+				Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
+			}
+		}
+
 		[Test]
 		[TestCase("01/01/2017", "08:50 PM", "1/1/2017 7:50 PM")]
 		public void NextRunJobScheduledToFirstDayOfMonth(string clientStartDate, string clientLocalTime, string expectedRunUtcTime)
@@ -871,6 +919,40 @@ namespace kCura.ScheduleQueue.Core.Tests
 				Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
 			}
 		}
+
+
+		[TestCase("Central European Standard Time", "1:20 AM", "02/25/2017", "09/03/2017", "09/05/2017 11:20 PM")]
+		[TestCase("Central European Standard Time", "1:20 AM", "02/25/2017", "10/28/2017", "11/01/2017 12:20 AM")]  //DST: CEST → CET change 10/30/2016
+		public void NextRunJobServerAhead(string clientTimeZone, string clientLocalTime, string clientStartDate, string serverDateTime, string expectedRunUtcTime)
+		{
+			// arrange
+			DateTime startDate = DateTime.Parse(clientStartDate);
+			DateTime endDate = startDate.AddYears(1);
+			const DaysOfWeek dayToRun = DaysOfWeek.Wednesday;
+
+			// client time
+			TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
+			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+			//For test purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
+			TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
+
+			// server time
+			DateTime serverTime = DateTime.Parse(serverDateTime);
+
+			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, startDate, clientlocalTime, endDate, (int)clientUtcOffSet.TotalMinutes, dayToRun, null, null, null, null, clientTimeZone)
+			{
+				TimeService = Substitute.For<ITimeService>()
+			};
+			rule.TimeService.UtcNow.Returns(serverTime);
+
+			// act
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+
+			//assert
+			Assert.IsNotNull(nextRunTime);
+			Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
+		}
+
 
 		//server ahead
 
