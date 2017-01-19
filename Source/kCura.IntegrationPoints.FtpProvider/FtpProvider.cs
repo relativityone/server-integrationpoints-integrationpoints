@@ -78,6 +78,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 				{
 					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
 					//This is to hide the issue because data is corretly parsed
+					LogRetrievingFieldsWarning(ex, ex.Message);
 				}
 				else
 				{
@@ -131,6 +132,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 				{
 					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
 					//This is to hide the issue because data is corretly parsed
+					LogRetrievingBatchableIdsWarning(ex, ex.Message);
 				}
 				else
 				{
@@ -173,6 +175,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 				{
 					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
 					//This is to hide the issue because data is corretly parsed
+					LogRetrievingDataWarning(ex, ex.Message);
 				}
 				else
 				{
@@ -256,12 +259,22 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		private void LogRetrievingFieldsErrorWithDetails(Exception ex, string message)
 		{
-			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider. Details: {Message}.");
+			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider. Details: {Message}.", message);
+		}
+
+		private void LogRetrievingFieldsWarning(Exception ex, string message)
+		{
+			_logger.LogWarning(ex, "Error occured while retrieving fields. Details: {Message}", message);
 		}
 
 		private void LogRetrievingBatchableIdsError(FieldEntry identifier, Exception ex)
 		{
 			_logger.LogError(ex, "Failed to retrieve batchable ids in FTP Provider for field {FieldIdentifier}.", identifier.FieldIdentifier);
+		}
+
+		private void LogRetrievingBatchableIdsWarning(Exception ex, string message)
+		{
+			_logger.LogWarning(ex, "Error occured while retrieving batchable ids. Details: {Message}", message);
 		}
 
 		private void LogRetrievingBatchableIdsErrorWithDetails(FieldEntry identifier, Exception ex, string message)
@@ -270,10 +283,15 @@ namespace kCura.IntegrationPoints.FtpProvider
 				"Failed to retrieve batchable ids in FTP Provider for field {FieldIdentifier}. Details: {Message}.",
 				identifier.FieldIdentifier, message);
 		}
-
+		
 		private void LogRetrievingDataError(IEnumerable<string> entryIds, Exception ex)
 		{
 			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for ids {Ids}.", string.Join(",", entryIds));
+		}
+
+		private void LogRetrievingDataWarning(Exception ex, string message)
+		{
+			_logger.LogWarning(ex, "Error occured while retrieving data. Details: {Message}", message);
 		}
 
 		private void LogRetrievingDataErrorWithDetails(IEnumerable<string> entryIds, Exception ex, string message)
