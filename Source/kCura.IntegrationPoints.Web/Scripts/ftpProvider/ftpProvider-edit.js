@@ -158,9 +158,11 @@ var ftpHelper = (function (data) {
                 });
             }, function(data) {
            
-        	if(data.status == '400'){
-		IP.frameMessaging().dFrame.IP.message.error.raise("File not found.");
-		}   
+        	if (data.status == '400') {
+		        IP.frameMessaging().dFrame.IP.message.error.raise("File not found.");
+	        } else {
+        		IP.frameMessaging().dFrame.IP.message.error.raise(data.responseText);
+	        }
             });
         }, function (error) {
             IP.frameMessaging().dFrame.IP.message.error.raise(error.statusText);

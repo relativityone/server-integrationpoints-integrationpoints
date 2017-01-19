@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve integration point types.")]
 		public HttpResponseMessage Get()
 		{
 			var types = _integrationPointTypeService.GetAllIntegrationPointTypes();

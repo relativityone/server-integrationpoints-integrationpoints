@@ -122,6 +122,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string RELATIVITY = "423B4D43-EAE9-4E14-B767-17D629DE4BB2";
 				public const string FTP = "85120BC8-B2B9-4F05-99E9-DE37BB6C0E15";
 				public const string LDAP = "5BF1F2C2-9670-4D6E-A3E9-DBC83DB6C232";
+				public const string IMPORTLOADFILE = "548f0873-8e5e-4da6-9f27-5f9cda764636";
 			}
 
 			public class DestinationProviders

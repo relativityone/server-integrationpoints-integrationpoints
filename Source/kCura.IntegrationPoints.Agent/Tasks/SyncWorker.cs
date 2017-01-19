@@ -12,6 +12,8 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -38,6 +40,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly JobStatisticsService _statisticsService;
 		private IEnumerable<IBatchStatus> _batchStatus;
 		private IDataReaderWrapperFactory _dataReaderWrapperFactory;
+		private IProviderTypeService _providerTypeService;
 
 		public SyncWorker(
 			ICaseServiceContext caseServiceContext,
@@ -53,7 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerFactory managerFactory,
 			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService) :
+			IJobService jobService, IProviderTypeService providerTypeService) :
 			this(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -67,7 +70,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				managerFactory,
 				dataReaderWrapperFactory,
 				contextContainerFactory,
-				jobService, true)
+				jobService, true, providerTypeService)
 		{
 		}
 
@@ -85,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerFactory managerFactory,
 			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, bool isStoppable) :
+			IJobService jobService, bool isStoppable, IProviderTypeService providerTypeService) :
 			base(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -101,6 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			BatchStatus = statuses;
 			_statisticsService = statisticsService;
 			_isStoppable = isStoppable;
+			_providerTypeService = providerTypeService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncWorker>();
 			_dataReaderWrapperFactory = dataReaderWrapperFactory;
 		}
@@ -154,18 +158,38 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			//Extract source fields from field map
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-			using (IDataReader sourceData = _dataReaderWrapperFactory.GetWrappedDataReader(
-				sourceProvider,
-				fieldMaps,
-				sourceFields,
-				destinationSettings,
-				entryIDs,
-				sourceConfiguration
-				))
+			var providerType = _providerTypeService.GetProviderType(sourceProviderRdo.ArtifactId, destinationProvider.ArtifactId);
+
+			if (providerType == ProviderType.ImportLoadFile)
 			{
-				SetupSubscriptions(dataSynchronizer, job);
-				JobStopManager?.ThrowIfStopRequested();
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+				using (IDataReader sourceDataReader = _dataReaderWrapperFactory.GetWrappedDataReader(
+					sourceProvider,
+					fieldMaps,
+					sourceFields,
+					destinationSettings,
+					entryIDs,
+					sourceConfiguration))
+				{
+					SetupSubscriptions(dataSynchronizer, job);
+					JobStopManager?.ThrowIfStopRequested();
+
+					dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
+					IEnumerable<IDictionary<FieldEntry, object>> data = GetSourceData(sourceFields, sourceDataReader);
+					dataSynchronizer.SyncData(data, fieldMaps, destinationConfiguration);
+				}
+			}
+			else 
+			{
+				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
+				{
+					SetupSubscriptions(dataSynchronizer, job);
+
+					IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+
+					JobStopManager?.ThrowIfStopRequested();
+
+					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+				}
 			}
 		}
 

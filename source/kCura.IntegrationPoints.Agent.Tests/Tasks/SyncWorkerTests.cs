@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -58,6 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IContextContainer _contextContainer;
 		private IJobHistoryManager _jobHistoryManager;
 		private IDataReaderWrapperFactory _dataReaderWrapperFactory;
+		private IProviderTypeService _providerTypeService;
 
 		[SetUp]
 		public override void SetUp()
@@ -81,10 +83,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_contextContainer = Substitute.For<IContextContainer>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_dataReaderWrapperFactory = Substitute.For<IDataReaderWrapperFactory>();
+			_providerTypeService = Substitute.For<IProviderTypeService>();
 
 			_instance = new SyncWorker(_caseServiceContext, _helper, _dataProviderFactory, _serializer, 
 				_appDomainRdoSynchronizerFactory, _jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
-				null, _managerFactory, _dataReaderWrapperFactory, _contextContainerFactory, _jobService );
+				null, _managerFactory, _dataReaderWrapperFactory, _contextContainerFactory, _jobService, _providerTypeService);
 
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);
@@ -136,7 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received().CommitErrors();
 			EnsureToUpdateTheStopStateBackToNone();
@@ -157,7 +160,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received().CommitErrors();
 			EnsureToUpdateTheStopStateBackToNone();
@@ -177,7 +180,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received().CommitErrors();
 			EnsureToUpdateTheStopStateBackToNone();
@@ -237,7 +240,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobStart(_job);
 			EnsureToSetJobHistroyErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
 			_jobHistoryErrorService.Received().CommitErrors();

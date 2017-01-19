@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Web.Helpers
 			{ProviderType.LoadFile, "~/Views/Fileshare/LoadFileProviderSummaryPage.cshtml" },
 			{ProviderType.Relativity, "~/Views/RelativityProvider/RelativityProviderSummaryPage.cshtml" },
 			{ProviderType.Other, "~/Views/ThirdPartyProviders/ThirdPartyProviderSummaryPage.cshtml" },
+			{ProviderType.ImportLoadFile, "~/Views/ThirdPartyProviders/ThirdPartyProviderSummaryPage.cshtml" },
 		};
 
 		public string this[ProviderType type] => _summaryPagesDictionary[type];
