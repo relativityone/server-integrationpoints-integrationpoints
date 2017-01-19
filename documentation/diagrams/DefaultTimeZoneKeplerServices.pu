@@ -3,7 +3,7 @@
 actor User
 User -> Browser : Enable Scheduler
 
-Browser -> TimeZoneManager : GetWindowsTimeZones()
+Browser -> TimeZoneManager : GetWindowsTimeZonesAsync()
 
 Browser <- TimeZoneManager : List containing all the Windows Time Zone objects
 
@@ -21,7 +21,7 @@ note right of Browser
   client IANA Time Zone id.
 end note
 
-Browser -> TimeZoneManager : ConvertIanaToWindowsTimeZone(ianaZoneId)
+Browser -> TimeZoneManager : ConvertIanaToWindowsTimeZoneAsync(ianaZoneId)
 
 note right of TimeZoneManager
   IANA Time Zone Id mapped to

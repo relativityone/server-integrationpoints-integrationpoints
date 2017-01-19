@@ -268,7 +268,7 @@
 			dataType: "json",
 			headers: { "X-CSRF-Header": "-" },
 			type: "POST",
-			url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZones")
+			url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZonesAsync")
 		}).then(function (winTimeZones) {
 			self.timeZones(winTimeZones);
 			self.timeZoneId(self.options.timeZoneId);
@@ -284,7 +284,7 @@
 			dataType: "json",
 			headers: { "X-CSRF-Header": "-" },
 			type: "POST",
-			url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/ConvertIanaToWindowsTimeZone")
+			url: ("/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/ConvertIanaToWindowsTimeZoneAsync")
 		}).then(function (winTimeZone) {
 			self.timeZoneId(winTimeZone);
 		});
