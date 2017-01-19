@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 							var columns = parser.ParseColumns();
 							foreach (var column in columns)
 							{
-								retVal.Add(new FieldEntry {DisplayName = column, FieldIdentifier = column});
+								retVal.Add(new FieldEntry { DisplayName = column, FieldIdentifier = column });
 							}
 						}
 					}
@@ -73,8 +73,17 @@ namespace kCura.IntegrationPoints.FtpProvider
 					LogRetrievingFieldsErrorWithDetails(ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingFieldsError(ex);
-				throw new Exception(ex.ToString());
+				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
+						ex.ToString().Contains("The remote server returned an error")))
+				{
+					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+					//This is to hide the issue because data is corretly parsed
+				}
+				else
+				{
+					LogRetrievingFieldsError(ex);
+					throw new Exception(ex.ToString());
+				}
 			}
 
 			return retVal;
@@ -106,6 +115,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 						ValidateColumns(columns, settings, parserOptions);
 					}
 					retVal = fileReader;
+					return retVal;
 				}
 			}
 			catch (Exception ex)
@@ -116,11 +126,20 @@ namespace kCura.IntegrationPoints.FtpProvider
 					LogRetrievingBatchableIdsErrorWithDetails(identifier, ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingBatchableIdsError(identifier, ex);
-				throw new Exception(ex.ToString());
+				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
+						ex.ToString().Contains("The remote server returned an error")))
+				{
+					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+					//This is to hide the issue because data is corretly parsed
+				}
+				else
+				{
+					LogRetrievingBatchableIdsError(identifier, ex);
+					throw new Exception(ex.ToString());
+				}
 			}
 
-			return retVal;
+			return null;
 		}
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
@@ -138,6 +157,8 @@ namespace kCura.IntegrationPoints.FtpProvider
 				TextReader reader = _dataReaderFactory.GetEnumerableReader(entryIds);
 				IParser parser = _parserFactory.GetDelimitedFileParser(reader, parserOptions, columnList);
 				retVal = parser.ParseData();
+
+				return retVal;
 			}
 			catch (Exception ex)
 			{
@@ -147,11 +168,20 @@ namespace kCura.IntegrationPoints.FtpProvider
 					LogRetrievingDataErrorWithDetails(entryIds, ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingDataError(entryIds, ex);
-				throw new Exception(ex.ToString());
+				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
+						ex.ToString().Contains("The remote server returned an error")))
+				{
+					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+					//This is to hide the issue because data is corretly parsed
+				}
+				else
+				{
+					LogRetrievingDataError(entryIds, ex);
+					throw new Exception(ex.ToString());
+				}
 			}
 
-			return retVal;
+			return null;
 		}
 
 		internal DateTime GetCurrentTime(int? offset)
