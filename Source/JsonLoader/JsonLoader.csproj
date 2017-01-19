@@ -57,7 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="kCura.EventHandler, Version=9.4.240.4, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.4.240.4\lib\net45\kCura.EventHandler.dll</HintPath>
+      <HintPath>..\packages\kCura.EventHandler.9.5.35.67\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">
