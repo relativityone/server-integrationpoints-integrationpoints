@@ -42,27 +42,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IContextContainerFactory _contextContainerFactory;
 		private ICaseServiceContext _caseServiceContext;
 		private IRSAPIClient _rsapiClient;
-		private IWorkspaceDBContext _workspaceDbContext;
-		private IEddsServiceContext _eddsServiceContext;
-		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
 		private IAgentService _agentService;
 		private IJobService _jobService;
 		private IManagerFactory _managerFactory;
 		private TaskFactory _instance;
-		private IIntegrationPointService _integrationPointService;
 		private IRelativityConfigurationFactory _relativityConfigurationFactory;
 		private IJobHistoryErrorService _jobHistoryErrorService;
 		private IContextContainer _contextContainer;
 		private IQueueManager _queueManager;
-		private IIntegrationPointProviderValidator _ipValidator;
 		private IServiceManagerProvider _serviceManagerProvider;
-		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
 
 			_helper = Substitute.For<IAgentHelper>();
@@ -70,9 +63,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_rsapiClient = Substitute.For<IRSAPIClient>();
-			_workspaceDbContext = Substitute.For<IWorkspaceDBContext>();
-			_eddsServiceContext = Substitute.For<IEddsServiceContext>();
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_agentService = Substitute.For<IAgentService>();
@@ -83,12 +73,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_contextContainer = Substitute.For<IContextContainer>();
 			_queueManager = Substitute.For<IQueueManager>();
-			_ipValidator = Substitute.For<IIntegrationPointProviderValidator>();
-			_toggleProvider = Substitute.For<IToggleProvider>();
 
-			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _rsapiClient,
-				_workspaceDbContext, _eddsServiceContext, _repositoryFactory, _jobHistoryService, _agentService, _jobService,
-				_managerFactory, apiLog, _ipValidator, _toggleProvider);
+			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _jobHistoryService, _agentService, _jobService,
+				_managerFactory, apiLog);
 		}
 
 		[Test]
@@ -200,7 +187,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
 			IWindsorContainer container = Substitute.For<IWindsorContainer>();
-			container.Resolve<IIntegrationPointService>().Returns(_integrationPointService);
+
+			container.Resolve<ICaseServiceContext>().Returns(_caseServiceContext);
 			container.Resolve<IRelativityConfigurationFactory>().Returns(_relativityConfigurationFactory);
 			container.Resolve<ISerializer>().Returns(_serializer);
 			container.Resolve<IJobHistoryService>().Returns(_jobHistoryService);
@@ -213,7 +201,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun,
 				Arg.Any<DateTime>()).Returns(jobHistory);
 
-			_integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(relatedId).Returns(new Data.IntegrationPoint());
 
 			TaskFactory taskFactory = new TaskFactory(_helper, container);
 
@@ -233,10 +221,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void CreateTask_AllTaskTypesAreResolvable(TaskType taskType)
 		{
 			// Arrange
-			IAgentHelper helper = Substitute.For<IAgentHelper>();
-			IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
-			IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
-			IRelativityConfigurationFactory relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
 			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
 			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
@@ -251,7 +235,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 			integrationPointLibrary.Read(relatedId).Returns(integrationPoint);
 			IWindsorContainer windsorContainer = new WindsorContainer();
-			windsorContainer.Register(Component.For<IIntegrationPointService>().Instance(_integrationPointService));
 			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
 			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
 			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
@@ -265,7 +248,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			int jobId = 342343;
 
-			_integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(relatedId).Returns(new Data.IntegrationPoint());
 
 			Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
 			try

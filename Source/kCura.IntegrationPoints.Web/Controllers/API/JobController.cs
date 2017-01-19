@@ -103,10 +103,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				targetHelper = _helper;
 			}
 
-			IContextContainer targetContextContainer = _contextContainerFactory.CreateContextContainer(targetHelper);
-			IJobHistoryService jobHistoryService = _managerFactory.CreateJobHistoryService(_context, targetContextContainer, _serializer);
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
-				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+
 			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
 		}
@@ -117,10 +116,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage Retry(Payload payload)
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-			IJobHistoryService jobHistoryService = _managerFactory.CreateJobHistoryService(_context, contextContainer, _serializer);
+
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper,
-				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+
 			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RetryIntegrationPoint);
 			return httpResponseMessage;
 		}
@@ -133,10 +132,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			string errorMessage = String.Empty;
 			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
-			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-			IJobHistoryService jobHistoryService = _managerFactory.CreateJobHistoryService(_context, contextContainer, _serializer);
+
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper,
-				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
 
 			try
 			{

@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 			IContextContainerFactory contextContainerFactory,
 			ISerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService,
-			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory,
 			IIntegrationPointProviderValidator ipValidator,
 			IIntegrationPointPermissionValidator permissionValidator,

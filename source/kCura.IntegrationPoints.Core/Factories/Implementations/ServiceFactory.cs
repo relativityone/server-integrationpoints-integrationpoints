@@ -22,12 +22,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			ISerializer serializer, 
 			IChoiceQuery choiceQuery,
 			IJobManager jobService, 
-			IJobHistoryService jobHistoryService, 
 			IManagerFactory managerFactory,
 			IIntegrationPointProviderValidator ipValidator,
 			IIntegrationPointPermissionValidator permissionValidator,
 			IToggleProvider toggleProvider)
 		{
+			IContextContainer targetContextContainer = contextContainerFactory.CreateContextContainer(targetHelper);
+			IJobHistoryService jobHistoryService = managerFactory.CreateJobHistoryService(context, targetContextContainer, serializer);
+
 			return new IntegrationPointService(
 				helper, 
 				targetHelper, 

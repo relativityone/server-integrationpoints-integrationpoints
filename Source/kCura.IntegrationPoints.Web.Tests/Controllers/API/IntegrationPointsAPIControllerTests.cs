@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			};
 
 			_serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
-				_jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 
 			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
 
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			var validationResult = new ValidationResult(false, "That's a damn shame.");
 			Exception expectException = new IntegrationPointProviderValidationException(validationResult);
 			_serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
-				_jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 			_integrationPointService.SaveIntegration(Arg.Any<IntegrationPointModel>()).Throws(expectException);
 
 			// Act

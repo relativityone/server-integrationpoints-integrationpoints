@@ -11,16 +11,12 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -46,17 +42,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IWindsorContainer _container;
 		private IContextContainerFactory _contextContainerFactory;
-		private IEddsServiceContext _eddsServiceContext;
-		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
 		private IJobService _jobService;
 		private IManagerFactory _managerFactory;
-		private IRepositoryFactory _repositoryFactory;
-		private IRSAPIClient _rsapiClient;
 		private ISerializer _serializer;
-		private IWorkspaceDBContext _workspaceDbContext;
-		private readonly IIntegrationPointProviderValidator _ipValidator;
-		private readonly IToggleProvider _toggleProvider;
 
 		public TaskFactory(IAgentHelper helper)
 		{
@@ -73,25 +62,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		///     For unit tests only
 		/// </summary>
 		internal TaskFactory(IAgentHelper helper, ISerializer serializer, IContextContainerFactory contextContainerFactory, ICaseServiceContext caseServiceContext,
-			IRSAPIClient rsapiClient, IWorkspaceDBContext workspaceDbContext, IEddsServiceContext eddsServiceContext,
-			IRepositoryFactory repositoryFactory, IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory,
-			IAPILog apiLog, IIntegrationPointProviderValidator ipValidator, IToggleProvider toggleProvider)
+			IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory, IAPILog apiLog)
 		{
 			_helper = helper;
 			_serializer = serializer;
 			_contextContainerFactory = contextContainerFactory;
 			_caseServiceContext = caseServiceContext;
-			_rsapiClient = rsapiClient;
-			_workspaceDbContext = workspaceDbContext;
-			_eddsServiceContext = eddsServiceContext;
-			_repositoryFactory = repositoryFactory;
 			_jobHistoryService = jobHistoryService;
 			_agentService = agentService;
 			_jobService = jobService;
 			_managerFactory = managerFactory;
 			_logger = apiLog;
-			_ipValidator = ipValidator;
-			_toggleProvider = toggleProvider;
 		}
 
 		private IWindsorContainer Container
@@ -196,13 +177,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_serializer = Container.Resolve<ISerializer>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
-			_rsapiClient = Container.Resolve<IRSAPIClient>();
-			_workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
-			_eddsServiceContext = Container.Resolve<IEddsServiceContext>();
-			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
-			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
@@ -227,25 +203,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
-			IIntegrationPointService integrationPointService;
-			if (_integrationPointService == null)
-			{
-				IChoiceQuery choiceQuery = new ChoiceQuery(_rsapiClient);
-				JobResourceTracker jobResourceTracker = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
-				JobTracker jobTracker = new JobTracker(jobResourceTracker);
-				IJobManager jobManager = new AgentJobManager(_eddsServiceContext, _jobService, _helper, _serializer, jobTracker);
-				IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), _serializer);
-				IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), _serializer);
-
-				integrationPointService = new IntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, 
-					choiceQuery, jobManager, _jobHistoryService, _managerFactory, ipValidator, permissionValidator, _toggleProvider);
-			}
-			else
-			{
-				integrationPointService = _integrationPointService;
-			}
-
-			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			var integrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{

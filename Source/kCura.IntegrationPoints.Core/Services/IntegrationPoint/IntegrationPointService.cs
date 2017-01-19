@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
 	public class IntegrationPointService : IntegrationPointServiceBase<Data.IntegrationPoint>, IIntegrationPointService
 	{
-		private IContextContainer _targetContextContainer;
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 
@@ -415,17 +414,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
-				// TODO: This is only for the Fest Demo! 
-				// Please replace this to use proper DI! -- biedrzycki: Oct 7th, 2016
-				ImportSettings setting = Serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-				if (setting.FederatedInstanceArtifactId != null)
-				{
-					IHelperFactory helperFactory = new HelperFactory(ManagerFactory, new ContextContainerFactory(), new RelativityCoreTokenProvider());
-					IHelper targetHelper = helperFactory.CreateOAuthClientHelper(SourceContextContainer.Helper, setting.FederatedInstanceArtifactId.Value);
-					_targetContextContainer = new ContextContainer(targetHelper);
-				}
-
-				IJobHistoryService jobHistoryService = ManagerFactory.CreateJobHistoryService(Context, _targetContextContainer, Serializer);
 				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 			}

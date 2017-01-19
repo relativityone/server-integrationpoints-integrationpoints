@@ -87,7 +87,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				model.ArtifactID = id;
 				if (id > 0)
 				{
-					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, _context ,_contextContainerFactory, _serializer, _choiceQuery, _jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, 
+						_context ,_contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
 					model = integrationPointService.ReadIntegrationPoint(id);
 				}
 				if (model.DestinationProvider == 0)
@@ -122,7 +123,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 							targetHelper = _cpHelper;
 						}
 
-						IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper, _context, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+						IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper, 
+							_context, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
 						
 						int createdId;
 						try

@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateJobHistoryService(_caseServiceContext, _contextContainer, _serializer).Returns(_jobHistoryService);
-			_serviceFactory.CreateIntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+			_serviceFactory.CreateIntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 			_managerFactory.CreateAuditManager(_contextContainer, _WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
 			_repositoryFactory.GetIntegrationPointRepository(_WORKSPACE_ARTIFACT_ID).Returns(_integrationPointRepository);
 			_auditManager.RelativityAuditRepository.Returns(_auditRepository);
