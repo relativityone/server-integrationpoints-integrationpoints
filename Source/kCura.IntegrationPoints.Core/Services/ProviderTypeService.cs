@@ -30,6 +30,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				return ProviderType.LDAP;
 			}
+			if (sourceProviderGuid.Equals(Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE, StringComparison.InvariantCultureIgnoreCase))
+			{
+				return  ProviderType.ImportLoadFile;
+			}
 			if (sourceProviderGuid.Equals(Constants.IntegrationPoints.SourceProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase))
 			{
 				if (destinationProviderGuid.Equals(Constants.IntegrationPoints.DestinationProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase))
