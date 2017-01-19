@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			: base($"DataTransferMigrationTests_{Utils.FormatedDateTimeNow}")
 		{ }
 
-		public override void TestSetup()
+		public override void SuiteSetup()
 		{
-			base.TestSetup();
+			base.SuiteSetup();
 
 			_logger = Substitute.For<IAPILog>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
@@ -68,6 +68,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_resourcePoolManager = Substitute.For<IResourcePoolManager>();
 
 			_resourcePoolManager.GetProcessingSourceLocation(WorkspaceArtifactId).Returns(CreateSampleProcessingSourceLocations());
+		}
+
+		public override void TestSetup()
+		{
+			base.TestSetup();
 
 			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
 				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _integrationPointLibrary,

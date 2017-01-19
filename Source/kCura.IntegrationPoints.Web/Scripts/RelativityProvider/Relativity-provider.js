@@ -15,7 +15,7 @@
 
 		errorContainer.appendChild(iconSpan);
 
-		$(element).parents('.editFieldValue').eq(0).append(errorContainer);
+		$(element).parents('.field-value').eq(0).append(errorContainer);
 
 		return iconSpan;
 	};
@@ -195,7 +195,7 @@
 					self.TargetFolder(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
 				}
 			});
-			self.locationSelector.toggle(!self.disable);
+			self.locationSelector.toggle(!self.disable && self.TargetWorkspaceArtifactId.isValid());
 		};
 
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
@@ -243,6 +243,14 @@
 			self.updateWorkspaces();
 		});
 
+		this.TargetFolder.extend({
+			required: {
+				onlyIf: function () {
+					return !self.disable;
+				}
+			}
+		});
+
 		this.TargetWorkspaceArtifactId.extend({
 			required: {
 				onlyIf: function () {
@@ -287,6 +295,17 @@
 				},
 				params: { workspaces: self.workspaces }
 			}
+		});
+
+		self.TargetWorkspaceArtifactId.subscribe(function (value) {
+			if (value !== undefined) {
+				self.getFolderAndSubFolders(value);
+			}
+			if (!self.TargetWorkspaceArtifactId.isValid()) {
+				self.TargetFolder("");
+				self.TargetFolder.isModified(false);
+			}
+			self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
 		});
 
 		this.SavedSearchArtifactId.extend({

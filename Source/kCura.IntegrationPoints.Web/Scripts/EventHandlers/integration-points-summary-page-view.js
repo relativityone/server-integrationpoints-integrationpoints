@@ -110,7 +110,7 @@ $(function integrationPointsSummaryPageView() {
 					headers: { "X-CSRF-Header": "-" },
 					type: "POST",
 					url:
-						"/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZones",
+						"/Relativity.REST/api/Relativity.Services.TimeZone.ITimeZoneModule/Time%20Zone%20Service/GetWindowsTimeZonesAsync",
 					async: false
 				})
 					.then(function (result) {

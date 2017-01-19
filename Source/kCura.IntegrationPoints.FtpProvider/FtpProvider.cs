@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.FtpProvider.Parser;
 using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
 using Relativity.API;
 using Renci.SshNet.Common;
+using Constants = kCura.IntegrationPoints.FtpProvider.Helpers.Constants;
 
 namespace kCura.IntegrationPoints.FtpProvider
 {
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 							var columns = parser.ParseColumns();
 							foreach (var column in columns)
 							{
-								retVal.Add(new FieldEntry {DisplayName = column, FieldIdentifier = column});
+								retVal.Add(new FieldEntry { DisplayName = column, FieldIdentifier = column });
 							}
 						}
 					}
@@ -72,8 +73,18 @@ namespace kCura.IntegrationPoints.FtpProvider
 					LogRetrievingFieldsErrorWithDetails(ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingFieldsError(ex);
-				throw new Exception(ex.ToString());
+				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
+						ex.ToString().Contains("The remote server returned an error")))
+				{
+					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+					//This is to hide the issue because data is corretly parsed
+					LogRetrievingFieldsWarning(ex, ex.Message);
+				}
+				else
+				{
+					LogRetrievingFieldsError(ex);
+					throw new Exception(ex.ToString());
+				}
 			}
 
 			return retVal;
@@ -105,6 +116,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 						ValidateColumns(columns, settings, parserOptions);
 					}
 					retVal = fileReader;
+					return retVal;
 				}
 			}
 			catch (Exception ex)
@@ -115,11 +127,21 @@ namespace kCura.IntegrationPoints.FtpProvider
 					LogRetrievingBatchableIdsErrorWithDetails(identifier, ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingBatchableIdsError(identifier, ex);
-				throw new Exception(ex.ToString());
+				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
+						ex.ToString().Contains("The remote server returned an error")))
+				{
+					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+					//This is to hide the issue because data is corretly parsed
+					LogRetrievingBatchableIdsWarning(ex, ex.Message);
+				}
+				else
+				{
+					LogRetrievingBatchableIdsError(identifier, ex);
+					throw new Exception(ex.ToString());
+				}
 			}
 
-			return retVal;
+			return null;
 		}
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
@@ -137,6 +159,8 @@ namespace kCura.IntegrationPoints.FtpProvider
 				TextReader reader = _dataReaderFactory.GetEnumerableReader(entryIds);
 				IParser parser = _parserFactory.GetDelimitedFileParser(reader, parserOptions, columnList);
 				retVal = parser.ParseData();
+
+				return retVal;
 			}
 			catch (Exception ex)
 			{
@@ -146,11 +170,21 @@ namespace kCura.IntegrationPoints.FtpProvider
 					LogRetrievingDataErrorWithDetails(entryIds, ex, message);
 					throw new Exception(message);
 				}
-				LogRetrievingDataError(entryIds, ex);
-				throw new Exception(ex.ToString());
+				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
+						ex.ToString().Contains("The remote server returned an error")))
+				{
+					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+					//This is to hide the issue because data is corretly parsed
+					LogRetrievingDataWarning(ex, ex.Message);
+				}
+				else
+				{
+					LogRetrievingDataError(entryIds, ex);
+					throw new Exception(ex.ToString());
+				}
 			}
 
-			return retVal;
+			return null;
 		}
 
 		internal DateTime GetCurrentTime(int? offset)
@@ -191,8 +225,11 @@ namespace kCura.IntegrationPoints.FtpProvider
 			//must contain the same columns in the same order as it was initially when Integration Point was saved
 			string expectedColumns = string.Join(parserOptions.Delimiters[0], settings.ColumnList.Select(x => x.FieldIdentifier).ToList());
 
-			if (!expectedColumns.Equals(columns, StringComparison.InvariantCultureIgnoreCase))
+			string fixedColumns = string.Join(",", columns.Split(',').Select(item => item.Trim().TrimStart('"').TrimEnd('"')));
+
+			if (!expectedColumns.Equals(fixedColumns, StringComparison.InvariantCultureIgnoreCase))
 			{
+				LogValidatingColumnsError(columns, expectedColumns);
 				LogValidatingColumnsError(columns, expectedColumns);
 				throw new Exceptions.ColumnsMissmatchExcepetion();
 			}
@@ -222,12 +259,22 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		private void LogRetrievingFieldsErrorWithDetails(Exception ex, string message)
 		{
-			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider. Details: {Message}.");
+			_logger.LogError(ex, "Failed to retrieve fields in FTP Provider. Details: {Message}.", message);
+		}
+
+		private void LogRetrievingFieldsWarning(Exception ex, string message)
+		{
+			_logger.LogWarning(ex, "Error occured while retrieving fields. Details: {Message}", message);
 		}
 
 		private void LogRetrievingBatchableIdsError(FieldEntry identifier, Exception ex)
 		{
 			_logger.LogError(ex, "Failed to retrieve batchable ids in FTP Provider for field {FieldIdentifier}.", identifier.FieldIdentifier);
+		}
+
+		private void LogRetrievingBatchableIdsWarning(Exception ex, string message)
+		{
+			_logger.LogWarning(ex, "Error occured while retrieving batchable ids. Details: {Message}", message);
 		}
 
 		private void LogRetrievingBatchableIdsErrorWithDetails(FieldEntry identifier, Exception ex, string message)
@@ -236,10 +283,15 @@ namespace kCura.IntegrationPoints.FtpProvider
 				"Failed to retrieve batchable ids in FTP Provider for field {FieldIdentifier}. Details: {Message}.",
 				identifier.FieldIdentifier, message);
 		}
-
+		
 		private void LogRetrievingDataError(IEnumerable<string> entryIds, Exception ex)
 		{
 			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for ids {Ids}.", string.Join(",", entryIds));
+		}
+
+		private void LogRetrievingDataWarning(Exception ex, string message)
+		{
+			_logger.LogWarning(ex, "Error occured while retrieving data. Details: {Message}", message);
 		}
 
 		private void LogRetrievingDataErrorWithDetails(IEnumerable<string> entryIds, Exception ex, string message)

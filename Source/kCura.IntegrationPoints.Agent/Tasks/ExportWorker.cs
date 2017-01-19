@@ -43,7 +43,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IContextContainerFactory contextContainerFactory,
 			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IJobService jobService,
-			IDataTransferLocationService dataTransferLocationService
+			IDataTransferLocationService dataTransferLocationService,
+			IProviderTypeService providerTypeService
 		) : base(
 			caseServiceContext,
 			helper,
@@ -58,7 +59,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			managerFactory,
 			dataReaderWrapperFactory,
 			contextContainerFactory,
-			jobService)
+			jobService,
+			providerTypeService)
 		{
 			_exportProcessRunner = exportProcessRunner;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();

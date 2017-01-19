@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -53,6 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobService _jobService;
 		private IJobManager _jobManager;
 		private IDataReaderWrapperFactory _dataReaderWrapperFactory;
+		private IProviderTypeService _providerTypeService;
 
 		private SyncCustodianManagerWorker _instance;
 
@@ -111,6 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_rdoRepository = Substitute.For<IRdoRepository>();
 			_fieldRepository = Substitute.For<IFieldRepository>();
+			_providerTypeService = Substitute.For<IProviderTypeService>();
 
 			_workspaceArtifactId = 12345;
 
@@ -129,7 +132,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_dataReaderWrapperFactory,
 				_contextContainerFactory,
 				_jobService,
-				_repositoryFactory
+				_repositoryFactory,
+				_providerTypeService
 				);
 
 			_job = JobHelper.GetJob(
@@ -279,7 +283,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<System.Data.IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			_jobHistoryErrorService.Received().CommitErrors();
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -292,7 +296,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobStopManager
 				.When(manager => manager.ThrowIfStopRequested())
 				.Do(Callback.First(x => { })
-					.Then(x => { }).Then(x => { })
+					.Then(x => { }).Then(x => { }).Then(x => { })
 					.Then(info => { throw new OperationCanceledException(); }));
 			_jobStopManager.IsStopRequested().Returns(true);
 
@@ -301,7 +305,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<System.Data.IDataReader>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
 		}
@@ -312,7 +316,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -345,7 +349,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 			task.GetType().GetField("_destinationConfiguration", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, jsonParam2);
 
 			//ACT

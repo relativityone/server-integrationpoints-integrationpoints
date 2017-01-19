@@ -14,12 +14,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private DataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
 		private ISerializer _serializer;
 
-		private readonly IList<string> _testProcessingSourceLocations = new List<string>()
-		{
-			"ProcessingSourceLocation\\Export",
-			"ExportSourceLocation"
-		};
-
 		private string _newDataTransferLocationRoot = "DataTransfer\\Export";
 
 		public override void SetUp()
@@ -32,9 +26,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		[TestCaseSource(nameof(GetUpdatedSourceConfigurationTestData))]
 		public void ItShouldGetUpdatedSourceConfiguration(string sourceConfiguration, string relativeExportLocation)
 		{
+			IList<string> testProcessingSourceLocations = new List<string>()
+			{
+				"ProcessingSourceLocation\\Export",
+				"ExportSourceLocation"
+			};
+
 			string result = _dataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(sourceConfiguration,
-				_testProcessingSourceLocations, _newDataTransferLocationRoot);
-			Dictionary<string, object> deserializedResult = _serializer.Deserialize<Dictionary<string, object>>(result); 
+					testProcessingSourceLocations, _newDataTransferLocationRoot);
+			Dictionary<string, object> deserializedResult = _serializer.Deserialize<Dictionary<string, object>>(result);
 
 			string expectedResult = Path.Combine(_newDataTransferLocationRoot, relativeExportLocation);
 
