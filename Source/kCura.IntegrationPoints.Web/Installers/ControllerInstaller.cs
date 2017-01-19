@@ -8,8 +8,12 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.Relativity.Client;
@@ -71,6 +75,31 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IHtmlSanitizerManager>().ImplementedBy<HtmlSanitizerManager>().LifestyleSingleton());
 			container.Register(Component.For<SummaryPageSelector>().ImplementedBy<SummaryPageSelector>().LifestyleSingleton());
+			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
+			container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
+			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestylePerWebRequest());
+
+			container.Register(Component.For<IOAuthClientManager>().UsingFactoryMethod(k =>
+			{
+				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
+				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
+				IHelper helper = k.Resolve<IHelper>();
+				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
+				IOAuthClientManager oAuthClientManager = managerFactory.CreateOAuthClientManager(contextConainer);
+
+				return oAuthClientManager;
+			}).LifestyleTransient());
+
+			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
+			{
+				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
+				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
+				IHelper helper = k.Resolve<IHelper>();
+				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
+				IFederatedInstanceManager federatedInstanceManager = managerFactory.CreateFederatedInstanceManager(contextConainer);
+
+				return federatedInstanceManager;
+			}).LifestyleTransient());
 		}
 	}
 }

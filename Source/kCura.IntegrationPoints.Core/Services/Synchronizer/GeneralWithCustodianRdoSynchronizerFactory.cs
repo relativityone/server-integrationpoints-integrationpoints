@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -32,13 +33,24 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
 			
             if (json.Provider != null && json.Provider.ToLower() == "relativity")
-			{ 
-				IRSAPIClient client = _container.Resolve<IRSAPIClient>();
-				IHelper helper = _container.Resolve<IHelper>();
-				client.APIOptions.WorkspaceID = json.CaseArtifactId;
+            {
+	            IRSAPIClient client;
+				IHelper sourceInstanceHelper = _container.Resolve<IHelper>();
+				if (json.FederatedInstanceArtifactId != null)
+				{
+					IHelperFactory helperFactory = _container.Resolve<IHelperFactory>();
+					IHelper targetHelper = helperFactory.CreateOAuthClientHelper(sourceInstanceHelper, json.FederatedInstanceArtifactId.Value);
+					client = targetHelper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+					client.APIOptions.WorkspaceID = json.CaseArtifactId;
+				}
+				else
+				{
+					client = _container.Resolve<IRSAPIClient>();
+					client.APIOptions.WorkspaceID = json.CaseArtifactId;
+				}
 				Dictionary<string, RelativityFieldQuery> dict = new Dictionary<string, RelativityFieldQuery>
 				{
-					{"fieldQuery", new RelativityFieldQuery(client, helper)},
+					{"fieldQuery", new RelativityFieldQuery(client, sourceInstanceHelper)},
 				};
 				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizer).AssemblyQualifiedName, dict);
 				RdoSynchronizer syncBase = (RdoSynchronizer) synchronizer;

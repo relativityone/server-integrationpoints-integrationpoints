@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -18,14 +19,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 	public class JobHistoryService : IJobHistoryService
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IRepositoryFactory _targetRepositoryFactory;
 		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
-		private readonly IWorkspaceRepository _workspaceRepository;
 
-		public JobHistoryService(ICaseServiceContext caseServiceContext, IWorkspaceRepository workspaceRepository, IHelper helper, ISerializer serializer)
-		{
+		public JobHistoryService(ICaseServiceContext caseServiceContext, IRepositoryFactory targetRepositoryFactory, IHelper helper, ISerializer serializer){
 			_caseServiceContext = caseServiceContext;
-			_workspaceRepository = workspaceRepository;
+			_targetRepositoryFactory = targetRepositoryFactory;
 			_serializer = serializer;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryService>();
 		}
@@ -118,7 +118,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				};
 
 				ImportSettings setting = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-				WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(setting.CaseArtifactId);
+				IWorkspaceRepository workspaceRepository = _targetRepositoryFactory.GetWorkspaceRepository();
+				WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(setting.CaseArtifactId);
 				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, setting.CaseArtifactId);
 
 				if (startTimeUtc.HasValue)

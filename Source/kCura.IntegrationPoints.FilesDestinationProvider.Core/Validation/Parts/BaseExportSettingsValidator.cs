@@ -5,9 +5,9 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public abstract class BaseExportSettingsValidator : BasePartsValidator<IntegrationPoints.Core.Models.ExportSettings>
+	public abstract class BaseExportSettingsValidator : BasePartsValidator<ExportSettings>
 	{
-		public override ValidationResult Validate(IntegrationPoints.Core.Models.ExportSettings value)
+		public override ValidationResult Validate(ExportSettings value)
 		{
 			var result = new ValidationResult();
 
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			return result;
 		}
 
-		internal ValidationResult ValidateLoadFile(IntegrationPoints.Core.Models.ExportSettings value)
+		internal ValidationResult ValidateLoadFile(ExportSettings value)
 		{
 			var result = new ValidationResult();
 
@@ -52,12 +52,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			return result;
 		}
 
-		internal virtual ValidationResult ValidateImages(IntegrationPoints.Core.Models.ExportSettings value)
+		internal virtual ValidationResult ValidateImages(ExportSettings value)
 		{
 			return new ValidationResult();
 		}
 
-		internal virtual ValidationResult ValidateNatives(IntegrationPoints.Core.Models.ExportSettings value)
+		internal virtual ValidationResult ValidateNatives(ExportSettings value)
 		{
 			var result = new ValidationResult();
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			return result;
 		}
 
-		internal virtual ValidationResult ValidateTextFieldsAsFiles(IntegrationPoints.Core.Models.ExportSettings value)
+		internal virtual ValidationResult ValidateTextFieldsAsFiles(ExportSettings value)
 		{
 			var result = new ValidationResult();
 

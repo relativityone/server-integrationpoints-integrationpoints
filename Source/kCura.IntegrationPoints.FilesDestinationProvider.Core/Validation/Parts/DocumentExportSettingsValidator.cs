@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
 	public sealed class DocumentExportSettingsValidator : BaseExportSettingsValidator
 	{
-		internal override ValidationResult ValidateImages(IntegrationPoints.Core.Models.ExportSettings value)
+		internal override ValidationResult ValidateImages(ExportSettings value)
 		{
 			var result = new ValidationResult();
 

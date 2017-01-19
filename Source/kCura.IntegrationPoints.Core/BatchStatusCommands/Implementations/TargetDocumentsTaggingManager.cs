@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -10,6 +12,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -17,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 	{
 		private readonly int _destinationWorkspaceArtifactId;
 		private readonly IDocumentRepository _documentRepository;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly FieldMap[] _fields;
 		private readonly string _importConfig;
 		private readonly int _jobHistoryArtifactId;
@@ -35,6 +39,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
 			IDocumentRepository documentRepository,
+			IToggleProvider toggleProvider,
 			IHelper helper,
 			FieldMap[] fields,
 			string importConfig,
@@ -49,6 +54,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_sourceJobManager = sourceJobManager;
 			_documentRepository = documentRepository;
+			_toggleProvider = toggleProvider;
 			_documentRepository.WorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_fields = fields;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>();
@@ -65,6 +71,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
+				if (_toggleProvider.IsEnabled<RipToR1Toggle>())
+				{
+					return;
+				}
+
 				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
 				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId,
 					_sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
@@ -82,6 +93,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			InjectionManager.Instance.Evaluate(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id);
 			try
 			{
+				if (_toggleProvider.IsEnabled<RipToR1Toggle>())
+				{
+					return;
+				}
+
 				if (!_errorOccurDuringJobStart)
 				{
 					FieldMap identifier = _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
@@ -111,7 +127,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 			finally
 			{
-				ScratchTableRepository.Dispose();
+				if (!_toggleProvider.IsEnabled<RipToR1Toggle>())
+				{
+					ScratchTableRepository.Dispose();
+				}
 			}
 		}
 

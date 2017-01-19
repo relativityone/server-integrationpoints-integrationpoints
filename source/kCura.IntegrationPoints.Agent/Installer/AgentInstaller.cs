@@ -1,26 +1,38 @@
 ﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.kCura.IntegrationPoints.Agent;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 using CreateErrorRdo = kCura.ScheduleQueue.Core.Logging.CreateErrorRdo;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
@@ -85,6 +97,85 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IManagerFactory<ISearchManager>>().ImplementedBy<SearchManagerFactory>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionEmptyValidator>().LifestyleSingleton());
+
+			// TODO: yea, we need a better way of getting the target IRepositoryFactory to the IExporterFactory -- biedrzycki: Sept 1, 2016
+			container.Register(Component.For<global::kCura.IntegrationPoints.Core.Factories.IExporterFactory>().UsingFactoryMethod(
+				k =>
+					{
+						IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory =
+							k.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
+						IRepositoryFactory sourceRepositoryFactory = k.Resolve<IRepositoryFactory>();
+						int integrationPointId = _job.RelatedObjectArtifactID;
+						ICaseServiceContext caseServiceContext = k.Resolve<ICaseServiceContext>();
+						IntegrationPoint integrationPoint = caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+						if (integrationPoint == null)
+						{
+							throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
+						}
+
+						ISerializer serializer = k.Resolve<ISerializer>();
+						ImportSettings importSettings = serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+
+						IRepositoryFactory targetRepositoryFactory = null;
+						IHelper sourceHelper = k.Resolve<IHelper>();
+						if (importSettings.FederatedInstanceArtifactId == null)
+						{
+							targetRepositoryFactory = sourceRepositoryFactory;
+						}
+						else
+						{
+							IHelperFactory helperFactory = k.Resolve<IHelperFactory>();
+							IHelper targetHelper = helperFactory.CreateOAuthClientHelper(sourceHelper, importSettings.FederatedInstanceArtifactId.Value);
+							targetRepositoryFactory = new RepositoryFactory(targetHelper, targetHelper.GetServicesManager());
+						}
+
+						IToggleProvider toggleProvider = container.Resolve<IToggleProvider>();
+
+						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, toggleProvider);
+					}).LifestyleTransient());
+
+			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
+				() =>
+					{
+						SqlConnection connection = container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
+						return connection;
+					},
+				async () =>
+					{
+						Task<SqlConnection> task = Task.Run(() =>
+						{
+							SqlConnection connection = container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
+							return connection;
+						});
+
+						return await task;
+					}
+				)).LifestyleTransient());
+
+			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
+			container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
+
+			container.Register(Component.For<IOAuthClientManager>().UsingFactoryMethod(k =>
+			{
+				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
+				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
+				IHelper helper = k.Resolve<IHelper>();
+				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
+				IOAuthClientManager oAuthClientManager = managerFactory.CreateOAuthClientManager(contextConainer);
+
+				return oAuthClientManager;
+			}).LifestyleTransient());
+
+			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
+			{
+				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
+				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
+				IHelper helper = k.Resolve<IHelper>();
+				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
+				IFederatedInstanceManager federatedInstanceManager = managerFactory.CreateFederatedInstanceManager(contextConainer);
+
+				return federatedInstanceManager;
+			}).LifestyleTransient());
 		}
 	}
 }

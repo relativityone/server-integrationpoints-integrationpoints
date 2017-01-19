@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -8,6 +10,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
@@ -17,6 +20,8 @@ using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -25,12 +30,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		private readonly IIntegrationPointBaseFieldGuidsConstants _guidsConstants;
 		protected ISerializer Serializer;
 		protected ICaseServiceContext Context;
-		protected IContextContainer ContextContainer;
+		protected IContextContainer SourceContextContainer;
+		protected IContextContainer TargetContextContainer;
+
 		protected IChoiceQuery ChoiceQuery;
 		protected IManagerFactory ManagerFactory;
 		protected IIntegrationPointProviderValidator IntegrationModelValidator;
 		protected IIntegrationPointPermissionValidator _permissionValidator;
 		protected IHelper _helper;
+		protected IToggleProvider _toggleProvider;
 
 		protected static readonly object Lock = new object();
 
@@ -38,6 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected IntegrationPointServiceBase(
 			IHelper helper,
+			IHelper targetHelper,
 			ICaseServiceContext context,
 			IChoiceQuery choiceQuery,
 			ISerializer serializer,
@@ -45,7 +54,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointBaseFieldGuidsConstants guidsConstants,
 			IIntegrationPointProviderValidator integrationModelValidator,
-			IIntegrationPointPermissionValidator permissionValidator)
+			IIntegrationPointPermissionValidator permissionValidator,
+			IToggleProvider toggleProvider)
 		{
 			Serializer = serializer;
 			Context = context;
@@ -55,7 +65,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IntegrationModelValidator = integrationModelValidator;
 			_permissionValidator = permissionValidator;
 			_helper = helper;
-			ContextContainer = contextContainerFactory.CreateContextContainer(helper);
+			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
+			TargetContextContainer = contextContainerFactory.CreateContextContainer(targetHelper);
+			_toggleProvider = toggleProvider;
 		}
 
 		public IList<T> GetAllRDOs()
@@ -296,7 +308,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected void CreateRelativityError(string message, string fullText)
 		{
-			IErrorManager errorManager = ManagerFactory.CreateErrorManager(ContextContainer);
+			IErrorManager errorManager = ManagerFactory.CreateErrorManager(SourceContextContainer);
 			var error = new ErrorDTO()
 			{
 				Message = message,
@@ -317,7 +329,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				throw new IntegrationPointProviderValidationException(validationResult);
 			}
 
-			ValidationResult permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider, integrationPointType);
+			var permissionCheck = new ValidationResult();
+			if (!_toggleProvider.IsEnabled<RipToR1Toggle>())
+			{
+				permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider,
+					integrationPointType);
+			}
 
 			if (Context.EddsUserID == 0)
 			{

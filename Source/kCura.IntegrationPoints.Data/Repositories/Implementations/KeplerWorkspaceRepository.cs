@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.Services.ObjectQuery;
@@ -26,27 +28,51 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				 workspaces = this.RetrieveAllArtifactsAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
+				 workspaces = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to retrieve Workspace", e);
+				throw new Exception("Unable to retrieve workspace", e);
 			}
 
-			ArtifactDTO workspace = workspaces.FirstOrDefault();
+			return Convert(workspaces).FirstOrDefault();
+		}
 
-			if (workspace == null || (workspace.Fields[0].Value as string) == null)
+		public IEnumerable<WorkspaceDTO> RetrieveAll()
+		{
+			var query = new global::Relativity.Services.ObjectQuery.Query()
 			{
-				throw new Exception("Unable to retrieve Workspace");	
-			}
-
-			var workspaceDto = new WorkspaceDTO()
-			{
-				ArtifactId = workspace.ArtifactId,
-				Name = (string) workspace.Fields[0].Value
+				Fields = new[] { "Name" },
 			};
 
-			return workspaceDto;
+			ArtifactDTO[] artifactDtos = null;
+			try
+			{
+				artifactDtos = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to retrieve workspaces", e);
+			}
+
+			return Convert(artifactDtos);
 		}
+
+		private IEnumerable<WorkspaceDTO> Convert(IEnumerable<ArtifactDTO> artifactDtos)
+		{
+			var workspaces = new List<WorkspaceDTO>();
+
+			foreach (ArtifactDTO artifactDto in artifactDtos)
+			{
+				workspaces.Add(new WorkspaceDTO()
+				{
+					ArtifactId = artifactDto.ArtifactId,
+					Name = (string)artifactDto.Fields[0].Value
+				});
+			}
+
+			return workspaces;
+		}
+
 	}
 }

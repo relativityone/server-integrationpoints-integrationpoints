@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
@@ -27,11 +28,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				Name = workspaceName
 			};
 
-			var workspaceRepositoryMock = Substitute.For<IWorkspaceRepository>();
-			workspaceRepositoryMock.Retrieve(Arg.Any<int>())
+			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
+			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>())
 				.Returns(workspaceDTO);
 
-			var validator = new RelativityProviderWorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceValidator(workspaceManagerMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);
@@ -48,11 +49,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var workspaceArtifactId = 42;
 			var workspacePrefix = "prefix";
 
-			var workspaceRepositoryMock = Substitute.For<IWorkspaceRepository>();
-			workspaceRepositoryMock.Retrieve(Arg.Any<int>())
+			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
+			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>())
 				.Returns(x => { throw new Exception("Thou shall not pass!"); });
 
-			var validator = new RelativityProviderWorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceValidator(workspaceManagerMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);
@@ -77,11 +78,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				Name = workspaceName
 			};
 
-			var workspaceRepositoryMock = Substitute.For<IWorkspaceRepository>();
-			workspaceRepositoryMock.Retrieve(Arg.Any<int>())
+			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
+			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>())
 				.Returns(workspaceDTO);
 
-			var validator = new RelativityProviderWorkspaceValidator(workspaceRepositoryMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceValidator(workspaceManagerMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);

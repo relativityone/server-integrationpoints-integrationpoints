@@ -4,16 +4,16 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -21,19 +21,45 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class WorkspaceFinderController : ApiController
 	{
 		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
-		private readonly IWorkspaceManager _workspaceManager;
+		private readonly IHelperFactory _helperFactory;
+		private readonly ICPHelper _helper;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IContextContainerFactory _contextContainerFactory;
 
-		public WorkspaceFinderController(IWorkspaceManager workspaceManager, IHtmlSanitizerManager htmlSanitizerManager)
+		public WorkspaceFinderController(IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory, IHtmlSanitizerManager htmlSanitizerManager, ICPHelper helper, IHelperFactory helperFactory)
 		{
-			_workspaceManager = workspaceManager;
+			_managerFactory = managerFactory;
+			_contextContainerFactory = contextContainerFactory;
+			_helper = helper;
+			_helperFactory = helperFactory;
 			_htmlSanitizerManager = htmlSanitizerManager;
 		}
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve the workspace information.")]
-		public HttpResponseMessage Get()
+		public HttpResponseMessage Get(int? federatedInstanceId = null)
 		{
-			IEnumerable<WorkspaceDTO> userWorkspaces = _workspaceManager.GetUserWorkspaces();
+			//var helper = federatedInstanceId.HasValue ? _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value) : _helper;
+			//IWorkspaceManager workspaceManager =
+			//	_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
+			//IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserWorkspaces();
+
+			// TODO this is a workaround until getting active workspaces is available as a service, replace the following if/else snippet with the one above
+			IEnumerable<WorkspaceDTO> userWorkspaces = null;
+			if (federatedInstanceId.HasValue)
+			{
+				var helper = _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value);
+				IWorkspaceManager workspaceManager =
+					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
+				userWorkspaces = workspaceManager.GetUserWorkspaces();
+			}
+			else
+			{
+				IWorkspaceManager workspaceManager =
+					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper));
+				userWorkspaces = workspaceManager.GetUserActiveWorkspaces();
+			}
+			//
 
 			WorkspaceModel[] workspaceModels = userWorkspaces.Select(x =>
 				new WorkspaceModel
@@ -48,6 +74,5 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			return Request.CreateResponse(HttpStatusCode.OK, workspaceModels);
 		}
-	
 	}
 }

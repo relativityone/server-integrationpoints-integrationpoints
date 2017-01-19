@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class ViewValidator : BasePartsValidator<IntegrationPoints.Core.Models.ExportSettings>
+	public class ViewValidator : BasePartsValidator<ExportSettings>
 	{
 		private readonly IViewService _viewService;
 
@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			_viewService = viewService;
 		}
 
-		public override ValidationResult Validate(IntegrationPoints.Core.Models.ExportSettings value)
+		public override ValidationResult Validate(ExportSettings value)
 		{
 			var result = new ValidationResult();
 

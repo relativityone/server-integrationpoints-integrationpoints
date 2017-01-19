@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			int sourceWorkspaceDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceWorkspaceRepository, artifactGuidRepository, (int)ArtifactType.Case);
 
-			IFieldRepository fieldRepository = RepositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
+			IExtendedFieldRepository fieldRepository = RepositoryFactory.GetExtendedFieldRepository(destinationWorkspaceArtifactId);
 			var fieldGuids = new List<Guid>(2) { SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid };
 			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceWorkspaceRepository, fieldRepository, sourceWorkspaceDescriptorArtifactTypeId);
 			CreateDocumentsFields(sourceWorkspaceDescriptorArtifactTypeId, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, artifactGuidRepository, sourceWorkspaceRepository, fieldRepository);

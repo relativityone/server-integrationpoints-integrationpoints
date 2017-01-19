@@ -215,17 +215,22 @@
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
+    <Compile Include="Repositories\IArtifactTypeRepository.cs" />
     <Compile Include="Repositories\IDocumentTotalsRepository.cs" />
     <Compile Include="Repositories\IErrorRepository.cs" />
+    <Compile Include="Repositories\IExtendedFieldRepository.cs" />
+    <Compile Include="Repositories\IFederatedInstanceRepository.cs" />
     <Compile Include="Repositories\IInstanceSettingRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\HardCodedServiceUrlRepository.cs" />
     <Compile Include="Repositories\Implementations\DestinationProviderRepository.cs" />
     <Compile Include="Repositories\Implementations\DocumentTotalsRepository.cs" />
     <Compile Include="Repositories\Implementations\InstanceSettingRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerFederatedInstanceRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
@@ -233,6 +238,8 @@
     <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiRdoRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
+    <Compile Include="Repositories\Implementations\SqlArtifactTypeRepository.cs" />
+    <Compile Include="Repositories\Implementations\SqlExtendedFieldRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
@@ -260,6 +267,7 @@
     <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
     <Compile Include="Repositories\IRdoRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
+    <Compile Include="Repositories\IServiceUrlRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\ISourceJobRepository.cs" />
@@ -422,7 +430,9 @@
       <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Toggle\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"

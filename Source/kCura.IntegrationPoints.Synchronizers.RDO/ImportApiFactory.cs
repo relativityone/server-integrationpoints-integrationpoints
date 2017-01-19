@@ -4,6 +4,9 @@ using System.Security.Authentication;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
@@ -13,13 +16,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportApiFactory : IImportApiFactory
 	{
+		private readonly ITokenProvider _tokenProvider;
+		private readonly IOAuthClientManager _oAuthClientManager;
+		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly ISystemEventLoggingService _systemEventLoggingService;
-		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
-
 		private readonly IAPILog _logger;
 
-		public ImportApiFactory(IHelper helper, ISystemEventLoggingService systemEventLoggingService)
+		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
+
+		public ImportApiFactory(
+			ITokenProvider tokenProvider, 
+			IOAuthClientManager oAuthClientManager, 
+			IFederatedInstanceManager federatedInstanceManager,
+			IHelper helper, ISystemEventLoggingService systemEventLoggingService)
 		{
+			_tokenProvider = tokenProvider;
+			_oAuthClientManager = oAuthClientManager;
+			_federatedInstanceManager = federatedInstanceManager;
 			_systemEventLoggingService = systemEventLoggingService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportApiFactory>();
 		}
@@ -40,8 +53,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					{
 						LogCreatingImportApiWithToken(settings.WebServiceURL);
 						string username = _RELATIVITY_BEARER_USERNAME;
-						string token = ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-						importApi = new ExtendedImportAPI(username, token, settings.WebServiceURL);
+						string webServiceUrl;
+						string token;
+
+						if (settings.FederatedInstanceArtifactId != null)
+						{
+							OAuthClientDto oAuthClientDto =
+								_oAuthClientManager.RetrieveOAuthClientForFederatedInstance(settings.FederatedInstanceArtifactId.Value);
+							FederatedInstanceDto federatedInstance =
+								_federatedInstanceManager.RetrieveFederatedInstance(settings.FederatedInstanceArtifactId.Value);
+
+							token = _tokenProvider.GetExternalSystemToken(oAuthClientDto.ClientId, oAuthClientDto.ClientSecret,
+								new Uri(federatedInstance.InstanceUrl));
+							webServiceUrl = federatedInstance.WebApiUrl;
+						}
+						else
+						{
+							token = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
+							webServiceUrl = settings.WebServiceURL;
+						}
+						importApi = new ExtendedImportAPI(username, token, webServiceUrl);
 					}
 					// ExtendedImportAPI extends ImportAPI so the following cast is acceptable
 					Relativity.ImportAPI.ImportAPI concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;

@@ -22,13 +22,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		public SourceObjectBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper,
+		public SourceObjectBatchUpdateManager(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper,
 			SourceConfiguration sourceConfig, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
-			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
-			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
-			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS,
-				uniqueJobId);
+			_destinationWorkspaceRepository = sourceRepositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
+			_workspaceRepository = targetRepositoryFactory.GetWorkspaceRepository();
+			ScratchTableRepository = sourceRepositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS, uniqueJobId);
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;

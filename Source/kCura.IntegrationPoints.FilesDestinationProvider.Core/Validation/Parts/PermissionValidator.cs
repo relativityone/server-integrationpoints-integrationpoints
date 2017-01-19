@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
-using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {

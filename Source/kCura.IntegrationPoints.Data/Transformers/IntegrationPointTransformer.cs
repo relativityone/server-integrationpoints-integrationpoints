@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 		private readonly int _workspaceArtifactId;
 
 		public IntegrationPointTransformer(IHelper helper, int workspaceArtifactId)
-			: this(new RepositoryFactory(helper), workspaceArtifactId)
+			: this(new RepositoryFactory(helper, helper.GetServicesManager()), workspaceArtifactId)
 		{
 		}
 

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			var validator = new ViewValidator(viewServiceMock);
 
-			var exportSettings = new IntegrationPoints.Core.Models.ExportSettings { ViewId = viewId };
+			var exportSettings = new ExportSettings { ViewId = viewId };
 
 			// act
 			var actual = validator.Validate(exportSettings);
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			var validator = new ViewValidator(viewServiceMock);
 
-			var exportSettings = new IntegrationPoints.Core.Models.ExportSettings { ProductionId = viewId };
+			var exportSettings = new ExportSettings { ProductionId = viewId };
 
 			// act
 			var actual = validator.Validate(exportSettings);

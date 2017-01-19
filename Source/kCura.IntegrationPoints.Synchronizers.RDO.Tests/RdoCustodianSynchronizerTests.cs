@@ -4,6 +4,8 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
@@ -40,7 +42,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			}
 
 			import.GetWorkspaceFields(Arg.Any<int>(), Arg.Any<int>()).Returns(list);
-			var mock = Substitute.For<ImportApiFactory>(Substitute.For<IHelper>(), Substitute.For<ISystemEventLoggingService>());
+
+			var mock = Substitute.For<ImportApiFactory>(Substitute.For<ITokenProvider>(), Substitute.For<IOAuthClientManager>(), Substitute.For<IFederatedInstanceManager>(),
+				Substitute.For<IHelper>(), Substitute.For<ISystemEventLoggingService>());
 			mock.GetImportAPI(Arg.Any<ImportSettings>()).Returns(import);
 			return mock;
 		}

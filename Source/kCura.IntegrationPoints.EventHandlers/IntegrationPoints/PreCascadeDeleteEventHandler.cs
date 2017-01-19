@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_repositoryFactory == null)
 				{
-					_repositoryFactory = new RepositoryFactory(Helper);
+                    _repositoryFactory = new RepositoryFactory(this.Helper, this.Helper.GetServicesManager());
 				}
 				return _repositoryFactory;
 			}
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				return _deleteHistoryErrorService ??
 						(_deleteHistoryErrorService =
-							new DeleteHistoryErrorService(
+                                 new DeleteHistoryErrorService(
 								ServiceContextFactory.CreateRSAPIService(Helper, Application.ArtifactID)));
 			}
 			set { _deleteHistoryErrorService = value; }
@@ -78,9 +78,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				return _deleteHistoryService ??
 						(_deleteHistoryService =
-							new DeleteHistoryService(
+                           new DeleteHistoryService(
 								ServiceContextFactory.CreateRSAPIService(Helper, Application.ArtifactID),
-								DeleteHistoryErrorService));
+                               DeleteHistoryErrorService));
 			}
 			set { _deleteHistoryService = value; }
 		}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Parts;
@@ -34,8 +35,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var serializerMock = new JSONSerializer();
 			var validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
 
-			var workspaceRepositoryMock = Substitute.For<IWorkspaceRepository>();
-			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceValidator>(workspaceRepositoryMock, String.Empty);
+			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
+			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceValidator>(workspaceManagerMock, String.Empty);
 			workspaceValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>())
@@ -55,8 +56,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			validatorsFactoryMock.CreateArtifactValidator(Arg.Any<int>(), Arg.Any<string>())
 				.Returns(destinationFolderValidatorMock);
 
-			var repositoryFactory = Substitute.For<IRepositoryFactory>();
-			var fieldMappingValidatorMock = Substitute.For<FieldsMappingValidator>(serializerMock, repositoryFactory);
+			var sourceFieldManager = Substitute.For<IFieldManager>();
+			var targetFieldManager = Substitute.For<IFieldManager>();
+			var fieldMappingValidatorMock = Substitute.For<FieldsMappingValidator>(serializerMock, sourceFieldManager, targetFieldManager);
 			fieldMappingValidatorMock.Validate(Arg.Any<IntegrationPointProviderValidationModel>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateFieldsMappingValidator()

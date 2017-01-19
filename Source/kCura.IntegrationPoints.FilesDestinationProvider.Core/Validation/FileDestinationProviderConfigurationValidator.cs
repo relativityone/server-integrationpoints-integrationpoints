@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using static kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
@@ -69,8 +68,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 			switch (exportSettings.TypeOfExport)
 			{
-				case ExportType.Folder:
-				case ExportType.FolderAndSubfolders:
+				case ExportSettings.ExportType.Folder:
+				case ExportSettings.ExportType.FolderAndSubfolders:
 					if (model.ArtifactTypeId == (int)ArtifactType.Document)
 					{
 						var folderValidator = _validatorsFactory.CreateArtifactValidator(exportSettings.WorkspaceId, ArtifactTypeNames.Folder);
@@ -84,12 +83,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 					result.Add(exportNativeSettingsValidator.Validate(model));
 					break;
 
-				case ExportType.ProductionSet:
+				case ExportSettings.ExportType.ProductionSet:
 					var productionsValidator = _validatorsFactory.CreateProductionValidator();
 					result.Add(productionsValidator.Validate(exportSettings));
 					break;
 
-				case ExportType.SavedSearch:
+				case ExportSettings.ExportType.SavedSearch:
 					var savedSearchValidator = _validatorsFactory.CreateSavedSearchValidator(exportSettings.WorkspaceId, exportSettings.SavedSearchArtifactId);
 					result.Add(savedSearchValidator.Validate(exportSettings.SavedSearchArtifactId));
 					break;

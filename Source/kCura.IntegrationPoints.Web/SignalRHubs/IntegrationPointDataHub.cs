@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			var queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 			var jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			var stateManager = _managerFactory.CreateStateManager();
-			var repositoryFactory = new RepositoryFactory(ConnectionHelper.Helper());
+			var repositoryFactory = new RepositoryFactory(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetServicesManager());
 
 			IIntegrationPointPermissionValidator permissionValidator =
 				new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new JSONSerializer());

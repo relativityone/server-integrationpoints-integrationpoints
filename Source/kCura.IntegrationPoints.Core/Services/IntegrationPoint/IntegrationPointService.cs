@@ -1,35 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
 	public class IntegrationPointService : IntegrationPointServiceBase<Data.IntegrationPoint>, IIntegrationPointService
 	{
+		private IContextContainer _targetContextContainer;
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 
 		protected override string UnableToSaveFormat
 			=> "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
 
-		public IntegrationPointService(IHelper helper,
+		public IntegrationPointService(
+			IHelper helper,
+			IHelper targetHelper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
 			ISerializer serializer, IChoiceQuery choiceQuery,
@@ -37,9 +47,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory,
 			IIntegrationPointProviderValidator integrationModelValidator,
-			IIntegrationPointPermissionValidator permissionValidator)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(),
-				  integrationModelValidator, permissionValidator)
+			IIntegrationPointPermissionValidator permissionValidator,
+			IToggleProvider toggleProvider)
+			: base(helper, targetHelper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(),
+				  integrationModelValidator, permissionValidator, toggleProvider)
 		{
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
@@ -216,7 +227,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			Data.JobHistory lastJobHistory = null;
 			try
 			{
-				var jobHistoryManager = ManagerFactory.CreateJobHistoryManager(ContextContainer);
+				var jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
 				int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
 				lastJobHistory = Context.RsapiService.JobHistoryLibrary.Read(lastJobHistoryArtifactId);
 			}
@@ -260,7 +271,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			CheckStopPermission(workspaceArtifactId, integrationPointArtifactId);
 
-			IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(ContextContainer);
+			IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
 			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
 			IList<int> allStoppableJobArtifactIds = stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds).ToList();
 			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
@@ -344,16 +355,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-			ValidationResult validationResult = _permissionValidator.Validate(IntegrationPointModel.FromIntegrationPoint(integrationPoint),
-				sourceProvider, destinationProvider, integrationPointType);
-
-			if (!validationResult.IsValid)
+			if (!_toggleProvider.IsEnabled<RipToR1Toggle>())
 			{
-				CreateRelativityError(
-					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, validationResult.Messages)}");
+				ValidationResult validationResult = _permissionValidator.Validate(IntegrationPointModel.FromIntegrationPoint(integrationPoint),
+					sourceProvider, destinationProvider, integrationPointType);
 
-				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
+				if (!validationResult.IsValid)
+				{
+					CreateRelativityError(
+						Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+						$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, validationResult.Messages)}");
+
+					throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
+				}
 			}
 		}
 
@@ -401,6 +415,17 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
+				// TODO: This is only for the Fest Demo! 
+				// Please replace this to use proper DI! -- biedrzycki: Oct 7th, 2016
+				ImportSettings setting = Serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+				if (setting.FederatedInstanceArtifactId != null)
+				{
+					IHelperFactory helperFactory = new HelperFactory(ManagerFactory, new ContextContainerFactory(), new RelativityCoreTokenProvider());
+					IHelper targetHelper = helperFactory.CreateOAuthClientHelper(SourceContextContainer.Helper, setting.FederatedInstanceArtifactId.Value);
+					_targetContextContainer = new ContextContainer(targetHelper);
+				}
+
+				IJobHistoryService jobHistoryService = ManagerFactory.CreateJobHistoryService(Context, _targetContextContainer, Serializer);
 				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 			}
@@ -455,7 +480,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			if (taskType == TaskType.ExportService || taskType == TaskType.SyncManager || taskType == TaskType.ExportManager)
 			{
-				IQueueManager queueManager = ManagerFactory.CreateQueueManager(ContextContainer);
+				IQueueManager queueManager = ManagerFactory.CreateQueueManager(SourceContextContainer);
 				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 
 				if (jobsExecutingOrInQueue)

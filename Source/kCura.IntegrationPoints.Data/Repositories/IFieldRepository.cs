@@ -12,13 +12,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	/// </summary>
 	public interface IFieldRepository
 	{
-
-		/// <summary>
-		/// Retrieves the potential begin bates fields
-		/// </summary>
-		/// <returns>An array of ArtifactFieldDTOs</returns>
-		ArtifactFieldDTO[] RetrieveBeginBatesFields();
-
 		/// <summary>
 		/// Retrieves the long text fields for an rdo
 		/// </summary>
@@ -43,33 +36,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldNames);
 
 		/// <summary>
-		/// Retrieves the artifact ID of a field.
-		/// </summary>
-		/// <param name="displayName">The display name of the field.</param>
-		/// <param name="fieldArtifactTypeId">The object type artifact ID the field is associated with.</param>
-		/// <param name="fieldTypeId">The field type ID.</param>
-		/// <returns>The artifact ID for the field, <code>NULL</code> if not found.</returns>
-		int? RetrieveField(string displayName, int fieldArtifactTypeId, int fieldTypeId);
-
-		/// <summary>
-		/// Sets the overlay behavior for a field
-		/// </summary>
-		/// <param name="fieldArtifactId">The artifact id of the field</param>
-		/// <param name="value">The value for overlay behavior. <code>TRUE</code> for MERGE, <code>FALSE</code> for Overlay</param>
-		void SetOverlayBehavior(int fieldArtifactId, bool value);
-
-		/// <summary>
 		/// Deletes the specified fields
 		/// </summary>
 		/// <param name="artifactIds">The artifact ids of the fields to delete</param>
 		void Delete(IEnumerable<int> artifactIds);
-
-		/// <summary>
-		/// Retrieves the artifact view field id for the given field
-		/// </summary>
-		/// <param name="fieldArtifactId">The artifact id of the field</param>
-		/// <returns>The artifact view field id if found, <code>NULL</code> otherwise</returns>
-		int? RetrieveArtifactViewFieldId(int fieldArtifactId);
 
 		/// <summary>
 		/// Retrieves the identifier field. NOTE : the returns ArtifactDTO contains name and 'is identifier' fields
@@ -78,13 +48,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns>the ArtifactDTO represents the identifier field of the object</returns>
 		/// <remarks>the returns ArtifactDTO contains name and 'is identifier' fields</remarks>
 		ArtifactDTO RetrieveTheIdentifierField(int rdoTypeId);
-
-		/// <summary>
-		/// Updates the field's filter type
-		/// </summary>
-		/// <param name="artifactViewFieldId">The artifact view field id of the field</param>
-		/// <param name="filterType">The filter type to set</param>
-		void UpdateFilterType(int artifactViewFieldId, string filterType);
 
 		/// <summary>
 		/// Reads a given Field Dto

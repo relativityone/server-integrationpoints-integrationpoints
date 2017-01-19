@@ -23,10 +23,14 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -51,7 +55,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobHistoryErrorService _jobHistoryErrorService;
 		private IContextContainer _contextContainer;
 		private IQueueManager _queueManager;
+		private IIntegrationPointProviderValidator _ipValidator;
 		private IServiceManagerProvider _serviceManagerProvider;
+		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -77,10 +83,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_contextContainer = Substitute.For<IContextContainer>();
 			_queueManager = Substitute.For<IQueueManager>();
+			_ipValidator = Substitute.For<IIntegrationPointProviderValidator>();
+			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _rsapiClient,
 				_workspaceDbContext, _eddsServiceContext, _repositoryFactory, _jobHistoryService, _agentService, _jobService,
-				_managerFactory, apiLog);
+				_managerFactory, apiLog, _ipValidator, _toggleProvider);
 		}
 
 		[Test]
@@ -219,14 +227,33 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				x => x.ArtifactId == jobHistory.ArtifactId && x.JobStatus == JobStatusChoices.JobHistoryErrorJobFailed));
 		}
 
+		//TODO: add test to scenario where the federated instance is populated -- biedrzycki: Sept 7th, 2016
 		[Test]
 		[TestCaseSource(nameof(CreateTask_CaseData))]
 		public void CreateTask_AllTaskTypesAreResolvable(TaskType taskType)
 		{
 			// Arrange
+			IAgentHelper helper = Substitute.For<IAgentHelper>();
+			IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
+			IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
+			IRelativityConfigurationFactory relativityConfigurationFactory = Substitute.For<IRelativityConfigurationFactory>();
+			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
+			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
+			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
+
+			caseServiceContext.RsapiService.Returns(rsapiService);
+			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
+
+			int relatedId = 453245;
+			var integrationPoint = new Data.IntegrationPoint()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+			};
+			integrationPointLibrary.Read(relatedId).Returns(integrationPoint);
 			IWindsorContainer windsorContainer = new WindsorContainer();
 			windsorContainer.Register(Component.For<IIntegrationPointService>().Instance(_integrationPointService));
 			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
+			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
 			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);
@@ -236,7 +263,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(_rsapiClient);
 			_relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
 
-			int relatedId = 453245;
 			int jobId = 342343;
 
 			_integrationPointService.GetRdo(relatedId).Returns(new Data.IntegrationPoint());

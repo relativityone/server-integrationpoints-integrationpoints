@@ -25,7 +25,6 @@ using ArtifactType = Relativity.ArtifactType;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
-using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
@@ -159,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		#region Methods
 
-		private ExportSettings CreateExportSettings()
+		private Core.ExportSettings CreateExportSettings()
 		{
 			var fieldIds = _configSettings.DefaultFields
 				.Select(x => int.Parse(x.FieldIdentifier))
@@ -170,16 +169,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			// Add Long Text Field
 			fieldIds.Add(int.Parse(_configSettings.LongTextField.FieldIdentifier));
 
-			var settings = new ExportSettings
+			var settings = new Core.ExportSettings
 			{
 				ArtifactTypeId = (int) ArtifactType.Document,
-				TypeOfExport = ExportSettings.ExportType.SavedSearch,
+				TypeOfExport = Core.ExportSettings.ExportType.SavedSearch,
 				ExportFilesLocation = Path.Combine(_configSettings.DestinationPath, DateTime.UtcNow.ToString("HHmmss_fff")),
 				WorkspaceId = _configSettings.WorkspaceId,
 				SavedSearchArtifactId = _configSettings.ExportedObjArtifactId,
 				SavedSearchName = _configSettings.SavedSearchArtifactName,
 				SelViewFieldIds = fieldIds,
-				SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.None,
+				SelectedImageDataFileFormat = Core.ExportSettings.ImageDataFileFormat.None,
 				TextPrecedenceFieldsIds = new List<int> {int.Parse(_configSettings.LongTextField.FieldIdentifier)},
 				DataFileEncoding = Encoding.Unicode,
 				VolumeMaxSize = 650,

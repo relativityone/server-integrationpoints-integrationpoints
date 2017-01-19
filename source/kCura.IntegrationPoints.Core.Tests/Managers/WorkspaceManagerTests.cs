@@ -23,18 +23,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const int CurrentUserWorkspaceArtifactId = 1234;
 		private IRepositoryFactory _repositoryFactory;
 		private IWorkspacesRepository _workspacesRepository;
+		private IWorkspaceRepository _workspaceRepository;
 		private IRdoRepository _rdoRepository;
 		private int _workspaceArtifactId;
-		private WorkspaceDTO _currentUserWorkspace;
-		private WorkspaceDTO _adminUserWorkspace;
 
 		[SetUp]
 		public void Setup()
 		{
 			_workspaceArtifactId = -1;
-
-			_currentUserWorkspace = new WorkspaceDTO() {ArtifactId = CurrentUserWorkspaceArtifactId, Name = "Test Workspace"};
-			_adminUserWorkspace = new WorkspaceDTO() {ArtifactId = 5678, Name = "Admin User Workspace"};
 
 			QueryResultSet<RDO> rdoQueryResultSet = new QueryResultSet<RDO>
 			{
@@ -48,10 +44,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_workspacesRepository.RetrieveAllActive()
 				.Returns(new List<WorkspaceDTO>()
 				{
-					_currentUserWorkspace,
-					_adminUserWorkspace
+					new WorkspaceDTO() {ArtifactId = CurrentUserWorkspaceArtifactId, Name = "Test Workspace"},
+					new WorkspaceDTO() {ArtifactId = 5678, Name = "Admin User Workspace"}
 				});
+
+			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			_workspaceRepository.RetrieveAll()
+				.Returns(new List<WorkspaceDTO>()
+				{
+					new WorkspaceDTO() { ArtifactId = CurrentUserWorkspaceArtifactId, Name = "Test Workspace"},
+					new WorkspaceDTO {ArtifactId = 9012, Name = "I am being upgraded"}
+				});
+
 			_repositoryFactory.GetWorkspacesRepository().Returns(_workspacesRepository);
+			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
 
 			_rdoRepository = Substitute.For<IRdoRepository>();
 			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(rdoQueryResultSet);
@@ -65,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			WorkspaceManager workspaceManager = new WorkspaceManager(_repositoryFactory);
 
 			//ACT
-			IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserWorkspaces().ToList();
+			IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserActiveWorkspaces().ToList();
 
 			//ASSERT
 			Assert.AreEqual(1, userWorkspaces.Count());

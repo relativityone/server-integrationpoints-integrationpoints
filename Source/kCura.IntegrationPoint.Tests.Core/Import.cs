@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -15,9 +17,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static void ImportNewDocuments(int workspaceId, DataTable importTable)
 		{
-			var helper = NSubstitute.Substitute.For<IHelper>();
-			ISystemEventLoggingService systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
-			ImportApiFactory factory = new ImportApiFactory(helper, systemEventLoggingService);
+			var helper = Substitute.For<IHelper>();
+			var systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
+			var tokenProvider = Substitute.For<ITokenProvider>();
+			var federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
+			var oauthClientManager = Substitute.For<IOAuthClientManager>();
+
+			ImportApiFactory factory = new ImportApiFactory(tokenProvider, oauthClientManager, federatedInstanceManager, helper, systemEventLoggingService);
 			ImportJobFactory jobFactory = new ImportJobFactory();
 			ImportSettings setting = new ImportSettings()
 			{
@@ -34,7 +40,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string settings = JsonConvert.SerializeObject(setting);
-			RdoSynchronizer pusher = new RdoSynchronizer(null, factory, jobFactory, helper);
+			var relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
+
+			RdoSynchronizer pusher = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper);
 
 			FieldMap mapIdentifier = new FieldMap
 			{

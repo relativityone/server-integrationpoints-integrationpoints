@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 		private readonly int _workspaceArtifactId;
 
 		public JobHistoryErrorTransformer(IHelper helper, int workspaceArtifactId)
-			: this(new RepositoryFactory(helper), workspaceArtifactId)
+			: this(new RepositoryFactory(helper, helper.GetServicesManager()), workspaceArtifactId)
 		{
 		}
 

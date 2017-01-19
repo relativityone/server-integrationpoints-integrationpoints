@@ -1,10 +1,13 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -85,11 +88,38 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new StateManager();
 		}
 
+		public IFederatedInstanceManager CreateFederatedInstanceManager(IContextContainer contextContainer)
+		{
+			IFederatedInstanceManager manager = new FederatedInstanceManager(CreateRepositoryFactory(contextContainer));
+
+			return manager;
+		}
+
+		public IOAuthClientManager CreateOAuthClientManager(IContextContainer contextContainer)
+		{
+			IOAuthClientManager oAuthClientManager = new OAuthClientManager(CreateRepositoryFactory(contextContainer));
+
+			return oAuthClientManager;
+		}
+
+		public IJobHistoryService CreateJobHistoryService(ICaseServiceContext caseServiceContext,
+			IContextContainer targetContextContainer, ISerializer serializer)
+		{
+			IJobHistoryService jobHistoryService = 	new JobHistoryService(caseServiceContext, CreateRepositoryFactory(targetContextContainer), _helper, serializer);
+			return jobHistoryService;
+		}
+
+		public IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer)
+		{
+			IWorkspaceManager workspaceManager = new WorkspaceManager(CreateRepositoryFactory(contextContainer));
+			return workspaceManager;
+		}
+
 		#region Private Helpers
 
 		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)
 		{
-			return new RepositoryFactory(contextContainer.Helper);
+			return new RepositoryFactory(contextContainer.Helper, contextContainer.Helper.GetServicesManager());
 		}
 
 		#endregion

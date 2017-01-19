@@ -37,8 +37,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 {
                     string key = regex.Replace(kvp.Key, " ");
                     key = _htmlSanitizerManager.Sanitize(key).CleanHTML;
-                    string value = kvp.Value.ToString();
-                    value = _htmlSanitizerManager.Sanitize(value).CleanHTML;
+					object value = null;
+					if (kvp.Value != null)
+						value = _htmlSanitizerManager.Sanitize(kvp.Value.ToString()).CleanHTML;
                     result.Add(new KeyValuePair<string, object>(key, value));
                 }
             }

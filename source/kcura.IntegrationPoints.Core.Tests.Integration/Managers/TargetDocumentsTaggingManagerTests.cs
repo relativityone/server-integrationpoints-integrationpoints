@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -31,7 +32,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private SourceJobManager _sourceJobManager;
 		private ISynchronizerFactory _synchronizerFactory;
 		private IJobHistoryService _jobHistoryService;
+		private IExtendedFieldRepository _extendedFieldRepository;
 		private IFieldRepository _fieldRepository;
+		private IToggleProvider _toggleProvider;
 		private FieldMap[] _fieldMaps;
 		private ISerializer _serializer;
 		private IHelper _helper;
@@ -48,12 +51,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			base.SuiteSetup();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			_toggleProvider = Container.Resolve<IToggleProvider>();
 			_serializer = Container.Resolve<ISerializer>();
 			_sourceWorkspaceManager = new SourceWorkspaceManager(_repositoryFactory);
 			_sourceJobManager = new SourceJobManager(_repositoryFactory);
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			_helper = Container.Resolve<IHelper>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
+			_extendedFieldRepository = _repositoryFactory.GetExtendedFieldRepository(SourceWorkspaceArtifactId);
 			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 			_fieldMaps = GetDefaultFieldMap();
 		}
@@ -91,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
-			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, integrationModelCreated.Destination, jobHistory.ArtifactId, jobHistory.BatchInstance);
+			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _toggleProvider, _fieldMaps, integrationModelCreated.SourceConfiguration, integrationModelCreated.Destination, jobHistory.ArtifactId, jobHistory.BatchInstance);
 			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
@@ -108,8 +113,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		{
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 
-			int relativitySourceCaseFieldArtifactId = _fieldRepository.RetrieveField(_RELATIVITY_SOURCE_CASE, (int)kCura.Relativity.Client.ArtifactType.Document, (int)kCura.Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
-			int relativitySourceJobdArtifactId = _fieldRepository.RetrieveField(_RELATIVITY_SOURCE_JOB, (int)kCura.Relativity.Client.ArtifactType.Document, (int)kCura.Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
+			int relativitySourceCaseFieldArtifactId = _extendedFieldRepository.RetrieveField(_RELATIVITY_SOURCE_CASE, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
+			int relativitySourceJobdArtifactId = _extendedFieldRepository.RetrieveField(_RELATIVITY_SOURCE_JOB, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
 
 			ArtifactDTO[] documentArtifacts =
 				_documentRepository.RetrieveDocumentsAsync(documentArtifactIds,

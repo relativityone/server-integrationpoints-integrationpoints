@@ -342,6 +342,7 @@
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
     <Compile Include="Controllers\API\FolderPathController.cs" />
     <Compile Include="Controllers\API\FtpProviderAPIController.cs" />
+    <Compile Include="Controllers\API\InstanceFinderController.cs" />
     <Compile Include="Controllers\API\ProductionController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />

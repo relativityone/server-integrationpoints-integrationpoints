@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	{
 		private IFieldManager _testInstance;
 		private IRepositoryFactory _repositoryFactory;
-		private IFieldRepository _fieldRepository;
+		private IExtendedFieldRepository _extendedFieldRepository;
 		private ArtifactFieldDTO[] _fieldArray;
 
 		private const int _WORKSPACE_ID = 100532;
@@ -24,10 +24,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_fieldRepository = Substitute.For<IFieldRepository>();
+			_extendedFieldRepository = Substitute.For<IExtendedFieldRepository>();
 			_testInstance = new FieldManager(_repositoryFactory);
 
-			_repositoryFactory.GetFieldRepository(_WORKSPACE_ID).Returns(_fieldRepository);
+			_repositoryFactory.GetExtendedFieldRepository(_WORKSPACE_ID).Returns(_extendedFieldRepository);
 		}
 
 		[Test]
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			int? expectedResult = 123123;
 			int fieldArtifactId = 234242;
 
-			_fieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId).Returns(expectedResult);
+			_extendedFieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId).Returns(expectedResult);
 
 			// ACT
 			int? result = _testInstance.RetrieveArtifactViewFieldId(_WORKSPACE_ID, fieldArtifactId);
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// ARRANGE
 			ArtifactFieldDTO[] expectedResult = _fieldArray;
 
-			_fieldRepository.RetrieveBeginBatesFields().Returns(expectedResult);
+			_extendedFieldRepository.RetrieveBeginBatesFields().Returns(expectedResult);
 
 			// ACT
 			ArtifactFieldDTO[] result = _testInstance.RetrieveBeginBatesFields(_WORKSPACE_ID);

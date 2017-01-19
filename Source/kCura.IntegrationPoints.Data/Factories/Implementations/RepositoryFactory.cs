@@ -19,10 +19,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 	public class RepositoryFactory : MarshalByRefObject, IRepositoryFactory
 	{
 		private readonly IHelper _helper;
+		private readonly IServicesMgr _servicesMgr;
 
-		public RepositoryFactory(IHelper helper)
+		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr)
 		{
 			_helper = helper;
+			_servicesMgr = servicesMgr;
 		}
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
@@ -31,6 +33,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IArtifactGuidRepository artifactGuidRepository = new SqlArtifactGuidRepository(baseContext);
 
 			return artifactGuidRepository;
+		}
+
+		public IArtifactTypeRepository GetArtifactTypeRepository()
+		{
+			BaseContext baseContext = GetBaseContextForWorkspace(-1);
+			IArtifactTypeRepository artifactTypeRepository = new SqlArtifactTypeRepository(baseContext);
+
+			return artifactTypeRepository;
 		}
 
 		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
@@ -62,12 +72,20 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
 		{
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
+			IFieldRepository fieldRepository = new FieldRepository(_helper, objectQueryManagerAdaptor, workspaceArtifactId);
+
+			return fieldRepository;
+		}
+
+		public IExtendedFieldRepository GetExtendedFieldRepository(int workspaceArtifactId)
+		{
 			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
 			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
+			
+			IExtendedFieldRepository extendedFieldRepository = new SqlExtendedFieldRepository(_helper, baseServiceContext, baseContext, workspaceArtifactId);	
 
-			IFieldRepository fieldRepository = new FieldRepository(_helper, objectQueryManagerAdaptor, baseServiceContext, baseContext, workspaceArtifactId);
-			return fieldRepository;
+			return extendedFieldRepository;
 		}
 
 		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)
@@ -190,6 +208,18 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new RelativityAuditRepository(baseServiceContext);
 		}
 
+		public IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId)
+		{
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, artifactTypeId);
+
+			return new KeplerFederatedInstanceRepository(objectQueryManagerAdaptor);
+		}
+
+		public IServiceUrlRepository GetServiceUrlRepository()
+		{
+			return new HardCodedServiceUrlRepository();
+		}
+
 		public IResourcePoolRepository GetResourcePoolRepository()
 		{
 			return new ResourcePoolRepository(_helper);
@@ -222,7 +252,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, int artifactType)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, workspaceArtifactId, artifactType);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_servicesMgr, workspaceArtifactId, artifactType);
 			return objectQueryManagerAdaptor;
 		}
 

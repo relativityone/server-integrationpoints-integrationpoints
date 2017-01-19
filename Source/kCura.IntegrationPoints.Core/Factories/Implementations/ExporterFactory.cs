@@ -13,20 +13,30 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ExporterFactory : IExporterFactory
 	{
 		private readonly IOnBehalfOfUserClaimsPrincipalFactory _claimsPrincipalFactory;
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRepositoryFactory _sourceRepositoryFactory;
+		private readonly IRepositoryFactory _targetRepositoryFactory;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly IHelper _helper;
 
-		public ExporterFactory(IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory, IRepositoryFactory repositoryFactory, IHelper helper)
+		public ExporterFactory(
+			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory, 
+			IRepositoryFactory sourceRepositoryFactory, 
+			IRepositoryFactory targetRepositoryFactory,
+			IHelper helper,
+			IToggleProvider toggleProvider)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
-			_repositoryFactory = repositoryFactory;
+			_sourceRepositoryFactory = sourceRepositoryFactory;
+			_targetRepositoryFactory = targetRepositoryFactory;
 			_helper = helper;
+			_toggleProvider = toggleProvider;
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
@@ -44,15 +54,15 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			string uniqueJobId,
 			string userImportApiSettings)
 		{
-			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
+			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
 
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, sourceWorkspaceManager,
-				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration,
+			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, sourceWorkspaceManager,
+				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, _toggleProvider, mappedFiles, integrationPoint.SourceConfiguration,
 				userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_repositoryFactory, _claimsPrincipalFactory, _helper, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _repositoryFactory, _claimsPrincipalFactory, jobStopManager, configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
+			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager, configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>()
 			{
@@ -70,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				onBehalfOfUser = 9;
 			}
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
-			return new RelativityExporterService(_repositoryFactory, jobStopManager, _helper, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+			return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
 		}
 	}
 }

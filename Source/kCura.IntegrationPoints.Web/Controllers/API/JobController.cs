@@ -5,17 +5,30 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
+using Newtonsoft.Json;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -26,29 +39,75 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
 		private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
 
-		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly IManagerFactory _managerFactory;
+		private readonly IServiceFactory _serviceFactory;
 		private readonly ICPHelper _helper;
+		private readonly IHelperFactory _helperFactory;
+		private readonly ICaseServiceContext _context;
+		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly ISerializer _serializer;
+		private readonly IChoiceQuery _choiceQuery;
+		private readonly IJobManager _jobService;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IIntegrationPointProviderValidator _ipValidator;
+		private readonly IIntegrationPointPermissionValidator _permissionValidator;
+		private readonly IToggleProvider _toggleProvider;
 
-		public JobController(IIntegrationPointService integrationPointService,
+		public JobController(
+			IServiceFactory serviceFactory, 
 			ICPHelper helper, 
+			IHelperFactory helperFactory,
+			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			IManagerFactory managerFactory)
+			ISerializer serializer,
+			IChoiceQuery choiceQuery,
+			IJobManager jobService,
+			IManagerFactory managerFactory,
+			IRepositoryFactory repositoryFactory,
+			IIntegrationPointProviderValidator ipValidator,
+			IIntegrationPointPermissionValidator permissionValidator,
+			IToggleProvider toggleProvider)
 		{
-			_integrationPointService = integrationPointService;
-			_contextContainerFactory = contextContainerFactory;
-			_managerFactory = managerFactory;
+			_serviceFactory = serviceFactory;
 			_helper = helper;
+			_helperFactory = helperFactory;
+			_context = context;
+			_contextContainerFactory = contextContainerFactory;
+			_serializer = serializer;
+			_choiceQuery = choiceQuery;
+			_jobService = jobService;
+			_managerFactory = managerFactory;
+			_repositoryFactory = repositoryFactory;
+			_ipValidator = ipValidator;
+			_permissionValidator = permissionValidator;
+			_toggleProvider = toggleProvider;
 		}
-		
+
 		// POST API/Job/Run
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to run the transfer job.")]
 		public HttpResponseMessage Run(Payload payload)
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
-			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, _integrationPointService.RunIntegrationPoint);
+			IHelper targetHelper;
+
+			IIntegrationPointRepository integrationPointRepository = _repositoryFactory.GetIntegrationPointRepository(_helper.GetActiveCaseID());
+			IntegrationPointDTO integrationPoint = integrationPointRepository.Read(Convert.ToInt32(payload.ArtifactId));
+			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
+			if (importSettings.FederatedInstanceArtifactId != null)
+			{
+				targetHelper = _helperFactory.CreateOAuthClientHelper(_helper, importSettings.FederatedInstanceArtifactId.Value);
+			}
+			else
+			{
+				targetHelper = _helper;
+			}
+
+			IContextContainer targetContextContainer = _contextContainerFactory.CreateContextContainer(targetHelper);
+			IJobHistoryService jobHistoryService = _managerFactory.CreateJobHistoryService(_context, targetContextContainer, _serializer);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
+				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
 		}
 
@@ -58,7 +117,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage Retry(Payload payload)
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
-			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, _integrationPointService.RetryIntegrationPoint);
+			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+			IJobHistoryService jobHistoryService = _managerFactory.CreateJobHistoryService(_context, contextContainer, _serializer);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper,
+				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RetryIntegrationPoint);
 			return httpResponseMessage;
 		}
 
@@ -70,9 +133,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			string errorMessage = String.Empty;
 			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
+			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+			IJobHistoryService jobHistoryService = _managerFactory.CreateJobHistoryService(_context, contextContainer, _serializer);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper,
+				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+
 			try
 			{
-				_integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
+				integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
 			}
 			catch (AggregateException exception)
 			{

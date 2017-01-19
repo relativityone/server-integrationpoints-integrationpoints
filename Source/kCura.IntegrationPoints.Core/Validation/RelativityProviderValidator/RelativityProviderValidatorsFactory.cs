@@ -1,20 +1,24 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
 	public interface IRelativityProviderValidatorsFactory
 	{
-		FieldsMappingValidator CreateFieldsMappingValidator();
+		FieldsMappingValidator CreateFieldsMappingValidator(int? federatedInstanceArtifactId = null);
 
-		ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName);
+		ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId = null);
 
 		SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId);
 
-		RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix);
+		RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId = null);
 
 		TransferredObjectValidator CreateTransferredObjectValidator();
 	}
@@ -23,24 +27,40 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 	{
 		private readonly ISerializer _serializer;
 		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IArtifactService _artifactService;
+		private readonly IHelperFactory _helperFactory;
+		private readonly IHelper _helper;
+		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IServiceFactory _serviceFactory;
 
 		public RelativityProviderValidatorsFactory(ISerializer serializer, IRepositoryFactory repositoryFactory,
-			IArtifactService artifactService)
+			IHelper helper, IHelperFactory helperFactory, IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, IServiceFactory serviceFactory)
 		{
 			_serializer = serializer;
 			_repositoryFactory = repositoryFactory;
-			_artifactService = artifactService;
+			_helper = helper;
+			_helperFactory = helperFactory;
+			_contextContainerFactory = contextContainerFactory;
+			_managerFactory = managerFactory;
+			_serviceFactory = serviceFactory;
 		}
 
-		public FieldsMappingValidator CreateFieldsMappingValidator()
+		public FieldsMappingValidator CreateFieldsMappingValidator(int? federatedInstanceArtifactId = null)
 		{
-			return new FieldsMappingValidator(_serializer, _repositoryFactory);
+			IFieldManager sourceFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(_helper));
+
+			var targetHelper = CreateHelper(federatedInstanceArtifactId);
+			IFieldManager targetFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(targetHelper));
+
+			return new FieldsMappingValidator(_serializer, sourceFieldManager, targetFieldManager);
 		}
 
-		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName)
+		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId = null)
 		{
-			return new ArtifactValidator(_artifactService, workspaceArtifactId, artifactTypeName);
+			var helper = CreateHelper(federatedInstanceArtifactId);
+			var artifactService = _serviceFactory.CreateArtifactService(_helper, helper);
+
+			return new ArtifactValidator(artifactService, workspaceArtifactId, artifactTypeName);
 		}
 
 		public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId)
@@ -48,14 +68,22 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchRepository(workspaceArtifactId, savedSearchArtifactId));
 		}
 
-		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix)
+		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId = null)
 		{
-			return new RelativityProviderWorkspaceValidator(_repositoryFactory.GetWorkspaceRepository(), prefix);
+			var helper = CreateHelper(federatedInstanceArtifactId);
+			IWorkspaceManager workspaceManager =
+				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
+			return new RelativityProviderWorkspaceValidator(workspaceManager, prefix);
 		}
 
 		public TransferredObjectValidator CreateTransferredObjectValidator()
 		{
 			return new TransferredObjectValidator();
+		}
+
+		private IHelper CreateHelper(int? federatedInstanceArtifactId = null)
+		{
+			return federatedInstanceArtifactId.HasValue ? _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceArtifactId.Value) : _helper;
 		}
 	}
 }

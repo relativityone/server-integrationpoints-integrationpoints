@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 using NSubstitute;

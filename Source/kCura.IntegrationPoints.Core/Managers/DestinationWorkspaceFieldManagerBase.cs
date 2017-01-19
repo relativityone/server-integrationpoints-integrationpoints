@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		protected void CreateObjectFields(List<Guid> fieldGuids,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IFieldRepository fieldRepository,
+			IExtendedFieldRepository extendedFieldRepository,
 			int descriptorArtifactTypeId)
 		{
 			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(fieldGuids);
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 				{
 					Guid missingGuid = missingFieldGuids[index];
 					FieldDefinition definition = fieldDefinitions[missingGuid];
-					int? artifactId = fieldRepository.RetrieveField(definition.FieldName, descriptorArtifactTypeId, (int)definition.FieldType);
+					int? artifactId = extendedFieldRepository.RetrieveField(definition.FieldName, descriptorArtifactTypeId, (int)definition.FieldType);
 					if (artifactId.HasValue)
 					{
 						guidToArtifactId.Add(missingGuid, artifactId.Value);
@@ -118,27 +118,27 @@ namespace kCura.IntegrationPoints.Core.Managers
 			Guid documentFieldGuid,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IFieldRepository fieldRepository)
+			IExtendedFieldRepository extendedFieldRepository)
 		{
 			bool sourceWorkspaceFieldOnDocumentExists = artifactGuidRepository.GuidExists(documentFieldGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
 			{
-				int? fieldArtifactId = fieldRepository.RetrieveField(FieldName, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject);
+				int? fieldArtifactId = extendedFieldRepository.RetrieveField(FieldName, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject);
 
 				int sourceWorkspaceFieldArtifactId = fieldArtifactId ?? relativityObjectRepository.CreateFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId);
 
 				try
 				{
-					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
+					int? retrieveArtifactViewFieldId = extendedFieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
 						throw new Exception(ErrorMassage);
 					}
 
 					// Set the filter type
-					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
+					extendedFieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
 					// Set the overlay behavior
-					fieldRepository.SetOverlayBehavior(sourceWorkspaceFieldArtifactId, true);
+					extendedFieldRepository.SetOverlayBehavior(sourceWorkspaceFieldArtifactId, true);
 					// Set the field artifact guid
 					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceFieldArtifactId, documentFieldGuid);
 				}

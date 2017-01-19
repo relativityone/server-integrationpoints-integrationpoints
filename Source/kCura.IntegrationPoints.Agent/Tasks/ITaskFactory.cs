@@ -26,6 +26,7 @@ using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -54,6 +55,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IRSAPIClient _rsapiClient;
 		private ISerializer _serializer;
 		private IWorkspaceDBContext _workspaceDbContext;
+		private readonly IIntegrationPointProviderValidator _ipValidator;
+		private readonly IToggleProvider _toggleProvider;
 
 		public TaskFactory(IAgentHelper helper)
 		{
@@ -72,7 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		internal TaskFactory(IAgentHelper helper, ISerializer serializer, IContextContainerFactory contextContainerFactory, ICaseServiceContext caseServiceContext,
 			IRSAPIClient rsapiClient, IWorkspaceDBContext workspaceDbContext, IEddsServiceContext eddsServiceContext,
 			IRepositoryFactory repositoryFactory, IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory,
-			IAPILog apiLog)
+			IAPILog apiLog, IIntegrationPointProviderValidator ipValidator, IToggleProvider toggleProvider)
 		{
 			_helper = helper;
 			_serializer = serializer;
@@ -87,6 +90,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobService = jobService;
 			_managerFactory = managerFactory;
 			_logger = apiLog;
+			_ipValidator = ipValidator;
+			_toggleProvider = toggleProvider;
 		}
 
 		private IWindsorContainer Container
@@ -143,6 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					case TaskType.ImageSyncManager:
 						CheckForSynchronization(typeof(ImageSyncManager), job, integrationPointDto, agentBase);
 						return Container.Resolve<ImageSyncManager>();
+						
 					default:
 						LogUnknownTaskTypeError(taskType);
 						return null;
@@ -231,8 +237,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), _serializer);
 				IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), _serializer);
 
-				integrationPointService = new IntegrationPointService(_helper, _caseServiceContext, _contextContainerFactory, _serializer, 
-					choiceQuery, jobManager, _jobHistoryService, _managerFactory, ipValidator, permissionValidator);
+				integrationPointService = new IntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, 
+					choiceQuery, jobManager, _jobHistoryService, _managerFactory, ipValidator, permissionValidator, _toggleProvider);
 			}
 			else
 			{

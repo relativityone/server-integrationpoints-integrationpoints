@@ -6,6 +6,7 @@ using System.Runtime;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
@@ -17,6 +18,7 @@ using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Data;
+using Relativity.Toggles;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
 using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
@@ -62,7 +64,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		public RelativityExporterService(
-			IRepositoryFactory repositoryFactory,
+			IRepositoryFactory sourceRepositoryFactory,
+			IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager,
 			IHelper helper,
 			ClaimsPrincipal claimsPrincipal,
@@ -72,10 +75,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			int savedSearchArtifactId)
 			: this(mappedFields, jobStopManager, helper)
 		{
-			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
+			var settings = JsonConvert.DeserializeObject<SourceConfiguration>(config);
 			_baseContext = claimsPrincipal.GetUnversionContext(settings.SourceWorkspaceArtifactId);
 
-			ValidateDestinationFields(claimsPrincipal, settings.TargetWorkspaceArtifactId, mappedFields);
+			IFieldRepository targetFieldRepository= targetRepositoryFactory.GetFieldRepository(settings.TargetWorkspaceArtifactId);
+			ValidateDestinationFields(targetFieldRepository, claimsPrincipal, settings.TargetWorkspaceArtifactId, mappedFields);
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int) ArtifactType.Document);
 
@@ -90,10 +94,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				{
 					case FieldTypeHelper.FieldType.Objects:
 						_multipleObjectFieldArtifactIds.Add(artifactId);
-						IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(settings.SourceWorkspaceArtifactId);
+						IFieldRepository fieldRepository = sourceRepositoryFactory.GetFieldRepository(settings.SourceWorkspaceArtifactId);
 						ArtifactDTO identifierField = fieldRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
 						string identifierFieldName = (string) identifierField.Fields.First(field => field.Name == "Name").Value;
-						IObjectRepository objectRepository = repositoryFactory.GetObjectRepository(settings.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
+						IObjectRepository objectRepository = sourceRepositoryFactory.GetObjectRepository(settings.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
 						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] {identifierFieldName}).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, objects, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
 						break;
@@ -107,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						break;
 
 					case FieldTypeHelper.FieldType.MultiCode:
-						ICodeRepository codeRepository = repositoryFactory.GetCodeRepository(settings.SourceWorkspaceArtifactId);
+						ICodeRepository codeRepository = sourceRepositoryFactory.GetCodeRepository(settings.SourceWorkspaceArtifactId);
 						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, codes, Constants.IntegrationPoints.InvalidMultiChoicesValueFormat);
 						break;
@@ -258,11 +262,18 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			GC.Collect();
 		}
 
-		private void ValidateDestinationFields(ClaimsPrincipal claimsPrincipal, int destinationWorkspace, FieldMap[] mappedFields)
+		private void ValidateDestinationFields(IFieldRepository fieldRepository, ClaimsPrincipal claimsPrincipal, int destinationWorkspace, FieldMap[] mappedFields)
 		{
 			IList<string> missingFields = new List<string>();
-			BaseServiceContext destinationWorkspaceContext = claimsPrincipal.GetUnversionContext(destinationWorkspace);
-			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(destinationWorkspaceContext, (int) ArtifactType.Document);
+			//BaseServiceContext destinationWorkspaceContext = claimsPrincipal.GetUnversionContext(destinationWorkspace);
+			//IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(destinationWorkspaceContext, (int) ArtifactType.Document);
+
+			IDictionary<int, string> targetFields = fieldRepository
+				.RetrieveFieldsAsync(
+					(int)Relativity.Client.ArtifactType.Document, 
+					new HashSet<string>(new string[0]))
+				.GetResultsWithoutContextSync()
+				.ToDictionary(k => k.ArtifactId, v => v.TextIdentifier);
 
 			for (int index = 0; index < mappedFields.Length; index++)
 			{
@@ -274,11 +285,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					{
 						try
 						{
+							string fieldName;
+							if (!targetFields.TryGetValue(artifactId, out fieldName)
+								|| String.Equals(fieldEntry.ActualName, fieldName, StringComparison.OrdinalIgnoreCase))
+							{
+								missingFields.Add(fieldEntry.ActualName);
+							}
+							
+							/*
 							ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
 							if ((fieldInfo == null) || (string.Equals(fieldInfo.DisplayName, fieldEntry.ActualName, StringComparison.OrdinalIgnoreCase) == false))
 							{
 								missingFields.Add(fieldEntry.ActualName);
 							}
+							*/
 						}
 						catch(Exception e)
 						{

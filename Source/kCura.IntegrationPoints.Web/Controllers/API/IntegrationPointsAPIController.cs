@@ -2,32 +2,79 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
+using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.Services.Metrics;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class IntegrationPointsAPIController : ApiController
 	{
-		private readonly IIntegrationPointService _reader;
+		private readonly IServiceFactory _serviceFactory;
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICPHelper _cpHelper;
+		private readonly ICaseServiceContext _context;
+		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly ISerializer _serializer;
+		private readonly IChoiceQuery _choiceQuery;
+		private readonly IJobManager _jobManager;
+		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IHelperFactory _helperFactory;
+		private readonly IIntegrationPointProviderValidator _ipValidator;
+		private readonly IIntegrationPointPermissionValidator _permissionValidator;
+		private readonly IToggleProvider _toggleProvider;
 
-		public IntegrationPointsAPIController(IIntegrationPointService reader,
+		public IntegrationPointsAPIController(
+			IServiceFactory serviceFactory,
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
-			ICPHelper cpHelper)
+			ICPHelper cpHelper,
+			ICaseServiceContext context,
+			IContextContainerFactory contextContainerFactory,
+			ISerializer serializer, 
+			IChoiceQuery choiceQuery,
+			IJobManager jobManager,
+			IJobHistoryService jobHistoryService,
+			IManagerFactory managerFactory,
+			IHelperFactory helperFactory,
+			IIntegrationPointProviderValidator ipValidator,
+			IIntegrationPointPermissionValidator permissionValidator,
+			IToggleProvider toggleProvider)
 		{
-			_reader = reader;
+			_serviceFactory = serviceFactory;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_cpHelper = cpHelper;
+			_context = context;
+			_contextContainerFactory = contextContainerFactory;
+			_serializer = serializer;
+			_choiceQuery = choiceQuery;
+			_jobManager = jobManager;
+			_jobHistoryService = jobHistoryService;
+			_managerFactory = managerFactory;
+			_helperFactory = helperFactory;
+			_ipValidator = ipValidator;
+			_permissionValidator = permissionValidator;
+			_toggleProvider = toggleProvider;
 		}
 
 		[HttpGet]
@@ -40,7 +87,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				model.ArtifactID = id;
 				if (id > 0)
 				{
-					model = _reader.ReadIntegrationPoint(id);
+					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, _context ,_contextContainerFactory, _serializer, _choiceQuery, _jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+					model = integrationPointService.ReadIntegrationPoint(id);
 				}
 				if (model.DestinationProvider == 0)
 				{
@@ -63,20 +111,32 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
 					Guid.Empty, model.Name, MetricTargets.APMandSUM))
 				{
-					int createdId;
+						ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(model.Destination);
+						IHelper targetHelper;
+						if (importSettings.FederatedInstanceArtifactId != null)
+						{
+							targetHelper = _helperFactory.CreateOAuthClientHelper(_cpHelper, importSettings.FederatedInstanceArtifactId.Value);
+						}
+						else
+						{
+							targetHelper = _cpHelper;
+						}
 
-					try
-					{
-						createdId = _reader.SaveIntegration(model);
-					}
-					catch (IntegrationPointProviderValidationException ex)
-					{
-						return Request.CreateResponse(HttpStatusCode.NotAcceptable, String.Join("<br />", ex.Result.Messages));
-					}
+						IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper, _context, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+						
+						int createdId;
+						try
+						{
+							createdId = integrationPointService.SaveIntegration(model);
+						}
+						catch (IntegrationPointProviderValidationException ex)
+						{
+							return Request.CreateResponse(HttpStatusCode.NotAcceptable, String.Join("<br />", ex.Result.Messages));
+						}
 
-					string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+						string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
 
-					return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+						return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 				}
 			}
 		}

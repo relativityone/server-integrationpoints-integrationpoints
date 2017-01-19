@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -10,13 +11,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 	{
 		private const string _WORKSPACE_INVALID_NAME_CHAR = ";";
 
-		private readonly IWorkspaceRepository _workspaceRepository;
+		private readonly IWorkspaceManager _workspaceManager;
 
 		private readonly string _prefix;
 
-		public RelativityProviderWorkspaceValidator(IWorkspaceRepository workspaceRepository, string prefix)
+		public RelativityProviderWorkspaceValidator(IWorkspaceManager workspaceManager, string prefix)
 		{
-			_workspaceRepository = workspaceRepository;
+			_workspaceManager = workspaceManager;
 			_prefix = prefix;
 		}
 
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			try
 			{
-				WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(value);
+				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(value);
 
 				if (workspaceDto.Name.Contains(_WORKSPACE_INVALID_NAME_CHAR))
 				{

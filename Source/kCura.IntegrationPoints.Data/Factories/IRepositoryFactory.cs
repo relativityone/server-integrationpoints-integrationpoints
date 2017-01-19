@@ -14,6 +14,8 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <returns>A class implementing the IArtifactGuidRepository interface.</returns>
 		IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId);
 
+		IArtifactTypeRepository GetArtifactTypeRepository();
+
 		/// <summary>
 		/// Returns a class implementing the ICodeRepository interface
 		/// </summary>
@@ -200,5 +202,10 @@ namespace kCura.IntegrationPoints.Data.Factories
         /// <returns>Returns a class implementing the IWorkspacesRepository interface.</returns>
         IWorkspacesRepository GetWorkspacesRepository();
 		
+		IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId);
+		
+		IServiceUrlRepository GetServiceUrlRepository();
+		
+		IExtendedFieldRepository GetExtendedFieldRepository(int workspaceArtifactId);
 	}
 }

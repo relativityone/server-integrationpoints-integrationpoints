@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 			IDataSourceProvider provider = domainManager.GetProvider(providerGuid, helper);
 			IInternalDataSourceProvider internalProvider = provider as IInternalDataSourceProvider;
-			internalProvider?.RegisterDependency<IRepositoryFactory>(new RepositoryFactory(helper));
+			internalProvider?.RegisterDependency<IRepositoryFactory>(new RepositoryFactory(helper, helper.GetServicesManager()));
 
 			return provider;
 		}

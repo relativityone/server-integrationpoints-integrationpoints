@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Factories;
@@ -16,14 +17,16 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 	public class FieldsMappingValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
 	{
 		private readonly ISerializer _serializer;
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IFieldManager _sourcefieldManager;
+		private readonly IFieldManager _targetfieldManager;
 
 		private const string _OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 
-		public FieldsMappingValidator(ISerializer serializer, IRepositoryFactory repositoryFactory)
+		public FieldsMappingValidator(ISerializer serializer, IFieldManager sourcefieldManager, IFieldManager targetfieldManager)
 		{
 			_serializer = serializer;
-			_repositoryFactory = repositoryFactory;
+			_sourcefieldManager = sourcefieldManager;
+			_targetfieldManager = targetfieldManager;
 		}
 
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel value)
@@ -34,8 +37,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			var destinationConfiguration = _serializer.Deserialize<IntegrationPointDestinationConfiguration>(value.DestinationConfiguration);
 			var fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
 
-			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(sourceConfiguration.SourceWorkspaceArtifactId);
-			List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(sourceConfiguration.TargetWorkspaceArtifactId);
+			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(_sourcefieldManager, sourceConfiguration.SourceWorkspaceArtifactId);
+			List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(_targetfieldManager, sourceConfiguration.TargetWorkspaceArtifactId);
 
 			bool mappedIdentifier = false;
 
@@ -252,17 +255,15 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 #endregion
 
-		private List<ArtifactDTO> RetrieveAllFields(int workspaceId)
+		private List<ArtifactDTO> RetrieveAllFields(IFieldManager fieldManager, int workspaceId)
 		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceId);
-
-			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFields(
-				Convert.ToInt32(ArtifactType.Document),
+			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFields(workspaceId,
 				new HashSet<string>(new[]
 				{
 					RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,
 					RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER
-				}));
+				})
+			);
 
 			return fieldArtifacts.ToList();
 		}

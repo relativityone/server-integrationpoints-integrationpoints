@@ -6,19 +6,29 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Hosting;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -38,12 +48,23 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IIntegrationPointService _integrationPointService;
 		private ICPHelper _helper;
 		private IContextContainerFactory _contextContainerFactory;
+		private IHelperFactory _helperFactory;
+		private IServiceFactory _serviceFactory;
+		private ICaseServiceContext _caseServiceContext;
+		private ISerializer _serializer;
+		private IChoiceQuery _choiceQuery;
+		private IJobManager _jobManager;
 		private IManagerFactory _managerFactory;
-
+		private IRepositoryFactory _repositoryFactory;
+		private IIntegrationPointRepository _integrationPointRepository;
+		private IContextContainer _contextContainer;
+		private IJobHistoryService _jobHistoryService;
+		private IIntegrationPointProviderValidator _ipValidator;
+		private IIntegrationPointPermissionValidator _permissionValidator;
 		private JobController _instance;
 		private IRelativityAuditRepository _auditRepository;
-		private IContextContainer _contextContainer;
 		private IAuditManager _auditManager;
+		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -52,17 +73,46 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_helper = Substitute.For<ICPHelper>();
+			_helperFactory = Substitute.For<IHelperFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_managerFactory = Substitute.For<IManagerFactory>();
-			_auditRepository = Substitute.For<IRelativityAuditRepository>();
-			_contextContainer = Substitute.For<IContextContainer>();
 			_auditManager = Substitute.For<IAuditManager>();
+			_managerFactory = Substitute.For<IManagerFactory>();
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			_auditRepository = Substitute.For<IRelativityAuditRepository>();
+			_serviceFactory = Substitute.For<IServiceFactory>();
+			_caseServiceContext = Substitute.For<ICaseServiceContext>();
+			_serializer = Substitute.For<ISerializer>();
+			_choiceQuery = Substitute.For<IChoiceQuery>();
+			_jobManager = Substitute.For<IJobManager>();
+			_contextContainer = Substitute.For<IContextContainer>();
+			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			_ipValidator = Substitute.For<IIntegrationPointProviderValidator>();
+			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
+			_toggleProvider = Substitute.For<IToggleProvider>();
 
+			_helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
+			_managerFactory.CreateJobHistoryService(_caseServiceContext, _contextContainer, _serializer).Returns(_jobHistoryService);
+			_serviceFactory.CreateIntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _jobHistoryService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 			_managerFactory.CreateAuditManager(_contextContainer, _WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
+			_repositoryFactory.GetIntegrationPointRepository(_WORKSPACE_ARTIFACT_ID).Returns(_integrationPointRepository);
 			_auditManager.RelativityAuditRepository.Returns(_auditRepository);
 
-			_instance = new JobController(_integrationPointService, _helper, _contextContainerFactory, _managerFactory)
+			_instance = new JobController(
+				_serviceFactory, 
+				_helper,
+				_helperFactory,
+				_caseServiceContext,
+				_contextContainerFactory,
+				_serializer,
+				_choiceQuery,
+				_jobManager,
+				_managerFactory,
+				_repositoryFactory,
+				_ipValidator,
+				_permissionValidator,
+				_toggleProvider)
 			{
 				Request = new HttpRequestMessage()
 			};
@@ -73,9 +123,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest()
 		{
 			// Arrange
+			var integrationPoint = new IntegrationPointDTO()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+			};
 			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
 			Exception exception = new Exception(expectedErrorMessage);
+
+			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
@@ -105,6 +162,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			AggregateException exceptionToBeThrown = new AggregateException("ABC",
 				new[] { new AccessViolationException("123"), new Exception("456") });
 
+			var integrationPoint = new IntegrationPointDTO()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+			};
+
+			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID))
 				.Throw(exceptionToBeThrown);
@@ -121,6 +185,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError()
 		{
 			// Arrange
+			var integrationPoint = new IntegrationPointDTO()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+			};
+
+			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
 			// Act
@@ -139,6 +209,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			{
 				new Claim("rel_uai", _userIdString)
 			};
+
+			var integrationPoint = new IntegrationPointDTO()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+			};
+
+			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
 			// Act
@@ -228,14 +305,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				WorkspaceId = _WORKSPACE_ARTIFACT_ID
 			};
 
-			ContextContainer contextContainer = new ContextContainer(_helper);
 			IErrorManager errorManager = Substitute.For<IErrorManager>();
 
 			_integrationPointService
 				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
 				.Throw(aggregateException);
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
-			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
+			_managerFactory.CreateErrorManager(_contextContainer).Returns(errorManager);
 			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
 			// Act
@@ -269,14 +344,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				WorkspaceId = _WORKSPACE_ARTIFACT_ID
 			};
 
-			ContextContainer contextContainer = new ContextContainer(_helper);
 			IErrorManager errorManager = Substitute.For<IErrorManager>();
 
 			_integrationPointService
 				.When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
 				.Throw(exception);
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(contextContainer);
-			_managerFactory.CreateErrorManager(contextContainer).Returns(errorManager);
+			_managerFactory.CreateErrorManager(_contextContainer).Returns(errorManager);
 			errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
 			// Act

@@ -1,12 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -19,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _jobHistoryArtifactId;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISerializer _serializer;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly string _sourceConfig;
 		private readonly ISourceJobManager _sourceJobManager;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
@@ -33,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			ISynchronizerFactory synchronizerFactory,
 			IHelper helper,
 			ISerializer serializer,
+			IToggleProvider toggleProvider,
 			FieldMap[] fields,
 			string sourceConfig,
 			string destinationConfig,
@@ -46,6 +52,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_synchronizerFactory = synchronizerFactory;
 			_helper = helper;
 			_serializer = serializer;
+			_toggleProvider = toggleProvider;
 			_fields = fields;
 			_sourceConfig = sourceConfig;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
@@ -66,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
 		{
-			var settings = _serializer.Deserialize<ExportSettings>(_sourceConfig);
+			var settings = _serializer.Deserialize<SourceConfiguration>(_sourceConfig);
 			var synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
 
 			IConsumeScratchTableBatchStatus tagger = new TargetDocumentsTaggingManager(
@@ -75,6 +82,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_sourceWorkspaceManager,
 				_sourceJobManager,
 				_documentRepository,
+				_toggleProvider,
 				_helper,
 				_fields.ToArray(),
 				_destinationConfig,

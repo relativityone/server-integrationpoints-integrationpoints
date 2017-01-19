@@ -1,6 +1,10 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Factories
@@ -94,5 +98,13 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <returns>Audit Manager</returns>
 		IAuditManager CreateAuditManager(IContextContainer contextContainer, int workspaceArtifactId);
 
+
+		IJobHistoryService CreateJobHistoryService(ICaseServiceContext caseServiceContext,
+			IContextContainer targetContextContainer, ISerializer serializer);
+
+		IFederatedInstanceManager CreateFederatedInstanceManager(IContextContainer contextContainer);
+		IOAuthClientManager CreateOAuthClientManager(IContextContainer contextContainer);
+
+		IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer);
 	}
 }

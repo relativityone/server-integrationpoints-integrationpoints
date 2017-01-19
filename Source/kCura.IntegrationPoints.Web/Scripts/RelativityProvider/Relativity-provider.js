@@ -61,6 +61,7 @@
 		// Modify destination object to contain target workspaceId
 		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
 		var destination = JSON.parse(destinationJson);
+		destination.FederatedInstanceArtifactId = viewModel.FederatedInstanceArtifactId();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
 		destination.Provider = "relativity";
@@ -99,9 +100,11 @@
 		var state = $.extend({}, {}, m);
 		var self = this;
 
+		self.federatedInstances = ko.observableArray(state.federatedInstances);
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.savedSearches = ko.observableArray(state.savedSearches);
 		self.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
+		this.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
 		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
@@ -122,6 +125,27 @@
 			return "";
 		};
 
+		if (self.federatedInstances.length === 0) {
+			IP.data.ajax({
+				type: 'GET',
+				url: IP.utils.generateWebAPIURL('InstanceFinder'),
+				async: true,
+				success: function(result) {
+					self.federatedInstances(result);
+
+					if (state.FederatedInstanceArtifactId != undefined) {
+						self.FederatedInstanceArtifactId(state.FederatedInstanceArtifactId);
+					} else {
+						self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
+					}
+				},
+				error: function() {
+					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");
+					self.federatedInstances([]);
+				}
+			});
+		}
+
 		self.setDestinationFolder = function (folderArtifactId, destinationWorkspaceId) {
 			if (!folderArtifactId) {
 				return;
@@ -129,7 +153,7 @@
 
 			IP.data.ajax({
 				type: "get",
-				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId)
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId())
 			})
 				.then(function (result) {
 					self.TargetFolder(self.getFolderFullName(result, folderArtifactId));
@@ -150,7 +174,7 @@
 		self.getFolderAndSubFolders = function (destinationWorkspaceId) {
 			IP.data.ajax({
 				type: "get",
-				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId)
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId())
 			}).then(function (result) {
 				if (!!self.TargetFolder() && self.TargetFolder().indexOf(result.text) === -1) {
 					self.FolderArtifactId("");
@@ -162,7 +186,6 @@
 				IP.frameMessaging().dFrame.IP.message.error.raise(error);
 			});
 		};
-
 
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
@@ -192,10 +215,10 @@
 			});
 		}
 
-		if (self.workspaces.length === 0) {
+		self.updateWorkspaces = function() {
 			IP.data.ajax({
 				type: 'GET',
-				url: IP.utils.generateWebAPIURL('WorkspaceFinder'),
+				url: IP.utils.generateWebAPIURL('WorkspaceFinder', self.FederatedInstanceArtifactId()),
 				async: true,
 				success: function (result) {
 					ko.utils.arrayForEach(result, function (item) {
@@ -215,6 +238,10 @@
 				}
 			});
 		}
+
+		self.FederatedInstanceArtifactId.subscribe(function(value) {
+			self.updateWorkspaces();
+		});
 
 		this.TargetWorkspaceArtifactId.extend({
 			required: {
@@ -280,6 +307,7 @@
 		this.errors = ko.validation.group(this, { deep: true });
 		this.getSelectedOption = function () {
 			return {
+				"FederatedInstanceArtifactId": self.FederatedInstanceArtifactId(),
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),

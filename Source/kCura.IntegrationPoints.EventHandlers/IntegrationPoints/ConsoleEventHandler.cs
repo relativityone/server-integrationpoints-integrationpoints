@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
 					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
 					IStateManager stateManager = ManagerFactory.CreateStateManager();
-					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper);
+					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
 					IIntegrationPointPermissionValidator permissionValidator =
 						new IntegrationPointPermissionValidator(new[] {new ViewErrorsPermissionValidator(repositoryFactory)}, new JSONSerializer());
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());

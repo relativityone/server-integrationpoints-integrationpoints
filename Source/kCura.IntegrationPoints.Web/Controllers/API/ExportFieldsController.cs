@@ -11,7 +11,7 @@ using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.DataStructures;
 using Newtonsoft.Json;
 using Relativity;
-using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
+using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {

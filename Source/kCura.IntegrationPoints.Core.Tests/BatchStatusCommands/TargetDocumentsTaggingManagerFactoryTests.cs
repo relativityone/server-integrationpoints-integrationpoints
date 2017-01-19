@@ -1,6 +1,7 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -11,6 +12,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private TargetDocumentsTaggingManagerFactory _instance;
 		private ImportSettings _settings;
 		private IDataSynchronizer _dataSynchronizer;
+		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -46,6 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_serializer = Substitute.For<ISerializer>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
 			_helper = Substitute.For<IHelper>();
+			_toggleProvider = Substitute.For<IToggleProvider>();
 			_fields = new FieldMap[0];
 			_settings = new ImportSettings();
 			_serializer.Deserialize<ImportSettings>(_DEST_CONFIG).Returns(_settings);
@@ -65,6 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_synchronizerFactory,
 				_helper,
 				_serializer,
+				_toggleProvider,
 				_fields,
 				_SOURCE_CONFIG,
 				_DEST_CONFIG,
@@ -87,12 +92,12 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		public void BuildDocumentsTagger_GoldFlow()
 		{
 			// ARRANGE
-			ExportSettings exportSettings = new ExportUsingSavedSearchSettings()
+			SourceConfiguration exportSettings = new SourceConfiguration()
 			{
 				SourceWorkspaceArtifactId = 1,
 				TargetWorkspaceArtifactId = 2
 			};
-			_serializer.Deserialize<ExportSettings>(_SOURCE_CONFIG).Returns(exportSettings);
+			_serializer.Deserialize<SourceConfiguration>(_SOURCE_CONFIG).Returns(exportSettings);
 			_synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _NEW_DEST_CONFIG).Returns(_dataSynchronizer);
 			_instance = new TargetDocumentsTaggingManagerFactory
 			(
@@ -103,6 +108,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_synchronizerFactory,
 				_helper,
 				_serializer,
+				_toggleProvider,
 				_fields,
 				_SOURCE_CONFIG,
 				_DEST_CONFIG,

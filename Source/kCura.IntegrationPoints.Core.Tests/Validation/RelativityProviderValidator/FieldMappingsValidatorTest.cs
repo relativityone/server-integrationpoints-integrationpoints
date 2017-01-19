@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
@@ -17,8 +18,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 	public class FieldMappingsValidatorTest
 	{
 		private IValidator _instance;
-		private IRepositoryFactory _repositoryFactory;
-		private IFieldRepository _fieldRepository;
+		private IFieldManager _sourceFieldManager;
+		private IFieldManager _targetFieldManager;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1074540;
 		private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
 		private readonly string SourceConfiguration = "{\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + "}";
@@ -29,9 +30,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		[SetUp]
 		public void Setup()
 		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_fieldRepository = Substitute.For<IFieldRepository>();
-			_instance = new FieldsMappingValidator(new JSONSerializer(), _repositoryFactory);
+			_sourceFieldManager = Substitute.For<IFieldManager>();
+			_targetFieldManager = Substitute.For<IFieldManager>();
+			_instance = new FieldsMappingValidator(new JSONSerializer(), _sourceFieldManager, _targetFieldManager);
 		}
 
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]")]
@@ -285,15 +286,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				fieldArtifacts.Add(new ArtifactDTO(artifactId, 0, "", new List<ArtifactFieldDTO>()));
 			}
 
-			SetReturnValue(_SOURCE_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
-			SetReturnValue(_TARGET_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
+			SetReturnValue(_sourceFieldManager, _SOURCE_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
+			SetReturnValue(_targetFieldManager, _TARGET_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
 		}
 
-		private void SetReturnValue(int workspaceId, List<ArtifactDTO> fieldArtifacts)
+		private void SetReturnValue(IFieldManager fieldManager, int workspaceId, List<ArtifactDTO> fieldArtifacts)
 		{
 			const int artifactTypeDocument = 10;
-			_repositoryFactory.GetFieldRepository(workspaceId).Returns(_fieldRepository);
-			_fieldRepository.RetrieveFields(artifactTypeDocument,
+			fieldManager.RetrieveFields(artifactTypeDocument,
 				new HashSet<string>(new[]
 				{
 					RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,

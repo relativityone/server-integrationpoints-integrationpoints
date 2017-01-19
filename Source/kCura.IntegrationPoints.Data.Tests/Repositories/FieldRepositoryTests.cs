@@ -13,7 +13,7 @@ using Relativity.Core;
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
-	public class FieldRepositoryTests : TestBase
+	public class ExtendedFieldRepositoryTests : TestBase
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 1024165;
 
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private BaseServiceContext _baseServiceContext;
 		private BaseContext _baseContext;
 
-		private IFieldRepository _instance;
+		private IExtendedFieldRepository _instance;
 
 		[SetUp]
 		public override void SetUp()
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_baseServiceContext = Substitute.For<BaseServiceContext>();
 			_baseContext = Substitute.For<BaseContext>();
 
-			_instance = new FieldRepository(_helper, _objectQueryManagerAdaptor, _baseServiceContext, _baseContext, _WORKSPACE_ARTIFACT_ID);
+			_instance = new SqlExtendedFieldRepository(_helper, _objectQueryManagerAdaptor, _baseServiceContext, _baseContext, _WORKSPACE_ARTIFACT_ID);
 		}
 
 		[Test]

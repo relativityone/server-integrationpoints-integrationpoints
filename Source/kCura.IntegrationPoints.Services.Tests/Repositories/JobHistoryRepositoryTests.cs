@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
@@ -14,8 +15,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		private IWorkspaceManager _workspaceManager;
 		private IJobHistoryAccess _jobHistoryAccess;
 		private IJobHistorySummaryModelBuilder _summaryModelBuilder;
-
 		private JobHistoryRepository _jobHistoryRepository;
+		private IToggleProvider _toggleProvider;
 
 		public override void SetUp()
 		{
@@ -24,9 +25,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_jobHistoryAccess = Substitute.For<IJobHistoryAccess>();
 			_summaryModelBuilder = Substitute.For<IJobHistorySummaryModelBuilder>();
-
+			_toggleProvider = Substitute.For<IToggleProvider>();
 			_jobHistoryRepository = new JobHistoryRepository(_relativityIntegrationPointsRepository, _completedJobsHistoryRepository, _workspaceManager, _jobHistoryAccess,
-				_summaryModelBuilder);
+				_summaryModelBuilder, _toggleProvider);
 		}
 
 		[Test]

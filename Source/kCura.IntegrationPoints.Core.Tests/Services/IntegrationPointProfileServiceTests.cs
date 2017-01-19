@@ -14,6 +14,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private readonly int _destinationProviderId = 424;
 
 		private IHelper _helper;
+		private IHelper _targetHelper;
 		private ICaseServiceContext _caseServiceContext;
 		private IContextContainer _contextContainer;
 		private IContextContainerFactory _contextContainerFactory;
@@ -40,11 +42,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationPointPermissionValidator _permissionValidator;
 		private IntegrationPointProfileService _instance;
 		private IChoiceQuery _choiceQuery;
+		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
+			_targetHelper = Substitute.For<IHelper>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
@@ -56,16 +60,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(
 				_helper,
+				_targetHelper,
 				_caseServiceContext,
 				_contextContainerFactory,
 				_serializer,
 				_choiceQuery,
 				_managerFactory,
 				_integrationModelValidator,
-				_permissionValidator
+				_permissionValidator,
+				_toggleProvider
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();

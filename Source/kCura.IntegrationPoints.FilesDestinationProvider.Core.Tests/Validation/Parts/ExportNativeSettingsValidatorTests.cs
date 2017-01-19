@@ -13,7 +13,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts

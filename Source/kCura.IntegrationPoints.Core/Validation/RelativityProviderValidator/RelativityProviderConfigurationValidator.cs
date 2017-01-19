@@ -41,13 +41,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var savedSearchValidator = _validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId);
 			result.Add(savedSearchValidator.Validate(sourceConfiguration.SavedSearchArtifactId));
 
-			var destinationWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Destination");
+			var destinationWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Destination", sourceConfiguration.FederatedInstanceArtifactId);
 			result.Add(destinationWorkspaceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
 
-			var destinationFolderValidator = _validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId, ArtifactTypeNames.Folder);
+			var destinationFolderValidator = _validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId, ArtifactTypeNames.Folder, sourceConfiguration.FederatedInstanceArtifactId);
 			result.Add(destinationFolderValidator.Validate(destinationConfiguration.DestinationFolderArtifactId));
 
-			var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator();
+			var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator(sourceConfiguration.FederatedInstanceArtifactId);
 			result.Add(fieldMappingValidator.Validate(integrationModel));
 
 			var transferredObjectValidator = _validatorsFactory.CreateTransferredObjectValidator();

@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using ExportSettings = kCura.IntegrationPoints.Core.Models.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {

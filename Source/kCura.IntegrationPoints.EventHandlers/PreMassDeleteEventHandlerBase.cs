@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers
             {
                 if (_repositoryFactory == null)
                 {
-                    _repositoryFactory = new RepositoryFactory(this.Helper);
+                    _repositoryFactory = new RepositoryFactory(this.Helper, this.Helper.GetServicesManager());
                 }
                 return _repositoryFactory;
             }

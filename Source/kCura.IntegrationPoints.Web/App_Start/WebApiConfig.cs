@@ -267,8 +267,8 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "SearchFolder",
-				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
-				defaults: new { controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional }
+				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}/{federatedInstanceId}",
+				defaults: new {controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional, federatedInstanceId = RouteParameter.Optional }
 			);
 
 			config.Routes.MapHttpRoute(
@@ -294,7 +294,13 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/Production/GetProductionsForExport",
 				defaults: new { controller = "Production", action = "GetProductionsForExport" }
 			);
-
+			
+			config.Routes.MapHttpRoute(
+				name: "GetWorkspaces",
+				routeTemplate: "{workspaceID}/api/WorkspaceFinder/{federatedInstanceId}",
+				defaults: new { controller = "WorkspaceFinder", action = "Get" }
+			);
+			
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",

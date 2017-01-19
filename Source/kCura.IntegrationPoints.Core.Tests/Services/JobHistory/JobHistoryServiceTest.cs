@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 	{
 		private ICaseServiceContext _caseServiceContext;
 		private IWorkspaceRepository _workspaceRepository;
+		private IRepositoryFactory _repositoryFactory;
 		private IHelper _helper;
 
 		private JobHistoryService _instance;
@@ -39,8 +41,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_helper = Substitute.For<IHelper>();
 			_serializer = Substitute.For<ISerializer>();
+
+			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
 
 			_integrationPoint = new Data.IntegrationPoint()
 			{
@@ -58,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext, _workspaceRepository, _helper, _serializer);
+			_instance = new JobHistoryService(_caseServiceContext, _repositoryFactory, _helper, _serializer);
 		}
 
 		[Test]

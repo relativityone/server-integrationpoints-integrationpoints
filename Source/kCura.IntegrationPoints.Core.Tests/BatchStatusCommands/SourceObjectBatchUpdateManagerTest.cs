@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_repositoryFactory.GetScratchTableRepository(_sourceConfig.SourceWorkspaceArtifactId, _scratchTableName, Arg.Any<string>()).ReturnsForAnyArgs(_scratchTableRepository);
 			_scratchTableRepository.GetTempTableName().Returns(_scratchTableName);
 
-			_instance = new SourceObjectBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _helper, _sourceConfig,
+			_instance = new SourceObjectBatchUpdateManager(_repositoryFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _helper, _sourceConfig,
 				_jobHistoryRdoId, _submittedBy, _uniqueJobId);
 
 			_repositoryFactory.Received().GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId);

@@ -59,10 +59,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			internal static string IsIdentifier = "Is Identifier";
 		}
 
-		private ArtifactDTO[] GetRelativityFields(int workspaceId, int rdoTypeId)
+		private ArtifactDTO[] GetRelativityFields(int sourceWorkspaceId, int rdoTypeId)
 		{
 			IRepositoryFactory repositoryFactory = ResolveDependencies<IRepositoryFactory>();
-			IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(workspaceId);
+			IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(sourceWorkspaceId);
 
 			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFields(
 				rdoTypeId,
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				DocumentFields.JobHistory
 			};
 
-			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
+			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(sourceWorkspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
 
 			// Contains is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
 			return fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
