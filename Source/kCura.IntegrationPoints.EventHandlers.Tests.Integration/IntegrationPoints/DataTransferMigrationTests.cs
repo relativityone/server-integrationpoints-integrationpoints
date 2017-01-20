@@ -57,8 +57,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_logger = Substitute.For<IAPILog>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			_destinationProviderRepository = _repositoryFactory.GetDestinationProviderRepository(WorkspaceArtifactId);
-			_sourceProviderRepository = _repositoryFactory.GetSourceProviderRepository(WorkspaceArtifactId);
 			_serializer = new JSONSerializer();
 			_dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(_serializer);
 			_dataTransferLocationService = Container.Resolve<IDataTransferLocationService>();
@@ -73,6 +71,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		public override void TestSetup()
 		{
 			base.TestSetup();
+
+			_destinationProviderRepository = _repositoryFactory.GetDestinationProviderRepository(WorkspaceArtifactId);
+			_sourceProviderRepository = _repositoryFactory.GetSourceProviderRepository(WorkspaceArtifactId);
+			_integrationPointLibrary = CaseContext.RsapiService.IntegrationPointLibrary;
 
 			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
 				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _integrationPointLibrary,
