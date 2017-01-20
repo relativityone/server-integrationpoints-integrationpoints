@@ -172,10 +172,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					SetupSubscriptions(dataSynchronizer, job);
 					JobStopManager?.ThrowIfStopRequested();
-
 					dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
-					IEnumerable<IDictionary<FieldEntry, object>> data = GetSourceData(sourceFields, sourceDataReader);
-					dataSynchronizer.SyncData(data, fieldMaps, destinationConfiguration);
 				}
 			}
 			else 
@@ -183,11 +180,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
 				{
 					SetupSubscriptions(dataSynchronizer, job);
-
 					IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-
 					JobStopManager?.ThrowIfStopRequested();
-
 					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
 				}
 			}
