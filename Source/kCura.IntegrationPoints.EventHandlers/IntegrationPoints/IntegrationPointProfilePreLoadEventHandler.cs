@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return _integrationPointViewPreLoad ??
 						(_integrationPointViewPreLoad =
 							new IntegrationPointViewPreLoad(ServiceContextFactory.CreateCaseServiceContext(Helper, Application.ArtifactID), 
-							new RelativityProviderSourceConfiguration(Helper, new KeplerWorkspaceRepository(new ObjectQueryManagerAdaptor(Helper.GetServicesManager(), -1, (int)ArtifactType.Case))),
+							new RelativityProviderSourceConfiguration(Helper, new KeplerWorkspaceRepository(Helper, new ObjectQueryManagerAdaptor(Helper, Helper.GetServicesManager(), -1, (int)ArtifactType.Case))),
 							new RelativityProviderDestinationConfiguration(Helper),
 								new IntegrationPointProfileFieldsConstants()));
 			}

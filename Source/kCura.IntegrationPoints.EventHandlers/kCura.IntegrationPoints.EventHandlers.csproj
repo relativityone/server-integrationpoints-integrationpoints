@@ -151,8 +151,8 @@
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Toggles.1.0.0.68\lib\net45\Relativity.Toggles.dll</HintPath>
+    <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">

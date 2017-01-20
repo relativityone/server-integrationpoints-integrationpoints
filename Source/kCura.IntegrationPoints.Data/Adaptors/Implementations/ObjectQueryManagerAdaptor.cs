@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
@@ -9,13 +10,15 @@ namespace kCura.IntegrationPoints.Data.Adaptors.Implementations
 	public class ObjectQueryManagerAdaptor : IObjectQueryManagerAdaptor
 	{
 		private readonly IServicesMgr _servicesMgr;
+		private readonly IAPILog _logger;
 
 		public int WorkspaceId { set; get; }
 		public int ArtifactTypeId { set; get; }
 
-		public ObjectQueryManagerAdaptor(IServicesMgr servicesMgr, int workspaceId, int artifactTypeId)
+		public ObjectQueryManagerAdaptor(IHelper helper, IServicesMgr servicesMgr, int workspaceId, int artifactTypeId)
 		{
 			_servicesMgr = servicesMgr;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ObjectQueryManagerAdaptor>();
 			WorkspaceId = workspaceId;
 			ArtifactTypeId = artifactTypeId;
 		}
@@ -37,9 +40,10 @@ namespace kCura.IntegrationPoints.Data.Adaptors.Implementations
 
 					return result;
 				}
-				catch (System.Exception ex)
+				catch (Exception e)
 				{
-					throw ex;
+					_logger.LogError(e, "Object Query Manager service call failed");
+					throw;
 				}
 			}
 		}
