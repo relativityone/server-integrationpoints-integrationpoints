@@ -167,6 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					entryIDs,
 					sourceConfiguration))
 				{
+					importDataReader.Setup(fieldMaps);
 					SetupSubscriptions(dataSynchronizer, job);
 					JobStopManager?.ThrowIfStopRequested();
 					dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
