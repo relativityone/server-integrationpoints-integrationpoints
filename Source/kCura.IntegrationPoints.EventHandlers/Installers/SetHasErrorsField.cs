@@ -94,7 +94,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID(), rsapiClientFactory);
 			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-			IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
 			IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
 			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
@@ -118,7 +117,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IToggleProvider toggleProvider = new AlwaysDisabledToggleProvider();
 
 			// TODO: make sure we're passing the right helper
-			_integrationPointService = new IntegrationPointService(Helper, Helper, caseServiceContext, contextContainerFactory, serializer, 
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, 
 				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator, toggleProvider);
 		}
 

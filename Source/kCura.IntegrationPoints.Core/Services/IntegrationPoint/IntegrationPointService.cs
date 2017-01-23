@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		public IntegrationPointService(
 			IHelper helper,
-			IHelper targetHelper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
 			ISerializer serializer, IChoiceQuery choiceQuery,
@@ -48,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IIntegrationPointProviderValidator integrationModelValidator,
 			IIntegrationPointPermissionValidator permissionValidator,
 			IToggleProvider toggleProvider)
-			: base(helper, targetHelper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(),
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(),
 				  integrationModelValidator, permissionValidator, toggleProvider)
 		{
 			_jobService = jobService;

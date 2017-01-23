@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		protected ISerializer Serializer;
 		protected ICaseServiceContext Context;
 		protected IContextContainer SourceContextContainer;
-		protected IContextContainer TargetContextContainer;
 
 		protected IChoiceQuery ChoiceQuery;
 		protected IManagerFactory ManagerFactory;
@@ -46,7 +45,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected IntegrationPointServiceBase(
 			IHelper helper,
-			IHelper targetHelper,
 			ICaseServiceContext context,
 			IChoiceQuery choiceQuery,
 			ISerializer serializer,
@@ -66,7 +64,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_permissionValidator = permissionValidator;
 			_helper = helper;
 			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
-			TargetContextContainer = contextContainerFactory.CreateContextContainer(targetHelper);
 			_toggleProvider = toggleProvider;
 		}
 

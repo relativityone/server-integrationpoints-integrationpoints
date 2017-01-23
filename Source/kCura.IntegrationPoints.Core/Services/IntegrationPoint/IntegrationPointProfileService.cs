@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	public class IntegrationPointProfileService : IntegrationPointServiceBase<IntegrationPointProfile>, IIntegrationPointProfileService
 	{
 		public IntegrationPointProfileService(IHelper helper,
-			IHelper targetHelper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
 			ISerializer serializer,
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IIntegrationPointProviderValidator integrationModelValidator,
 			IIntegrationPointPermissionValidator permissionValidator,
 			IToggleProvider toggleProvider)
-			: base(helper, targetHelper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator, permissionValidator, toggleProvider)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator, permissionValidator, toggleProvider)
 		{
 		}
 

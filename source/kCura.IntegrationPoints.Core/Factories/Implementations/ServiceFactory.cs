@@ -27,12 +27,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IIntegrationPointPermissionValidator permissionValidator,
 			IToggleProvider toggleProvider)
 		{
-			IContextContainer targetContextContainer = contextContainerFactory.CreateContextContainer(targetHelper);
+			IContextContainer targetContextContainer = contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
 			IJobHistoryService jobHistoryService = managerFactory.CreateJobHistoryService(context, targetContextContainer, serializer);
 
 			return new IntegrationPointService(
 				helper, 
-				targetHelper, 
 				context, 
 				contextContainerFactory, 
 				serializer, 
