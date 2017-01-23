@@ -161,7 +161,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			};
 
 			_permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(
-				new ValidationResult(hasViewErrorsPermissions ? null : viewErrorMessages));
+				new ValidationResult(hasViewErrorsPermissions ? null : viewErrorMessages)
+				{
+					IsValid = hasViewErrorsPermissions
+				});
 
 			_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
@@ -331,7 +334,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				RetryErrorsButtonEnabled = false
 			};
 
-			_stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, true, true, hasStoppableJobs, true).Returns(buttonStates);
+			_stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, true, true, providerType == ProviderType.LoadFile && hasStoppableJobs, true).Returns(buttonStates);
 
 			string actionButtonOnClickEvent;
 			if (!hasJobsExecutingOrInQueue)
@@ -359,8 +362,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			Console console = _instance.GetConsole(ConsoleEventHandler.PageEvent.Load);
 
 			// ASSERT
-			_jobHistoryManager.Received(1).GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID);
-
 			Assert.IsNotNull(console);
 
 			int buttonCount = 1;
