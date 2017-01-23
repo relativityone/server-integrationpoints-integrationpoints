@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 				}
 				return _sqlContext;
 			}
-			set { _sqlContext = value; }
 		}
 	}
 }
