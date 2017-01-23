@@ -50,15 +50,15 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			IFieldManager sourceFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(_helper));
 
 			var targetHelper = CreateHelper(federatedInstanceArtifactId);
-			IFieldManager targetFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(targetHelper));
+			IFieldManager targetFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 
 			return new FieldsMappingValidator(_serializer, sourceFieldManager, targetFieldManager);
 		}
 
 		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId = null)
 		{
-			var helper = CreateHelper(federatedInstanceArtifactId);
-			var artifactService = _serviceFactory.CreateArtifactService(_helper, helper);
+			var targetHelper = CreateHelper(federatedInstanceArtifactId);
+			var artifactService = _serviceFactory.CreateArtifactService(_helper, targetHelper);
 
 			return new ArtifactValidator(artifactService, workspaceArtifactId, artifactTypeName);
 		}
@@ -70,9 +70,9 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId = null)
 		{
-			var helper = CreateHelper(federatedInstanceArtifactId);
+			var targetHelper = CreateHelper(federatedInstanceArtifactId);
 			IWorkspaceManager workspaceManager =
-				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
+				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 			return new RelativityProviderWorkspaceValidator(workspaceManager, prefix);
 		}
 

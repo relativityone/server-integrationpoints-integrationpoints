@@ -8,5 +8,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new ContextContainer(helper);
 		}
+
+		public IContextContainer CreateContextContainer(IHelper helper, IServicesMgr servicesMgr)
+		{
+			return new ContextContainer(helper, servicesMgr);
+		}
 	}
 }

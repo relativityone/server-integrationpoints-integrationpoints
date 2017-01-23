@@ -53,53 +53,11 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 			container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifestyleTransient());
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService()).LifestyleTransient());
-
-			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
-			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
-				() =>
-				{
-					SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
-
-					return connection;
-				},
-				async () =>
-				{
-					Task<SqlConnection> task = Task.Run(() =>
-					{
-						SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
-						return connection;
-					});
-
-					return await task;
-				})).LifestyleTransient());
-
 			container.Register(Component.For<IHtmlSanitizerManager>().ImplementedBy<HtmlSanitizerManager>().LifestyleSingleton());
 			container.Register(Component.For<SummaryPageSelector>().ImplementedBy<SummaryPageSelector>().LifestyleSingleton());
 			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
 			container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
 			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestylePerWebRequest());
-
-			container.Register(Component.For<IOAuthClientManager>().UsingFactoryMethod(k =>
-			{
-				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
-				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
-				IHelper helper = k.Resolve<IHelper>();
-				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
-				IOAuthClientManager oAuthClientManager = managerFactory.CreateOAuthClientManager(contextConainer);
-
-				return oAuthClientManager;
-			}).LifestyleTransient());
-
-			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
-			{
-				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
-				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
-				IHelper helper = k.Resolve<IHelper>();
-				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
-				IFederatedInstanceManager federatedInstanceManager = managerFactory.CreateFederatedInstanceManager(contextConainer);
-
-				return federatedInstanceManager;
-			}).LifestyleTransient());
 		}
 	}
 }

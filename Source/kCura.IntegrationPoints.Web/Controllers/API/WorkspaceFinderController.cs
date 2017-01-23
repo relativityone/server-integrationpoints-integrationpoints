@@ -39,18 +39,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve the workspace information.")]
 		public HttpResponseMessage Get(int? federatedInstanceId = null)
 		{
-			//var helper = federatedInstanceId.HasValue ? _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value) : _helper;
+			//var targetHelper = federatedInstanceId.HasValue ? _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value) : _helper;
 			//IWorkspaceManager workspaceManager =
-			//	_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
+			//	_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 			//IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserWorkspaces();
 
 			// TODO this is a workaround until getting active workspaces is available as a service, replace the following if/else snippet with the one above
 			IEnumerable<WorkspaceDTO> userWorkspaces = null;
 			if (federatedInstanceId.HasValue)
 			{
-				var helper = _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value);
+				var targetHelper = _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value);
 				IWorkspaceManager workspaceManager =
-					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
+					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 				userWorkspaces = workspaceManager.GetUserWorkspaces();
 			}
 			else

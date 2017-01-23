@@ -31,10 +31,10 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
-			
-            if (json.Provider != null && json.Provider.ToLower() == "relativity")
-            {
-	            IRSAPIClient client;
+
+			if (json.Provider != null && json.Provider.ToLower() == "relativity")
+			{
+				IRSAPIClient client;
 				IHelper sourceInstanceHelper = _container.Resolve<IHelper>();
 				if (json.FederatedInstanceArtifactId != null)
 				{
@@ -52,8 +52,8 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				{
 					{"fieldQuery", new RelativityFieldQuery(client, sourceInstanceHelper)},
 				};
-				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizer).AssemblyQualifiedName, dict);
-				RdoSynchronizer syncBase = (RdoSynchronizer) synchronizer;
+				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizer).AssemblyQualifiedName, dict);
+				RdoSynchronizer syncBase = (RdoSynchronizer)synchronizer;
 				syncBase.SourceProvider = SourceProvider;
 				return syncBase;
 			}

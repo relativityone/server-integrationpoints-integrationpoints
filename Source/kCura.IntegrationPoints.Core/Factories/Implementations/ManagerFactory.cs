@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)
 		{
-			return new RepositoryFactory(contextContainer.Helper, contextContainer.Helper.GetServicesManager());
+			return new RepositoryFactory(contextContainer.Helper, contextContainer.ServicesMgr);
 		}
 
 		#endregion

@@ -19,6 +19,7 @@ using Castle.MicroKernel.Registration;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -52,6 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IContextContainer _contextContainer;
 		private IQueueManager _queueManager;
 		private IServiceManagerProvider _serviceManagerProvider;
+		private IHelperFactory _helperFactory;
 
 		[SetUp]
 		public override void SetUp()
@@ -64,15 +66,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_rsapiClient = Substitute.For<IRSAPIClient>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
-			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_agentService = Substitute.For<IAgentService>();
 			_jobService = Substitute.For<IJobService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
 			var apiLog = Substitute.For<IAPILog>();
 
+			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_queueManager = Substitute.For<IQueueManager>();
+			_helperFactory = Substitute.For<IHelperFactory>();
 
 			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _jobHistoryService, _agentService, _jobService,
 				_managerFactory, apiLog);
@@ -215,7 +218,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				x => x.ArtifactId == jobHistory.ArtifactId && x.JobStatus == JobStatusChoices.JobHistoryErrorJobFailed));
 		}
 
-		//TODO: add test to scenario where the federated instance is populated -- biedrzycki: Sept 7th, 2016
 		[Test]
 		[TestCaseSource(nameof(CreateTask_CaseData))]
 		public void CreateTask_AllTaskTypesAreResolvable(TaskType taskType)
@@ -248,8 +250,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			int jobId = 342343;
 
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(relatedId).Returns(new Data.IntegrationPoint());
-
 			Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
 			try
 			{
@@ -259,6 +259,51 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			catch (Exception ex)
 			{
 				throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
+			}
+		}
+
+		[Test]
+		public void CreateTask_FederatedInstanceExportServiceIsResolvable()
+		{
+			// Arrange
+			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
+			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
+			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
+
+			caseServiceContext.RsapiService.Returns(rsapiService);
+			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
+
+			int relatedId = 453245;
+			var integrationPoint = new Data.IntegrationPoint()
+			{
+				SourceConfiguration = JsonConvert.SerializeObject(new SourceConfiguration() { FederatedInstanceArtifactId = 1 }),
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 1 })
+			};
+			integrationPointLibrary.Read(relatedId).Returns(integrationPoint);
+			IWindsorContainer windsorContainer = new WindsorContainer();
+			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
+			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
+			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
+			windsorContainer.Register(Component.For<IHelperFactory>().Instance(_helperFactory));
+
+			var taskFactory = new TaskFactory(_helper, windsorContainer);
+			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+			_rsapiClient.APIOptions = new APIOptions(40234);
+			_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(_rsapiClient);
+			_relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
+
+			int jobId = 342343;
+
+			Job job = JobExtensions.CreateJob(jobId, TaskType.ExportService, relatedId);
+			try
+			{
+				// Act / Assert
+				taskFactory.CreateTask(job, agentBase);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Unable to resolve the \"{TaskType.ExportService}\" task type.", ex);
 			}
 		}
 

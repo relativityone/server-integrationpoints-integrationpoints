@@ -11,5 +11,10 @@ namespace kCura.IntegrationPoints.Core
 		/// Helper object used for all context creations
 		/// </summary>
 		IHelper Helper { get; }
+
+		/// <summary>
+		/// Services Manager object used for creating service proxies
+		/// </summary>
+		IServicesMgr ServicesMgr { get; }
 	}
 }

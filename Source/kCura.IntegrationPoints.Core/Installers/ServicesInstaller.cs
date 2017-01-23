@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -42,6 +44,9 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Domain.Managers;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -124,6 +129,48 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
 			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
+
+			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
+			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
+				() =>
+				{
+					SqlConnection connection = container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
+
+					return connection;
+				},
+				async () =>
+				{
+					Task<SqlConnection> task = Task.Run(() =>
+					{
+						SqlConnection connection = container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
+						return connection;
+					});
+
+					return await task;
+				})).LifestyleTransient());
+
+			container.Register(Component.For<IOAuthClientManager>().UsingFactoryMethod(k =>
+			{
+				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
+				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
+				IHelper helper = k.Resolve<IHelper>();
+				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
+				IOAuthClientManager oAuthClientManager = managerFactory.CreateOAuthClientManager(contextConainer);
+
+				return oAuthClientManager;
+			}).LifestyleTransient());
+
+			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
+			{
+				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
+				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
+				IHelper helper = k.Resolve<IHelper>();
+				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
+				IFederatedInstanceManager federatedInstanceManager = managerFactory.CreateFederatedInstanceManager(contextConainer);
+
+				return federatedInstanceManager;
+			}).LifestyleTransient());
+
 		}
 	}
 }
