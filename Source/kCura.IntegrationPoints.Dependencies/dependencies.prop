@@ -41,9 +41,9 @@
     <Relativity_ServiceBus>Relativity.ServiceBus.2.1.2</Relativity_ServiceBus>
     <Relativity_Services_DataContracts>Relativity.Services.DataContracts.9.5.35.67</Relativity_Services_DataContracts>
     <Relativity_Services_Interfaces>Relativity.Services.Interfaces.9.5.35.67</Relativity_Services_Interfaces>
-    <Relativity_Telemetry_DataContracts_Shared>Relativity.Telemetry.DataContracts.Shared.9.4.74</Relativity_Telemetry_DataContracts_Shared>
-    <Relativity_Telemetry_MetricsCollection>Relativity.Telemetry.MetricsCollection.9.4.74</Relativity_Telemetry_MetricsCollection>
-    <Relativity_Telemetry_Services_Interface>Relativity.Telemetry.Services.Interface.9.4.226.9</Relativity_Telemetry_Services_Interface>
+    <Relativity_Telemetry_DataContracts_Shared>Relativity.Telemetry.DataContracts.Shared.9.4.94</Relativity_Telemetry_DataContracts_Shared>
+    <Relativity_Telemetry_MetricsCollection>Relativity.Telemetry.MetricsCollection.9.4.94</Relativity_Telemetry_MetricsCollection>
+    <Relativity_Telemetry_Services_Interface>Relativity.Telemetry.Services.Interface.9.5.28.1</Relativity_Telemetry_Services_Interface>
     <Relativity_Toggles>Relativity.Toggles.1.0.0.68</Relativity_Toggles>
     <Relativity_Vfs>Relativity.Vfs.1.0.20</Relativity_Vfs>
     <Relativity_Vfs_IO>Relativity.Vfs.IO.1.0.20</Relativity_Vfs_IO>
