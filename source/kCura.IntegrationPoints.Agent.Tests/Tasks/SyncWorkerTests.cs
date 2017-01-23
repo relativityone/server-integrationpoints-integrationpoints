@@ -81,12 +81,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
-			_dataReaderWrapperFactory = Substitute.For<IDataReaderWrapperFactory>();
 			_providerTypeService = Substitute.For<IProviderTypeService>();
 
 			_instance = new SyncWorker(_caseServiceContext, _helper, _dataProviderFactory, _serializer, 
 				_appDomainRdoSynchronizerFactory, _jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
-				null, _managerFactory, _dataReaderWrapperFactory, _contextContainerFactory, _jobService, _providerTypeService);
+				null, _managerFactory, _contextContainerFactory, _jobService, _providerTypeService);
+
+
 
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);

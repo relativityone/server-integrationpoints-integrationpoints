@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IAPILog _logger;
 		private readonly JobStatisticsService _statisticsService;
 		private IEnumerable<IBatchStatus> _batchStatus;
-		private IDataReaderWrapperFactory _dataReaderWrapperFactory;
+
 		private IProviderTypeService _providerTypeService;
 
 		public SyncWorker(
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IBatchStatus> statuses,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
-			IDataReaderWrapperFactory dataReaderWrapperFactory,
+
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService, IProviderTypeService providerTypeService) :
 			this(caseServiceContext,
@@ -69,7 +69,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				statuses,
 				statisticsService,
 				managerFactory,
-				dataReaderWrapperFactory,
 				contextContainerFactory,
 				jobService, true, providerTypeService)
 		{
@@ -87,7 +86,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IBatchStatus> statuses,
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
-			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService, bool isStoppable, IProviderTypeService providerTypeService) :
 			base(caseServiceContext,
@@ -107,7 +105,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_isStoppable = isStoppable;
 			_providerTypeService = providerTypeService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncWorker>();
-			_dataReaderWrapperFactory = dataReaderWrapperFactory;
+			
 		}
 
 		public IEnumerable<IBatchStatus> BatchStatus
@@ -150,7 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			//Make non-Relativity providers log the document RDOs' created by/modified by field as the user who submitted the job.
 			//(Adjustment only needs to be made before IDataSynchronizer.SyncData)
-			if (dataSynchronizer is RdoSynchronizer)
+			if (dataSynchronizer is RdoSynchronizerBase)
 			{
 				destinationSettings.OnBehalfOfUserId = job.SubmittedBy;
 				destinationConfiguration = Serializer.Serialize(destinationSettings);
@@ -163,17 +161,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (providerType == ProviderType.ImportLoadFile)
 			{
-				using (IDataReader sourceDataReader = _dataReaderWrapperFactory.GetWrappedDataReader(
+				using (ImportDataReader importDataReader = new ImportDataReader(
 					sourceProvider,
-					fieldMaps,
 					sourceFields,
-					destinationSettings,
 					entryIDs,
 					sourceConfiguration))
 				{
 					SetupSubscriptions(dataSynchronizer, job);
 					JobStopManager?.ThrowIfStopRequested();
-					dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
+					dataSynchronizer.SyncData(importDataReader, fieldMaps, destinationConfiguration);
 				}
 			}
 			else 
