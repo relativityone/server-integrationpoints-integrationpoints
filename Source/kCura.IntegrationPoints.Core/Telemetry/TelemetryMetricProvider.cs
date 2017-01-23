@@ -24,6 +24,14 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			new MetricIdentifier()
 				{   Name = Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR,
 					Description = "Length of time (in milliseconds) that Integration Points takes to run Sync Manager job"},
+
+			new MetricIdentifier()
+				{	Name = Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
+				Description = "Length of time (in milliseconds) that RIP Relativity Provider takes to kick off import"},
+
+			new MetricIdentifier()
+				{   Name = Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
+				Description = "Length of time (in milliseconds) that RIP Relativity Provider takes to run documents tagging"}
 		};
 
 		protected override List<MetricIdentifier> GetMetricIdentifiers()

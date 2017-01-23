@@ -32,6 +32,8 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
+using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -148,13 +150,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 								.Select(observer => observer.ScratchTableRepository).ToArray();
 
 							IDataReader dataReader = exporter.GetDataReader(scratchTables);
-							synchronizer.SyncData(dataReader, MappedFields, userImportApiSettings);
+							using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
+								Guid.Empty, MetricTargets.APMandSUM))
+							{
+								synchronizer.SyncData(dataReader, MappedFields, userImportApiSettings);
+							}
 						}
 					}
 				}
 				finally
 				{
-					FinalizeExportServiceObservers(job);
+					using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
+						Guid.Empty, MetricTargets.APMandSUM))
+					{
+						FinalizeExportServiceObservers(job);
+					}
 				}
 			}
 			catch (OperationCanceledException e)
