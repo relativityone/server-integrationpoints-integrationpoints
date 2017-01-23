@@ -225,11 +225,10 @@ namespace kCura.IntegrationPoints.FtpProvider
 			//must contain the same columns in the same order as it was initially when Integration Point was saved
 			string expectedColumns = string.Join(parserOptions.Delimiters[0], settings.ColumnList.Select(x => x.FieldIdentifier).ToList());
 
-			string fixedColumns = string.Join(",", columns.Split(',').Select(item => item.Trim().TrimStart('"').TrimEnd('"')));
+			string fixedColumns = string.Join(",", columns.Split(',').Select(item => item.Trim(' ', '"')));
 
 			if (!expectedColumns.Equals(fixedColumns, StringComparison.InvariantCultureIgnoreCase))
 			{
-				LogValidatingColumnsError(columns, expectedColumns);
 				LogValidatingColumnsError(columns, expectedColumns);
 				throw new Exceptions.ColumnsMissmatchExcepetion();
 			}

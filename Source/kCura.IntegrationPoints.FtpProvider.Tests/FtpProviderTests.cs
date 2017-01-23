@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
 
 		[Test, System.ComponentModel.Description("Validates columns when all match")]
 		[TestCase("AAA, bbb ,CcC")]
-		[TestCase("\"AAA\", \"bbb\",\"CcC\"")]
+		[TestCase("\"AAA\", \"bbb\"  ,\"CcC\"")]
 		public void ValidateColumns_AllMatch(string columns)
 		{
 			Settings settings = new Settings()
