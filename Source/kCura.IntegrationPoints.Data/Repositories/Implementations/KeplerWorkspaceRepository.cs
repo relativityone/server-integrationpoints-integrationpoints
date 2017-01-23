@@ -5,15 +5,19 @@ using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
+using Relativity.API;
 using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class KeplerWorkspaceRepository : KeplerServiceBase, IWorkspaceRepository
 	{
-		public KeplerWorkspaceRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor) : base(objectQueryManagerAdaptor)
+		private readonly IAPILog _logger;
+
+		public KeplerWorkspaceRepository(IHelper helper, IObjectQueryManagerAdaptor objectQueryManagerAdaptor) : base(objectQueryManagerAdaptor)
 		{
 			this.ObjectQueryManagerAdaptor.ArtifactTypeId = (int) ArtifactType.Case;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
 		}
 
 		public WorkspaceDTO Retrieve(int workspaceArtifactId)
@@ -32,7 +36,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to retrieve workspace", e);
+				_logger.LogError(e, "Unable to retrieve workspace {WorkspaceArtifactId}", workspaceArtifactId);
+				throw;
 			}
 
 			return Convert(workspaces).FirstOrDefault();
@@ -52,7 +57,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to retrieve workspaces", e);
+				_logger.LogError(e, "Unable to retrieve workspaces");
+				throw;
 			}
 
 			return Convert(artifactDtos);

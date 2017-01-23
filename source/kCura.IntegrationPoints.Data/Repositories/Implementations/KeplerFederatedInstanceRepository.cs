@@ -6,15 +6,20 @@ using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class KeplerFederatedInstanceRepository : KeplerServiceBase, IFederatedInstanceRepository
 	{
-		public KeplerFederatedInstanceRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor) 
+		private readonly IAPILog _logger;
+
+		public KeplerFederatedInstanceRepository(IHelper helper, IObjectQueryManagerAdaptor objectQueryManagerAdaptor) 
 			: base(objectQueryManagerAdaptor)
 		{
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
 		}
+
 		public FederatedInstanceDto RetrieveFederatedInstance(int artifactId)
 		{
 			var query = new global::Relativity.Services.ObjectQuery.Query()
@@ -36,7 +41,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to retrieve federated instance", e);
+				_logger.LogError(e, "Unable to retrieve federated instance {ArtifactId}", artifactId);
+				throw;
 			}
 
 			return Convert(artifactDtos).FirstOrDefault();
@@ -56,7 +62,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to retrieve federated instances", e);
+				_logger.LogError(e, "Unable to retrieve federated instances");
+				throw;
 			}
 
 			return Convert(artifactDtos);

@@ -59,7 +59,7 @@
     <Reference Include="kCura.Data, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(kCura_Data)\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
-    </Reference>    
+    </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Data_RowDataGateway)\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
@@ -110,11 +110,11 @@
     <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
-    </Reference>   
+    </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
-    </Reference> 
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -129,7 +129,6 @@
     </Compile>
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Queries\GetSavedSearchesQueryTests..cs" />
-    <Compile Include="Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="RelativityRdoQueryTest.cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />

@@ -27,12 +27,12 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
 	[TestFixture]
-	[Ignore("THIS IS ONLY FOR THE QUICK FEST FIX!")]
 	public class IntegrationPointServiceTests : TestBase
 	{
 		private readonly int _sourceWorkspaceArtifactId = 789;
@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationPointProviderValidator _integrationModelValidator;
 		private IIntegrationPointPermissionValidator _permissionValidator;
 		private IntegrationPointModelBase _integrationPointModel;
+		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -104,6 +105,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
 				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
 
+			_toggleProvider = Substitute.For<IToggleProvider>();
+
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(
 				_helper,
 				_helper,
@@ -115,7 +118,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_jobHistoryService,
 				_managerFactory,
 				_integrationModelValidator,
-				_permissionValidator
+				_permissionValidator,
+				_toggleProvider
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();

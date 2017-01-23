@@ -548,7 +548,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogDeletingTempSavedSearchError(Exception e, SourceConfiguration sourceConfiguration)
 		{
-			_logger.LogError(e, "Failed to delete temp Saved Search {SavedSearchArtifactId}.", sourceConfiguration?.SourceWorkspaceArtifactId);
+			_logger.LogError(e, "Failed to delete temp Saved Search {SavedSearchArtifactId}.", sourceConfiguration?.SavedSearchArtifactId);
 		}
 
 		private void LogLoadingIntegrationPointDtoError(Job job)

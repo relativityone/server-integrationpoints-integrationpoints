@@ -14,6 +14,10 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <returns>A class implementing the IArtifactGuidRepository interface.</returns>
 		IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId);
 
+		/// <summary>
+		/// Returns a class implementing the IArtifactTypeRepository interface.
+		/// </summary>
+		/// <returns>A class implementing the IArtifactTypeRepository interface.</returns>
 		IArtifactTypeRepository GetArtifactTypeRepository();
 
 		/// <summary>
@@ -201,11 +205,25 @@ namespace kCura.IntegrationPoints.Data.Factories
         /// </summary>
         /// <returns>Returns a class implementing the IWorkspacesRepository interface.</returns>
         IWorkspacesRepository GetWorkspacesRepository();
-		
+
+		/// <summary>
+		/// Returns a class implementing the IFederatedInstanceRepository interface.
+		/// </summary>
+		/// <param name="artifactTypeId">Federated instance artifact id.</param>
+		/// <returns>A class implementing the IFederatedInstanceRepository interface.</returns>
 		IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId);
-		
+
+		/// <summary>
+		/// Returns a class implementing the IServiceUrlRepository interface.
+		/// </summary>
+		/// <returns>A class implementing the IServiceUrlRepository interface.</returns>
 		IServiceUrlRepository GetServiceUrlRepository();
-		
+
+		/// <summary>
+		/// Returns a class implementing the IExtendedFieldRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the IExtendedFieldRepository interface.</returns>
 		IExtendedFieldRepository GetExtendedFieldRepository(int workspaceArtifactId);
 	}
 }
