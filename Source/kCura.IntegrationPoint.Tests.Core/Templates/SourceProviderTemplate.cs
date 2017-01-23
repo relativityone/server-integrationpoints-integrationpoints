@@ -20,11 +20,16 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -122,6 +127,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					return client;
 				})
 				.LifeStyle.Transient);
+			Container.Register(Component.For<IToggleProvider>().Instance(Substitute.For<IToggleProvider>()));
+			Container.Register(Component.For<IImportApiFactory>().Instance(Substitute.For<IImportApiFactory>()));
+			Container.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()));
+			Container.Register(Component.For<IOAuthClientManager>().Instance(Substitute.For<IOAuthClientManager>()));
+			Container.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());

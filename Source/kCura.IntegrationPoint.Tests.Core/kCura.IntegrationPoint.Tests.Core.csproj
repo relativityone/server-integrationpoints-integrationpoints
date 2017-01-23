@@ -197,6 +197,10 @@
       <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Sodium, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(libsodium-net)\lib\Net40\Sodium.dll</HintPath>
       <Private>True</Private>
