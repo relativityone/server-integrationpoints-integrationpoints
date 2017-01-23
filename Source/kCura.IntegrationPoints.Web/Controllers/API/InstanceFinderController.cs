@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
@@ -32,22 +33,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	    }
 
 	    [HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve federated instances.")]
 		public HttpResponseMessage Get()
 		{
-			try
-			{
-				IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-				IFederatedInstanceManager federatedInstanceManager =
-					_managerFactory.CreateFederatedInstanceManager(sourceContextContainer);
+			IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+			IFederatedInstanceManager federatedInstanceManager =
+				_managerFactory.CreateFederatedInstanceManager(sourceContextContainer);
 
-				var results = federatedInstanceManager.RetrieveAll();
+			var results = federatedInstanceManager.RetrieveAll();
 
-				return Request.CreateResponse(HttpStatusCode.OK, results);
-			}
-			catch (Exception exception)
-			{
-				return Request.CreateResponse(HttpStatusCode.InternalServerError, exception);
-			}
+			return Request.CreateResponse(HttpStatusCode.OK, results);
 		}
 	}
 }

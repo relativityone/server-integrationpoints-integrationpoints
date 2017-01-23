@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(objectQueryManagerAdaptor);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, objectQueryManagerAdaptor);
 
 			return repository;
 		}
@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, artifactTypeId);
 
-			return new KeplerFederatedInstanceRepository(objectQueryManagerAdaptor);
+			return new KeplerFederatedInstanceRepository(_helper, objectQueryManagerAdaptor);
 		}
 
 		public IServiceUrlRepository GetServiceUrlRepository()
@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, int artifactType)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_servicesMgr, workspaceArtifactId, artifactType);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, _servicesMgr, workspaceArtifactId, artifactType);
 			return objectQueryManagerAdaptor;
 		}
 
