@@ -105,8 +105,8 @@ namespace kCura.IntegrationPoints.Core
 				#region Export
 
 				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.SharedLibrary.Export.Duration";
-				public const string BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT = "IntegrationPoints.Agent.Tasks.ExportServiceManager.Execute.SyncData.Duration";
-				public const string BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT = "IntegrationPoints.Agent.Tasks.ExportServiceManager.Execute.FinalizeExportServiceObservers.Duration";
+				public const string BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT = "IntegrationPoints.ExportServiceManager.SyncData.Duration";
+				public const string BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT = "IntegrationPoints.ExportServiceManager.FinalizeExportServiceObservers.Duration";
 
 				#endregion //Export
 
