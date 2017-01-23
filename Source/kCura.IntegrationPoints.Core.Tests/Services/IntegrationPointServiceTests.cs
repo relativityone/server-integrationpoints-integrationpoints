@@ -109,7 +109,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(
 				_helper,
-				_helper,
 				_caseServiceContext,
 				_contextContainerFactory,
 				_serializer,
