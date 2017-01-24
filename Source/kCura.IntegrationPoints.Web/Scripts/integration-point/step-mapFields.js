@@ -362,6 +362,8 @@ ko.validation.insertValidationMessage = function (element) {
 			self.hasParent(result.hasParent);
 		});
 
+		this.destinationCaseArtifactID = destination.CaseArtifactId;
+
 		var mappedSourcePromise;
 		if (destination.DoNotUseFieldsMapCache) {
 			mappedSourcePromise = [];
@@ -514,17 +516,25 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 
 		this.GetCatalogFieldMappings = function () {
-		    self.CatalogField = {};
-		    $.ajax({
-		        url: IP.utils.generateWebAPIURL('FieldCatalog', IP.utils.getParameterByName('AppID', window.top)),
-		        type: 'GET',
-		        success: function (data) {
-		            self.CatalogField = data;
-		        },
-		        error: function (error) {
-		            console.log(error);
-		        }
-		    });
+			self.CatalogField = {};
+			var destinationWorkspaceID;
+			if(self.IsRelativityProvider())
+			{
+				destinationWorkspaceID = self.destinationCaseArtifactID;
+			} else {
+				destinationWorkspaceID = IP.utils.getParameterByName('AppID', window.top);
+			}
+
+			$.ajax({
+				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID),
+				type: 'GET',
+				success: function (data) {
+					self.CatalogField = data;
+				},
+				error: function (error) {
+					console.log(error);
+				}
+			});
 		};
 
 		/********** Submit Validation**********/
@@ -571,52 +581,72 @@ ko.validation.insertValidationMessage = function (element) {
 			IP.workspaceFieldsControls.moveTop(this.sourceMapped, this.selectedMappedSource());
 		};
 		this.moveMappedSourceBottom = function () {
-		    IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
+			IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
 		};
 
-	    /********** AutoMap Controls  **********/
+		/********** AutoMap Controls  **********/
 		this.GetCatalogFieldMappings();
 
 		this.autoFieldMap = function () {
-		    //Remove current mappings first
-		    self.addAlltoSourceField();
-		    self.addAlltoWorkspaceField();
+			//Remove current mappings first
+			self.addAlltoSourceField();
+			self.addAlltoWorkspaceField();
 
-		    var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
-		        for (var x = 0; x < self.CatalogField.length; x++) {
-		            if (self.CatalogField[x].fieldArtifactId == wsFieldArtifactId &&
-                        self.CatalogField[x].friendlyName === fieldName) {
-		                return true;
-		            }
-		        }
-		        return false;
-		    };
+			var isCatalogFieldMatch = function (wsFieldArtifactId, fieldName) {
+				for (var x = 0; x < self.CatalogField.length; x++) {
+					if (self.CatalogField[x].fieldArtifactId == wsFieldArtifactId &&
+						self.CatalogField[x].friendlyName === fieldName) {
+						return true;
+					}
+				}
+				return false;
+			};
 
-		    var sourceFieldToAdd = ko.observableArray([]);
-		    var wspaceFieldToAdd = ko.observableArray([]);
-		    for (var i = 0; i < self.sourceField().length; i++) {
-		        for (var j = 0; j < self.workspaceFields().length; j++) {
-		            if (self.sourceField()[i].name === self.workspaceFields()[j].name) {
-		                sourceFieldToAdd.push(self.sourceField()[i]);
-		                wspaceFieldToAdd.push(self.workspaceFields()[j]);
-		                break;
-		            }
-		            else if (isCatalogFieldMatch(self.workspaceFields()[j].identifer, self.sourceField()[i].name)) {
-		                sourceFieldToAdd.push(self.sourceField()[i]);
-		                wspaceFieldToAdd.push(self.workspaceFields()[j]);
-		                break;
-		            }
-		        }
-		    }
+			var sourceFieldToAdd = ko.observableArray([]);
+			var wspaceFieldToAdd = ko.observableArray([]);
+			for (var i = 0; i < self.sourceField().length; i++) {
+				var fieldAlreadyMatched = false;
 
-		    if (sourceFieldToAdd().length > 0) {
-		        IP.workspaceFieldsControls.add(self.sourceField, sourceFieldToAdd, self.sourceMapped);
-		        IP.workspaceFieldsControls.add(self.workspaceFields, wspaceFieldToAdd, self.mappedWorkspace);
-		    }
-		    else {
-		        IP.message.error.raise("Unable to auto map. No matching fields found.");
-		    }
-		    self.populateExtractedText();
+				//check for a match b/w the source and destination fields by name
+				for (var j = 0; j < self.workspaceFields().length; j++) {
+					//check to make sure that we ignore any workspace field that's already added
+					if (wspaceFieldToAdd().indexOf(self.workspaceFields()[j]) != -1) {
+						continue;
+					}
+
+					if (self.sourceField()[i].name === self.workspaceFields()[j].name) {
+						sourceFieldToAdd.push(self.sourceField()[i]);
+						wspaceFieldToAdd.push(self.workspaceFields()[j]);
+						fieldAlreadyMatched = true;
+						break;
+					}
+				}
+
+				//if we haven't found a match for the current source field by name, now check the field catalog
+				if (!fieldAlreadyMatched) {
+					for (var k = 0; k < self.workspaceFields().length; k++) {
+						//check to make sure that we ignore any workspace field that's already added
+						if (wspaceFieldToAdd().indexOf(self.workspaceFields()[k]) != -1) {
+							continue;
+						}
+
+						if (isCatalogFieldMatch(self.workspaceFields()[k].identifer, self.sourceField()[i].name)) {
+							sourceFieldToAdd.push(self.sourceField()[i]);
+							wspaceFieldToAdd.push(self.workspaceFields()[k]);
+							break;
+						}
+					}
+				}
+			}
+
+			if (sourceFieldToAdd().length > 0) {
+				IP.workspaceFieldsControls.add(self.sourceField, sourceFieldToAdd, self.sourceMapped);
+				IP.workspaceFieldsControls.add(self.workspaceFields, wspaceFieldToAdd, self.mappedWorkspace);
+			}
+			else {
+				IP.message.error.raise("Unable to auto map. No matching fields found.");
+			}
+			self.populateExtractedText();
 		};
 
 	};// end of the viewmodel
