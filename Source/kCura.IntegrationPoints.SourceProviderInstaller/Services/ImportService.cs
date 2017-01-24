@@ -17,17 +17,20 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 	internal class ImportService : IImportService
 	{
 		private readonly ICaseServiceContext _caseContext;
+		private readonly IEddsServiceContext _eddsServiceContext;
 		private readonly DeleteIntegrationPoints _deleteintegrationPoint;
 		private readonly IHelper _helper;
 
 		public ImportService(
 			ICaseServiceContext caseContext,
+			IEddsServiceContext eddsServiceContext,
 			DeleteIntegrationPoints deleteIntegrationPoints,
 			IHelper helper)
 		{
 			_caseContext = caseContext;
 			_deleteintegrationPoint = deleteIntegrationPoints;
 			_helper = helper;
+			_eddsServiceContext = eddsServiceContext;
 		}
 
 		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
@@ -145,7 +148,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		private void ValidateProvider(SourceProvider provider)
 		{
 			ISourcePluginProvider pluginProvider =
-				new DefaultSourcePluginProvider(new GetApplicationBinaries(_caseContext.SqlContext));
+				new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsServiceContext.SqlContext));
 			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider, new RelativityFeaturePathService()))
 			{
 				TryLoadingProvider(factory, provider);
