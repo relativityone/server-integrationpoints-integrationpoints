@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					EnableScheduler = true,
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 					StartDate = DateTime.MaxValue.ToString(),
-					ScheduledTime = DateTime.Now.ToString()
+					ScheduledTime = DateTime.Now.TimeOfDay.ToString()
 				};
 				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob_ScheduledJob", scheduler);
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
-
+				
 				// inserts a job entry to the ScheduleQueue table that is locked by the disabled agent
 				job2 = JobExtensions.Execute(
 					qDBContext: _queueContext,

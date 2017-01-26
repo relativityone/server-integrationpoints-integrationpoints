@@ -128,7 +128,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				})
 				.LifeStyle.Transient);
 			Container.Register(Component.For<IToggleProvider>().Instance(Substitute.For<IToggleProvider>()));
-			Container.Register(Component.For<IImportApiFactory>().Instance(Substitute.For<IImportApiFactory>()));
 			Container.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()));
 			Container.Register(Component.For<IOAuthClientManager>().Instance(Substitute.For<IOAuthClientManager>()));
 			Container.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
