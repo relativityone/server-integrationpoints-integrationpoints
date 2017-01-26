@@ -11,6 +11,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private string _currentLine;
 		private string _recordDelimiterString;
 		private string _quoteDelimiterString;
+		private string _doubleRecordDelimiterString;
+		private string _doubleQuoteDelimiterString;
 
 		public LoadFileDataReader(kCura.WinEDDS.LoadFile config)
 			: base(config)
@@ -19,6 +21,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			_currentLine = string.Empty;
 			_recordDelimiterString = _config.RecordDelimiter.ToString();
 			_quoteDelimiterString = _config.QuoteDelimiter.ToString();
+			_doubleQuoteDelimiterString = new string(_config.QuoteDelimiter, 2);
+			_doubleRecordDelimiterString = new string(_config.RecordDelimiter, 2);
 		}
 
 		public void Init()
@@ -47,7 +51,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				data[artifact.ArtifactID] = artifact.ValueAsString;
 			}
-			_currentLine = string.Join(_recordDelimiterString, data.Select(x => _quoteDelimiterString + x + _quoteDelimiterString));
+			_currentLine = string.Join(_recordDelimiterString, data.Select(x =>
+				_quoteDelimiterString
+				+ x.Replace(_quoteDelimiterString, _doubleQuoteDelimiterString).Replace(_recordDelimiterString, _doubleRecordDelimiterString)
+				+ _quoteDelimiterString
+			));
 		}
 
 		//IDataReader Implementation
