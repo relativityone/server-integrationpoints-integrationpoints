@@ -4,7 +4,7 @@
 	var _getAppPath = function () {
 		var newPath = window.location.pathname.split('/')[1];
 		var url = window.location.protocol + '//' + window.location.host +'/'+ newPath;
-		return url;		
+		return url;
 	};
 
 	var parseURL = function (url, obj) {
@@ -24,17 +24,17 @@
 		this.loadModel = function (model) {//loads a readonly version of the ipmodel
 			this.stepKey = model.source.selectedType;
 			this.model = model;
-			
+
 			if(typeof(stepCache[model.source.selectedType]) === "undefined"){
 				stepCache[model.source.selectedType] = self.model.sourceConfiguration || '';
 			}
-			
+
 			this.source = $.grep(model.source.sourceTypes, function(item){
 				return item.value === model.source.selectedType;
 			})[0].href;
 		};
 
-		
+
 		var FRAME_KEY = 'syncType';
 		var stepCache = {};
 
@@ -55,9 +55,12 @@
 				var $frame = $('#' + frameName).attr('src', self.source);
 				$frame.iFrameResize({ heightCalculationMethod: 'max' }).load(function () {
 					self.frameBus = IP.frameMessaging({ destination: window[frameName].contentWindow || window[frameName].frameElement.contentWindow });
-					
+
 					//for ImportProvider, pass along full model to our second step
 					if (self.model.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636") {
+						if (stepCache[self.stepKey] !== "") {
+							self.model.sourceConfiguration = stepCache[self.stepKey];
+						}
 						self.frameBus.publish('loadFullState', self.model);
 					}
 					else {
@@ -74,14 +77,14 @@
 			//save sate in local cache
 			stepCache[self.stepKey] = state;
 		});
-		
+
 		this.submit = function () {
 			var d = root.data.deferred().defer();
 			this.frameBus.publish('submit');
 			//this is sketchy at best
 			this.bus.subscribe('saveComplete', function (data) {
 				self.model.sourceConfiguration = data;
-				
+
 				stepCache[self.model.source.selectedType] = self.model.sourceConfiguration;
 				d.resolve(self.model);
 			});
@@ -116,7 +119,7 @@
 		templateID: 'configuration'
 	});
 
-	
+
 
 	root.points.steps.push(step);
 

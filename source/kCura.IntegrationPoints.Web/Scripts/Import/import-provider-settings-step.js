@@ -67,17 +67,10 @@
 		if (model.CopyFilesToDocumentRepository === 'true') {
 			model.ImportNativeFileCopyMode = 'CopyFiles';
 		}
+		$.extend(model, currentLoadFileSettings());
 
 		return model;
 	};
-
-	$("#import-importType").on("click", function () {
-		if (currentImportType === ImportTypeEnum.Document) {
-			documentModel();
-		} else {
-			imageProductionModel();
-		}
-	});
 
 	var validationCheck = function (self) {
 		var results = windowObj.RelativityImport.koErrors();
@@ -115,7 +108,7 @@
 			windowObj.parent.RelativityImport.PreviewOptions.disablePreviewButton(false);
 			IP.frameMessaging().dFrame.IP.message.error.clear();
 		}
-	}; 
+	};
 
 	windowObj.parent.RelativityImport.GetCurrentUiModel = documentModel;
 
@@ -130,8 +123,14 @@
     //An event raised when a user clicks the Back button.
     //Leaving the custom settings page and going back to the first RIP screen
     message.subscribe('back', function () {
-        //Execute save logic that persists the root.
-    	var current = documentModel();
+    	//Execute save logic that persists the root.
+	    var current;
+    	var importType = windowObj.RelativityImport.koModel.selectedImportType();
+    	if (importType === ImportTypeEnum.Document) {
+    		current = documentModel();
+    	} else {
+    		current = imageProductionModel();
+    	};
         var stringified = JSON.stringify(current);
         this.publish("saveState", stringified);
 
@@ -148,7 +147,6 @@
     	//look at fullModel.artifactTypeID to get destination object
     	var isRdoImport = fullModel.artifactTypeID !== fullModel.DefaultRdoTypeId;
     	windowObj.RelativityImport.GetImportTypes(isRdoImport);
-
     	var model = fullModel.sourceConfiguration;
     	windowObj.RelativityImport.FullIPModel = fullModel;
 

@@ -139,6 +139,7 @@
 			var extractedTextFileEncoding = windowObj.RelativityImport.GetCachedUiModel.ExtractedTextFileEncoding;
 			var copyFilesToDocumentRepo = windowObj.RelativityImport.GetCachedUiModel.CopyFilesToDocumentRepository;
 			var selectedCaseFileRepoPath = windowObj.RelativityImport.GetCachedUiModel.SelectedCaseFileRepoPath;
+			var productionSet = windowObj.RelativityImport.GetCachedUiModel.ProductionArtifactId;
 
 			//ImageProduction repopulate model
 			windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
@@ -152,6 +153,7 @@
 			windowObj.RelativityImport.koModel.ExtractedTextFileEncoding(extractedTextFileEncoding);
 			windowObj.RelativityImport.koModel.copyFilesToDocumentRepository(copyFilesToDocumentRepo);
 			windowObj.RelativityImport.koModel.selectedRepo(selectedCaseFileRepoPath);
+			windowObj.RelativityImport.koModel.selectedProductionSets(productionSet);
 		}
 	};
 

@@ -148,13 +148,24 @@
 		};
 
 		self.DataFileEncodingTypeValue = "Select...";
+		self.ExtractedTextFileEncodingValue = "Select...";
 
 		self.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({
 			required: true
 		});
 
+		self.ExtractedTextFileEncoding = ko.observable(self.ExtractedTextFileEncodingValue).extend({
+			required: {
+				onlyIf: function () {
+					return self.selectedImportType() === ImportTypeEnum.Image && self.ExtractedTextFieldContainsFilePath() === "true";
+				}
+			}
+		});
+
 		//Populate file encoding dropdown
 		self.FileEncodingTypeList = ko.observableArray([]);
+		self.ExtractedTextFieldContainsFilePath = ko.observable("false");
+
 		self._UpdateFileEncodingTypeList = function () {
 			$.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
 				function Group(label, children) {
@@ -183,23 +194,14 @@
 				//self.FileEncodingTypeList([new Group("", [new Option("Select...", "")]), new Group("Favorite", favorite), new Group("Others", others)]);
 
 				self.FileEncodingTypeList([new Group("", [new Option("Unicode (UTF-8)", "utf-8")]), new Group("Favorite", favorite), new Group("Others", others)]);
-				self.ExtractedTextFileEncodingList(result);
 
 				self.DataFileEncodingType(self.DataFileEncodingTypeValue);
+				self.ExtractedTextFileEncoding(self.ExtractedTextFileEncodingValue);
+
 				self.DataFileEncodingType.isModified(false);
+				self.ExtractedTextFileEncoding.isModified(false);
 			});
-		}	
-
-		self.ExtractedTextFieldContainsFilePath = ko.observable("false");
-
-		self.ExtractedTextFileEncoding = ko.observable().extend({
-			required: {
-				onlyIf: function() {
-					return self.selectedImportType() === ImportTypeEnum.Image && self.ExtractedTextFieldContainsFilePath() === "true";
-				}
-			}
-		});
-		self.ExtractedTextFileEncodingList = ko.observableArray([]);
+		}
 
 		self._UpdateFileEncodingTypeList();
 	}

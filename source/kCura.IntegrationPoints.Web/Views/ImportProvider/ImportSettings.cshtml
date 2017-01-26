@@ -151,7 +151,11 @@
 										<div class="field-row">
 											<div class="field-label required ">Encoding for undetectable files:</div>
 											<div class="field-value ">
-												<select id="encodings" data-bind="options: ExtractedTextFileEncodingList, value: ExtractedTextFileEncoding, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+												<select id="encodings" data-bind="foreach: FileEncodingTypeList, value: ExtractedTextFileEncoding, select2searchable: {}">
+													<optgroup data-bind="attr: {label: label}, foreach: children">
+														<option data-bind="text: displayName, value: name"></option>
+													</optgroup>
+												</select>
 												<div class="import-validation-errors-container">
 													<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: ExtractedTextFileEncoding"></span>
 												</div>
@@ -185,7 +189,7 @@
 										File Encoding:
 									</div>
 									<div class="field-value">
-										<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
+										<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, select2searchable: {}">
 											<optgroup data-bind="attr: {label: label}, foreach: children">
 												<option data-bind="text: displayName, value: name"></option>
 											</optgroup>
