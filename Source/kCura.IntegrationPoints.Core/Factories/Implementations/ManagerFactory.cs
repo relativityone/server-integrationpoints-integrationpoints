@@ -115,6 +115,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return workspaceManager;
 		}
 
+		public IPermissionManager CreatePermissionManager(IContextContainer contextContainer)
+		{
+			IPermissionManager permissionManager = new PermissionManager(CreateRepositoryFactory(contextContainer));
+			return permissionManager;
+		}
+
 		#region Private Helpers
 
 		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)

@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 						else
 						{
 							IHelperFactory helperFactory = k.Resolve<IHelperFactory>();
-							IHelper targetHelper = helperFactory.CreateOAuthClientHelper(sourceHelper, importSettings.FederatedInstanceArtifactId.Value);
+							IHelper targetHelper = helperFactory.CreateTargetHelper(sourceHelper, importSettings.FederatedInstanceArtifactId);
 							targetRepositoryFactory = new RepositoryFactory(sourceHelper, targetHelper.GetServicesManager());
 						}
 

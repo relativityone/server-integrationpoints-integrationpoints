@@ -1,23 +1,34 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
 	public class RelativityProviderPermissionValidator : BasePermissionValidator
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IHelperFactory _helperFactory;
+		private readonly IHelper _helper;
 
-		public RelativityProviderPermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper)
+		public RelativityProviderPermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper,
+			IHelper helper, IHelperFactory helperFactory, IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory)
 			: base(serializer, contextHelper)
 		{
 			_repositoryFactory = repositoryFactoryFactory;
+			_helper = helper;
+			_helperFactory = helperFactory;
+			_contextContainerFactory = contextContainerFactory;
+			_managerFactory = managerFactory;
 		}
 
 		public override string Key
@@ -32,32 +43,35 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
 			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
 
-			var sourceWorkspacePermissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
-			//TODO change sourceConfiguration to destinationConfiguration after global model refactoring
-			var destinationWorkspacePermissionRepository = _repositoryFactory.GetPermissionRepository(sourceConfiguration.TargetWorkspaceArtifactId);
+			var sourceWorkspacePermissionManager =
+				_managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(_helper));
 
-			if (!sourceWorkspacePermissionRepository.UserCanExport())
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, sourceConfiguration.FederatedInstanceArtifactId);
+			var destinationWorkspacePermissionManager = 
+				_managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(targetHelper));
+
+			if (!sourceWorkspacePermissionManager.UserCanExport(ContextHelper.WorkspaceID))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_WORKSPACE_NO_EXPORT);
 			}
 
-			if (!destinationWorkspacePermissionRepository.UserHasPermissionToAccessWorkspace())
+			if (!destinationWorkspacePermissionManager.UserHasPermissionToAccessWorkspace(sourceConfiguration.TargetWorkspaceArtifactId))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
 			}
 
-			if (!destinationWorkspacePermissionRepository.UserCanImport())
+			if (!destinationWorkspacePermissionManager.UserCanImport(sourceConfiguration.TargetWorkspaceArtifactId))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_IMPORT);
 			}
 
-			if (!destinationWorkspacePermissionRepository.UserHasArtifactTypePermissions(destinationConfiguration.ArtifactTypeId,
+			if (!destinationWorkspacePermissionManager.UserHasArtifactTypePermissions(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId,
 				new[] {ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create}))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
 			}
 
-			if (!sourceWorkspacePermissionRepository.UserCanEditDocuments())
+			if (!sourceWorkspacePermissionManager.UserCanEditDocuments(ContextHelper.WorkspaceID))
 			{
 				result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}

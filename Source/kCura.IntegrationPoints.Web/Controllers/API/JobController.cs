@@ -89,19 +89,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage Run(Payload payload)
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
-			IHelper targetHelper;
 
 			IIntegrationPointRepository integrationPointRepository = _repositoryFactory.GetIntegrationPointRepository(_helper.GetActiveCaseID());
 			IntegrationPointDTO integrationPoint = integrationPointRepository.Read(Convert.ToInt32(payload.ArtifactId));
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
-			if (importSettings.FederatedInstanceArtifactId != null)
-			{
-				targetHelper = _helperFactory.CreateOAuthClientHelper(_helper, importSettings.FederatedInstanceArtifactId.Value);
-			}
-			else
-			{
-				targetHelper = _helper;
-			}
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId);
 
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
 				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);

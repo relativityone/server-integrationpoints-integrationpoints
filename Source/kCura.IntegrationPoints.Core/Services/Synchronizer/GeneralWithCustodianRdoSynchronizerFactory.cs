@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				if (json.FederatedInstanceArtifactId != null)
 				{
 					IHelperFactory helperFactory = _container.Resolve<IHelperFactory>();
-					IHelper targetHelper = helperFactory.CreateOAuthClientHelper(sourceInstanceHelper, json.FederatedInstanceArtifactId.Value);
+					IHelper targetHelper = helperFactory.CreateTargetHelper(sourceInstanceHelper, json.FederatedInstanceArtifactId);
 					client = targetHelper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
 					client.APIOptions.WorkspaceID = json.CaseArtifactId;
 				}

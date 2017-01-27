@@ -326,12 +326,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				throw new IntegrationPointProviderValidationException(validationResult);
 			}
 
-			var permissionCheck = new ValidationResult();
-			if (!_toggleProvider.IsEnabled<RipToR1Toggle>())
-			{
-				permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider,
-					integrationPointType);
-			}
+			var permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider, integrationPointType);
 
 			if (Context.EddsUserID == 0)
 			{

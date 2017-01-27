@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IRelativityUrlHelper _relativityUrlHelper;
 		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 		private ICPHelper _cpHelper;
+		private IHelper _targetHelper;
 		private ICaseServiceContext _caseServiceContext;
 		private ISerializer _serializer;
 		private IJobManager _jobManager;
@@ -62,6 +63,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 			_cpHelper = Substitute.For<ICPHelper>();
+			_targetHelper = Substitute.For<IHelper>();
 			_svcMgr = Substitute.For<IServicesMgr>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_serializer = Substitute.For<ISerializer>();
@@ -84,18 +86,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_instance.Request.SetConfiguration(new HttpConfiguration());
 		}
 
-		[Test]
-		public void Update_StandardSourceProvider_NoJobsRun_GoldFlow()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void Update_StandardSourceProvider_NoJobsRun_GoldFlow(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var model = new IntegrationPointModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
-				Destination = JsonConvert.SerializeObject(new ImportSettings())
+				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
 			};
 
-			_serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
+			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId).Returns(_targetHelper);
+
+			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
 				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 
 			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
@@ -124,17 +129,22 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 					ObjectTypes.IntegrationPoint);
 		}
 
-		[Test]
-		public void UpdateIntegrationPointThrowsError_ReturnFailedResponse()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void UpdateIntegrationPointThrowsError_ReturnFailedResponse(int? federatedInstanceArtifactId)
 		{
 			var model = new IntegrationPointModel()
 			{
-				Destination = JsonConvert.SerializeObject(new ImportSettings())
+				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
 			};
 			var validationResult = new ValidationResult(false, "That's a damn shame.");
 			Exception expectException = new IntegrationPointProviderValidationException(validationResult);
-			_serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
+
+			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId).Returns(_targetHelper);
+
+			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
 				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+
 			_integrationPointService.SaveIntegration(Arg.Any<IntegrationPointModel>()).Throws(expectException);
 
 			// Act

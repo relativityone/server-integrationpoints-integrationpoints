@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private JobController.Payload _payload;
 		private IIntegrationPointService _integrationPointService;
 		private ICPHelper _helper;
+		private IHelper _targetHelper;
 		private IContextContainerFactory _contextContainerFactory;
 		private IHelperFactory _helperFactory;
 		private IServiceFactory _serviceFactory;
@@ -73,6 +74,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_helper = Substitute.For<ICPHelper>();
+			_targetHelper = Substitute.For<IHelper>();
 			_helperFactory = Substitute.For<IHelperFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_auditManager = Substitute.For<IAuditManager>();
@@ -92,9 +94,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
+			_helperFactory.CreateTargetHelper(_helper).Returns(_helper);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateJobHistoryService(_caseServiceContext, _contextContainer, _serializer).Returns(_jobHistoryService);
 			_serviceFactory.CreateIntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+			_serviceFactory.CreateIntegrationPointService(_helper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 			_managerFactory.CreateAuditManager(_contextContainer, _WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
 			_repositoryFactory.GetIntegrationPointRepository(_WORKSPACE_ARTIFACT_ID).Returns(_integrationPointRepository);
 			_auditManager.RelativityAuditRepository.Returns(_auditRepository);
@@ -119,17 +123,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_instance.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}
 
-		[Test]
-		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var integrationPoint = new IntegrationPointDTO()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
 			};
 			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
 			Exception exception = new Exception(expectedErrorMessage);
+
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 
 			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
@@ -148,8 +155,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
 
-		[Test]
-		public void RsapiCallThrowsException()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void RsapiCallThrowsException(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var claims = new List<Claim>(1)
@@ -164,8 +172,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			var integrationPoint = new IntegrationPointDTO()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
 			};
+
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 
 			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
@@ -181,15 +191,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
 
-		[Test]
-		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var integrationPoint = new IntegrationPointDTO()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
 			};
 
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
@@ -201,8 +213,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
-		[Test]
-		public void NonRelativityProviderCall()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void NonRelativityProviderCall(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var claims = new List<Claim>(1)
@@ -212,9 +225,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			var integrationPoint = new IntegrationPointDTO()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
 			};
 
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 

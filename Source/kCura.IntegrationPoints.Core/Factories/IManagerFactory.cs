@@ -106,5 +106,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IOAuthClientManager CreateOAuthClientManager(IContextContainer contextContainer);
 
 		IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer);
+
+		IPermissionManager CreatePermissionManager(IContextContainer contextContainer);
 	}
 }

@@ -353,19 +353,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-			if (!_toggleProvider.IsEnabled<RipToR1Toggle>())
+			ValidationResult validationResult = _permissionValidator.Validate(IntegrationPointModel.FromIntegrationPoint(integrationPoint),
+				sourceProvider, destinationProvider, integrationPointType);
+
+			if (!validationResult.IsValid)
 			{
-				ValidationResult validationResult = _permissionValidator.Validate(IntegrationPointModel.FromIntegrationPoint(integrationPoint),
-					sourceProvider, destinationProvider, integrationPointType);
+				CreateRelativityError(
+					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, validationResult.Messages)}");
 
-				if (!validationResult.IsValid)
-				{
-					CreateRelativityError(
-						Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-						$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, validationResult.Messages)}");
-
-					throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
-				}
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
 			}
 		}
 

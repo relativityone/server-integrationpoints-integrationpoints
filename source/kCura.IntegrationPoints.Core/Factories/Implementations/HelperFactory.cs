@@ -19,24 +19,30 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_tokenProvider = tokenProvider;
 		}
 
-		public IHelper CreateOAuthClientHelper(IHelper sourceInstanceHelper, int federatedInstanceArtifactId)
+		public IHelper CreateTargetHelper(IHelper sourceInstanceHelper, int? federatedInstanceArtifactId = null)
 		{
-			IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(sourceInstanceHelper);
-			IFederatedInstanceManager federatedInstanceManager =
-				_managerFactory.CreateFederatedInstanceManager(sourceContextContainer);
-			FederatedInstanceDto federatedInstance = federatedInstanceManager.RetrieveFederatedInstance(federatedInstanceArtifactId);
-			IOAuthClientManager oAuthClientManager = _managerFactory.CreateOAuthClientManager(sourceContextContainer);
-			OAuthClientDto oAuthClientDto =
-				oAuthClientManager.RetrieveOAuthClientForFederatedInstance(federatedInstanceArtifactId);
+			if (federatedInstanceArtifactId.HasValue)
+			{
+				IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(sourceInstanceHelper);
+				IFederatedInstanceManager federatedInstanceManager =
+					_managerFactory.CreateFederatedInstanceManager(sourceContextContainer);
+				FederatedInstanceDto federatedInstance =
+					federatedInstanceManager.RetrieveFederatedInstance(federatedInstanceArtifactId.Value);
+				IOAuthClientManager oAuthClientManager = _managerFactory.CreateOAuthClientManager(sourceContextContainer);
+				OAuthClientDto oAuthClientDto =
+					oAuthClientManager.RetrieveOAuthClientForFederatedInstance(federatedInstanceArtifactId.Value);
 
-			IHelper targetHelper = new OAuthHelper(
-				new Uri(federatedInstance.InstanceUrl),
-				new Uri(federatedInstance.RsapiUrl),
-				new Uri(federatedInstance.KeplerUrl),
-				oAuthClientDto,
-				_tokenProvider);
+				IHelper targetHelper = new OAuthHelper(
+					new Uri(federatedInstance.InstanceUrl),
+					new Uri(federatedInstance.RsapiUrl),
+					new Uri(federatedInstance.KeplerUrl),
+					oAuthClientDto,
+					_tokenProvider);
 
-			return targetHelper;
+				return targetHelper;
+			}
+
+			return sourceInstanceHelper;
 		}
 	}
 }

@@ -11,6 +11,8 @@ using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -25,10 +27,8 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Web;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
