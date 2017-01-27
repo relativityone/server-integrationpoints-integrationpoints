@@ -171,6 +171,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 				return federatedInstanceManager;
 			}).LifestyleTransient());
 
+			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
+			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
+			container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
 		}
 	}
 }

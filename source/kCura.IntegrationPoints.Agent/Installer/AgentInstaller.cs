@@ -133,9 +133,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, toggleProvider);
 					}).LifestyleTransient());
-
-			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
-			container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
 		}
 	}
 }

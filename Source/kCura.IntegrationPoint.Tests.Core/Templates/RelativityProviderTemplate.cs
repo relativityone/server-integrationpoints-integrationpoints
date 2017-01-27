@@ -9,15 +9,11 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.Relativity.Client;
-using Relativity.Services.Field;
 using Relativity.Services.Folder;
-using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {

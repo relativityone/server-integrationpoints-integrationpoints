@@ -1,6 +1,4 @@
-﻿using System.Data.SqlClient;
-using System.Threading.Tasks;
-using System.Web.Http.Controllers;
+﻿using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
@@ -8,12 +6,9 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.Relativity.Client;
@@ -21,8 +16,6 @@ using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
 using Relativity.Core.Service;
 using Relativity.CustomPages;
-using Relativity.Toggles;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -55,9 +48,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService()).LifestyleTransient());
 			container.Register(Component.For<IHtmlSanitizerManager>().ImplementedBy<HtmlSanitizerManager>().LifestyleSingleton());
 			container.Register(Component.For<SummaryPageSelector>().ImplementedBy<SummaryPageSelector>().LifestyleSingleton());
-			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
-			container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
-			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestylePerWebRequest());
 		}
 	}
 }
