@@ -128,13 +128,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					return client;
 				})
 				.LifeStyle.Transient);
-			Container.Register(Component.For<IOAuthClientManager>().Instance(Substitute.For<IOAuthClientManager>()));
-			Container.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
+
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
-			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller(), new ValidationInstaller() };

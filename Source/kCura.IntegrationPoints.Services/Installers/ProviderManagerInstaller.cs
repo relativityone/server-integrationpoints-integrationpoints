@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, true));
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
-			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper.GetServicesManager()));
+			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager()));
 			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
 		}
 	}
