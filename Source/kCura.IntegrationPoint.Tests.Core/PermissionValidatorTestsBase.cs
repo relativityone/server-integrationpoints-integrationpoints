@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 	}
 
-	public class PermissionValidatorTestsBase
+	public class PermissionValidatorTestsBase : TestBase
 	{
 		protected const int _SOURCE_WORKSPACE_ID = 100532;
 		protected const int _DESTINATION_WORKSPACE_ID = 349234;
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		protected IntegrationPointProviderValidationModel _validationModel;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_sourcePermissionRepository = Substitute.For<IPermissionRepository>();

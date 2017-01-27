@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			IFieldManager sourceFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(_helper));
 
-			var targetHelper = CreateHelper(federatedInstanceArtifactId);
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId);
 			IFieldManager targetFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 
 			return new FieldsMappingValidator(_serializer, sourceFieldManager, targetFieldManager);
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId = null)
 		{
-			var targetHelper = CreateHelper(federatedInstanceArtifactId);
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId);
 			var artifactService = _serviceFactory.CreateArtifactService(_helper, targetHelper);
 
 			return new ArtifactValidator(artifactService, workspaceArtifactId, artifactTypeName);
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId = null)
 		{
-			var targetHelper = CreateHelper(federatedInstanceArtifactId);
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId);
 			IWorkspaceManager workspaceManager =
 				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 			return new RelativityProviderWorkspaceValidator(workspaceManager, prefix);
@@ -79,11 +79,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public TransferredObjectValidator CreateTransferredObjectValidator()
 		{
 			return new TransferredObjectValidator();
-		}
-
-		private IHelper CreateHelper(int? federatedInstanceArtifactId = null)
-		{
-			return federatedInstanceArtifactId.HasValue ? _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceArtifactId.Value) : _helper;
 		}
 	}
 }

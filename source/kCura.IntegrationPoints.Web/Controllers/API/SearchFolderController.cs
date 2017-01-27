@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve folders from destination workspace.")]
 		public HttpResponseMessage Get(int destinationWorkspaceId = 0, int? federatedInstanceId = null)
 		{
-			var targetHelper = federatedInstanceId.HasValue ? _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value) : _helper;
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId);
 			var artifactService = _serviceFactory.CreateArtifactService(_helper, targetHelper);
 			//TODO see if possible moving to DI container
 			var artifactTreeService = new ArtifactTreeService(artifactService, new ArtifactTreeCreator(_helper));

@@ -65,12 +65,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider);
 
 			//act
-			IHelper helper = testInstance.CreateOAuthClientHelper(_sourceInstanceHelper, 1000);
+			IHelper helper = testInstance.CreateTargetHelper(_sourceInstanceHelper, 1000);
 
 			//assert
 			Assert.That(helper.GetServicesManager(), Is.Not.Null);
 			Assert.That(helper.GetServicesManager().GetServicesURL().AbsoluteUri, Is.EqualTo(rsapiUrl));
 			Assert.That(helper.GetServicesManager().GetRESTServiceUrl().AbsoluteUri, Is.EqualTo(keplerUrl));
+		}
+
+		[Test]
+		public void TestCreateTargetHelperIfFederatedInstanceIsNull()
+		{
+			//arrange
+			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider);
+			
+			//act
+			IHelper helper = testInstance.CreateTargetHelper(_sourceInstanceHelper);
+
+			//assert
+			Assert.That(helper, Is.EqualTo(_sourceInstanceHelper));
 		}
 	}
 }

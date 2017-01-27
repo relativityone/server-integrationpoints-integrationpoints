@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve the workspace information.")]
 		public HttpResponseMessage Get(int? federatedInstanceId = null)
 		{
-			//var targetHelper = federatedInstanceId.HasValue ? _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value) : _helper;
+			//var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId);
 			//IWorkspaceManager workspaceManager =
 			//	_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 			//IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserWorkspaces();
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IEnumerable<WorkspaceDTO> userWorkspaces = null;
 			if (federatedInstanceId.HasValue)
 			{
-				var targetHelper = _helperFactory.CreateOAuthClientHelper(_helper, federatedInstanceId.Value);
+				var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId);
 				IWorkspaceManager workspaceManager =
 					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 				userWorkspaces = workspaceManager.GetUserWorkspaces();

@@ -113,15 +113,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					Guid.Empty, model.Name, MetricTargets.APMandSUM))
 				{
 						ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(model.Destination);
-						IHelper targetHelper;
-						if (importSettings.FederatedInstanceArtifactId != null)
-						{
-							targetHelper = _helperFactory.CreateOAuthClientHelper(_cpHelper, importSettings.FederatedInstanceArtifactId.Value);
-						}
-						else
-						{
-							targetHelper = _cpHelper;
-						}
+						IHelper targetHelper = _helperFactory.CreateTargetHelper(_cpHelper, importSettings.FederatedInstanceArtifactId);
 
 						IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper, 
 							_context, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);

@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 {
 	public interface IHelperFactory
 	{
-		IHelper CreateOAuthClientHelper(IHelper sourceInstanceHelper, int federatedInstanceArtifactId);
+		IHelper CreateTargetHelper(IHelper sourceInstanceHelper, int? federatedInstanceArtifactId = null);
 	}
 }

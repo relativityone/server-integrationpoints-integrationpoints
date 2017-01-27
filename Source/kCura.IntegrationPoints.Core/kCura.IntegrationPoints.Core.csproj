@@ -252,6 +252,8 @@
     <Compile Include="Installers\ValidationInstaller.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
     <Compile Include="Managers\Implementations\OAuthClientManager.cs" />
+    <Compile Include="Managers\Implementations\PermissionManager.cs" />
+    <Compile Include="Managers\IPermissionManager.cs" />
     <Compile Include="OAuthHelper.cs" />
     <Compile Include="OAuthServicesManager.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />

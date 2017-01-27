@@ -11,6 +11,8 @@ using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -26,10 +28,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -127,15 +127,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					return client;
 				})
 				.LifeStyle.Transient);
-			Container.Register(Component.For<IToggleProvider>().Instance(Substitute.For<IToggleProvider>()));
-			Container.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()));
-			Container.Register(Component.For<IOAuthClientManager>().Instance(Substitute.For<IOAuthClientManager>()));
-			Container.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
+
+			Container.Register(Component.For<ITokenProvider>().ImplementedBy<RelativityCoreTokenProvider>().LifestyleTransient());
+			Container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleTransient());
+			Container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
-			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller(), new ValidationInstaller() };
