@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using Castle.Core.Internal;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Core.Contracts.Helpers;
-using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Services;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -16,36 +11,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[Guid("5EA14201-EEBE-4D1D-99FA-2E28C9FAB7F4")]
 	public class DeleteEventHandler : PreDeleteEventHandler
 	{
-		private IAgentService _agentService;
+		private ICorrespondingJobDelete _correspondingJobDelete;
+		private IIntegrationPointSecretDelete _integrationPointSecretDelete;
 
-		private IJobService _jobService;
-
-		public IAgentService AgentService
+		internal ICorrespondingJobDelete CorrespondingJobDelete
 		{
-			get
-			{
-				if (_agentService == null)
-				{
-					_agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-				}
-				return _agentService;
-			}
+			get { return _correspondingJobDelete ?? (_correspondingJobDelete = CorrespondingJobDeleteFactory.Create(Helper)); }
+			set { _correspondingJobDelete = value; }
 		}
 
-		public IJobService JobService
+		internal IIntegrationPointSecretDelete IntegrationPointSecretDelete
 		{
-			get
-			{
-				if (_jobService == null)
-				{
-					_jobService = new JobService(AgentService, Helper);
-				}
-				return _jobService;
-			}
+			get { return _integrationPointSecretDelete ?? (_integrationPointSecretDelete = IntegrationPointSecretDeleteFactory.Create(Helper)); }
+			set { _integrationPointSecretDelete = value; }
 		}
 
-		public override FieldCollection RequiredFields =>
-			new FieldCollection {new Field(Guid.Parse(IntegrationPointFieldGuids.JobHistory))};
+		public override FieldCollection RequiredFields => null;
 
 		public override void Commit()
 		{
@@ -54,31 +35,44 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public override Response Execute()
 		{
-			Response eventResponse = new Response
-			{
-				Success = true,
-				Message = string.Empty
-			};
+			int workspaceId = Helper.GetActiveCaseID();
+			int integrationPointId = ActiveArtifact.ArtifactID;
 
 			try
 			{
-				int workspaceId = Helper.GetActiveCaseID();
-				int integrationPointId = ActiveArtifact.ArtifactID;
-				IEnumerable<Job> jobs = JobService.GetScheduledJobs(workspaceId, integrationPointId,
-					TaskTypeHelper.GetManagerTypes()
-						.Select(taskType => taskType.ToString())
-						.ToList());
-
-				jobs.ForEach(job => JobService.DeleteJob(job.JobId));
+				CorrespondingJobDelete.DeleteCorrespondingJob(workspaceId, integrationPointId);
 			}
 			catch (Exception ex)
 			{
 				LogDeletingJobsError(ex);
-				eventResponse.Success = false;
-				eventResponse.Message = $"Failed to delete corresponding job(s). Error: {ex.Message}";
+				return new Response
+				{
+					Success = false,
+					Message = $"Failed to delete corresponding job(s). Error: {ex.Message}",
+					Exception = ex
+				};
 			}
 
-			return eventResponse;
+			try
+			{
+				IntegrationPointSecretDelete.DeleteSecret(integrationPointId);
+			}
+			catch (Exception ex)
+			{
+				LogDeletingSecretError(ex);
+				return new Response
+				{
+					Success = false,
+					Message = $"Failed to delete corresponding secret. Error: {ex.Message}",
+					Exception = ex
+				};
+			}
+
+			return new Response
+			{
+				Success = true,
+				Message = "Integration Point successfully deleted."
+			};
 		}
 
 		public override void Rollback()
@@ -92,6 +86,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			var logger = Helper.GetLoggerFactory().GetLogger().ForContext<DeleteEventHandler>();
 			logger.LogError(ex, "Failed to delete corresponding job(s).");
+		}
+
+		private void LogDeletingSecretError(Exception ex)
+		{
+			var logger = Helper.GetLoggerFactory().GetLogger().ForContext<DeleteEventHandler>();
+			logger.LogError(ex, "Failed to delete corresponding secret.");
 		}
 
 		#endregion

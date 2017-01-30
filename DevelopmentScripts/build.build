@@ -55,7 +55,7 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.264\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.Client.1.0.1.264\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.16\lib"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.18\lib"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ServiceBus.2.1.2\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.DataContracts.Shared.9.4.94\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.MetricsCollection.9.4.94\lib\net45"' />
@@ -130,6 +130,7 @@
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.API.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.18\lib"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
@@ -151,6 +152,7 @@
 			<arg line='/lib:"${source.packages.directory}\kCura.Config.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.API.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.18\lib"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />
@@ -185,6 +187,7 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\systemwrapper.interfaces.0.7.0.0\lib\net45"'/>
 			<arg line='/lib:"${source.packages.directory}\kCura.LongPath.1.0.8\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.18\lib"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleCore.directory}"' />
 			<arg line='/lib:"${source.dependency.CastleWindsor.directory}"' />

@@ -36,8 +36,8 @@
     <Relativity_Logging_Interfaces>Relativity.Logging.Interfaces.9.4.300</Relativity_Logging_Interfaces>
     <Relativity_Kepler>Relativity.Kepler.1.0.1.264</Relativity_Kepler>
     <Relativity_Kepler_Client>Relativity.Kepler.Client.1.0.1.264</Relativity_Kepler_Client>
-    <Relativity_SecretCatalog>Relativity.SecretCatalog.1.0.16</Relativity_SecretCatalog>
-    <Relativity_SecretCatalog_AzureKeyVault>Relativity.SecretCatalog.AzureKeyVault.1.0.16</Relativity_SecretCatalog_AzureKeyVault>
+    <Relativity_SecretCatalog>Relativity.SecretCatalog.1.0.18</Relativity_SecretCatalog>
+    <Relativity_SecretCatalog_AzureKeyVault>Relativity.SecretCatalog.AzureKeyVault.1.0.18</Relativity_SecretCatalog_AzureKeyVault>
     <Relativity_ServiceBus>Relativity.ServiceBus.2.1.2</Relativity_ServiceBus>
     <Relativity_Services_DataContracts>Relativity.Services.DataContracts.9.5.41.88</Relativity_Services_DataContracts>
     <Relativity_Services_Interfaces>Relativity.Services.Interfaces.9.5.41.88</Relativity_Services_Interfaces>

@@ -138,6 +138,9 @@
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.SecretCatalog, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_SecretCatalog)\lib\Relativity.SecretCatalog.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Services.DataContracts, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Services_DataContracts)\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
@@ -180,8 +183,10 @@
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
+    <Compile Include="GenericLibraryFactory.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="IGenericLibraryFactory.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IntegrationPointBaseQuery.cs" />
@@ -291,11 +296,6 @@
     <Compile Include="GetObjectBase.cs" />
     <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />
-    <Compile Include="Installers\RSAPIServiceInstaller.cs">
-      <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="IObjectTypeQuery.cs" />
     <Compile Include="IRSAPIService.cs">
       <DependentUpon>IRSAPIService.tt</DependentUpon>
@@ -342,6 +342,10 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="RSAPIServiceGetLibrary.cs" />
+    <Compile Include="SecretStore\DefaultSecretCatalogFactory.cs" />
+    <Compile Include="SecretStore\ISecretCatalogFactory.cs" />
+    <Compile Include="SecretStore\ISecretManager.cs" />
+    <Compile Include="SecretStore\SecretManager.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
@@ -361,10 +365,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Installers\RSAPIServiceInstaller.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>RSAPIServiceInstaller.cs</LastGenOutput>
-    </None>
     <None Include="IRSAPIService.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IRSAPIService.cs</LastGenOutput>

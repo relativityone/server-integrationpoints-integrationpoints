@@ -470,12 +470,12 @@
       <HintPath>..\packages\RelativityCore.9.5.41.88\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SecretCatalog, Version=1.0.16.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.SecretCatalog.1.0.16\lib\Relativity.SecretCatalog.dll</HintPath>
+    <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SecretCatalog.AzureKeyVault, Version=1.0.16.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.SecretCatalog.AzureKeyVault.1.0.16\lib\Relativity.SecretCatalog.AzureKeyVault.dll</HintPath>
+    <Reference Include="Relativity.SecretCatalog.AzureKeyVault, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.SecretCatalog.AzureKeyVault.1.0.18\lib\Relativity.SecretCatalog.AzureKeyVault.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.5.41.88, Culture=neutral, processorArchitecture=AMD64">
