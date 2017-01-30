@@ -57,7 +57,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			}
 
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
-			result.Add(ValidateAllRequiredFieldsMapped(fieldsMap, destinationWorkpaceFields));
 			result.Add(ValidateSettingsFieldOverlayBehavior(destinationConfiguration));
 			result.Add(ValidateSettingsFolderPathInformation(sourceWorkpaceFields, destinationConfiguration));
 
