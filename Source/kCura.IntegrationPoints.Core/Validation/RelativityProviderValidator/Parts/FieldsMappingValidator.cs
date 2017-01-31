@@ -152,54 +152,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			return result;
 		}
 
-		private ValidationResult ValidateAllRequiredFieldsMapped(List<FieldMap> fieldsMap, List<ArtifactDTO> fieldArtifacts)
-		{
-			var result = new ValidationResult();
-			var requiredFields = new List<string>();
-			var missingFields = new List<string>();
-
-			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
-			{
-				string displayName = string.Empty;
-				int isIdentifierFieldValue = 0;
-
-				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
-				{
-					if (field.Name == RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME)
-					{
-						displayName = field.Value as string;
-					}
-					else if (field.Name == RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER)
-					{
-						isIdentifierFieldValue = Convert.ToInt32(field.Value);
-					}
-				}
-
-				if (isIdentifierFieldValue > 0)
-				{
-					displayName += _OBJECT_IDENTIFIER_APPENDAGE_TEXT;
-					requiredFields.Add(displayName);
-				}
-			}
-
-			foreach (string requiredField in requiredFields)
-			{
-				if (fieldsMap.All(x => x.SourceField.DisplayName != requiredField))
-				{
-					missingFields.Add(requiredField);
-				}
-			}
-
-			if (missingFields.Count > 0)
-			{
-				var fieldMessage = string.Join(" and ", missingFields);
-				string fieldPlural = requiredFields.Count == 1 ? "field" : "fields";
-				result.Add($"The {fieldMessage} {fieldPlural} {RelativityProviderValidationMessages.FIELD_MAP_FIELD_MUST_BE_MAPPED}");
-			}
-
-			return result;
-		}
-
 		private ValidationResult ValidateSettingsFieldOverlayBehavior(IntegrationPointDestinationConfiguration destinationConfig)
 		{
 			var result = new ValidationResult();
