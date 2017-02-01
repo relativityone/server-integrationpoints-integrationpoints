@@ -49,5 +49,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			var rsapiClient = targetHelper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
 			return new ArtifactService(rsapiClient, helper);
 		}
+
+		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)
+		{
+			return new FieldCatalogService(targetHelper);
+		}
 	}
 }
