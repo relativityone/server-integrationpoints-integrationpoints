@@ -191,8 +191,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
+			ISavedSearchRepository repository = new SavedSearchRepository(_helper, workspaceArtifactId, savedSearchArtifactId, 1000);
+			return repository;
+		}
+
+		public ISavedSearchQueryRepository GetSavedSearchQueryRepository(int workspaceArtifactId)
+		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Search);
-			ISavedSearchRepository repository = new SavedSearchRepository(_helper, objectQueryManagerAdaptor, workspaceArtifactId, savedSearchArtifactId, 1000);
+			ISavedSearchQueryRepository repository = new SavedSearchQueryRepository(objectQueryManagerAdaptor);
 
 			return repository;
 		}

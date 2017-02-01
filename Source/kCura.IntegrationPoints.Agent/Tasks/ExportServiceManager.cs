@@ -300,9 +300,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, JobHistoryDto.JobType);
 
 			//Quick check to see if saved search is still available before using it for the job
-			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(_sourceConfiguration.SourceWorkspaceArtifactId,
-				_sourceConfiguration.SavedSearchArtifactId);
-			SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch();
+			ISavedSearchQueryRepository savedSearchRepository =
+				_repositoryFactory.GetSavedSearchQueryRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+
+			SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch(_sourceConfiguration.SavedSearchArtifactId);
 			if (savedSearch == null)
 			{
 				LogSavedSearchNotFound(job, _sourceConfiguration);

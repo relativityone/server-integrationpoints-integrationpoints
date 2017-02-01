@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -10,7 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class SavedSearchRepository : KeplerServiceBase, ISavedSearchRepository
+	public class SavedSearchRepository : ISavedSearchRepository
 	{
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
@@ -23,11 +21,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public SavedSearchRepository(
 			IHelper helper,
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor, 
 			int workspaceArtifactId, 
 			int savedSearchId, 
 			int pageSize)
-			: base(objectQueryManagerAdaptor)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -91,33 +87,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public bool AllDocumentsRetrieved()
 		{
 			return StartedRetrieving && (string.IsNullOrEmpty(_queryToken) || _totalDocumentsRetrieved - _documentsRetrieved == 0);
-		}
-
-		public SavedSearchDTO RetrieveSavedSearch()
-		{
-			var query = new global::Relativity.Services.ObjectQuery.Query()
-			{
-				Fields = new [] {"Name", "Owner"},
-				Condition = $"'Artifact ID' == {_savedSearchId}",
-				TruncateTextFields = false,
-			};
-
-			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
-
-			ArtifactDTO artifactDto = results?.FirstOrDefault();
-			SavedSearchDTO savedSearch = null;
-			if (artifactDto != null)
-			{
-				IDictionary<string, ArtifactFieldDTO> fieldMapping = artifactDto.Fields.ToDictionary(k => k.Name, v => v);
-				savedSearch = new SavedSearchDTO()
-				{
-					ArtifactId = artifactDto.ArtifactId,
-					Name = fieldMapping["Name"]?.Value as string,
-					Owner = fieldMapping["Owner"]?.Value as string
-				};
-			}
-
-			return savedSearch;
 		}
 	}
 }

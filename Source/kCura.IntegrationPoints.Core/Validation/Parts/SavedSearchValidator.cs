@@ -6,18 +6,20 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class SavedSearchValidator : BasePartsValidator<int>
 	{
-		private readonly ISavedSearchRepository _savedSearchRepository;
+		private readonly ISavedSearchQueryRepository _savedSearchQueryRepository;
+		private readonly int _savedSearchId;
 
-		public SavedSearchValidator(ISavedSearchRepository savedSearchRepository)
+		public SavedSearchValidator(ISavedSearchQueryRepository savedSearchQueryRepository, int savedSearchId)
 		{
-			_savedSearchRepository = savedSearchRepository;
+			_savedSearchQueryRepository = savedSearchQueryRepository;
+			_savedSearchId = savedSearchId;
 		}
 
 		public override ValidationResult Validate(int value)
 		{
 			var result = new ValidationResult();
 
-			SavedSearchDTO savedSearch = _savedSearchRepository.RetrieveSavedSearch();
+			SavedSearchDTO savedSearch = _savedSearchQueryRepository.RetrieveSavedSearch(_savedSearchId);
 
 			if (savedSearch == null)
 			{

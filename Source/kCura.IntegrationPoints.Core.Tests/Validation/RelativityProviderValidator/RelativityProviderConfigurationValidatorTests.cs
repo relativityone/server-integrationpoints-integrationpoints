@@ -42,8 +42,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>())
 				.Returns(workspaceValidatorMock);
 
-			var savedSearchRepositoryMock = Substitute.For<ISavedSearchRepository>();
-			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(savedSearchRepositoryMock);
+			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
+			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(savedSearchRepositoryMock, SavedSearchArtifactId);
 			savedSearchValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateSavedSearchValidator(Arg.Any<int>(), Arg.Any<int>())

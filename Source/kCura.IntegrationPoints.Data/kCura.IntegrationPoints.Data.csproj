@@ -207,8 +207,10 @@
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="Repositories\Implementations\ResourcePoolRepository.cs" />
+    <Compile Include="Repositories\Implementations\SavedSearchQueryRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlWorkspacesRepository.cs" />
     <Compile Include="Repositories\IResourcePoolRepository.cs" />
+    <Compile Include="Repositories\ISavedSearchQueryRepository.cs" />
     <Compile Include="Repositories\IWorkspacesRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
     <Compile Include="Models\AuditElement.cs" />

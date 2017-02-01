@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Tests.Helpers;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -24,12 +28,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ItShouldReturnSavedSearchesTree()
 		{
 			// arrange
-			var resultSet = new SearchContainerQueryResultSet();
-			resultSet.Results.Add(new Result<SearchContainer>() { Artifact = new SearchContainer { ArtifactID = 1001 } });
+			int workspaceArtifactId = 1042;
+
+			var repoFactoryMock = Substitute.For<IRepositoryFactory>();
+			var savedSearchQueryRepoMock = Substitute.For<ISavedSearchQueryRepository>();
+
+			repoFactoryMock.GetSavedSearchQueryRepository(workspaceArtifactId).Returns(savedSearchQueryRepoMock);
+
+			savedSearchQueryRepoMock.RetrievePublicSavedSearches().Returns(new[]
+			{
+				new SavedSearchDTO()
+				{
+					ArtifactId = 1001
+				}
+			});
 
 			var searchContainerManager = Substitute.For<ISearchContainerManager>();
-			searchContainerManager.QueryAsync(Arg.Any<int>(), Arg.Any<Query>())
-				.Returns(resultSet);
 			searchContainerManager.GetSearchContainerTreeAsync(Arg.Any<int>(), Arg.Any<List<int>>())
 				.Returns(SavedSearchesTreeTestHelper.GetSampleContainerCollection());
 
@@ -47,9 +61,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Any<IEnumerable<SavedSearchContainerItem>>())
 				.Returns(expected);
 
-			var service = new SavedSearchesTreeService(helper, creator);
+			var service = new SavedSearchesTreeService(helper, creator, repoFactoryMock);
 
-			var workspaceArtifactId = 1042;
+			
 
 			// act
 			var actual = service.GetSavedSearchesTree(workspaceArtifactId);

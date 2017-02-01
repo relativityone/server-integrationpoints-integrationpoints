@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobHistoryManager _jobHistoryManager;
 		private IContextContainer _contextContainer;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
-		private ISavedSearchRepository _savedSearchRepository;
+		private ISavedSearchQueryRepository _savedSearchQueryRepository;
 		private IJobStopManager _jobStopManager;
 		private IDocumentRepository _documentRepository;
 		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;
@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_jobHistoryErrorManager = Substitute.For<IJobHistoryErrorManager>();
 			_contextContainer = Substitute.For<IContextContainer>();
-			_savedSearchRepository = Substitute.For<ISavedSearchRepository>();
+			_savedSearchQueryRepository = Substitute.For<ISavedSearchQueryRepository>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
 			_destinationWorkspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
@@ -172,8 +172,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_mappings);
 			_managerFactory.CreateJobHistoryErrorManager(_contextContainer, _configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
-			_repositoryFactory.GetSavedSearchRepository(_configuration.SourceWorkspaceArtifactId, _configuration.SavedSearchArtifactId).Returns(_savedSearchRepository);
-			_savedSearchRepository.RetrieveSavedSearch().Returns(new SavedSearchDTO());
+			_repositoryFactory.GetSavedSearchQueryRepository(_configuration.SourceWorkspaceArtifactId).Returns(_savedSearchQueryRepository);
+			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns(new SavedSearchDTO());
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
 			_synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration).Returns(_synchornizer);
@@ -245,7 +245,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void Execute_EnsureToCheckTheExistentOfSavedSearch()
 		{
 			// ARRANGE
-			_savedSearchRepository.RetrieveSavedSearch().Returns((SavedSearchDTO)null);
+			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns((SavedSearchDTO)null);
 
 			// ACT
 			_instance.Execute(_job);

@@ -159,7 +159,7 @@
       <HintPath>..\packages\$(Relativity_Telemetry_DataContracts_Shared)\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.Telemetry.Services.Interface, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.Services.Interface, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_Services_Interface)\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -224,7 +224,7 @@
     <Compile Include="Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Controllers\LdapControllerTests.cs" />
     <Compile Include="Controllers\RelativityControllerTests.cs" />
-    <Compile Include="Controllers\SavedSearchQueryTests.cs" />
+    <Compile Include="Controllers\SavedSearchFinderControllerTests.cs" />
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />
     <Compile Include="DataStructures\FolderTreeTests.cs" />

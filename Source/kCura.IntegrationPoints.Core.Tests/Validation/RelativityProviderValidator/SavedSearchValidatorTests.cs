@@ -12,17 +12,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 	[TestFixture]
 	public class SavedSearchValidatorTests
 	{
+		private const int _SAVED_SEARCH_ID = 1;
+
 		[Test]
 		public void ItShouldValidateSavedSearch()
 		{
 			// arrange
 			var savedSearch = new SavedSearchDTO();
-
-			var savedSearchRepositoryMock = Substitute.For<ISavedSearchRepository>();
-			savedSearchRepositoryMock.RetrieveSavedSearch()
+			
+			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
+			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
 				.Returns(savedSearch);
 
-			var validator = new SavedSearchValidator(savedSearchRepositoryMock);
+			var validator = new SavedSearchValidator(savedSearchRepositoryMock, _SAVED_SEARCH_ID);
 
 			// act
 			var actual = validator.Validate(0);
@@ -38,11 +40,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			// arrange
 			var savedSearch = default(SavedSearchDTO);
 
-			var savedSearchRepositoryMock = Substitute.For<ISavedSearchRepository>();
-			savedSearchRepositoryMock.RetrieveSavedSearch()
+			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
+			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
 				.Returns(savedSearch);
 
-			var validator = new SavedSearchValidator(savedSearchRepositoryMock);
+			var validator = new SavedSearchValidator(savedSearchRepositoryMock, _SAVED_SEARCH_ID);
 
 			// act
 			var actual = validator.Validate(0);
@@ -58,11 +60,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			// arrange
 			var savedSearch = new SavedSearchDTO() { Owner = "owner" };
 
-			var savedSearchRepositoryMock = Substitute.For<ISavedSearchRepository>();
-			savedSearchRepositoryMock.RetrieveSavedSearch()
+			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
+			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
 				.Returns(savedSearch);
 
-			var validator = new SavedSearchValidator(savedSearchRepositoryMock);
+			var validator = new SavedSearchValidator(savedSearchRepositoryMock, _SAVED_SEARCH_ID);
 
 			// act
 			var actual = validator.Validate(0);
