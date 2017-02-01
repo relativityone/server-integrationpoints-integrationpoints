@@ -21,5 +21,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <returns>WorkspaceDTO collection</returns>
 		IEnumerable<WorkspaceDTO> RetrieveAll();
+
+		/// <summary>
+		/// Retrieves all active workspaces
+		/// </summary>
+		/// <returns>WorkspaceDTO collection</returns>
+		IEnumerable<WorkspaceDTO> RetrieveAllActive();
 	}
 }

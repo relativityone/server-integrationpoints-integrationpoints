@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, objectQueryManagerAdaptor);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, objectQueryManagerAdaptor);
 
 			return repository;
 		}
@@ -235,12 +235,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			return new DocumentTotalsRepository(_helper, workspaceArtifactId);
 		}
-
-		public IWorkspacesRepository GetWorkspacesRepository()
-        {
-            IWorkspacesRepository repository = new SqlWorkspacesRepository(GetBaseContextForWorkspace(-1));
-            return repository;
-        }
 		
         #region Helper Methods
 

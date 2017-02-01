@@ -7,6 +7,7 @@ using Relativity.Services.ObjectQuery;
 using Relativity.Services.Permission;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
+using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIObjectQueryManager(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System).Returns(new ExtendedIKeywordSearchManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIKeywordSearchManager(this, ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIWorkspaceManager(this, ExecutionIdentity.CurrentUser));
 		}
 
 		public T CreateUserProxy<T>() where T : IDisposable
