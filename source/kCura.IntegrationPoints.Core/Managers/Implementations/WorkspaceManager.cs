@@ -1,18 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class WorkspaceManager:IWorkspaceManager
+	public class WorkspaceManager: IWorkspaceManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
@@ -44,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		
 		private IEnumerable<WorkspaceDTO> RetrieveAllActiveWorkspaces()
 		{
-			IWorkspacesRepository repository = _repositoryFactory.GetWorkspacesRepository();
+			IWorkspaceRepository repository = _repositoryFactory.GetWorkspaceRepository();
 			return repository.RetrieveAllActive();
 		}
 	}
