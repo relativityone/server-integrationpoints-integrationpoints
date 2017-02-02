@@ -11,7 +11,9 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
+using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Toggles;
 
@@ -26,8 +28,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 
 		public ExporterFactory(
-			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory, 
-			IRepositoryFactory sourceRepositoryFactory, 
+			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory,
+			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IHelper helper,
 			IToggleProvider toggleProvider)
@@ -73,14 +75,26 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return batchStatusCommands;
 		}
 
-		public IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser)
+		public IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings)
 		{
 			if (onBehalfOfUser == 0)
 			{
 				onBehalfOfUser = 9;
 			}
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
-			return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+
+			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
+
+
+			if (settings.ImageImport)
+			{
+				return new ImageExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
+					claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+			}
+			else
+			{
+				return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+			}
 		}
 	}
 }

@@ -186,7 +186,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(_documentRepository);
 
 			_exporterFactory.BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration,
-				_configuration.SavedSearchArtifactId, job.SubmittedBy).Returns(_exporterService);
+				_configuration.SavedSearchArtifactId, job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID).Returns(_exporterService);
 
 			_exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
 			_jobStopManager.SyncRoot.Returns(_lock);
@@ -371,7 +371,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ASSERT
 			_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(),
 				_integrationPoint.SourceConfiguration,
-				_RETRY_SAVEDSEARCHID, _job.SubmittedBy);
+				_RETRY_SAVEDSEARCHID, _job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID);
 			AssertRetrySavedSearch(true);
 		}
 
@@ -463,7 +463,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_exporterFactory.DidNotReceive().BuildExporter(Arg.Any<IJobStopManager>(), Arg.Any<FieldMap[]>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>());
+			_exporterFactory.DidNotReceive().BuildExporter(Arg.Any<IJobStopManager>(), Arg.Any<FieldMap[]>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), _IMPORTSETTINGS_WITH_USERID);
 
 			_sendingEmailNotification.Received(1).OnJobComplete(_job);
 			_updateJobHistoryStatus.Received(1).OnJobStart(_job);
@@ -584,13 +584,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			if (expectToCreate)
 			{
-				_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration, _RETRY_SAVEDSEARCHID, _job.SubmittedBy);
+				_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration, _RETRY_SAVEDSEARCHID, _job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID);
 				_jobHistoryErrorManager.Received(1).CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.Received(1).DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}
 			else
 			{
-				_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration, _configuration.SavedSearchArtifactId, _job.SubmittedBy);
+				_exporterFactory.Received(1).BuildExporter(_jobStopManager, Arg.Any<FieldMap[]>(), _integrationPoint.SourceConfiguration, _configuration.SavedSearchArtifactId, _job.SubmittedBy, _IMPORTSETTINGS_WITH_USERID);
 				_jobHistoryErrorManager.DidNotReceive().CreateItemLevelErrorsSavedSearch(_job, _configuration.SavedSearchArtifactId);
 				_jobHistoryErrorRepository.DidNotReceive().DeleteItemLevelErrorsSavedSearch(_RETRY_SAVEDSEARCHID);
 			}

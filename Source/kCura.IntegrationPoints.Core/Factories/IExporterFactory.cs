@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 {
 	public interface IExporterFactory
 	{
-		IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser);
+		IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings);
 
 		List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
 			ISourceWorkspaceManager sourceWorkspaceManager,
