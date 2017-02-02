@@ -2,18 +2,24 @@
 using kCura.WinEDDS.Api;
 using System;
 using System.Data;
+using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class OpticonDataReader : IDataReader
 	{
-		private const string _RECORD_DELIMITER_STRING = ",";
+		private const char _RECORD_DELIMITER = ',';
+		private const char _QUOTE_DELIMITER = '"';
 		private ImageLoadFile _config;
 		private OpticonFileReader _opticonFileReader;
 		private bool _isClosed;
 		private string _currentLine;
 		private ulong _documentId;
+		private string _recordDelimiterString;
+		private string _quoteDelimiterString;
+		private string _doubleRecordDelimiterString;
+		private string _doubleQuoteDelimiterString;
 
 		public OpticonDataReader(ImageLoadFile config)
 		{
@@ -21,6 +27,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			_isClosed = false;
 			_currentLine = string.Empty;
 			_documentId = 0;
+
+			_recordDelimiterString = _RECORD_DELIMITER.ToString();
+			_quoteDelimiterString = _QUOTE_DELIMITER.ToString();
+			_doubleRecordDelimiterString = new string(_RECORD_DELIMITER, 2);
+			_doubleQuoteDelimiterString = new string(_QUOTE_DELIMITER, 2);
 		}
 
 		public void Init()
@@ -38,12 +49,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 				_documentId++;
 			}
 
-			string[] result = new string[3];
-			result[OpticonInfo.BATES_NUMBER_FIELD_INDEX] = currentRecord.BatesNumber;
-			result[OpticonInfo.FILE_LOCATION_FIELD_INDEX] = currentRecord.FileLocation;
-			result[OpticonInfo.DOCUMENT_ID_FIELD_INDEX] = _documentId.ToString();
+			string[] data = new string[3];
+			data[OpticonInfo.BATES_NUMBER_FIELD_INDEX] = currentRecord.BatesNumber;
+			data[OpticonInfo.FILE_LOCATION_FIELD_INDEX] = currentRecord.FileLocation;
+			data[OpticonInfo.DOCUMENT_ID_FIELD_INDEX] = _documentId.ToString();
 
-			_currentLine = string.Join(_RECORD_DELIMITER_STRING, result);
+			_currentLine = string.Join(_recordDelimiterString, data.Select(x =>
+				_quoteDelimiterString
+				+ x.Replace(_quoteDelimiterString, _doubleQuoteDelimiterString).Replace(_recordDelimiterString, _doubleRecordDelimiterString)
+				+ _quoteDelimiterString
+			));
 		}
 
 		//IDataReader Implementation
