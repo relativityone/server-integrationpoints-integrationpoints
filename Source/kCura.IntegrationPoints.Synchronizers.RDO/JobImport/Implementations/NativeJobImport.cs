@@ -45,9 +45,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			if (_importSettings.ArtifactTypeId == (int) ArtifactType.Document)
 			{
 				if (_importSettings.FederatedInstanceArtifactId == null)
-					_importApi.NewNativeDocumentImportJob(_importSettings.OnBehalfOfUserToken);
-				else
-					_importApi.NewNativeDocumentImportJob();
+					return _importApi.NewNativeDocumentImportJob(_importSettings.OnBehalfOfUserToken);
+				return _importApi.NewNativeDocumentImportJob();
 			}
 			return _importApi.NewObjectImportJob(_importSettings.ArtifactTypeId);
 		}

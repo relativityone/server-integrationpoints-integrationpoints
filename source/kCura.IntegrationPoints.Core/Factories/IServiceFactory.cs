@@ -26,5 +26,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 			IToggleProvider toggleProvider);
 
 		IArtifactService CreateArtifactService(IHelper helper, IHelper targetHelper);
+
+		IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper);
 	}
 }

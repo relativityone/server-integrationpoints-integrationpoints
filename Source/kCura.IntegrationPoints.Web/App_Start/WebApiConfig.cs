@@ -300,7 +300,13 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/WorkspaceFinder/{federatedInstanceId}",
 				defaults: new { controller = "WorkspaceFinder", action = "Get" }
 			);
-			
+
+			config.Routes.MapHttpRoute(
+				name: "GetFieldCatalogMappings",
+				routeTemplate: "{workspaceID}/api/FieldCatalog/{destinationWorkspaceId}/{federatedInstanceId}",
+				defaults: new { controller = "FieldCatalog", action = "Get", federatedInstanceId = RouteParameter.Optional }
+			);
+
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
