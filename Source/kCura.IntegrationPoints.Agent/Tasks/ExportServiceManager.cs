@@ -135,7 +135,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					using (IExporterService exporter = _exporterFactory.BuildExporter(_jobStopManager, MappedFields.ToArray(),
 						IntegrationPointDto.SourceConfiguration,
 						_savedSearchArtifactId,
-						job.SubmittedBy))
+						job.SubmittedBy,
+						userImportApiSettings))
 					{
 						lock (_jobStopManager.SyncRoot)
 						{

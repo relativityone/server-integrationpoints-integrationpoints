@@ -309,6 +309,10 @@
     <Compile Include="RelativityCoreTokenProvider.cs" />
     <Compile Include="Services\ArtifactService.cs" />
     <Compile Include="Services\DataTransferLocationService.cs" />
+    <Compile Include="Services\Exporter\Base\ExporterServiceBase.cs" />
+    <Compile Include="Services\Exporter\Base\ExportTransferDataReaderBase.cs" />
+    <Compile Include="Services\Exporter\ImageExporterService.cs" />
+    <Compile Include="Services\Exporter\ImageTransferDataReader.cs" />
     <Compile Include="Services\IChoiceService.cs" />
     <Compile Include="Services\IDataTransferLocationService.cs" />
     <Compile Include="Services\IImportTypeService.cs" />

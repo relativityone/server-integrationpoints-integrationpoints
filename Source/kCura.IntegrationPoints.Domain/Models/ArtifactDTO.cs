@@ -20,9 +20,9 @@ namespace kCura.IntegrationPoints.Domain.Models
 		/// <param name="textIdentifier">The text identifier for the object.</param>
 		/// <param name="fields">The fields of the artifact.</param>
 		public ArtifactDTO(
-			int artifactId, 
-			int artifactTypeId, 
-			string textIdentifier, 
+			int artifactId,
+			int artifactTypeId,
+			string textIdentifier,
 			IEnumerable<ArtifactFieldDTO> fields)
 		{
 			ArtifactId = artifactId;
@@ -61,6 +61,12 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public ArtifactFieldDTO GetFieldForIdentifier(int artifactId)
 		{
 			ArtifactFieldDTO field = _fieldDictionary?[artifactId];
+			return field;
+		}
+
+		public ArtifactFieldDTO GetFieldByName(string name)
+		{
+			ArtifactFieldDTO field = Fields.FirstOrDefault(_ => _.Name == name);
 			return field;
 		}
 	}

@@ -156,6 +156,7 @@
     <Compile Include="JobImport\Implementations\ImageDataTableHelper.cs" />
     <Compile Include="JobImport\Implementations\ImageImportSettingsBuilder.cs" />
     <Compile Include="JobImport\Implementations\ImageJobImport.cs" />
+    <Compile Include="JobImport\Implementations\ImageRelativityToRelativityImportSettingsBuilder.cs" />
     <Compile Include="JobImport\Implementations\ImportJobFactory.cs" />
     <Compile Include="JobImport\Implementations\ImportSettingsBaseBuilder.cs" />
     <Compile Include="JobImport\Implementations\JobImport.cs" />
