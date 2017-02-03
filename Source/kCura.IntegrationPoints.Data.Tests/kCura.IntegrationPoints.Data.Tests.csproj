@@ -143,6 +143,10 @@
       <HintPath>..\packages\$(Relativity_Services_Interfaces)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces.Private, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Toggles, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Toggles)\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
@@ -243,6 +247,7 @@
     <Compile Include="EncryptingRsapiClientLibraryTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="SecretStore\SecretManagerTests.cs" />
+    <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="BaseRdoTests.cs" />

@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
+using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class KeplerWorkspaceRepository : KeplerServiceBase, IWorkspaceRepository
 	{
 		private readonly IAPILog _logger;
+		private readonly IServicesMgr _servicesMgr;
 
-		public KeplerWorkspaceRepository(IHelper helper, IObjectQueryManagerAdaptor objectQueryManagerAdaptor) : base(objectQueryManagerAdaptor)
+		public KeplerWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, IObjectQueryManagerAdaptor objectQueryManagerAdaptor) 
+			: base(objectQueryManagerAdaptor)
 		{
 			this.ObjectQueryManagerAdaptor.ArtifactTypeId = (int) ArtifactType.Case;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
+			_servicesMgr = servicesMgr;
 		}
 
 		public WorkspaceDTO Retrieve(int workspaceArtifactId)
@@ -62,6 +67,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			return Convert(artifactDtos);
+		}
+
+		public IEnumerable<WorkspaceDTO> RetrieveAllActive()
+		{
+			IEnumerable<WorkspaceDTO> activeWorkspaces;
+
+			using (IWorkspaceManager workspaceManagerProxy =
+				_servicesMgr.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser))
+			{
+				Task<IEnumerable<WorkspaceRef>> activeWorkspacesTask = workspaceManagerProxy.RetrieveAllActive();
+				activeWorkspaces = activeWorkspacesTask.Result.Select(x => new WorkspaceDTO()
+				{
+					Name = x.Name,
+					ArtifactId = x.ArtifactID
+				});
+			}
+
+			return activeWorkspaces;
 		}
 
 		private IEnumerable<WorkspaceDTO> Convert(IEnumerable<ArtifactDTO> artifactDtos)

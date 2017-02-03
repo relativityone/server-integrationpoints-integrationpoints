@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchRepository(workspaceArtifactId, savedSearchArtifactId));
+			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
 		}
 
 		public ViewValidator CreateViewValidator()

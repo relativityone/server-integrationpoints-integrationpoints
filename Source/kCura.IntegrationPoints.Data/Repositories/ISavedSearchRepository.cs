@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Domain.Models;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -15,11 +16,5 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <returns><code>TRUE</code> if more documents can be retrieved, <code>FALSE</code> otherwise</returns>
 		bool AllDocumentsRetrieved();
-
-		/// <summary>
-		/// Retrieves the current Saved Search.
-		/// </summary>
-		/// <returns>Returns the current SavedSearchDTO.</returns>
-		SavedSearchDTO RetrieveSavedSearch();
 	}
 }

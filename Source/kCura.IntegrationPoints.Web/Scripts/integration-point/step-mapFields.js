@@ -251,6 +251,7 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 		}
 
+
 		this.FolderPathImportProvider = ko.observableArray([]);
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
@@ -518,15 +519,18 @@ ko.validation.insertValidationMessage = function (element) {
 		this.GetCatalogFieldMappings = function () {
 			self.CatalogField = {};
 			var destinationWorkspaceID;
+			var federatedInstanceID = null;
 			if(self.IsRelativityProvider())
 			{
 				destinationWorkspaceID = self.destinationCaseArtifactID;
+				var sourceSettings = JSON.parse(model.sourceConfiguration);
+				federatedInstanceID = sourceSettings.FederatedInstanceArtifactId;
 			} else {
 				destinationWorkspaceID = IP.utils.getParameterByName('AppID', window.top);
 			}
 
 			$.ajax({
-				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID),
+				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID, federatedInstanceID),
 				type: 'GET',
 				success: function (data) {
 					self.CatalogField = data;

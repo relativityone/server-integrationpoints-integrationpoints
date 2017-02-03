@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, objectQueryManagerAdaptor);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, objectQueryManagerAdaptor);
 
 			return repository;
 		}
@@ -191,8 +191,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
+			ISavedSearchRepository repository = new SavedSearchRepository(_helper, workspaceArtifactId, savedSearchArtifactId, 1000);
+			return repository;
+		}
+
+		public ISavedSearchQueryRepository GetSavedSearchQueryRepository(int workspaceArtifactId)
+		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Search);
-			ISavedSearchRepository repository = new SavedSearchRepository(_helper, objectQueryManagerAdaptor, workspaceArtifactId, savedSearchArtifactId, 1000);
+			ISavedSearchQueryRepository repository = new SavedSearchQueryRepository(objectQueryManagerAdaptor);
 
 			return repository;
 		}
@@ -235,12 +241,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			return new DocumentTotalsRepository(_helper, workspaceArtifactId);
 		}
-
-		public IWorkspacesRepository GetWorkspacesRepository()
-        {
-            IWorkspacesRepository repository = new SqlWorkspacesRepository(GetBaseContextForWorkspace(-1));
-            return repository;
-        }
 		
         #region Helper Methods
 

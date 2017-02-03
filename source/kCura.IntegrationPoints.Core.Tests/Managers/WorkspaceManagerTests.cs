@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 
@@ -22,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	{
 		private const int CurrentUserWorkspaceArtifactId = 1234;
 		private IRepositoryFactory _repositoryFactory;
-		private IWorkspacesRepository _workspacesRepository;
 		private IWorkspaceRepository _workspaceRepository;
 		private IRdoRepository _rdoRepository;
 		private int _workspaceArtifactId;
@@ -40,15 +34,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 
-			_workspacesRepository = Substitute.For<IWorkspacesRepository>();
-			_workspacesRepository.RetrieveAllActive()
+			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
+			_workspaceRepository.RetrieveAllActive()
 				.Returns(new List<WorkspaceDTO>()
 				{
 					new WorkspaceDTO() {ArtifactId = CurrentUserWorkspaceArtifactId, Name = "Test Workspace"},
 					new WorkspaceDTO() {ArtifactId = 5678, Name = "Admin User Workspace"}
 				});
 
-			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
 			_workspaceRepository.RetrieveAll()
 				.Returns(new List<WorkspaceDTO>()
 				{
@@ -56,7 +49,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 					new WorkspaceDTO {ArtifactId = 9012, Name = "I am being upgraded"}
 				});
 
-			_repositoryFactory.GetWorkspacesRepository().Returns(_workspacesRepository);
 			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
 
 			_rdoRepository = Substitute.For<IRdoRepository>();

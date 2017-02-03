@@ -136,12 +136,12 @@
     <Compile Include="RelativityRdoQueryTest.cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
+    <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Repositories\RelativityAuditRepositoryTests.cs" />
     <Compile Include="Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Repositories\ScratchTableRepositoryTests.cs" />
-    <Compile Include="Repositories\SqlWorkspacesRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
