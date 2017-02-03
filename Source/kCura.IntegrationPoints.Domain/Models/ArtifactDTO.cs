@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 			return field;
 		}
 
-		public ArtifactFieldDTO GetFieldForName(string name)
+		public ArtifactFieldDTO GetFieldByName(string name)
 		{
 			ArtifactFieldDTO field = Fields.FirstOrDefault(_ => _.Name == name);
 			return field;

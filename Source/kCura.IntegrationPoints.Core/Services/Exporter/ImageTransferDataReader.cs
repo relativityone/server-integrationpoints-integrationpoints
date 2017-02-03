@@ -57,11 +57,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				switch (fieldIdentifier)
 				{
 					case IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD:
-						ArtifactFieldDTO fileLocationField = CurrentArtifact.GetFieldForName(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
+						ArtifactFieldDTO fileLocationField = CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
 						return fileLocationField.Value;
 
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD:
-						ArtifactFieldDTO nameField = CurrentArtifact.GetFieldForName(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME);
+						ArtifactFieldDTO nameField = CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME);
 						return nameField.Value;
 				}
 			}
