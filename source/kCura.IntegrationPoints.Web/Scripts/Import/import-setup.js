@@ -27,9 +27,8 @@
 	var classSelector = function (name) { return '.' + name; }
 	windowObj.RelativityImport.UI.idSelector = idSelector;
 
-	/*todo change column back to 19*/
 	var assignAsciiDropDownDefault = function (array) {
-		windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[43].asciiID);
+		windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[19].asciiID);
 		windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(array[253].asciiID);
 		windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(array[173].asciiID);
 		windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(array[58].asciiID);
