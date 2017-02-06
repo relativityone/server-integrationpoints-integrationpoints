@@ -978,6 +978,16 @@ ko.validation.insertValidationMessage = function (element) {
 		return JSON.stringify(currentMapping);
 	};
 
+	window.top.getExtractedTextInfo = function () {
+		var extractedTextInfo = {};
+		if (step.returnModel.ExtractedTextFieldContainsFilePath == 'true'){
+			extractedTextInfo.LongTextColumnThatContainsPathToFullText = step.returnModel.LongTextColumnThatContainsPathToFullText;
+			extractedTextInfo.ExtractedTextFileEncoding = step.returnModel.ExtractedTextFileEncoding;
+		}
+		
+		return extractedTextInfo;
+	};
+
 	window.top.getMappedChoiceFieldsPromise = function () {
 		return IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetChoiceFields') }).then(function (result) {
 			var choiceFields = [];
