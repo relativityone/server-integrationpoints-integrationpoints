@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.Injection;
 using kCura.IntegrationPoint.Tests.Core;
@@ -29,12 +28,10 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	[Ignore("Tests doen't work and need fix")]
 	public class ExportServiceManagerTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;
@@ -61,19 +58,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			base.SuiteTeardown();
 		}
 
-		protected override void Install()
-		{
-			base.Install();
-			Container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifeStyle.Transient);
-			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
-				.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
-				.LifestyleTransient());
-			Container.Register(
-				Component.For<IRSAPIService>()
-					.Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId))
-					.LifestyleTransient());
-		}
-
 		public override void TestSetup()
 		{
 			_caseContext = Container.Resolve<ICaseServiceContext>();
@@ -89,12 +73,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_jobService = Container.Resolve<IJobService>();
 			IScheduleRuleFactory scheduleRuleFactory = new DefaultScheduleRuleFactory();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			JobHistoryErrorService jobHistoryErrorService = Container.Resolve<JobHistoryErrorService>();
+			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
 			JobStatisticsService jobStatisticsService = Container.Resolve<JobStatisticsService>();
 
 			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			JobHistoryBatchUpdateStatus jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
-
+			
 			_exportManager = new ExportServiceManager(Helper,
 				_caseContext, contextContainerFactory,
 				synchronizerFactory,
@@ -172,6 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Ignore("Test doen't work and need fix")]
 		public void AgentPickUpRunNowJobWhenScheduledJobIsRunning()
 		{
 			Job scheduledJob = null;
@@ -243,6 +228,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Ignore("Test doen't work and need fix")]
 		public void AgentPickUpScheduledJobJobWhenRunNowJobIsRunning()
 		{
 			Job fakeScheduledJob = null;
@@ -318,6 +304,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Ignore("Test doen't work and need fix")]
 		public void StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers()
 		{
 			global::kCura.Injection.Injection injection = new global::kCura.Injection.Injection(

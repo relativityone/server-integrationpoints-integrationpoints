@@ -85,6 +85,9 @@
       <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="Relativity.DataGrid.Logging">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.DataGrid.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Extensions" />
