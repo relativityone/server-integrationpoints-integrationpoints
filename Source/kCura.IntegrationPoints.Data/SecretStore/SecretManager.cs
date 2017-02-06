@@ -6,6 +6,13 @@ namespace kCura.IntegrationPoints.Data.SecretStore
 {
 	public class SecretManager : ISecretManager
 	{
+		private readonly int _workspaceArtifactId;
+
+		public SecretManager(int workspaceArtifactId)
+		{
+			_workspaceArtifactId = workspaceArtifactId;
+		}
+
 		public SecretRef GenerateIdentifier()
 		{
 			return new SecretRef
@@ -44,10 +51,9 @@ namespace kCura.IntegrationPoints.Data.SecretStore
 			return new Dictionary<string, string> {{nameof(IntegrationPoint.SecuredConfiguration), rdo.SecuredConfiguration}};
 		}
 
-		private string GetTenantID()
+		public string GetTenantID()
 		{
-			//TODO this is temporary solution for now. we have to create our own tenant id
-			return null;
+			return $"{SecretStoreConstants.TENANT_ID_PREFIX}:{_workspaceArtifactId}";
 		}
 	}
 }

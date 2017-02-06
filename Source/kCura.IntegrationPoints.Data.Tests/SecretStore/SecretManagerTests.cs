@@ -7,11 +7,12 @@ namespace kCura.IntegrationPoints.Data.Tests.SecretStore
 {
 	public class SecretManagerTests : TestBase
 	{
+		private const int _WORKSPACE_ARTIFACT_ID = 622465;
 		private SecretManager _secretManager;
 
 		public override void SetUp()
 		{
-			_secretManager = new SecretManager();
+			_secretManager = new SecretManager(_WORKSPACE_ARTIFACT_ID);
 		}
 
 		[Test]
@@ -94,10 +95,17 @@ namespace kCura.IntegrationPoints.Data.Tests.SecretStore
 			Assert.That(secretData[nameof(IntegrationPoint.SecuredConfiguration)], Is.EqualTo(valueToSecure));
 		}
 
+		[Test]
+		public void ItShouldReturnTenantId()
+		{
+			var tenantId = _secretManager.GetTenantID();
+
+			Assert.That(tenantId, Is.EqualTo(GetTenantId()));
+		}
+
 		private string GetTenantId()
 		{
-			//TODO this is temporary solution for now. change this after tenant id is in use
-			return null;
+			return $"{SecretStoreConstants.TENANT_ID_PREFIX}:{_WORKSPACE_ARTIFACT_ID}";
 		}
 	}
 }

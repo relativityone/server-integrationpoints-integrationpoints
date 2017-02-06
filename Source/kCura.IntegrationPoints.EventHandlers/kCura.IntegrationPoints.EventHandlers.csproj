@@ -183,10 +183,22 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
+    <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreEventHandlerWrapper.cs" />
+    <Compile Include="Installers\Helpers\Factories\CreateTenantIdForSecretStoreFactory.cs" />
+    <Compile Include="Installers\Helpers\Factories\SecretStoreCleanUpFactory.cs" />
+    <Compile Include="Installers\Helpers\Implementations\CreateTenantIdForSecretStore.cs" />
+    <Compile Include="Installers\Helpers\ICreateTenantIdForSecretStore.cs" />
+    <Compile Include="Installers\Helpers\ISecretStoreCleanUp.cs" />
+    <Compile Include="Installers\Helpers\Implementations\SecretStoreCleanUp.cs" />
+    <Compile Include="Installers\Helpers\SecretStoreCleanUpEventHandlerWrapper.cs" />
     <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
+    <Compile Include="Installers\SecretStorePostWorkspaceCreateEventHandler.cs" />
+    <Compile Include="Installers\SecretStorePreWorkspaceDeleteEventHandler.cs" />
+    <Compile Include="Installers\SecretStoreUninstaller.cs" />
     <Compile Include="Installers\SetIntegrationPointType.cs" />
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\CorrespondingJobDeleteFactory.cs" />

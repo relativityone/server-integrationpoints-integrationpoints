@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Relativity.SecretCatalog;
 
 namespace kCura.IntegrationPoints.Data.SecretStore
@@ -15,5 +14,7 @@ namespace kCura.IntegrationPoints.Data.SecretStore
 		string RetrieveValue(Dictionary<string, string> dictionary);
 
 		Dictionary<string, string> CreateSecretData(IntegrationPoint rdo);
+
+		string GetTenantID();
 	}
 }

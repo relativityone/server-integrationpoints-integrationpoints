@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 	{
 		public static IIntegrationPointSecretDelete Create(IEHHelper helper)
 		{
-			ISecretManager secretManager = new SecretManager();
+			ISecretManager secretManager = new SecretManager(helper.GetActiveCaseID());
 			ISecretCatalog secretCatalog = new DefaultSecretCatalogFactory().Create(helper.GetActiveCaseID());
 			return new IntegrationPointSecretDelete(secretManager, secretCatalog, new RsapiClientLibrary<Data.IntegrationPoint>(helper, helper.GetActiveCaseID()));
 		}
