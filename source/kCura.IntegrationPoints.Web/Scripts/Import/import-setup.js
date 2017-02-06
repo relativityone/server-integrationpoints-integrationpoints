@@ -332,6 +332,14 @@
 		}
 	});
 
+	$.ajax({
+		type: 'GET',
+		url: IP.utils.generateWebAPIURL('ImportProviderDocument/IsCloudInstance'),
+		success: function (data) {
+			windowObj.RelativityImport.koModel.isCloudInstance(data);
+		}
+	});
+
 	$('#btnDefaultFileRepo').click(function () {
 		windowObj.RelativityImport.setDefaultFileRepo();
 	});
