@@ -102,13 +102,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return oAuthClientManager;
 		}
 
-		public IJobHistoryService CreateJobHistoryService(ICaseServiceContext caseServiceContext,
-			IContextContainer targetContextContainer, ISerializer serializer)
-		{
-			IJobHistoryService jobHistoryService = 	new JobHistoryService(caseServiceContext, CreateRepositoryFactory(targetContextContainer), _helper, serializer);
-			return jobHistoryService;
-		}
-
 		public IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer)
 		{
 			IWorkspaceManager workspaceManager = new WorkspaceManager(CreateRepositoryFactory(contextContainer));

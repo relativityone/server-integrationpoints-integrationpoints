@@ -13,25 +13,42 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IRepositoryFactory _repositoryFactory;
 		const string ARTIFACT_TYPE_NAME = "FederatedInstance";
 
+		private static readonly FederatedInstanceDto _localInstanceDto = new FederatedInstanceDto()
+		{
+			Name = "This Instance",
+			ArtifactId = null
+		};
+
 		public FederatedInstanceManager(IRepositoryFactory repositoryFactory)
 		{
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public FederatedInstanceDto RetrieveFederatedInstance(int artifactId)
+		public static FederatedInstanceDto LocalInstance 
 		{
-			IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
-			int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
-			IFederatedInstanceRepository federatedInstanceRepository = _repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
+			get { return _localInstanceDto; }
+		}
 
-			FederatedInstanceDto federatedInstance =
-				federatedInstanceRepository.RetrieveFederatedInstance(artifactId);
+		public FederatedInstanceDto RetrieveFederatedInstance(int? artifactId)
+		{
+			if (artifactId.HasValue)
+			{
+				IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
+				int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
+				IFederatedInstanceRepository federatedInstanceRepository =
+					_repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
 
-			IServiceUrlRepository serviceUrlRepository = _repositoryFactory.GetServiceUrlRepository();
+				FederatedInstanceDto federatedInstance =
+					federatedInstanceRepository.RetrieveFederatedInstance(artifactId.Value);
 
-			LoadUrl(federatedInstance, serviceUrlRepository);
+				IServiceUrlRepository serviceUrlRepository = _repositoryFactory.GetServiceUrlRepository();
 
-			return federatedInstance;
+				LoadUrl(federatedInstance, serviceUrlRepository);
+
+				return federatedInstance;
+			}
+
+			return LocalInstance;
 		}
 
 		public IEnumerable<FederatedInstanceDto> RetrieveAll()
@@ -46,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			LoadUrls(federatedInstances);
 
 			// add local instance
-			federatedInstances.Insert(0, new FederatedInstanceDto() { Name = "This Instance", ArtifactId = null });
+			federatedInstances.Insert(0, LocalInstance);
 
 			return federatedInstances;
 		}

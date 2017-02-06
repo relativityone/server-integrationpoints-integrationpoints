@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -24,8 +27,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 	public class JobHistoryServiceTest : TestBase
 	{
 		private ICaseServiceContext _caseServiceContext;
-		private IWorkspaceRepository _workspaceRepository;
-		private IRepositoryFactory _repositoryFactory;
+		private IWorkspaceManager _workspaceManager;
+		private IFederatedInstanceManager _federatedInstanceManager;
 		private IHelper _helper;
 
 		private JobHistoryService _instance;
@@ -40,12 +43,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public override void SetUp()
 		{
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_workspaceManager = Substitute.For<IWorkspaceManager>();
+			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_helper = Substitute.For<IHelper>();
 			_serializer = Substitute.For<ISerializer>();
-
-			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
 
 			_integrationPoint = new Data.IntegrationPoint()
 			{
@@ -63,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext, _repositoryFactory, _helper, _serializer);
+			_instance = new JobHistoryService(_caseServiceContext, _federatedInstanceManager, _workspaceManager, _helper, _serializer);
 		}
 
 		[Test]
@@ -148,23 +149,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// ARRANGE
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(new List<Data.JobHistory>());
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
-			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
+			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 			
 			// ACT
-			Data.JobHistory jobHistory = _instance.CreateRdo(_integrationPoint, _batchGuid, JobTypeChoices.JobHistoryRun,DateTime.Now);
+			Data.JobHistory jobHistory = _instance.CreateRdo(_integrationPoint, _batchGuid, JobTypeChoices.JobHistoryRun, DateTime.Now);
 
 			// ASSERT
 			ValidateJobHistory(jobHistory, JobTypeChoices.JobHistoryRun);
 		}
-
+	
 		[Test]
 		public void CreateRdo_WhenGetRdoThrowsException_NewJobHistoryCreated()
 		{
 			// ARRANGE
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Throws(new Exception("blah blah"));
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
-			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
+			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
@@ -195,7 +200,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// ARRANGE
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(new List<Data.JobHistory>());
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
-			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
+			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
@@ -212,7 +219,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// ARRANGE
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Throws(new Exception("blah blah"));
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
-			_workspaceRepository.Retrieve(_settings.CaseArtifactId).Returns(_workspace);
+			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
+			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT

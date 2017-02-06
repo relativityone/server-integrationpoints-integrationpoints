@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly ISerializer _serializer;
 		private readonly IChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobManager;
-		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IIntegrationPointProviderValidator _ipValidator;
@@ -53,7 +52,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			ISerializer serializer, 
 			IChoiceQuery choiceQuery,
 			IJobManager jobManager,
-			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory,
 			IHelperFactory helperFactory,
 			IIntegrationPointProviderValidator ipValidator,
@@ -69,7 +67,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobManager = jobManager;
-			_jobHistoryService = jobHistoryService;
 			_managerFactory = managerFactory;
 			_helperFactory = helperFactory;
 			_ipValidator = ipValidator;
