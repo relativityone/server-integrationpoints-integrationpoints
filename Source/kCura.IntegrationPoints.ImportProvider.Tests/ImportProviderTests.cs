@@ -5,6 +5,8 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -21,6 +23,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 		private IFieldParserFactory _fieldParserFactory;
 		private IDataReaderFactory _dataReaderFactory;
 		private IEnumerableParserFactory _enumerableParserFactory;
+		private IDataTransferLocationServiceFactory _dataTransferLocationServiceFactory;
+		private IDataTransferLocationService _dataTransferLocationService;
 
 		[SetUp]
 		public override void SetUp()
@@ -29,6 +33,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 			_fieldParserFactory = Substitute.For<IFieldParserFactory>();;
 			_dataReaderFactory = Substitute.For<IDataReaderFactory>();;
 			_enumerableParserFactory = Substitute.For<IEnumerableParserFactory>();
+			_dataTransferLocationServiceFactory = Substitute.For<IDataTransferLocationServiceFactory>();
+			_dataTransferLocationService = Substitute.For<IDataTransferLocationService>();
 		}
 
 		[Test]
@@ -41,7 +47,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 			_fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
 			_fieldParser.GetFields().Returns(testData);
 
-			ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory);
+			ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory, _dataTransferLocationServiceFactory);
 			IEnumerable<FieldEntry> ipFields = ip.GetFields(string.Empty);
 
 			Assert.AreEqual(testData.Count, ipFields.Count());
@@ -71,15 +77,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 			_fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
 			_fieldParser.GetFields().Returns(testHeaders);
 
+			_dataTransferLocationServiceFactory.CreateService(123456).ReturnsForAnyArgs(_dataTransferLocationService);
+			_dataTransferLocationService.GetWorkspaceFileLocationRootPath(123456).ReturnsForAnyArgs(string.Empty);
+
 			//Subsitute config so test can use GetData
 			IEnumerable<string> tdJoinedRows = testData.Select(x => string.Join(recordDelimiter.ToString(), x));
 			EnumerableParser tdEnumerableParser = new EnumerableParser(tdJoinedRows, recordDelimiter, quoteDelimiter);
 			_enumerableParserFactory.GetEnumerableParser(null, null).ReturnsForAnyArgs(tdEnumerableParser);
 
-			ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory);
+			ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory, _dataTransferLocationServiceFactory);
 			IEnumerable<FieldEntry> ipFields = ip.GetFields(string.Empty);
 
-			IDataReader ipGetDataResult = ip.GetData(ipFields, tdJoinedRows, @"{""ImportType"":""0""}");
+			IDataReader ipGetDataResult = ip.GetData(ipFields, tdJoinedRows, @"{""ImportType"":""0"",""LoadFile"":""path"",""WorkspaceId"":""123456""}");
 
 			Assert.AreEqual(colCount, ipGetDataResult.FieldCount);
 

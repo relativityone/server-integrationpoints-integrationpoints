@@ -1,6 +1,9 @@
 ﻿using System.Text;
 using System.Net;
+using System.IO;
 using kCura.WinEDDS;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
@@ -10,10 +13,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class WinEddsLoadFileFactory : IWinEddsLoadFileFactory
 	{
-		ICredentialProvider _credentialProvider;
-		public WinEddsLoadFileFactory(ICredentialProvider credentialProvider)
+		private ICredentialProvider _credentialProvider;
+		private IDataTransferLocationServiceFactory _locationServiceFactory;
+		private IDataTransferLocationService _locationService;
+
+		public WinEddsLoadFileFactory(ICredentialProvider credentialProvider, IDataTransferLocationServiceFactory locationServiceFactory)
 		{
 			_credentialProvider = credentialProvider;
+			_locationServiceFactory = locationServiceFactory;
 		}
 
 		public LoadFile GetLoadFile(ImportSettingsBase settings)
@@ -24,12 +31,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			NativeSettingsFactory factory = new NativeSettingsFactory(cred, settings.WorkspaceId);
 			LoadFile loadFile = factory.ToLoadFile();
 
+			_locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
+
 			loadFile.RecordDelimiter = (char)settings.AsciiColumn;
 			loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
 			loadFile.NewlineDelimiter = (char)settings.AsciiNewLine;
 			loadFile.MultiRecordDelimiter = (char)settings.AsciiMultiLine;
 			loadFile.HierarchicalValueDelimiter = (char)settings.AsciiMultiLine;
-			loadFile.FilePath = settings.LoadFile;
+			loadFile.FilePath = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
 			loadFile.SourceFileEncoding = Encoding.GetEncoding(settings.EncodingType);
 			loadFile.StartLineNumber = long.Parse(settings.LineNumber);
 
@@ -43,7 +52,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public ImageLoadFile GetImageLoadFile(ImportSettingsBase settings)
 		{
-			return new ImageLoadFile { FileName = settings.LoadFile };
+			_locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
+
+			string loadFilePath = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
+			return new ImageLoadFile { FileName = loadFilePath };
 		}
 	}
 }

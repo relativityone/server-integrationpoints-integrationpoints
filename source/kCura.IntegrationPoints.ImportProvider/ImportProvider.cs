@@ -4,6 +4,8 @@ using System.Data;
 using System.IO;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
@@ -15,12 +17,14 @@ namespace kCura.IntegrationPoints.ImportProvider
 		private IFieldParserFactory _fieldParserFactory;
 		private IDataReaderFactory _dataReaderFactory;
 		private IEnumerableParserFactory _enumerableParserFactory;
+		private IDataTransferLocationServiceFactory _locationServiceFactory;
 
-		public ImportProvider(IFieldParserFactory fieldParserFactory, IDataReaderFactory dataReaderFactory, IEnumerableParserFactory enumerableParserFactory)
+		public ImportProvider(IFieldParserFactory fieldParserFactory, IDataReaderFactory dataReaderFactory, IEnumerableParserFactory enumerableParserFactory, IDataTransferLocationServiceFactory locationServiceFactory)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_dataReaderFactory = dataReaderFactory;
 			_enumerableParserFactory = enumerableParserFactory;
+			_locationServiceFactory = locationServiceFactory;
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
@@ -52,6 +56,11 @@ namespace kCura.IntegrationPoints.ImportProvider
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> sourceFileLines, string options)
 		{
 			ImportProviderSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
+
+			//use dataTransferLocationService to get the true path for extracted text and natives
+			IDataTransferLocationService locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
+			settings.LoadFile = Path.Combine(locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
+
 			if (int.Parse(settings.ImportType) == (int)ImportType.ImportTypeValue.Document)
 			{
 				return GetDataForDocumentRdo(settings, fields, sourceFileLines);

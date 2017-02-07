@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				_loadFile.LongTextColumnThatContainsPathToFullText = settings.ExtractedTextColumn;
 				_loadFile.ExtractedTextFileEncoding = Encoding.GetEncoding(settings.ExtractedTextFileEncoding);
-				System.IO.Directory.SetCurrentDirectory(System.IO.Path.GetDirectoryName(settings.LoadFile));
+				System.IO.Directory.SetCurrentDirectory(System.IO.Path.GetDirectoryName(_loadFile.FilePath));
 			}
 
 			if (settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Errors)
