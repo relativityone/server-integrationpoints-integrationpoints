@@ -212,6 +212,17 @@ ko.validation.insertValidationMessage = function (element) {
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+		this.ImageImport = ko.observable(model.ImageImport || "false");
+		/********** Temporary UI Toggle**********/
+		this.ImageImportToggle = ko.observable("false");
+		root.data.ajax({
+			type: 'get',
+			url: root.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Web.Toggles.UI.ShowImageImportToggle'),
+			success: function(result) {
+				self.ImageImportToggle(result);
+			}
+		});
+
 
 		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
 
@@ -241,7 +252,6 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		});
-
 		this.FolderPathFields = ko.observableArray([]);
 		if (self.FolderPathFields.length === 0) {
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function (result) {
@@ -250,9 +260,9 @@ ko.validation.insertValidationMessage = function (element) {
 				self.FolderPathSourceField(model.FolderPathSourceField);
 			});
 		}
-
-
 		this.FolderPathImportProvider = ko.observableArray([]);
+		this.MoveExistingDocuments = ko.observable(model.MoveExistingDocuments || "false");
+
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
 		{
@@ -864,6 +874,8 @@ ko.validation.insertValidationMessage = function (element) {
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
+					_destination.ImageImport = this.model.ImageImport();
+					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
 
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();

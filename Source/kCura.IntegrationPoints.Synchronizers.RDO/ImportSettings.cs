@@ -153,6 +153,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public bool AutoNumberImages { get; set; }
 		public bool ProductionImport { get; set; }
 		public bool ImageImport { get; set; }
+
+		/// <summary>
+		/// In Overlay mode it allows to switch Yes/No if import API should move documents between folders when use folder path information
+		/// </summary>
+		public bool MoveExistingDocuments { get; set; }
 		public int ProductionArtifactId { get; set; }
 
 		#endregion "Public Properties"
@@ -186,7 +191,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		[JsonIgnore]
-		public bool MoveDocumentsInAppendOverlayMode => OverwriteMode == OverwriteModeEnum.AppendOverlay && !String.IsNullOrEmpty(FolderPathSourceFieldName);
+		public bool MoveDocumentsInAnyOverlayMode => OverwriteMode != OverwriteModeEnum.Append &&
+			MoveExistingDocuments && !String.IsNullOrEmpty(FolderPathSourceFieldName);
 
 		#endregion "Internal Properties"
 	}

@@ -308,6 +308,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+			name: "CheckToggle",
+			routeTemplate: "{workspaceID}/api/ToggleAPI/{toggleName}",
+			defaults: new { controller = "ToggleAPI", action = "Get"}
+		);
+
+			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
 				defaults: new { id = RouteParameter.Optional }

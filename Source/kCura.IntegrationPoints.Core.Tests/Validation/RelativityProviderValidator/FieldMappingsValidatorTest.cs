@@ -198,7 +198,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		}
 
 		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
-		public void ItShouldValidateInvalidSettingsFolderPathInformation_OverlayOnly(string destinationConfig)
+		public void ItShouldValidateAsValidSettingsForFolderPathInformation_With_OverlayOnly(string destinationConfig)
 		{
 			// Arrange
 			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
@@ -210,8 +210,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			ValidationResult result = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
-			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY)));
+			Assert.IsTrue(result.IsValid);
 		}
 
 		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"-1\"}")]

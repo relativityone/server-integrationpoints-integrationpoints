@@ -328,6 +328,7 @@
     <Compile Include="Controllers\API\IntegrationPointProfilesAPIController.cs" />
     <Compile Include="Controllers\API\IntegrationPointTypesController.cs" />
     <Compile Include="Controllers\API\ResourcePoolController.cs" />
+    <Compile Include="Controllers\API\ToggleAPIController.cs" />
     <Compile Include="Controllers\SummaryPageController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
