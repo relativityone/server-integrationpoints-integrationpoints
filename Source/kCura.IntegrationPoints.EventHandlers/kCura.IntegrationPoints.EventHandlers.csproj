@@ -203,6 +203,8 @@
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\CorrespondingJobDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointViewPreLoadFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Factories\RelativityProviderSourceConfigurationFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointSecretDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\CorrespondingJobDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />

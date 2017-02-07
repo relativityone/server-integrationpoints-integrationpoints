@@ -1,12 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Adaptors.Implementations;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
-using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.Relativity.Client;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -21,11 +17,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			get
 			{
 				return _integrationPointViewPreLoad ??
-						(_integrationPointViewPreLoad =
-							new IntegrationPointViewPreLoad(ServiceContextFactory.CreateCaseServiceContext(Helper, Application.ArtifactID), 
-							new RelativityProviderSourceConfiguration(Helper, new KeplerWorkspaceRepository(Helper, Helper.GetServicesManager(), new ObjectQueryManagerAdaptor(Helper, Helper.GetServicesManager(), -1, (int)ArtifactType.Case))),
-							new RelativityProviderDestinationConfiguration(Helper),
-								new IntegrationPointProfileFieldsConstants()));
+				       (_integrationPointViewPreLoad =
+					       IntegrationPointViewPreLoadFactory.Create(Helper, new IntegrationPointProfileFieldsConstants()));
 			}
 			set { _integrationPointViewPreLoad = value; }
 		}

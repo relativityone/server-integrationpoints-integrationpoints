@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.Relativity.Client;
@@ -8,6 +10,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Folder;
+using Folder = Relativity.Services.Folder.Folder;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
@@ -17,28 +20,34 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		public void SetUp()
 		{
 			_helper = Substitute.For<IEHHelper>();
-			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
-			_instace = new RelativityProviderSourceConfiguration(_helper, _workspaceRepository);
+			_helperFactory = Substitute.For<IHelperFactory>();
+			_helperFactory.CreateTargetHelper(Arg.Any<IEHHelper>(), Arg.Any<int?>()).Returns(_helper);
+			_managerFactory = Substitute.For<IManagerFactory>();
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			_workspaceManager = Substitute.For<IWorkspaceManager>();
+			_instace = new RelativityProviderSourceConfiguration(_helper, _helperFactory, _managerFactory, _contextContainerFactory);
 		}
 
 		private RelativityProviderSourceConfiguration _instace;
 		private IEHHelper _helper;
-		private IWorkspaceRepository _workspaceRepository;
-
+		private IHelperFactory _helperFactory;
+		private IManagerFactory _managerFactory;
+		private IContextContainerFactory _contextContainerFactory;
+		private IWorkspaceManager _workspaceManager;
 		private const int _FOLDER_ARTIFACT_ID = 0;
 		private const int _TARGET_WORKSPACE_ID = 1;
 		private const int _SOURCE_WORKSPACE_ID = 2;
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 3;
-		
+
 		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", "NewFolderName", _FOLDER_ARTIFACT_ID)]
 		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", RelativityProviderSourceConfiguration.ERROR_FOLDER_NOT_FOUND, -1)]
 		public void ItShouldUpdateNames(string sourceWorkspaceName, string targetWorkspaceName, string savedSearchName, string folderName, int folderArtifactId)
 		{
 			// arrange
 			var settings = GetSettings();
-			MockFolderManager(folderName, folderArtifactId);
 			MockWorkspaceRepository(_SOURCE_WORKSPACE_ID, sourceWorkspaceName);
 			MockWorkspaceRepository(_TARGET_WORKSPACE_ID, targetWorkspaceName);
+			MockFolderManager(folderName, folderArtifactId);
 			MockSavedSearchQuery(savedSearchName);
 
 			// act
@@ -58,7 +67,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				Name = "Text Identifier",
 				Value = savedSearchName
 			};
-			var artifact = new Artifact {Fields = new List<Field>() { field } };
+			var artifact = new Artifact { Fields = new List<Field>() { field } };
 			var queryResult = new QueryResult()
 			{
 				Success = true
@@ -67,14 +76,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 			var rsapiClient = Substitute.For<IRSAPIClient>();
 			rsapiClient.APIOptions = new APIOptions();
-			rsapiClient.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(queryResult);
+			rsapiClient.Query(Arg.Any<APIOptions>(), Arg.Any<kCura.Relativity.Client.Query>()).Returns(queryResult);
 			_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(rsapiClient);
 		}
 
 		private void MockWorkspaceRepository(int workspaceId, string workspaceName)
 		{
-			var workspaceDto = new WorkspaceDTO() {Name = workspaceName};
-			_workspaceRepository.Retrieve(workspaceId).Returns(workspaceDto);
+			var workspaceDto = new WorkspaceDTO() { Name = workspaceName };
+
+			_workspaceManager.RetrieveWorkspace(workspaceId).Returns(workspaceDto);
+			_managerFactory.CreateWorkspaceManager(Arg.Any<IContextContainer>()).Returns(_workspaceManager);
 		}
 
 		private void MockFolderManager(string folderName, int folderArtifactId)
@@ -85,7 +96,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				Name = folderName,
 				Children = new List<Folder>()
 			};
-			var responseTask = Task.FromResult(new List<Folder>() {folder});
+			var responseTask = Task.FromResult(new List<Folder>() { folder });
 
 			var folderManager = Substitute.For<IFolderManager>();
 			folderManager.GetFolderTreeAsync(_TARGET_WORKSPACE_ID, Arg.Any<List<int>>(), _FOLDER_ARTIFACT_ID).Returns(responseTask);
