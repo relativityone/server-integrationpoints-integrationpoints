@@ -1,168 +1,168 @@
 ﻿<script id="step3" type="text/html">
-    <div class="card" id="fieldMappings">
-        <div>
-            <span class="label title">Field Mappings</span>
-            <span style="visibility: hidden;" id="forceRedraw"></span>
-            <div class="map-field-title">
-                <label class="list-title leftSide-field">Source</label>
-                <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map Fields</button>
-                <label class="list-title rightSide-field">Destination</label>
-            </div>
-            <div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
-            <div class="table" id="mapFields">
-                <div class="cell fixedColumn">
-                    <select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource, optionsAfterRender: setTitle"></select>
-                </div>
-                <div class="cell selection map-move">
-                    <a href="#" id="add-all-source-fields" class="icon-move-last" data-bind="click: addSourceToMapped"></a>
-                    <a href="#" id="add-source-field" class="icon-move-next" data-bind="click: addToMappedSource"></a>
-                    <a href="#" id="remove-source-field" class="icon-move-previous" data-bind="click: addToSourceField"></a>
-                    <a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addAlltoSourceField"></a>
-                </div>
-                <div class="cell fixedColumn">
-                    <select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name', doubleClick: addToSourceField, optionsAfterRender: setTitle "></select>
-                </div>
-                <div class="cell selection map-move">
-                    <a href="#" id="attributeFieldTop" class="icon-move-to-top" data-bind="click: moveMappedSourceTop"></a>
-                    <a href="#" id="attribute-field-up" class="icon-move-up" data-bind="click: moveMappedSourceUp"></a>
-                    <a href="#" id="attribute-field-down" class="icon-move-down" data-bind="click: moveMappedSourceDown"></a>
-                    <a href="#" id="attributeFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedSourceBottom"></a>
-                </div>
-                <div class="cell selection map-move">
-                    <a href="#" id="workspaceFieldTop" class="icon-move-to-top" data-bind="click: moveMappedWorkspaceTop"></a>
-                    <a href="#" id="workspace-field-up" class="icon-move-up" data-bind="click: moveMappedWorkspaceUp"></a>
-                    <a href="#" id="workspace-field-down" class="icon-move-down" data-bind="click: moveMappedWorkspaceDown"></a>
-                    <a href="#" id="workspaceFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedWorkspaceBottom"></a>
-                </div>
-                <div class="cell fixedColumn">
-                    <select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField, optionsAfterRender: setTitle" multiple="multiple"></select>
-                </div>
-                <div class="cell selection map-move">
-                    <a href="#" id="add-all-workspace-fields" class="icon-move-first" data-bind="click: addAllWorkspaceFields"></a>
-                    <a href="#" id="add-workspace-field" class="icon-move-previous" data-bind="click: addSelectFields"></a>
-                    <a href="#" id="remove-workspace-field" class="icon-move-next" data-bind="click: addToWorkspaceField"></a>
-                    <a href="#" id="remove-all-workspace-fields" class="icon-move-last" data-bind="click: addAlltoWorkspaceField"></a>
-                </div>
-                <div class="cell fixedColumn">
-                    <select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: workspaceFieldSelected, optionsText: 'name', doubleClick: addSelectFields, optionsAfterRender: setTitle" multiple="multiple"></select>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <span class="label title">Settings</span>
-        <div class="identifier">
-            <div class="field-row">
-                <div class="field-label required">Overwrite:</div>
-                <div class="field-value">
-                    <select id="overwrite" data-bind="options: OverwriteOptions, value: SelectedOverwrite, select2: {}"></select>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
-                <div class="field-label required">
-                    Multi-Select Field<br/>Overlay Behavior:
-                </div>
-                <div class="field-value">
-                    <select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
-                </div>
-            </div>
-            <div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
-                <div class="field-label required">Unique Identifier:</div>
-                <div class="field-value ">
-                    <select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'displayName', optionsText: 'displayName', select2: {}"></select>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: hasParent">
-                <div class="field-label required ">Parent Attribute:</div>
-                <div class="field-value ">
-                    <select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
-                <div class="field-label required">Export Images:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <label><input id="exportImages-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ImageImport">Yes</label>
-                        </li>
-                        <li>
-                            <label><input id="exportImages-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ImageImport">No</label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: isDocument() == 'true'">
-                <div class="field-label required ">Copy Native File:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <label><input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</label>
-                        </li>
-                        <li>
-                            <label><input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
-                <div class="field-label required ">Native File Path:</div>
-                <div class="field-value ">
-                    <select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}"></select>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: showManager">
-                <div class="field-label required ">
-                    Custodian Manager<br/>
-                    Contains Link:
-                </div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <label><input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</label>
-                        </li>
-                        <li>
-                            <label><input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: isDocument() == 'true'">
-                <div class="field-label required ">Use Folder Path Information:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <label><input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes</label>
-                        </li>
-                        <li>
-                            <label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
-                <div class="field-label required ">Folder Path Information:</div>
-                <div class="field-value ">
-                    <div data-bind="if: IsRelativityProvider()">
-                        <select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
-                    </div>
-                    <div data-bind="if: !IsRelativityProvider()">
-                        <select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
-                    </div>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true'">
-                <div class="field-label required ">Move Exisitng Documents:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <label><input id="move-documents-radio-0" type="radio" name="import_MoveDocumntsToFolder" value="true" data-bind="checked: MoveExistingDocuments">Yes</label>
-                        </li>
-                        <li>
-                            <label><input id="move-documents-radio-1" type="radio" name="import_MoveDocumntsToFolder" value="false" data-bind="checked: MoveExistingDocuments">No</label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+	<div class="card" id="fieldMappings">
+		<div>
+			<span class="label title">Field Mappings</span>
+			<span style="visibility: hidden;" id="forceRedraw"></span>
+			<div class="map-field-title">
+				<label class="list-title leftSide-field">Source</label>
+				<button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map Fields</button>
+				<label class="list-title rightSide-field">Destination</label>
+			</div>
+			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
+			<div class="table" id="mapFields">
+				<div class="cell fixedColumn">
+					<select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource, optionsAfterRender: setTitle"></select>
+				</div>
+				<div class="cell selection map-move">
+					<a href="#" id="add-all-source-fields" class="icon-move-last" data-bind="click: addSourceToMapped"></a>
+					<a href="#" id="add-source-field" class="icon-move-next" data-bind="click: addToMappedSource"></a>
+					<a href="#" id="remove-source-field" class="icon-move-previous" data-bind="click: addToSourceField"></a>
+					<a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addAlltoSourceField"></a>
+				</div>
+				<div class="cell fixedColumn">
+					<select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name', doubleClick: addToSourceField, optionsAfterRender: setTitle "></select>
+				</div>
+				<div class="cell selection map-move">
+					<a href="#" id="attributeFieldTop" class="icon-move-to-top" data-bind="click: moveMappedSourceTop"></a>
+					<a href="#" id="attribute-field-up" class="icon-move-up" data-bind="click: moveMappedSourceUp"></a>
+					<a href="#" id="attribute-field-down" class="icon-move-down" data-bind="click: moveMappedSourceDown"></a>
+					<a href="#" id="attributeFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedSourceBottom"></a>
+				</div>
+				<div class="cell selection map-move">
+					<a href="#" id="workspaceFieldTop" class="icon-move-to-top" data-bind="click: moveMappedWorkspaceTop"></a>
+					<a href="#" id="workspace-field-up" class="icon-move-up" data-bind="click: moveMappedWorkspaceUp"></a>
+					<a href="#" id="workspace-field-down" class="icon-move-down" data-bind="click: moveMappedWorkspaceDown"></a>
+					<a href="#" id="workspaceFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedWorkspaceBottom"></a>
+				</div>
+				<div class="cell fixedColumn">
+					<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField, optionsAfterRender: setTitle" multiple="multiple"></select>
+				</div>
+				<div class="cell selection map-move">
+					<a href="#" id="add-all-workspace-fields" class="icon-move-first" data-bind="click: addAllWorkspaceFields"></a>
+					<a href="#" id="add-workspace-field" class="icon-move-previous" data-bind="click: addSelectFields"></a>
+					<a href="#" id="remove-workspace-field" class="icon-move-next" data-bind="click: addToWorkspaceField"></a>
+					<a href="#" id="remove-all-workspace-fields" class="icon-move-last" data-bind="click: addAlltoWorkspaceField"></a>
+				</div>
+				<div class="cell fixedColumn">
+					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: workspaceFieldSelected, optionsText: 'name', doubleClick: addSelectFields, optionsAfterRender: setTitle" multiple="multiple"></select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<span class="label title">Settings</span>
+		<div class="identifier">
+			<div class="field-row">
+				<div class="field-label required">Overwrite:</div>
+				<div class="field-value">
+					<select id="overwrite" data-bind="options: OverwriteOptions, value: SelectedOverwrite, select2: {}"></select>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
+				<div class="field-label required">
+					Multi-Select Field<br />Overlay Behavior:
+				</div>
+				<div class="field-value">
+					<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
+				</div>
+			</div>
+			<div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
+				<div class="field-label required">Unique Identifier:</div>
+				<div class="field-value ">
+					<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'displayName', optionsText: 'displayName', select2: {}"></select>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: hasParent">
+				<div class="field-label required ">Parent Attribute:</div>
+				<div class="field-value ">
+					<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
+				<div class="field-label required">Export Images:</div>
+				<div class="field-value">
+					<ul>
+						<li>
+							<label><input id="exportImages-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ImageImport">Yes</label>
+						</li>
+						<li>
+							<label><input id="exportImages-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ImageImport">No</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: isDocument() == 'true'">
+				<div class="field-label required ">Copy Native File:</div>
+				<div class="field-value">
+					<ul>
+						<li>
+							<label><input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</label>
+						</li>
+						<li>
+							<label><input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
+				<div class="field-label required ">Native File Path:</div>
+				<div class="field-value ">
+					<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}"></select>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: showManager">
+				<div class="field-label required ">
+					Custodian Manager<br />
+					Contains Link:
+				</div>
+				<div class="field-value">
+					<ul>
+						<li>
+							<label><input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</label>
+						</li>
+						<li>
+							<label><input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: isDocument() == 'true'">
+				<div class="field-label required ">Use Folder Path Information:</div>
+				<div class="field-value">
+					<ul>
+						<li>
+							<label><input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes</label>
+						</li>
+						<li>
+							<label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
+				<div class="field-label required ">Folder Path Information:</div>
+				<div class="field-value ">
+					<div data-bind="if: IsRelativityProvider()">
+						<select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
+					</div>
+					<div data-bind="if: !IsRelativityProvider()">
+						<select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
+					</div>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true'">
+				<div class="field-label required ">Move Exisitng Documents:</div>
+				<div class="field-value">
+					<ul>
+						<li>
+							<label><input id="move-documents-radio-0" type="radio" name="import_MoveDocumntsToFolder" value="true" data-bind="checked: MoveExistingDocuments">Yes</label>
+						</li>
+						<li>
+							<label><input id="move-documents-radio-1" type="radio" name="import_MoveDocumntsToFolder" value="false" data-bind="checked: MoveExistingDocuments">No</label>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 		<br />
 		<div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
