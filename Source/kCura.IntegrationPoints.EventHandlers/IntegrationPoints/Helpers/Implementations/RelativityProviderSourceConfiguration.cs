@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
@@ -11,13 +12,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 {
 	public class RelativityProviderSourceConfiguration : RelativityProviderConfiguration
 	{
-		private readonly IWorkspaceRepository _workspaceRepository;
+		private readonly IHelperFactory _helperFactory;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IContextContainerFactory _contextContainerFactory;
 
 		public const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
 
-		public RelativityProviderSourceConfiguration(IEHHelper helper, IWorkspaceRepository workspaceRepository) : base(helper)
+		public RelativityProviderSourceConfiguration(IEHHelper helper, IHelperFactory helperFactory, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory) : base(helper)
 		{
-			_workspaceRepository = workspaceRepository;
+			_helperFactory = helperFactory;
+			_managerFactory = managerFactory;
+			_contextContainerFactory = contextContainerFactory;
 		}
 
 		public override void UpdateNames(IDictionary<string, object> settings)
@@ -59,27 +64,54 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			try
 			{
+				IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, GetFederatedInstanceArtifactId(settings));
+				IWorkspaceManager workspaceManager =
+					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(Helper,
+						targetHelper.GetServicesManager()));
+
 				int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
-				var workspaceDTO = _workspaceRepository.Retrieve(targetWorkspaceId);
+
+				var workspaceDTO = workspaceManager.RetrieveWorkspace(targetWorkspaceId);
 				settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspace)] = workspaceDTO.Name;
 			}
 			catch (Exception ex)
 			{
-				Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointViewPreLoad>().LogError(ex, "Target workspace not found");
+				Helper.GetLoggerFactory()
+					.GetLogger()
+					.ForContext<IntegrationPointViewPreLoad>()
+					.LogError(ex, "Target workspace not found");
 				settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId)] = 0;
 			}
 		}
 
 		private void SetSourceWorkspaceName(IDictionary<string, object> settings)
 		{
-			int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
-			var workspaceDTO = _workspaceRepository.Retrieve(sourceWorkspaceId);
-			settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)] = workspaceDTO.Name;
+			try
+			{
+				IWorkspaceManager workspaceManager =
+					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(Helper,
+						Helper.GetServicesManager()));
+
+				int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
+				var workspaceDTO = workspaceManager.RetrieveWorkspace(sourceWorkspaceId);
+				settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)] = workspaceDTO.Name;
+			}
+			catch (Exception ex)
+			{
+				Helper.GetLoggerFactory()
+					.GetLogger()
+					.ForContext<IntegrationPointViewPreLoad>()
+					.LogError(ex, "Source workspace not found");
+				settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId)] = 0;
+			}
 		}
 
 		private void SetFolderName(IDictionary<string, object> settings)
 		{
-			using (IFolderManager folderManager = Helper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, GetFederatedInstanceArtifactId(settings));
+
+			using (IFolderManager folderManager =
+					targetHelper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
 			{
 				int folderArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.FolderArtifactId));
 				int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
@@ -95,7 +127,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				}
 				catch (Exception ex)
 				{
-					Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointViewPreLoad>().LogError(ex, ERROR_FOLDER_NOT_FOUND);
+					Helper.GetLoggerFactory()
+						.GetLogger()
+						.ForContext<IntegrationPointViewPreLoad>()
+						.LogError(ex, ERROR_FOLDER_NOT_FOUND);
 					settings[nameof(ExportUsingSavedSearchSettings.FolderArtifactId)] = 0;
 				}
 			}

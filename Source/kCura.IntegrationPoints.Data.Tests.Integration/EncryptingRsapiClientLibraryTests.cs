@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.SecretStore;
@@ -15,7 +13,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
 	public class EncryptingRsapiClientLibraryTests : SourceProviderTemplate
 	{
-		private IList<string> _existingSecrets;
 		private EncryptingRsapiClientLibrary _encryptingRsapiClientLibrary;
 		private ISecretCatalog _secretCatalog;
 		private ISecretManager _secretManager;
@@ -27,18 +24,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			RetrieveExistingSecrets();
 
 			_secretCatalog = SecretStoreFactory.GetSecretStore(BaseServiceContextHelper.Create().GetMasterRdgContext());
-			_secretManager = new SecretManager();
+			_secretManager = new SecretManager(WorkspaceArtifactId);
 			_encryptingRsapiClientLibrary = new EncryptingRsapiClientLibrary(new RsapiClientLibrary<IntegrationPoint>(Helper, WorkspaceArtifactId), _secretCatalog,
 				_secretManager);
-		}
-
-		public override void SuiteTeardown()
-		{
-			CleanUpSecrets();
-			base.SuiteTeardown();
 		}
 
 		[Test]
@@ -153,7 +143,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			var integrationPointId = _encryptingRsapiClientLibrary.Create(oldRdo);
-			
+
 			var newIntegrationPointName = $"ip_{Guid.NewGuid()}";
 			var newRdo = new IntegrationPoint
 			{
@@ -342,27 +332,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			var sqlStatement = $"SELECT COUNT(*) FROM [EDDS].[eddsdbo].[SQLSecretStore] WHERE [SecretID] = '{secretId}'";
 			return Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(sqlStatement) == 0;
-		}
-
-		private void RetrieveExistingSecrets()
-		{
-			//TODO change this to Tenant after fixing database schema
-			_existingSecrets = new List<string>();
-			var secretsDataTable = Helper.GetDBContext(-1).ExecuteSqlStatementAsDataTable("SELECT [SecretID] FROM [EDDS].[eddsdbo].[SQLSecretStore]");
-			foreach (DataRow row in secretsDataTable.Rows)
-			{
-				_existingSecrets.Add(row[0].ToString());
-			}
-		}
-
-		private void CleanUpSecrets()
-		{
-			if (_existingSecrets.Count == 0)
-			{
-				return;
-			}
-			var ids = _existingSecrets.Select(x => $"'{x}'");
-			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement($"DELETE FROM [EDDS].[eddsdbo].[SQLSecretStore] WHERE [SecretID] NOT IN ({string.Join(",", ids)})");
 		}
 	}
 }

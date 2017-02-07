@@ -7,6 +7,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Toggles;
@@ -24,6 +26,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IFieldParser _fieldParser;
 		private IImportTypeService _importTypeService;
 		private ISerializer _serializer;
+		private IRepositoryFactory _repositoryFactory;
+		private IInstanceSettingRepository _instanceSettingRepo;
 
 		[SetUp]
 		public override void SetUp()
@@ -32,7 +36,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_fieldParser = Substitute.For<IFieldParser>();
 			_fieldParserFactory = Substitute.For<IFieldParserFactory>();
 			_serializer = Substitute.For<ISerializer>();
-			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService, _serializer);
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_instanceSettingRepo = Substitute.For<IInstanceSettingRepository>();
+			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService, _serializer, _repositoryFactory);
 		}
 
 		[Test]
@@ -72,6 +78,32 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				tdEnum.MoveNext();
 				idx++;
 			}
+		}
+
+		[TestCase("True")]
+		[TestCase("False")]
+		[TestCase(null)]
+		public void ItShouldReturnCloudInstanceValue(string instanceSettingValue)
+		{
+			_repositoryFactory.GetInstanceSettingRepository().ReturnsForAnyArgs(_instanceSettingRepo);
+			_instanceSettingRepo.GetConfigurationValue(Domain.Constants.RELATIVITY_CORE_SECTION, Domain.Constants.CLOUD_INSTANCE_NAME).ReturnsForAnyArgs(instanceSettingValue);
+			_controller = new ImportProviderDocumentController(_fieldParserFactory, _importTypeService, _serializer, _repositoryFactory);
+
+			JsonResult<string> result = _controller.IsCloudInstance() as JsonResult<string>;
+			string isCloudInstance = result.Content;
+
+			//Assert that we get the correct expected value based on the instance setting value
+			string expectedValue;
+			if (!string.IsNullOrEmpty(instanceSettingValue))
+			{
+				expectedValue = instanceSettingValue.ToLower();
+			}
+			else
+			{
+				expectedValue = "false";
+			}
+
+			Assert.AreEqual(expectedValue, isCloudInstance);
 		}
 
 		private IEnumerable<string> ExtractListResponse(IHttpActionResult response)

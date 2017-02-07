@@ -19,7 +19,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -57,6 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private ISerializer _serializer;
 		private IJobHistoryService _jobHistoryService;
 		private IManagerFactory _managerFactory;
+		private IServiceFactory _serviceFactory;
 		private Data.IntegrationPoint _integrationPoint;
 		private IntegrationPointDTO _integrationPointDto;
 		private SourceProvider _sourceProvider;
@@ -87,6 +87,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_jobManager = Substitute.For<IJobManager>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
+			_serviceFactory = Substitute.For<IServiceFactory>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_errorManager = Substitute.For<IErrorManager>();
@@ -130,7 +131,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_repositoryFactory.GetPermissionRepository(_targetWorkspaceArtifactId).Returns(_targetPermissionRepository);
 			_managerFactory.CreateErrorManager(Arg.Is(_contextContainer)).Returns(_errorManager);
 			_managerFactory.CreateJobHistoryManager(Arg.Is(_contextContainer)).Returns(_jobHistoryManager);
-			_managerFactory.CreateJobHistoryService(_caseServiceContext, _contextContainer, _serializer).Returns(_jobHistoryService);
 
 			_integrationPoint = new Data.IntegrationPoint
 			{

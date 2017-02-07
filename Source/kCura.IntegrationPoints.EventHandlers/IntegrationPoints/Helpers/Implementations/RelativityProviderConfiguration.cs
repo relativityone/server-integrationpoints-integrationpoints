@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -23,6 +24,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				return default(T);
 			}
 			return (T)Convert.ChangeType(settings[parameterName], typeof(T));
+		}
+
+		protected static int? GetFederatedInstanceArtifactId(IDictionary<string, object> settings)
+		{
+			int? federatedInstanceArtifactId = null;
+			if (settings.ContainsKey(nameof(SourceConfiguration.FederatedInstanceArtifactId)) &&
+				settings[nameof(SourceConfiguration.FederatedInstanceArtifactId)] != null)
+			{
+				federatedInstanceArtifactId = ParseValue<int>(settings, nameof(SourceConfiguration.FederatedInstanceArtifactId));
+			}
+			return federatedInstanceArtifactId;
 		}
 
 		protected virtual IRSAPIClient GetRsapiClient(int workspaceArtifactId)

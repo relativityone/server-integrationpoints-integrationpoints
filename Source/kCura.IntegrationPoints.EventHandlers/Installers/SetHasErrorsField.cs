@@ -9,6 +9,8 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -21,6 +23,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
@@ -105,9 +108,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			ISerializer serializer = new JSONSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, serializer, jobTracker);
+			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 
-			//TODO: make sure we're passing the right repositoryFactory
-			_jobHistoryService = new JobHistoryService(caseServiceContext, repositoryFactory, Helper, serializer);
+			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, serializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 			IManagerFactory managerFactory = new ManagerFactory(Helper);
 
@@ -116,7 +120,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), serializer);
 			IToggleProvider toggleProvider = new AlwaysDisabledToggleProvider();
 
-			// TODO: make sure we're passing the right helper
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, 
 				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator, toggleProvider);
 		}

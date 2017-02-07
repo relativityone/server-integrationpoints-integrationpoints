@@ -158,6 +158,13 @@
             windowObj.RelativityImport.GetCachedUiModel = JSON.parse(model);
         };
 
+		//wait to load the directories until we've loaded the full IP model
+        windowObj.RelativityImport.enableLoadModal(true);
+        windowObj.RelativityImport.loadRootDataTransferLocation(windowObj.RelativityImport.FullIPModel.IntegrationPointTypeIdentifier);
+        windowObj.RelativityImport.getDirectories(windowObj.RelativityImport.FullIPModel.IntegrationPointTypeIdentifier);
+        windowObj.RelativityImport.enableLoadModal(false);
+        windowObj.RelativityImport.enableLocation(true);
+
         //Adding horizontal scroll to entire child div
         windowObj.parent.RelativityImport.PreviewOptions.UI.addSiteCss();
 

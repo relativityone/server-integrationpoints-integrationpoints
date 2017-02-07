@@ -47,7 +47,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IHelperFactory _helperFactory;
 		private IServicesMgr _svcMgr;
 		private IContextContainerFactory _contextContainerFactory;
-		private IJobHistoryService _jobHistoryService;
 		private IManagerFactory _managerFactory;
 		private IIntegrationPointProviderValidator _ipValidator;
 		private IIntegrationPointPermissionValidator _permissionValidator;
@@ -71,7 +70,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_helperFactory = Substitute.For<IHelperFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_ipValidator = Substitute.For<IIntegrationPointProviderValidator>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
@@ -81,7 +79,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>()).Returns(Substitute.For<IMetricsManager>());
 
 			_instance = new IntegrationPointsAPIController(_serviceFactory, _relativityUrlHelper, _rdoSynchronizerProvider, _cpHelper, _caseServiceContext, _contextContainerFactory,
-				_serializer, _choiceQuery, _jobManager, _jobHistoryService, _managerFactory, _helperFactory, _ipValidator, _permissionValidator, _toggleProvider) {Request = new HttpRequestMessage()};
+				_serializer, _choiceQuery, _jobManager, _managerFactory, _helperFactory, _ipValidator, _permissionValidator, _toggleProvider) {Request = new HttpRequestMessage()};
 
 			_instance.Request.SetConfiguration(new HttpConfiguration());
 		}

@@ -12,6 +12,8 @@
 	var workspaceId = ("/" + opener.RelativityImportPreviewSettings.WorkspaceId);
 	var fieldMapping;
 	var choiceFieldsPromise;
+	var extractedTextColumn;
+	var extractedTextEncoding;
 	//If we are an ImageImport, we will create an empty choiceFields promise and use an empty fieldMap, otherwise we'll use the real functions on the 3rd step
 	if (settings.ImportType !== importTypeEnum.Document) {
 			fieldMapping = '[]';
@@ -21,6 +23,9 @@
 		} else {
 		fieldMapping = opener.top.getCurrentIpFieldMapping();
 		choiceFieldsPromise = opener.top.getMappedChoiceFieldsPromise();
+		var extractedTextInfo = opener.top.getExtractedTextInfo();
+		extractedTextColumn = extractedTextInfo.LongTextColumnThatContainsPathToFullText;
+		extractedTextEncoding = extractedTextInfo.ExtractedTextFileEncoding;
 	}
     var timerCount = 0;
     var timerRequest = true;
@@ -83,6 +88,8 @@
     	var previewSettingsData = {
     		WorkspaceId: settings.WorkspaceId,
     		PreviewType: settings.PreviewType,
+    		ExtractedTextColumn: extractedTextColumn,
+    		ExtractedTextFileEncoding: extractedTextEncoding,
     		LoadFile: settings.LoadFile,
     		EncodingType: settings.EncodingType,
     		AsciiColumn: settings.AsciiColumn,

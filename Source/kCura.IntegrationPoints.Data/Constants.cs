@@ -89,4 +89,9 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public static readonly Guid ProductionInformationTypeGuid = new Guid("11F4D584-C2A7-4E13-8458-D2C031FA40B6");
 	}
+
+	public static class SecretStoreConstants
+	{
+		public const string TENANT_ID_PREFIX = "92080CA4-4903-41B0-9E4C-4DC7DF961A8E";
+	}
 }

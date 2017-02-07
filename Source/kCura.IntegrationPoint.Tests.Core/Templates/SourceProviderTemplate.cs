@@ -30,6 +30,7 @@ using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -133,6 +134,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
+			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
+			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
+			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller(), new ValidationInstaller() };
@@ -208,9 +212,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected void ControlIntegrationPointAgents(bool enable)
 		{
-			global::Relativity.Services.Agent.Agent agent = Agent.ReadIntegrationPointAgent(AgentArtifactId);
-			agent.Enabled = enable;
-			Agent.UpdateAgent(agent);
+			var agentType = Agent.GetAgentTypeByName("Integration Points Agent");
+			var agents = Agent.QueryAgents(new global::Relativity.Services.Query() {Condition = $"'AgentTypeArtifactID' == {agentType.ArtifactID}"});
+
+			foreach (var agent in agents.Results)
+			{
+				agent.Artifact.Enabled = enable;
+				Agent.UpdateAgent(agent.Artifact);
+			}
 		}
 
 		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)

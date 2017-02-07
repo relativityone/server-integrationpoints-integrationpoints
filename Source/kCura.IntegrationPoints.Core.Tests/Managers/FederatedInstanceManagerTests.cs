@@ -39,6 +39,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
+		public void TestLocalInstance()
+		{
+			var testInstance = new FederatedInstanceManager(_repositoryFactory);
+
+			var federatedInstance = testInstance.RetrieveFederatedInstance(null);
+
+			Assert.That(federatedInstance, Is.EqualTo(FederatedInstanceManager.LocalInstance));
+		}
+
+		[Test]
 		public void TestRetrieveFederatedInstance()
 		{
 			//arrange

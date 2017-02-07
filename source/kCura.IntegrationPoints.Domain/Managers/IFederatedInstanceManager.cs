@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Domain.Managers
 {
 	public interface IFederatedInstanceManager
 	{
-		FederatedInstanceDto RetrieveFederatedInstance(int artifactId);
+		FederatedInstanceDto RetrieveFederatedInstance(int? artifactId);
 		IEnumerable<FederatedInstanceDto> RetrieveAll();
 	}
 }

@@ -222,12 +222,14 @@
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
     <Compile Include="Factories\IDataReaderWrapperFactory.cs" />
+    <Compile Include="Factories\IDataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\IHelperFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
     <Compile Include="Factories\IManagerFactory.cs" />
     <Compile Include="Factories\Implementations\DataReaderWrapperFactory.cs" />
+    <Compile Include="Factories\Implementations\DataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\HelperFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
@@ -307,6 +309,7 @@
       <DependentUpon>JobStatusMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="RelativityCoreTokenProvider.cs" />
+    <Compile Include="ServiceContextHelperForLoadFileReader.cs" />
     <Compile Include="Services\ArtifactService.cs" />
     <Compile Include="Services\DataTransferLocationService.cs" />
     <Compile Include="Services\Exporter\Base\ExporterServiceBase.cs" />

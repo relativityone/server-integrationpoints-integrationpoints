@@ -604,6 +604,14 @@
 			textPrecedencePickerViewModel.open(self.TextPrecedenceFields());
 		};
 
+		var exportDetailsTooltipViewModel = new TooltipViewModel(TooltipDefs.ExportDetails, TooltipDefs.ExportDetailsTitle);
+
+		Picker.create("Tooltip", "tooltipExportTypeId", "TooltipView", exportDetailsTooltipViewModel);
+
+		this.openExportDetailsTooltip = function (data, event) {
+			exportDetailsTooltipViewModel.open(event);
+		};
+
 		this.ImagePrecedence = ko.observable(state.ImagePrecedence || [])
 			.extend({
 				required: {
