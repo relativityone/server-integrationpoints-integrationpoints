@@ -35,6 +35,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		public void Init(LoadFile loadFile, ImportPreviewSettings settings)
 		{
 			_loadFile = loadFile;
+			//check if the user selected ExtractedText and set the current directory so that the extracted text files can be found via relative paths
+			if (!String.IsNullOrEmpty(settings.ExtractedTextColumn))
+			{
+				_loadFile.LongTextColumnThatContainsPathToFullText = settings.ExtractedTextColumn;
+				_loadFile.ExtractedTextFileEncoding = Encoding.GetEncoding(settings.ExtractedTextFileEncoding);
+				System.IO.Directory.SetCurrentDirectory(System.IO.Path.GetDirectoryName(_loadFile.FilePath));
+			}
+
 			if (settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Errors)
 			{
 				_errorsOnly = true;

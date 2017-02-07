@@ -30,6 +30,8 @@
 		public const string DESTINATION_PROVIDER_ARTIFACTID_FIELD = "C8B6AA0B-C854-43CA-B213-152A472ED023";
 	    public const string REPLACE_WEB_API_WITH_EXPORT_CORE = "ReplaceWebAPIWithExportCore";
         public const string RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+		public const string RELATIVITY_CORE_SECTION = "Relativity.Core";
+		public const string CLOUD_INSTANCE_NAME = "CloudInstance";
         public const char MULTI_VALUE_DELIMITER = ';';
         public const char NESTED_VALUE_DELIMITER = '/';
 

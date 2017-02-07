@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Web
 
 			bundles.Add(new ScriptBundle("~/bundles/ipEdit").Include(
 				"~/Scripts/Controls/step-progress.js",
+				"~/Scripts/Controls/Tooltip-ctrl.js",
 				"~/Scripts/integration-point/step-definition-provider.js",
 				"~/Scripts/integration-point/edit.js",
 				"~/Scripts/integration-point/step-vm.js",
@@ -45,6 +46,8 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/integration-point/step-mapFields-control.js",
 				"~/Scripts/integration-point/step-mapFields.js",
 				"~/Scripts/integration-point/picker.js",
+				"~/Scripts/integration-point/tooltip-definitions.js",
+				"~/Scripts/integration-point/tooltip-view-model.js",
 				"~/Scripts/route.js"
 			));
 

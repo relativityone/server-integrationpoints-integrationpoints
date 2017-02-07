@@ -59,7 +59,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IRepositoryFactory _repositoryFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private IContextContainer _contextContainer;
-		private IJobHistoryService _jobHistoryService;
 		private IIntegrationPointProviderValidator _ipValidator;
 		private IIntegrationPointPermissionValidator _permissionValidator;
 		private JobController _instance;
@@ -88,7 +87,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_jobManager = Substitute.For<IJobManager>();
 			_contextContainer = Substitute.For<IContextContainer>();
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_ipValidator = Substitute.For<IIntegrationPointProviderValidator>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 			_toggleProvider = Substitute.For<IToggleProvider>();
@@ -96,7 +94,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
 			_helperFactory.CreateTargetHelper(_helper).Returns(_helper);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_managerFactory.CreateJobHistoryService(_caseServiceContext, _contextContainer, _serializer).Returns(_jobHistoryService);
 			_serviceFactory.CreateIntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 			_serviceFactory.CreateIntegrationPointService(_helper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 			_managerFactory.CreateAuditManager(_contextContainer, _WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
@@ -240,15 +237,24 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
-		[Test]
-		public void RetryJob_UserIdExists_Succeeds_Test()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void RetryJob_UserIdExists_Succeeds_Test(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var claims = new List<Claim>(1)
 			{
 				new Claim("rel_uai", _userIdString)
 			};
+			
+			var integrationPoint = new Data.IntegrationPoint()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+			};
+
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 
 			// Act
 			HttpResponseMessage response = _instance.Retry(_payload);
@@ -261,14 +267,22 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
-		[Test]
-		public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test(int? federatedInstanceArtifactId)
 		{
 			// Arrange
+			var integrationPoint = new Data.IntegrationPoint()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+			};
+
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 			var exception = new Exception(Core.Constants.IntegrationPoints.NO_USERID);
 			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 
 			// Act
 			HttpResponseMessage response = _instance.Retry(_payload);

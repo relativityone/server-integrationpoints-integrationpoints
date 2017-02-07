@@ -242,6 +242,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ImportProviderDocumentIsCloudInstance",
+				routeTemplate: "{workspaceID}/api/ImportProviderDocument/IsCloudInstance",
+				defaults: new { controller = "ImportProviderDocument", action = "IsCloudInstance" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "ImportProviderDocumentViewData",
 				routeTemplate: "{workspaceID}/api/ImportProviderDocument/ViewData",
 				defaults: new { controller = "ImportProviderDocument", action = "ViewData" }
@@ -306,6 +312,12 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/FieldCatalog/{destinationWorkspaceId}/{federatedInstanceId}",
 				defaults: new { controller = "FieldCatalog", action = "Get", federatedInstanceId = RouteParameter.Optional }
 			);
+
+			config.Routes.MapHttpRoute(
+			name: "CheckToggle",
+			routeTemplate: "{workspaceID}/api/ToggleAPI/{toggleName}",
+			defaults: new { controller = "ToggleAPI", action = "Get"}
+		);
 
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",

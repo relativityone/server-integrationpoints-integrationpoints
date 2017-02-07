@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -17,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -45,6 +47,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IJobHistoryService _jobHistoryService;
 		private IJobService _jobService;
 		private IManagerFactory _managerFactory;
+		private IHelperFactory _helperFactory;
+		private IServiceFactory _serviceFactory;
 		private ISerializer _serializer;
 
 		public TaskFactory(IAgentHelper helper)
@@ -85,8 +89,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			LogCreatingTaskInformation(job);
 			Install(job, agentBase);
-			ResolveDependencies();
 			IntegrationPoint integrationPointDto = GetIntegrationPoint(job);
+			ResolveDependencies(integrationPointDto);
 			try
 			{
 				TaskType taskType;
@@ -173,16 +177,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Install(new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory));
 		}
 
-		private void ResolveDependencies()
+		private void ResolveDependencies(IntegrationPoint integrationPointDto)
 		{
 			_serializer = Container.Resolve<ISerializer>();
-			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
-			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
+			_helperFactory = Container.Resolve<IHelperFactory>();
+			_serviceFactory = Container.Resolve<IServiceFactory>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
 			_managerFactory = new ManagerFactory(_helper);
+			_jobHistoryService = CreateJobHistoryService(integrationPointDto);
 		}
 
 		private void CheckForSynchronization(Type type, Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase)
@@ -203,6 +208,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
+			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
+
 			var integrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
@@ -285,6 +292,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
 			_jobHistoryService.UpdateRdo(jobHistory);
 			_jobHistoryService.DeleteRdo(jobHistory.ArtifactId);
+		}
+
+		private IJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPointDto)
+		{
+			DestinationConfiguration destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPointDto.DestinationConfiguration);
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, destinationConfiguration.FederatedInstanceArtifactId);
+			return _serviceFactory.CreateJobHistoryService(_helper, targetHelper, _caseServiceContext, _contextContainerFactory, _managerFactory, _serializer);
 		}
 
 		#region Logging

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -19,15 +21,17 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 	public class JobHistoryService : IJobHistoryService
 	{
 		private readonly ICaseServiceContext _caseServiceContext;
-		private readonly IRepositoryFactory _targetRepositoryFactory;
+		private readonly IFederatedInstanceManager _federatedInstanceManager;
+		private readonly IWorkspaceManager _workspaceManager;
 		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 
-		public JobHistoryService(ICaseServiceContext caseServiceContext, IRepositoryFactory targetRepositoryFactory, IHelper helper, ISerializer serializer){
+		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, IHelper helper, ISerializer serializer){
 			_caseServiceContext = caseServiceContext;
-			_targetRepositoryFactory = targetRepositoryFactory;
-			_serializer = serializer;
+			_federatedInstanceManager = federatedInstanceManager;
+			_workspaceManager = workspaceManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryService>();
+			_serializer = serializer;
 		}
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
@@ -118,9 +122,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				};
 
 				ImportSettings setting = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-				IWorkspaceRepository workspaceRepository = _targetRepositoryFactory.GetWorkspaceRepository();
-				WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(setting.CaseArtifactId);
-				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, setting.CaseArtifactId);
+
+				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(setting.CaseArtifactId);
+
+				FederatedInstanceDto federatedInstanceDto =
+					_federatedInstanceManager.RetrieveFederatedInstance(setting.FederatedInstanceArtifactId);
+
+				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, workspaceDto.Name, setting.CaseArtifactId);
 
 				if (startTimeUtc.HasValue)
 				{

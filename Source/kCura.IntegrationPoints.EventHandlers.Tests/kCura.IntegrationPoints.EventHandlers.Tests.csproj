@@ -125,6 +125,10 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Installers\CreateTenantIdForSecretStoreEventHandlerWrapperTests.cs" />
+    <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreTests.cs" />
+    <Compile Include="Installers\Helpers\SecretStoreCleanUpTests.cs" />
+    <Compile Include="Installers\SecretStoreCleanUpEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="IntegrationPoints\DeleteEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\ConsoleBuilderTests.cs" />

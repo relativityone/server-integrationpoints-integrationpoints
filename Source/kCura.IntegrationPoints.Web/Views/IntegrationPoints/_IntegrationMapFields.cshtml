@@ -59,7 +59,9 @@
 				</div>
 			</div>
 			<div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
-				<div class="field-label required">Multi-Select Field<br/>Overlay Behavior:</div>
+				<div class="field-label required">
+					Multi-Select Field<br />Overlay Behavior:
+				</div>
 				<div class="field-value">
 					<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
 				</div>
@@ -74,6 +76,19 @@
 				<div class="field-label required ">Parent Attribute:</div>
 				<div class="field-value ">
 					<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
+				<div class="field-label required">Export Images:</div>
+				<div class="field-value">
+					<ul>
+						<li>
+							<label><input id="exportImages-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ImageImport">Yes</label>
+						</li>
+						<li>
+							<label><input id="exportImages-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ImageImport">No</label>
+						</li>
+					</ul>
 				</div>
 			</div>
 			<div class="field-row" data-bind="visible: isDocument() == 'true'">
@@ -97,7 +112,7 @@
 			</div>
 			<div class="field-row" data-bind="visible: showManager">
 				<div class="field-label required ">
-					Custodian Manager<br/>
+					Custodian Manager<br />
 					Contains Link:
 				</div>
 				<div class="field-value">
@@ -111,7 +126,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="field-row" data-bind="visible: isDocument() == 'true' && SelectedOverwrite() != 'Overlay Only'">
+			<div class="field-row" data-bind="visible: isDocument() == 'true'">
 				<div class="field-label required ">Use Folder Path Information:</div>
 				<div class="field-value">
 					<ul>
@@ -135,8 +150,21 @@
 					</div>
 				</div>
 			</div>
+			<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true'">
+				<div class="field-label required ">Move Exisitng Documents:</div>
+				<div class="field-value">
+					<ul>
+						<li>
+							<label><input id="move-documents-radio-0" type="radio" name="import_MoveDocumntsToFolder" value="true" data-bind="checked: MoveExistingDocuments">Yes</label>
+						</li>
+						<li>
+							<label><input id="move-documents-radio-1" type="radio" name="import_MoveDocumntsToFolder" value="false" data-bind="checked: MoveExistingDocuments">No</label>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
-		<br/>
+		<br />
 		<div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
 			<span class="extracted-label">Extracted Text</span>
 			<div class="margin-top-8px">

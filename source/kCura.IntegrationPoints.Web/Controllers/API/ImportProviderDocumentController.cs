@@ -4,6 +4,8 @@ using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -14,13 +16,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private IFieldParserFactory _fieldParserFactory;
 		private IImportTypeService _importTypeService;
+		private IRepositoryFactory _repositoryFactory;
 		private ISerializer _serializer;
 
-		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory, IImportTypeService importTypeService, ISerializer serializer)
+		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory, IImportTypeService importTypeService, ISerializer serializer, IRepositoryFactory repoFactory)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_importTypeService = importTypeService;
 			_serializer = serializer;
+			_repositoryFactory = repoFactory;
 		}
 
 		[HttpGet]
@@ -48,6 +52,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public IHttpActionResult GetImportTypes(bool isRdo = false)
 		{
 			return Json(_importTypeService.GetImportTypes(isRdo));
+		}
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to check cloud instance setting.")]
+		public IHttpActionResult IsCloudInstance()
+		{
+			IInstanceSettingRepository instanceSettings =  _repositoryFactory.GetInstanceSettingRepository();
+			string isCloudInstance = instanceSettings.GetConfigurationValue(Domain.Constants.RELATIVITY_CORE_SECTION, Domain.Constants.CLOUD_INSTANCE_NAME);
+			if (string.IsNullOrEmpty(isCloudInstance))
+			{
+				isCloudInstance = "false";
+			}
+			return Json(isCloudInstance.ToLower());
 		}
 
 		[HttpPost]

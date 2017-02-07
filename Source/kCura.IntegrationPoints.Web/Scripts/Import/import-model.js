@@ -61,6 +61,9 @@
 
 		self.fileContainsColumn = ko.observable("true");
 
+		//true if the instance is running in RelativityOne
+		self.isCloudInstance = ko.observable("false");
+
 		//image/production import knockout bindings
 		self.autoNumberPages = ko.observable("false");
 		self.copyFilesToDocumentRepository = ko.observable("true");

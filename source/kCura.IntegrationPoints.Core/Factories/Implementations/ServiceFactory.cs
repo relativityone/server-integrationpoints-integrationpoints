@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IIntegrationPointService CreateIntegrationPointService(
 			IHelper helper, 
 			IHelper targetHelper, 
-			ICaseServiceContext context,
+			ICaseServiceContext caseServiceContext,
 			IContextContainerFactory contextContainerFactory, 
 			ISerializer serializer, 
 			IChoiceQuery choiceQuery,
@@ -27,12 +27,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IIntegrationPointPermissionValidator permissionValidator,
 			IToggleProvider toggleProvider)
 		{
-			IContextContainer targetContextContainer = contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
-			IJobHistoryService jobHistoryService = managerFactory.CreateJobHistoryService(context, targetContextContainer, serializer);
+			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper, caseServiceContext, contextContainerFactory, managerFactory, serializer);
 
 			return new IntegrationPointService(
-				helper, 
-				context, 
+				helper,
+				caseServiceContext, 
 				contextContainerFactory, 
 				serializer, 
 				choiceQuery, 
@@ -53,6 +52,18 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)
 		{
 			return new FieldCatalogService(targetHelper);
+		}
+
+		public IJobHistoryService CreateJobHistoryService(IHelper helper, IHelper targetHelper, ICaseServiceContext caseServiceContext, 
+			IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, ISerializer serializer)
+		{
+			IContextContainer sourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
+			IContextContainer targetContextContainer = contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
+
+			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
+				managerFactory.CreateWorkspaceManager(targetContextContainer), helper, serializer);
+
+			return jobHistoryService;
 		}
 	}
 }

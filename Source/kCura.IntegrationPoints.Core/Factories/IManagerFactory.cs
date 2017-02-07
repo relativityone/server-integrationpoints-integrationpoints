@@ -89,7 +89,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <returns></returns>
 		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob);
 
-
 		/// <summary>
 		/// Creates an audit manager.
 		/// </summary>
@@ -98,11 +97,8 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <returns>Audit Manager</returns>
 		IAuditManager CreateAuditManager(IContextContainer contextContainer, int workspaceArtifactId);
 
-
-		IJobHistoryService CreateJobHistoryService(ICaseServiceContext caseServiceContext,
-			IContextContainer targetContextContainer, ISerializer serializer);
-
 		IFederatedInstanceManager CreateFederatedInstanceManager(IContextContainer contextContainer);
+
 		IOAuthClientManager CreateOAuthClientManager(IContextContainer contextContainer);
 
 		IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer);

@@ -28,5 +28,8 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IArtifactService CreateArtifactService(IHelper helper, IHelper targetHelper);
 
 		IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper);
+
+		IJobHistoryService CreateJobHistoryService(IHelper helper, IHelper targetHelper, ICaseServiceContext caseServiceContext, 
+			IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, ISerializer serializer);
 	}
 }

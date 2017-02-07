@@ -328,12 +328,14 @@
     <Compile Include="Controllers\API\IntegrationPointProfilesAPIController.cs" />
     <Compile Include="Controllers\API\IntegrationPointTypesController.cs" />
     <Compile Include="Controllers\API\ResourcePoolController.cs" />
+    <Compile Include="Controllers\API\ToggleAPIController.cs" />
     <Compile Include="Controllers\SummaryPageController.cs" />
     <Compile Include="Controllers\ImportProviderController.cs" />
     <Compile Include="Controllers\API\SavedSearchesTreeController.cs" />
     <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Controllers\API\WorkspaceViewController.cs" />
     <Compile Include="Controllers\IntegrationPointBaseController.cs" />
+    <Compile Include="Controllers\TooltipController.cs" />
     <Compile Include="DataStructures\ExportSourceOptions.cs" />
     <Compile Include="ErrorFactory.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
@@ -493,6 +495,7 @@
     <Content Include="Content\themes\default\style.min.css" />
     <Content Include="Content\themes\default\throbber.gif" />
     <Content Include="Content\import-preview.css" />
+    <Content Include="Content\tooltip.css" />
     <Content Include="Content\ui-dialog.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\site.css" />
@@ -531,6 +534,7 @@
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
+    <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
     <Content Include="Scripts\integration-point\scheduler-summary-page.js" />
     <Content Include="Scripts\integration-point\source.js" />
@@ -539,6 +543,7 @@
     <Content Include="Scripts\integration-point\save-as-profile-modal-vm.js" />
     <Content Include="Scripts\integration-point\choice.js" />
     <Content Include="Scripts\integration-point\scheduler.js" />
+    <Content Include="Scripts\integration-point\tooltip-definitions.js" />
     <Content Include="Scripts\ldap\ldap-provider-summary-page.js" />
     <Content Include="Scripts\moment-timezone-utils.js" />
     <Content Include="Scripts\moment-timezone-with-data-2010-2020.js" />
@@ -787,6 +792,7 @@
     <Content Include="Views\FtpProvider\FtpProviderSummaryPage.cshtml" />
     <Content Include="Views\IntegrationPoints\SchedulerSummaryPage.cshtml" />
     <Content Include="Views\ThirdPartyProviders\ThirdPartyProviderSummaryPage.cshtml" />
+    <Content Include="Views\Tooltip\TooltipView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

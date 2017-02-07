@@ -129,6 +129,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
 			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
+			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
 			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(

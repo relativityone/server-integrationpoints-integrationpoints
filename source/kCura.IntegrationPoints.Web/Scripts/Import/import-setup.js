@@ -27,9 +27,8 @@
 	var classSelector = function (name) { return '.' + name; }
 	windowObj.RelativityImport.UI.idSelector = idSelector;
 
-	/*todo change column back to 19*/
 	var assignAsciiDropDownDefault = function (array) {
-		windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[43].asciiID);
+		windowObj.RelativityImport.koModel.setSelectedColumnAsciiDelimiters(array[19].asciiID);
 		windowObj.RelativityImport.koModel.selectedQuoteAsciiDelimiter(array[253].asciiID);
 		windowObj.RelativityImport.koModel.selectedNewLineAsciiDelimiter(array[173].asciiID);
 		windowObj.RelativityImport.koModel.selectedMultiLineAsciiDelimiter(array[58].asciiID);
@@ -103,7 +102,6 @@
 		var lineNumber = windowObj.RelativityImport.GetCachedUiModel.LineNumber;
 		var importType = windowObj.RelativityImport.GetCachedUiModel.ImportType;
 		var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
-		var artifactId = windowObj.RelativityImport.GetCachedUiModel.ProcessingSourceLocation;
 
 		var ImportTypeEnum = windowObj.RelativityImport.ImportTypeEnum;
 
@@ -118,7 +116,6 @@
 			var hasColumnName = windowObj.RelativityImport.GetCachedUiModel.HasColumnName;
 
 			//Document repopulate model
-			windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
 			windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
 			windowObj.RelativityImport.koModel.selectedImportType(importType);
 			windowObj.RelativityImport.koModel.startLine(lineNumber);
@@ -142,7 +139,6 @@
 			var productionSet = windowObj.RelativityImport.GetCachedUiModel.ProductionArtifactId;
 
 			//ImageProduction repopulate model
-			windowObj.RelativityImport.koModel.ProcessingSourceLocation(artifactId);
 			windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
 			windowObj.RelativityImport.koModel.startLine(lineNumber);
 			windowObj.RelativityImport.koModel.selectedImportType(importType);
@@ -221,22 +217,39 @@
 	};
 
 	windowObj.RelativityImport.enableLocation(false);
+	self.rootDataTransferLocation = "";
+	windowObj.RelativityImport.loadRootDataTransferLocation = function (integrationPointTypeIdentifier) {
+		root.data.ajax({
+			type: "post",
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", integrationPointTypeIdentifier)
+		}).then(function (result) {
+			self.rootDataTransferLocation = result;
+		}).fail(function (error) {
+			IP.message.error.raise("Can not retrieve data transfer location root path");
+		});
+	}
 
-	windowObj.RelativityImport.getDirectories = function () {
+	windowObj.RelativityImport.getDirectories = function (integrationPointTypeIdentifier) {
 		var reloadTree = function (params, onSuccess, onFail) {
 			var isRoot = params.id === '#';
 			var path = params.id;
 			if (isRoot) {
-				path = windowObj.RelativityImport.koModel.ProcessingSourceLocationPath;
+				path = self.rootDataTransferLocation;
 			}
 			$.ajax({
 				type: "post",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot) + '?includeFiles=true',
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) + '?isRoot=' + isRoot + '&includeFiles=true',
 				data: { '': path }
 			}).then(function (result) {
 				onSuccess(result);
 				windowObj.RelativityImport.enableLocation(true);
+				//once we've loaded the file tree, we can repopulate our settings
+				if (windowObj.RelativityImport.GetCachedUiModel) {
+					populateCachedState();
+					windowObj.RelativityImport.checkValueForImportType();
+				};
 			}).fail(function (error) {
 				onFail(error);
 				IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve directories and subfolders info. Please contact system administrator");
@@ -244,31 +257,6 @@
 		};
 		windowObj.RelativityImport.locationSelector.reloadWithRoot(reloadTree);
 	};
-
-	windowObj.RelativityImport.enableLoadModal(true);
-	$.ajax({
-		type: "get",
-		url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
-		data: {
-			sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-		}
-	}).done(function (data) {
-		windowObj.RelativityImport.enableLoadModal(false);
-		windowObj.RelativityImport.koModel.ProcessingSourceLocationList(data);
-		if (windowObj.RelativityImport.GetCachedUiModel) {
-			populateCachedState();
-			windowObj.RelativityImport.checkValueForImportType();
-		};
-
-		$(idSelector(PROCESSING_SOURCE_DROP_DOWN)).change(function (c, item) {
-			windowObj.RelativityImport.koModel.ProcessingSourceLocationPath = windowObj.RelativityImport.koModel.GetSelectedProcessingSourceLocationPath(windowObj.RelativityImport.koModel.ProcessingSourceLocation()).location;
-			windowObj.RelativityImport.getDirectories();
-			windowObj.RelativityImport.enableLocation(true);
-		});
-	}).fail(function () {
-		windowObj.RelativityImport.enableLoadModal(false);
-		IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve processing source locations. Please contact system administrator");
-	});
 
 	$.ajax({
 		url: root.utils.getBaseURL() + workspaceId + "/api/ImportProviderDocument/GetAsciiDelimiters",
@@ -329,6 +317,14 @@
 		success: function (data) {
 			windowObj.RelativityImport.koModel.fileRepositories(data);
 			windowObj.RelativityImport.setDefaultFileRepo();
+		}
+	});
+
+	$.ajax({
+		type: 'GET',
+		url: IP.utils.generateWebAPIURL('ImportProviderDocument/IsCloudInstance'),
+		success: function (data) {
+			windowObj.RelativityImport.koModel.isCloudInstance(data);
 		}
 	});
 

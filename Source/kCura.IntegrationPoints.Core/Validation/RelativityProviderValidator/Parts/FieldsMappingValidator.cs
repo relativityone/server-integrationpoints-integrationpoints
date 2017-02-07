@@ -185,19 +185,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			var result = new ValidationResult();
 
 			if (destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly ||
+				destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.OverlayOnly ||
 			    destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOverlay)
 			{
 				if (destinationConfig.UseFolderPathInformation)
 				{
 					result.Add(ValidateFieldExists(destinationConfig.FolderPathSourceField, sourceWorkpaceFields,
 						RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
-				}
-			}
-			else
-			{
-				if (destinationConfig.UseFolderPathInformation)
-				{
-					result.Add(RelativityProviderValidationMessages.FIELD_MAP_FOLDER_PATH_INFO_UNAVAILABLE_FOR_OVERLAY_ONLY);
 				}
 			}
 

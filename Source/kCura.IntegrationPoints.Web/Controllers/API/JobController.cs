@@ -109,7 +109,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper,
+			IntegrationPoint integrationPoint = _context.RsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(payload.ArtifactId));
+			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId);
+
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
 				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
 
 			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RetryIntegrationPoint);
