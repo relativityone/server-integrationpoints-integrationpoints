@@ -237,15 +237,24 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
-		[Test]
-		public void RetryJob_UserIdExists_Succeeds_Test()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void RetryJob_UserIdExists_Succeeds_Test(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var claims = new List<Claim>(1)
 			{
 				new Claim("rel_uai", _userIdString)
 			};
+			
+			var integrationPoint = new Data.IntegrationPoint()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+			};
+
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 
 			// Act
 			HttpResponseMessage response = _instance.Retry(_payload);
@@ -258,14 +267,22 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
-		[Test]
-		public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test(int? federatedInstanceArtifactId)
 		{
 			// Arrange
+			var integrationPoint = new Data.IntegrationPoint()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+			};
+
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 			var exception = new Exception(Core.Constants.IntegrationPoints.NO_USERID);
 			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
 
 			// Act
 			HttpResponseMessage response = _instance.Retry(_payload);
