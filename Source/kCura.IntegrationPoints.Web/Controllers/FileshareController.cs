@@ -9,11 +9,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
             return PartialView();
         }
 
-        public ActionResult ExportDetails()
-        {
-            return PartialView();
-        }
-
         public ActionResult ListPicker()
         {
             return PartialView();

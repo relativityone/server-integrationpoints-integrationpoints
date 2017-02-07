@@ -1,11 +1,13 @@
-﻿<script src="~/Scripts/dragon/dragon-dialogs.js"></script>
-<link type="text/css" rel="stylesheet" href="~/Content/ui-dialog.css" />
+﻿<link type="text/css" rel="stylesheet" href="~/Content/ui-dialog.css" />
 
 <script id="exportProviderSettingsStep" type="text/html">
+
 	<div id="_main">
 		<div id="exportProviderConfiguration" style="min-width: 900px;">
 			<div class="card">
+
 				<span class="label">Export Detail</span>
+				<img data-bind="click: openExportDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left:5px;" />
 				<table style="width: 100%;">
 					<tr>
 						<td style="width: 48%;">
@@ -21,7 +23,7 @@
 											</div>
 										</li>
 										<li>
-											<div class="field-value"  data-bind="visible: !ExportRdoMode()">
+											<div class="field-value" data-bind="visible: !ExportRdoMode()">
 												<label><input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages" />Images</label>
 											</div>
 										</li>
@@ -412,4 +414,3 @@
 		</div>
 	</div>
 </script>
-
