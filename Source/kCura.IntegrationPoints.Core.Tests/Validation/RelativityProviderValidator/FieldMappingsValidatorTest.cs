@@ -197,7 +197,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID)));
 		}
 
-		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
+		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"1000186\"}")]
 		public void ItShouldValidateAsValidSettingsForFolderPathInformation_With_OverlayOnly(string destinationConfig)
 		{
 			// Arrange
