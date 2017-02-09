@@ -1,147 +1,65 @@
 ﻿@{
-    ViewBag.Title = "GetDefaultFtpSettings";
-    var model = (kCura.IntegrationPoints.FtpProvider.Helpers.Models.Settings)Model;
-    Layout = "~/Views/Shared/_StepLayout.cshtml";
+	ViewBag.Title = "GetDefaultFtpSettings";
+	var model = (kCura.IntegrationPoints.FtpProvider.Helpers.Models.Settings)Model;
+	Layout = "~/Views/Shared/_StepLayout.cshtml";
 }
 
 <link href="~/Content/site.css" rel="stylesheet" />
-<style>
-	.modal {
-		display: none; /* Hidden by default */
-		position: fixed; /* Stay in place */
-		z-index: 1; /* Sit on top */
-		left: 0;
-		top: 0;
-		width: 100%; /* Full width */
-		height: 100%; /* Full height */
-		overflow: auto; /* Enable scroll if needed */
-	}
-
-	/* Modal Content/Box */
-	.modal-content {
-		background-color: #596066;
-		padding-left: 5px;
-		border: 1px solid #888;
-		width: 650px;
-		padding-right: 5px;
-		color: white;
-	}
-
-	.modal-content p {
-		display: inline;
-	}
-	/* The Close Button */
-	.close {
-		color: #aaa;
-		background-repeat: no-repeat;
-		top: 2px;
-		left: -1px;
-		position: relative;
-		cursor: pointer;
-		height: 16px;
-		width: 16px;
-		z-index: 9999;
-		float: right;
-	}
-
-	.close:hover,
-	.close:focus {
-		color: black;
-		text-decoration: none;
-		cursor: pointer;
-	}
-</style>
 <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
+<link href="~/Content/tooltip.css" rel="stylesheet" type="text/css" />
+
 <div class="card">
 
-    <label class="section label">Connection Information<img class="" id="contextualHelp" src="~/Content/images/help_icon.png" style="padding-left:5px;">  </label>
+	<label class="section label">Connection Information<img data-bind="click: openFtpConfigDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left:5px;">  </label>
 
-    <div class="field-row">
-        @Html.ValidationMessageFor(m => model.ValidationMessage, "", new { id = "validation_message", @class = "field-label", style = "color: red" })
-    </div>
-    <div class="field-row">
-        @Html.LabelFor(m => model.Host, new { id = "host_label", @class = "field-label required", title = "Host: The address of the FTP or SFTP server, e.g. yourcompany.com" })
-        <div class="field-value">
-            @Html.TextBoxFor(m => model.Host, new { id = "host" })
-        </div>
-    </div>
+	<div class="field-row">
+		@Html.ValidationMessageFor(m => model.ValidationMessage, "", new { id = "validation_message", @class = "field-label", style = "color: red" })
+	</div>
+	<div class="field-row">
+		@Html.LabelFor(m => model.Host, new { id = "host_label", @class = "field-label required", title = "Host: The address of the FTP or SFTP server, e.g. yourcompany.com" })
+		<div class="field-value">
+			@Html.TextBoxFor(m => model.Host, new { id = "host" })
+		</div>
+	</div>
 
-    <div class="field-row">
-        @Html.LabelFor(m => model.Protocol, new { id = "protocol_label", @class = "field-label required", title = "Protocol: Specifies if the standard File Transfer Protocol (FTP) or the SSH File Transfer Protocol (SFTP) should be used." })
-        <div class="field-value"> @Html.DropDownListFor(m => model.Protocol, new SelectList(kCura.IntegrationPoints.FtpProvider.Helpers.ProtocolName.All), new { id = "protocol", onchange = "protocol_onchange();" }) </div>
-    </div>
+	<div class="field-row">
+		@Html.LabelFor(m => model.Protocol, new { id = "protocol_label", @class = "field-label required", title = "Protocol: Specifies if the standard File Transfer Protocol (FTP) or the SSH File Transfer Protocol (SFTP) should be used." })
+		<div class="field-value"> @Html.DropDownListFor(m => model.Protocol, new SelectList(kCura.IntegrationPoints.FtpProvider.Helpers.ProtocolName.All), new { id = "protocol", onchange = "protocol_onchange();" }) </div>
+	</div>
 
-    <div class="field-row">
-        @Html.LabelFor(m => model.Port, new { id = "port_label", @class = "field-label", title = "Port: The port of the server to connect to." })
-        <div class="field-value"> @Html.TextBoxFor(m => model.Port, new { id = "port" }) </div>
-    </div>
+	<div class="field-row">
+		@Html.LabelFor(m => model.Port, new { id = "port_label", @class = "field-label", title = "Port: The port of the server to connect to." })
+		<div class="field-value"> @Html.TextBoxFor(m => model.Port, new { id = "port" }) </div>
+	</div>
 
-    <div class="field-row">
-        @Html.LabelFor(m => model.Username, new { id = "username_label", @class = "field-label", title = "Username: If required for your connection, specifies the username to the use for authenticating. Leave blank to use anonymous." })
-        <div class="field-value"> @Html.TextBoxFor(m => model.Username, new { id = "username", }) </div>
-    </div>
+	<div class="field-row">
+		@Html.LabelFor(m => model.Username, new { id = "username_label", @class = "field-label", title = "Username: If required for your connection, specifies the username to the use for authenticating. Leave blank to use anonymous." })
+		<div class="field-value"> @Html.TextBoxFor(m => model.Username, new { id = "username", }) </div>
+	</div>
 
-    <div class="field-row">
-        @Html.LabelFor(m => model.Password, new { id = "password_label", @class = "field-label", title = "Password: If required for your connection, specify the password to use for authentication. Leave blank to use anonymous." })
-        <div class="field-value"> @Html.TextBoxFor(m => model.Password, new { type = "password", id = "password" }) </div>
-    </div>
+	<div class="field-row">
+		@Html.LabelFor(m => model.Password, new { id = "password_label", @class = "field-label", title = "Password: If required for your connection, specify the password to use for authentication. Leave blank to use anonymous." })
+		<div class="field-value"> @Html.TextBoxFor(m => model.Password, new { type = "password", id = "password" }) </div>
+	</div>
 
-    <label class="section label">File Information</label>
+	<label class="section label">File Information</label>
 
-    <div class="field-row">
-        @Html.LabelFor(m => model.Filename_Prefix, new { id = "filename_prefix_label", @class = "field-label required", title = "CSV Filepath: The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file." })
-        <div class="field-value"> @Html.TextBoxFor(m => model.Filename_Prefix, new { id = "filename_prefix", placeholder = "e.g. /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export", style = "width: 250%;" }) </div>
-    </div>
+	<div class="field-row">
+		@Html.LabelFor(m => model.Filename_Prefix, new { id = "filename_prefix_label", @class = "field-label required", title = "CSV Filepath: The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file." })
+		<div class="field-value"> @Html.TextBoxFor(m => model.Filename_Prefix, new { id = "filename_prefix", placeholder = "e.g. /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export", style = "width: 250%;" }) </div>
+	</div>
 
-    @Html.HiddenFor(m => model.Timezone_Offset, new { id = "timezone_offset" })
-</div>
-
-<div id="contextualHelpModal" class="modal">
-
-    <!-- Modal content -->
-    <div class="modal-content">
-        <img class="close" src="~/Content/images/grey_close.png">
-        <div>
-            <span class="popup-title"><h4>CSV Import on FTP</h4></span>
-        </div>
-        <ul>
-            <li>
-                <span><strong>Host:</strong> <p>The address of the FTP or SFTP server, e.g. yourcompany.com </p> </span>
-            </li>
-            <li>
-                <span><strong>Protocol:</strong> <p>Specifies if the standard File Transfer Protocol (FTP) or the SSH File Transfer Protocol (SFTP) should be used.</p> </span>
-            </li>
-            <li>
-                <span><strong>Port:</strong> <p>The port of the server to connect to.</p> </span>
-            </li>
-
-            <li>
-                <span><strong>Username:</strong> <p>If required for your connection, specifies the username to use for authenticating. Leave blank to use anonymous.</p> </span>
-            </li>
-            <li>
-                <span><strong>Password:</strong> <p>: If required for your connection, specifies the password to use for authentication. Leave blank to use anonymous.</p> </span>
-            </li>
-            <li>
-                <span>
-                    <strong>CSV filepath:</strong> <p>
-                        The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file.
-                    </p>
-                </span>
-            </li>
-        </ul>
-
-
-
-    </div>
-
-
+	@Html.HiddenFor(m => model.Timezone_Offset, new { id = "timezone_offset" })
 </div>
 
 @section scripts
 {
-    <script src="~/Scripts/knockout-3.4.0.debug.js"></script>
-    <script src="~/Scripts/knockout.validation.debug.js"></script>
-    <script src="~/Scripts/core/data.js"></script>
-    <script src="~/Scripts/core/utils.js"></script>
-    <script src="~/Scripts/ftpProvider/ftpProvider-edit.js"></script>
+	<script src="~/Scripts/knockout-3.4.0.debug.js"></script>
+	<script src="~/Scripts/knockout.validation.debug.js"></script>
+	<script src="~/Scripts/core/data.js"></script>
+	<script src="~/Scripts/core/utils.js"></script>
+	<script src="~/Scripts/integration-point/tooltip-view-model.js"></script>
+	<script src="~/Scripts/integration-point/tooltip-definitions.js"></script>
+	<script src="~/Scripts/integration-point/picker.js"></script>
+	<script src="~/Scripts/ftpProvider/ftpProvider-edit.js"></script>
 }
