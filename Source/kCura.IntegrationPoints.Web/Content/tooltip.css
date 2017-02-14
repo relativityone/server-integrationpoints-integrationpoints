@@ -1,5 +1,4 @@
 ﻿.modal {
-		position: fixed; /* Stay in place */
 		z-index: 1; /* Sit on top */
 		width: 100%; /* Full width */
 		height: 100%; /* Full height */
@@ -11,7 +10,7 @@
 		background-color: #596066;
 		padding-left: 5px;
 		border: 1px solid #888;
-		width: 650px;
+		width: 1000px;
 		padding-right: 5px;
 		color: white;
 	}

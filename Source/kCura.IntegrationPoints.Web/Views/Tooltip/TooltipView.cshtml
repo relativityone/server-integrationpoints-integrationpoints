@@ -1,14 +1,21 @@
-﻿<link type="text/css" rel="stylesheet" href="~/Content/tooltip.css"/>
+﻿<link type="text/css" rel="stylesheet" href="~/Content/tooltip.css" />
 
 <div id="contextualTooltipView" class="modal">
 	<div class="modal-content">
-		<img class="close" data-bind="click: ok"/>
+		<img class="close" data-bind="click: ok" />
 		<div>
 			<h4 data-bind="text: tooltipTitle"></h4>
 		</div>
 		<ul data-bind="foreach: tooltips">
 			<li>
-				<span><strong data-bind="text: name"></strong> - <p data-bind="text: description"/> </span>
+				<span><strong data-bind="text: name"></strong> - <p data-bind="text: description" /> </span>
+				<div data-bind="if: subsection.length > 0">
+					<ul data-bind="foreach: subsection">
+						<li>
+							<span><strong data-bind="text: s_name"></strong> - <p data-bind="text: s_description" /> </span>
+						</li>
+					</ul>
+				</div>
 			</li>
 		</ul>
 	</div>

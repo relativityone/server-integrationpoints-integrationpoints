@@ -663,6 +663,14 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 			self.populateExtractedText();
 		};
+		/********** Tooltips  **********/
+		var settingsTooltipViewModel = new TooltipViewModel(TooltipDefs.RelativityProviderSettingsDetails, TooltipDefs.RelativityProviderSettingsDetailsTitle);
+
+		Picker.create("Tooltip", "tooltipSettingsId", "TooltipView", settingsTooltipViewModel);
+
+		this.openRelativityProviderSettingsTooltip = function (data, event) {
+			settingsTooltipViewModel.open(event);
+		};
 
 	};// end of the viewmodel
 
