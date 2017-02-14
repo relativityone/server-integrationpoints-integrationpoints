@@ -272,9 +272,15 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "SearchFolder",
+				name: "SearchFolderInCurrentInstace",
+				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
+				defaults: new {controller = "SearchFolder", action = "GetCurrentInstaceFolders" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "SearchFolderInFederatedInstance",
 				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}/{federatedInstanceId}",
-				defaults: new {controller = "SearchFolder", action = "Get", destinationWorkspaceId = RouteParameter.Optional, federatedInstanceId = RouteParameter.Optional }
+				defaults: new { controller = "SearchFolder", action = "GetFederatedInstaceFolders" }
 			);
 
 			config.Routes.MapHttpRoute(
@@ -302,15 +308,27 @@ namespace kCura.IntegrationPoints.Web
 			);
 			
 			config.Routes.MapHttpRoute(
-				name: "GetWorkspaces",
-				routeTemplate: "{workspaceID}/api/WorkspaceFinder/{federatedInstanceId}",
-				defaults: new { controller = "WorkspaceFinder", action = "Get" }
+				name: "GetCurrentInstanceWorkspaces",
+				routeTemplate: "{workspaceID}/api/WorkspaceFinder",
+				defaults: new { controller = "WorkspaceFinder", action = "GetCurrentInstanceWorkspaces" }
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetFieldCatalogMappings",
+				name: "GetFederatedInstanceWorkspaces",
+				routeTemplate: "{workspaceID}/api/WorkspaceFinder/{federatedInstanceId}",
+				defaults: new { controller = "WorkspaceFinder", action = "GetFederatedInstanceWorkspaces" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetFieldCatalogMappingsForCurrentInstance",
+				routeTemplate: "{workspaceID}/api/FieldCatalog/{destinationWorkspaceId}",
+				defaults: new { controller = "FieldCatalog", action = "GetCurrentInstanceFields" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetFieldCatalogMappingsForFederatedInstance",
 				routeTemplate: "{workspaceID}/api/FieldCatalog/{destinationWorkspaceId}/{federatedInstanceId}",
-				defaults: new { controller = "FieldCatalog", action = "Get", federatedInstanceId = RouteParameter.Optional }
+				defaults: new { controller = "FieldCatalog", action = "GetFederatedInstanceFields" }
 			);
 
 			config.Routes.MapHttpRoute(

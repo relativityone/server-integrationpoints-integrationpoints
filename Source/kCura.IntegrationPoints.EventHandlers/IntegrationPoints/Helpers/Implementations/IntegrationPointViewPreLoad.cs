@@ -31,12 +31,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			{
 				IDictionary<string,object> sourceConfiguration = GetSourceConfiguration(artifact);
 				
-				_relativityProviderSourceConfiguration.UpdateNames(sourceConfiguration);
+				_relativityProviderSourceConfiguration.UpdateNames(sourceConfiguration, artifact);
 				artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(sourceConfiguration);
 			}
 			IDictionary<string, object> destinationConfiguration = GetDestinationConfiguration(artifact);
 
-			_relativityProviderDestinationConfiguration.UpdateNames(destinationConfiguration);
+			_relativityProviderDestinationConfiguration.UpdateNames(destinationConfiguration, artifact);
 			artifact.Fields[_fieldsConstants.DestinationConfiguration].Value.Value = JsonConvert.SerializeObject(destinationConfiguration);
 		}
 

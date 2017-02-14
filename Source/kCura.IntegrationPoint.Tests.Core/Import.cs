@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
@@ -21,9 +22,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
 			var tokenProvider = Substitute.For<ITokenProvider>();
 			var federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
-			var oauthClientManager = Substitute.For<IOAuthClientManager>();
+			var serializer = Substitute.For<ISerializer>();
 
-			ImportApiFactory factory = new ImportApiFactory(tokenProvider, oauthClientManager, federatedInstanceManager, helper, systemEventLoggingService);
+			ImportApiFactory factory = new ImportApiFactory(tokenProvider, federatedInstanceManager, helper, systemEventLoggingService, serializer);
 			ImportJobFactory jobFactory = new ImportJobFactory();
 			ImportSettings setting = new ImportSettings()
 			{

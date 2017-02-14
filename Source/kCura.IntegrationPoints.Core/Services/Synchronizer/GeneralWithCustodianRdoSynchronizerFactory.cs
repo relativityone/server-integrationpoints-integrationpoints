@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		public SourceProvider SourceProvider { get; set; }
 
-		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options)
+		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options, string credentials)
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				if (json.FederatedInstanceArtifactId != null)
 				{
 					IHelperFactory helperFactory = _container.Resolve<IHelperFactory>();
-					IHelper targetHelper = helperFactory.CreateTargetHelper(sourceInstanceHelper, json.FederatedInstanceArtifactId);
+					IHelper targetHelper = helperFactory.CreateTargetHelper(sourceInstanceHelper, json.FederatedInstanceArtifactId, credentials);
 					client = targetHelper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
 					client.APIOptions.WorkspaceID = json.CaseArtifactId;
 				}
@@ -68,6 +68,11 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				default:
 					return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizer).AssemblyQualifiedName);
 			}
+		}
+
+		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options)
+		{
+			return CreateSynchronizer(identifier, options, null);
 		}
 	}
 }

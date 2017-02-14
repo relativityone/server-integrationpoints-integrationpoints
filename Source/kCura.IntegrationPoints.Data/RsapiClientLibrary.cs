@@ -31,15 +31,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		public int Create(T obj)
+		public int Create(T integrationPoint)
 		{
-			CheckObject(obj);
-			return Create(new List<T> { obj }).First();
+			CheckObject(integrationPoint);
+			return Create(new List<T> { integrationPoint }).First();
 		}
 
-		public virtual List<int> Create(IEnumerable<T> objs)
+		public virtual List<int> Create(IEnumerable<T> integrationPoints)
 		{
-			var localList = objs.ToList();
+			var localList = integrationPoints.ToList();
 			if (!localList.Any())
 			{
 				return new List<int>();

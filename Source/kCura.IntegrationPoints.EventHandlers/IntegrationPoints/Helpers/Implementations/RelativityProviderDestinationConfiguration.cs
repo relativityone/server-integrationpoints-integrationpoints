@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Artifact = kCura.EventHandler.Artifact;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 		}
 
-		public override void UpdateNames(IDictionary<string, object> settings)
+		public override void UpdateNames(IDictionary<string, object> settings, Artifact artifact)
 		{
 			try
 			{
@@ -36,7 +36,5 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				settings[_ARTIFACT_TYPE_NAME] = "RDO";
 			}
 		}
-
-		
 	}
 }

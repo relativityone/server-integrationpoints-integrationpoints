@@ -25,12 +25,12 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
 		private ISourceJobManager _sourceJobManager;
 		private IDocumentRepository _documentRepo;
-		private IToggleProvider _toggleProvider;
 		private IHelper _helper;
 		private string _importConfig;
 		private int _sourceWorkspaceArtifactId;
 		private int _destinationWorkspaceArtifactId;
 		private int _jobHistoryArtifactId;
+		private int? _federatedInstanceArtifactId;
 
 		private FieldMap[] _fieldMaps;
 		private TargetDocumentsTaggingManager _instance;
@@ -58,12 +58,12 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
 			_documentRepo = Substitute.For<IDocumentRepository>();
-			_toggleProvider = Substitute.For<IToggleProvider>();
 			_helper = Substitute.For<IHelper>();
 
 			_importConfig = String.Empty;
 			_sourceWorkspaceArtifactId = 100;
 			_destinationWorkspaceArtifactId = 200;
+			_federatedInstanceArtifactId = null;
 			_jobHistoryArtifactId = 300;
 			_fieldMaps = new FieldMap[]
 			{
@@ -92,8 +92,8 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_repositoryFactory.GetScratchTableRepository(_sourceWorkspaceArtifactId, _scratchTableName, Arg.Any<string>()).ReturnsForAnyArgs(_scratchTableRepository);
 
 			_instance = new TargetDocumentsTaggingManager(_repositoryFactory, _synchronizer, _sourceWorkspaceManager, _sourceJobManager, 
-				_documentRepo, _toggleProvider, _helper, _fieldMaps, _importConfig, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, 
-				_jobHistoryArtifactId, _uniqueJobId);
+				_documentRepo, _helper, _fieldMaps, _importConfig, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
+				_federatedInstanceArtifactId, _jobHistoryArtifactId, _uniqueJobId);
 		}
 
 		[SetUp]

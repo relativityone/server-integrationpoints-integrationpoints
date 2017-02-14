@@ -11,17 +11,28 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		{
 			ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
 
+			IFederatedInstanceModelFactory federatedInstanceModelFactory;
+			if (integrationPointBaseFieldsConstants.Name == IntegrationPointFieldGuids.Name)
+			{
+				federatedInstanceModelFactory = new IntegrationPointFederatedInstanceModelFactory(caseServiceContext);
+			}
+			else
+			{
+				federatedInstanceModelFactory = new IntegrationPointProfileFederatedInstanceModelFactory();
+			}
+
+
 			IRelativityProviderConfiguration relativityProviderSourceConfiguration =
-				RelativityProviderSourceConfigurationFactory.Create(helper);
+				RelativityProviderSourceConfigurationFactory.Create(helper, federatedInstanceModelFactory);
 
 			IRelativityProviderConfiguration relativityProviderDestinationConfiguration =
 				new RelativityProviderDestinationConfiguration(helper);
 
 			return new IntegrationPointViewPreLoad(
-					caseServiceContext,
-					relativityProviderSourceConfiguration,
-					relativityProviderDestinationConfiguration,
-					integrationPointBaseFieldsConstants);
+				caseServiceContext,
+				relativityProviderSourceConfiguration,
+				relativityProviderDestinationConfiguration,
+				integrationPointBaseFieldsConstants);
 		}
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
@@ -109,17 +111,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			ISerializer serializer = new JSONSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, serializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
+			IToggleProvider toggleProvider = new AlwaysDisabledToggleProvider();
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory, toggleProvider);
 
 			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, serializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-			IManagerFactory managerFactory = new ManagerFactory(Helper);
+			IManagerFactory managerFactory = new ManagerFactory(Helper, toggleProvider);
 
 			_caseServiceContext = caseServiceContext;
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), serializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), serializer);
-			IToggleProvider toggleProvider = new AlwaysDisabledToggleProvider();
-
+			
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, 
 				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator, toggleProvider);
 		}

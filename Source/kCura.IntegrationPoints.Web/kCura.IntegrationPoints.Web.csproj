@@ -335,6 +335,7 @@
     <Compile Include="Controllers\API\SearchFolderController.cs" />
     <Compile Include="Controllers\API\WorkspaceViewController.cs" />
     <Compile Include="Controllers\IntegrationPointBaseController.cs" />
+    <Compile Include="Controllers\ModalsController.cs" />
     <Compile Include="Controllers\TooltipController.cs" />
     <Compile Include="DataStructures\ExportSourceOptions.cs" />
     <Compile Include="ErrorFactory.cs" />
@@ -534,6 +535,7 @@
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
+    <Content Include="Scripts\modals\authenticate-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
     <Content Include="Scripts\integration-point\scheduler-summary-page.js" />
@@ -793,6 +795,7 @@
     <Content Include="Views\IntegrationPoints\SchedulerSummaryPage.cshtml" />
     <Content Include="Views\ThirdPartyProviders\ThirdPartyProviderSummaryPage.cshtml" />
     <Content Include="Views\Tooltip\TooltipView.cshtml" />
+    <Content Include="Views\Modals\AuthenticationModalView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

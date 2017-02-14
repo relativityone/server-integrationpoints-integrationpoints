@@ -48,7 +48,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 				DestinationConfiguration = model.Destination,
 				FieldsMap = model.Map,
 				Type = model.Type,
-				IntegrationPointTypeIdentifier = integrationPointType.Identifier
+				IntegrationPointTypeIdentifier = integrationPointType.Identifier,
+				SecuredConfiguration = model.SecuredConfiguration
 			};
 		}
 			

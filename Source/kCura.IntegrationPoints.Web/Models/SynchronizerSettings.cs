@@ -4,5 +4,6 @@
 	{
 		public string Settings { get; set; }
 
+		public string Credentials { get; set; }
 	}
 }

@@ -151,6 +151,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				DestinationConfiguration = "destination config",
 				SourceProvider = 741,
 				FieldMappings = "mapping",
+				SecuredConfiguration = "secured config"
 			};
 			_configuration = new SourceConfiguration()
 			{
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns(new SavedSearchDTO());
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
-			_synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration).Returns(_synchornizer);
+			_synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_synchornizer);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, true).Returns(_jobStopManager);
 
 			ImportSettings settings = new ImportSettings();

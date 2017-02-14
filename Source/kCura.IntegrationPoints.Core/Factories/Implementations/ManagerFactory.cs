@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -10,16 +12,20 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ManagerFactory : IManagerFactory
 	{
 		private readonly IHelper _helper;
+		private readonly IToggleProvider _toggleProvider;
 
-		public ManagerFactory(IHelper helper)
+		public ManagerFactory(IHelper helper, IToggleProvider toggleProvider)
 		{
 			_helper = helper;
+			_toggleProvider = toggleProvider;
 		}
 
 		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
@@ -90,16 +96,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IFederatedInstanceManager CreateFederatedInstanceManager(IContextContainer contextContainer)
 		{
-			IFederatedInstanceManager manager = new FederatedInstanceManager(CreateRepositoryFactory(contextContainer));
+			IFederatedInstanceManager manager = new FederatedInstanceManager(CreateRepositoryFactory(contextContainer), _toggleProvider);
 
 			return manager;
-		}
-
-		public IOAuthClientManager CreateOAuthClientManager(IContextContainer contextContainer)
-		{
-			IOAuthClientManager oAuthClientManager = new OAuthClientManager(CreateRepositoryFactory(contextContainer));
-
-			return oAuthClientManager;
 		}
 
 		public IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer)

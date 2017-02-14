@@ -199,6 +199,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private string ReconfigureImportAPISettings(int custodianManagerFieldArtifactID)
 		{
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(_destinationConfiguration);
+			importSettings.FederatedInstanceCredentials = this.IntegrationPoint.SecuredConfiguration;
 			importSettings.ObjectFieldIdListContainsArtifactId = new[] {custodianManagerFieldArtifactID};
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
 			importSettings.CustodianManagerFieldContainsLink = false;

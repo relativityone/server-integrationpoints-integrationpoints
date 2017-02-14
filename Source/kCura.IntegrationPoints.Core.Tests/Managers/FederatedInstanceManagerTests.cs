@@ -5,12 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -22,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private IArtifactTypeRepository _artifactTypeRepository;
 		private IFederatedInstanceRepository _federatedInstanceRepository;
 		private IServiceUrlRepository _serviceUrlRepository;
+		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -36,12 +39,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			_serviceUrlRepository = Substitute.For<IServiceUrlRepository>();
 			_repositoryFactory.GetServiceUrlRepository().Returns(_serviceUrlRepository);
+
+			_toggleProvider = Substitute.For<IToggleProvider>();
+			_toggleProvider.IsEnabled<RipToR1Toggle>().Returns(true);
 		}
 
 		[Test]
 		public void TestLocalInstance()
 		{
-			var testInstance = new FederatedInstanceManager(_repositoryFactory);
+			var testInstance = new FederatedInstanceManager(_repositoryFactory, _toggleProvider);
 
 			var federatedInstance = testInstance.RetrieveFederatedInstance(null);
 
@@ -53,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			//arrange
 			var federatedInstanceArtifactId = 1024;
-			var testInstance = new FederatedInstanceManager(_repositoryFactory);
+			var testInstance = new FederatedInstanceManager(_repositoryFactory, _toggleProvider);
 
 			string name = "FederatedInstance1";
 			string instanceUrl = "http://hostname/";
@@ -93,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public void TestRetrieveAllHasLocalInstance()
 		{
 			//arrange
-			var testInstance = new FederatedInstanceManager(_repositoryFactory);
+			var testInstance = new FederatedInstanceManager(_repositoryFactory, _toggleProvider);
 
 			int artifactId1 = 4096;
 			string name1 = "FederatedInstance1";

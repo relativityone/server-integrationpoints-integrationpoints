@@ -274,6 +274,18 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IF NOT EXISTS (SELECT * FROM [eddsdbo].[TOGGLE] WHERE [Name] = &apos;kCura.IntegrationPoints.Core.Toggles.RipToR1Toggle&apos;)
+        ///BEGIN
+        ///	INSERT INTO [eddsdbo].[Toggle] VALUES (&apos;kCura.IntegrationPoints.Core.Toggles.RipToR1Toggle&apos;, 1)
+        ///END.
+        /// </summary>
+        internal static string RipToR1Toggle {
+            get {
+                return ResourceManager.GetString("RipToR1Toggle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update [eddsdbo].[IntegrationPoint]
         ///set LogErrors = 0
         ///where LogErrors IS NULL.

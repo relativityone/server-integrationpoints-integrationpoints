@@ -23,5 +23,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		public bool LogErrors { get; set; }
 		public string NotificationEmails { get; set; }
 		public DateTime? NextRun { get; set; }
+		public string SecuredConfiguration { get; set; }
 	}
 }

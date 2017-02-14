@@ -42,21 +42,21 @@
 
 	public class IntegrationPointProfileFieldsConstants : IIntegrationPointBaseFieldsConstants
 	{
-		public string NextScheduledRuntimeUTC => IntegrationPointProfileFields.NextScheduledRuntimeUTC;
+		public string NextScheduledRuntimeUTC => IntegrationPointProfileFieldGuids.NextScheduledRuntimeUTC;
 		public string LastRuntimeUTC => string.Empty;
-		public string FieldMappings => IntegrationPointProfileFields.FieldMappings;
-		public string EnableScheduler => IntegrationPointProfileFields.EnableScheduler;
-		public string SourceConfiguration => IntegrationPointProfileFields.SourceConfiguration;
-		public string DestinationConfiguration => IntegrationPointProfileFields.DestinationConfiguration;
-		public string SourceProvider => IntegrationPointProfileFields.SourceProvider;
-		public string ScheduleRule => IntegrationPointProfileFields.ScheduleRule;
-		public string OverwriteFields => IntegrationPointProfileFields.OverwriteFields;
-		public string DestinationProvider => IntegrationPointProfileFields.DestinationProvider;
+		public string FieldMappings => IntegrationPointProfileFieldGuids.FieldMappings;
+		public string EnableScheduler => IntegrationPointProfileFieldGuids.EnableScheduler;
+		public string SourceConfiguration => IntegrationPointProfileFieldGuids.SourceConfiguration;
+		public string DestinationConfiguration => IntegrationPointProfileFieldGuids.DestinationConfiguration;
+		public string SourceProvider => IntegrationPointProfileFieldGuids.SourceProvider;
+		public string ScheduleRule => IntegrationPointProfileFieldGuids.ScheduleRule;
+		public string OverwriteFields => IntegrationPointProfileFieldGuids.OverwriteFields;
+		public string DestinationProvider => IntegrationPointProfileFieldGuids.DestinationProvider;
 		public string JobHistory => string.Empty;
-		public string LogErrors => IntegrationPointProfileFields.LogErrors;
-		public string EmailNotificationRecipients => IntegrationPointProfileFields.EmailNotificationRecipients;
+		public string LogErrors => IntegrationPointProfileFieldGuids.LogErrors;
+		public string EmailNotificationRecipients => IntegrationPointProfileFieldGuids.EmailNotificationRecipients;
 		public string HasErrors => string.Empty;
-		public string Type => IntegrationPointProfileFields.Type;
-		public string Name => IntegrationPointProfileFields.Name;
+		public string Type => IntegrationPointProfileFieldGuids.Type;
+		public string Name => IntegrationPointProfileFieldGuids.Name;
 	}
 }

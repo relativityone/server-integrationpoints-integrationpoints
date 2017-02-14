@@ -159,7 +159,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				DestinationProvider = 942,
 				FieldMappings = "fields",
 				SourceConfiguration = "source config",
-				DestinationConfiguration = "{ \"artifactTypeID\": 1000036 }"
+				DestinationConfiguration = "{ \"artifactTypeID\": 1000036 }",
+				SecuredConfiguration = "sec conf"
 			};
 			_sourceProvider = new SourceProvider
 			{
@@ -269,7 +270,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_repositoryFactory.GetFieldRepository(_workspaceArtifactId).Returns(_fieldRepository);
 			_fieldRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
 			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
-				_integrationPoint.DestinationConfiguration).Returns(_dataSynchronizer);
+				_integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
 			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
 				.Returns(_associatedJobs);
@@ -351,6 +352,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			SyncCustodianManagerWorker task =
 				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 			task.GetType().GetField("_destinationConfiguration", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, jsonParam2);
+			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("ReconfigureImportAPISettings",

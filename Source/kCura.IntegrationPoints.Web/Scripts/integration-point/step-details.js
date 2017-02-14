@@ -152,6 +152,7 @@ var IP = IP || {};
 				self.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
 				self.importNativeFile = destinationSettings.importNativeFile;
 				self.destinationProvider = settings.destinationProvider;
+				self.SecuredConfiguration = settings.SecuredConfiguration;
 
 				self.type(settings.type);
 

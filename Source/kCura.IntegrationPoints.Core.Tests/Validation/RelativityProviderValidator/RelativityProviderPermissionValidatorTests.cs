@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var sourceContextContainer = Substitute.For<IContextContainer>();
 			var targetContextContainer = Substitute.For<IContextContainer>();
 			var targetHelper = Substitute.For<IHelper>();
-			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int?>()).Returns(targetHelper);
+			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int?>(), Arg.Any<string>()).Returns(targetHelper);
 
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(sourceContextContainer);
 			_contextContainerFactory.CreateContextContainer(targetHelper).Returns(targetContextContainer);

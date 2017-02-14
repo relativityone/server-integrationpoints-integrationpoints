@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class FederatedInstanceManager : IFederatedInstanceManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IToggleProvider _toggleProvider;
 		const string ARTIFACT_TYPE_NAME = "FederatedInstance";
 
 		private static readonly FederatedInstanceDto _localInstanceDto = new FederatedInstanceDto()
@@ -19,9 +22,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			ArtifactId = null
 		};
 
-		public FederatedInstanceManager(IRepositoryFactory repositoryFactory)
+		public FederatedInstanceManager(IRepositoryFactory repositoryFactory, IToggleProvider toggleProvider)
 		{
 			_repositoryFactory = repositoryFactory;
+			_toggleProvider = toggleProvider;
 		}
 
 		public static FederatedInstanceDto LocalInstance 
@@ -53,19 +57,25 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public IEnumerable<FederatedInstanceDto> RetrieveAll()
 		{
-			IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
-			int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
-			IFederatedInstanceRepository federatedInstanceRepository = _repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
+			var instances = new List<FederatedInstanceDto>();
 
-			var federatedInstances =
-				federatedInstanceRepository.RetrieveAll().ToList();
+			if (_toggleProvider.IsEnabled<RipToR1Toggle>())
+			{
+				IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
+				int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
+				IFederatedInstanceRepository federatedInstanceRepository =
+					_repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
 
-			LoadUrls(federatedInstances);
+				instances =
+					federatedInstanceRepository.RetrieveAll().ToList();
+
+				LoadUrls(instances);
+			}
 
 			// add local instance
-			federatedInstances.Insert(0, LocalInstance);
+			instances.Insert(0, LocalInstance);
 
-			return federatedInstances;
+			return instances;
 		}
 
 		private void LoadUrls(IEnumerable<FederatedInstanceDto> federatedInstances)

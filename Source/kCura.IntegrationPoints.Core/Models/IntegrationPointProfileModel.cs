@@ -24,7 +24,8 @@ namespace kCura.IntegrationPoints.Core.Models
 				NotificationEmails = ip.EmailNotificationRecipients ?? string.Empty,
 				LogErrors = ip.LogErrors.GetValueOrDefault(false),
 				NextRun = ip.NextScheduledRuntimeUTC,
-				Map = ip.FieldMappings
+				Map = ip.FieldMappings,
+				SecuredConfiguration = ip.SecuredConfiguration
 			};
 		}
 

@@ -4,7 +4,9 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Models;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
@@ -21,11 +23,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			_helper = Substitute.For<IEHHelper>();
 			_helperFactory = Substitute.For<IHelperFactory>();
-			_helperFactory.CreateTargetHelper(Arg.Any<IEHHelper>(), Arg.Any<int?>()).Returns(_helper);
+			_helperFactory.CreateTargetHelper(Arg.Any<IEHHelper>(), Arg.Any<int?>(), Arg.Any<string>()).Returns(_helper);
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
-			_instace = new RelativityProviderSourceConfiguration(_helper, _helperFactory, _managerFactory, _contextContainerFactory);
+			IFederatedInstanceModelFactory federatedInstanceModelFactory = Substitute.For<IFederatedInstanceModelFactory>();
+			federatedInstanceModelFactory.Create(Arg.Any<IDictionary<string, object>>(), Arg.Any<EventHandler.Artifact>()).Returns(new FederatedInstanceModel());
+
+			_instace = new RelativityProviderSourceConfiguration(_helper, _helperFactory, _managerFactory, _contextContainerFactory, federatedInstanceModelFactory);
 		}
 
 		private RelativityProviderSourceConfiguration _instace;
@@ -51,7 +56,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			MockSavedSearchQuery(savedSearchName);
 
 			// act
-			_instace.UpdateNames(settings);
+			_instace.UpdateNames(settings, new EventHandler.Artifact(934580, 990562, 533988, "", false, null));
 
 			//assert
 			Assert.AreEqual(sourceWorkspaceName, settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)]);

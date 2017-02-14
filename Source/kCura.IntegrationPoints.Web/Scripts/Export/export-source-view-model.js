@@ -312,8 +312,8 @@ var ExportSourceViewModel = function (state) {
 				}
 				else if (typeof (self.Cache.ViewsResult) === 'undefined') {
 					var searchFoldersPromise = IP.data.ajax({
-						type: 'get',
-						url: IP.utils.generateWebAPIURL('SearchFolder/GetFolders')
+						type: 'POST',
+						url: IP.utils.generateWebAPIURL('SearchFolder/GetFolders', IP.utils.getParameterByName("AppID", window.top))
 					}).fail(function (error) {
 						IP.message.error.raise("No folders were returned from the source provider.");
 					});

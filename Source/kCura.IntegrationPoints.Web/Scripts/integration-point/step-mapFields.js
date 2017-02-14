@@ -154,7 +154,8 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
-		var artifactTypeId = JSON.parse(model.destination).artifactTypeID;
+		var destinationModel = JSON.parse(model.destination);
+		var artifactTypeId = destinationModel.artifactTypeID;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]).extend({
 			fieldsMustBeMapped: {
@@ -169,6 +170,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
+		self.SecuredConfiguration = destinationModel.SecuredConfiguration;
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			uniqueIdIsMapped: {
@@ -354,7 +356,8 @@ ko.validation.insertValidationMessage = function (element) {
 
 		var workspaceFieldPromise = root.data.ajax({
 			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
-				settings: model.destination
+				settings: model.destination,
+				credentials: self.SecuredConfiguration
 			})
 		}).then(function (result) {
 			return result;
@@ -542,7 +545,8 @@ ko.validation.insertValidationMessage = function (element) {
 
 			$.ajax({
 				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID, federatedInstanceID),
-				type: 'GET',
+				type: 'POST',
+				data: self.SecuredConfiguration,
 				success: function (data) {
 					self.CatalogField = data;
 				},
@@ -922,6 +926,7 @@ ko.validation.insertValidationMessage = function (element) {
 				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 				_destination.FieldOverlayBehavior = this.model.FieldOverlayBehavior();
 				this.returnModel.destination = JSON.stringify(_destination);
+				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
 				d.resolve(this.returnModel);
 			} else {
 				this.model.errors.showAllMessages();
@@ -1028,7 +1033,4 @@ ko.validation.insertValidationMessage = function (element) {
 	};
 
 })(IP, ko);
-
-
-
 

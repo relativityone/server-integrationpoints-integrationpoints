@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IToggleProvider _toggleProvider;
 
 		private const int _WORKSPACE_ID = 23432;
+		private const string _CREDENTIALS = "{}";
 
 		[SetUp]
 		public override void SetUp()
@@ -93,10 +94,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
-				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = _CREDENTIALS
 			};
 
-			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId).Returns(_targetHelper);
+			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
 			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
 				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
@@ -133,12 +135,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			var model = new IntegrationPointModel()
 			{
-				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = _CREDENTIALS
 			};
 			var validationResult = new ValidationResult(false, "That's a damn shame.");
 			Exception expectException = new IntegrationPointProviderValidationException(validationResult);
 
-			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId).Returns(_targetHelper);
+			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
 			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
 				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);

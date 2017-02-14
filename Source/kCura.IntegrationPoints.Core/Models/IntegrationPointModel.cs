@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Core.Models
 	{
 		public DateTime? LastRun { get; set; }
 		public bool? HasErrors { get; set; }
-		public string SecuredConfiguration { get; set; }
 
 		public IntegrationPointModel()
 		{

@@ -13,13 +13,16 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private readonly ISerializer _serializer;
 		private readonly IRelativityProviderValidatorsFactory _validatorsFactory;
 
-		public string Key => IntegrationPointProviderValidator.GetProviderValidatorKey(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString());
-
 		public RelativityProviderConfigurationValidator(ISerializer serializer, IRelativityProviderValidatorsFactory validatorsFactory)
 		{
 			_serializer = serializer;
 			_validatorsFactory = validatorsFactory;
 		}
+
+		public string Key
+			=>
+				IntegrationPointProviderValidator.GetProviderValidatorKey(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString())
+		;
 
 		public ValidationResult Validate(object value)
 		{
@@ -30,24 +33,24 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
 			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
 
-			var sourceWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Source");
+			var sourceWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Source", null, null);
 			result.Add(sourceWorkspaceValidator.Validate(sourceConfiguration.SourceWorkspaceArtifactId));
 
 			if (!result.IsValid)
-			{
 				return result;
-			}
 
 			var savedSearchValidator = _validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId);
 			result.Add(savedSearchValidator.Validate(sourceConfiguration.SavedSearchArtifactId));
 
-			var destinationWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Destination", sourceConfiguration.FederatedInstanceArtifactId);
+			var destinationWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Destination", sourceConfiguration.FederatedInstanceArtifactId,
+				integrationModel.SecuredConfiguration);
 			result.Add(destinationWorkspaceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
 
-			var destinationFolderValidator = _validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId, ArtifactTypeNames.Folder, sourceConfiguration.FederatedInstanceArtifactId);
+			var destinationFolderValidator = _validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId, ArtifactTypeNames.Folder,
+				sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
 			result.Add(destinationFolderValidator.Validate(destinationConfiguration.DestinationFolderArtifactId));
 
-			var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator(sourceConfiguration.FederatedInstanceArtifactId);
+			var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
 			result.Add(fieldMappingValidator.Validate(integrationModel));
 
 			var transferredObjectValidator = _validatorsFactory.CreateTransferredObjectValidator();

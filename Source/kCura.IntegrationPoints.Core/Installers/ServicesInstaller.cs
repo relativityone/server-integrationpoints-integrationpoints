@@ -150,17 +150,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 					return await task;
 				})).LifestyleTransient());
 
-			container.Register(Component.For<IOAuthClientManager>().UsingFactoryMethod(k =>
-			{
-				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();
-				IContextContainerFactory contextContainerFactory = k.Resolve<IContextContainerFactory>();
-				IHelper helper = k.Resolve<IHelper>();
-				IContextContainer contextConainer = contextContainerFactory.CreateContextContainer(helper);
-				IOAuthClientManager oAuthClientManager = managerFactory.CreateOAuthClientManager(contextConainer);
-
-				return oAuthClientManager;
-			}).LifestyleTransient());
-
 			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
 			{
 				IManagerFactory managerFactory = k.Resolve<IManagerFactory>();

@@ -125,13 +125,11 @@ namespace kCura.IntegrationPoints.Agent.Installer
 						else
 						{
 							IHelperFactory helperFactory = k.Resolve<IHelperFactory>();
-							IHelper targetHelper = helperFactory.CreateTargetHelper(sourceHelper, importSettings.FederatedInstanceArtifactId);
+							IHelper targetHelper = helperFactory.CreateTargetHelper(sourceHelper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 							targetRepositoryFactory = new RepositoryFactory(sourceHelper, targetHelper.GetServicesManager());
 						}
-
-						IToggleProvider toggleProvider = container.Resolve<IToggleProvider>();
-
-						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, toggleProvider);
+						
+						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper);
 					}).LifestyleTransient());
 		}
 	}

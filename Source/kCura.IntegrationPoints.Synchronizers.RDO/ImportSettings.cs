@@ -49,6 +49,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public string BulkLoadFileFieldDelimiter { get; set; }
 		public int CaseArtifactId { get; set; }
 		public int? FederatedInstanceArtifactId { get; set; }
+		public string FederatedInstanceCredentials { get; set; }
 		public bool CopyFilesToDocumentRepository { get; set; }
 		public bool CustodianManagerFieldContainsLink { get; set; }
 		public int DestinationFolderArtifactId { get; set; }

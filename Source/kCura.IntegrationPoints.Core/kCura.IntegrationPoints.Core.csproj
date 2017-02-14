@@ -253,7 +253,6 @@
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Installers\ValidationInstaller.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
-    <Compile Include="Managers\Implementations\OAuthClientManager.cs" />
     <Compile Include="Managers\Implementations\PermissionManager.cs" />
     <Compile Include="Managers\IPermissionManager.cs" />
     <Compile Include="OAuthHelper.cs" />
@@ -342,6 +341,7 @@
     <Compile Include="Validation\Parts\ViewErrorsPermissionValidator.cs" />
     <Compile Include="Validation\Parts\WorkspaceValidator.cs" />
     <Compile Include="Validation\Parts\SavedSearchValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\IRelativityProviderValidatorsFactory.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderWorkspaceValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\TransferredObjectValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidator.cs" />

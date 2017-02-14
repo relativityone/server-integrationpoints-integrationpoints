@@ -1,0 +1,20 @@
+﻿<div class="popupTitle">Authenticate</div>
+<div class="card">
+	<div class="field-row" style="padding: 10px 20px;">
+		<div class="field-label required" style="min-width: 150px;" data-bind="text: model.idPropName"></div>
+		<div class="field-value">
+			<input id="client-id" style="min-width: 250px;" data-bind="value: id" />
+		</div>
+	</div>
+	<div class="field-row" style="padding: 10px 20px;">
+		<div class="field-label required" style="min-width: 150px;" data-bind="text: model.secretPropName"></div>
+		<div class="field-value">
+			<input id="client-secret" style="min-width: 250px;" data-bind="value: secret" />
+		</div>
+	</div>
+</div>
+<div class="popupArtifactActionBar">
+	<button id="authenticate-confirm-button" style="min-width: 80px;" class="ActionButton" data-bind="click: ok">Ok</button>
+	<button id="authenticate-cancel-button" style="min-width: 80px;" class="ActionButton" data-bind="click: cancel">Cancel</button>
+</div>
+<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">

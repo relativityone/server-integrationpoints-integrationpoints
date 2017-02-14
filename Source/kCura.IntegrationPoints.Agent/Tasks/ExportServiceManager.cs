@@ -453,7 +453,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				factory.SourceProvider = SourceProvider;
 			}
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration, IntegrationPointDto.SecuredConfiguration);
 			return synchronizer;
 		}
 
@@ -487,7 +487,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			var importSettings = _serializer.Deserialize<ImportSettings>(originalImportApiSettings);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
-
+			importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
 			//Switch to Append/Overlay for error retries where original setting was Append Only
 			if ((_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors) &&
 				(importSettings.OverwriteMode == OverwriteModeEnum.Append))

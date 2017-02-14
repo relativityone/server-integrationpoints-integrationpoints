@@ -1,87 +1,89 @@
 ﻿
 @{
-	ViewBag.Title = "Settings";
+    ViewBag.Title = "Settings";
 }
 <link href="~/Content/themes/default/style.min.css" rel="stylesheet" />
-<link href="~/Content/jstree-fluid.css" rel="stylesheet"/>
+<link href="~/Content/jstree-fluid.css" rel="stylesheet" />
 <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
 <div id="_main">
-	<div id="relativityProviderConfiguration" style="min-width: 900px;">
-		<div class="card">
-			<span class="label">Source</span>
-			<table style="width: 100%;">
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label required">
-								Saved Search :
-							</div>
-							<div class="field-value">
-								<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2searchable: {}"></select>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div class="card">
-			<span class="label">Destination</span>
-			<table style="width: 100%;">
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label required">
-								Relativity Instance :
-							</div>
-							<div class="field-value">
-								<select id="relativitySelector" data-bind="options: federatedInstances, optionsText: 'name', optionsValue: 'artifactId', value: FederatedInstanceArtifactId, select2searchable: {}"></select>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label required">
-								Destination Workspace :
-							</div>
-							<div class="field-value">
-								<select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, optionsCaption: 'Select...', select2searchable: {}"></select>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label required">
-								Destination Folder:
-							</div>
-							<div class="field-value select2-double-width">
-								<div id="location-select" class="select2-container fluid-mock-select filter-container">
-									<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder" />
-									<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
-								</div>
-								<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
-									<div id="browser-tree" tabindex="0"></div>
-								</div>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
+    <div id="relativityProviderConfiguration" style="min-width: 900px;">
+        <div class="card">
+            <span class="label">Source</span>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Saved Search :
+                            </div>
+                            <div class="field-value">
+                                <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2searchable: {}"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="card">
+            <span class="label">Destination</span>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Relativity Instance :
+                            </div>
+                            <div class="field-value">
+                                <select id="relativitySelector" data-bind="options: federatedInstances, optionsText: 'name', optionsValue: 'artifactId', value: FederatedInstanceArtifactId, select2searchable: {}"></select>
+                                <button id="authenticate-button" data-bind="click: openAuthenticateModal,visible: ShowAuthentiactionButton()" class="actionButtonSmall">...</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Destination Workspace :
+                            </div>
+                            <div class="field-value">
+                                <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, disable : AuthenticationFailed(), optionsCaption: 'Select...', select2searchable: {}"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Destination Folder:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <div id="location-select" class="select2-container fluid-mock-select filter-container">
+                                    <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder" />
+                                    <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+                                </div>
+                                <div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
+                                    <div id="browser-tree" tabindex="0"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>
 
 @section scripts
 {
-	<script src="~/Scripts/core/data.js"></script>
-	<script src="~/Scripts/core/utils.js"></script>
-	<script src="~/Scripts/knockout-3.4.0.js"></script>
-	<script src="~/Scripts/knockout.validation.js"></script>
-	<script src="~/Scripts/jstree.min.js"></script>
-	<script src="~/Scripts/export/location-jstree-selector.js"></script>
-	<script src="~/Scripts/integration-point/binding.js"></script>
-	<script src="~/Scripts/RelativityProvider/Relativity-provider.js"></script>
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
+    <script src="~/Scripts/knockout-3.4.0.js"></script>
+    <script src="~/Scripts/knockout.validation.js"></script>
+    <script src="~/Scripts/jstree.min.js"></script>
+    <script src="~/Scripts/export/location-jstree-selector.js"></script>
+    <script src="~/Scripts/integration-point/binding.js"></script>
+    <script src="~/Scripts/integration-point/picker.js"></script>
+    <script src="~/Scripts/RelativityProvider/Relativity-provider.js"></script>
 }

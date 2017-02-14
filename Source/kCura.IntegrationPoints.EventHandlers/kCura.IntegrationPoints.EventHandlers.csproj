@@ -205,6 +205,7 @@
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointViewPreLoadFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\RelativityProviderSourceConfigurationFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\IFederatedInstanceModelFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointSecretDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\CorrespondingJobDelete.cs" />
     <Compile Include="IntegrationPoints\Helpers\IConsoleBuilder.cs" />
@@ -223,10 +224,13 @@
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderDestinationConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointTypeInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointSecretDelete.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointFederatedInstanceModelFactory.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\IntegrationPointProfileFederatedInstanceModelFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\IWorkspaceNameValidator.cs" />
     <Compile Include="IntegrationPoints\Helpers\IRelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderSourceConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\WorkspaceNameValidator.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Models\FederatedInstanceModel.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScriptsFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ImportProvidersScripts.cs" />
