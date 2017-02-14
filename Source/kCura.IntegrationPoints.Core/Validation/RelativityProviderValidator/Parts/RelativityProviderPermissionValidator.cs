@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			var sourceWorkspacePermissionManager =
 				_managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(_helper));
 
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, sourceConfiguration.FederatedInstanceArtifactId);
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
 			var destinationWorkspacePermissionManager = 
 				_managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(targetHelper));
 

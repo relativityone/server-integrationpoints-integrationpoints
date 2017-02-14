@@ -91,9 +91,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
 			IIntegrationPointRepository integrationPointRepository = _repositoryFactory.GetIntegrationPointRepository(_helper.GetActiveCaseID());
-			IntegrationPointDTO integrationPoint = integrationPointRepository.Read(Convert.ToInt32(payload.ArtifactId));
+			var integrationPoint = _context.RsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(payload.ArtifactId));
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId);
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
 				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			IntegrationPoint integrationPoint = _context.RsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(payload.ArtifactId));
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId);
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
 				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);

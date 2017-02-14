@@ -4,32 +4,39 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.Folder;
+using Artifact = kCura.EventHandler.Artifact;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
 	public class RelativityProviderSourceConfiguration : RelativityProviderConfiguration
 	{
+		public const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IManagerFactory _managerFactory;
-		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly IFederatedInstanceModelFactory _federatedInstanceModelFactory;
 
-		public const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
 
-		public RelativityProviderSourceConfiguration(IEHHelper helper, IHelperFactory helperFactory, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory) : base(helper)
+		public RelativityProviderSourceConfiguration(IEHHelper helper, IHelperFactory helperFactory, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory,
+			IFederatedInstanceModelFactory federatedInstanceModelFactory)
+			: base(helper)
 		{
 			_helperFactory = helperFactory;
 			_managerFactory = managerFactory;
 			_contextContainerFactory = contextContainerFactory;
+			_federatedInstanceModelFactory = federatedInstanceModelFactory;
 		}
 
-		public override void UpdateNames(IDictionary<string, object> settings)
+		public override void UpdateNames(IDictionary<string, object> settings, Artifact artifact)
 		{
-			SetFolderName(settings);
+			var federatedInstanceModel = _federatedInstanceModelFactory.Create(settings, artifact);
+			SetFolderName(settings, federatedInstanceModel);
 			SetSourceWorkspaceName(settings);
-			SetTargetWorkspaceName(settings);
+			SetTargetWorkspaceName(settings, federatedInstanceModel);
 			SetSavedSearchName(settings);
 		}
 
@@ -40,9 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			{
 				var savedSearchArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId));
 				if (savedSearchArtifactId > 0)
-				{
 					GetSavedSearchId(settings, client, savedSearchArtifactId);
-				}
 			}
 		}
 
@@ -50,21 +55,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			var queryResult = new GetSavedSearchQuery(client, savedSearchArtifactId).ExecuteQuery();
 			if (queryResult.Success)
-			{
 				settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] =
 					queryResult.QueryArtifacts[0].getFieldByName("Text Identifier").ToString();
-			}
 			else
-			{
 				settings[nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)] = 0;
-			}
 		}
 
-		private void SetTargetWorkspaceName(IDictionary<string, object> settings)
+		private void SetTargetWorkspaceName(IDictionary<string, object> settings, FederatedInstanceModel federatedInstanceModel)
 		{
 			try
 			{
-				IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, GetFederatedInstanceArtifactId(settings));
+				IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, federatedInstanceModel.FederatedInstanceArtifactId, federatedInstanceModel.Credentials);
 				IWorkspaceManager workspaceManager =
 					_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(Helper,
 						targetHelper.GetServicesManager()));
@@ -106,12 +107,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 		}
 
-		private void SetFolderName(IDictionary<string, object> settings)
+		private void SetFolderName(IDictionary<string, object> settings, FederatedInstanceModel federatedInstanceModel)
 		{
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, GetFederatedInstanceArtifactId(settings));
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, federatedInstanceModel.FederatedInstanceArtifactId, federatedInstanceModel.Credentials);
 
 			using (IFolderManager folderManager =
-					targetHelper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
+				targetHelper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
 			{
 				int folderArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.FolderArtifactId));
 				int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
@@ -120,9 +121,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					var folders = folderManager.GetFolderTreeAsync(targetWorkspaceId, new List<int>(), folderArtifactId).Result;
 					var folderName = FindFolderName(folders[0], folderArtifactId);
 					if (folderName == string.Empty)
-					{
 						folderName = ERROR_FOLDER_NOT_FOUND;
-					}
 					settings[nameof(ExportUsingSavedSearchSettings.TargetFolder)] = folderName;
 				}
 				catch (Exception ex)
@@ -139,16 +138,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private string FindFolderName(Folder folder, int folderArtifactId)
 		{
 			if (folder.ArtifactID == folderArtifactId)
-			{
 				return folder.Name;
-			}
 			foreach (var folderChild in folder.Children)
 			{
 				var name = FindFolderName(folderChild, folderArtifactId);
 				if (!string.IsNullOrEmpty(name))
-				{
 					return $"{folder.Name}/{name}";
-				}
 			}
 			return string.Empty;
 		}

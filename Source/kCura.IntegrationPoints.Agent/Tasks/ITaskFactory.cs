@@ -50,6 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IHelperFactory _helperFactory;
 		private IServiceFactory _serviceFactory;
 		private ISerializer _serializer;
+		private IToggleProvider _toggleProvider;
 
 		public TaskFactory(IAgentHelper helper)
 		{
@@ -183,10 +184,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			_helperFactory = Container.Resolve<IHelperFactory>();
 			_serviceFactory = Container.Resolve<IServiceFactory>();
+			_toggleProvider = Container.Resolve<IToggleProvider>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
-			_managerFactory = new ManagerFactory(_helper);
+			_managerFactory = new ManagerFactory(_helper, _toggleProvider);
 			_jobHistoryService = CreateJobHistoryService(integrationPointDto);
 		}
 
@@ -294,10 +296,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryService.DeleteRdo(jobHistory.ArtifactId);
 		}
 
-		private IJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPointDto)
+		private IJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint)
 		{
-			DestinationConfiguration destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPointDto.DestinationConfiguration);
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, destinationConfiguration.FederatedInstanceArtifactId);
+			DestinationConfiguration destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, destinationConfiguration.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 			return _serviceFactory.CreateJobHistoryService(_helper, targetHelper, _caseServiceContext, _contextContainerFactory, _managerFactory, _serializer);
 		}
 

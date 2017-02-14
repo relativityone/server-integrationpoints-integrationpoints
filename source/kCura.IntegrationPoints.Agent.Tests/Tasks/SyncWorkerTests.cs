@@ -97,7 +97,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				DestinationProvider = 942,
 				FieldMappings = "fields",
 				SourceConfiguration = "source config",
-				DestinationConfiguration = "dest config"
+				DestinationConfiguration = "dest config",
+				SecuredConfiguration = "sec config"
 			};
 			_sourceProvider = new SourceProvider() {Identifier = Guid.NewGuid().ToString(), ApplicationIdentifier = Guid.NewGuid().ToString() };
 			_destinationProvider = new DestinationProvider() {Identifier = Guid.NewGuid().ToString()};
@@ -123,7 +124,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), (List<string>) _taskParams.BatchParameters,
 				_integrationPoint.SourceConfiguration).Returns(_sourceDataReader);
 			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
-				_integrationPoint.DestinationConfiguration).Returns(_dataSynchronizer);
+				_integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
 			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
 				.Returns(_associatedJobs);

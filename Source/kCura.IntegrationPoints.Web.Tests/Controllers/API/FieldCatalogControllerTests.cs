@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_helperFactory = Substitute.For<IHelperFactory>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 
-			_helperFactory.CreateTargetHelper(_helper).Returns(_helper);
+			_helperFactory.CreateTargetHelper(_helper, null, null).Returns(_helper);
 			_serviceFactory.CreateFieldCatalogService(_helper).Returns(_service);
 
 			HttpConfiguration config = new HttpConfiguration();
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			_service.GetAllFieldCatalogMappings(123456).ReturnsForAnyArgs(_externalMappingArray);
 
-			HttpResponseMessage responseMessage = _controller.Get(123456);
+			HttpResponseMessage responseMessage = _controller.GetCurrentInstanceFields(123456);
 			ExternalMapping[] result = ExtractMappingResponse(responseMessage);
 
 			//assert that the starting array and result of the controller call are equal

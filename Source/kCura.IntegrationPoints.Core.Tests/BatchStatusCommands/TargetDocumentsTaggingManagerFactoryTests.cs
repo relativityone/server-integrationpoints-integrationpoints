@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private TargetDocumentsTaggingManagerFactory _instance;
 		private ImportSettings _settings;
 		private IDataSynchronizer _dataSynchronizer;
-		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -49,7 +48,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_serializer = Substitute.For<ISerializer>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
 			_helper = Substitute.For<IHelper>();
-			_toggleProvider = Substitute.For<IToggleProvider>();
 			_fields = new FieldMap[0];
 			_settings = new ImportSettings();
 			_serializer.Deserialize<ImportSettings>(_DEST_CONFIG).Returns(_settings);
@@ -69,7 +67,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_synchronizerFactory,
 				_helper,
 				_serializer,
-				_toggleProvider,
 				_fields,
 				_SOURCE_CONFIG,
 				_DEST_CONFIG,
@@ -108,7 +105,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_synchronizerFactory,
 				_helper,
 				_serializer,
-				_toggleProvider,
 				_fields,
 				_SOURCE_CONFIG,
 				_DEST_CONFIG,

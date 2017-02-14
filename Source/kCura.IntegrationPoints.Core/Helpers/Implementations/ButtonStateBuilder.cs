@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -6,6 +7,7 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
@@ -39,8 +41,18 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
 
+			//TODO this is hack for now - remove after enabling I2I in profiles
+			bool isFederatedInstance = false;
+			try
+			{
+				isFederatedInstance = (new JSONSerializer()).Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration).FederatedInstanceArtifactId.HasValue;
+			}
+			catch (Exception)
+			{
+				//ignore
+			}
 			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
-				ArtifactPermission.Create);
+				ArtifactPermission.Create) && !isFederatedInstance;
 
 			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
 			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);

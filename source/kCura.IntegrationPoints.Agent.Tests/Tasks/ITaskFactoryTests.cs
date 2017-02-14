@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -81,8 +82,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_contextContainer = Substitute.For<IContextContainer>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_helperFactory = Substitute.For<IHelperFactory>();
-			_helperFactory.CreateTargetHelper(_helper).Returns(_helper);
-			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int>()).Returns(_targetHelper);
+			_helperFactory.CreateTargetHelper(_helper, null, Arg.Any<string>()).Returns(_helper);
+			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int>(), Arg.Any<string>()).Returns(_targetHelper);
 
 			_serviceFactory.CreateJobHistoryService(_helper, _helper, _caseServiceContext, _contextContainerFactory,
 				Arg.Any<IManagerFactory>(), _serializer).Returns(_jobHistoryService);
@@ -227,7 +228,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(relatedId).Returns(new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(destinationConfiguration)
+				DestinationConfiguration = JsonConvert.SerializeObject(destinationConfiguration),
+				SecuredConfiguration = "{}"
 			});
 
 			_serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(destinationConfiguration);
@@ -259,7 +261,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			int relatedId = 453245;
 			var integrationPoint = new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings())
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings()),
+				SecuredConfiguration = "{}"
 			};
 			integrationPointLibrary.Read(relatedId).Returns(integrationPoint);
 			IWindsorContainer windsorContainer = new WindsorContainer();
@@ -303,7 +306,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			var integrationPoint = new Data.IntegrationPoint()
 			{
 				SourceConfiguration = JsonConvert.SerializeObject(new SourceConfiguration() { FederatedInstanceArtifactId = 1 }),
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 1 })
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 1 }),
+				SecuredConfiguration = JsonConvert.SerializeObject(new OAuthClientDto())
 			};
 			integrationPointLibrary.Read(relatedId).Returns(integrationPoint);
 			IWindsorContainer windsorContainer = new WindsorContainer();

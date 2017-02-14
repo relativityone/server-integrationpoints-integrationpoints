@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Authentication;
 using System.Security.Claims;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
@@ -17,23 +18,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class ImportApiFactory : IImportApiFactory
 	{
 		private readonly ITokenProvider _tokenProvider;
-		private readonly IOAuthClientManager _oAuthClientManager;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly ISystemEventLoggingService _systemEventLoggingService;
 		private readonly IAPILog _logger;
+		private readonly ISerializer _serializer;
 
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
-		public ImportApiFactory(
-			ITokenProvider tokenProvider, 
-			IOAuthClientManager oAuthClientManager, 
-			IFederatedInstanceManager federatedInstanceManager,
-			IHelper helper, ISystemEventLoggingService systemEventLoggingService)
+		public ImportApiFactory(ITokenProvider tokenProvider, IFederatedInstanceManager federatedInstanceManager, IHelper helper, ISystemEventLoggingService systemEventLoggingService, ISerializer serializer)
 		{
 			_tokenProvider = tokenProvider;
-			_oAuthClientManager = oAuthClientManager;
 			_federatedInstanceManager = federatedInstanceManager;
 			_systemEventLoggingService = systemEventLoggingService;
+			_serializer = serializer;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportApiFactory>();
 		}
 
@@ -58,8 +55,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 						if (settings.FederatedInstanceArtifactId != null)
 						{
-							OAuthClientDto oAuthClientDto =
-								_oAuthClientManager.RetrieveOAuthClientForFederatedInstance(settings.FederatedInstanceArtifactId.Value);
+							OAuthClientDto oAuthClientDto = _serializer.Deserialize<OAuthClientDto>(settings.FederatedInstanceCredentials);
 							FederatedInstanceDto federatedInstance =
 								_federatedInstanceManager.RetrieveFederatedInstance(settings.FederatedInstanceArtifactId.Value);
 

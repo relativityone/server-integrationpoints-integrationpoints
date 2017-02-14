@@ -121,7 +121,8 @@ namespace kCura.IntegrationPoints.Core.Agent
 				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncCustodianManagerWorker, BatchInstance);
 				factory.SourceProvider = SourceProvider;
 			}
-			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
+			var integrationPoint = CaseServiceContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID);
+			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration, integrationPoint.SecuredConfiguration);
 			return sourceProvider;
 		}
 

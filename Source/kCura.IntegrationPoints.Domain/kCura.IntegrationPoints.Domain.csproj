@@ -212,7 +212,6 @@
     <Compile Include="ITokenProvider.cs" />
     <Compile Include="IValidator.cs" />
     <Compile Include="Managers\IFederatedInstanceManager.cs" />
-    <Compile Include="Managers\IOAuthClientManager.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\BaseDTO.cs" />

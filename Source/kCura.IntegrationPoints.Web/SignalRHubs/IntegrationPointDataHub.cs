@@ -23,6 +23,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
 using Relativity.CustomPages;
+using Relativity.Toggles.Providers;
 using Timer = System.Timers.Timer;
 
 namespace kCura.IntegrationPoints.Web.SignalRHubs
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
 
-		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory(), new ManagerFactory(ConnectionHelper.Helper()))
+		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory(), new ManagerFactory(ConnectionHelper.Helper(), new AlwaysDisabledToggleProvider()))
 		{
 			var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
 			var queueManager = _managerFactory.CreateQueueManager(_contextContainer);

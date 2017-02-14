@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		[SetUp]
 		public override void SetUp()
 		{
-			
+
 		}
 
 		[Test]
@@ -35,17 +36,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			repoFactoryMock.GetSavedSearchQueryRepository(workspaceArtifactId).Returns(savedSearchQueryRepoMock);
 
-			savedSearchQueryRepoMock.RetrievePublicSavedSearches().Returns(new[]
-			{
-				new SavedSearchDTO()
-				{
-					ArtifactId = 1001
-				}
-			});
+			var sampleContainerCollection = SavedSearchesTreeTestHelper.GetSampleContainerCollection();
+
+			// take all SavedSearches without the last one
+			int sampleItemCount = sampleContainerCollection.SavedSearchContainerItems.Count - 1;
+
+			IEnumerable<SavedSearchContainerItem> savedSearchContainerItems = sampleContainerCollection.SavedSearchContainerItems
+				.Take(sampleItemCount);
+
+			List<SavedSearchDTO> retSavedSearches = savedSearchContainerItems
+				.Select(item =>
+						new SavedSearchDTO()
+						{
+							ArtifactId = item.SavedSearch.ArtifactID
+						})
+				.ToList();
+
+			List<int> expectedSavedSearchesArtifactIds = new List<int>(retSavedSearches.Select(_ => _.ArtifactId));
+
+			savedSearchQueryRepoMock.RetrievePublicSavedSearches().Returns(retSavedSearches);
 
 			var searchContainerManager = Substitute.For<ISearchContainerManager>();
-			searchContainerManager.GetSearchContainerTreeAsync(Arg.Any<int>(), Arg.Any<List<int>>())
-				.Returns(SavedSearchesTreeTestHelper.GetSampleContainerCollection());
+			searchContainerManager.GetSearchContainerTreeAsync(Arg.Any<int>(), Arg.Is<List<int>>(x => x.SequenceEqual(expectedSavedSearchesArtifactIds)))
+				.Returns(sampleContainerCollection);
 
 			var servicesManager = Substitute.For<IServicesMgr>();
 			servicesManager.CreateProxy<ISearchContainerManager>(Arg.Any<ExecutionIdentity>())
@@ -57,13 +70,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			var expected = SavedSearchesTreeTestHelper.GetSampleTreeWithSearches();
 
+			
+
 			var creator = Substitute.For<ISavedSearchesTreeCreator>();
-			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Any<IEnumerable<SavedSearchContainerItem>>())
+			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.SequenceEqual(savedSearchContainerItems)))
 				.Returns(expected);
 
 			var service = new SavedSearchesTreeService(helper, creator, repoFactoryMock);
-
-			
 
 			// act
 			var actual = service.GetSavedSearchesTree(workspaceArtifactId);

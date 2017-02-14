@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _jobHistoryArtifactId;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISerializer _serializer;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly string _sourceConfig;
 		private readonly ISourceJobManager _sourceJobManager;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
@@ -38,7 +37,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			ISynchronizerFactory synchronizerFactory,
 			IHelper helper,
 			ISerializer serializer,
-			IToggleProvider toggleProvider,
 			FieldMap[] fields,
 			string sourceConfig,
 			string destinationConfig,
@@ -52,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_synchronizerFactory = synchronizerFactory;
 			_helper = helper;
 			_serializer = serializer;
-			_toggleProvider = toggleProvider;
 			_fields = fields;
 			_sourceConfig = sourceConfig;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
@@ -82,12 +79,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_sourceWorkspaceManager,
 				_sourceJobManager,
 				_documentRepository,
-				_toggleProvider,
 				_helper,
 				_fields.ToArray(),
 				_destinationConfig,
 				settings.SourceWorkspaceArtifactId,
 				settings.TargetWorkspaceArtifactId,
+				settings.FederatedInstanceArtifactId,
 				_jobHistoryArtifactId,
 				_uniqueJobId);
 

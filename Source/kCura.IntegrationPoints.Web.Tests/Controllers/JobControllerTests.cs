@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private const int _WORKSPACE_ARTIFACT_ID = 1020530;
 		private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
 		private const int _USERID = 9;
+		private const string _CREDENTIALS = "{}";
 		private readonly string _userIdString = _USERID.ToString();
 
 		private JobController.Payload _payload;
@@ -92,7 +93,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
-			_helperFactory.CreateTargetHelper(_helper).Returns(_helper);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_serviceFactory.CreateIntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
 			_serviceFactory.CreateIntegrationPointService(_helper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
@@ -125,17 +125,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest(int? federatedInstanceArtifactId)
 		{
 			// Arrange
-			var integrationPoint = new IntegrationPointDTO()
+			var integrationPoint = new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = "{}"
 			};
 			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
 			Exception exception = new Exception(expectedErrorMessage);
 
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
@@ -167,14 +168,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			AggregateException exceptionToBeThrown = new AggregateException("ABC",
 				new[] { new AccessViolationException("123"), new Exception("456") });
 
-			var integrationPoint = new IntegrationPointDTO()
+			var integrationPoint = new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = "{}"
 			};
 
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID))
@@ -193,13 +195,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError(int? federatedInstanceArtifactId)
 		{
 			// Arrange
-			var integrationPoint = new IntegrationPointDTO()
+			var integrationPoint = new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = "{}"
 			};
 
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
 			// Act
@@ -220,13 +223,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				new Claim("rel_uai", _userIdString)
 			};
 
-			var integrationPoint = new IntegrationPointDTO()
+			var integrationPoint = new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = "{}"
 			};
 
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
 			// Act
@@ -249,12 +253,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			
 			var integrationPoint = new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = "{}"
 			};
 
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act
 			HttpResponseMessage response = _instance.Retry(_payload);
@@ -274,7 +279,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			// Arrange
 			var integrationPoint = new Data.IntegrationPoint()
 			{
-				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId })
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+				SecuredConfiguration = "{}"
 			};
 
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
@@ -282,7 +288,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
-			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId).Returns(_targetHelper);
+			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act
 			HttpResponseMessage response = _instance.Retry(_payload);

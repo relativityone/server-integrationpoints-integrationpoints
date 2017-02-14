@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceValidator>(workspaceManagerMock, String.Empty);
 			workspaceValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
-			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>())
+			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<string>())
 				.Returns(workspaceValidatorMock);
 
 			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var destinationFolderValidatorMock = Substitute.For<ArtifactValidator>(artifactServiceMock, Arg.Any<int>(), Arg.Any<string>());
 			destinationFolderValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
-			validatorsFactoryMock.CreateArtifactValidator(Arg.Any<int>(), Arg.Any<string>())
+			validatorsFactoryMock.CreateArtifactValidator(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<string>())
 				.Returns(destinationFolderValidatorMock);
 
 			var sourceFieldManager = Substitute.For<IFieldManager>();
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var fieldMappingValidatorMock = Substitute.For<FieldsMappingValidator>(serializerMock, sourceFieldManager, targetFieldManager);
 			fieldMappingValidatorMock.Validate(Arg.Any<IntegrationPointProviderValidationModel>())
 				.Returns(new ValidationResult());
-			validatorsFactoryMock.CreateFieldsMappingValidator()
+			validatorsFactoryMock.CreateFieldsMappingValidator(Arg.Any<int?>(), Arg.Any<string>())
 				.Returns(fieldMappingValidatorMock);
 
 			var transferredObjectValidatorMock = Substitute.For<TransferredObjectValidator>();

@@ -62,6 +62,7 @@
 		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
 		var destination = JSON.parse(destinationJson);
 		destination.FederatedInstanceArtifactId = viewModel.FederatedInstanceArtifactId();
+		destination.SecuredConfiguration = viewModel.SecuredConfiguration();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
 		destination.Provider = "relativity";
@@ -110,6 +111,10 @@
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
 		self.TargetFolder = ko.observable();
+		self.SecuredConfiguration = ko.observable(state.SecuredConfiguration);
+
+		self.ShowAuthentiactionButton = ko.observable(false);
+		self.AuthenticationFailed = ko.observable(false);
 
 		self.getFolderFullName = function (currentFolder, folderId) {
 			if (currentFolder.id === folderId) {
@@ -130,7 +135,11 @@
 				type: 'GET',
 				url: IP.utils.generateWebAPIURL('InstanceFinder'),
 				async: true,
-				success: function(result) {
+				success: function (result) {
+					//TODO hack for now - remove this after enabling I2I in profiles
+					if (parent.IP.data.params['apiControllerName'] == 'IntegrationPointProfilesAPI') {
+						result = result.filter(function (value) { return value.artifactId == null; });
+					}
 					self.federatedInstances(result);
 
 					if (state.FederatedInstanceArtifactId != undefined) {
@@ -138,22 +147,35 @@
 					} else {
 						self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
 					}
+					self.updateWorkspaces();
+					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null);
+					self.FederatedInstanceArtifactId.subscribe(function (value) {
+						var isRemoteInstance = value != null;
+						self.AuthenticationFailed(false);
+						self.SecuredConfiguration(null);
+						if (isRemoteInstance) {
+							self.openAuthenticateModal();
+						} else {
+							self.updateWorkspaces();
+						}
+						self.ShowAuthentiactionButton(isRemoteInstance);
+					});
 				},
-				error: function() {
+				error: function () {
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");
 					self.federatedInstances([]);
 				}
 			});
 		}
-
 		self.setDestinationFolder = function (folderArtifactId, destinationWorkspaceId) {
 			if (!folderArtifactId) {
 				return;
 			}
 
 			IP.data.ajax({
-				type: "get",
-				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId())
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId()),
+				data: self.SecuredConfiguration()
 			})
 				.then(function (result) {
 					self.TargetFolder(self.getFolderFullName(result, folderArtifactId));
@@ -165,16 +187,11 @@
 
 		self.setDestinationFolder(state.FolderArtifactId, state.TargetWorkspaceArtifactId);
 
-		self.TargetWorkspaceArtifactId.subscribe(function (value) {
-			if (value !== undefined) {
-				self.getFolderAndSubFolders(value);
-			}
-		});
-		
 		self.getFolderAndSubFolders = function (destinationWorkspaceId) {
 			IP.data.ajax({
-				type: "get",
-				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId())
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId()),
+				data: self.SecuredConfiguration()
 			}).then(function (result) {
 				if (!!self.TargetFolder() && self.TargetFolder().indexOf(result.text) === -1) {
 					self.FolderArtifactId("");
@@ -215,10 +232,11 @@
 			});
 		}
 
-		self.updateWorkspaces = function() {
+		self.updateWorkspaces = function () {
 			IP.data.ajax({
-				type: 'GET',
+				type: 'POST',
 				url: IP.utils.generateWebAPIURL('WorkspaceFinder', self.FederatedInstanceArtifactId()),
+				data: self.SecuredConfiguration(),
 				async: true,
 				success: function (result) {
 					ko.utils.arrayForEach(result, function (item) {
@@ -239,9 +257,31 @@
 			});
 		}
 
-		self.FederatedInstanceArtifactId.subscribe(function(value) {
+		self.updateSecuredConfiguration = function (clientId, clientSecret) {
+			self.SecuredConfiguration(IP.utils.generateCredentialsData(self.FederatedInstanceArtifactId(), clientId, clientSecret));
 			self.updateWorkspaces();
-		});
+		}
+
+		var authenticateModalViewModel = new AuthenticateViewModel(
+			function (clientId, clientSecret) {
+				self.updateSecuredConfiguration(clientId, clientSecret);
+			},
+			function () {
+				self.AuthenticationFailed(true);
+				self.workspaces([]);
+				self.TargetWorkspaceArtifactId(null);
+				self.FolderArtifactId(null);
+				self.TargetFolder(null);
+				self.locationSelector.reload([]);
+			}
+		);
+
+		Picker.create("Modals", "authenticate-modal", "AuthenticationModalView", authenticateModalViewModel);
+
+		self.openAuthenticateModal = function () {
+			self.AuthenticationFailed(false);
+			authenticateModalViewModel.open();
+		};
 
 		this.TargetFolder.extend({
 			required: {
@@ -298,7 +338,7 @@
 		});
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
-			if (value !== undefined) {
+			if (value) {
 				self.getFolderAndSubFolders(value);
 			}
 			if (!self.TargetWorkspaceArtifactId.isValid()) {
@@ -328,6 +368,7 @@
 			return {
 				"FederatedInstanceArtifactId": self.FederatedInstanceArtifactId(),
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
+				"SecuredConfiguration": self.SecuredConfiguration(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 				"FolderArtifactId": self.FolderArtifactId()

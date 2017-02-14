@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private EncryptingRsapiClientLibrary _encryptingRsapiClientLibrary;
 		private ISecretCatalog _secretCatalog;
 		private ISecretManager _secretManager;
+		private RsapiClientLibrary<IntegrationPoint> _integrationPointLibrary;
 
 		public EncryptingRsapiClientLibraryTests() : base($"EncryptingClient_{Utils.FormatedDateTimeNow}")
 		{
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			base.SuiteSetup();
 
+			_integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(Helper, WorkspaceArtifactId);
 			_secretCatalog = SecretStoreFactory.GetSecretStore(BaseServiceContextHelper.Create().GetMasterRdgContext());
 			_secretManager = new SecretManager(WorkspaceArtifactId);
 			_encryptingRsapiClientLibrary = new EncryptingRsapiClientLibrary(new RsapiClientLibrary<IntegrationPoint>(Helper, WorkspaceArtifactId), _secretCatalog,
@@ -43,13 +45,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			rdo.ArtifactId = _encryptingRsapiClientLibrary.Create(rdo);
-			var secretId = rdo.SecuredConfiguration;
+			var secretId = _integrationPointLibrary.Read(rdo.ArtifactId).SecuredConfiguration;
 			Assert.That(IntegrationPointHasSecretId(rdo.ArtifactId, secretId));
 			Assert.That(SecretExistsInDatabase(secretId));
 
 			rdo.SecuredConfiguration = secondSecret;
 			_encryptingRsapiClientLibrary.Update(rdo);
-			Assert.That(rdo.SecuredConfiguration, Is.EqualTo(secretId));
+			var secretIdAfterUpdate = _integrationPointLibrary.Read(rdo.ArtifactId).SecuredConfiguration;
+			Assert.That(secretIdAfterUpdate, Is.EqualTo(secretId));
 
 			var actualRdo = _encryptingRsapiClientLibrary.Read(rdo.ArtifactId);
 			Assert.That(actualRdo.SecuredConfiguration, Is.EqualTo(secondSecret));
@@ -74,10 +77,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			var integrationPointId = _encryptingRsapiClientLibrary.Create(rdo);
 
-			Assert.That(IntegrationPointHasSecretId(integrationPointId, rdo.SecuredConfiguration));
-			Assert.That(SecretExistsInDatabase(rdo.SecuredConfiguration));
-			Assert.That(rdo.SecuredConfiguration, Is.Not.EqualTo(expectedSecuredConfiguration));
-			Assert.That(ReadSecret(rdo.SecuredConfiguration), Is.EqualTo(expectedSecuredConfiguration));
+			var secretId = _integrationPointLibrary.Read(integrationPointId).SecuredConfiguration;
+			Assert.That(IntegrationPointHasSecretId(integrationPointId, secretId));
+			Assert.That(SecretExistsInDatabase(secretId));
+			Assert.That(rdo.SecuredConfiguration, Is.EqualTo(expectedSecuredConfiguration));
+			Assert.That(ReadSecret(secretId), Is.EqualTo(expectedSecuredConfiguration));
 		}
 
 		[Test]
@@ -94,17 +98,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			};
 
 			rdo.ArtifactId = _encryptingRsapiClientLibrary.Create(rdo);
-			var securedConfigurationBeforeUpdate = rdo.SecuredConfiguration;
+			var secretIdBeforeUpdate = _integrationPointLibrary.Read(rdo.ArtifactId).SecuredConfiguration;
 
 			rdo.SecuredConfiguration = expectedSecuredConfiguration;
 			_encryptingRsapiClientLibrary.Update(rdo);
-			var securedConfigurationAfterUpdate = rdo.SecuredConfiguration;
+			var secretIdAfterUpdate = _integrationPointLibrary.Read(rdo.ArtifactId).SecuredConfiguration;
 
-			Assert.That(IntegrationPointHasSecretId(rdo.ArtifactId, rdo.SecuredConfiguration));
-			Assert.That(SecretExistsInDatabase(rdo.SecuredConfiguration));
-			Assert.That(rdo.SecuredConfiguration, Is.Not.EqualTo(expectedSecuredConfiguration));
-			Assert.That(ReadSecret(rdo.SecuredConfiguration), Is.EqualTo(expectedSecuredConfiguration));
-			Assert.That(securedConfigurationAfterUpdate, Is.EqualTo(securedConfigurationBeforeUpdate));
+			Assert.That(IntegrationPointHasSecretId(rdo.ArtifactId, secretIdAfterUpdate));
+			Assert.That(SecretExistsInDatabase(secretIdAfterUpdate));
+			Assert.That(rdo.SecuredConfiguration, Is.EqualTo(expectedSecuredConfiguration));
+			Assert.That(ReadSecret(secretIdAfterUpdate), Is.EqualTo(expectedSecuredConfiguration));
+			Assert.That(secretIdAfterUpdate, Is.EqualTo(secretIdBeforeUpdate));
 		}
 
 		[Test]
@@ -115,21 +119,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[TestCase("{json: \"example\"}")]
 		public void UpdateOldIntegrationPoint(string expectedSecuredConfiguration)
 		{
-			var integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(Helper, WorkspaceArtifactId);
-
 			var oldRdo = new IntegrationPoint
 			{
 				Name = "ip"
 			};
-			oldRdo.ArtifactId = integrationPointLibrary.Create(oldRdo);
+			oldRdo.ArtifactId = _integrationPointLibrary.Create(oldRdo);
 
 			oldRdo.SecuredConfiguration = expectedSecuredConfiguration;
 			_encryptingRsapiClientLibrary.Update(oldRdo);
 
-			Assert.That(IntegrationPointHasSecretId(oldRdo.ArtifactId, oldRdo.SecuredConfiguration));
-			Assert.That(SecretExistsInDatabase(oldRdo.SecuredConfiguration));
-			Assert.That(oldRdo.SecuredConfiguration, Is.Not.EqualTo(expectedSecuredConfiguration));
-			Assert.That(ReadSecret(oldRdo.SecuredConfiguration), Is.EqualTo(expectedSecuredConfiguration));
+			var secretId = _integrationPointLibrary.Read(oldRdo.ArtifactId).SecuredConfiguration;
+			Assert.That(IntegrationPointHasSecretId(oldRdo.ArtifactId, secretId));
+			Assert.That(SecretExistsInDatabase(secretId));
+			Assert.That(oldRdo.SecuredConfiguration, Is.EqualTo(expectedSecuredConfiguration));
+			Assert.That(ReadSecret(secretId), Is.EqualTo(expectedSecuredConfiguration));
 		}
 
 		[Test]
@@ -182,14 +185,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[Test]
 		public void ReadOldIntegrationPoint()
 		{
-			var integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(Helper, WorkspaceArtifactId);
-
 			var rdo = new IntegrationPoint
 			{
 				Name = "ip"
 			};
 
-			var integrationPointId = integrationPointLibrary.Create(rdo);
+			var integrationPointId = _integrationPointLibrary.Create(rdo);
 
 			var actualRdo = _encryptingRsapiClientLibrary.Read(integrationPointId);
 
@@ -215,13 +216,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[Test]
 		public void DeleteOldIntegrationPoint()
 		{
-			var integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(Helper, WorkspaceArtifactId);
-
 			var rdo = new IntegrationPoint
 			{
 				Name = "ip"
 			};
-			var integrationPointId = integrationPointLibrary.Create(rdo);
+			var integrationPointId = _integrationPointLibrary.Create(rdo);
 
 			_encryptingRsapiClientLibrary.Delete(integrationPointId);
 
@@ -259,14 +258,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[Test]
 		public void QueryOldIntegrationPoint()
 		{
-			var integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(Helper, WorkspaceArtifactId);
-
 			var rdo = new IntegrationPoint
 			{
 				Name = $"ip_{Guid.NewGuid()}"
 			};
 
-			integrationPointLibrary.Create(rdo);
+			_integrationPointLibrary.Create(rdo);
 
 			Query<RDO> query = new Query<RDO>
 			{

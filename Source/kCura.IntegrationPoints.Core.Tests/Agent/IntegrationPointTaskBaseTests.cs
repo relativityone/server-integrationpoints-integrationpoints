@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 		[SetUp]
 		public override void SetUp()
 		{
+			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_helper = Substitute.For<IHelper>();
@@ -231,13 +232,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
 				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
 
+			var integrationPoint = new Data.IntegrationPoint
+			{
+				SecuredConfiguration = "{}"
+			};
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(Arg.Any<int>()).Returns(integrationPoint);
+
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
 			_managerFactory.CreateJobStopManager(Arg.Is(_jobService), Arg.Is(_jobHistoryService),
 				Arg.Is(taskParameters.BatchInstance), jobIdValue, true)
 				.Returns(jobStopManager);
 
-			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration))
+			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(integrationPoint.SecuredConfiguration))
 				.Returns(expectedDataSynchronizer);
 
 			// ACT
@@ -245,7 +252,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
 			// ASSERT
 			Assert.AreEqual(expectedDataSynchronizer, result);
-			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration));
+			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(integrationPoint.SecuredConfiguration));
 		}
 	}
 

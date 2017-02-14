@@ -76,8 +76,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IWorkspaceManager workspaceManagerProxy =
 				_servicesMgr.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser))
 			{
-				Task<IEnumerable<WorkspaceRef>> activeWorkspacesTask = workspaceManagerProxy.RetrieveAllActive();
-				activeWorkspaces = activeWorkspacesTask.Result.Select(x => new WorkspaceDTO()
+				IEnumerable<WorkspaceRef> result = workspaceManagerProxy.RetrieveAllActive().Result;
+				activeWorkspaces = result.Select(x => new WorkspaceDTO()
 				{
 					Name = x.Name,
 					ArtifactId = x.ArtifactID

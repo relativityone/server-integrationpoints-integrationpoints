@@ -15,6 +15,7 @@
 		position.of = event.currentTarget;
 		position.at = "right+5 top";
 		position.my = "left top";
+		position.collision = "flip flip";
 
 		self.view.dialog('option', 'position', position);
 		self.view.dialog("open");

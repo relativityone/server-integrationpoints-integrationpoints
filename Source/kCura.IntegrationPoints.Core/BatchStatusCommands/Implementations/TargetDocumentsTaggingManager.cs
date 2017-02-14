@@ -19,8 +19,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 	public class TargetDocumentsTaggingManager : IConsumeScratchTableBatchStatus
 	{
 		private readonly int _destinationWorkspaceArtifactId;
+		private readonly int? _federatedInstanceArtifactId;
 		private readonly IDocumentRepository _documentRepository;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly FieldMap[] _fields;
 		private readonly string _importConfig;
 		private readonly int _jobHistoryArtifactId;
@@ -39,12 +39,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
 			IDocumentRepository documentRepository,
-			IToggleProvider toggleProvider,
 			IHelper helper,
 			FieldMap[] fields,
 			string importConfig,
 			int sourceWorkspaceArtifactId,
 			int destinationWorkspaceArtifactId,
+			int? federatedInstanceArtifactId,
 			int jobHistoryArtifactId,
 			string uniqueJobId)
 		{
@@ -54,13 +54,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_sourceJobManager = sourceJobManager;
 			_documentRepository = documentRepository;
-			_toggleProvider = toggleProvider;
 			_documentRepository.WorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_fields = fields;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>();
 
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_destinationWorkspaceArtifactId = destinationWorkspaceArtifactId;
+			_federatedInstanceArtifactId = federatedInstanceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
 			_importConfig = importConfig;
 		}
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				if (_toggleProvider.IsEnabled<RipToR1Toggle>())
+				if (_federatedInstanceArtifactId != null)
 				{
 					return;
 				}
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			InjectionManager.Instance.Evaluate(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id);
 			try
 			{
-				if (_toggleProvider.IsEnabled<RipToR1Toggle>())
+				if (_federatedInstanceArtifactId != null)
 				{
 					return;
 				}
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 			finally
 			{
-				if (!_toggleProvider.IsEnabled<RipToR1Toggle>())
+				if (_federatedInstanceArtifactId == null)
 				{
 					ScratchTableRepository.Dispose();
 				}

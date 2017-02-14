@@ -24,21 +24,18 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IOnBehalfOfUserClaimsPrincipalFactory _claimsPrincipalFactory;
 		private readonly IRepositoryFactory _sourceRepositoryFactory;
 		private readonly IRepositoryFactory _targetRepositoryFactory;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly IHelper _helper;
 
 		public ExporterFactory(
 			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
-			IHelper helper,
-			IToggleProvider toggleProvider)
+			IHelper helper)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
 			_targetRepositoryFactory = targetRepositoryFactory;
 			_helper = helper;
-			_toggleProvider = toggleProvider;
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
@@ -59,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
 
 			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, sourceWorkspaceManager,
-				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, _toggleProvider, mappedFiles, integrationPoint.SourceConfiguration,
+				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration,
 				userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();

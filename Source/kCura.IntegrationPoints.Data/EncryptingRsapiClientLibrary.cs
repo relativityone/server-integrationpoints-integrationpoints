@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -20,16 +21,22 @@ namespace kCura.IntegrationPoints.Data
 			_secretManager = secretManager;
 		}
 
-		public int Create(IntegrationPoint obj)
+		public int Create(IntegrationPoint integrationPoint)
 		{
-			EncryptSecuredConfigurationForNewRdo(obj);
-			return _integrationPointLibrary.Create(obj);
+			return PreserveSecuredConfiguration(integrationPoint, () =>
+			{
+				EncryptSecuredConfigurationForNewRdo(integrationPoint);
+				return _integrationPointLibrary.Create(integrationPoint);
+			});
 		}
 
-		public List<int> Create(IEnumerable<IntegrationPoint> objs)
+		public List<int> Create(IEnumerable<IntegrationPoint> integrationPoints)
 		{
-			EncryptSecuredConfigurationForNewRdos(objs);
-			return _integrationPointLibrary.Create(objs);
+			return PreserveSecuredConfiguration(integrationPoints, () =>
+			{
+				EncryptSecuredConfigurationForNewRdos(integrationPoints);
+				return _integrationPointLibrary.Create(integrationPoints);
+			});
 		}
 
 		public IntegrationPoint Read(int artifactId)
@@ -48,14 +55,20 @@ namespace kCura.IntegrationPoints.Data
 
 		public bool Update(IntegrationPoint obj)
 		{
-			EncryptSecuredConfigurationForExistingRdo(obj);
-			return _integrationPointLibrary.Update(obj);
+			return PreserveSecuredConfiguration(obj, () =>
+			{
+				EncryptSecuredConfigurationForExistingRdo(obj);
+				return _integrationPointLibrary.Update(obj);
+			});
 		}
 
 		public bool Update(IEnumerable<IntegrationPoint> objs)
 		{
-			EncryptSecuredConfigurationForExistingRdos(objs);
-			return _integrationPointLibrary.Update(objs);
+			return PreserveSecuredConfiguration(objs, () =>
+			{
+				EncryptSecuredConfigurationForExistingRdos(objs);
+				return _integrationPointLibrary.Update(objs);
+			});
 		}
 
 		public bool Delete(int artifactId)
@@ -160,7 +173,7 @@ namespace kCura.IntegrationPoints.Data
 				rdo.SecuredConfiguration = _secretManager.RetrieveValue(secretData);
 			});
 		}
-		
+
 		private void IgnoreMissingSecuredConfiguration(Action action)
 		{
 			try
@@ -172,6 +185,55 @@ namespace kCura.IntegrationPoints.Data
 				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
 				//Any access to missing field will throw FieldNotFoundException
 			}
+		}
+
+		private T IgnoreMissingSecuredConfiguration<T>(Func<T> action)
+		{
+			try
+			{
+				return action();
+			}
+			catch (FieldNotFoundException)
+			{
+				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+				//Any access to missing field will throw FieldNotFoundException
+			}
+			return default(T);
+		}
+
+		private T PreserveSecuredConfiguration<T>(IntegrationPoint integrationPoint, Func<T> action)
+		{
+			return PreserveSecuredConfiguration(new[] {integrationPoint}, action);
+		}
+
+		private T PreserveSecuredConfiguration<T>(IEnumerable<IntegrationPoint> integrationPoints, Func<T> action)
+		{
+			var preservedSecuredConfiguration = IgnoreMissingSecuredConfiguration(() =>
+			{
+				return integrationPoints.Select(x => new IntegrationPointWrapper
+				{
+					SecuredConfiguration = x.SecuredConfiguration,
+					IntegrationPoint = x
+				}).ToList();
+			});
+			T result = action();
+			IgnoreMissingSecuredConfiguration(() =>
+			{
+				if (preservedSecuredConfiguration != null)
+				{
+					foreach (var integrationPointWrapper in preservedSecuredConfiguration)
+					{
+						integrationPointWrapper.IntegrationPoint.SecuredConfiguration = integrationPointWrapper.SecuredConfiguration;
+					}
+				}
+			});
+			return result;
+		}
+
+		private class IntegrationPointWrapper
+		{
+			public IntegrationPoint IntegrationPoint { get; set; }
+			public string SecuredConfiguration { get; set; }
 		}
 	}
 }

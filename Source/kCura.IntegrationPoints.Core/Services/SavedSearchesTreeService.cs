@@ -36,7 +36,10 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			SearchContainerItemCollection searchContainterCollection = _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, searchContainersArtifactIds).Result;
 
-			JsTreeItemDTO tree = _treeCreator.Create(searchContainterCollection.SearchContainerItems, searchContainterCollection.SavedSearchContainerItems);
+			IEnumerable<SavedSearchContainerItem> publicSearchContainerItemCollection = searchContainterCollection.SavedSearchContainerItems.Where(
+				item => searchContainersArtifactIds.Contains(item.SavedSearch.ArtifactID));
+
+			JsTreeItemDTO tree = _treeCreator.Create(searchContainterCollection.SearchContainerItems, publicSearchContainerItemCollection);
 
 			return tree;
 		}
