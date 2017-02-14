@@ -53,6 +53,12 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
 		}
 
+		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix)
+		{
+			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, _helper.GetServicesManager()));
+			return new RelativityProviderWorkspaceValidator(workspaceManager, prefix);
+		}
+
 		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId, string credentials)
 		{
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);

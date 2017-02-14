@@ -19,10 +19,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			_validatorsFactory = validatorsFactory;
 		}
 
-		public string Key
-			=>
-				IntegrationPointProviderValidator.GetProviderValidatorKey(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString())
-		;
+		public string Key => IntegrationPointProviderValidator.GetProviderValidatorKey(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString());
 
 		public ValidationResult Validate(object value)
 		{
@@ -33,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
 			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
 
-			var sourceWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Source", null, null);
+			var sourceWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Source");
 			result.Add(sourceWorkspaceValidator.Validate(sourceConfiguration.SourceWorkspaceArtifactId));
 
 			if (!result.IsValid)

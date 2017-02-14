@@ -6,8 +6,8 @@ namespace kCura.IntegrationPoints.Data
 {
 	public interface IGenericLibrary<T> where T: BaseRdo, new()
 	{
-		int Create(T integrationPoint);
-		List<int> Create(IEnumerable<T> integrationPoints);
+		int Create(T obj);
+		List<int> Create(IEnumerable<T> objs);
 		T Read(int artifactId);
 		List<T> Read(IEnumerable<int> artifactIds);
 		bool Update(T obj);
