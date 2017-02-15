@@ -15,7 +15,7 @@ TooltipDefs.ExportDetailsTitle = "Export Details:";
 
 TooltipDefs.RelativityProviderSettingsDetails = [
 	{
-		name: "Append Only",
+		name: "Overwrite",
 		description: "determines how the system overwrites records once you promote data to the review workspace. This field provides the following choices:",
 		subsection: [
 			{
@@ -57,7 +57,7 @@ TooltipDefs.RelativityProviderSettingsDetails = [
 	},
 	{
 		name: "Use Folder Path Information",
-		description: "determines how the system overlays records when you promote documents to the review workspace. This field provides the following choices:",
+		description: "allows you to use a metadata field to build the folder structure for the documents that you promote to the review workspace:",
 		subsection: [
 			{
 				s_name: "Select Yes",
