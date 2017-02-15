@@ -33,7 +33,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[TestCase(false)]
 		public void ItShouldEncryptWhileCreating(bool testWithEnumerable)
 		{
-			var rdo = new IntegrationPoint();
+			var expectedSecuredConfiguration = "{secured: 'config'}";
+			var rdo = new IntegrationPoint
+			{
+				SecuredConfiguration = expectedSecuredConfiguration
+			};
 
 			var expectedDictionary = new Dictionary<string, string>();
 			var expectedSecretRef = new SecretRef
@@ -48,12 +52,12 @@ namespace kCura.IntegrationPoints.Data.Tests
 			if (testWithEnumerable)
 			{
 				_encryptingRsapiClientLibrary.Create(new[] {rdo});
-				_library.Received(1).Create(Arg.Is<IEnumerable<IntegrationPoint>>(x => x.First().SecuredConfiguration == expectedSecretRef.SecretID));
+				_library.Received(1).Create(Arg.Is<IEnumerable<IntegrationPoint>>(x => x.First().SecuredConfiguration == expectedSecuredConfiguration));
 			}
 			else
 			{
 				_encryptingRsapiClientLibrary.Create(rdo);
-				_library.Received(1).Create(Arg.Is<IntegrationPoint>(x => x.SecuredConfiguration == expectedSecretRef.SecretID));
+				_library.Received(1).Create(Arg.Is<IntegrationPoint>(x => x.SecuredConfiguration == expectedSecuredConfiguration));
 			}
 
 			_secretManager.Received(1).CreateSecretData(rdo);
@@ -112,9 +116,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 		[TestCase(false)]
 		public void ItShouldEncryptWhileUpdating(bool testWithEnumerable)
 		{
+			var expectedSecuredConfiguration = "{secured: 'config'}";
 			var rdo = new IntegrationPoint
 			{
-				ArtifactId = 801515
+				ArtifactId = 801515,
+				SecuredConfiguration = expectedSecuredConfiguration
 			};
 			var existingRdo = new IntegrationPoint();
 
@@ -132,12 +138,12 @@ namespace kCura.IntegrationPoints.Data.Tests
 			if (testWithEnumerable)
 			{
 				_encryptingRsapiClientLibrary.Update(new[] { rdo });
-				_library.Received(1).Update(Arg.Is<IEnumerable<IntegrationPoint>>(x => x.First().SecuredConfiguration == expectedSecretRef.SecretID));
+				_library.Received(1).Update(Arg.Is<IEnumerable<IntegrationPoint>>(x => x.First().SecuredConfiguration == expectedSecuredConfiguration));
 			}
 			else
 			{
 				_encryptingRsapiClientLibrary.Update(rdo);
-				_library.Received(1).Update(Arg.Is<IntegrationPoint>(x => x.SecuredConfiguration == expectedSecretRef.SecretID));
+				_library.Received(1).Update(Arg.Is<IntegrationPoint>(x => x.SecuredConfiguration == expectedSecuredConfiguration));
 			}
 
 			_secretManager.Received(1).CreateSecretData(rdo);

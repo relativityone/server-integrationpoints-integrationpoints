@@ -187,20 +187,6 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		private T IgnoreMissingSecuredConfiguration<T>(Func<T> action)
-		{
-			try
-			{
-				return action();
-			}
-			catch (FieldNotFoundException)
-			{
-				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
-				//Any access to missing field will throw FieldNotFoundException
-			}
-			return default(T);
-		}
-
 		private T PreserveSecuredConfiguration<T>(IntegrationPoint integrationPoint, Func<T> action)
 		{
 			return PreserveSecuredConfiguration(new[] {integrationPoint}, action);
@@ -208,25 +194,28 @@ namespace kCura.IntegrationPoints.Data
 
 		private T PreserveSecuredConfiguration<T>(IEnumerable<IntegrationPoint> integrationPoints, Func<T> action)
 		{
-			var preservedSecuredConfiguration = IgnoreMissingSecuredConfiguration(() =>
+			var preservedSecuredConfiguration = integrationPoints.Select(x =>
 			{
-				return integrationPoints.Select(x => new IntegrationPointWrapper
+				var wrapper = new IntegrationPointWrapper
 				{
-					SecuredConfiguration = x.SecuredConfiguration,
 					IntegrationPoint = x
-				}).ToList();
-			});
-			T result = action();
-			IgnoreMissingSecuredConfiguration(() =>
-			{
-				if (preservedSecuredConfiguration != null)
+				};
+				try
 				{
-					foreach (var integrationPointWrapper in preservedSecuredConfiguration)
-					{
-						integrationPointWrapper.IntegrationPoint.SecuredConfiguration = integrationPointWrapper.SecuredConfiguration;
-					}
+					wrapper.SecuredConfiguration = x.SecuredConfiguration;
 				}
-			});
+				catch (FieldNotFoundException)
+				{
+					//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+					//Any access to missing field will throw FieldNotFoundException
+				}
+				return wrapper;
+			}).ToList();
+			T result = action();
+			foreach (var pointWrapper in preservedSecuredConfiguration)
+			{
+				IgnoreMissingSecuredConfiguration(() => { pointWrapper.IntegrationPoint.SecuredConfiguration = pointWrapper.SecuredConfiguration; });
+			}
 			return result;
 		}
 
