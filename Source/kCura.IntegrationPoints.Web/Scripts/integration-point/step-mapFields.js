@@ -132,8 +132,15 @@ ko.validation.insertValidationMessage = function (element) {
 (function (root, ko) {
 
 	function mapField(entry) {
+		var fieldDisplayName = entry.displayName;
+		if (!entry.isIdentifier && entry.type) {
+			fieldDisplayName = entry.displayName + " [" + entry.type + "]";
+		}
+
 		return {
 			name: entry.displayName,
+			displayName: fieldDisplayName,
+			type: entry.type,
 			identifer: entry.fieldIdentifier,
 			isIdentifier: entry.isIdentifier,
 			isRequired: entry.isRequired
@@ -149,7 +156,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var self = this;
 
 		self.setTitle = function (option, item) {
-			option.title = item.name;
+			option.title = item.displayName;
 		}
 
 		this.hasBeenLoaded = model.hasBeenLoaded;
@@ -414,32 +421,39 @@ ko.validation.insertValidationMessage = function (element) {
 			function getNotMapped(fields, fieldMapping, key) {
 				return find(fields, fieldMapping, key, function (r) { return !r });
 			}
-			function getMapped(sourceField, destinationFields, fieldMapping, sourceKey, destinationKey) {
-				function _contains(array, field) {
-					return $.grep(array, function (value, index) { return value.fieldIdentifier == field.fieldIdentifier; }).length > 0; //I wish underscore was an option
+			function getMapped(sourceFields, destinationFields, fieldMapping, sourceKey, destinationKey) {
+				function findField(array, field) {
+					var fields = $.grep(array, function (value, index) { return value.fieldIdentifier === field.fieldIdentifier; });
+					var fieldFound = fields.length > 0;
+					return {
+						exist: fieldFound,
+						type: fields[0].type
+					};
 				}
 				var sourceMapped = [];
 				var destinationMapped = [];
+				var type = "type";
 				$.each(fieldMapping, function (item) {
 					var source = this[sourceKey];
 					var destination = this[destinationKey];
-					var isInSource = _contains(sourceField, source);
-					var isInDestination = _contains(destinationFields, destination);
-					if (isInSource) {
+					var sourceField = findField(sourceFields, source);
+					var destinationField = findField(destinationFields, destination);
+					if (sourceField.exist) {
+						source[type] = sourceField.type;
 						sourceMapped.push(source);
 					}
-					if (isInDestination) {
+					if (destinationField.exist) {
+						destination[type] = destinationField.type;
 						destinationMapped.push(destination);
 					}
 				});
 				return [destinationMapped, sourceMapped];
 			}
+			
 			return {
 				getNotMapped: getNotMapped,
-				getMapped: getMapped,
+				getMapped: getMapped
 			};
-
-
 		})();
 
 		root.data.deferred().all(promises).then(
@@ -451,7 +465,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.nativeFilePathOption(sourceFields);
 				self.FolderPathImportProvider(sourceFields);
 
-			    // Setting the cached value for Non-Relativity Providers
+				// Setting the cached value for Non-Relativity Providers
 				self.FolderPathSourceField(model.FolderPathSourceField);
 
 				var types = mapFields(sourceFields);
@@ -487,7 +501,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 
 				$.each(mapping, function () {
-				    if (this.fieldMapType == mapTypes.native && artifactTypeId == 10) {
+					if (this.fieldMapType == mapTypes.native && artifactTypeId == 10) {
 						self.importNativeFile("true");
 						self.nativeFilePathValue(this.sourceField.displayName);
 						return false;
@@ -565,20 +579,20 @@ ko.validation.insertValidationMessage = function (element) {
 
 
 		this.addSelectFields = function () {
-		    IP.workspaceFieldsControls.add(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
-		    self.populateExtractedText();
+			IP.workspaceFieldsControls.add(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
+			self.populateExtractedText();
 		}
 		this.addToWorkspaceField = function() {
-		    IP.workspaceFieldsControls.add(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
-		    self.populateExtractedText();
+			IP.workspaceFieldsControls.add(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
+			self.populateExtractedText();
 		}
 		this.addAllWorkspaceFields = function() {
-		    IP.workspaceFieldsControls.addAll(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
-		    self.populateExtractedText();
+			IP.workspaceFieldsControls.addAll(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
+			self.populateExtractedText();
 		}
 		this.addAlltoWorkspaceField = function() {
-		    IP.workspaceFieldsControls.addAll(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
-		    self.populateExtractedText();
+			IP.workspaceFieldsControls.addAll(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
+			self.populateExtractedText();
 		}
 
 		/********** Source Attribute control  **********/
@@ -734,7 +748,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.getTemplate = function () {
 			// If import provider and non-document type, we want to skip the field mapping step
-		    if (this.returnModel.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636" &&
+			if (this.returnModel.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636" &&
 				relativityImportType !== 0) {
 				return;
 			};
@@ -842,7 +856,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 				// specific to document type
 				if (this.model.isDocument){
-				    // pushing native file setting
+					// pushing native file setting
 					if (this.model.importNativeFile() == "true") {
 						var nativePathField = "";
 						for (var i = 0; i < allSourceField.length; i++) {
@@ -983,10 +997,10 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 	}
 
-        var step = new Step({
-            url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
-            templateID: 'step3'
-        });
+		var step = new Step({
+			url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
+			templateID: 'step3'
+		});
 
 
 	IP.messaging.subscribe('back', function () {
@@ -1033,4 +1047,3 @@ ko.validation.insertValidationMessage = function (element) {
 	};
 
 })(IP, ko);
-

@@ -58,6 +58,11 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public FieldType FieldType { get; set; }
 
 		/// <summary>
+		/// Gets or sets the Relatiity field type.
+		/// </summary>
+		public string Type { get; set; }
+
+		/// <summary>
 		/// Gets or sets a flag indicating whether the field contains a unique identifier for the data.
 		/// </summary>
 		public bool IsIdentifier { get; set; }

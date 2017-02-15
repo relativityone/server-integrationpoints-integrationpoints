@@ -96,6 +96,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
 			{
 				string fieldName = string.Empty;
+				string fieldType = string.Empty;
 				int isIdentifierFieldValue = 0;
 
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
@@ -116,6 +117,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 							// suppress error for invalid casts
 						}
 					}
+					else if (field.Name == Fields.FieldType)
+					{
+						fieldType = Convert.ToString(field.Value);
+					}
 				}
 
 				bool isIdentifier = isIdentifierFieldValue > 0;
@@ -127,6 +132,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				yield return new FieldEntry()
 				{
 					DisplayName = fieldName,
+					Type = fieldType,
 					FieldIdentifier = fieldArtifact.ArtifactId.ToString(),
 					IsIdentifier = isIdentifier,
 					IsRequired = isIdentifier
