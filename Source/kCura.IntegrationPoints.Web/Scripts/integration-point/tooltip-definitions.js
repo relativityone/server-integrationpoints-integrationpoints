@@ -72,7 +72,16 @@ TooltipDefs.RelativityProviderSettingsDetails = [
 	{
 		name: "Move Existing Documents",
 		description: "setting this option to Yes will result in moving existing documents in the destination location into folders provided in Folder Path Information field, if different. Setting this option to No will not re-folder existing documents.",
-		subsection: []
+		subsection: [
+			{
+				s_name: "Select Yes",
+				s_description: "to move existing documents into the folders provided in the Folder Path Information field. Note that if the Folder Path Information field contains an identical folder structure for existing documents in the destination workspace, those documents won’t be moved; instead, they’ll be overlaid with new information."
+			},
+			{
+				s_name: "Select No",
+				s_description: "if you don’t want to re-folder existing documents."
+			}
+		]
 	}
 ];
 
