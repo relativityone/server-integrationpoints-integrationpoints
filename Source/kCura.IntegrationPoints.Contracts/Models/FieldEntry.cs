@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public FieldType FieldType { get; set; }
 
 		/// <summary>
-		/// Gets or sets the Relatiity field type.
+		/// Gets or sets the Relativity field type.
 		/// </summary>
 		public string Type { get; set; }
 
