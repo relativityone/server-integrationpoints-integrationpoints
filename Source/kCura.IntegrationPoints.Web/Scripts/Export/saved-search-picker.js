@@ -31,6 +31,12 @@
 			self.selected = data.node;
 		});
 
+		$(".jstree").on("loaded.jstree", function () {
+
+			$('#saved-search-picker-browser-tree').jstree(true).select_node(self.selected);
+		});
+
+
 		self.view.dialog('open');
 	}
 
