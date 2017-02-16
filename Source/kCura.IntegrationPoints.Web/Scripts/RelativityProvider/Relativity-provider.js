@@ -153,6 +153,10 @@
 						var isRemoteInstance = value != null;
 						self.AuthenticationFailed(false);
 						self.SecuredConfiguration(null);
+						if (state.TargetWorkspaceArtifactId != null) {
+							state.TargetWorkspaceArtifactId = null;
+							state.FolderArtifactId = null;
+						}
 						if (isRemoteInstance) {
 							self.openAuthenticateModal();
 						} else {
@@ -196,6 +200,7 @@
 				if (!!self.TargetFolder() && self.TargetFolder().indexOf(result.text) === -1) {
 					self.FolderArtifactId("");
 					self.TargetFolder("");
+					self.TargetFolder.isModified(false);
 				}
 				self.foldersStructure = result;
 				self.locationSelector.reload(result);
@@ -246,6 +251,7 @@
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
 					self.TargetWorkspaceArtifactId.subscribe(function (value) {
 						if (self.TargetWorkspaceArtifactId !== value) {
+							self.TargetWorkspaceArtifactId.isModified(false);
 							self.WorkspaceHasChanged = true;
 						}
 					});
@@ -272,6 +278,7 @@
 				self.TargetWorkspaceArtifactId(null);
 				self.FolderArtifactId(null);
 				self.TargetFolder(null);
+				self.TargetFolder.isModified(false);
 				self.locationSelector.reload([]);
 			}
 		);
