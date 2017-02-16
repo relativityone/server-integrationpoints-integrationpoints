@@ -20,9 +20,16 @@
 		self.model = model;
 	}
 
-	this.open = function () {
-		self.id("");
-		self.secret("");
+	this.open = function (secretCatalog) {
+		if (secretCatalog) {
+			var secret = JSON.parse(secretCatalog);
+			self.id(secret.ClientId);
+			self.secret(secret.ClientSecret);
+		}
+		else {
+			self.id("");
+			self.secret("");
+		}
 		self.view.dialog("open");
 		self.view.keypress(function (e) {
 			if (e.which === 13) {

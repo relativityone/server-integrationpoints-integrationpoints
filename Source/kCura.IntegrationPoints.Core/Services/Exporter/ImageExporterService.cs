@@ -49,9 +49,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			List<ArtifactDTO> result = new List<ArtifactDTO>(size);
+			List<ArtifactDTO> result = new List<ArtifactDTO>();
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
-			
+
 			if (retrievedData != null)
 			{
 				int artifactType = (int)ArtifactType.Document;
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return result.ToArray();
 		}
 
-		public override int TotalRecordsFound => _retrievedDataCount == 0 ? (int)_exportJobInfo.RowCount : _retrievedDataCount;
+		//public override int TotalRecordsFound => _retrievedDataCount == 0 ? (int)_exportJobInfo.RowCount : _retrievedDataCount;//TODO: Item Count
 
 		private string WrapImageFileName(string imageFileName, int rowIndex)
 		{
