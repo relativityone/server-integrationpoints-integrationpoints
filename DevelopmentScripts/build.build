@@ -56,9 +56,10 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.264\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.Client.1.0.1.264\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.18\lib"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.ServiceBus.2.1.2\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.DataContracts.Shared.9.4.94\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.MetricsCollection.9.4.94\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.ServiceBus.2.1.9\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.DataContracts.Shared.9.4.117\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.MetricsCollection.9.4.117\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.APM.9.4.117\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Vfs.IO.1.0.20\lib\net451"' />
 			<arg line='/lib:"${source.packages.directory}\FluentValidation.6.1.0.0\lib\Net45"' />

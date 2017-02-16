@@ -482,12 +482,12 @@
       <HintPath>..\packages\RelativityCore.9.5.48.3\lib\net45\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.2.1.2\lib\net45\Relativity.ServiceBus.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus, Version=2.1.9.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.2.1.9\lib\net45\Relativity.ServiceBus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.Providers.Configuration, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.2.1.2\lib\net45\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus.Providers.Configuration, Version=2.1.9.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.2.1.9\lib\net45\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus.Utilities, Culture=neutral, processorArchitecture=MSIL">
@@ -510,12 +510,12 @@
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.264\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.94.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.94\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.117.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.117\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.94.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.94\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.117.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.117\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.MetricsCollection.Factory, Version=9.5.48.3, Culture=neutral, processorArchitecture=MSIL">
@@ -526,12 +526,16 @@
       <HintPath>..\packages\RelativityCore.9.5.48.3\lib\net45\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.28.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.5.28.1\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.62.75, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.5.62.75\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.Toggles, Version=9.5.48.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.5.48.3\lib\net45\Relativity.Telemetry.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.APM, Version=9.4.117.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.APM.9.4.117\lib\net45\Relativity.Telemetry.APM.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">

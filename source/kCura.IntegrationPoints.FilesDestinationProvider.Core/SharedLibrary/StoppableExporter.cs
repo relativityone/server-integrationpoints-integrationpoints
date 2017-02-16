@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		{
 			using (Client.MetricsClient.LogDuration(
 				Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR,
-				Guid.Empty, MetricTargets.SUM))
+				Guid.Empty))
 			{
 				try
 				{

@@ -34,6 +34,7 @@ using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
+using APMClient = Relativity.Telemetry.APM.Client;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -151,8 +152,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 								.Select(observer => observer.ScratchTableRepository).ToArray();
 
 							IDataReader dataReader = exporter.GetDataReader(scratchTables);
+							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
 							using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
-								Guid.Empty, MetricTargets.APMandSUM))
+								Guid.Empty))
 							{
 								synchronizer.SyncData(dataReader, MappedFields, userImportApiSettings);
 							}
@@ -161,8 +163,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				finally
 				{
+					using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT))
 					using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
-						Guid.Empty, MetricTargets.APMandSUM))
+						Guid.Empty))
 					{
 						FinalizeExportServiceObservers(job);
 					}
