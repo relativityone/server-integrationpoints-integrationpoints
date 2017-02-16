@@ -148,7 +148,7 @@
 						self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
 					}
 					self.updateWorkspaces();
-					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null);
+					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null && !self.disable);
 					self.FederatedInstanceArtifactId.subscribe(function (value) {
 						var isRemoteInstance = value != null;
 						self.AuthenticationFailed(false);
@@ -280,7 +280,7 @@
 
 		self.openAuthenticateModal = function () {
 			self.AuthenticationFailed(false);
-			authenticateModalViewModel.open();
+			authenticateModalViewModel.open(self.SecuredConfiguration());
 		};
 
 		this.TargetFolder.extend({
