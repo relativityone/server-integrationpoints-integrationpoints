@@ -23,7 +23,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void ValidateTest(bool canEditIntegrationPoint, bool canEditJobHistory)
 		{
 			// arrange
-			_sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, INTEGRATION_POINT_ID, ArtifactPermission.Edit).Returns(canEditIntegrationPoint);
+			var objectTypeGuid = new Guid(_validationModel.ObjectTypeGuid);
+
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(objectTypeGuid, INTEGRATION_POINT_ID, ArtifactPermission.Edit).Returns(canEditIntegrationPoint);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is<Guid>(guid => guid == new Guid(ObjectTypeGuids.JobHistory)), ArtifactPermission.Edit).Returns(canEditJobHistory);
 
 			var stopJobPermissionValidator = new StopJobPermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			// assert
 			validationResult.Check(canEditIntegrationPoint && canEditJobHistory);
 
-			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, INTEGRATION_POINT_ID, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(objectTypeGuid, INTEGRATION_POINT_ID, ArtifactPermission.Edit);
 			_sourcePermissionRepository.Received(1)
 				.UserHasArtifactTypePermission(Arg.Is<Guid>(guid => guid == new Guid(ObjectTypeGuids.JobHistory)),
 					ArtifactPermission.Edit);

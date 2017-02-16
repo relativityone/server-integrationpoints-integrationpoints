@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public interface IRelativityIntegrationPointsRepository
 	{
-		List<int> RetrieveRelativityIntegrationPointsIds(int workspaceId);
+		List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints();
 	}
 }

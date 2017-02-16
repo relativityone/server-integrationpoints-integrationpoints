@@ -1,9 +1,9 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Services.Tests.JobHistory
+namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
 	public class DestinationWorkspaceParserTests : TestBase
 	{
@@ -43,6 +43,18 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 		{
 			Assert.That(() => _destinationWorkspaceParser.GetWorkspaceArtifactId(destinationWorkspace),
 				Throws.TypeOf<Exception>().With.Message.EqualTo("The formatting of the destination workspace information has changed and cannot be parsed."));
+		}
+
+		[TestCase("instance - workspace - 1", "instance")]
+		[TestCase(" instance - workspace - 1", "instance")]
+		[TestCase("instance1 - workspace1 - 1", "instance1")]
+		[TestCase("instance", "instance")]
+		[TestCase("instance - workspace", "instance")]
+		public void ItShouldReturnInstanceNames(string destinationWorkspace, string expectedInstanceName)
+		{
+			var instanceName = _destinationWorkspaceParser.GetInstanceName(destinationWorkspace);
+
+			Assert.That(instanceName, Is.EqualTo(expectedInstanceName));
 		}
 	}
 }

@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IFederatedInstanceRepository
 	{
+		FederatedInstanceDto RetrieveFederatedInstance(string name);
 		FederatedInstanceDto RetrieveFederatedInstance(int artifactId);
 		IEnumerable<FederatedInstanceDto> RetrieveAll();
 	}

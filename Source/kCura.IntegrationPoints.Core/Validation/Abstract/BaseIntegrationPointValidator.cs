@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 		}
 
 		public IntegrationPointProviderValidationModel CreateValidationModel(IntegrationPointModelBase model, SourceProvider sourceProvider,
-			DestinationProvider destinationProvider, IntegrationPointType integrationPointType)
+			DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
 			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
@@ -49,11 +49,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 				FieldsMap = model.Map,
 				Type = model.Type,
 				IntegrationPointTypeIdentifier = integrationPointType.Identifier,
+				ObjectTypeGuid = objectTypeGuid,
 				SecuredConfiguration = model.SecuredConfiguration
 			};
 		}
 			
-		public abstract ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider,
-			DestinationProvider destinationProvider, IntegrationPointType integrationPointType);
+		public abstract ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid);
 	}
 }

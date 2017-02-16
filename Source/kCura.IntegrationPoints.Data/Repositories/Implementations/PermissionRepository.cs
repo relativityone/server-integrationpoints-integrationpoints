@@ -152,6 +152,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return UserHasArtifactTypePermissions(artifactTypeGuid, new[] { artifactPermission });
 		}
 
+		public bool UserHasArtifactTypePermission(int artifactTypeId, ArtifactPermission artifactPermission)
+		{
+			return UserHasArtifactTypePermissions(artifactTypeId, new[] { artifactPermission });
+		}
+
 		private bool UserHasArtifactTypePermissions(Guid artifactTypeGuid, IEnumerable<ArtifactPermission> artifactPermissions)
 		{
 			List<PermissionRef> permissionRefs = artifactPermissions.Select(x => new PermissionRef()

@@ -14,57 +14,62 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IAPILog _logger;
 
-		public KeplerFederatedInstanceRepository(IHelper helper, IObjectQueryManagerAdaptor objectQueryManagerAdaptor) 
+		public KeplerFederatedInstanceRepository(IHelper helper, IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
 			: base(objectQueryManagerAdaptor)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
 		}
 
-		public FederatedInstanceDto RetrieveFederatedInstance(int artifactId)
+		public FederatedInstanceDto RetrieveFederatedInstance(string name)
 		{
-			var query = new global::Relativity.Services.ObjectQuery.Query()
-			{
-				Condition = $"'Artifact ID' == {artifactId}",
-				Fields = new [] {"Name", "Instance URL" },
-				IncludeIdWindow = false,
-				SampleParameters = null,
-				RelationalField = null,
-				SearchProviderCondition = null,
-				TruncateTextFields = false
-			};
-
-			ArtifactDTO[] artifactDtos = null;
-
 			try
 			{
-				artifactDtos = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+				return RetrieveFederatedInstanceByCondition($"'Name' == '{name}'").FirstOrDefault();
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Unable to retrieve federated instance {Name}", name);
+				throw;
+			}
+		}
+
+		public FederatedInstanceDto RetrieveFederatedInstance(int artifactId)
+		{
+			try
+			{
+				return RetrieveFederatedInstanceByCondition($"'Artifact ID' == {artifactId}").FirstOrDefault();
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Unable to retrieve federated instance {ArtifactId}", artifactId);
 				throw;
 			}
-
-			return Convert(artifactDtos).FirstOrDefault();
 		}
 
 		public IEnumerable<FederatedInstanceDto> RetrieveAll()
 		{
-			var query = new global::Relativity.Services.ObjectQuery.Query()
-			{
-				Fields = new[] { "Name", "Instance URL" },
-			};
-
-			ArtifactDTO[] artifactDtos = null;
 			try
 			{
-				artifactDtos = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+				return RetrieveFederatedInstanceByCondition(string.Empty);
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Unable to retrieve federated instances");
 				throw;
 			}
+		}
+
+		private IEnumerable<FederatedInstanceDto> RetrieveFederatedInstanceByCondition(string condition)
+		{
+			var query = new global::Relativity.Services.ObjectQuery.Query()
+			{
+				Condition = condition,
+				Fields = new[] { "Name", "Instance URL" },
+			};
+
+			ArtifactDTO[] artifactDtos = null;
+
+			artifactDtos = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
 
 			return Convert(artifactDtos);
 		}

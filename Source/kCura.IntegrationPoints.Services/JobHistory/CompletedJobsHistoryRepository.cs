@@ -32,5 +32,10 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 				EndTimeUTC = x.EndTimeUTC.GetValueOrDefault()
 			}).ToList();
 		}
+
+		public IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoint(JobHistoryRequest request, int integrationPointId)
+		{
+			return RetrieveCompleteJobsForIntegrationPoints(request, new List<int>() { integrationPointId });
+		}
 	}
 }

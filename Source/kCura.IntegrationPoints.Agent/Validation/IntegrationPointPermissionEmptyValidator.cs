@@ -8,13 +8,13 @@ namespace kCura.IntegrationPoints.Agent.Validation
 	public class IntegrationPointPermissionEmptyValidator : IIntegrationPointPermissionValidator
 	{
 		public ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider,
-			IntegrationPointType integrationPointType)
+			IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
 			return new ValidationResult();
 		}
 
 		public ValidationResult ValidateSave(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider,
-			IntegrationPointType integrationPointType)
+			IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
 			return new ValidationResult();
 		}
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Validation
 		}
 
 		public ValidationResult ValidateStop(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider,
-			IntegrationPointType integrationPointType)
+			IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
 			return new ValidationResult();
 		}

@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 		{			
 		}
 
-		public override ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType)
+		public override ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
 			var result = new ValidationResult();
 
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(model.Name));
 			}
 
-			var validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType);
+			var validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
 
 			foreach (var validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.INTEGRATION_POINT_TYPE])
 			{

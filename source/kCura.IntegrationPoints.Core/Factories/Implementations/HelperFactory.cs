@@ -11,11 +11,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	{
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
-		private readonly ISerializer _serializer;
+		private readonly IIntegrationPointSerializer _serializer;
 		private readonly ITokenProvider _tokenProvider;
 
 		public HelperFactory(IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory,
-			ITokenProvider tokenProvider, ISerializer serializer)
+			ITokenProvider tokenProvider, IIntegrationPointSerializer serializer)
 		{
 			_managerFactory = managerFactory;
 			_contextContainerFactory = contextContainerFactory;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			{
 				IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(sourceInstanceHelper);
 				IFederatedInstanceManager federatedInstanceManager = _managerFactory.CreateFederatedInstanceManager(sourceContextContainer);
-				FederatedInstanceDto federatedInstance = federatedInstanceManager.RetrieveFederatedInstance(federatedInstanceArtifactId.Value);
+				FederatedInstanceDto federatedInstance = federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(federatedInstanceArtifactId.Value);
 				OAuthClientDto authClientDto = _serializer.Deserialize<OAuthClientDto>(credentials);
 
 				IHelper targetHelper = new OAuthHelper(new Uri(federatedInstance.InstanceUrl), new Uri(federatedInstance.RsapiUrl), new Uri(federatedInstance.KeplerUrl), authClientDto,

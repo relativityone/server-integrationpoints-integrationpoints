@@ -14,6 +14,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 	[TestFixture]
 	public class HelperFactoryTests : TestBase
 	{
+		private IManagerFactory _managerFactory;
+		private IContextContainerFactory _contextContainerFactory;
+		private ITokenProvider _tokenProvider;
+		private IFederatedInstanceManager _federatedInstanceManager;
+		private IHelper _sourceInstanceHelper;
+
 		public override void SetUp()
 		{
 			_managerFactory = Substitute.For<IManagerFactory>();
@@ -22,12 +28,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_sourceInstanceHelper = Substitute.For<IHelper>();
 		}
-
-		private IManagerFactory _managerFactory;
-		private IContextContainerFactory _contextContainerFactory;
-		private ITokenProvider _tokenProvider;
-		private IFederatedInstanceManager _federatedInstanceManager;
-		private IHelper _sourceInstanceHelper;
 
 		[Test]
 		public void TestCreateOAuthClientHelper()
@@ -41,14 +41,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 			string rsapiUrl = "http://hostname/Relativity.Services";
 			string keplerUrl = "http://hostname/Relativity.REST/api/";
 
-			_federatedInstanceManager.RetrieveFederatedInstance(Arg.Any<int>()).Returns(new FederatedInstanceDto
+			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(Arg.Any<int>()).Returns(new FederatedInstanceDto()
 			{
 				InstanceUrl = instanceUrl,
 				RsapiUrl = rsapiUrl,
 				KeplerUrl = keplerUrl
 			});
 
-			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new JSONSerializer());
+			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new IntegrationPointSerializer());
 
 			//act
 			IHelper helper = testInstance.CreateTargetHelper(_sourceInstanceHelper, 1000, "{}");
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 		public void TestCreateTargetHelperIfFederatedInstanceIsNull()
 		{
 			//arrange
-			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new JSONSerializer());
+			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new IntegrationPointSerializer());
 
 			//act
 			IHelper helper = testInstance.CreateTargetHelper(_sourceInstanceHelper, null, string.Empty);

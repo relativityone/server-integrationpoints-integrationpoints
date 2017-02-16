@@ -26,11 +26,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-			
+
+			var objectTypeGuid = new Guid(model.ObjectTypeGuid);
+
 			IPermissionRepository sourcePermissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
-			if (!sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid,
-				model.ArtifactId, ArtifactPermission.Edit))
+			if (!sourcePermissionRepository.UserHasArtifactInstancePermission(objectTypeGuid, model.ArtifactId, ArtifactPermission.Edit))
 			{
 				result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT);
 			}

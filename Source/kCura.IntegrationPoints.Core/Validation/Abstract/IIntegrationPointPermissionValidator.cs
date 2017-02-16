@@ -12,11 +12,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 	public interface IIntegrationPointPermissionValidator : IIntegrationPointValidator
 	{
 		ValidationResult ValidateSave(IntegrationPointModelBase model, SourceProvider sourceProvider, 
-			DestinationProvider destinationProvider, IntegrationPointType integrationPointType);
+			DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid);
 
 		ValidationResult ValidateViewErrors(int workspaceArtifactId);
 
 		ValidationResult ValidateStop(IntegrationPointModelBase model, SourceProvider sourceProvider,
-			DestinationProvider destinationProvider, IntegrationPointType integrationPointType);
+			DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid);
 	}
 }

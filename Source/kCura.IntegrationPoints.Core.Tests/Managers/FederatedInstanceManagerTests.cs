@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			var testInstance = new FederatedInstanceManager(_repositoryFactory, _toggleProvider);
 
-			var federatedInstance = testInstance.RetrieveFederatedInstance(null);
+			var federatedInstance = testInstance.RetrieveFederatedInstanceByArtifactId(null);
 
 			Assert.That(federatedInstance, Is.EqualTo(FederatedInstanceManager.LocalInstance));
 		}
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			});
 
 			//act
-			var federatedInstance = testInstance.RetrieveFederatedInstance(federatedInstanceArtifactId);
+			var federatedInstance = testInstance.RetrieveFederatedInstanceByArtifactId(federatedInstanceArtifactId);
 
 			//assert
 			Assert.That(federatedInstance, Is.Not.Null);
