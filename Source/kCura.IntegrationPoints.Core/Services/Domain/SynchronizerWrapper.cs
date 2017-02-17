@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 
 namespace kCura.IntegrationPoints.Core.Domain
@@ -44,11 +45,11 @@ namespace kCura.IntegrationPoints.Core.Domain
 			}
 		}
 
-	    public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+	    public void SyncData(IDataTransferContext context, IEnumerable<FieldMap> fieldMap, string options)
 	    {
             try
             {
-                _synchronizer.SyncData(data, fieldMap, options);
+                _synchronizer.SyncData(context, fieldMap, options);
             }
             catch (Exception e)
             {

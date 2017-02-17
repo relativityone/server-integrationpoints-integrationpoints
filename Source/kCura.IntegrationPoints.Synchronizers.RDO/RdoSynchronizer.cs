@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -187,7 +188,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			FinalizeSyncData(data, fieldMap, ImportSettings);
 		}
 
-		public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+		public void SyncData(IDataTransferContext context, IEnumerable<FieldMap> fieldMap, string options)
 		{
 			LogSyncingData();
 
@@ -196,12 +197,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 			if (fieldMaps.Length > 0)
 			{
-				IDataReader sourceReader = new RelativityReaderDecorator(data, fieldMaps);
-				_importService.KickOffImport(sourceReader);
+				context.DataReader = new RelativityReaderDecorator(context.DataReader, fieldMaps);
+				_importService.KickOffImport(context);
 			}
 			else
 			{
-				_importService.KickOffImport(data);
+				_importService.KickOffImport(context);
 			}
 			
 			WaitUntilTheJobIsDone();

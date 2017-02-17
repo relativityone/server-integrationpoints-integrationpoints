@@ -3,6 +3,7 @@ using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using System.Collections;
 using System.Data;
+using kCura.IntegrationPoints.Domain.Readers;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
@@ -12,13 +13,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		private readonly IExtendedImportAPI _importApi;
 		private readonly IImportSettingsBaseBuilder<Settings> _builder;
 		private readonly IDataReader _sourceData;
+		private readonly IDataTransferContext _context;
 
-		public NativeJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataReader sourceData)
+		public NativeJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataTransferContext context)
 		{
 			_importSettings = importSettings;
 			_importApi = importApi;
 			_builder = builder;
-			_sourceData = sourceData;
+			_context = context;
+			_sourceData = context.DataReader;
 		}
 
 		public override void RegisterEventHandlers()

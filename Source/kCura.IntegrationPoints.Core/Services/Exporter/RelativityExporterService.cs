@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Toggles;
@@ -28,9 +30,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 		}
 
-		public override IDataReader GetDataReader(IScratchTableRepository[] scratchTableRepositories)
+		public override IDataTransferContext GetDataReader(IScratchTableRepository[] scratchTableRepositories)
 		{
-			return _reader ?? (_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, scratchTableRepositories));
+			var documentTransferDataReader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, scratchTableRepositories);
+			return _context ?? (_context = new DefaultTransferContext(documentTransferDataReader));
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)

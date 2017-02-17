@@ -4,6 +4,7 @@ using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 
 namespace kCura.IntegrationPoints.Domain.Synchronizer
 {
@@ -26,6 +27,6 @@ namespace kCura.IntegrationPoints.Domain.Synchronizer
 		/// <param name="data">The reader used to read the records to insert into the system.</param>
 		/// <param name="fieldMap">The field mapping used to import data into the system.</param>
 		/// <param name="options">The option settings used to synchronize the source data with the destination.</param>
-		void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options);
+		void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options);
 	}
 }

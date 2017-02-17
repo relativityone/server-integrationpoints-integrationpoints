@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.API;
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		protected readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		protected readonly IAPILog _logger;
 		protected DataGridContext _dataGridContext;
-		protected IDataReader _reader;
+		protected IDataTransferContext _context;
 		protected int _retrievedDataCount;
 
 
@@ -166,16 +167,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public virtual int TotalRecordsFound => (int)_exportJobInfo.RowCount;
 
-		public abstract IDataReader GetDataReader(IScratchTableRepository[] scratchTableRepositories);
+		public abstract IDataTransferContext GetDataReader(IScratchTableRepository[] scratchTableRepositories);
 
 		public abstract ArtifactDTO[] RetrieveData(int size);
 
 		public void Dispose()
 		{
-			if (_reader != null)
+			if (_context.DataReader != null)
 			{
-				_reader.Dispose();
-				_reader = null;
+				_context.DataReader.Dispose();
+				_context.DataReader = null;
+				_context = null;
 			}
 
 			if (_dataGridContext != null)

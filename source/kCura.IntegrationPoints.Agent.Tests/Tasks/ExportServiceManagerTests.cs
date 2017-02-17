@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -535,7 +536,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void Execute_GoldFlow_CreateDataReaderAndPassItToSynchronizer()
 		{
 			// ARRANGE
-			IDataReader reader = Substitute.For<IDataReader>();
+			IDataTransferContext reader = Substitute.For<IDataTransferContext>();
 
 			_exporterService.TotalRecordsFound.Returns(99);
 			_exporterService.GetDataReader(Arg.Any<IScratchTableRepository[]>()).Returns(reader);
@@ -544,7 +545,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_synchornizer.Received(1).SyncData(Arg.Any<IDataReader>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
+			_synchornizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
 		}
 
 		[Test]

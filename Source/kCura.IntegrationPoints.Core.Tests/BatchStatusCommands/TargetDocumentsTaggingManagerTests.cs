@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
@@ -154,7 +155,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_instance.OnJobComplete(_job);
 
 			//assert
-			_synchronizer.Received(1).SyncData(Arg.Any<TempTableReader>(), Arg.Any<FieldMap[]>(), _importConfig);
+			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig);
 		}
 
 		[Test]
@@ -177,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_instance.OnJobComplete(_job);
 
 			//assert
-			_synchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<TempTableReader>(), Arg.Any<FieldMap[]>(), _importConfig);
+			_synchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig);
 		}
 	}
 }

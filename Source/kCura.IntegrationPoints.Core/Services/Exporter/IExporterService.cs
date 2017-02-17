@@ -3,6 +3,7 @@ using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// Gets the reader of the exported data.
 		/// </summary>
 		/// <returns>DataReader to read export results</returns>
-		IDataReader GetDataReader(IScratchTableRepository[] scratchRepositories);
+		IDataTransferContext GetDataReader(IScratchTableRepository[] scratchRepositories);
 
 		/// <summary>
 		/// Retrieves data from exporter with a give size

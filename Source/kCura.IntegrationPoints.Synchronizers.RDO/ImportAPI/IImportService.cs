@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Domain.Readers;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -8,7 +9,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		void AddRow(Dictionary<string, object> fields);
 		bool PushBatchIfFull(bool forcePush);
 		void Initialize();
-		void KickOffImport(IDataReader dataSource);
+		void KickOffImport(IDataTransferContext dataSource);
 		ImportSettings Settings { get; }
 	}
 }

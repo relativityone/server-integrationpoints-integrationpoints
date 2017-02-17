@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
@@ -101,7 +102,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			//	}
 			//};
 
-			pusher.SyncData(importTable.CreateDataReader(), allFieldMaps, settings);
+			DataTableReader reader = importTable.CreateDataReader();
+			var context = new DefaultTransferContext(reader);
+			pusher.SyncData(context, allFieldMaps, settings);
 		}
 
 		public static DataTable GetImportTable(string documentPrefix, int numberOfDocuments)

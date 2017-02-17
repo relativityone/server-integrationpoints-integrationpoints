@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -174,7 +175,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					SetupSubscriptions(dataSynchronizer, job);
 					JobStopManager?.ThrowIfStopRequested();
-					dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
+					var context = new DefaultTransferContext(sourceDataReader);
+					dataSynchronizer.SyncData(context, fieldMaps, destinationConfiguration);
 				}
 			}
 			else 

@@ -4,6 +4,7 @@ using kCura.Relativity.ImportAPI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Domain.Readers;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
@@ -13,13 +14,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		private readonly IExtendedImportAPI _importApi;
 		private readonly IImportSettingsBaseBuilder<ImageSettings> _builder;
 		private readonly IDataReader _sourceData;
+		public IDataTransferContext Context { get; set; }
 
-		public ImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataReader sourceData)
+		public ImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context)
 		{
+			Context = context;
 			_importSettings = importSettings;
 			_importApi = importApi;
 			_builder = builder;
-			_sourceData = sourceData;
+			_sourceData = context.DataReader;
 		}
 
 		public override void RegisterEventHandlers()
@@ -51,6 +54,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		{
 			_builder.PopulateFrom(_importSettings, ImportJob.Settings);
 			ImportJob.SourceData.SourceData = ImageDataTableHelper.GetDataTable(_sourceData);
+			Context.UpdateTransferStatus();
 			ImportJob.Execute();
 		}
 	}

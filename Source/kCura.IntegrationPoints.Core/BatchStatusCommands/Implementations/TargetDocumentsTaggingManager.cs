@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
 using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -113,9 +114,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					using (TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId))
 					{
 						FieldMap[] fieldsToPush = {identifier};
+						var documentTransferContext = new  DefaultTransferContext(reader);
 						if (ScratchTableRepository.Count > 0)
 						{
-							_synchronizer.SyncData(reader, fieldsToPush, _importConfig);
+							_synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig);
 						}
 					}
 				}

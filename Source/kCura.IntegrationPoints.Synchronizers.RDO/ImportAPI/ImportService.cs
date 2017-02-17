@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.ImportAPI;
@@ -104,7 +105,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 					IDataReader sourceData = _batchManager.GetBatchData();
 					if (sourceData != null)
 					{
-						KickOffImport(sourceData);
+
+						KickOffImport(new DefaultTransferContext(sourceData));
 					}
 					else
 					{
@@ -119,10 +121,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return isFull;
 		}
 
-		public virtual void KickOffImport(IDataReader dataReader)
+		public virtual void KickOffImport(IDataTransferContext context)
 		{
 			LogSettingUpImportJob();
-			IJobImport importJob = _jobFactory.Create(_importApi, Settings, dataReader);
+			IJobImport importJob = _jobFactory.Create(_importApi, Settings, context);
 
 			//Assign events
 			importJob.OnComplete += ImportJob_OnComplete;

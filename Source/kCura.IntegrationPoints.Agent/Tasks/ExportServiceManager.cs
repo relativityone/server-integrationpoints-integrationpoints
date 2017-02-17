@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.DataReaderClient;
@@ -151,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 							IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
 								.Select(observer => observer.ScratchTableRepository).ToArray();
 
-							IDataReader dataReader = exporter.GetDataReader(scratchTables);
+							IDataTransferContext dataReader = exporter.GetDataReader(scratchTables);
 							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
 							using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
 								Guid.Empty))

@@ -8,10 +8,12 @@ using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.API;
@@ -42,9 +44,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 		}
 
-		public override IDataReader GetDataReader(IScratchTableRepository[] scratchTableRepositories)
+		public override IDataTransferContext GetDataReader(IScratchTableRepository[] scratchTableRepositories)
 		{
-			return _reader ?? (_reader = new ImageTransferDataReader(this, _mappedFields, _baseContext, scratchTableRepositories));
+			var imageTransferDataReader = new ImageTransferDataReader(this, _mappedFields, _baseContext, scratchTableRepositories);
+			return _context ?? (_context = new ImageTransferContext(imageTransferDataReader));
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)
