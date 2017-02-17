@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private int _artifactTypeId;
 
 		private IDictionary<string, string> _custodianManagerMap;
-
 		public RdoCustodianSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
 			: base(fieldQuery, factory, jobFactory, helper)
 		{
@@ -143,6 +142,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					importRow = null;
 				}
 			}
+			
 			return importRow;
 		}
 
@@ -211,10 +211,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (!string.IsNullOrWhiteSpace(managerReferenceLink))
 			{
 				string custodianUniqueIdentifier = (string) importRow[UniqueIDSourceFieldId];
-				if (!string.IsNullOrWhiteSpace(custodianUniqueIdentifier))
+				if (!string.IsNullOrWhiteSpace(custodianUniqueIdentifier) && !_custodianManagerMap.ContainsKey(custodianUniqueIdentifier))
 				{
 					_custodianManagerMap.Add(custodianUniqueIdentifier, managerReferenceLink);
 				}
+
 				importRow[ManagerSourceFieldId] = null;
 			}
 		}
