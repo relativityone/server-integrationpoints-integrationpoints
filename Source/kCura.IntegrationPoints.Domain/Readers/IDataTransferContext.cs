@@ -4,8 +4,8 @@ namespace kCura.IntegrationPoints.Domain.Readers
 {
 	public interface IDataTransferContext
 	{
-		bool HasDynamicRecordsCount { get; }
 		IDataReader DataReader { get; set; }
+		int? TotalItemsFound { get; set; }
 		void UpdateTransferStatus();
 	}
 
@@ -15,9 +15,10 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		{
 			DataReader = reader;
 		}
-
-		public bool HasDynamicRecordsCount => false;
+		
 		public IDataReader DataReader { get; set; }
+		public int? TotalItemsFound { get; set; }
+
 		public void UpdateTransferStatus()
 		{
 		}

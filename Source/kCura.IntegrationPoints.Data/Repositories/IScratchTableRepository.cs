@@ -4,7 +4,7 @@ using System.Data;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
-    public interface IScratchTableRepository : IDisposable
+	public interface IScratchTableRepository : IDisposable
     {
         /// <summary>
         /// Choice on whether to ignore errored documents when doing batch updating. Defaults to false.

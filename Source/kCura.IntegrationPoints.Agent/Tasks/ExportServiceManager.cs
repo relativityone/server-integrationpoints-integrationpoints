@@ -152,7 +152,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 							IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
 								.Select(observer => observer.ScratchTableRepository).ToArray();
 
-							IDataTransferContext dataReader = exporter.GetDataReader(scratchTables);
+							var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables,_jobHistoryService,_identifier);
+							IDataTransferContext dataReader = exporter.GetDataTransferContext(exporterTransferConfiguration);
 							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
 							using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
 								Guid.Empty))

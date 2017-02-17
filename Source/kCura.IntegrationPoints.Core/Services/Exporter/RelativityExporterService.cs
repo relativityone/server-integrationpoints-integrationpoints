@@ -30,10 +30,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 		}
 
-		public override IDataTransferContext GetDataReader(IScratchTableRepository[] scratchTableRepositories)
+		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
-			var documentTransferDataReader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, scratchTableRepositories);
-			return _context ?? (_context = new DefaultTransferContext(documentTransferDataReader));
+			var documentTransferDataReader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, transferConfiguration.ScratchRepositories);
+			return _context ?? (_context = new ExporterTransferContext(documentTransferDataReader,transferConfiguration));
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)

@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public virtual int TotalRecordsFound => (int)_exportJobInfo.RowCount;
 
-		public abstract IDataTransferContext GetDataReader(IScratchTableRepository[] scratchTableRepositories);
+		public abstract IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration);
 
 		public abstract ArtifactDTO[] RetrieveData(int size);
 

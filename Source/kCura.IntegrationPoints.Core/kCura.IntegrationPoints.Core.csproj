@@ -315,8 +315,9 @@
     <Compile Include="Services\DataTransferLocationService.cs" />
     <Compile Include="Services\Exporter\Base\ExporterServiceBase.cs" />
     <Compile Include="Services\Exporter\Base\ExportTransferDataReaderBase.cs" />
+    <Compile Include="Services\Exporter\IExporterTransferConfiguration.cs" />
     <Compile Include="Services\Exporter\Images\ImageExporterService.cs" />
-    <Compile Include="Services\Exporter\Images\ImageTransferContext.cs" />
+    <Compile Include="Services\Exporter\ExporterTransferContext.cs" />
     <Compile Include="Services\Exporter\Images\ImageTransferDataReader.cs" />
     <Compile Include="Services\IChoiceService.cs" />
     <Compile Include="Services\IDataTransferLocationService.cs" />

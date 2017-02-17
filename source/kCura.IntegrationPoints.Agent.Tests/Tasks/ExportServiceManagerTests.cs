@@ -539,7 +539,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IDataTransferContext reader = Substitute.For<IDataTransferContext>();
 
 			_exporterService.TotalRecordsFound.Returns(99);
-			_exporterService.GetDataReader(Arg.Any<IScratchTableRepository[]>()).Returns(reader);
+			_exporterService.GetDataTransferContext(Arg.Any<IExporterTransferConfiguration>()).Returns(reader);
 
 			// ACT
 			_instance.Execute(_job);
