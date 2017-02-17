@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
-			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(
@@ -105,15 +105,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_integrationModelValidator.Validate(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 
 			_permissionValidator.Validate(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 
 			_permissionValidator.ValidateSave(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 		}
 
 		[TestCase(true)]

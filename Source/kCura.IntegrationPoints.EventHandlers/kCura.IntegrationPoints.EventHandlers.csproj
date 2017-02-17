@@ -200,6 +200,7 @@
     <Compile Include="Installers\SecretStorePreWorkspaceDeleteEventHandler.cs" />
     <Compile Include="Installers\SecretStoreUninstaller.cs" />
     <Compile Include="Installers\SetIntegrationPointType.cs" />
+    <Compile Include="Installers\UpdateJobHistoryDestinationWorkspace.cs" />
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\CorrespondingJobDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />

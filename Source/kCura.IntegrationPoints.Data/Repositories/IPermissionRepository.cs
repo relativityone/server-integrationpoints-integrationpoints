@@ -21,6 +21,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 		bool UserHasArtifactTypePermission(Guid artifactTypeGuid, ArtifactPermission artifactPermission);
 
+		bool UserHasArtifactTypePermission(int artifactTypeId, ArtifactPermission artifactPermission);
+
 		bool UserHasArtifactInstancePermission(Guid artifactTypeGuid, int artifactId, ArtifactPermission artifactPermission);
 
 		bool UserHasArtifactInstancePermission(int artifactTypeId, int artifactId, ArtifactPermission artifactPermission);

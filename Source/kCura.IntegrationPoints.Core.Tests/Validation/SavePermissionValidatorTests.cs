@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		public void ValidateTest(bool isNew, bool typeEdit, bool instanceEdit, bool typeCreate, bool expected)
 		{
 			// arrange
-			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
+			var integrationPointObjectTypeGuid = new Guid(_validationModel.ObjectTypeGuid);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit).Returns(typeEdit);
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.Edit).Returns(instanceEdit);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(typeCreate);

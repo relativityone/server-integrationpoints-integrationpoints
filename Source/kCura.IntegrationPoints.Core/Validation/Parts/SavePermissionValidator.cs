@@ -25,25 +25,25 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
+			var objectTypeGuid = new Guid(model.ObjectTypeGuid);
 
 			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
 			if (model.ArtifactId > 0) // IP exists -- Edit permissions check
 			{
-				if (!permissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit))
+				if (!permissionRepository.UserHasArtifactTypePermission(objectTypeGuid, ArtifactPermission.Edit))
 				{
 					result.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_EDIT);
 				}
 
-				if (!permissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, model.ArtifactId, ArtifactPermission.Edit))
+				if (!permissionRepository.UserHasArtifactInstancePermission(objectTypeGuid, model.ArtifactId, ArtifactPermission.Edit))
 				{
 					result.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_EDIT);
 				}
 			}
 			else // IP is new -- Create permissions check
 			{
-				if (!permissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create))
+				if (!permissionRepository.UserHasArtifactTypePermission(objectTypeGuid, ArtifactPermission.Create))
 				{
 					result.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_CREATE);
 				}

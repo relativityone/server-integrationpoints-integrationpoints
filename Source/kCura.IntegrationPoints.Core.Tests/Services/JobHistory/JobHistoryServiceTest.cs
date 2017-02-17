@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(new List<Data.JobHistory>());
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
 				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 			
@@ -168,7 +168,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Throws(new Exception("blah blah"));
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
 				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(new List<Data.JobHistory>());
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
 				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
@@ -220,7 +220,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Throws(new Exception("blah blah"));
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-			_federatedInstanceManager.RetrieveFederatedInstance(_settings.FederatedInstanceArtifactId)
+			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
 				.Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 

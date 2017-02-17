@@ -68,7 +68,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				SourceConfiguration = $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
 				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
 				SourceProviderArtifactId = _SOURCE_PROVIDER_ID,
-				DestinationProviderArtifactId = _DESTINATION_PROVIDER_ID
+				DestinationProviderArtifactId = _DESTINATION_PROVIDER_ID,
+				ObjectTypeGuid = "00000000-0000-0000-0000-000000000000"
 			};
 
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)

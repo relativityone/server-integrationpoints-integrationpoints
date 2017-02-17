@@ -57,6 +57,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			var guid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
 			container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().LifestyleSingleton());
+			container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>().LifestyleSingleton());
 			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
 			{
 				IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();

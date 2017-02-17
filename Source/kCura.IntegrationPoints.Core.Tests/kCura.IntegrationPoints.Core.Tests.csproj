@@ -250,6 +250,7 @@
     <Compile Include="Services\Export\ExportTransferDataReaderTestsBase.cs" />
     <Compile Include="Services\Export\ImageTransferDataReaderTests.cs" />
     <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
+    <Compile Include="Services\JobHistory\DestinationWorkspaceParserTests.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />

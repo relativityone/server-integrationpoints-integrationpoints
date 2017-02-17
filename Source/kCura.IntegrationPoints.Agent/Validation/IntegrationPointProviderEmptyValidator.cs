@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Agent.Validation
 {
 	internal class IntegrationPointProviderEmptyValidator : IIntegrationPointProviderValidator
 	{
-		public ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType)
+		public ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
 			return new ValidationResult();
 		}

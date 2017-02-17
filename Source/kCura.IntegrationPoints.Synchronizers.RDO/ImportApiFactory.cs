@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						{
 							OAuthClientDto oAuthClientDto = _serializer.Deserialize<OAuthClientDto>(settings.FederatedInstanceCredentials);
 							FederatedInstanceDto federatedInstance =
-								_federatedInstanceManager.RetrieveFederatedInstance(settings.FederatedInstanceArtifactId.Value);
+								_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(settings.FederatedInstanceArtifactId.Value);
 
 							token = _tokenProvider.GetExternalSystemToken(oAuthClientDto.ClientId, oAuthClientDto.ClientSecret,
 								new Uri(federatedInstance.InstanceUrl));

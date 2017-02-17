@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[Guid("1A4C2EC1-079E-4F8F-8FC8-1358627617DE")]
 	public class RemoveUnusedEventHandlers : PostInstallEventHandler
 	{
-		private const string _PRE_LAOD_EVENT_HANDLER_GUID = "c77369d2-3f9a-4598-b7bc-229050b3bbe6";
+		private const string _PRE_LOAD_EVENT_HANDLER_GUID = "c77369d2-3f9a-4598-b7bc-229050b3bbe6";
 		private const string _PAGE_INTERACTION_EVENT_HANDLER_GUID = "eed5ad4a-3137-4a93-a2b6-3d96e3894cd2";
 
 		private const int _ARTIFACTTYPEID_EVENTHANDLER = (int) ArtifactType.EventHandler;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				Message = "Old EventHandlers successfully removed."
 			};
 
-			List<int> artifactIds = RetrieveArtifactIdsByGuids(new List<string> {_PRE_LAOD_EVENT_HANDLER_GUID, _PAGE_INTERACTION_EVENT_HANDLER_GUID});
+			List<int> artifactIds = RetrieveArtifactIdsByGuids(new List<string> {_PRE_LOAD_EVENT_HANDLER_GUID, _PAGE_INTERACTION_EVENT_HANDLER_GUID});
 			
 			if (artifactIds.Count > 0)
 			{

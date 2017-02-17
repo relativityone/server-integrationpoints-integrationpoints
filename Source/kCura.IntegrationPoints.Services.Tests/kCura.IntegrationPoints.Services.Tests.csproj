@@ -77,7 +77,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="JobHistory\DestinationWorkspaceParserTests.cs" />
     <Compile Include="JobHistory\JobHistoryAccessTests.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
     <Compile Include="Managers\DocumentManagerTests.cs" />
@@ -96,6 +95,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
       <Project>{b8bf6d01-e190-4c2c-b07f-3b627ffc1bfc}</Project>

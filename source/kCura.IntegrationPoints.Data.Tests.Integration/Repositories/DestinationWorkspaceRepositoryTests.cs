@@ -96,12 +96,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		public void Link_JobHistoryErrorToDestinationWorkspace_Success()
+		[TestCase(null)]
+		[TestCase(1000)]
+		public void Link_JobHistoryErrorToDestinationWorkspace_Success(int? federatedInstanceArtifactId)
 		{
 			//Arrange
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly, federatedInstanceArtifactId),
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
@@ -127,7 +129,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			JobHistory linkedJobHistory = _jobHistoryService.GetRdo(batchInstance);
 
 			//Assert
-			Assert.AreEqual($"DestinationWorkspaceRepositoryTests - {SourceWorkspaceArtifactId}", linkedJobHistory.DestinationWorkspace);
+			Assert.AreEqual($"This Instance - DestinationWorkspaceRepositoryTests - {SourceWorkspaceArtifactId}", linkedJobHistory.DestinationWorkspace);
 			CollectionAssert.Contains(linkedJobHistory.DestinationWorkspaceInformation, _destinationWorkspaceDto.ArtifactId);
 		}
 

@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private readonly int _userId = 951;
 		private readonly int _previousJobHistoryArtifactId = Int32.MaxValue;
 		private readonly int _integrationPointTypeArtifactId = 12345;
+		private readonly string _objectTypeGuid = ObjectTypeGuids.IntegrationPoint;
 
 		private IHelper _helper;
 		private ICaseServiceContext _caseServiceContext;
@@ -94,17 +95,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
-			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModel>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModel>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 
 			_permissionValidator.Validate(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 
 			_permissionValidator.ValidateSave(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
-				Arg.Any<IntegrationPointType>()).Returns(new ValidationResult());
+				Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 
 			_toggleProvider = Substitute.For<IToggleProvider>();
 
@@ -186,7 +187,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				_sourceProvider,
 				_destinationProvider,
-				_integrationPointType)
+				_integrationPointType,
+				_objectTypeGuid)
 				.Returns(_stopPermissionChecksResults);
 
 			_jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
@@ -211,7 +213,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 					Arg.Is(_sourceProvider),
 					Arg.Is(_destinationProvider),
-					Arg.Is(_integrationPointType))
+					Arg.Is(_integrationPointType),
+					Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(false);
 
@@ -223,7 +226,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 					Arg.Is(_sourceProvider),
 					Arg.Is(_destinationProvider),
-					Arg.Is(_integrationPointType));
+					Arg.Is(_integrationPointType),
+					Arg.Is(_objectTypeGuid));
 			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 			_managerFactory.Received().CreateQueueManager(_contextContainer);
@@ -627,7 +631,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult(errorMessages));
 
 			// act
@@ -638,7 +643,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType));
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_jobHistoryService.DidNotReceive().GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
@@ -659,7 +665,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType));
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_jobHistoryService.DidNotReceive().GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
@@ -678,7 +685,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
@@ -692,7 +700,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType));
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_queueManager.Received(1).HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 			_jobHistoryService.DidNotReceive().GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), null);
@@ -714,7 +723,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			// Act
@@ -730,7 +740,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType));
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
@@ -749,7 +760,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult(errorMessages));
 
 			// Act
@@ -765,7 +777,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType));
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			var expectedErrorMessage = new ErrorDTO()
 			{
@@ -797,7 +810,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType));
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
@@ -814,7 +828,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
@@ -839,7 +854,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
@@ -864,7 +880,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
@@ -889,7 +906,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
@@ -905,7 +923,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
 				Arg.Is(_sourceProvider),
 				Arg.Is(_destinationProvider),
-				Arg.Is(_integrationPointType));
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
@@ -1082,7 +1101,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
 				Arg.Is(destinationProvider),
-				Arg.Is(integrationPointType))
+				Arg.Is(integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult(errorMessages));
 
 			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
@@ -1111,7 +1131,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
 				Arg.Is(destinationProvider),
-				Arg.Is(integrationPointType));
+				Arg.Is(integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new ErrorDTO[] { expectedError }, x)));
 		}
@@ -1184,7 +1205,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
 				Arg.Is(destinationProvider),
-				Arg.Is(integrationPointType))
+				Arg.Is(integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			_caseServiceContext.EddsUserID = 1232;
@@ -1206,7 +1228,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
 				Arg.Is(destinationProvider),
-				Arg.Is(integrationPointType));
+				Arg.Is(integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_caseServiceContext.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
 			_jobManager.Received(1).GetJob(
@@ -1271,7 +1294,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
 				Arg.Is(destinationProvider),
-				Arg.Is(integrationPointType))
+				Arg.Is(integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			const int newIntegrationPoinId = 389234;
@@ -1296,7 +1320,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
 				Arg.Is(destinationProvider),
-				Arg.Is(integrationPointType));
+				Arg.Is(integrationPointType),
+				Arg.Is(_objectTypeGuid));
 
 			_caseServiceContext.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Received(1).Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
 			_jobManager.Received(1).GetJob(
@@ -1379,7 +1404,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Arg.Is<IntegrationPointModelBase>(x => x.ArtifactID == model.ArtifactID),
 				Arg.Is(sourceProvider),
 				Arg.Is(destinationProvider),
-				Arg.Is(_integrationPointType))
+				Arg.Is(_integrationPointType),
+				Arg.Is(_objectTypeGuid))
 				.Returns(new ValidationResult());
 
 			// Act

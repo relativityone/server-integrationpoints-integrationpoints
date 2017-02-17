@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IManagerFactory managerFactory = new ManagerFactory(helper, toggleProvider);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-			ISerializer serializer = new JSONSerializer();
+			IIntegrationPointSerializer serializer = new IntegrationPointSerializer();
 			IHelperFactory helperFactory = new HelperFactory(managerFactory, contextContainerFactory, tokenProvider, serializer);
 
 			return new RelativityProviderSourceConfiguration(helper, helperFactory, managerFactory, contextContainerFactory, federatedInstanceModelFactory);

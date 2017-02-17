@@ -51,5 +51,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// </summary>
 		/// <param name="jobHistoryId">The Artifact ID of the job history instance to delete.</param>
 		void DeleteRdo(int jobHistoryId);
+
+		IList<Data.JobHistory> GetAll();
 	}
 }

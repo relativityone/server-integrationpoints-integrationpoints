@@ -24,7 +24,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-			
+
+			var objectTypeGuid = new Guid(model.ObjectTypeGuid);
+
 			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
 			if (!permissionRepository.UserHasPermissionToAccessWorkspace())
@@ -32,12 +34,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 				result.Add(Constants.IntegrationPoints.PermissionErrors.CURRENT_WORKSPACE_NO_ACCESS);
 			}
 
-			if (!permissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View))
+			if (!permissionRepository.UserHasArtifactTypePermission(objectTypeGuid, ArtifactPermission.View))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_VIEW);
 			}
 
-			if (!permissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, model.ArtifactId, ArtifactPermission.View))
+			if (!permissionRepository.UserHasArtifactInstancePermission(objectTypeGuid, model.ArtifactId, ArtifactPermission.View))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
 			}

@@ -26,10 +26,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			[Values(true, false)] bool destinationProviderViewPermission,
 			[Values(true, false)] bool sourceProviderInstanceViewPermission)
 		{
+			var objectTypeGuid = new Guid(_validationModel.ObjectTypeGuid);
+
 			_sourcePermissionRepository.UserHasPermissionToAccessWorkspace().Returns(sourceWorkspacePermission);
-			_sourcePermissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View).Returns(integrationPointTypeViewPermission);
-			_sourcePermissionRepository.UserHasArtifactInstancePermission(
-				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(objectTypeGuid, ArtifactPermission.View).Returns(integrationPointTypeViewPermission);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(objectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(
 				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), ArtifactPermission.Create).Returns(jobHistoryAddPermission);
 
@@ -54,11 +55,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			validationResult.Check(expected);
 
 			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
-			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(objectTypeGuid, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
 				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), ArtifactPermission.Create);
-			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(
-				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(objectTypeGuid, _validationModel.ArtifactId, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(_SOURCE_PROVIDER_GUID, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(_DESTINATION_PROVIDER_GUID, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(_SOURCE_PROVIDER_GUID, _validationModel.SourceProviderArtifactId, ArtifactPermission.View);

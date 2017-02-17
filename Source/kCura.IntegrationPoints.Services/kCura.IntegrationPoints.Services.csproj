@@ -44,10 +44,6 @@
       <HintPath>..\packages\$(Castle_Windsor)\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Utils, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.IntegrationPoints">
       <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
     </Reference>
@@ -125,19 +121,15 @@
     <Compile Include="IntegrationPointTypeManager.cs" />
     <Compile Include="JobHistoryManager.cs" />
     <Compile Include="JobHistory\CompletedJobsHistoryRepository.cs" />
-    <Compile Include="JobHistory\DestinationWorkspaceParser.cs" />
     <Compile Include="JobHistory\ICompletedJobsHistoryRepository.cs" />
-    <Compile Include="JobHistory\IDestinationWorkspaceParser.cs" />
     <Compile Include="JobHistory\IJobHistoryAccess.cs" />
     <Compile Include="JobHistory\ILibraryFactory.cs" />
     <Compile Include="JobHistory\IJobHistorySummaryModelBuilder.cs" />
     <Compile Include="JobHistory\IRelativityIntegrationPointsRepository.cs" />
-    <Compile Include="JobHistory\IWorkspaceManager.cs" />
     <Compile Include="JobHistory\JobHistoryAccess.cs" />
     <Compile Include="JobHistory\LibraryFactory.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilder.cs" />
     <Compile Include="JobHistory\RelativityIntegrationPointsRepositoryAdminAccess.cs" />
-    <Compile Include="JobHistory\WorkspaceManager.cs" />
     <Compile Include="KeplerServiceBase.cs" />
     <Compile Include="Models\LoadFileExportDestinationConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\LoadFileExportSourceConfigurationBackwardCompatibility.cs" />

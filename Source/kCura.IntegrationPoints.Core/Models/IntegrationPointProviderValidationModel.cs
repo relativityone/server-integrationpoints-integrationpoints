@@ -41,6 +41,8 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public string IntegrationPointTypeIdentifier { get; set; }
 
+		public string ObjectTypeGuid { get; set; }
+
 		public string SecuredConfiguration { get; set; }
 	}
 }

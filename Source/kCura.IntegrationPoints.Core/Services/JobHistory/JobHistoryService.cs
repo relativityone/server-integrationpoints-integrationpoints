@@ -5,6 +5,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -126,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(setting.CaseArtifactId);
 
 				FederatedInstanceDto federatedInstanceDto =
-					_federatedInstanceManager.RetrieveFederatedInstance(setting.FederatedInstanceArtifactId);
+					_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(setting.FederatedInstanceArtifactId);
 
 				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, workspaceDto.Name, setting.CaseArtifactId);
 
@@ -150,6 +151,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		public void DeleteRdo(int jobHistoryId)
 		{
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Delete(jobHistoryId);
+		}
+
+		public IList<Data.JobHistory> GetAll()
+		{
+			return _caseServiceContext.RsapiService.JobHistoryLibrary.ReadAll();
 		}
 
 		protected List<FieldValue> GetFields<T>()

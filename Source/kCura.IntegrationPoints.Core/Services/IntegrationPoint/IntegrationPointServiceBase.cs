@@ -317,16 +317,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			errorManager.Create(new[] { error });
 		}
 
-		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType)
+		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
-			ValidationResult validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType);
+			ValidationResult validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
 
 			if (!validationResult.IsValid)
 			{
 				throw new IntegrationPointProviderValidationException(validationResult);
 			}
 
-			var permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider, integrationPointType);
+			var permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
 
 			if (Context.EddsUserID == 0)
 			{

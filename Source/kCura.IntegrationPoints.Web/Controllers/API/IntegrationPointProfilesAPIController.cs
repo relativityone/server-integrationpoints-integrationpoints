@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				DestinationProvider destinationProvider = _context.RsapiService.DestinationProviderLibrary.Read(model.DestinationProvider);
 				IntegrationPointType integrationPointType = _context.RsapiService.IntegrationPointTypeLibrary.Read(model.Type);
 
-				ValidationResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType);
+				ValidationResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPointProfile);
 
 				return Request.CreateResponse(HttpStatusCode.OK, new  { model,validationResult});
 			}

@@ -33,21 +33,31 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			get { return _localInstanceDto; }
 		}
 
-		public FederatedInstanceDto RetrieveFederatedInstance(int? artifactId)
+		public FederatedInstanceDto RetrieveFederatedInstanceByName(string instanceName)
+		{
+			if (instanceName.Equals(LocalInstance.Name, StringComparison.Ordinal))
+				return LocalInstance;
+
+			IFederatedInstanceRepository federatedInstanceRepository = GetFederatedInstanceRepository();
+
+			FederatedInstanceDto federatedInstance =
+				federatedInstanceRepository.RetrieveFederatedInstance(instanceName);
+
+			LoadUrl(federatedInstance);
+
+			return federatedInstance;
+		}
+
+		public FederatedInstanceDto RetrieveFederatedInstanceByArtifactId(int? artifactId)
 		{
 			if (artifactId.HasValue)
 			{
-				IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
-				int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
-				IFederatedInstanceRepository federatedInstanceRepository =
-					_repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
+				IFederatedInstanceRepository federatedInstanceRepository = GetFederatedInstanceRepository();
 
 				FederatedInstanceDto federatedInstance =
 					federatedInstanceRepository.RetrieveFederatedInstance(artifactId.Value);
 
-				IServiceUrlRepository serviceUrlRepository = _repositoryFactory.GetServiceUrlRepository();
-
-				LoadUrl(federatedInstance, serviceUrlRepository);
+				LoadUrl(federatedInstance);
 
 				return federatedInstance;
 			}
@@ -61,13 +71,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			if (_toggleProvider.IsEnabled<RipToR1Toggle>())
 			{
-				IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
-				int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
-				IFederatedInstanceRepository federatedInstanceRepository =
-					_repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
+				IFederatedInstanceRepository federatedInstanceRepository = GetFederatedInstanceRepository();
 
-				instances =
-					federatedInstanceRepository.RetrieveAll().ToList();
+				instances = federatedInstanceRepository.RetrieveAll().ToList();
 
 				LoadUrls(instances);
 			}
@@ -88,6 +94,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 		}
 
+		private void LoadUrl(FederatedInstanceDto federatedInstance)
+		{
+			IServiceUrlRepository serviceUrlRepository = _repositoryFactory.GetServiceUrlRepository();
+			LoadUrl(federatedInstance, serviceUrlRepository);
+		}
+
 		private void LoadUrl(FederatedInstanceDto federatedInstance, IServiceUrlRepository serviceUrlRepository)
 		{
 			InstanceUrlCollectionDTO instanceUrlCollection = serviceUrlRepository.RetrieveInstanceUrlCollection(new Uri(federatedInstance.InstanceUrl));
@@ -95,6 +107,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			federatedInstance.RsapiUrl = instanceUrlCollection.RsapiUrl;
 			federatedInstance.KeplerUrl = instanceUrlCollection.KeplerUrl;
 			federatedInstance.WebApiUrl = instanceUrlCollection.WebApiUrl;
+		}
+
+		private IFederatedInstanceRepository GetFederatedInstanceRepository()
+		{
+			IArtifactTypeRepository artifactTypeRepository = _repositoryFactory.GetArtifactTypeRepository();
+			int artifactTypeId = artifactTypeRepository.GetArtifactTypeIdFromArtifactTypeName(ARTIFACT_TYPE_NAME);
+			return _repositoryFactory.GetFederatedInstanceRepository(artifactTypeId);
 		}
 	}
 }

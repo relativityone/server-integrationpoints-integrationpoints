@@ -91,12 +91,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId},\"FolderArtifactId\":{GetRootFolder(Helper, targetWorkspaceId)}}}";
 		}
 
-		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
+		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode, int? federatedInstanceArtifactId = null)
 		{
-			return CreateDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactId);
+			return CreateDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactId, federatedInstanceArtifactId);
 		}
 
-		protected string CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
+		protected string CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
 		{
 			ImportSettings destinationConfig = new ImportSettings
 			{
@@ -110,7 +110,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				RelativityUsername = SharedVariables.RelativityUserName,
 				RelativityPassword = SharedVariables.RelativityPassword,
 				DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
-				DestinationFolderArtifactId = GetRootFolder(Helper, targetWorkspaceId)
+				DestinationFolderArtifactId = GetRootFolder(Helper, targetWorkspaceId),
+				FederatedInstanceArtifactId = federatedInstanceArtifactId
 			};
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
