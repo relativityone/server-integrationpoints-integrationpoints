@@ -140,25 +140,26 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						job.SubmittedBy,
 						userImportApiSettings))
 					{
+						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+								.Select(observer => observer.ScratchTableRepository).ToArray();
+
+						var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, _jobHistoryService, _identifier);
+						IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
+						
 						lock (_jobStopManager.SyncRoot)
 						{
 							JobHistoryDto = _jobHistoryService.GetRdo(_identifier);
-							JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
-							UpdateJobStatus();
+							dataTransferContext.UpdateTransferStatus();
 						}
 
 						if (exporter.TotalRecordsFound > 0)
 						{
-							IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
-								.Select(observer => observer.ScratchTableRepository).ToArray();
-
-							var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables,_jobHistoryService,_identifier);
-							IDataTransferContext dataReader = exporter.GetDataTransferContext(exporterTransferConfiguration);
+							
 							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
 							using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
 								Guid.Empty))
 							{
-								synchronizer.SyncData(dataReader, MappedFields, userImportApiSettings);
+								synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
 							}
 						}
 					}

@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		{
 			DataReader = reader;
 		}
-		
+
 		public IDataReader DataReader { get; set; }
 		public int? TotalItemsFound { get; set; }
 

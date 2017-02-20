@@ -33,7 +33,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
 			var documentTransferDataReader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, transferConfiguration.ScratchRepositories);
-			return _context ?? (_context = new ExporterTransferContext(documentTransferDataReader,transferConfiguration));
+			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader,transferConfiguration) {TotalItemsFound = TotalRecordsFound};
+			return _context ?? (_context = exporterTransferContext);
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)
