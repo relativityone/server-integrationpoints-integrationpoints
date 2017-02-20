@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,6 +16,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -96,15 +98,28 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to save or update integration point profile.")]
 		public HttpResponseMessage Save(int workspaceID, IntegrationPointProfileModel model)
 		{
-			using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
 			{
-				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
-					Guid.Empty, model.Name, MetricTargets.APMandSUM))
+				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
-					int createdId = _profileService.SaveIntegration(model);
-					string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, ObjectTypes.IntegrationPointProfile);
+					var apmMetricProperties = new APMMetric
+					{
+						Name =
+							Core.Constants.IntegrationPoints.Telemetry
+								.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
+						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, model.Name } }
+					};
+					using (apmManger.LogTimedOperation(apmMetricProperties))
+					{
+						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
+							Guid.Empty, model.Name))
+						{
+							int createdId = _profileService.SaveIntegration(model);
+							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, ObjectTypes.IntegrationPointProfile);
 
-					return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
+							return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+						}
+					}
 				}
 			}
 		}
@@ -113,19 +128,32 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to save integration point profile.")]
 		public HttpResponseMessage SaveUsingIntegrationPoint(int workspaceID, int integrationPointArtifactId, string profileName)
 		{
-			using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
 			{
-				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
-					Guid.Empty, profileName, MetricTargets.APMandSUM))
+				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
-					var ip = _integrationPointService.GetRdo(integrationPointArtifactId);
-					var model = IntegrationPointProfileModel.FromIntegrationPoint(ip, profileName);
+					var apmMetricProperties = new APMMetric
+					{
+						Name =
+							Core.Constants.IntegrationPoints.Telemetry
+								.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
+						CustomData = new Dictionary<string, object> {{ Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, profileName}}
+					};
+					using (apmManger.LogTimedOperation(apmMetricProperties))
+					{
+						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
+							Guid.Empty, profileName))
+						{
+							var ip = _integrationPointService.GetRdo(integrationPointArtifactId);
+							var model = IntegrationPointProfileModel.FromIntegrationPoint(ip, profileName);
 
-					int createdId = _profileService.SaveIntegration(model);
-					string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, ObjectTypes.IntegrationPointProfile);
+							int createdId = _profileService.SaveIntegration(model);
+							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, ObjectTypes.IntegrationPointProfile);
 
-					return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
-				}
+							return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+						}
+						}
+					}
 			}
 		}
 	}
