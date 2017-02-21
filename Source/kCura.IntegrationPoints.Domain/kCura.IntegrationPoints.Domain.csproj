@@ -254,6 +254,7 @@
     <Compile Include="Readers\DataColumnWithValue.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Readers\DefaultTransferContext.cs" />
     <Compile Include="Readers\IDataTransferContext.cs" />
     <Compile Include="Readers\ImportDataReader.cs" />
     <Compile Include="Readers\RelativityReaderBase.cs" />
