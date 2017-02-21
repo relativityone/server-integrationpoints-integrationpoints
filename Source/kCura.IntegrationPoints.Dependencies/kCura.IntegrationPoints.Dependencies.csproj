@@ -526,8 +526,8 @@
       <HintPath>..\packages\RelativityCore.9.5.48.3\lib\net45\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.62.75, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.5.62.75\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.65.35, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.5.65.35\lib\net45\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.Toggles, Version=9.5.48.3, Culture=neutral, processorArchitecture=MSIL">

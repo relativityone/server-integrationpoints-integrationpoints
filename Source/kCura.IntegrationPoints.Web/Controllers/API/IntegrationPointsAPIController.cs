@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -20,6 +21,7 @@ using kCura.IntegrationPoints.Web.Attributes;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
 using Relativity.Toggles;
 
@@ -104,30 +106,43 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
 		public HttpResponseMessage Update(int workspaceID, IntegrationPointModel model)
 		{
-			using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
 			{
-				using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
-					Guid.Empty, model.Name, MetricTargets.APMandSUM))
+				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
-						ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(model.Destination);
-						IHelper targetHelper = _helperFactory.CreateTargetHelper(_cpHelper, importSettings.FederatedInstanceArtifactId, model.SecuredConfiguration);
-
-						IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper, 
-							_context, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
-						
-						int createdId;
-						try
+					var apmMetricProperties = new APMMetric
+					{
+						Name =
+							Core.Constants.IntegrationPoints.Telemetry
+								.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
+						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, model.Name } }
+					};
+					using (apmManger.LogTimedOperation(apmMetricProperties))
+					{
+						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
+							Guid.Empty, model.Name))
 						{
-							createdId = integrationPointService.SaveIntegration(model);
-						}
-						catch (IntegrationPointProviderValidationException ex)
-						{
-							return Request.CreateResponse(HttpStatusCode.NotAcceptable, String.Join("<br />", ex.Result.Messages));
-						}
+							ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(model.Destination);
+							IHelper targetHelper = _helperFactory.CreateTargetHelper(_cpHelper, importSettings.FederatedInstanceArtifactId, model.SecuredConfiguration);
 
-						string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+							IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper,
+								_context, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
 
-						return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+							int createdId;
+							try
+							{
+								createdId = integrationPointService.SaveIntegration(model);
+							}
+							catch (IntegrationPointProviderValidationException ex)
+							{
+								return Request.CreateResponse(HttpStatusCode.NotAcceptable, String.Join("<br />", ex.Result.Messages));
+							}
+
+							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+
+							return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
+						}
+					}
 				}
 			}
 		}

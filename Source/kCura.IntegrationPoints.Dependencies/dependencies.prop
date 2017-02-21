@@ -44,7 +44,7 @@
     <Relativity_Telemetry_DataContracts_Shared>Relativity.Telemetry.DataContracts.Shared.9.4.117</Relativity_Telemetry_DataContracts_Shared>
     <Relativity_Telemetry_MetricsCollection>Relativity.Telemetry.MetricsCollection.9.4.117</Relativity_Telemetry_MetricsCollection>
     <Relativity_Telemetry_APM>Relativity.Telemetry.APM.9.4.117</Relativity_Telemetry_APM>
-    <Relativity_Telemetry_Services_Interface>Relativity.Telemetry.Services.Interface.9.5.62.75</Relativity_Telemetry_Services_Interface>
+    <Relativity_Telemetry_Services_Interface>Relativity.Telemetry.Services.Interface.9.5.65.35</Relativity_Telemetry_Services_Interface>
     <Relativity_Toggles>Relativity.Toggles.1.0.0.68</Relativity_Toggles>
     <Relativity_Vfs>Relativity.Vfs.1.0.20</Relativity_Vfs>
     <Relativity_Vfs_IO>Relativity.Vfs.IO.1.0.20</Relativity_Vfs_IO>
