@@ -64,6 +64,10 @@
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Utility, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>

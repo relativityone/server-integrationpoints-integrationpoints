@@ -68,8 +68,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				LogCreatingExporter(settings);
 				var exportFile = _exportFileBuilder.Create(settings);
 				PerformLogin(exportFile);
-				PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds, settings.TextPrecedenceFieldsIds);
-				var exporter = _exporterFactory.Create(exportFile);
+				PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds.Select(item => item.Key).ToList(), settings.TextPrecedenceFieldsIds);
+				var exporter = _exporterFactory.Create(new ExportDataContext()
+				{
+					ExportFile = exportFile,
+					Settings = settings
+				});
 				AttachHandlers(exporter);
 				SubscribeToJobStatisticsEvents(job);
 				return exporter;

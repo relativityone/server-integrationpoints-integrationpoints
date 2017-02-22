@@ -8,11 +8,11 @@
     <Elasticsearch_Net>Elasticsearch.Net.1.4.3</Elasticsearch_Net>
     <FluentValidation>FluentValidation.6.1.0.0</FluentValidation>
     <kCura_HTMLSanitizer>kCura.HTMLSanitizer.0.0.21.7</kCura_HTMLSanitizer>
-    <kCuraCore>kCuraCore.9.5.48.3</kCuraCore>
-    <kCura_Config>kCura.Config.9.5.48.3</kCura_Config>
-    <kCura_Crypto>kCura.Crypto.9.5.48.3</kCura_Crypto>
-    <kCura_Data>kCura.Data.9.5.48.3</kCura_Data>
-    <kCura_Data_RowDataGateway>kCura.Data.RowDataGateway.9.5.48.3</kCura_Data_RowDataGateway>
+    <kCuraCore>kCuraCore.9.5.70.6</kCuraCore>
+    <kCura_Config>kCura.Config.9.5.70.6</kCura_Config>
+    <kCura_Crypto>kCura.Crypto.9.5.70.6</kCura_Crypto>
+    <kCura_Data>kCura.Data.9.5.70.6</kCura_Data>
+    <kCura_Data_RowDataGateway>kCura.Data.RowDataGateway.9.5.70.6</kCura_Data_RowDataGateway>
     <kCura_LongPath>kCura.LongPath.1.0.8</kCura_LongPath>
     <libsodium-net>libsodium-net.0.8.0</libsodium-net>
     <Microsoft_A1spNet_Identity_Core>Microsoft.AspNet.Identity.Core.2.2.1</Microsoft_A1spNet_Identity_Core>
@@ -39,8 +39,8 @@
     <Relativity_SecretCatalog>Relativity.SecretCatalog.1.0.18</Relativity_SecretCatalog>
     <Relativity_SecretCatalog_AzureKeyVault>Relativity.SecretCatalog.AzureKeyVault.1.0.18</Relativity_SecretCatalog_AzureKeyVault>
     <Relativity_ServiceBus>Relativity.ServiceBus.2.1.9</Relativity_ServiceBus>
-    <Relativity_Services_DataContracts>Relativity.Services.DataContracts.9.5.48.3</Relativity_Services_DataContracts>
-    <Relativity_Services_Interfaces>Relativity.Services.Interfaces.9.5.48.3</Relativity_Services_Interfaces>
+    <Relativity_Services_DataContracts>Relativity.Services.DataContracts.9.5.70.6</Relativity_Services_DataContracts>
+    <Relativity_Services_Interfaces>Relativity.Services.Interfaces.9.5.70.6</Relativity_Services_Interfaces>
     <Relativity_Telemetry_DataContracts_Shared>Relativity.Telemetry.DataContracts.Shared.9.4.117</Relativity_Telemetry_DataContracts_Shared>
     <Relativity_Telemetry_MetricsCollection>Relativity.Telemetry.MetricsCollection.9.4.117</Relativity_Telemetry_MetricsCollection>
     <Relativity_Telemetry_APM>Relativity.Telemetry.APM.9.4.117</Relativity_Telemetry_APM>
@@ -48,7 +48,7 @@
     <Relativity_Toggles>Relativity.Toggles.1.0.0.68</Relativity_Toggles>
     <Relativity_Vfs>Relativity.Vfs.1.0.20</Relativity_Vfs>
     <Relativity_Vfs_IO>Relativity.Vfs.IO.1.0.20</Relativity_Vfs_IO>
-    <RelativityCore>RelativityCore.9.5.48.3</RelativityCore>
+    <RelativityCore>RelativityCore.9.5.70.6</RelativityCore>
     <Serilog>Serilog.1.5.9</Serilog>
     <Serilog_Sinks_Elasticsearch>Serilog.Sinks.Elasticsearch.2.0.60</Serilog_Sinks_Elasticsearch>
     <Serilog_Sinks_MSSqlServer>Serilog.Sinks.MSSqlServer.1.4.168</Serilog_Sinks_MSSqlServer>
@@ -58,22 +58,22 @@
     <SystemWrapper_Interfaces>SystemWrapper.Interfaces.0.7.0.0</SystemWrapper_Interfaces>
     <SystemWrapper_Wrappers>SystemWrapper.Wrappers.0.7.0.0</SystemWrapper_Wrappers>
     <Thinktecture_IdentityModel_Client>Thinktecture.IdentityModel.Client.4.0.1</Thinktecture_IdentityModel_Client>
-    <Relativity_ImportExport>Relativity.ImportExport.9.5.48.3</Relativity_ImportExport>
-    <Relativity_API>Relativity.API.9.5.48.3</Relativity_API>
-    <Relativity_Data>Relativity.Data.9.5.48.3</Relativity_Data>
-    <Relativity_CustomPages>Relativity.CustomPages.9.5.48.3</Relativity_CustomPages>
-    <kCura_Relativity_Client>kCura.Relativity.Client.9.5.48.3</kCura_Relativity_Client>
+    <Relativity_ImportExport>Relativity.ImportExport.9.5.70.6</Relativity_ImportExport>
+    <Relativity_API>Relativity.API.9.5.70.6</Relativity_API>
+    <Relativity_Data>Relativity.Data.9.5.70.6</Relativity_Data>
+    <Relativity_CustomPages>Relativity.CustomPages.9.5.70.6</Relativity_CustomPages>
+    <kCura_Relativity_Client>kCura.Relativity.Client.9.5.70.6</kCura_Relativity_Client>
     <kCura_Apps_Common_Config>kCura.Apps.Common.Config.1.0.227.4</kCura_Apps_Common_Config>
     <kCura_Apps_Common_Data>kCura.Apps.Common.Data.1.0.192.5</kCura_Apps_Common_Data>
     <kCura_Apps_Common_Utils>kCura.Apps.Common.Utils.1.0.192.5</kCura_Apps_Common_Utils>
     <Selenium_Support>Selenium.Support.2.51.0</Selenium_Support>
     <Selenium_WebDriver>Selenium.WebDriver.2.53.0</Selenium_WebDriver>
-    <kCura_Agent>kCura.Agent.9.5.48.3</kCura_Agent>
+    <kCura_Agent>kCura.Agent.9.5.70.6</kCura_Agent>
     <Nito_AsyncEx>Nito.AsyncEx.3.0.1</Nito_AsyncEx>
     <AutoMapper>AutoMapper.4.2.1</AutoMapper>
     <Remotion_Linq>Remotion.Linq.2.0.2</Remotion_Linq>
     <Dynamitey>Dynamitey.1.0.2.0</Dynamitey>
-    <kCura_EventHandler>kCura.EventHandler.9.5.48.3</kCura_EventHandler>
+    <kCura_EventHandler>kCura.EventHandler.9.5.70.6</kCura_EventHandler>
     <Selenium_WebDriver_ChromeDriver>Selenium.WebDriver.ChromeDriver.2.21.0.0</Selenium_WebDriver_ChromeDriver>
     <SSH_NET>SSH.NET.2013.4.7</SSH_NET>
     <Relativity_OAuth2Client_Interfaces>Relativity.OAuth2Client.Interfaces.1.0.1</Relativity_OAuth2Client_Interfaces>

@@ -105,13 +105,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			var fields = new List<FieldMap>()
 			{
-				new FieldMap() {SourceField = new FieldEntry() {FieldIdentifier = "1"}},
-				new FieldMap() {SourceField = new FieldEntry() {FieldIdentifier = "2"}}
+				new FieldMap() {DestinationField = new FieldEntry() {FieldIdentifier = "1"}},
+				new FieldMap() {DestinationField = new FieldEntry() {FieldIdentifier = "2"}}
 			};
 
 			var exportSettings = _exportSettingsBuilder.Create(CreateSourceSettings(), fields, 1);
 
-			CollectionAssert.AreEqual(exportSettings.SelViewFieldIds, new List<int> {1, 2});
+			CollectionAssert.AreEqual(exportSettings.SelViewFieldIds.Keys, new List<int> {1, 2});
 		}
 
 		[Test]
