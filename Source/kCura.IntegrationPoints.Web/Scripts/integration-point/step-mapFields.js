@@ -215,6 +215,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
+		this.IdentifierField = ko.observable();
+
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
 		this.hasParent = ko.observable(false);
@@ -231,6 +233,24 @@ ko.validation.insertValidationMessage = function (element) {
 				self.ImageImportToggle(result);
 			}
 		});
+
+
+		this.ImageImport.subscribe(function (value) {
+			if (value === "true") {
+				root.utils.UI.disable("#fieldMappings", true);
+				self.autoFieldMapWithCustomOptions(function (identfier) {
+					var name = identfier.name.replace(" [Object Identifier]", "");
+					self.IdentifierField(name);
+				});
+			}
+			else {
+				root.utils.UI.disable("#fieldMappings", false);
+			}
+		});
+
+		this.onDOMLoaded = function () {
+			root.utils.UI.disable("#fieldMappings", self.ImageImport());
+		}
 
 
 		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
@@ -276,7 +296,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
 		{
-			required : {
+			required: {
 				onlyIf: function() {
 					return self.ExtractedTextFieldContainsFilePath() === 'true';
 				}
@@ -298,10 +318,10 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.MappedLongTextFields = ko.observableArray([]); //only has the mapped long text fields
 		if (self.MappedLongTextFields.length === 0) {
-				IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetLongTextFields') }).then(function (result) {
-					// Returns a list of all attributes in a workspace with the FieldCategory for long text
-					self.TotalLongTextFields = result;
-					self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetLongTextFields') }).then(function (result) {
+				// Returns a list of all attributes in a workspace with the FieldCategory for long text
+				self.TotalLongTextFields = result;
+				self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
 			});
 		}
 
@@ -449,7 +469,7 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 				return [destinationMapped, sourceMapped];
 			}
-			
+
 			return {
 				getNotMapped: getNotMapped,
 				getMapped: getMapped
@@ -495,7 +515,7 @@ ko.validation.insertValidationMessage = function (element) {
 					for (var i = 0; i < mapping.length; i++) {
 						var a = mapping[i];
 						if (a.fieldMapType === mapTypes.parent && self.hasParent) {
-							self.selectedIdentifier(a.sourceField.displayName);break;
+							self.selectedIdentifier(a.sourceField.displayName); break;
 						}
 					}
 				}
@@ -548,8 +568,7 @@ ko.validation.insertValidationMessage = function (element) {
 			self.CatalogField = {};
 			var destinationWorkspaceID;
 			var federatedInstanceID = null;
-			if(self.IsRelativityProvider())
-			{
+			if (self.IsRelativityProvider()) {
 				destinationWorkspaceID = self.destinationCaseArtifactID;
 				var sourceSettings = JSON.parse(model.sourceConfiguration);
 				federatedInstanceID = sourceSettings.FederatedInstanceArtifactId;
@@ -582,15 +601,15 @@ ko.validation.insertValidationMessage = function (element) {
 			IP.workspaceFieldsControls.add(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
 			self.populateExtractedText();
 		}
-		this.addToWorkspaceField = function() {
+		this.addToWorkspaceField = function () {
 			IP.workspaceFieldsControls.add(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
 			self.populateExtractedText();
 		}
-		this.addAllWorkspaceFields = function() {
+		this.addAllWorkspaceFields = function () {
 			IP.workspaceFieldsControls.addAll(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace);
 			self.populateExtractedText();
 		}
-		this.addAlltoWorkspaceField = function() {
+		this.addAlltoWorkspaceField = function () {
 			IP.workspaceFieldsControls.addAll(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields);
 			self.populateExtractedText();
 		}
@@ -619,8 +638,10 @@ ko.validation.insertValidationMessage = function (element) {
 
 		/********** AutoMap Controls  **********/
 		this.GetCatalogFieldMappings();
-
 		this.autoFieldMap = function () {
+			self.autoFieldMapWithCustomOptions();
+		};
+		this.autoFieldMapWithCustomOptions = function (matchOnlyIdentifierFields) {
 			//Remove current mappings first
 			self.addAlltoSourceField();
 			self.addAlltoWorkspaceField();
@@ -639,6 +660,14 @@ ko.validation.insertValidationMessage = function (element) {
 			var wspaceFieldToAdd = ko.observableArray([]);
 			for (var i = 0; i < self.sourceField().length; i++) {
 				var fieldAlreadyMatched = false;
+
+				if (matchOnlyIdentifierFields) {
+					if (!self.sourceField()[i].isIdentifier) {
+						continue;
+					}
+					matchOnlyIdentifierFields(self.sourceField()[i]);
+				}
+
 
 				//check for a match b/w the source and destination fields by name
 				for (var j = 0; j < self.workspaceFields().length; j++) {
@@ -706,7 +735,7 @@ ko.validation.insertValidationMessage = function (element) {
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
 				SelectedOverwrite: model.SelectedOverwrite,
-				FieldOverlayBehavior : model.FieldOverlayBehavior,
+				FieldOverlayBehavior: model.FieldOverlayBehavior,
 				FolderPathSourceField: model.FolderPathSourceField,
 				LongTextColumnThatContainsPathToFullText: model.LongTextColumnThatContainsPathToFullText,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
@@ -752,7 +781,7 @@ ko.validation.insertValidationMessage = function (element) {
 				relativityImportType !== 0) {
 				return;
 			};
-			self.settings.url=
+			self.settings.url =
 				IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3');
 			self.settings.templateID = "step3";
 
@@ -762,6 +791,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
 				IP.affects.hover();
+				self.model.onDOMLoaded();
 			});
 		};
 
@@ -855,7 +885,7 @@ ko.validation.insertValidationMessage = function (element) {
 				var _destination = JSON.parse(this.returnModel.destination);
 
 				// specific to document type
-				if (this.model.isDocument){
+				if (this.model.isDocument) {
 					// pushing native file setting
 					if (this.model.importNativeFile() == "true") {
 						var nativePathField = "";
@@ -902,6 +932,7 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 					_destination.ImageImport = this.model.ImageImport();
+					_destination.IdentifierField = this.model.IdentifierField();
 					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
 
 					// pushing extracted text location setting
@@ -997,10 +1028,10 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 	}
 
-		var step = new Step({
-			url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
-			templateID: 'step3'
-		});
+	var step = new Step({
+		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
+		templateID: 'step3'
+	});
 
 
 	IP.messaging.subscribe('back', function () {
@@ -1020,11 +1051,11 @@ ko.validation.insertValidationMessage = function (element) {
 
 	window.top.getExtractedTextInfo = function () {
 		var extractedTextInfo = {};
-		if (step.returnModel.ExtractedTextFieldContainsFilePath == 'true'){
+		if (step.returnModel.ExtractedTextFieldContainsFilePath == 'true') {
 			extractedTextInfo.LongTextColumnThatContainsPathToFullText = step.returnModel.LongTextColumnThatContainsPathToFullText;
 			extractedTextInfo.ExtractedTextFileEncoding = step.returnModel.ExtractedTextFileEncoding;
 		}
-		
+
 		return extractedTextInfo;
 	};
 

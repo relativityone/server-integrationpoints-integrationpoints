@@ -154,5 +154,18 @@
 			textArea.innerHTML = encodedString;
 			return textArea.value;
 		};
+
+		utils.UI = {
+			disable: function (idSelector, isDisabled) {
+				if (isDisabled) {
+					$(idSelector).css('pointer-events', 'none');
+				}
+				else {
+					$(idSelector).css('pointer-events', 'all');
+				}
+				$(idSelector + " *").attr("disabled", isDisabled);
+			}
+		}
+
 	})(root.utils || (root.utils = {}));
 })(IP || (IP = {}));

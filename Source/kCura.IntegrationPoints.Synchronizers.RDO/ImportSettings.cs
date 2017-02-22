@@ -154,6 +154,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public bool AutoNumberImages { get; set; }
 		public bool ProductionImport { get; set; }
 		public bool ImageImport { get; set; }
+		public string IdentifierField { get; set; }
 
 		/// <summary>
 		/// In Overlay mode it allows to switch Yes/No if import API should move documents between folders when use folder path information

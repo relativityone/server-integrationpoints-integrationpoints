@@ -51,152 +51,160 @@
 	</div>
 	<div class="card">
 		<span class="label title">Settings</span>
-		<img data-bind="visible: IsRelativityProvider(), click: openRelativityProviderSettingsTooltip" class="tooltip-img" id="contextualSettingsHelp" style="padding-left:5px;" />
-		<div class="identifier">
-			<div class="field-row">
-				<div class="field-label required">Overwrite:</div>
-				<div class="field-value">
-					<select id="overwrite" data-bind="options: OverwriteOptions, value: SelectedOverwrite, select2: {}"></select>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
-				<div class="field-label required">
-					Multi-Select Field<br />Overlay Behavior:
-				</div>
-				<div class="field-value">
-					<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
-				</div>
-			</div>
-			<div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
-				<div class="field-label required">Unique Identifier:</div>
-				<div class="field-value ">
-					<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'displayName', optionsText: 'displayName', select2: {}"></select>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: hasParent">
-				<div class="field-label required ">Parent Attribute:</div>
-				<div class="field-value ">
-					<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
-				<div class="field-label required">Export Images:</div>
-				<div class="field-value">
-					<ul>
-						<li>
-							<label><input id="exportImages-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ImageImport">Yes</label>
-						</li>
-						<li>
-							<label><input id="exportImages-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ImageImport">No</label>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: isDocument() == 'true'">
-				<div class="field-label required ">Copy Native File:</div>
-				<div class="field-value">
-					<ul>
-						<li>
-							<label><input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</label>
-						</li>
-						<li>
-							<label><input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</label>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
-				<div class="field-label required ">Native File Path:</div>
-				<div class="field-value ">
-					<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}"></select>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: showManager">
-				<div class="field-label required ">
-					Custodian Manager<br />
-					Contains Link:
-				</div>
-				<div class="field-value">
-					<ul>
-						<li>
-							<label><input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</label>
-						</li>
-						<li>
-							<label><input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</label>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: isDocument() == 'true'">
-				<div class="field-label required ">Use Folder Path Information:</div>
-				<div class="field-value">
-					<ul>
-						<li>
-							<label><input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes</label>
-						</li>
-						<li>
-							<label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
-				<div class="field-label required ">Folder Path Information:</div>
-				<div class="field-value ">
-					<div data-bind="if: IsRelativityProvider()">
-						<select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
-					</div>
-					<div data-bind="if: !IsRelativityProvider()">
-						<select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
-					</div>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true'">
-				<div class="field-label required ">Move Existing Documents:</div>
-				<div class="field-value">
-					<ul>
-						<li>
-							<label><input id="move-documents-radio-0" type="radio" name="import_MoveDocumntsToFolder" value="true" data-bind="checked: MoveExistingDocuments">Yes</label>
-						</li>
-						<li>
-							<label><input id="move-documents-radio-1" type="radio" name="import_MoveDocumntsToFolder" value="false" data-bind="checked: MoveExistingDocuments">No</label>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-		<br />
-		<div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
-			<span class="extracted-label">Extracted Text</span>
-			<div class="margin-top-8px">
-				<div class="field-row">
-					<div class="field-label required ">Cell Contains File Location:</div>
-					<div class="field-value">
-						<ul>
-							<li>
-								<label><input id="extracted-text-radio-0" type="radio" name="import_extractedTextLocation" value="true" data-bind="checked: ExtractedTextFieldContainsFilePath">Yes</label>
-							</li>
-							<li>
-								<label><input id="extracted-text-radio-1" type="radio" name="import_extractedTextLocation" value="false" data-bind="checked: ExtractedTextFieldContainsFilePath">No</label>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div data-bind="visible: ExtractedTextFieldContainsFilePath() == 'true'">
-					<div class="field-row">
-						<div class="field-label required"></div>
-						<div class="field-value ">
-							<select id="" data-bind="options: MappedLongTextFields, value: LongTextColumnThatContainsPathToFullText, optionsText: 'displayName', optionsValue: 'displayName', optionsCaption: 'Select...' , select2: {}"></select>
+		<img data-bind="visible: IsRelativityProvider(), click: openRelativityProviderSettingsTooltip" class="tooltip-img" id="contextualSettingsHelp" style="padding-left: 5px;"/>
+		<table style="width: 100%;">
+			<tr>
+				<td style="width: 48%; vertical-align: top">
+					<div class="identifier">
+						<div class="field-row">
+							<div class="field-label required">Overwrite:</div>
+							<div class="field-value">
+								<select id="overwrite" data-bind="options: OverwriteOptions, value: SelectedOverwrite, select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
+							<div class="field-label required">
+								Multi-Select Field<br/>Overlay Behavior:
+							</div>
+							<div class="field-value">
+								<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
+							<div class="field-label required">Unique Identifier:</div>
+							<div class="field-value ">
+								<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'displayName', optionsText: 'displayName', select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: hasParent">
+							<div class="field-label required ">Parent Attribute:</div>
+							<div class="field-value ">
+								<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
+							<div class="field-label required ">Native File Path:</div>
+							<div class="field-value ">
+								<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: showManager">
+							<div class="field-label required ">
+								Custodian Manager<br/>
+								Contains Link:
+							</div>
+							<div class="field-value">
+								<ul>
+									<li>
+										<label><input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</label>
+									</li>
+									<li>
+										<label><input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: isDocument() == 'true'">
+							<div class="field-label required ">Use Folder Path Information:</div>
+							<div class="field-value">
+								<ul>
+									<li>
+										<label><input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes</label>
+									</li>
+									<li>
+										<label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
+							<div class="field-label required ">Folder Path Information:</div>
+							<div class="field-value ">
+								<div data-bind="if: IsRelativityProvider()">
+									<select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
+								</div>
+								<div data-bind="if: !IsRelativityProvider()">
+									<select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
+								</div>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true'">
+							<div class="field-label required ">Move Existing Documents:</div>
+							<div class="field-value">
+								<ul>
+									<li>
+										<label><input id="move-documents-radio-0" type="radio" name="import_MoveDocumntsToFolder" value="true" data-bind="checked: MoveExistingDocuments">Yes</label>
+									</li>
+									<li>
+										<label><input id="move-documents-radio-1" type="radio" name="import_MoveDocumntsToFolder" value="false" data-bind="checked: MoveExistingDocuments">No</label>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
-					<div class="field-row">
-						<div class="field-label required ">Encoding for undetectable files:</div>
-						<div class="field-value ">
-							<select id="encodings" data-bind="options: ExtractedTextFileEncodingList, value: ExtractedTextFileEncoding, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+					<br/>
+					<div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
+						<span class="extracted-label">Extracted Text</span>
+						<div class="margin-top-8px">
+							<div class="field-row">
+								<div class="field-label required ">Cell Contains File Location:</div>
+								<div class="field-value">
+									<ul>
+										<li>
+											<label><input id="extracted-text-radio-0" type="radio" name="import_extractedTextLocation" value="true" data-bind="checked: ExtractedTextFieldContainsFilePath">Yes</label>
+										</li>
+										<li>
+											<label><input id="extracted-text-radio-1" type="radio" name="import_extractedTextLocation" value="false" data-bind="checked: ExtractedTextFieldContainsFilePath">No</label>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div data-bind="visible: ExtractedTextFieldContainsFilePath() == 'true'">
+								<div class="field-row">
+									<div class="field-label required"></div>
+									<div class="field-value ">
+										<select id="" data-bind="options: MappedLongTextFields, value: LongTextColumnThatContainsPathToFullText, optionsText: 'displayName', optionsValue: 'displayName', optionsCaption: 'Select...' , select2: {}"></select>
+									</div>
+								</div>
+								<div class="field-row">
+									<div class="field-label required ">Encoding for undetectable files:</div>
+									<div class="field-value ">
+										<select id="encodings" data-bind="options: ExtractedTextFileEncodingList, value: ExtractedTextFileEncoding, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
+				</td>
+				<td style="width: 48%; vertical-align: top">
+					<div class="field-row" data-bind="visible: isDocument() == 'true'">
+						<div class="field-label required ">Copy Native File:</div>
+						<div class="field-value">
+							<ul>
+								<li>
+									<label><input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</label>
+								</li>
+								<li>
+									<label><input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</label>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
+						<div class="field-label required">Export Images:</div>
+						<div class="field-value">
+							<ul>
+								<li>
+									<label><input id="exportImages-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ImageImport">Yes</label>
+								</li>
+								<li>
+									<label><input id="exportImages-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ImageImport">No</label>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
 	</div>
 </script>
