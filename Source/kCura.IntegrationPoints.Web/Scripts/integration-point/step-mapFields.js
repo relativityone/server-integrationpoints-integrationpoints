@@ -249,7 +249,7 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 
 		this.onDOMLoaded = function () {
-			root.utils.UI.disable("#fieldMappings", self.ImageImport());
+			root.utils.UI.disable("#fieldMappings", self.ImageImport() === "true");
 		}
 
 
