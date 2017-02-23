@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Castle.Core.Internal;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				ExportFilesLocation = sourceSettings.Fileshare,
 				OverwriteFiles = sourceSettings.OverwriteFiles,
 				ExportNatives = sourceSettings.ExportNatives,
-				SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
+				SelViewFieldIds = fieldMap.Select(item =>item.DestinationField).ToDictionary(entry => int.Parse(entry.FieldIdentifier)),
 				ArtifactTypeId = artifactTypeId,
 				OutputDataFileFormat = dataFileFormat,
 				DataFileEncoding = Encoding.GetEncoding(sourceSettings.DataFileEncodingType),

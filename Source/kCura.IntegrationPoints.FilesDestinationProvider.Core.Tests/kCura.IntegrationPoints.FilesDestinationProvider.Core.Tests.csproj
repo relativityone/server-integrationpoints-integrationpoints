@@ -84,6 +84,10 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.WinEDDS.ImportExtension, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>

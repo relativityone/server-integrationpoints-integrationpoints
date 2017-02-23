@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -48,6 +49,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private IExporterFactory _exporterFactory;
 
 		private ExportFile _exportFile;
+		private ExportDataContext _exportDataContext;
 		private IExportFileBuilder _exportFileBuilder;
 
 		private ExportProcessBuilder _exportProcessBuilder;
@@ -59,8 +61,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private JobStatisticsService _jobStatisticsService;
 		private Job _job;
 
-		private List<int> AllExportableAvfIds => new List<int>() { 1234, 5678 };
-		private List<int> SelectedAvfIds => new List<int>() { 1234 };
+		private Dictionary<int, FieldEntry> AllExportableAvfIds => new Dictionary<int, FieldEntry>
+		{
+			{ 1234, new FieldEntry { DisplayName = "Field1"}},
+			{ 5678, new FieldEntry { DisplayName = "Field2"}}
+		};
+		private Dictionary<int, FieldEntry> SelectedAvfIds => new Dictionary<int, FieldEntry>
+		{
+			{ 1234, new FieldEntry { DisplayName = "Field1"}},
+		};
 
 		#endregion
 
@@ -85,7 +94,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			MockExportFile();
 
-			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds));
+			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList()));
 
 			_exportProcessBuilder = new ExportProcessBuilder(
 				_configFactory,
@@ -114,7 +123,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 					ArtifactID = 2
 				}
 			};
-			_exportFileBuilder.Create(new ExportSettings()).ReturnsForAnyArgs(_exportFile);
+
+			var exportSettings = new ExportSettings();
+			_exportDataContext = new ExportDataContext()
+			{
+				ExportFile = _exportFile,
+				Settings = exportSettings
+			};
+			_exportFileBuilder.Create(_exportDataContext.Settings).ReturnsForAnyArgs(_exportFile);
 		}
 
 		#endregion
@@ -141,7 +157,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			var searchManager = Substitute.For<ISearchManager>();
 			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(
-				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds));
+				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList()));
 
 			_searchManagerFactory.Create(null, null).ReturnsForAnyArgs(searchManager);
 
@@ -216,38 +232,39 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelViewFieldIds = AllExportableAvfIds
 			}, _job);
 
-			CollectionAssert.AreEquivalent(expectedExportableFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
+			CollectionAssert.AreEquivalent(expectedExportableFields.Keys, _exportFile.SelectedViewFields.Select(x => x.AvfId));
 
 			Assert.That(expectedExportableFields.Count, Is.EqualTo(_exportFile.AllExportableFields.Length));
-			Assert.That(expectedExportableFields.Exists(item => _exportFile.AllExportableFields.Any(obj => obj.AvfId == item)));
+
+			Assert.That(expectedExportableFields.Select(item => item.Key).ToList().Exists(item => _exportFile.AllExportableFields.Any(obj => obj.AvfId == item)));
 		}
 
 		[Test]
 		public void ItShouldFilterSelectedViewFields()
 		{
-			var expectedFilteredFields = new List<int>
+			var expectedFilteredFields = new Dictionary<int, FieldEntry>
 			{
-				1,
-				2,
-				3
+				{ 1, new FieldEntry()},
+				{ 2, new FieldEntry()},
+				{ 3, new FieldEntry()}
 			};
-			var notExpectedFilteredFields = new List<int>
+			var notExpectedFilteredFields = new Dictionary <int, FieldEntry>
 			{
-				4,
-				5,
-				6
+				{ 4, new FieldEntry()},
+				{ 5, new FieldEntry()},
+				{ 6, new FieldEntry()}
 			};
 			var settings = new ExportSettings
 			{
 				SelViewFieldIds = expectedFilteredFields
 			};
-			var expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(expectedFilteredFields.Concat(notExpectedFilteredFields).ToList());
+			var expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(expectedFilteredFields.Keys.Concat(notExpectedFilteredFields.Keys).ToList());
 
 			MockSearchManagerReturnValue(expected);
 
 			_exportProcessBuilder.Create(settings, _job);
 
-			CollectionAssert.AreEquivalent(expectedFilteredFields, _exportFile.SelectedViewFields.Select(x => x.AvfId));
+			CollectionAssert.AreEquivalent(expectedFilteredFields.Keys, _exportFile.SelectedViewFields.Select(x => x.AvfId));
 		}
 
 		[Test]
@@ -272,7 +289,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelViewFieldIds = SelectedAvfIds,
 				TextPrecedenceFieldsIds = textPrecedenceFieldsIdsExpected
 			};
-			settings.SelViewFieldIds.Add(textPrecedenceFieldsIdsExpected[0]);
+			settings.SelViewFieldIds.Add(textPrecedenceFieldsIdsExpected[0], new FieldEntry());
 			var expected = 
 				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(textPrecedenceFieldsIdsExpected.Concat(textPrecedenceFieldsIdsNotExpected).ToList());
 
@@ -291,14 +308,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelViewFieldIds = SelectedAvfIds
 			}, _job);
 
-			_exporterFactory.Received().Create(_exportFile);
+			_exporterFactory.Received().Create(Arg.Is<ExportDataContext>(context => context.ExportFile == _exportDataContext.ExportFile));
 		}
 
 		[Test]
 		public void ItShouldAttachEventHandlers()
 		{
 			var exporter = Substitute.For<Core.SharedLibrary.IExporter>();
-			_exporterFactory.Create(_exportFile).Returns(exporter);
+			_exporterFactory.Create(Arg.Is<ExportDataContext>(item => item.ExportFile == _exportFile )).Returns(exporter);
 
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
@@ -317,7 +334,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var batchReporterMock = new BatchReporterMock();
 			var job = _job;
 
-			_exporterFactory.Create(_exportFile).Returns(exporter);
+			_exporterFactory.Create(Arg.Is<ExportDataContext>(item => item.ExportFile == _exportFile)).Returns(exporter);
 
 			_loggingMediator.LoggingMediators.Returns(
 				new List<ILoggingMediator>( new [] { batchReporterMock } ));
@@ -341,7 +358,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var exportableFieldIds = new List<int> {1, 2, 3, 4, 5, 6};
 			MockSearchManagerReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(exportableFieldIds));
 
-			var expectedFieldIds = new List<int> { 2, 3, 1 };
+			var expectedFieldIds = new Dictionary<int, FieldEntry>
+			{
+				{ 2, new FieldEntry()},
+				{ 3, new FieldEntry()},
+				{ 1, new FieldEntry()}
+			};
 
 			var settings = new ExportSettings
 			{
@@ -352,7 +374,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportProcessBuilder.Create(settings, _job);
 
 			// assert
-			CollectionAssert.AreEqual(expectedFieldIds, _exportFile.SelectedViewFields.Select(x => x.AvfId));
+			CollectionAssert.AreEqual(expectedFieldIds.Keys, _exportFile.SelectedViewFields.Select(x => x.AvfId));
 		}
 
 		[Test]
@@ -360,7 +382,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			const int fieldArtifactId = 123456;
 
-			ViewFieldInfo[] fieldInfos = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds, true, fieldArtifactId);
+			ViewFieldInfo[] fieldInfos = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), true, fieldArtifactId);
 
 			MockSearchManagerReturnValue(fieldInfos);
 

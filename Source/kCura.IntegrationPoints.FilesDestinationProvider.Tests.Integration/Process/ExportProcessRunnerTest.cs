@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.Relativity.Client;
+using kCura.Vendor.Castle.Core.Internal;
 using kCura.Vendor.Castle.Windsor;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
@@ -161,13 +162,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private Core.ExportSettings CreateExportSettings()
 		{
 			var fieldIds = _configSettings.DefaultFields
-				.Select(x => int.Parse(x.FieldIdentifier))
-				.ToList();
+				.ToDictionary(item => int.Parse(item.FieldIdentifier));
 
-			fieldIds.AddRange(_configSettings.AdditionalFields.Select(x => int.Parse(x.FieldIdentifier)));
+			_configSettings.AdditionalFields.ForEach(item => fieldIds.Add(int.Parse(item.FieldIdentifier), item));
 
 			// Add Long Text Field
-			fieldIds.Add(int.Parse(_configSettings.LongTextField.FieldIdentifier));
+			fieldIds.Add(int.Parse(_configSettings.LongTextField.FieldIdentifier), _configSettings.LongTextField);
 
 			var settings = new Core.ExportSettings
 			{

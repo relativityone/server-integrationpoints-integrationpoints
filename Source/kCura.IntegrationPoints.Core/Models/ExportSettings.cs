@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
@@ -69,7 +70,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public bool AppendOriginalFileName { get; set; }
 		public int WorkspaceId { get; set; }
 		public string ExportFilesLocation { get; set; }
-		public List<int> SelViewFieldIds { get; set; }
+		public Dictionary<int, FieldEntry> SelViewFieldIds { get; set; }
 		public int ArtifactTypeId { get; set; }
 		public bool OverwriteFiles { get; set; }
 		public bool ExportNatives { get; set; }

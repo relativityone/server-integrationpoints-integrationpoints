@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Core.Export;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<StoppableExporterFactory>();
 		}
 
-		public IExporter Create(ExportFile exportFile)
+		public IExporter Create(ExportDataContext exportDataContext)
 		{
 			var useCoreApiConfig = _instanceSettingRepository.GetConfigurationValue(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
 				Constants.REPLACE_WEB_API_WITH_EXPORT_CORE);
@@ -35,16 +36,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			if (bool.TryParse(useCoreApiConfig, out useCoreApi) && useCoreApi)
 			{
 				LogUsingRelativityCore();
-				serviceFactory = new CoreServiceFactory(exportFile);
+				serviceFactory = new CoreServiceFactory(exportDataContext.ExportFile);
 			}
 			else
 			{
 				LogUsingWebApi();
-				serviceFactory = new WebApiServiceFactory(exportFile);
+				serviceFactory = new WebApiServiceFactory(exportDataContext.ExportFile);
 			}
-			var exporter = new Exporter(exportFile, controller, serviceFactory)
+			var loadFileFormatterFactory = new kCura.WinEDDS.Core.Export.ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings));
+
+			var exporter = new Exporter(exportDataContext.ExportFile, controller, serviceFactory,
+				loadFileFormatterFactory)
 			{
-				NameTextAndNativesAfterBegBates = exportFile.AreSettingsApplicableForProdBegBatesNameCheck()
+				NameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck()
 			};
 			return new StoppableExporter(exporter, controller, jobStopManager);
 		}

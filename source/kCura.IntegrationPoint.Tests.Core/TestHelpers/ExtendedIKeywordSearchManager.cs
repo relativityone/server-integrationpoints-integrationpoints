@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services;
@@ -47,6 +48,28 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public Task UpdateSingleAsync(int workspaceArtifactId, KeywordSearch searchDto)
 		{
 			return Manager.UpdateSingleAsync(workspaceArtifactId, searchDto);
+		}
+
+		public Task<SavedSearchMoveResultSet> MoveAsync(int workspaceArtifactID, int artifactID, int destinationContainerID)
+		{
+			return Manager.MoveAsync(workspaceArtifactID, artifactID, destinationContainerID);
+		}
+
+		public Task<SavedSearchMoveResultSet> MoveAsync(int workspaceArtifactID, int artifactID, int destinationContainerID,
+			CancellationToken cancel = new CancellationToken())
+		{
+			return Manager.MoveAsync(workspaceArtifactID, artifactID, destinationContainerID, cancel);
+		}
+
+		public Task<SavedSearchMoveResultSet> MoveAsync(int workspaceArtifactID, int artifactID, int destinationContainerID, IProgress<MoveProcessStateProgress> progress = null)
+		{
+			return Manager.MoveAsync(workspaceArtifactID, artifactID, destinationContainerID, progress);
+		}
+
+		public Task<SavedSearchMoveResultSet> MoveAsync(int workspaceArtifactID, int artifactID, int destinationContainerID,
+			CancellationToken cancel = new CancellationToken(), IProgress<MoveProcessStateProgress> progress = null)
+		{
+			return Manager.MoveAsync(workspaceArtifactID, artifactID, destinationContainerID, cancel, progress);
 		}
 
 		public Task DeleteSingleAsync(int workspaceArtifactId, int searchArtifactId)

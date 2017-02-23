@@ -118,6 +118,10 @@
     <Reference Include="Relativity.Services.Interfaces">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
+	<Reference Include="Relativity.Telemetry.APM, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Telemetry_APM)\lib\net45\Relativity.Telemetry.APM.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Telemetry.MetricsCollection, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_MetricsCollection)\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
