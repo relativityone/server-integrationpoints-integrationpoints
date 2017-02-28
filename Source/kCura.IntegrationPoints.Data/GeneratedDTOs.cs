@@ -894,6 +894,31 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName), value);
 			}
 		}
+		public const int DestinationInstanceNameFieldLength = 400;
+		[DynamicField(DestinationWorkspaceFields.DestinationInstanceName, DestinationWorkspaceFieldGuids.DestinationInstanceName, FieldTypes.FixedLengthText, 400)]
+		public string DestinationInstanceName
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName), value);
+			}
+		}
+		[DynamicField(DestinationWorkspaceFields.DestinationInstanceArtifactID, DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID, FieldTypes.WholeNumber)]
+		public int? DestinationInstanceArtifactID
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(DestinationWorkspaceFields.Name, DestinationWorkspaceFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name

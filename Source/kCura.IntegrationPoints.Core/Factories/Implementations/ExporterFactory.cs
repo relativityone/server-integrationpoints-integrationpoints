@@ -4,12 +4,14 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -25,17 +27,19 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IRepositoryFactory _sourceRepositoryFactory;
 		private readonly IRepositoryFactory _targetRepositoryFactory;
 		private readonly IHelper _helper;
+		private readonly IFederatedInstanceManager _federatedInstanceManager;
 
 		public ExporterFactory(
 			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
-			IHelper helper)
+			IHelper helper, IFederatedInstanceManager federatedInstanceManager)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
 			_targetRepositoryFactory = targetRepositoryFactory;
 			_helper = helper;
+			_federatedInstanceManager = federatedInstanceManager;
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
@@ -58,9 +62,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, sourceWorkspaceManager,
 				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration,
 				userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
-
+			
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper, _federatedInstanceManager, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
 			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager, configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>()

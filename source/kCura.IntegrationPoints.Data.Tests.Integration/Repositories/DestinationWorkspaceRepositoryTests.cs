@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 	public class DestinationWorkspaceRepositoryTests : RelativityProviderTemplate
 	{
 		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;
-		private DestinationWorkspaceDTO _destinationWorkspaceDto;
+		private DestinationWorkspace _destinationWorkspaceDto;
 		private IJobHistoryService _jobHistoryService;
 		private IScratchTableRepository _scratchTableRepository;
 		private IDocumentRepository _documentRepository;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			base.SuiteSetup();
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId);
-			_destinationWorkspaceDto = _destinationWorkspaceRepository.Create(SourceWorkspaceArtifactId, "DestinationWorkspaceRepositoryTests");
+			_destinationWorkspaceDto = _destinationWorkspaceRepository.Create(SourceWorkspaceArtifactId, "DestinationWorkspaceRepositoryTests", -1, "This Instance");
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_scratchTableRepository = repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, "Documents2Tag", "LikeASir");
 			_documentRepository = repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
@@ -54,19 +55,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Query_DestinationWorkspaceDto_Success()
 		{
 			//Act
-			DestinationWorkspaceDTO queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId);
+			DestinationWorkspace queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, queriedDestinationWorkspaceDto.ArtifactId);
-			Assert.AreEqual(_destinationWorkspaceDto.WorkspaceArtifactId, queriedDestinationWorkspaceDto.WorkspaceArtifactId);
-			Assert.AreEqual(_destinationWorkspaceDto.WorkspaceName, queriedDestinationWorkspaceDto.WorkspaceName);
+			Assert.AreEqual(_destinationWorkspaceDto.DestinationWorkspaceArtifactID, queriedDestinationWorkspaceDto.DestinationWorkspaceArtifactID);
+			Assert.AreEqual(_destinationWorkspaceDto.DestinationWorkspaceName, queriedDestinationWorkspaceDto.DestinationWorkspaceName);
 		}
 
 		[Test]
 		public void Query_DestinationWorkspaceDto_ReturnsNull()
 		{
 			//Act
-			DestinationWorkspaceDTO queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(-1);
+			DestinationWorkspace queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(-1, -1);
 
 			//Assert
 			Assert.IsNull(queriedDestinationWorkspaceDto);
@@ -78,21 +79,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//Arrange
 			const string expectedWorkspaceName = "Updated Workspace";
 
-			DestinationWorkspaceDTO destinationWorkspaceDto = new DestinationWorkspaceDTO
+			DestinationWorkspace destinationWorkspaceDto = new DestinationWorkspace
 			{
 				ArtifactId = _destinationWorkspaceDto.ArtifactId,
-				WorkspaceArtifactId = _destinationWorkspaceDto.WorkspaceArtifactId,
-				WorkspaceName = expectedWorkspaceName
+				DestinationWorkspaceArtifactID = _destinationWorkspaceDto.DestinationWorkspaceArtifactID,
+				DestinationWorkspaceName = expectedWorkspaceName
 			};
 
 			//Act
 			_destinationWorkspaceRepository.Update(destinationWorkspaceDto);
-			DestinationWorkspaceDTO updatedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId);
+			DestinationWorkspace updatedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, updatedDestinationWorkspaceDto.ArtifactId);
-			Assert.AreEqual(_destinationWorkspaceDto.WorkspaceArtifactId, updatedDestinationWorkspaceDto.WorkspaceArtifactId);
-			Assert.AreEqual(expectedWorkspaceName, updatedDestinationWorkspaceDto.WorkspaceName);
+			Assert.AreEqual(_destinationWorkspaceDto.DestinationWorkspaceArtifactID, updatedDestinationWorkspaceDto.DestinationWorkspaceArtifactID);
+			Assert.AreEqual(expectedWorkspaceName, updatedDestinationWorkspaceDto.DestinationWorkspaceName);
 		}
 
 		[Test]
@@ -177,27 +178,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Create_DestinationWorkspaceDTOWithInvalidWorkspaceId_ThrowsException()
 		{
 			//Arrange
-			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(Helper, -1);
+			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(Helper, -1, Substitute.For<IRSAPIService>());
 			//Act & Assert
-			Assert.Throws<Exception>(() => destinationWorkspaceRepository.Create(-999, "Invalid Workspace"), "Unable to create a new instance of Destination Workspace object");
+			Assert.Throws<Exception>(() => destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance"), "Unable to create a new instance of Destination Workspace object");
 		}
 
 		[Test]
 		public void Link_DestinationWorkspaceDTOWithInvalidWorkspaceId_ThrowsException()
 		{
 			//Act & Assert
-			Assert.Throws<Exception>(() => _destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceDto.WorkspaceArtifactId, -1), "Unable to link Destination Workspace object to Job History object");
+			Assert.Throws<Exception>(() => _destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceDto.DestinationWorkspaceArtifactID.Value, -1), "Unable to link Destination Workspace object to Job History object");
 		}
 
 		[Test]
 		public void Update_DestinationWorkspaceDtoWithInvalidArtifactId_ThrowsError()
 		{
 			//Arrange
-			DestinationWorkspaceDTO destinationWorkspaceDto = new DestinationWorkspaceDTO
+			DestinationWorkspace destinationWorkspaceDto = new DestinationWorkspace
 			{
 				ArtifactId = 12345,
-				WorkspaceArtifactId = _destinationWorkspaceDto.WorkspaceArtifactId,
-				WorkspaceName = _destinationWorkspaceDto.WorkspaceName
+				DestinationWorkspaceArtifactID = _destinationWorkspaceDto.DestinationWorkspaceArtifactID,
+				DestinationWorkspaceName = _destinationWorkspaceDto.DestinationWorkspaceName
 			};
 
 			//Act & Assert

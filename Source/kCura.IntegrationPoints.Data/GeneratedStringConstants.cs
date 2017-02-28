@@ -234,6 +234,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"Job History";
 		public const string DestinationWorkspaceArtifactID = @"Destination Workspace Artifact ID";
 		public const string DestinationWorkspaceName = @"Destination Workspace Name";
+		public const string DestinationInstanceName = @"Destination Instance Name";
+		public const string DestinationInstanceArtifactID = @"Destination Instance Artifact ID";
 		public const string Name = @"Name";
 	}
 
@@ -243,6 +245,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"07b8a468-dec8-45bd-b50a-989a35150be2";
 		public const string DestinationWorkspaceArtifactID = @"207e6836-2961-466b-a0d2-29974a4fad36";
 		public const string DestinationWorkspaceName = @"348d7394-2658-4da4-87d0-8183824adf98";
+		public const string DestinationInstanceName = @"909adc7c-2bb9-46ca-9f85-da32901d6554";
+		public const string DestinationInstanceArtifactID = @"323458db-8a06-464b-9402-af2516cf47e0";
 		public const string Name = @"155649c0-db15-4ee7-b449-bfdf2a54b7b5";
 	}
 

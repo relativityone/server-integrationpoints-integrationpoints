@@ -64,7 +64,7 @@
       <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -129,6 +129,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\EventHandlerCommandExecutorTests.cs" />
+    <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreTests.cs" />
     <Compile Include="Installers\Helpers\SecretStoreCleanUpTests.cs" />
@@ -193,9 +195,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\packages\Selenium.WebDriver.ChromeDriver.2.21.0.0\driver\chromedriver.exe">

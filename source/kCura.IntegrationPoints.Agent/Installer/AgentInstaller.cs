@@ -128,8 +128,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 							IHelper targetHelper = helperFactory.CreateTargetHelper(sourceHelper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 							targetRepositoryFactory = new RepositoryFactory(sourceHelper, targetHelper.GetServicesManager());
 						}
-						
-						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper);
+						IFederatedInstanceManager federatedInstanceManager = k.Resolve<IFederatedInstanceManager>();
+						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager);
 					}).LifestyleTransient());
 		}
 	}

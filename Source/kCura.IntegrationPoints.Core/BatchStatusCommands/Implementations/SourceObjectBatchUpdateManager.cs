@@ -1,10 +1,11 @@
 using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -18,19 +19,24 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _jobHistoryInstanceId;
 		private readonly IAPILog _logger;
 		private readonly int _sourceWorkspaceId;
+		private readonly int? _federatedInstanceId;
 		private readonly IWorkspaceRepository _workspaceRepository;
+		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		public SourceObjectBatchUpdateManager(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper,
-			SourceConfiguration sourceConfig, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
+		public SourceObjectBatchUpdateManager(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
+			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper, IFederatedInstanceManager federatedInstanceManager, SourceConfiguration sourceConfig,
+			int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
+			_federatedInstanceManager = federatedInstanceManager;
 			_destinationWorkspaceRepository = sourceRepositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			_workspaceRepository = targetRepositoryFactory.GetWorkspaceRepository();
 			ScratchTableRepository = sourceRepositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS, uniqueJobId);
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;
+			_federatedInstanceId = sourceConfig.FederatedInstanceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SourceObjectBatchUpdateManager>();
 		}
@@ -41,15 +47,18 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				DestinationWorkspaceDTO destinationWorkspace = _destinationWorkspaceRepository.Query(_destinationWorkspaceId);
+				DestinationWorkspace destinationWorkspace = _destinationWorkspaceRepository.Query(_destinationWorkspaceId, _federatedInstanceId);
 				string destinationWorkspaceName = _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
+				string destinationInstanceName = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_federatedInstanceId).Name;
+
 				if (destinationWorkspace == null)
 				{
-					destinationWorkspace = _destinationWorkspaceRepository.Create(_destinationWorkspaceId, destinationWorkspaceName);
+					destinationWorkspace = _destinationWorkspaceRepository.Create(_destinationWorkspaceId, destinationWorkspaceName, _federatedInstanceId, destinationInstanceName);
 				}
-				else if (destinationWorkspaceName != destinationWorkspace.WorkspaceName)
+				else if (destinationWorkspaceName != destinationWorkspace.DestinationWorkspaceName || destinationInstanceName != destinationWorkspace.DestinationInstanceName)
 				{
-					destinationWorkspace.WorkspaceName = destinationWorkspaceName;
+					destinationWorkspace.DestinationWorkspaceName = destinationWorkspaceName;
+					destinationWorkspace.DestinationInstanceName = destinationInstanceName;
 					_destinationWorkspaceRepository.Update(destinationWorkspace);
 				}
 

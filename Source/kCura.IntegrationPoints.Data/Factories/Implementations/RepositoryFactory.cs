@@ -58,7 +58,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)
 		{
-			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(_helper, sourceWorkspaceArtifactId);
+			var rsapiService = new RSAPIService(_helper, sourceWorkspaceArtifactId);
+			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(_helper, sourceWorkspaceArtifactId, rsapiService);
 
 			return destinationWorkspaceRepository;
 		}
