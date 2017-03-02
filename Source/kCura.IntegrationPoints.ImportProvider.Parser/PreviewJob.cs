@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 					int fieldTypeId = GetFieldTypeId(currentField, settings.ChoiceFields);
 
 					docFieldName = (currentField.DestinationField.DisplayName != null) ? currentField.DestinationField.DisplayName : currentField.SourceField.DisplayName;
-					docFieldIdentifier = (!String.IsNullOrEmpty(currentField.DestinationField.FieldIdentifier)) ? int.Parse(currentField.DestinationField.FieldIdentifier): int.Parse(currentField.SourceField.FieldIdentifier);
+					docFieldIdentifier = GetDocFieldId(fieldCategory, currentField);
 
 					DocumentField newDocField = new DocumentField(docFieldName, docFieldIdentifier, fieldTypeId, fieldCategory, -1, -1, -1, false,
 						kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
@@ -96,8 +97,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 				if (_foldersAndChoices)
 				{
-					PreviewHelper previewHelper = new PreviewHelper();
-					preview = previewHelper.BuildFoldersAndChoices(arrs, _loadFile.PreviewCodeCount);
+					preview = BuildPreviewTableFoldersAndChoices(arrs, _loadFile.PreviewCodeCount);
 				}
 				else
 				{
@@ -198,6 +198,23 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			return preview;
 		}
 
+		public ImportPreviewTable BuildPreviewTableFoldersAndChoices(List<object> arrs, HybridDictionary previewCodeCount)
+		{
+			PreviewChoicesHelper previewHelper = new PreviewChoicesHelper();
+			ImportPreviewTable preview = new ImportPreviewTable();
+			preview.Header.Add("Field Name");
+			preview.Header.Add("Count");
+
+			DataTable dt = previewHelper.BuildFoldersAndCodesDataSource(arrs, previewCodeCount);
+			//Convert from DataTable to the List<List<string>> that RIP preview uses
+			var dataTableQuery = from row in dt.AsEnumerable()
+					select row.ItemArray.Select(x => x.ToString()).ToList<string>();
+
+			preview.Data.AddRange(dataTableQuery.ToList());
+
+			return preview;
+		}
+
 		private int GetFieldCategory(FieldMap currentField)
 		{
 			int fieldCat = -1;
@@ -228,6 +245,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			}
 
 			return fieldTypeId;
+		}
+
+		private int GetDocFieldId(int fieldCategory, FieldMap currentField)
+		{
+			int docFieldIdentifier;
+			if (fieldCategory == (int)global::Relativity.FieldCategory.ParentArtifact)
+			{
+				//fieldIdentifier needs to be -2 for a folderInformation field
+				docFieldIdentifier = -2;
+			}
+			else
+			{
+				docFieldIdentifier = (!string.IsNullOrEmpty(currentField.DestinationField.FieldIdentifier)) ? int.Parse(currentField.DestinationField.FieldIdentifier) : int.Parse(currentField.SourceField.FieldIdentifier);
+			}
+
+			return docFieldIdentifier;
 		}
 
 		private bool ShouldFieldBeIncludedInPreview(FieldMap currentField)
