@@ -12,14 +12,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class FieldCatalogController : ApiController
 	{
 		private readonly ICPHelper _helper;
-		private readonly IHelperFactory _helperFactory;
 		private readonly IServiceFactory _serviceFactory;
 
-		public FieldCatalogController(ICPHelper helper, IHelperFactory helperFactory, IServiceFactory serviceFactory)
+		public FieldCatalogController(ICPHelper helper, IServiceFactory serviceFactory)
 		{
 			_serviceFactory = serviceFactory;
 			_helper = helper;
-			_helperFactory = helperFactory;
 		}
 
 		[HttpPost]
@@ -27,15 +25,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage GetCurrentInstanceFields(int destinationWorkspaceId)
 		{
 			var fieldCatalogService = _serviceFactory.CreateFieldCatalogService(_helper);
-			return GetFields(destinationWorkspaceId, fieldCatalogService);
-		}
-
-		[HttpPost]
-		[LogApiExceptionFilter(Message = "Unable to retrieve field catalog information.")]
-		public HttpResponseMessage GetFederatedInstanceFields(int destinationWorkspaceId, int federatedInstanceId, [FromBody] object credentials)
-		{
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials.ToString());
-			var fieldCatalogService = _serviceFactory.CreateFieldCatalogService(targetHelper);
 			return GetFields(destinationWorkspaceId, fieldCatalogService);
 		}
 

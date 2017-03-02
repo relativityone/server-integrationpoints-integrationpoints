@@ -566,20 +566,11 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.GetCatalogFieldMappings = function () {
 			self.CatalogField = {};
-			var destinationWorkspaceID;
-			var federatedInstanceID = null;
-			if (self.IsRelativityProvider()) {
-				destinationWorkspaceID = self.destinationCaseArtifactID;
-				var sourceSettings = JSON.parse(model.sourceConfiguration);
-				federatedInstanceID = sourceSettings.FederatedInstanceArtifactId;
-			} else {
-				destinationWorkspaceID = IP.utils.getParameterByName('AppID', window.top);
-			}
-
+			var destinationWorkspaceID = IP.utils.getParameterByName('AppID', window.top);
+			
 			$.ajax({
-				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID, federatedInstanceID),
+				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID),
 				type: 'POST',
-				data: self.SecuredConfiguration,
 				success: function (data) {
 					self.CatalogField = data;
 				},
@@ -692,7 +683,14 @@ ko.validation.insertValidationMessage = function (element) {
 							continue;
 						}
 
-						if (isCatalogFieldMatch(self.workspaceFields()[k].identifer, self.sourceField()[i].name)) {
+						var isCatalogFieldMatchResult;
+						if (self.IsRelativityProvider()) {
+							isCatalogFieldMatchResult = isCatalogFieldMatch(self.sourceField()[i].identifer, self.workspaceFields()[k].name);
+						} else {
+							isCatalogFieldMatchResult = isCatalogFieldMatch(self.workspaceFields()[k].identifer, self.sourceField()[i].name);
+						}
+
+						if (isCatalogFieldMatchResult) {
 							sourceFieldToAdd.push(self.sourceField()[i]);
 							wspaceFieldToAdd.push(self.workspaceFields()[k]);
 							break;

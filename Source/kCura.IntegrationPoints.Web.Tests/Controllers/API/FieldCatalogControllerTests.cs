@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			HttpRouteData routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFieldCatalogController" } });
 
-			_controller = new FieldCatalogController(_helper, _helperFactory, _serviceFactory)
+			_controller = new FieldCatalogController(_helper, _serviceFactory)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request
