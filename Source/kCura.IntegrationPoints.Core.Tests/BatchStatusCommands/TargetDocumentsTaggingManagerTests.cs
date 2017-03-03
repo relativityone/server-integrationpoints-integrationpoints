@@ -107,13 +107,13 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		public void OnJobStart_CreateSourceWorkspaceAndJobHistory()
 		{
 			// arrange
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Returns(_sourceWorkspaceDto);
+			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Returns(_sourceWorkspaceDto);
 
 			//act
 			_instance.OnJobStart(_job);
 
 			//assert
-			_sourceWorkspaceManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
+			_sourceWorkspaceManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId);
 			_sourceJobManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
 				_sourceWorkspaceDto.ArtifactTypeId,
 				_sourceWorkspaceDto.ArtifactId,
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		public void OnJobStart_SourceWorkspaceManagerFails()
 		{
 			// arrange
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Throws(new Exception());
+			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Throws(new Exception());
 
 			//act
 			Assert.Throws<Exception>(() => _instance.OnJobStart(_job));
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				Name = "whatever"
 			};
 
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Returns(_sourceWorkspaceDto);
+			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Returns(_sourceWorkspaceDto);
 			_sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
 				_sourceWorkspaceDto.ArtifactTypeId,
 				_sourceWorkspaceDto.ArtifactId,
@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				Name = "whatever"
 			};
 
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Returns(_sourceWorkspaceDto);
+			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Returns(_sourceWorkspaceDto);
 			_sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
 				_sourceWorkspaceDto.ArtifactTypeId,
 				_sourceWorkspaceDto.ArtifactId,

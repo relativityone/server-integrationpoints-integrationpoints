@@ -14,8 +14,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Retrieves the instance of Source Workspace for the given Source Workspace id
 		/// </summary>
 		/// <param name="sourceWorkspaceArtifactId">The artifact of the Workspace that initiated the push</param>
+		/// <param name="federatedInstanceName">Name of the federated instance.</param>
+		/// <param name="federatedInstanceArtifactId">Id of the federated instance.</param>
 		/// <returns>A SourceWorkspaceDTO class representing the Source Workspace rdo, <code>NULL</code> if not found</returns>
-		SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId);
+		SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId, string federatedInstanceName, int? federatedInstanceArtifactId);
 
 		/// <summary>
 		/// Creates an instance of the Source Workspace rdo

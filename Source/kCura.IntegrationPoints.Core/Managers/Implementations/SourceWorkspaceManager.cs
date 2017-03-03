@@ -12,43 +12,59 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
 			: base(repositoryFactory,
-				  IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				  SourceWorkspaceDTO.ObjectTypeGuid,
-				  Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE)
+				IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				SourceWorkspaceDTO.ObjectTypeGuid,
+				Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE)
 		{
 		}
 
-		public SourceWorkspaceDTO InitializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
+		public SourceWorkspaceDTO InitializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int? federatedInstanceArtifactId)
 		{
 			ISourceWorkspaceRepository sourceWorkspaceRepository = RepositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
 			IArtifactGuidRepository artifactGuidRepository = RepositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
 
-			int sourceWorkspaceDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceWorkspaceRepository, artifactGuidRepository, (int)ArtifactType.Case);
+			int sourceWorkspaceDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceWorkspaceRepository, artifactGuidRepository, (int) ArtifactType.Case);
 
 			IExtendedFieldRepository fieldRepository = RepositoryFactory.GetExtendedFieldRepository(destinationWorkspaceArtifactId);
-			var fieldGuids = new List<Guid>(2) { SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid };
+			var fieldGuids = new List<Guid>(3)
+			{
+				SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid,
+				SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid,
+				SourceWorkspaceDTO.Fields.InstanceNameFieldGuid
+			};
 			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceWorkspaceRepository, fieldRepository, sourceWorkspaceDescriptorArtifactTypeId);
-			CreateDocumentsFields(sourceWorkspaceDescriptorArtifactTypeId, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, artifactGuidRepository, sourceWorkspaceRepository, fieldRepository);
+			CreateDocumentsFields(sourceWorkspaceDescriptorArtifactTypeId, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, artifactGuidRepository, sourceWorkspaceRepository,
+				fieldRepository);
 
-			SourceWorkspaceDTO sourceWorkspaceDto = CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceRepository);
+			SourceWorkspaceDTO sourceWorkspaceDto = CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, federatedInstanceArtifactId,
+				sourceWorkspaceRepository);
 			return sourceWorkspaceDto;
 		}
 
 		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int workspaceArtifactId,
-			int sourceWorkspaceDescriptorArtifactTypeId, ISourceWorkspaceRepository sourceWorkspaceRepository)
+			int sourceWorkspaceDescriptorArtifactTypeId, int? federatedInstanceArtifactId, ISourceWorkspaceRepository sourceWorkspaceRepository)
 		{
 			IWorkspaceRepository workspaceRepository = RepositoryFactory.GetWorkspaceRepository();
 			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(workspaceArtifactId);
-			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(workspaceArtifactId);
 
+			string currentInstanceName = FederatedInstanceManager.LocalInstance.Name;
+			if (federatedInstanceArtifactId.HasValue)
+			{
+				IInstanceSettingRepository instanceSettingRepository = RepositoryFactory.GetInstanceSettingRepository();
+				currentInstanceName = instanceSettingRepository.GetConfigurationValue("Relativity.Authentication", "FriendlyInstanceName");
+			}
+
+			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(workspaceArtifactId, currentInstanceName, federatedInstanceArtifactId);
+			
 			if (sourceWorkspaceDto == null)
 			{
 				sourceWorkspaceDto = new SourceWorkspaceDTO
 				{
 					ArtifactId = -1,
-					Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, workspaceArtifactId),
+					Name = Utils.GetFormatForWorkspaceOrJobDisplay(currentInstanceName, workspaceDto.Name, workspaceArtifactId),
 					SourceCaseArtifactId = workspaceArtifactId,
-					SourceCaseName = workspaceDto.Name
+					SourceCaseName = workspaceDto.Name,
+					SourceInstanceName = currentInstanceName
 				};
 
 				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceDto);
@@ -58,10 +74,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId;
 
 			// Check to see if instance should be updated
-			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name)
+			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name || sourceWorkspaceDto.SourceInstanceName != currentInstanceName)
 			{
-				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, workspaceArtifactId);
+				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(currentInstanceName, workspaceDto.Name, workspaceArtifactId);
 				sourceWorkspaceDto.SourceCaseName = workspaceDto.Name;
+				sourceWorkspaceDto.SourceInstanceName = currentInstanceName;
 				sourceWorkspaceRepository.Update(sourceWorkspaceDto);
 			}
 
@@ -77,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
-						FieldType = Relativity.Client.FieldType.WholeNumber
+						FieldType = FieldType.WholeNumber
 					}
 				},
 				{
@@ -85,7 +102,15 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
-						FieldType = Relativity.Client.FieldType.FixedLengthText
+						FieldType = FieldType.FixedLengthText
+					}
+				},
+				{
+					SourceWorkspaceDTO.Fields.InstanceNameFieldGuid,
+					new FieldDefinition
+					{
+						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
+						FieldType = FieldType.FixedLengthText
 					}
 				}
 			};

@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
 
-			_sourceWorkspaceManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID)
+			_sourceWorkspaceManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID, null)
 				.Returns(_sourceWorkspaceDto);
 			_sourceJobManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _JOB_HISTORY_ARTIFACTID);
 		}

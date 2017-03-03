@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -89,7 +88,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					Wrapping = false,
 					Unicode = false, // TODO: check this
 					Length = 255 // TODO: check this
-				}
+				},
+				new kCura.Relativity.Client.DTOs.Field()
+				{
+					Name = Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
+					Guids = new List<Guid>() { SourceWorkspaceDTO.Fields.InstanceNameFieldGuid },
+					FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
+					ObjectType = objectType,
+					IsRequired = true,
+					IncludeInTextIndex = false,
+					Linked = false,
+					AllowHTML = false,
+					AllowSortTally = false,
+					AllowGroupBy = false,
+					AllowPivot = false,
+					OpenToAssociations = false,
+					Width = "100",
+					Wrapping = false,
+					Unicode = false, // TODO: check this
+					Length = 255 // TODO: check this
+				},
 			};
 
 			kCura.Relativity.Client.DTOs.Field[] fieldsToCreate =
@@ -128,6 +146,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 						case Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME:
 							return SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid;
+
+						case Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME:
+							return SourceWorkspaceDTO.Fields.InstanceNameFieldGuid;
 
 						default:
 							throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
@@ -177,14 +198,27 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return newFieldArtifactId;
 		}
 
-		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId)
+		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId, string federatedInstanceName, int? federatedInstanceArtifactId)
 		{
-			var condition = new WholeNumberCondition(Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
+			var sourceWorkspaceCondition = new WholeNumberCondition(Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
+			Condition federatedInstanceCondition;
+			if (federatedInstanceArtifactId.HasValue)
+			{
+				federatedInstanceCondition = new TextCondition(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, TextConditionEnum.EqualTo, federatedInstanceName);
+			}
+			else
+			{
+				var instanceNameCondition = new TextCondition(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, TextConditionEnum.EqualTo, federatedInstanceName);
+				var instanceNameIsNotSetCondition = new NotCondition(new TextCondition(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, TextConditionEnum.IsSet));
+				federatedInstanceCondition = new CompositeCondition(instanceNameCondition, CompositeConditionEnum.Or, instanceNameIsNotSetCondition);
+			}
+
+			
 			var query = new Query<RDO>()
 			{
 				ArtifactTypeGuid = SourceWorkspaceDTO.ObjectTypeGuid,
 				Fields = FieldValue.AllFields,
-				Condition = condition
+				Condition = new CompositeCondition(sourceWorkspaceCondition, CompositeConditionEnum.And, federatedInstanceCondition)
 			};
 
 			QueryResultSet<RDO> resultSet = null; 
@@ -217,6 +251,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					sourceWorkspaceDto.Name = fieldValue.ValueAsFixedLengthText;
 				}
+				else if (fieldValue.Name == Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME)
+				{
+					sourceWorkspaceDto.SourceInstanceName = fieldValue.ValueAsFixedLengthText;
+				}
 			}
 
 			return sourceWorkspaceDto;
@@ -228,7 +266,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				new FieldValue(Domain.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name),
 				new FieldValue(Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, sourceWorkspaceDto.SourceCaseArtifactId),
-				new FieldValue(Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName)
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName),
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, sourceWorkspaceDto.SourceInstanceName)
 			};
 			var rdo = new RDO()
 			{
@@ -259,6 +298,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				new FieldValue(Domain.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name, true),
 				new FieldValue(Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName, true),
+				new FieldValue(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, sourceWorkspaceDto.SourceInstanceName, true),
 			};
 
 			var rdo = new RDO(sourceWorkspaceDto.ArtifactTypeId, sourceWorkspaceDto.ArtifactId)

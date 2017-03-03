@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					return;
 				}
 
-				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
+				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId);
 				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId,
 					_sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
 			}

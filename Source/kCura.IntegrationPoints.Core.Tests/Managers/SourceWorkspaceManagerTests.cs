@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const int _OBJECT_TYPE_TAB_ID = 963852;
 		private const int _DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID = 22334455;
 		private const int _DOCUMENT_SOURCE_WORKSPACE_ARTIFACT_VIEW_FIELD_ID = 44668811;
+		private const string _FEDERATED_INSTANCE_NAME = "Instance Name";
+		private const int _FEDERATED_INSTANCE_ID = 516464;
 
 		private const string _SOURCE_WORKSPACE_NAME = "Killer Queen Review";
 
@@ -42,6 +44,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			_sourceWorkspaceRepository = Substitute.For<ISourceWorkspaceRepository>();
 			_repositoryFactory.GetSourceWorkspaceRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_sourceWorkspaceRepository);
+
+			var instanceSettingsRepository = Substitute.For<IInstanceSettingRepository>();
+			instanceSettingsRepository.GetConfigurationValue("Relativity.Authentication", "FriendlyInstanceName").Returns(_FEDERATED_INSTANCE_NAME);
+			_repositoryFactory.GetInstanceSettingRepository().Returns(instanceSettingsRepository);
 
 			_artifactGuidRepository = Substitute.For<IArtifactGuidRepository>();
 			_repositoryFactory.GetArtifactGuidRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_artifactGuidRepository);
@@ -101,12 +107,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_workspaceRepository.Retrieve(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(workspaceDto);
 			SourceWorkspaceDTO expectedSourceWorkspaceDto = new SourceWorkspaceDTO
 			{
-				SourceCaseName = _SOURCE_WORKSPACE_NAME
+				SourceCaseName = _SOURCE_WORKSPACE_NAME,
+				SourceInstanceName = _FEDERATED_INSTANCE_NAME
 			};
-			_sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(expectedSourceWorkspaceDto);
+			_sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(_SOURCE_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_NAME, _FEDERATED_INSTANCE_ID).Returns(expectedSourceWorkspaceDto);
 
 			// Act
-			SourceWorkspaceDTO actualSourceWorkspaceDto = _instance.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACT_ID, _DESTINATION_WORKSPACE_ARTIFACT_ID);
+			SourceWorkspaceDTO actualSourceWorkspaceDto = _instance.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACT_ID, _DESTINATION_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_ID);
 
 			// Assert
 			Assert.AreEqual(expectedSourceWorkspaceDto.ArtifactTypeId, _OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID);
@@ -156,7 +163,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			IDictionary<Guid, bool> fieldGuids = new Dictionary<Guid, bool>(2)
 			{
 				{SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, false},
-				{SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid, false}
+				{SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid, false},
+				{SourceWorkspaceDTO.Fields.InstanceNameFieldGuid, false}
 			};
 			_artifactGuidRepository.GuidsExist(Arg.Is<List<Guid>>(x => VerifyListOfGuids(fieldGuids.Keys, x)))
 				.Returns(fieldGuids);
@@ -165,6 +173,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int) Relativity.Client.FieldType.WholeNumber).Returns(1);
 			_extendedFieldRepository.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int) Relativity.Client.FieldType.FixedLengthText).Returns(2);
+			_extendedFieldRepository.RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
+				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int)Relativity.Client.FieldType.FixedLengthText).Returns(3);
 
 			// Create Document Fields
 			_artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid).Returns(false);
@@ -184,12 +194,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_workspaceRepository.Retrieve(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(workspaceDto);
 			SourceWorkspaceDTO expectedSourceWorkspaceDto = new SourceWorkspaceDTO
 			{
-				SourceCaseName = _SOURCE_WORKSPACE_NAME
+				SourceCaseName = _SOURCE_WORKSPACE_NAME,
+				SourceInstanceName = _FEDERATED_INSTANCE_NAME
 			};
-			_sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(expectedSourceWorkspaceDto);
+			_sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(_SOURCE_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_NAME, _FEDERATED_INSTANCE_ID).Returns(expectedSourceWorkspaceDto);
 
 			// Act
-			SourceWorkspaceDTO actualSourceWorkspaceDto = _instance.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACT_ID, _DESTINATION_WORKSPACE_ARTIFACT_ID);
+			SourceWorkspaceDTO actualSourceWorkspaceDto = _instance.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACT_ID, _DESTINATION_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_ID);
 
 			// Assert
 			Assert.AreEqual(expectedSourceWorkspaceDto.ArtifactTypeId, _OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID);
@@ -210,6 +221,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int)Relativity.Client.FieldType.WholeNumber);
 			_extendedFieldRepository.Received(1).RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int)Relativity.Client.FieldType.FixedLengthText);
+			_extendedFieldRepository.Received(1).RetrieveField(IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
+				_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, (int) Relativity.Client.FieldType.FixedLengthText);
 			_artifactGuidRepository.Received(1).InsertArtifactGuidsForArtifactIds(Arg.Any<Dictionary<Guid, int>>());
 			
 			// Create Document Fields

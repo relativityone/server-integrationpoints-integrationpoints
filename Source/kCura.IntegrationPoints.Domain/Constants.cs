@@ -15,6 +15,7 @@
         public const string SPECIAL_SOURCEJOB_FIELD_NAME = "Relativity Source Job";
         public const string SOURCEWORKSPACE_CASEID_FIELD_NAME = "Source Workspace Artifact ID";
         public const string SOURCEWORKSPACE_CASENAME_FIELD_NAME = "Source Workspace Name";
+        public const string SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME = "Source Instance Name";
         public const string SOURCEWORKSPACE_NAME_FIELD_NAME = "Name";
         public const string SOURCEJOB_NAME_FIELD_NAME = "Name";
         public const string SOURCEJOB_JOBHISTORYID_FIELD_NAME = "Job History Artifact ID";
