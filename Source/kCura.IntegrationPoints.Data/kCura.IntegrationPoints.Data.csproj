@@ -251,7 +251,6 @@
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
-    <Compile Include="Repositories\Implementations\SqlArtifactGuidRepository.cs" />
     <Compile Include="FileInfo.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
     <Compile Include="Repositories\IFieldRepository.cs" />
@@ -279,6 +278,7 @@
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\ISourceJobRepository.cs" />
     <Compile Include="Repositories\ITabRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepository.cs" />
     <Compile Include="Repositories\KeplerServiceBase.cs" />
     <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -12,7 +10,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -29,10 +26,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
 		{
-			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
-			IArtifactGuidRepository artifactGuidRepository = new SqlArtifactGuidRepository(baseContext);
-
-			return artifactGuidRepository;
+			return new KeplerArtifactGuidRepository(workspaceArtifactId, _servicesMgr);
 		}
 
 		public IArtifactTypeRepository GetArtifactTypeRepository()
@@ -83,8 +77,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
 			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
-			
-			IExtendedFieldRepository extendedFieldRepository = new SqlExtendedFieldRepository(_helper, baseServiceContext, baseContext, workspaceArtifactId);	
+
+			IExtendedFieldRepository extendedFieldRepository = new SqlExtendedFieldRepository(_helper, baseServiceContext, baseContext, workspaceArtifactId);
 
 			return extendedFieldRepository;
 		}
@@ -108,7 +102,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IObjectTypeRepository objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			int objectTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, objectTypeId);
-			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, objectQueryManagerAdaptor, jobHistoryErrorLibrary, dtoTransformer, workspaceArtifactId);
+			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, objectQueryManagerAdaptor, jobHistoryErrorLibrary, dtoTransformer,
+				workspaceArtifactId);
 			return jobHistoryErrorRepository;
 		}
 
@@ -138,7 +133,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
 		{
-			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
+			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix,
+				tableSuffix, workspaceArtifactId);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
@@ -242,12 +238,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			return new DocumentTotalsRepository(_helper, workspaceArtifactId);
 		}
-		
-        #region Helper Methods
 
-        private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
+		#region Helper Methods
+
+		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
 		{
-			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int)artifactType);
+			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int) artifactType);
 			return adaptor;
 		}
 
@@ -284,7 +280,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 				baseContext = baseServiceContext.ChicagoContext
 					.ThreadSafeChicagoContext;
 			}
-			var contextContainer = new ContextContainer()
+			var contextContainer = new ContextContainer
 			{
 				BaseContext = baseContext,
 				BaseServiceContext = baseServiceContext
@@ -292,9 +288,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return contextContainer;
 		}
 
-        #endregion Helper Methods
+		#endregion Helper Methods
 
-        private class ContextContainer
+		private class ContextContainer
 		{
 			public BaseServiceContext BaseServiceContext { get; set; }
 			public BaseContext BaseContext { get; set; }
