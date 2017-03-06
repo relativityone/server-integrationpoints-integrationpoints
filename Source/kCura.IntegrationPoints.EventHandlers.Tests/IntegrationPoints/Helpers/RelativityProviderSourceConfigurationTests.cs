@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -28,9 +29,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			IFederatedInstanceModelFactory federatedInstanceModelFactory = Substitute.For<IFederatedInstanceModelFactory>();
+			_instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
 			federatedInstanceModelFactory.Create(Arg.Any<IDictionary<string, object>>(), Arg.Any<EventHandler.Artifact>()).Returns(new FederatedInstanceModel());
 
-			_instace = new RelativityProviderSourceConfiguration(_helper, _helperFactory, _managerFactory, _contextContainerFactory, federatedInstanceModelFactory);
+			_instace = new RelativityProviderSourceConfiguration(_helper, _helperFactory, _managerFactory, _contextContainerFactory, federatedInstanceModelFactory, _instanceSettingsManager);
 		}
 
 		private RelativityProviderSourceConfiguration _instace;
@@ -39,14 +41,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private IManagerFactory _managerFactory;
 		private IContextContainerFactory _contextContainerFactory;
 		private IWorkspaceManager _workspaceManager;
+		private IInstanceSettingsManager _instanceSettingsManager;
 		private const int _FOLDER_ARTIFACT_ID = 0;
 		private const int _TARGET_WORKSPACE_ID = 1;
 		private const int _SOURCE_WORKSPACE_ID = 2;
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 3;
+		private const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+		private const string SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
+		private const string RELATIVITY_THIS_INSTANCE = "This instance";
 
-		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", "NewFolderName", _FOLDER_ARTIFACT_ID)]
-		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", RelativityProviderSourceConfiguration.ERROR_FOLDER_NOT_FOUND, -1)]
-		public void ItShouldUpdateNames(string sourceWorkspaceName, string targetWorkspaceName, string savedSearchName, string folderName, int folderArtifactId)
+		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", "NewFolderName", _FOLDER_ARTIFACT_ID,"FriendlyName")]
+		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", ERROR_FOLDER_NOT_FOUND, -1, "FriendlyName")]
+		public void ItShouldUpdateNames(string sourceWorkspaceName, string targetWorkspaceName, string savedSearchName, string folderName, int folderArtifactId,string instanceFriendlyName)
 		{
 			// arrange
 			var settings = GetSettings();
@@ -54,6 +60,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			MockWorkspaceRepository(_TARGET_WORKSPACE_ID, targetWorkspaceName);
 			MockFolderManager(folderName, folderArtifactId);
 			MockSavedSearchQuery(savedSearchName);
+			MockInstanceSettingsManager(instanceFriendlyName);
 
 			// act
 			_instace.UpdateNames(settings, new EventHandler.Artifact(934580, 990562, 533988, "", false, null));
@@ -63,6 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			Assert.AreEqual(targetWorkspaceName, settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspace)]);
 			Assert.AreEqual(savedSearchName, settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)]);
 			Assert.AreEqual(folderName, settings[nameof(ExportUsingSavedSearchSettings.TargetFolder)]);
+			Assert.AreEqual($"{RELATIVITY_THIS_INSTANCE}({instanceFriendlyName})", settings[SOURCE_RELATIVITY_INSTANCE]);
 		}
 
 		private void MockSavedSearchQuery(string savedSearchName)
@@ -106,6 +114,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			var folderManager = Substitute.For<IFolderManager>();
 			folderManager.GetFolderTreeAsync(_TARGET_WORKSPACE_ID, Arg.Any<List<int>>(), _FOLDER_ARTIFACT_ID).Returns(responseTask);
 			_helper.GetServicesManager().CreateProxy<IFolderManager>(Arg.Any<ExecutionIdentity>()).Returns(folderManager);
+		}
+
+		private void MockInstanceSettingsManager(string instanceFriendlyName)
+		{
+			_instanceSettingsManager.RetriveCurrentInstanceFriendlyName().Returns(instanceFriendlyName);
 		}
 
 		private IDictionary<string, object> GetSettings()

@@ -10,16 +10,7 @@ IP.utils.updateField = function ($el, text, value) {
 	return $el;
 };
 
-$(function () {
-	
-	var destinationId = IP.destinationid;
-	var $input = IP.utils.getViewField(destinationId);
-	var $value = $input.siblings('.dynamicViewFieldValue');
-	$input.siblings('.dynamicViewFieldName').text();
-	var obj = JSON.parse($value.text());
 
-	IP.utils.updateField($input.parent('tr'), 'Destination RDO', obj.ArtifactTypeName);
-});
 
 $(function () {
 

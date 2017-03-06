@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Models;
 using kCura.Relativity.Client;
@@ -14,30 +15,40 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 {
 	public class RelativityProviderSourceConfiguration : RelativityProviderConfiguration
 	{
-		public const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+		private const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+		private const string SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
+		private const string RELATIVITY_THIS_INSTANCE = "This instance";
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IFederatedInstanceModelFactory _federatedInstanceModelFactory;
+		private readonly IInstanceSettingsManager _instanceSettingsManager;
 
 
 		public RelativityProviderSourceConfiguration(IEHHelper helper, IHelperFactory helperFactory, IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory,
-			IFederatedInstanceModelFactory federatedInstanceModelFactory)
+			IFederatedInstanceModelFactory federatedInstanceModelFactory, IInstanceSettingsManager instanceSettingsManager)
 			: base(helper)
 		{
 			_helperFactory = helperFactory;
 			_managerFactory = managerFactory;
 			_contextContainerFactory = contextContainerFactory;
 			_federatedInstanceModelFactory = federatedInstanceModelFactory;
+			_instanceSettingsManager = instanceSettingsManager;
 		}
 
 		public override void UpdateNames(IDictionary<string, object> settings, Artifact artifact)
 		{
 			var federatedInstanceModel = _federatedInstanceModelFactory.Create(settings, artifact);
 			SetFolderName(settings, federatedInstanceModel);
+			SetInstanceFriendlyName(settings, _instanceSettingsManager);
 			SetSourceWorkspaceName(settings);
 			SetTargetWorkspaceName(settings, federatedInstanceModel);
 			SetSavedSearchName(settings);
+		}
+
+		private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager federatedInstanceManager)
+		{
+			settings[SOURCE_RELATIVITY_INSTANCE] = $"{RELATIVITY_THIS_INSTANCE}({federatedInstanceManager.RetriveCurrentInstanceFriendlyName()})";
 		}
 
 		private void SetSavedSearchName(IDictionary<string, object> settings)

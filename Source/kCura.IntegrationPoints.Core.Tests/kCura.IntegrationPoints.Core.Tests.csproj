@@ -243,6 +243,7 @@
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
+    <Compile Include="Managers\InstanceSettingsManagerTests.cs" />
     <Compile Include="Managers\FederatedInstanceManagerTests.cs" />
     <Compile Include="Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Managers\WorkspaceManagerTests.cs" />

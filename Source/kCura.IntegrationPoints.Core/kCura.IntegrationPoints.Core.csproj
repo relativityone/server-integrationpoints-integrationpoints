@@ -90,7 +90,7 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -259,6 +259,7 @@
     <Compile Include="Installers\ValidationInstaller.cs" />
     <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
+    <Compile Include="Managers\Implementations\InstanceSettingsManager.cs" />
     <Compile Include="Managers\Implementations\PermissionManager.cs" />
     <Compile Include="Managers\IPermissionManager.cs" />
     <Compile Include="OAuthHelper.cs" />

@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		protected static T ParseValue<T>(IDictionary<string, object> settings, string parameterName)
 		{
-			if (!settings.ContainsKey(parameterName))
+			if (!settings.ContainsKey(parameterName) || settings[parameterName] == null)
 			{
 				return default(T);
 			}

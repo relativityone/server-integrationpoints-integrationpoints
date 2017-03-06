@@ -1,7 +1,11 @@
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
@@ -21,12 +25,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 				federatedInstanceModelFactory = new IntegrationPointProfileFederatedInstanceModelFactory();
 			}
 
-
+			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
+			Domain.Managers.IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory, new AlwaysDisabledToggleProvider());
+			Domain.Managers.IInstanceSettingsManager instanceSettingsManager =new InstanceSettingsManager(repositoryFactory);
 			IRelativityProviderConfiguration relativityProviderSourceConfiguration =
-				RelativityProviderSourceConfigurationFactory.Create(helper, federatedInstanceModelFactory);
+				RelativityProviderSourceConfigurationFactory.Create(helper, federatedInstanceModelFactory, instanceSettingsManager);
 
 			IRelativityProviderConfiguration relativityProviderDestinationConfiguration =
-				new RelativityProviderDestinationConfiguration(helper);
+				new RelativityProviderDestinationConfiguration(helper, federatedInstanceManager);
 
 			return new IntegrationPointViewPreLoad(
 				caseServiceContext,

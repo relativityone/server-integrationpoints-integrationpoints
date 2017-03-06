@@ -51,14 +51,14 @@ $(function integrationPointsSummaryPageView() {
 						setSourceConfigurationField(sourceConfigurationFieldText);
 				}
 			}
-
-			this.transferredRdoTypeName = IP.utils.getViewField(IP.destinationid).siblings('.dynamicViewFieldValue').text();
+			this.destinationConfiguration = JSON.parse(IP.utils.getViewField(IP.destinationid).siblings('.dynamicViewFieldValue').text());
+			this.transferredRdoTypeName = this.destinationConfiguration.ArtifactTypeName;
 			this.hasErrors = IP.utils.getViewField(IP.hasErrorsId).siblings('.dynamicViewFieldValue').text();
 			this.logErrors = IP.utils.getViewField(IP.logErrorsId).siblings('.dynamicViewFieldValue').text();
 			this.emailNotification = IP.utils.getViewField(IP.emailNotificationId).siblings('.dynamicViewFieldValue').text();
 			this.name = IP.utils.getViewField(IP.nameId).siblings('.dynamicViewFieldValue').text();
 			this.overwriteMode = IP.utils.getViewField(IP.overwriteFieldsId).siblings('.dynamicViewFieldValue').text();
-			this.destinationRdoName = IP.utils.getViewField(IP.destinationid).siblings('.dynamicViewFieldValue').text();
+			this.destinationRdoName = this.destinationConfiguration.ArtifactTypeName;
 			this.sourceProviderName = IP.utils.getViewField(IP.sourceProviderId).siblings('.dynamicViewFieldValue').text();
 			this.sourceConfiguration = "";
 
