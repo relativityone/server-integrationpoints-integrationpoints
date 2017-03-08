@@ -334,11 +334,23 @@ ul li .day-select
 	min-width: 1250px;
 }
 
-.selection
+.selection , .selection-rename, .selection-dbl-padding
 {
 	vertical-align: middle;
 	padding-right: 17px;
 	padding-left: 17px;
+}
+
+.selection-dbl-padding
+{
+	text-align: center;
+    padding-right: 34px;
+	padding-left: 34px;
+}
+
+.selection-rename
+{
+	text-align: center;
 }
 
 .integrationName

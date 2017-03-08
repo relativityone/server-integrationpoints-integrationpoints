@@ -12,7 +12,7 @@
 			</div>
 			<div class="field-value select2-double-width">
 				<div id="location-select" class="select2-container fluid-mock-select filter-container">
-					<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: exportSource.FolderArtifactName" />
+					<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: exportSource.FolderArtifactName"/>
 					<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
 				</div>
 				<div id="jstree-holder-div" class="jstree-holder browse">
@@ -38,11 +38,11 @@
 			<div class="field-value">
 				<select id="productionSetsSelector" data-bind="options: exportSource.ProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: exportSource.ProductionId, disable: HasBeenRun(), select2: {}"></select>
 			</div>
-		</div>	
+		</div>
 		<div class="field-row">
 			<div class="field-label required">Start Export at Record:</div>
 			<div class="field-value">
-				<input id="start-export-at-record" type="number" min="1" data-bind="value: startExportAtRecord, disable: HasBeenRun()" />
+				<input id="start-export-at-record" type="number" min="1" data-bind="value: startExportAtRecord, disable: HasBeenRun()"/>
 			</div>
 		</div>
 	</div>
@@ -54,8 +54,8 @@
 				<div class="field-label" style="padding: 5px; text-align: left;">Source Fields:</div>
 				<select id="available-fields" class="list-box" name="available-field" data-bind="options: availableFields, selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField, disable: $parent.HasBeenRun, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
-			<div class="cell selection map-move">
-				<div data-bind="visible: !$parent.HasBeenRun()">
+			<div class="cell selection-dbl-padding">
+				<div class="field-row map-move" data-bind="visible: !$parent.HasBeenRun()">
 					<a href="#" id="add-all-fields" class="icon-move-last" data-bind="click: addAllFields"></a>
 					<a href="#" id="add-field" class="icon-move-next" data-bind="click: addField"></a>
 					<a href="#" id="remove-field" class="icon-move-previous" data-bind="click: removeField"></a>
@@ -66,13 +66,18 @@
 				<div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields:</div>
 				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, disable: $parent.HasBeenRun, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
-			<div class="cell selection map-move">
-				<div data-bind="visible: !$parent.HasBeenRun()">
-					<a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>
-					<a href="#" id="move-field-up" class="icon-move-up" data-bind="click: moveFieldUp"></a>
-					<a href="#" id="move-field-down" class="icon-move-down" data-bind="click: moveFieldDown"></a>
-					<a href="#" id="move-field-bottom" class="icon-move-to-bottom" data-bind="click: moveFieldBottom"></a>
-				</div>
+			<div class="cell selection-rename">
+					<button class="actionButtonSmall" id="renamed-fields-button" data-bind="click: openRenamedFieldsModal" >Rename</button>
+					<div class="field-row map-move" data-bind="visible: !$parent.HasBeenRun()">
+						<a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>
+						<a href="#" id="move-field-up" class="icon-move-up" data-bind="click: moveFieldUp"></a>
+						<a href="#" id="move-field-down" class="icon-move-down" data-bind="click: moveFieldDown"></a>
+						<a href="#" id="move-field-bottom" class="icon-move-to-bottom" data-bind="click: moveFieldBottom"></a>
+					</div>
+			</div>
+			<div class="cell fixedColumn">
+				<div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields:</div>
+				<select class="list-box" id="renamed-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'renamedText', doubleClick: openRenamedFieldsModal, disable: $parent.HasBeenRun, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
 		</div>
 	</div>

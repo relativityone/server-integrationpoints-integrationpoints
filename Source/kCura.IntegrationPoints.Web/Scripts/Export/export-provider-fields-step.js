@@ -20,11 +20,12 @@
 		self.onDOMLoaded = function () {
 			self.exportSource.InitializeLocationSelector();
 		};
+
 	};
 
 	var stepModel = function (settings) {
 		var self = this;
-		
+
 		self.settings = settings;
 		self.template = ko.observable();
 		self.hasTemplate = false;
@@ -173,8 +174,13 @@
 			};
 
 			root.data.deferred().all([exportableFieldsPromise, mappedFieldsPromise]).then(function (result) {
-				self.model.fields.availableFields(result[0]);
-				self.model.fields.selectedAvailableFields(getMappedFields(result[1]));
+
+				var availableFields = result[0];
+				var mappedFields = result[1];
+
+				self.model.fields.createRenamedFileds(availableFields, mappedFields);
+				self.model.fields.availableFields(availableFields);
+				self.model.fields.selectedAvailableFields(getMappedFields(mappedFields));
 				self.model.fields.addField();
 
 				self.model.exportSource.SavedSearchArtifactId.subscribe(function (value) {

@@ -547,6 +547,7 @@
     <Content Include="Scripts\integration-point\scheduler.js" />
     <Content Include="Scripts\integration-point\tooltip-definitions.js" />
     <Content Include="Scripts\ldap\ldap-provider-summary-page.js" />
+    <Content Include="Scripts\modals\export-renamed-fields-vm.js" />
     <Content Include="Scripts\moment-timezone-utils.js" />
     <Content Include="Scripts\moment-timezone-with-data-2010-2020.js" />
     <Content Include="Scripts\moment-timezone-with-data-2010-2020.min.js" />
@@ -796,6 +797,7 @@
     <Content Include="Views\ThirdPartyProviders\ThirdPartyProviderSummaryPage.cshtml" />
     <Content Include="Views\Tooltip\TooltipView.cshtml" />
     <Content Include="Views\Modals\AuthenticationModalView.cshtml" />
+    <Content Include="Views\Modals\ExportRenamedFieldsView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
