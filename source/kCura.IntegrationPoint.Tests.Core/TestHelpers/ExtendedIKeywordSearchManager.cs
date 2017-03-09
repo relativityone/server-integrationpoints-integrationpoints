@@ -77,6 +77,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return Manager.DeleteSingleAsync(workspaceArtifactId, searchArtifactId);
 		}
 
+		public Task<SavedSearchRef> CopySingleAsync(int workspaceArtifactID, int searchArtifactID)
+		{
+			return Manager.CopySingleAsync(workspaceArtifactID, searchArtifactID);
+		}
+
 		public Task<KeywordSearchQueryResultSet> QueryAsync(int workspaceArtifactId, Query query)
 		{
 			return Manager.QueryAsync(workspaceArtifactId, query);
@@ -135,11 +140,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public Task<SearchAccessStatus> GetAccessStatusAsync(int workspaceArtifactID, int artifactID, List<int> ancestorArtifactIDs)
 		{
 			return Manager.GetAccessStatusAsync(workspaceArtifactID, artifactID, ancestorArtifactIDs);
-		}
-
-		public Task<SavedSearchRef> CopySingleAsync(int a, int b)
-		{
-			return Manager.CopySingleAsync(a, b);
 		}
 	}
 }

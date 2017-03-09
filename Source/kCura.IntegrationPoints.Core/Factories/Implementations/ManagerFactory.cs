@@ -113,6 +113,20 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return permissionManager;
 		}
 
+		public ISourceWorkspaceManager CreateSourceWorkspaceManager(IContextContainer contextContainer)
+		{
+			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
+			ISourceWorkspaceManager sourceWorkspaceManager = new SourceWorkspaceManager(repositoryFactory);
+			return sourceWorkspaceManager;
+		}
+
+		public ISourceJobManager CreateSourceJobManager(IContextContainer contextContainer)
+		{
+			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
+			ISourceJobManager sourceJobManager = new SourceJobManager(repositoryFactory);
+			return sourceJobManager;
+		}
+
 		#region Private Helpers
 
 		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)

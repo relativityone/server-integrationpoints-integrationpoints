@@ -20,14 +20,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public int? RetrieveArtifactViewFieldId(int workspaceArtifactId, int fieldArtifactId)
 		{
-			IExtendedFieldRepository extendedFieldRepository = _repositoryFactory.GetExtendedFieldRepository(workspaceArtifactId);
-			return extendedFieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
+			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceArtifactId);
+			return fieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
 		}
 
 		public ArtifactFieldDTO[] RetrieveBeginBatesFields(int workspaceArtifactId)
 		{
-			IExtendedFieldRepository extendedFieldRepository = _repositoryFactory.GetExtendedFieldRepository(workspaceArtifactId);
-			return extendedFieldRepository.RetrieveBeginBatesFields();
+			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceArtifactId);
+			return fieldRepository.RetrieveBeginBatesFields();
 		}
 
 		public ArtifactDTO[] RetrieveFields(int workspaceId, int rdoTypeId, HashSet<string> fieldNames)

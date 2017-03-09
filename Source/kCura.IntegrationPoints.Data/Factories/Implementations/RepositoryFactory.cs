@@ -74,19 +74,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
-			IFieldRepository fieldRepository = new FieldRepository(_helper, objectQueryManagerAdaptor, workspaceArtifactId);
+			IFieldRepository fieldRepository = new FieldRepository(_helper, _servicesMgr, objectQueryManagerAdaptor, workspaceArtifactId);
 
 			return fieldRepository;
-		}
-
-		public IExtendedFieldRepository GetExtendedFieldRepository(int workspaceArtifactId)
-		{
-			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
-			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
-			
-			IExtendedFieldRepository extendedFieldRepository = new SqlExtendedFieldRepository(_helper, baseServiceContext, baseContext, workspaceArtifactId);	
-
-			return extendedFieldRepository;
 		}
 
 		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)
@@ -143,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
 		{
-			ISourceJobRepository repository = new SourceJobRepository(_helper, workspaceArtifactId);
+			ISourceJobRepository repository = new SourceJobRepository(_helper, _servicesMgr, workspaceArtifactId);
 
 			return repository;
 		}
@@ -156,7 +146,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
 		{
-			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(_helper, workspaceArtifactId);
+			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(_helper, _servicesMgr, workspaceArtifactId);
 
 			return repository;
 		}

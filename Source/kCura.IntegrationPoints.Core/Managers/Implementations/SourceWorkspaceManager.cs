@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -22,10 +24,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			ISourceWorkspaceRepository sourceWorkspaceRepository = RepositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
 			IArtifactGuidRepository artifactGuidRepository = RepositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
+			IFieldRepository fieldRepository = RepositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
 			int sourceWorkspaceDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceWorkspaceRepository, artifactGuidRepository, (int) ArtifactType.Case);
-
-			IExtendedFieldRepository fieldRepository = RepositoryFactory.GetExtendedFieldRepository(destinationWorkspaceArtifactId);
+			
 			var fieldGuids = new List<Guid>(3)
 			{
 				SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid,
@@ -94,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
-						FieldType = FieldType.WholeNumber
+						FieldType = FieldTypes.WholeNumber
 					}
 				},
 				{
@@ -102,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
-						FieldType = FieldType.FixedLengthText
+						FieldType = FieldTypes.FixedLengthText
 					}
 				},
 				{
@@ -110,7 +112,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
-						FieldType = FieldType.FixedLengthText
+						FieldType = FieldTypes.FixedLengthText
 					}
 				}
 			};

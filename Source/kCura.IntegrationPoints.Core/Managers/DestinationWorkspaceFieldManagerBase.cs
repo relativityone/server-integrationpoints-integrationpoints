@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Managers
 {
@@ -74,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		protected void CreateObjectFields(List<Guid> fieldGuids,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IExtendedFieldRepository extendedFieldRepository,
+			IFieldRepository fieldRepository,
 			int descriptorArtifactTypeId)
 		{
 			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(fieldGuids);
@@ -88,10 +90,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 				{
 					Guid missingGuid = missingFieldGuids[index];
 					FieldDefinition definition = fieldDefinitions[missingGuid];
-					int? artifactId = extendedFieldRepository.RetrieveField(definition.FieldName, descriptorArtifactTypeId, (int)definition.FieldType);
-					if (artifactId.HasValue)
+					ArtifactDTO fieldDto = fieldRepository.RetrieveField(descriptorArtifactTypeId, definition.FieldName,
+						definition.FieldType, new HashSet<string>() {Constants.Fields.ArtifactId});
+					if (fieldDto != null)
 					{
-						guidToArtifactId.Add(missingGuid, artifactId.Value);
+						guidToArtifactId.Add(missingGuid, fieldDto.ArtifactId);
 						missingFieldGuids.Remove(missingGuid);
 						index--;
 					}
@@ -118,27 +121,29 @@ namespace kCura.IntegrationPoints.Core.Managers
 			Guid documentFieldGuid,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IExtendedFieldRepository extendedFieldRepository)
+			IFieldRepository fieldRepository)
 		{
 			bool sourceWorkspaceFieldOnDocumentExists = artifactGuidRepository.GuidExists(documentFieldGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
 			{
-				int? fieldArtifactId = extendedFieldRepository.RetrieveField(FieldName, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject);
+				
+				ArtifactDTO fieldDto = fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, FieldName,
+					FieldTypes.MultipleObject, new HashSet<string>() { Constants.Fields.ArtifactId });
 
-				int sourceWorkspaceFieldArtifactId = fieldArtifactId ?? relativityObjectRepository.CreateFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId);
-
+				int sourceWorkspaceFieldArtifactId = fieldDto?.ArtifactId ?? relativityObjectRepository.CreateFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId);
+				
 				try
 				{
-					int? retrieveArtifactViewFieldId = extendedFieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
+					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
 						throw new Exception(ErrorMassage);
 					}
 
 					// Set the filter type
-					extendedFieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
+					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
 					// Set the overlay behavior
-					extendedFieldRepository.SetOverlayBehavior(sourceWorkspaceFieldArtifactId, true);
+					fieldRepository.SetOverlayBehavior(sourceWorkspaceFieldArtifactId, true);
 					// Set the field artifact guid
 					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceFieldArtifactId, documentFieldGuid);
 				}
@@ -154,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		protected sealed class FieldDefinition
 		{
 			public string FieldName;
-			public Relativity.Client.FieldType FieldType;
+			public string FieldType;
 		}
 	}
 }

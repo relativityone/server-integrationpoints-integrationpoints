@@ -225,7 +225,6 @@
     <Compile Include="Repositories\IArtifactTypeRepository.cs" />
     <Compile Include="Repositories\IDocumentTotalsRepository.cs" />
     <Compile Include="Repositories\IErrorRepository.cs" />
-    <Compile Include="Repositories\IExtendedFieldRepository.cs" />
     <Compile Include="Repositories\IFederatedInstanceRepository.cs" />
     <Compile Include="Repositories\IInstanceSettingRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
@@ -246,7 +245,6 @@
     <Compile Include="Repositories\Implementations\RsapiRdoRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactTypeRepository.cs" />
-    <Compile Include="Repositories\Implementations\SqlExtendedFieldRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />

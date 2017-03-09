@@ -173,6 +173,7 @@ namespace kCura.IntegrationPoints.Core
 		public static class Fields
 		{
 			internal static string Name = "Name";
+			internal static string ArtifactId = "ArtifactID";
 			internal static string Choices = "Choices";
 			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
 			internal static string FieldType = "Field Type";
