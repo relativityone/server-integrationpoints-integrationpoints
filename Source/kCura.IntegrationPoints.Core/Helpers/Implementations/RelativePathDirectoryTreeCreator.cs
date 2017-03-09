@@ -45,15 +45,15 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			{
 				TTreeItem rootTreeItem = treeItems.First();
 				// for root we need to append (relative) prefix to show on UI
-				rootTreeItem.Text = AppendFileSharePlaceholderPathPrefix(rootTreeItem.Text, rootPath);
+				rootTreeItem.Text = AppendFileSharePlaceholderPathPrefix(rootTreeItem.Text, rootPath, workspaceId);
 				RemoveWorkspaceFileShareUrlPart(rootPath, rootTreeItem.Children.Cast<TTreeItem>().ToList());
 			}
 			return treeItems;
 		}
 
-		private string AppendFileSharePlaceholderPathPrefix(string path, string rootPath)
+		private string AppendFileSharePlaceholderPathPrefix(string path, string rootPath, int workspaceId)
 		{
-			return Path.Combine(FILESHARE_PLACEHOLDER_PREFIX, GetLocationTruncatedByRootPath(path, rootPath));
+			return Path.Combine(FILESHARE_PLACEHOLDER_PREFIX, $"EDDS{workspaceId}", GetLocationTruncatedByRootPath(path, rootPath));
 		}
 
 		private void RemoveWorkspaceFileShareUrlPart(string rootPath, List<TTreeItem> treeItems)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Web;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Contracts;
 using kCura.WinEDDS;
@@ -167,7 +168,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 						columnNumbers = preview.Header.Count();
 						populatedHeaders = true;
 					}
-					row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => i.Value.ToString()).ToList();
+
+					//use the httpUtility class to encode the string values before we display them. This prevents Cross Site Scripting attacks.
+					row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => HttpUtility.HtmlEncode(i.Value.ToString())).ToList();
 					//check to see if any of the cells have an error so we can highlight red in UI
 					//we won't do this if the user has requested only errors to come back
 					if (!_errorsOnly)

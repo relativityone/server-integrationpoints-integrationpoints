@@ -26,6 +26,7 @@
 				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", state.integrationPointTypeIdentifier)
 			}).then(function (result) {
 				self.rootDataTransferLocation = result;
+				self.getDirectories();
 			}).fail(function (error) {
 				IP.message.error.raise("Can not retrieve data transfer location root path");
 			});
@@ -44,9 +45,9 @@
 
 				root.data.ajax({
 					type: "post",
-					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+					contentType: "application/json",
 					url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", state.integrationPointTypeIdentifier) + "?isRoot=" + isRoot,
-					data: { '': path }
+					data: JSON.stringify(path)
 				}).then(function (result) {
 					onSuccess(result);
 				}).fail(function (error) {
@@ -72,7 +73,6 @@
 
 				self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
 				self.loadRootDataTransferLocation();
-				self.getDirectories();
 			}
 		};
 
@@ -636,6 +636,12 @@
 		};
 
 		this.errors = ko.validation.group(this, { deep: true });
+
+		this.fileShareDisplayText = function () {
+			if(self.Fileshare())
+				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare();
+			return "Select...";
+		};
 
 		this.getSelectedOption = function () {
 			return {

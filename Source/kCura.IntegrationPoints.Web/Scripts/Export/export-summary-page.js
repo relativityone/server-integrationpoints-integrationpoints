@@ -5,13 +5,17 @@ var loadData = function (ko, dataContainer) {
 	var Model = function (dataContainer) {
 		var self = this;
 
+		var destinationFolderPrefix = function () {
+			return ".\\EDDS" + self.settings.SourceWorkspaceArtifactId;
+		}
+
 		this.hasErrors = dataContainer.hasErrors;
 		this.logErrors = dataContainer.logErrors;
 		this.emailNotification = dataContainer.emailNotification;
 		this.name = dataContainer.name;
 		this.settings = dataContainer.sourceConfiguration;
 		this.transferredRdoTypeName = dataContainer.transferredRdoTypeName;
-		this.fileShareLocation = "FileShare: .\\" + self.settings.Fileshare;
+		this.fileShareLocation = "FileShare: " + destinationFolderPrefix() + "\\" + self.settings.Fileshare;
 
 		this.sourceDetails = function () {
 			if (self.isRdoExportMode()) {

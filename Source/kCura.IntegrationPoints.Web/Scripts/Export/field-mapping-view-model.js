@@ -16,6 +16,19 @@
 	});
 	self.selectedMappedFields = ko.observableArray([]);
 
+	var exportRenamedFieldsViewModel = new ExportRenamedFieldsViewModel(function (fields) {
+		self.removeAllFields();
+		self.selectedAvailableFields(fields);
+		self.addField();
+	});
+
+	Picker.create("Modals", "export-renamed-fields-modal", "ExportRenamedFieldsView", exportRenamedFieldsViewModel);
+
+	self.openRenamedFieldsModal = function () {
+		var copy = self.mappedFields().slice(0);
+		exportRenamedFieldsViewModel.open(copy);
+	};
+
 	self.addField = function () {
 		IP.workspaceFieldsControls.add(
           self.availableFields,
@@ -97,7 +110,7 @@
 					isRequired: e.isRequired
 				},
 				destinationField: {
-					displayName: e.displayName,
+					displayName: e.renamedText.trim().length > 0 ? e.renamedText : e.displayName,
 					isIdentifier: e.isIdentifier,
 					fieldIdentifier: e.fieldIdentifier,
 					isRequired: e.isRequired
@@ -116,4 +129,16 @@
 
 		return fieldMap;
 	};
+
+	self.createRenamedFileds = function (availableFields, mappedFields) {
+		for (var i = 0; i < availableFields.length; i++) {
+			availableFields[i].renamedText = "";
+			if (!!mappedFields && mappedFields.length > 0) {
+				var foundElem = mappedFields.find(mappedField => mappedField.destinationField.fieldIdentifier === availableFields[i].fieldIdentifier);
+				if (!!foundElem) {
+					availableFields[i].renamedText = foundElem.destinationField.displayName;
+				}
+			}
+		}
+	}
 };
