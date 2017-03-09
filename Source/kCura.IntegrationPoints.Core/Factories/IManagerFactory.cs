@@ -102,5 +102,19 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IWorkspaceManager CreateWorkspaceManager(IContextContainer contextContainer);
 
 		IPermissionManager CreatePermissionManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates a Source Workspace Manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Instance of Source Workspace Manager</returns>
+		ISourceWorkspaceManager CreateSourceWorkspaceManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates a Source Job Manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Instance of Source Job Manager</returns>
+		ISourceJobManager CreateSourceJobManager(IContextContainer contextContainer);
 	}
 }

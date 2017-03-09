@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Factories
 {
@@ -119,7 +120,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <returns>A class implementing the ISourceJobRepository interface.</returns>
 		ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId);
-
+		
 		/// <summary>
 		/// Returns a class implementing the ISourceProviderRepository interface
 		/// </summary>
@@ -219,12 +220,5 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// </summary>
 		/// <returns>A class implementing the IServiceUrlRepository interface.</returns>
 		IServiceUrlRepository GetServiceUrlRepository();
-
-		/// <summary>
-		/// Returns a class implementing the IExtendedFieldRepository interface.
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the IExtendedFieldRepository interface.</returns>
-		IExtendedFieldRepository GetExtendedFieldRepository(int workspaceArtifactId);
 	}
 }

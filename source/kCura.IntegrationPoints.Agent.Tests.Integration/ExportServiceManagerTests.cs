@@ -61,12 +61,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void TestSetup()
 		{
 			_caseContext = Container.Resolve<ICaseServiceContext>();
+			IHelperFactory helperFactory = Container.Resolve<IHelperFactory>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
-			ISourceWorkspaceManager sourceWorkspaceManager = Container.Resolve<ISourceWorkspaceManager>();
-			ISourceJobManager sourceJobManager = Container.Resolve<ISourceJobManager>();
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
 			ISerializer serializer = Container.Resolve<ISerializer>();
@@ -79,13 +78,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			JobHistoryBatchUpdateStatus jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
 			
-			_exportManager = new ExportServiceManager(Helper,
+			_exportManager = new ExportServiceManager(Helper, helperFactory,
 				_caseContext, contextContainerFactory,
 				synchronizerFactory,
 				exporterFactory,
 				onBehalfOfUserClaimsPrincipalFactory,
-				sourceWorkspaceManager,
-				sourceJobManager,
 				repositoryFactory,
 				managerFactory,
 				new[] { jobHistoryUpdater },

@@ -12,11 +12,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class SourceJobRepository : ISourceJobRepository
 	{
 		private readonly IHelper _helper;
+		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 
-		public SourceJobRepository(IHelper helper, int workspaceArtifactId)
+		public SourceJobRepository(IHelper helper, IServicesMgr servicesMgr, int workspaceArtifactId)
 		{
 			_helper = helper;
+			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
@@ -35,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			WriteResultSet<ObjectType> resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -75,7 +77,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			int rdoArtifactId;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -137,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			kCura.Relativity.Client.DTOs.Field[] fieldsToCreate = jobHistoryFields.Where(x => fieldGuids.Contains(x.Guids.First())).ToArray();
 
 			ResultSet<kCura.Relativity.Client.DTOs.Field> newFieldResultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -217,7 +219,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 

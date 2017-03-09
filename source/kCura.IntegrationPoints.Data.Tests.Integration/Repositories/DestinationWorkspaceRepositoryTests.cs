@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IJobHistoryService _jobHistoryService;
 		private IScratchTableRepository _scratchTableRepository;
 		private IDocumentRepository _documentRepository;
-		private IExtendedFieldRepository _extendedFieldRepository;
 		private IFieldRepository _fieldRepository;
 
 		public DestinationWorkspaceRepositoryTests() : base("DestinationWorkspaceRepositoryTests", null)
@@ -41,7 +40,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_scratchTableRepository = repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, "Documents2Tag", "LikeASir");
 			_documentRepository = repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
-			_extendedFieldRepository = repositoryFactory.GetExtendedFieldRepository(SourceWorkspaceArtifactId);
 			_fieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 		}
 
@@ -215,9 +213,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private void VerifyDocumentTagging(int[] documentArtifactIds, string expectedJobHistory)
 		{
 			string expectedDestinationCase = $"DestinationWorkspaceRepositoryTests - { SourceWorkspaceArtifactId }";
-			int documentJobHistoryFieldArtifactId = _extendedFieldRepository.RetrieveField("Job History", (int) Relativity.Client.ArtifactType.Document, (int) Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
-			int documentDestinationCaseFieldArtifactId = _extendedFieldRepository.RetrieveField("Relativity Destination Case", (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
-			ArtifactDTO[] documentArtifacts = _documentRepository.RetrieveDocumentsAsync(documentArtifactIds, new HashSet<int>() { documentDestinationCaseFieldArtifactId, documentJobHistoryFieldArtifactId }).ConfigureAwait(false).GetAwaiter().GetResult();
+			int? documentJobHistoryFieldArtifactId = _fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, "Job History", FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" })?.ArtifactId;
+			int? documentDestinationCaseFieldArtifactId = _fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, "Relativity Destination Case", FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" })?.ArtifactId;
+			ArtifactDTO[] documentArtifacts = _documentRepository.RetrieveDocumentsAsync(documentArtifactIds, new HashSet<int>() { documentDestinationCaseFieldArtifactId.GetValueOrDefault(), documentJobHistoryFieldArtifactId.GetValueOrDefault() }).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			foreach (ArtifactDTO artifact in documentArtifacts)
 			{
