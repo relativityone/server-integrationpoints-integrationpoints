@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -31,12 +32,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			ISourceJobRepository sourceJobRepository = _repositoryFactory.GetSourceJobRepository(destinationWorkspaceArtifactId);
 			ISourceWorkspaceJobHistoryRepository sourceWorkspaceJobHistoryRepository = _repositoryFactory.GetSourceWorkspaceJobHistoryRepository(sourceWorkspaceArtifactId);
 			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
-			IExtendedFieldRepository extendedFieldRepository = _repositoryFactory.GetExtendedFieldRepository(destinationWorkspaceArtifactId);
+			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
 			int sourceJobDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceJobRepository, artifactGuidRepository, sourceWorkspaceArtifactTypeId);
 			var fieldGuids = new List<Guid>(2) { SourceJobDTO.Fields.JobHistoryIdFieldGuid, SourceJobDTO.Fields.JobHistoryNameFieldGuid };
-			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceJobRepository, extendedFieldRepository, sourceJobDescriptorArtifactTypeId);
-			CreateDocumentsFields(sourceJobDescriptorArtifactTypeId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, artifactGuidRepository, sourceJobRepository, extendedFieldRepository);
+			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceJobRepository, fieldRepository, sourceJobDescriptorArtifactTypeId);
+			CreateDocumentsFields(sourceJobDescriptorArtifactTypeId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, artifactGuidRepository, sourceJobRepository, fieldRepository);
 
 			// Create instance of Job History object
 			SourceWorkspaceJobHistoryDTO sourceWorkspaceJobHistoryDto = sourceWorkspaceJobHistoryRepository.Retrieve(jobHistoryArtifactId);
@@ -62,14 +63,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					SourceJobDTO.Fields.JobHistoryIdFieldGuid, new FieldDefinition()
 					{
 						FieldName = IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
-						FieldType = Relativity.Client.FieldType.WholeNumber
+						FieldType = FieldTypes.WholeNumber
 					}
 				},
 				{
 					SourceJobDTO.Fields.JobHistoryNameFieldGuid, new FieldDefinition()
 					{
 						FieldName = IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
-						FieldType = Relativity.Client.FieldType.FixedLengthText
+						FieldType = FieldTypes.FixedLengthText
 					}
 				}
 			};

@@ -32,7 +32,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private SourceJobManager _sourceJobManager;
 		private ISynchronizerFactory _synchronizerFactory;
 		private IJobHistoryService _jobHistoryService;
-		private IExtendedFieldRepository _extendedFieldRepository;
 		private IFieldRepository _fieldRepository;
 		private FieldMap[] _fieldMaps;
 		private ISerializer _serializer;
@@ -56,7 +55,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			_helper = Container.Resolve<IHelper>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
-			_extendedFieldRepository = _repositoryFactory.GetExtendedFieldRepository(SourceWorkspaceArtifactId);
 			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 			_fieldMaps = GetDefaultFieldMap();
 		}
@@ -111,12 +109,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		{
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 
-			int relativitySourceCaseFieldArtifactId = _extendedFieldRepository.RetrieveField(_RELATIVITY_SOURCE_CASE, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
-			int relativitySourceJobdArtifactId = _extendedFieldRepository.RetrieveField(_RELATIVITY_SOURCE_JOB, (int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject).GetValueOrDefault();
+			ArtifactDTO relativitySourceCaseField = _fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_CASE, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
+			int? relativitySourceCaseFieldArtifactId = relativitySourceCaseField?.ArtifactId;
+			ArtifactDTO relativitySourceJobField = _fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_JOB, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
+			int? relativitySourceJobArtifactId = relativitySourceJobField?.ArtifactId;
 
 			ArtifactDTO[] documentArtifacts =
 				_documentRepository.RetrieveDocumentsAsync(documentArtifactIds,
-					new HashSet<int>() { relativitySourceJobdArtifactId, relativitySourceCaseFieldArtifactId })
+					new HashSet<int>() { relativitySourceJobArtifactId.GetValueOrDefault(), relativitySourceCaseFieldArtifactId.GetValueOrDefault() })
 					.ConfigureAwait(false)
 					.GetAwaiter()
 					.GetResult();

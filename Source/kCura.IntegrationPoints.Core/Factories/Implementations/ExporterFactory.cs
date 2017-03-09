@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
 
 			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, sourceWorkspaceManager,
-				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration,
+				sourceJobManager, documentRepository, synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration, 
 				userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
 			
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();

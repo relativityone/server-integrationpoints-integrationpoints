@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 		private ExportServiceManager _instance;
 		private IHelper _helper;
+		private IHelperFactory _helperFactory;
 		private ICaseServiceContext _caseContext;
 		private IContextContainerFactory _contextContainerFactory;
 		private ISynchronizerFactory _synchronizerFactory;
@@ -104,6 +105,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			_job = job;
 			_helper = Substitute.For<IHelper>();
+			_helperFactory = Substitute.For<IHelperFactory>();
 			_caseContext = Substitute.For<ICaseServiceContext>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_synchronizerFactory = Substitute.For<ISynchronizerFactory>();
@@ -195,11 +197,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializer.Deserialize<TaskParameters>(job.JobDetails)
 				.Returns(_taskParameters);
 			_jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
-			_instance = new ExportServiceManager(_helper,
+
+			_managerFactory.CreateSourceWorkspaceManager(Arg.Any<IContextContainer>()).Returns(_sourceWorkspaceManager);
+			_managerFactory.CreateSourceJobManager(Arg.Any<IContextContainer>()).Returns(_sourceJobManager);
+
+			_instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory, _exporterFactory,
-				_claimPrincipleFactory, _sourceWorkspaceManager,
-				_sourceJobManager, _repositoryFactory,
+				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
 				null);
@@ -408,11 +413,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_synchronizerFactory = Substitute.For<GeneralWithCustodianRdoSynchronizerFactory>(windsorContainer, rdoQuery);
 
 			// ACT
-			ExportServiceManager instance = new ExportServiceManager(_helper,
+			ExportServiceManager instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory, _exporterFactory,
-				_claimPrincipleFactory, _sourceWorkspaceManager,
-				_sourceJobManager, _repositoryFactory,
+				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
 				null);

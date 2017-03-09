@@ -42,6 +42,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	[SynchronizedTask]
 	public class ExportServiceManager : ITask
 	{
+		private readonly IHelper _helper;
+		private readonly IHelperFactory _helperFactory;
+		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IContextContainer _contextContainer;
@@ -55,8 +58,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		private readonly ISerializer _serializer;
-		private readonly ISourceJobManager _sourceJobManager;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly TaskResult _taskResult;
@@ -70,13 +71,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 
 		public ExportServiceManager(IHelper helper,
+			IHelperFactory helperFactory,
 			ICaseServiceContext caseServiceContext,
 			IContextContainerFactory contextContainerFactory,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
-			ISourceWorkspaceManager sourceWorkspaceManager,
-			ISourceJobManager sourceJobManager,
 			IRepositoryFactory repositoryFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
@@ -87,8 +87,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService)
 		{
+			_helper = helper;
+			_helperFactory = helperFactory;
 			_batchStatus = statuses.ToList();
 			_caseServiceContext = caseServiceContext;
+			_contextContainerFactory = contextContainerFactory;
 			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 			_exporterFactory = exporterFactory;
 			_onBehalfOfUserClaimsPrincipalFactory = onBehalfOfUserClaimsPrincipalFactory;
@@ -99,8 +102,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_managerFactory = managerFactory;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			_serializer = serializer;
-			_sourceJobManager = sourceJobManager;
-			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_statisticsService = statisticsService;
 			_synchronizerFactory = synchronizerFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
@@ -242,8 +243,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
-			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, _sourceWorkspaceManager,
-				_sourceJobManager, _synchronizerFactory,
+			var settings = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
+			var targetHelper = _helperFactory.CreateTargetHelper(_helper, settings.FederatedInstanceArtifactId, IntegrationPointDto.SecuredConfiguration);
+			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper,
+				targetHelper.GetServicesManager());
+			ISourceWorkspaceManager sourceWorkspaceManager = _managerFactory.CreateSourceWorkspaceManager(contextContainer);
+			ISourceJobManager sourceJobManager = _managerFactory.CreateSourceJobManager(contextContainer);
+
+			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, sourceWorkspaceManager,
+				sourceJobManager, _synchronizerFactory,
 				_serializer, _jobHistoryErrorManager, _jobStopManager,
 				MappedFields.ToArray(), _sourceConfiguration,
 				_updateStatusType, IntegrationPointDto, JobHistoryDto,

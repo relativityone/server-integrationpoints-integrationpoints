@@ -11,11 +11,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class RsapiSourceWorkspaceRepository : ISourceWorkspaceRepository
 	{
 		private readonly IHelper _helper;
+		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 
-		public RsapiSourceWorkspaceRepository(IHelper helper, int workspaceArtifactId)
+		public RsapiSourceWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, int workspaceArtifactId)
 		{
 			_helper = helper;
+			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			WriteResultSet<ObjectType> resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -114,7 +116,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				sourceWorkspaceFields.Where(x => fieldGuids.Contains(x.Guids.First())).ToArray();
 
 			ResultSet<kCura.Relativity.Client.DTOs.Field> newFieldResultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = rsapiClient.Repositories.Field.Create(fieldsToCreate);
@@ -180,7 +182,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -222,7 +224,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			QueryResultSet<RDO> resultSet = null; 
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -278,7 +280,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			try
 			{
 				int rdoArtifactId;
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					rdoArtifactId = rsapiClient.Repositories.RDO.CreateSingle(rdo);
@@ -308,7 +310,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
