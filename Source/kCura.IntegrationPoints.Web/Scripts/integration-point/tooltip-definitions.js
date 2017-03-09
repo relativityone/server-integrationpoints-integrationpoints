@@ -14,12 +14,12 @@ TooltipDefs.ExportDetails = [
 
 
 TooltipDefs.FtpConfigurationDetails = [
-	{ name: "Host", description: "The address of the FTP or SFTP server, e.g. yourcompany.com" },
-	{ name: "Protocol", description: "Specifies if the standard File Transfer Protocol (FTP) or the SSH File Transfer Protocol (SFTP) should be used." },
-	{ name: "Port", description: "The port of the server to connect to." },
-	{ name: "Username", description: "If required for your connection, specifies the username to use for authenticating. Leave blank to use anonymous." },
-	{ name: "Password", description: "If required for your connection, specifies the password to use for authentication. Leave blank to use anonymous." },
-	{ name: "CSV filepath", description: "The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file." }
+	{ name: "Host", description: "The address of the FTP or SFTP server, e.g. yourcompany.com", subsection: [] },
+	{ name: "Protocol", description: "Specifies if the standard File Transfer Protocol (FTP) or the SSH File Transfer Protocol (SFTP) should be used.", subsection: [] },
+	{ name: "Port", description: "The port of the server to connect to.", subsection: [] },
+	{ name: "Username", description: "If required for your connection, specifies the username to use for authenticating. Leave blank to use anonymous.", subsection: [] },
+	{ name: "Password", description: "If required for your connection, specifies the password to use for authentication. Leave blank to use anonymous.", subsection: [] },
+	{ name: "CSV filepath", description: "The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file.", subsection: [] }
 ];
 
 TooltipDefs.FtpConfigurationDetailsTitle = "CSV Import on FTP";
