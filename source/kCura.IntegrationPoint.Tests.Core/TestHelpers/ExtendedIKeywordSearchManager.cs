@@ -136,5 +136,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			return Manager.GetAccessStatusAsync(workspaceArtifactID, artifactID, ancestorArtifactIDs);
 		}
+
+		public Task<SavedSearchRef> CopySingleAsync(int a, int b)
+		{
+			return Manager.CopySingleAsync(a, b);
+		}
 	}
 }
