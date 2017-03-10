@@ -1,9 +1,9 @@
-﻿using kCura.Relativity.DataReaderClient;
+﻿using System.Collections.Generic;
+using System.Linq;
+using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {

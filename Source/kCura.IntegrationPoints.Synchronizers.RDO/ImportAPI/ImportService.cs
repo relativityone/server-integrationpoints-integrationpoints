@@ -151,8 +151,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.OnProgress += ImportJob_OnProgress;
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
 
-			importJob.Execute();
 			LogImportJobStarted();
+			importJob.Execute();
 		}
 
 		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)

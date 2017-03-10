@@ -9,5 +9,7 @@
 		public bool ViewErrorsLinkEnabled { get; set; }
 		public bool ViewErrorsLinkVisible { get; set; }
 		public bool SaveAsProfileButtonVisible { get; set; }
+		public bool DownloadErrorFileLinkEnabled { get; set; }
+		public bool DownloadErrorFileLinkVisible { get; set; }
 	}
 }

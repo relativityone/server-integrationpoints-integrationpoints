@@ -1990,18 +1990,6 @@
       <Name>kCura.IntegrationPoints.Domain.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1030084</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.ImportProvider.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1030085</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.ImportProvider.Parser.dll</Name>
-      <Notes />
-    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
@@ -12026,6 +12014,18 @@
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
       <ApplicationVersion>9.5.0.9</ApplicationVersion>
       <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1039546</ArtifactId>
+      <AssemblyArtifactId>1021839</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.ImportProviderResourceFilePreInstallEventHandler</Name>
+      <Guid>8cad683a-0aac-4eb7-94c9-ab4d1450656d</Guid>
+      <Guids>83b50c55-6208-494c-9d15-cabbbaaec110</Guids>
+      <ExecutionType>9</ExecutionType>
+      <Order>5</Order>
+      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.9</ApplicationVersion>
+      <RunTarget>1</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />

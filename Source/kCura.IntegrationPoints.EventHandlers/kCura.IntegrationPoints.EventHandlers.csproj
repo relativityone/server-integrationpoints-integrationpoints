@@ -248,6 +248,7 @@
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScriptsFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\RelativityProviderScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ScriptsHelper.cs" />
+    <Compile Include="IntegrationPoints\ImportProviderResourceFilePreInstallEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointDataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPreLoadEventHandler.cs" />

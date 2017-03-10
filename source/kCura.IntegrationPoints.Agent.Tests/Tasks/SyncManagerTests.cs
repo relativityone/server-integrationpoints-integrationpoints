@@ -50,7 +50,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IScheduleRuleFactory _scheduleRuleFactory;
 		private IBatchStatus _batchStatus;
 		private SyncManager _instance;
-		private ImageSyncManager _imageInstance;
 		private Job _job;
 		private SourceProvider _sourceProvider;
 		private Data.IntegrationPoint _integrationPoint;
@@ -108,15 +107,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_batchInstance = Guid.NewGuid();
 			_instance = new SyncManager(_caseServiceContext, _dataProviderFactory, _jobManager, _jobService, _helper,
-				_integrationPointService, _serializer, _guidService, _jobHistoryService,
-				_jobHistoryErrorService, _scheduleRuleFactory, _managerFactory,
-				_contextContainerFactory, _batchStatuses)
-			{
-				BatchInstance = _batchInstance,
-				IntegrationPoint = _integrationPoint
-			};
-
-			_imageInstance = new TestImageSyncManager(_caseServiceContext, _dataProviderFactory, _jobManager, _jobService, _helper,
 				_integrationPointService, _serializer, _guidService, _jobHistoryService,
 				_jobHistoryErrorService, _scheduleRuleFactory, _managerFactory,
 				_contextContainerFactory, _batchStatuses)
@@ -489,33 +479,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Assert.AreEqual(2, _syncManagerEventHelper.BatchJobCount);
 		}
 
-		[Test]
-		public void ImageSyncManager_Batching()
-		{
-			//arrange
-			List<string> sourceRecords = new List<string>();
-			//Batch 1
-			sourceRecords.Add("REL-01,\\File\file.odt,1");
-			sourceRecords.Add("REL-02,\\File\file.odt,2");
-			//Batch 2
-			sourceRecords.Add("REL-03,\\File\file.odt,3");
-			sourceRecords.Add("REL-04,\\File\file.odt,4");
-			//Batch 3
-			sourceRecords.Add("REL-05,\\File\file.odt,5");
-			sourceRecords.Add("REL-06,\\File\file.odt,6");
-			sourceRecords.Add("REL-07,\\File\file.odt,6");
-			sourceRecords.Add("REL-08,\\File\file.odt,6");
-			sourceRecords.Add("REL-09,\\File\file.odt,6");
-			sourceRecords.Add("REL-10,\\File\file.odt,6");
-
-			//Act
-			int totalItems = _imageInstance.BatchTask(_job, sourceRecords);
-
-			//assert
-			Assert.AreEqual(sourceRecords.Count,totalItems);
-			Assert.AreEqual(3, _imageInstance.BatchJobCount);
-		}
-
 		private void ValidatePostJobExecuteOnStoppingJob()
 		{
 			_jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -574,29 +537,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			public void RaisePostEvent(Job job, TaskResult taskResult, int items)
 			{
 				OnRaiseJobPostExecute(job, taskResult, items);
-			}
-
-			public override int BatchSize => 2;
-		}
-
-		//used to test batching override for Images
-		private class TestImageSyncManager : ImageSyncManager
-		{
-			public TestImageSyncManager(ICaseServiceContext caseServiceContext,
-				IDataProviderFactory providerFactory,
-				IJobManager jobManager,
-				IJobService jobService,
-				IHelper helper,
-				IIntegrationPointService integrationPointService,
-				ISerializer serializer,
-				IGuidService guidService,
-				IJobHistoryService jobHistoryService,
-				IJobHistoryErrorService jobHistoryErrorService,
-				IScheduleRuleFactory scheduleRuleFactory,
-				IManagerFactory managerFactory,
-				IContextContainerFactory contextContainerFactory,
-				IEnumerable<IBatchStatus> batchStatuses) : base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, contextContainerFactory, batchStatuses)
-			{
 			}
 
 			public override int BatchSize => 2;

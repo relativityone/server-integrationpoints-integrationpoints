@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -12,9 +12,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	/// The objective of this class is to allow dynamic reading of sources to destination in import api.
 	/// NOTE : The assumption is that the column names are artifact id of the fields due to the prior implementation of the framework.
 	/// </summary>
-	public class RelativityReaderDecorator : IDataReader
+	public class RelativityReaderDecorator : IDataReader, IArtifactReader
 	{
-		private readonly IDataReader _source;
+		protected IDataReader _source;
 
 		private readonly Dictionary<string, string> _targetNameToSourceIdentifier;
 		private readonly Dictionary<string, string> _sourceIdentifierToTargetName; 
@@ -273,6 +273,132 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public bool Read()
 		{
 			return _source.Read();
+		}
+
+		//IArtifactReader
+		public string ManageErrorRecords(string errorMessageFileLocation, string prePushErrorLineNumbersFileName)
+		{
+			IArtifactReader sourceArtifactReader = _source as IArtifactReader;
+			return sourceArtifactReader?.ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName);
+		}
+
+		public long CountRecords()
+		{
+			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+		}
+
+		public ArtifactFieldCollection ReadArtifact()
+		{
+			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+		}
+
+		public string[] GetColumnNames(object args)
+		{
+			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+		}
+
+		public string SourceIdentifierValue()
+		{
+			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+		}
+
+		public void AdvanceRecord()
+		{
+			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+		}
+
+		public void OnFatalErrorState()
+		{
+			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+		}
+
+		public void Halt()
+		{
+			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+		}
+
+		public bool HasMoreRecords
+		{
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+		}
+
+		public int CurrentLineNumber
+		{
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+		}
+
+		public long SizeInBytes
+		{
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+		}
+
+		public long BytesProcessed
+		{
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+		}
+
+		event IArtifactReader.OnIoWarningEventHandler IArtifactReader.OnIoWarning
+		{
+			add
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+
+			remove
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+		}
+
+		event IArtifactReader.DataSourcePrepEventHandler IArtifactReader.DataSourcePrep
+		{
+			add
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+
+			remove
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+		}
+
+		event IArtifactReader.StatusMessageEventHandler IArtifactReader.StatusMessage
+		{
+			add
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+
+			remove
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+		}
+
+		event IArtifactReader.FieldMappedEventHandler IArtifactReader.FieldMapped
+		{
+			add
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
+
+			remove
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
+			}
 		}
 	}
 }

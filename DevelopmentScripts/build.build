@@ -90,7 +90,8 @@
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.dll"' />
 			
 			<!-- secondary dlls -->
-			<arg line='"${source.packages.directory}\SystemWrapper.Interfaces.0.7.0.0\lib\net45\SystemInterface.dll"'/>
+			<arg line='"${source.packages.directory}\SystemWrapper.Interfaces.0.19.0.115\lib\net45\SystemInterface.dll"'/>
+			<arg line='"${source.packages.directory}\SystemWrapper.Wrappers.0.19.0.115\lib\net45\SystemWrapper.dll"'/>
 			<arg line='"${source.packages.directory}\kCura.LongPath.1.0.8\lib\net45\kCura.LongPath.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.Relativity.ImportAPI.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\FreeImageNET.dll"' />
@@ -120,6 +121,8 @@
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Synchronizers.RDO.dll"' />
 			<arg line='"${lib.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
 			<arg line='"${lib.directory}\kCura.ScheduleQueue.Core.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.ImportProvider.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.ImportProvider.Parser.dll"' />
 		</exec>
 	</target>
 	
@@ -187,7 +190,8 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.264\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.Client.1.0.1.264\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\systemwrapper.interfaces.0.7.0.0\lib\net45"'/>
+			<arg line='/lib:"${source.packages.directory}\systemwrapper.interfaces.0.19.0.115\lib\net45"'/>
+			<arg line='/lib:"${source.packages.directory}\systemwrapper.wrappers.0.19.0.115\lib\net45"'/>
 			<arg line='/lib:"${source.packages.directory}\kCura.LongPath.1.0.8\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.SecretCatalog.1.0.18\lib"' />
 			<arg line='/lib:"${source.dependency.MVCContrib.directory}"' />

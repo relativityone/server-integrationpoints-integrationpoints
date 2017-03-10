@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
 	public interface IDataReaderFactory
 	{
-		IDataReader GetDataReader(ImportProviderSettings settings);
+		IDataReader GetDataReader(FieldMap[] fieldMaps, string options);
 	}
 }

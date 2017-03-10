@@ -60,6 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public bool? DisableNativeValidation { get; set; }
 		public string DestinationProviderType { get; set; }
 		public bool DisableUserSecurityCheck { get; set; }
+		public string ErrorFilePath { get; set; } = string.Empty;
 
 		[JsonIgnore]
 		public Encoding ExtractedTextEncoding => Encoding.GetEncoding(ExtractedTextFileEncoding);

@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private const string _RETRY_ERRORS = "Retry Errors";
 		private const string _VIEW_ERRORS = "View Errors";
 		private const string _SAVE_AS_PROFILE = "Save as a Profile";
+		private const string _DOWNLOAD_ERROR_FILE = "Download Error File";
 
 		private ConsoleBuilder _consoleBuilder;
 		private OnClickEventDTO _onClickEventDTO;
@@ -68,24 +69,23 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			{
 				result.Add(_SAVE_AS_PROFILE);
 			}
+			if (buttonState.DownloadErrorFileLinkVisible)
+			{
+				result.Add(_DOWNLOAD_ERROR_FILE);
+			}
 
 			return result;
 		}
 
-		[TestCase(true, true, true, true, true, true, true)]
-		[TestCase(true, true, true, true, true, true, false)]
-		[TestCase(true, false, true, true, true, true, true)]
-		[TestCase(false, false, true, true, true, true, true)]
-		[TestCase(false, true, true, true, true, true, true)]
-		[TestCase(true, true, true, false, true, true, true)]
-		[TestCase(true, true, false, true, true, true, true)]
-		[TestCase(true, true, false, false, true, true, true)]
-		[TestCase(true, true, true, true, true, false, true)]
-		[TestCase(true, true, true, true, false, true, true)]
-		[TestCase(true, true, true, true, false, false, true)]
 		[Test]
-		public void ItShouldCreateConsoleButtons(bool runButtonEnabled, bool stopButtonEnabled, bool retryErrorsButtonEnabled, bool retryErrorsButtonVisible,
-			bool viewErrorsLinkEnabled, bool viewErrorsLinkVisible, bool saveAsProfileButtonVisible)
+		public void ItShouldCreateConsoleButtons([Values(true, false)] bool runButtonEnabled,
+			[Values(true, false)] bool stopButtonEnabled,
+			[Values(true, false)] bool retryErrorsButtonEnabled,
+			[Values(true, false)] bool retryErrorsButtonVisible,
+			[Values(true, false)] bool viewErrorsLinkEnabled,
+			[Values(true, false)] bool viewErrorsLinkVisible,
+			[Values(true, false)] bool saveAsProfileButtonVisible,
+			[Values(true, false)] bool downloadErrorFileLinkVisible)
 		{
 			var buttonState = new ButtonStateDTO
 			{
@@ -95,7 +95,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = retryErrorsButtonEnabled,
 				StopButtonEnabled = stopButtonEnabled,
 				RunButtonEnabled = runButtonEnabled,
-				SaveAsProfileButtonVisible = saveAsProfileButtonVisible
+				SaveAsProfileButtonVisible = saveAsProfileButtonVisible,
+				DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible
 			};
 
 			var expectedButtons = GetExpectedButtons(buttonState);
@@ -127,7 +128,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = false,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -152,7 +155,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = false,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -177,7 +182,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = false,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -187,6 +194,33 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			Assert.That(button.DisplayText, Is.EqualTo(_VIEW_ERRORS));
 			Assert.That(button.CssClass, Is.EqualTo("consoleLinkDisabled"));
 			Assert.That(button.OnClickEvent, Is.EqualTo(_onClickEventDTO.ViewErrorsOnClickEvent));
+			Assert.That(button.Enabled, Is.False);
+			Assert.That(button.RaisesPostBack, Is.False);
+		}
+
+		[Test]
+		public void ItShouldCreateDisabledDownloadErrorLink()
+		{
+			var buttonState = new ButtonStateDTO
+			{
+				ViewErrorsLinkVisible = false,
+				RetryErrorsButtonVisible = false,
+				ViewErrorsLinkEnabled = false,
+				RetryErrorsButtonEnabled = false,
+				StopButtonEnabled = false,
+				RunButtonEnabled = false,
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = true,
+				DownloadErrorFileLinkEnabled = false
+			};
+
+			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
+
+			ConsoleButton button = FindButton(console.Items, _DOWNLOAD_ERROR_FILE);
+
+			Assert.That(button.DisplayText, Is.EqualTo(_DOWNLOAD_ERROR_FILE));
+			Assert.That(button.CssClass, Is.EqualTo("consoleLinkDisabled"));
+			Assert.That(button.OnClickEvent, Is.EqualTo(_onClickEventDTO.DownloadErrorFileOnClickEvent));
 			Assert.That(button.Enabled, Is.False);
 			Assert.That(button.RaisesPostBack, Is.False);
 		}
@@ -202,7 +236,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = true,
 				StopButtonEnabled = false,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -227,7 +263,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = false,
 				RunButtonEnabled = true,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -252,7 +290,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = true,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -277,7 +317,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = false,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -302,7 +344,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = true,
 				StopButtonEnabled = false,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -321,7 +365,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = false,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = false
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -340,7 +386,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 				RetryErrorsButtonEnabled = false,
 				StopButtonEnabled = true,
 				RunButtonEnabled = false,
-				SaveAsProfileButtonVisible = true
+				SaveAsProfileButtonVisible = true,
+				DownloadErrorFileLinkVisible = false,
+				DownloadErrorFileLinkEnabled = false
 			};
 
 			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
@@ -350,6 +398,33 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			Assert.That(button.DisplayText, Is.EqualTo(_SAVE_AS_PROFILE));
 			Assert.That(button.CssClass, Is.EqualTo("consoleButtonEnabled"));
 			Assert.That(button.OnClickEvent, Is.EqualTo(_onClickEventDTO.SaveAsProfileOnClickEvent));
+			Assert.That(button.Enabled, Is.True);
+			Assert.That(button.RaisesPostBack, Is.False);
+		}
+
+		[Test]
+		public void ItShouldCreateDownloadErrorLink()
+		{
+			var buttonState = new ButtonStateDTO
+			{
+				ViewErrorsLinkVisible = false,
+				RetryErrorsButtonVisible = false,
+				ViewErrorsLinkEnabled = false,
+				RetryErrorsButtonEnabled = false,
+				StopButtonEnabled = false,
+				RunButtonEnabled = false,
+				SaveAsProfileButtonVisible = false,
+				DownloadErrorFileLinkVisible = true,
+				DownloadErrorFileLinkEnabled = true
+			};
+
+			var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
+
+			ConsoleButton button = FindButton(console.Items, _DOWNLOAD_ERROR_FILE);
+
+			Assert.That(button.DisplayText, Is.EqualTo(_DOWNLOAD_ERROR_FILE));
+			Assert.That(button.CssClass, Is.EqualTo("consoleLinkEnabled"));
+			Assert.That(button.OnClickEvent, Is.EqualTo(_onClickEventDTO.DownloadErrorFileOnClickEvent));
 			Assert.That(button.Enabled, Is.True);
 			Assert.That(button.RaisesPostBack, Is.False);
 		}

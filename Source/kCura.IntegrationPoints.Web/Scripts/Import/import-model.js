@@ -48,13 +48,13 @@
 			self.populateFileColumnHeaders(data);
 		};
 
-		self.startLine = ko.observable("1").extend({
+		self.startLine = ko.observable("0").extend({
 			validation: {
 				validator: function (val) {
 					var intVal = parseInt(val);
-					return intVal > 0;
+					return intVal > -1;
 				},
-				message: 'The field must be greater than 0.'
+				message: 'The field must be a nonnegative integer.'
 			},
 			required: true
 		});

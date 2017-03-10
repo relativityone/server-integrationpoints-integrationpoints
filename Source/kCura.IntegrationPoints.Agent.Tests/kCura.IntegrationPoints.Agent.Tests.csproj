@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCrypt.Net, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(BCrypt-Official)\lib\BCrypt.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Castle_Core)\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
@@ -50,13 +54,6 @@
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\$(kCura_Apps_Common_Utils)\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.DataGrid.Logging">
-      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.DataGrid.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Config, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(kCura_Config)\lib\net45\kCura.Config.dll</HintPath>
@@ -94,6 +91,41 @@
       <HintPath>..\packages\$(kCuraCore)\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Windows.Forms, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Windows.Forms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Windows.Process, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Windows.Process.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.WinEDDS.ImportExtension, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\Relativity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.DataGrid.Logging">
+      <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.DataGrid.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(Relativity_Kepler)\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\$(kCura_Relativity_Client)\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Newtonsoft_Json)\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -118,7 +150,7 @@
     <Reference Include="Relativity.Services.Interfaces">
       <HintPath>..\packages\$(RelativityCore)\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
-	<Reference Include="Relativity.Telemetry.APM, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.APM, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(Relativity_Telemetry_APM)\lib\net45\Relativity.Telemetry.APM.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -155,6 +187,7 @@
     <Compile Include="SendEmailManagerUnitTests.cs" />
     <Compile Include="Tasks\ExportManagerTest.cs" />
     <Compile Include="Tasks\ExportServiceManagerTests.cs" />
+    <Compile Include="Tasks\ImportServiceManagerTests.cs" />
     <Compile Include="Tasks\ITaskFactoryTests.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Tasks\SyncManagerTests.cs" />
@@ -207,6 +240,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
+      <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
       <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>

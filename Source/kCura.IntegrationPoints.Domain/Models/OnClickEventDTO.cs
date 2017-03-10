@@ -8,5 +8,6 @@
 		public string RetryErrorsOnClickEvent { get; set; }
 		public string ViewErrorsOnClickEvent { get; set; }
 		public string SaveAsProfileOnClickEvent { get; set; }
+		public string DownloadErrorFileOnClickEvent { get; set; }
 	}
 }

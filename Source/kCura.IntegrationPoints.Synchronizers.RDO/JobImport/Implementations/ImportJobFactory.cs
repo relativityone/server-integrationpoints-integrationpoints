@@ -1,9 +1,7 @@
 ﻿using System;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
-using System.Data;
-using kCura.IntegrationPoints.Domain.Readers;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {

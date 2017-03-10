@@ -123,6 +123,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						CheckForSynchronization(typeof(ExportServiceManager), job, integrationPointDto, agentBase);
 						return Container.Resolve<ExportServiceManager>();
 
+					case TaskType.ImportService:
+						CheckForSynchronization(typeof(ImportServiceManager), job, integrationPointDto, agentBase);
+						return Container.Resolve<ImportServiceManager>();
+
 					case TaskType.ExportManager:
 						CheckForSynchronization(typeof(ExportManager), job, integrationPointDto, agentBase);
 						return Container.Resolve<ExportManager>();
@@ -131,10 +135,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						CheckForSynchronization(typeof(ExportWorker), job, integrationPointDto, agentBase);
 						return Container.Resolve<ExportWorker>();
 
-					case TaskType.ImageSyncManager:
-						CheckForSynchronization(typeof(ImageSyncManager), job, integrationPointDto, agentBase);
-						return Container.Resolve<ImageSyncManager>();
-						
 					default:
 						LogUnknownTaskTypeError(taskType);
 						return null;
@@ -175,6 +175,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Install(new Core.Installers.KeywordInstaller());
 			Container.Install(new Core.Installers.ServicesInstaller());
 			Container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());
+			Container.Install(new ImportProvider.Parser.ServicesInstaller());
 			Container.Install(new AgentInstaller(_helper, job, agentBase.ScheduleRuleFactory));
 		}
 

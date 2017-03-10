@@ -36,6 +36,9 @@ using Relativity.Toggles.Providers;
 using CreateErrorRdo = kCura.ScheduleQueue.Core.Logging.CreateErrorRdo;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
+using kCura.IntegrationPoints.ImportProvider.Parser;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+
 namespace kCura.IntegrationPoints.Agent.Installer
 {
 	internal class AgentInstaller : IWindsorInstaller
@@ -83,8 +86,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ISendable>().ImplementedBy<SMTP>().DependsOn(Dependency.OnValue<EmailConfiguration>(container.Resolve<IRelativityConfigurationFactory>().GetConfiguration())));
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
-			container.Register(Component.For<ImageSyncManager>().ImplementedBy<ImageSyncManager>().LifestyleTransient());
 			container.Register(Component.For<ExportServiceManager>().ImplementedBy<ExportServiceManager>().LifestyleTransient());
+			container.Register(Component.For<ImportServiceManager>().ImplementedBy<ImportServiceManager>().LifestyleTransient());
 			container.Register(Component.For<SyncCustodianManagerWorker>().ImplementedBy<SyncCustodianManagerWorker>().LifestyleTransient());
 			container.Register(Component.For<CreateErrorRdo>().ImplementedBy<CreateErrorRdo>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactory>().AsFactory(x => x.SelectedWith(new TaskComponentSelector())).LifestyleTransient());

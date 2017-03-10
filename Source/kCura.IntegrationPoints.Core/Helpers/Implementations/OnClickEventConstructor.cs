@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			string viewErrorsEvent = buttonStates.ViewErrorsLinkEnabled ? GetViewErrorsLinkEvent(workspaceId, integrationPointId) : string.Empty;
 			string stopEvent = buttonStates.StopButtonEnabled ? GetActionButtonStopEvent(integrationPointId, workspaceId) : string.Empty;
 			string saveAsProfileEvent = GetActionButtonSaveAsProfile(integrationPointId, integrationPointName, workspaceId);
+			string downloadErrorFileEvent = buttonStates.DownloadErrorFileLinkEnabled ? GetActionButtonDownloadErrorFile(integrationPointId, workspaceId) : string.Empty;
 
 			return new OnClickEventDTO
 			{
@@ -31,7 +32,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				RetryErrorsOnClickEvent = retryErrorsEvent,
 				ViewErrorsOnClickEvent = viewErrorsEvent,
 				StopOnClickEvent = stopEvent,
-				SaveAsProfileOnClickEvent = saveAsProfileEvent
+				SaveAsProfileOnClickEvent = saveAsProfileEvent,
+				DownloadErrorFileOnClickEvent = downloadErrorFileEvent
 			};
 		}
 
@@ -53,6 +55,11 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 		private string GetActionButtonSaveAsProfile(int integrationPointId, string integrationPointName, int workspaceId)
 		{
 			return $"IP.saveAsProfile({integrationPointId},{workspaceId},'{integrationPointName}')";
+		}
+
+		private string GetActionButtonDownloadErrorFile(int integrationPointId, int workspaceId)
+		{
+			return $"IP.downloadErrorFile({integrationPointId},{workspaceId})";
 		}
 
 		private string GetViewErrorsLinkEvent(int workspaceId, int integrationPointId)

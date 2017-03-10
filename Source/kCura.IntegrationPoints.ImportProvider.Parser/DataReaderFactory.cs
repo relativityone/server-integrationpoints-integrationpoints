@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using System.Linq;
 using kCura.WinEDDS;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
@@ -10,35 +12,45 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class DataReaderFactory : IDataReaderFactory
 	{
-		IWinEddsLoadFileFactory _winEddsLoadFileFactory;
-		IFieldParserFactory _fieldParserFactory;
+		private IWinEddsLoadFileFactory _winEddsLoadFileFactory;
+		private IFieldParserFactory _fieldParserFactory;
+
 		public DataReaderFactory(IFieldParserFactory fieldParserFactory, IWinEddsLoadFileFactory winEddsLoadFileFactory)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_winEddsLoadFileFactory = winEddsLoadFileFactory;
 		}
 
-		public IDataReader GetDataReader(ImportProviderSettings settings)
+		public IDataReader GetDataReader(FieldMap[] fieldMaps, string options)
 		{
-			if (int.Parse(settings.ImportType) == (int)ImportType.ImportTypeValue.Document)
+			//TODO: use injected Iserializer instead
+			ImportProviderSettings providerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
+			if (int.Parse(providerSettings.ImportType) == (int)ImportType.ImportTypeValue.Document)
 			{
-				return GetLoadFileDataReader(settings);
+				LoadFileDataReader lfdr = GetLoadFileDataReader(fieldMaps, providerSettings);
+				ImportDataReader idr = new ImportDataReader(lfdr);
+				idr.Setup(fieldMaps);
+				return idr;
 			}
 			else
 			{
-				return GetOpticonDataReader(settings);
+				return GetOpticonDataReader(providerSettings);
 			}
 		}
 
 		private OpticonDataReader GetOpticonDataReader(ImportProviderSettings settings)
 		{
-			OpticonDataReader rv = new OpticonDataReader(_winEddsLoadFileFactory.GetImageLoadFile(settings));
+			ImageLoadFile config = _winEddsLoadFileFactory.GetImageLoadFile(settings);
+			OpticonFileReader reader = new OpticonFileReader(0, config, null, Guid.Empty, false);
+			OpticonDataReader rv = new OpticonDataReader(settings, config, reader);
 			rv.Init();
 			return rv;
 		}
 
-		private LoadFileDataReader GetLoadFileDataReader(ImportProviderSettings settings)
+		private LoadFileDataReader GetLoadFileDataReader(FieldMap[] fieldMaps, ImportProviderSettings settings)
 		{
+			string fieldIdentifierColumnName = fieldMaps.FirstOrDefault(x => x.SourceField.IsIdentifier)?.SourceField.DisplayName;
+			
 			LoadFile loadFile = _winEddsLoadFileFactory.GetLoadFile(settings);
 
 			//Add columns to the LoadFile object
@@ -46,23 +58,21 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			int colIdx = 0;
 			foreach (string col in fieldParser.GetFields())
 			{
-				int fieldCat = -1;
-				//TODO: instead of setting the first column as the identifier, use options
-				if (colIdx == 0)
-				{
-					fieldCat = (int)RAPI.FieldCategory.Identifier;
-				}
+				int fieldCat = (! string.IsNullOrEmpty(fieldIdentifierColumnName) && col == fieldIdentifierColumnName)
+					? (int)RAPI.FieldCategory.Identifier
+					: -1;
 
 				DocumentField newDocField = new DocumentField(col, colIdx, 4, fieldCat, -1, -1, -1, false,
 					kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
 
-				LoadFileFieldMap.LoadFileFieldMapItem mapItem = new LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
+				LoadFileFieldMap.LoadFileFieldMapItem mapItem = new LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx++);
 				loadFile.FieldMap.Add(mapItem);
-				colIdx++;
 			}
 
-			LoadFileDataReader rv = new LoadFileDataReader(loadFile);
-			rv.Init(); //Init performs unsafe operations, so they could not be performed in the constructor.
+			LoadFileReader reader = new LoadFileReader(loadFile, false);
+
+			LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader);
+			rv.Init();
 			return rv;
 		}
 	}

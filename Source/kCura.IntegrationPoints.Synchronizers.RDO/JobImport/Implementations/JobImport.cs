@@ -24,10 +24,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			remove { ImportJob.OnProgress -= value; }
 		}
 
-		//TODO: create registration method for those event (you can see some examples in StatisticsLoggingMediator)
 		public virtual event OnErrorEventHandler OnError;
 		public virtual event OnMessageEventHandler OnMessage;
-
 
 		protected TJob ImportJob
 		{

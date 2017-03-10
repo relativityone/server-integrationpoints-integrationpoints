@@ -82,7 +82,6 @@
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="ImportProvider.cs" />
-    <Compile Include="Installers\ServicesInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

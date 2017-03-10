@@ -55,7 +55,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			_locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
 
 			string loadFilePath = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
-			return new ImageLoadFile { FileName = loadFilePath };
+			return new ImageLoadFile {
+				FileName = loadFilePath,
+				StartLineNumber = long.Parse(settings.LineNumber)
+			};
 		}
 	}
 }

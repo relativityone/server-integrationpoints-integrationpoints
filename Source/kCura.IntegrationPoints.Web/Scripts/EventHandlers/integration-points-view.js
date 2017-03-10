@@ -79,6 +79,22 @@
 		});
 	};
 
+	root.downloadErrorFile = function (artifactId, appId) {
+		var checkUrlBase = IP.utils.generateWebAPIURL('ImportProviderDocument/CheckErrorFile');
+		var checkUrl = checkUrlBase + '?artifactId=' + artifactId + '&workspaceId=' + appId;
+		IP.data.ajax({
+			url: checkUrl,
+			type: 'GET',
+			success: function () {
+				var urlBase = IP.utils.generateWebAPIURL('ImportProviderDocument/DownloadErrorFile');
+				window.location = urlBase + '?artifactId=' + artifactId + '&workspaceId=' + appId;
+			},
+			error: function (error) {
+				IP.message.error.raise('The error file could not be found for download.', $("#customRDOWithConsoleWrapper"));
+			}
+		});
+	}
+
 	IP.redirect.set(document.URL);
 
 	$(function () {

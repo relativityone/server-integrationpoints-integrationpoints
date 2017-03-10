@@ -1,14 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using kCura.IntegrationPoints.Core.Helpers;
+using Relativity.API;
+using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -18,13 +26,31 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private IImportTypeService _importTypeService;
 		private IRepositoryFactory _repositoryFactory;
 		private ISerializer _serializer;
+		private IImportFileLocationService _importFileLocationService;
+		private IFile _fileIo;
+		private IStreamFactory _streamFactory;
+		private ICPHelper _helper;
+		private IAPILog _logger;
 
-		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory, IImportTypeService importTypeService, ISerializer serializer, IRepositoryFactory repoFactory)
+		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory,
+			IImportTypeService importTypeService,
+			ISerializer serializer,
+			IRepositoryFactory repoFactory,
+			IImportFileLocationService importFileLocationService,
+			IFile fileIo,
+			IStreamFactory streamFactory,
+			ICPHelper helper)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_importTypeService = importTypeService;
 			_serializer = serializer;
 			_repositoryFactory = repoFactory;
+			_importFileLocationService = importFileLocationService;
+			_fileIo = fileIo;
+			_streamFactory = streamFactory;
+			_helper = helper;
+
+			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
 		[HttpGet]
@@ -91,6 +117,69 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				}
 			}
 			return Ok(result);
+		}
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to check error file location.")]
+		public IHttpActionResult CheckErrorFile(int artifactId, int workspaceId)
+		{
+			string errorFilePath = _importFileLocationService.ErrorFilePath(artifactId);
+			if (_fileIo.Exists(errorFilePath))
+			{
+				return Ok();
+			}
+			else
+			{
+				_logger.LogWarning(
+					"Error file for integration point {ArtifactId} in workspace {WorkspaceId} was not present; expected path was {ErrorFilePath}",
+					artifactId, workspaceId, errorFilePath);
+				return BadRequest();
+			}
+		}
+
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve error file for download.")]
+		public IHttpActionResult DownloadErrorFile(int artifactId, int workspaceId)
+		{
+			string errorFilePath = _importFileLocationService.ErrorFilePath(artifactId);
+
+			byte[] trimmedBuffer = GetTrimmedBuffer(errorFilePath);
+
+			HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new ByteArrayContent(trimmedBuffer)
+			};
+			result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
+			{
+				FileName = string.Concat("Error_file", Path.GetExtension(errorFilePath))
+			};
+			result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+			return ResponseMessage(result);
+		}
+
+		private byte[] GetTrimmedBuffer(string filePath)
+		{
+			IMemoryStream msWrap = _streamFactory.GetMemoryStream();
+			using (IFileStream f = _streamFactory.GetFileStream(filePath))
+			{
+				f.CopyTo(msWrap);
+			}
+
+			//Cannot pass stream.GetBuffer() directly to ByteArrayContent ctor: MemoryStream's buffer has trailing NULLs.
+			//http://stackoverflow.com/a/240745
+
+			byte[] memStreamBuf = msWrap.GetBuffer();
+			int i = msWrap.GetBuffer().Length - 1;
+			while(memStreamBuf[i] == 0)
+			{
+				i--;
+			}
+			// now memStreamBuf[i] is the last non-zero byte
+			byte[] rv = new byte[i+1];
+			System.Array.Copy(memStreamBuf, rv, i+1);
+
+			return rv;
 		}
 	}
 }

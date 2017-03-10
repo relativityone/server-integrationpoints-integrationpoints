@@ -1,9 +1,9 @@
-﻿using kCura.Relativity.Client;
-using kCura.Relativity.DataReaderClient;
-using kCura.Relativity.ImportAPI;
-using System.Collections;
+﻿using System.Collections;
 using System.Data;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.Relativity.Client;
+using kCura.Relativity.DataReaderClient;
+using kCura.Relativity.ImportAPI;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
@@ -59,6 +59,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			_builder.PopulateFrom(_importSettings, ImportJob.Settings);
 			ImportJob.SourceData.SourceData = _sourceData;
 			ImportJob.Execute();
+
+			if (! string.IsNullOrEmpty(_importSettings.ErrorFilePath))
+			{
+				ImportJob.ExportErrorFile(_importSettings.ErrorFilePath);
+			}
 		}
 	}
 }

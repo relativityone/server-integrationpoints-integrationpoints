@@ -1,44 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-	public class LoadFileDataReader : LoadFileBase, IDataReader
+	public class LoadFileDataReader : DataReaderBase, IArtifactReader
 	{
 		private bool _isClosed;
-		private string _currentLine;
-		private string _recordDelimiterString;
-		private string _quoteDelimiterString;
-		private string _doubleRecordDelimiterString;
-		private string _doubleQuoteDelimiterString;
+		private bool _extractedTextHasPathInfo;
+		private bool _nativeFileHasPathInfo;
+		private string _loadFileDirectory;
+		private string[] _currentLine;
+		private LoadFile _config;
+		private LoadFileReader _loadFileReader;
+		private DataTable _schemaTable;
+		private Dictionary<string, int> _ordinalMap;
+		ImportProviderSettings _providerSettings;
 
-		public LoadFileDataReader(kCura.WinEDDS.LoadFile config)
-			: base(config)
+		public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, LoadFileReader reader)
 		{
+			_providerSettings = providerSettings;
+			_config = config;
+			_loadFileReader = reader;
+
 			_isClosed = false;
-			_currentLine = string.Empty;
-			_recordDelimiterString = _config.RecordDelimiter.ToString();
-			_quoteDelimiterString = _config.QuoteDelimiter.ToString();
-			_doubleQuoteDelimiterString = new string(_config.QuoteDelimiter, 2);
-			_doubleRecordDelimiterString = new string(_config.RecordDelimiter, 2);
+			_extractedTextHasPathInfo = !string.IsNullOrEmpty(_providerSettings.ExtractedTextPathFieldIdentifier);
+			_nativeFileHasPathInfo = !string.IsNullOrEmpty(_providerSettings.NativeFilePathFieldIdentifier);
+			_loadFileDirectory = Path.GetDirectoryName(_providerSettings.LoadFile);
+
+			_schemaTable = new DataTable();
+			_ordinalMap = new Dictionary<string, int>();
 		}
 
 		public void Init()
 		{
 			//Accessing the ColumnNames is necessary to properly intialize the loadFileReader;
 			//Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
-			_loadFileReader.GetColumnNames(_config);
-
-			if (_loadFileReader.HasMoreRecords && _config.FirstLineContainsHeaders)
+			int colCount = _loadFileReader.GetColumnNames(_config).Length;
+			for (int i = 0; i < colCount; i++)
 			{
-				_loadFileReader.AdvanceRecord();
-			}
-
-			while (_loadFileReader.HasMoreRecords && _loadFileReader.CurrentLineNumber1 < _config.StartLineNumber)
-			{
-				_loadFileReader.AdvanceRecord();
+				string colName = i.ToString();
+				_schemaTable.Columns.Add(colName);
+				_ordinalMap[colName] = i;
 			}
 		}
 
@@ -46,47 +55,66 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private void ReadCurrentRecord()
 		{
 			ArtifactFieldCollection artifacts = _loadFileReader.ReadArtifact();
-			string[] data = new string[artifacts.Count];
+			_currentLine = new string[artifacts.Count];
 			foreach (ArtifactField artifact in artifacts)
 			{
-				data[artifact.ArtifactID] = artifact.ValueAsString;
+				string artifactValue = artifact.ValueAsString;
+				if (((_extractedTextHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.ExtractedTextPathFieldIdentifier)
+				|| (_nativeFileHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.NativeFilePathFieldIdentifier))
+				&& !Path.IsPathRooted(artifactValue)) //Do not rewrite paths if column contains full path info 
+				{
+					_currentLine[artifact.ArtifactID] = Path.Combine(_loadFileDirectory, artifactValue);
+				}
+				else
+				{
+					_currentLine[artifact.ArtifactID] = artifactValue;
+				}
 			}
-			_currentLine = string.Join(_recordDelimiterString, data.Select(x =>
-				_quoteDelimiterString
-				+ x.Replace(_quoteDelimiterString, _doubleQuoteDelimiterString).Replace(_recordDelimiterString, _doubleRecordDelimiterString)
-				+ _quoteDelimiterString
-			));
 		}
 
-		//IDataReader Implementation
-
-		public void Close()
+		public override int FieldCount
 		{
-			_loadFileReader.Close();
+			get
+			{
+				return _schemaTable.Columns.Count;
+			}
+		}
+
+		public override bool IsClosed
+		{
+			get
+			{
+				return _isClosed;
+			}
+		}
+
+		public override void Close()
+		{
 			_isClosed = true;
+			_loadFileReader.Close();
 		}
 
-		public int Depth
+		public override string GetName(int i)
 		{
-			get { return 0; }
+			return _schemaTable.Columns[i].ColumnName;
 		}
 
-		public DataTable GetSchemaTable()
+		public override int GetOrdinal(string name)
 		{
-			throw new NotImplementedException();
+			return _ordinalMap[name];
 		}
 
-		public bool IsClosed
+		public override DataTable GetSchemaTable()
 		{
-			get { return _isClosed; }
+			return _schemaTable;
 		}
 
-		public bool NextResult()
+		public override object GetValue(int i)
 		{
-			throw new NotImplementedException();
+			return _currentLine[i];
 		}
 
-		public bool Read()
+		public override bool Read()
 		{
 			if (_loadFileReader.HasMoreRecords)
 			{
@@ -99,139 +127,140 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			}
 		}
 
-		public int FieldCount
+		public override string GetDataTypeName(int i)
 		{
-			get { return 0; }
+			throw new NotImplementedException("IDataReader.GetDataTypeName should not be called on LoadFileDataReader");
 		}
 
-		public int RecordsAffected
+		public override Type GetFieldType(int i)
 		{
-			get { throw new NotImplementedException(); }
+			throw new NotImplementedException("IDataReader.GetFieldType should not be called on LoadFileDataReader");
 		}
 
-		public bool GetBoolean(int i)
+		//IArtifactReader implementation
+
+		public string ManageErrorRecords(string errorMessageFileLocation, string prePushErrorLineNumbersFileName)
 		{
-			throw new NotImplementedException();
+			return ((IArtifactReader)_loadFileReader).ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName);
 		}
 
-		public byte GetByte(int i)
+		public long CountRecords()
 		{
-			throw new NotImplementedException();
+			return _loadFileReader.CountRecords();
 		}
 
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+		public ArtifactFieldCollection ReadArtifact()
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
 		}
 
-		public char GetChar(int i)
+		public string[] GetColumnNames(object args)
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
 		}
 
-		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+		public string SourceIdentifierValue()
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
 		}
 
-		public IDataReader GetData(int i)
+		public void AdvanceRecord()
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
 		}
 
-		public string GetDataTypeName(int i)
+		public void OnFatalErrorState()
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
 		}
 
-		public DateTime GetDateTime(int i)
+		public void Halt()
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
 		}
 
-		public decimal GetDecimal(int i)
+		public bool HasMoreRecords
 		{
-			throw new NotImplementedException();
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
+			}
 		}
 
-		public double GetDouble(int i)
+		public int CurrentLineNumber
 		{
-			throw new NotImplementedException();
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
+			}
 		}
 
-		public Type GetFieldType(int i)
+		public long SizeInBytes
 		{
-			throw new NotImplementedException();
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
+			}
 		}
 
-		public float GetFloat(int i)
+		public long BytesProcessed
 		{
-			throw new NotImplementedException();
+			get
+			{
+				throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
+			}
 		}
 
-		public Guid GetGuid(int i)
+		event IArtifactReader.OnIoWarningEventHandler IArtifactReader.OnIoWarning
 		{
-			throw new NotImplementedException();
+			add
+			{
+				throw new NotImplementedException();
+			}
+
+			remove
+			{
+				throw new NotImplementedException();
+			}
 		}
 
-		public short GetInt16(int i)
+		event IArtifactReader.DataSourcePrepEventHandler IArtifactReader.DataSourcePrep
 		{
-			throw new NotImplementedException();
+			add
+			{
+				throw new NotImplementedException();
+			}
+
+			remove
+			{
+				throw new NotImplementedException();
+			}
 		}
 
-		public int GetInt32(int i)
+		event IArtifactReader.StatusMessageEventHandler IArtifactReader.StatusMessage
 		{
-			throw new NotImplementedException();
+			add
+			{
+				throw new NotImplementedException();
+			}
+
+			remove
+			{
+				throw new NotImplementedException();
+			}
 		}
 
-		public long GetInt64(int i)
+		event IArtifactReader.FieldMappedEventHandler IArtifactReader.FieldMapped
 		{
-			throw new NotImplementedException();
-		}
+			add
+			{
+				throw new NotImplementedException();
+			}
 
-		public string GetName(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public int GetOrdinal(string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		public string GetString(int i)
-		{
-			return _currentLine;
-		}
-
-		public object GetValue(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public int GetValues(object[] values)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool IsDBNull(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public object this[string name]
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public object this[int i]
-		{
-		    get { throw new NotImplementedException(); }
-		}
-
-		public void Dispose()
-		{
-		    this.Close();
+			remove
+			{
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

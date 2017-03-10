@@ -61,6 +61,14 @@
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.5.85.102\lib\net45\FreeImageNET.dll</HintPath>
       <Private>True</Private>
@@ -72,6 +80,9 @@
     <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\kCuraCore.9.5.85.102\lib\net45\itextsharp.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Config, Version=9.5.85.102, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Config.9.5.85.102\lib\net45\kCura.Config.dll</HintPath>
@@ -161,6 +172,10 @@
       <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.1\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SystemWrapper.Interfaces.0.19.0.115\lib\net45\SystemInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -176,10 +191,12 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DataReaderFactory.cs" />
-    <Compile Include="EnumerableParser.cs" />
-    <Compile Include="EnumerableParserFactory.cs" />
+    <Compile Include="Interfaces\IOpticonDataReader.cs" />
+    <Compile Include="Services\ImportFileLocationService.cs" />
     <Compile Include="FieldParserFactory.cs" />
     <Compile Include="Helpers\PreviewType.cs" />
+    <Compile Include="ImportTransferDataContext.cs" />
+    <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="Interfaces\ILoadFilePreviewer.cs" />
     <Compile Include="Interfaces\IPreviewJobFactory.cs" />
     <Compile Include="LoadFilePreviewerWrapper.cs" />
@@ -195,7 +212,9 @@
     <Compile Include="LoadFileBase.cs" />
     <Compile Include="LoadFileDataReader.cs" />
     <Compile Include="LoadFileFieldParser.cs" />
+    <Compile Include="ImportDataReader.cs" />
     <Compile Include="Services\ImportPreviewService.cs" />
+    <Compile Include="Services\Interfaces\IImportFileLocationService.cs" />
     <Compile Include="Services\Interfaces\IImportPreviewService.cs" />
     <Compile Include="WinEddsLoadFileFactory.cs" />
   </ItemGroup>
@@ -215,9 +234,17 @@
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

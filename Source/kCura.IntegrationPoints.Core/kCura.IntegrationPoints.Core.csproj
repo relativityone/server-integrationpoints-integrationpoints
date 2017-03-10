@@ -212,6 +212,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="SystemWrapper">
+      <HintPath>..\packages\SystemWrapper.Wrappers.0.19.0.115\lib\net45\SystemWrapper.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\ICredentialProvider.cs" />
@@ -225,15 +228,15 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
-    <Compile Include="Factories\IDataReaderWrapperFactory.cs" />
     <Compile Include="Factories\IDataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Factories\IStreamFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\IHelperFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
     <Compile Include="Factories\IManagerFactory.cs" />
-    <Compile Include="Factories\Implementations\DataReaderWrapperFactory.cs" />
     <Compile Include="Factories\Implementations\DataTransferLocationServiceFactory.cs" />
+    <Compile Include="Factories\Implementations\StreamFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\HelperFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
@@ -253,6 +256,7 @@
     <Compile Include="Helpers\ISavedSearchesTreeCreator.cs" />
     <Compile Include="Helpers\ITreeByParentIdCreator.cs" />
     <Compile Include="Helpers\LongPathDirectory.cs" />
+    <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />

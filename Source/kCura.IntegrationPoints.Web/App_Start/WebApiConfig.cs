@@ -254,6 +254,18 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ImportProviderDocumentDownloadErrorFile",
+				routeTemplate: "{workspaceID}/api/ImportProviderDocument/DownloadErrorFile",
+				defaults: new { controller = "ImportProviderDocument", action = "DownloadErrorFile" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "ImportProviderDocumentCheckErrorFile",
+				routeTemplate: "{workspaceID}/api/ImportProviderDocument/CheckErrorFile",
+				defaults: new { controller = "ImportProviderDocument", action = "CheckErrorFile" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "ImportProviderGetOverlayIdentifierFields",
 				routeTemplate: "{workspaceID}/api/ImportProviderImage/GetOverlayIdentifierFields",
 				defaults: new { controller = "ImportProviderImage", action = "GetOverlayIdentifierFields" }

@@ -15,6 +15,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			bool viewErrorsLinkVisible = IsViewErrorsLinkVisible(providerType, hasErrorViewPermissions);
 			bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(providerType);
 			bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
+			bool downloadErrorFileLinkEnabled = IsDownloadErrorFileLinkEnabled(hasErrors);
+			bool downloadErrorFileLinkVisible = IsDownloadErrorFileLinkVisible(providerType);
 
 			return new ButtonStateDTO
 			{
@@ -24,7 +26,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				ViewErrorsLinkEnabled = viewErrorsLinkEnabled,
 				RunButtonEnabled = runButtonEnabled,
 				StopButtonEnabled = stopButtonEnabled,
-				SaveAsProfileButtonVisible = saveAsProfileButtonVisible
+				SaveAsProfileButtonVisible = saveAsProfileButtonVisible,
+				DownloadErrorFileLinkEnabled = downloadErrorFileLinkEnabled,
+				DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible
 			};
 		}
 
@@ -61,6 +65,16 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private bool IsSaveAsProfileButtonVisible(bool hasProfileAddPermission)
 		{
 			return hasProfileAddPermission;
+		}
+
+		private bool IsDownloadErrorFileLinkEnabled(bool hasErrors)
+		{
+			return hasErrors;
+		}
+		
+		private bool IsDownloadErrorFileLinkVisible(ProviderType providerType)
+		{
+			return providerType == ProviderType.ImportLoadFile;
 		}
 	}
 }

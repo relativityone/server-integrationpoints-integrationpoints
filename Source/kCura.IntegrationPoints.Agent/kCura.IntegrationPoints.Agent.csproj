@@ -198,9 +198,10 @@
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
     <Compile Include="Tasks\ExportServiceManager.cs" />
-    <Compile Include="Tasks\ImageSyncManager.cs" />
+    <Compile Include="Tasks\ImportServiceManager.cs" />
     <Compile Include="Tasks\SendEmailManager.cs" />
     <Compile Include="Tasks\SendEmailWorker.cs" />
+    <Compile Include="Tasks\ServiceManagerBase.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />
     <Compile Include="Tasks\ITaskFactory.cs" />
     <Compile Include="Tasks\SyncManager.cs" />
@@ -251,6 +252,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
+      <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
       <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>

@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 	public class ImportProviderTests : TestBase
 	{
 		private int MAX_COLS = 100;
-		private int MAX_ROWS = 20;
 
 		private IFieldParser _fieldParser;
 		private IFieldParserFactory _fieldParserFactory;
@@ -47,7 +46,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 			_fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
 			_fieldParser.GetFields().Returns(testData);
 
-			ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory, _dataTransferLocationServiceFactory);
+			ImportProvider ip = new ImportProvider(_fieldParserFactory);
 			IEnumerable<FieldEntry> ipFields = ip.GetFields(string.Empty);
 
 			Assert.AreEqual(testData.Count, ipFields.Count());
@@ -63,51 +62,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 		}
 
 		[Test]
-		public void ImportProviderCanGetData()
+		public void ImportProviderCannotGetBatchableIds()
 		{
-			Random r = new Random();
-			int colCount = r.Next(MAX_COLS);
-			int rowCount = r.Next(MAX_ROWS);
-			List<string> testHeaders = TestHeaders(colCount);
-			List<List<string>> testData = TestData(colCount, rowCount);
-			char recordDelimiter = ',';
-			char quoteDelimiter = '"';
+			ImportProvider ip = new ImportProvider(_fieldParserFactory);
+			Assert.Throws<NotImplementedException>(() => ip.GetBatchableIds(null, string.Empty));
+		}
 
-			//Subsitute config so test can use GetFields
-			_fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
-			_fieldParser.GetFields().Returns(testHeaders);
-
-			_dataTransferLocationServiceFactory.CreateService(123456).ReturnsForAnyArgs(_dataTransferLocationService);
-			_dataTransferLocationService.GetWorkspaceFileLocationRootPath(123456).ReturnsForAnyArgs(string.Empty);
-
-			//Subsitute config so test can use GetData
-			IEnumerable<string> tdJoinedRows = testData.Select(x => string.Join(recordDelimiter.ToString(), x));
-			EnumerableParser tdEnumerableParser = new EnumerableParser(tdJoinedRows, recordDelimiter, quoteDelimiter);
-			_enumerableParserFactory.GetEnumerableParser(null, null).ReturnsForAnyArgs(tdEnumerableParser);
-
-			ImportProvider ip = new ImportProvider(_fieldParserFactory, _dataReaderFactory, _enumerableParserFactory, _dataTransferLocationServiceFactory);
-			IEnumerable<FieldEntry> ipFields = ip.GetFields(string.Empty);
-
-			IDataReader ipGetDataResult = ip.GetData(ipFields, tdJoinedRows, @"{""ImportType"":""0"",""LoadFile"":""path"",""WorkspaceId"":""123456""}");
-
-			Assert.AreEqual(colCount, ipGetDataResult.FieldCount);
-
-			int tdRow = 0;
-			if (ipGetDataResult.Read())
-			{
-				do
-				{
-					int tdCol = 0;
-					foreach (FieldEntry currentField in ipFields)
-					{
-						int ordinal = ipGetDataResult.GetOrdinal(currentField.FieldIdentifier);
-						Assert.AreEqual(testData[tdRow][tdCol], ipGetDataResult.GetString(ordinal));
-						tdCol++;
-					}
-					tdRow++;
-				} while (ipGetDataResult.Read());
-				Assert.AreEqual(tdRow, rowCount);
-			}
+		[Test]
+		public void ImportProviderCannotGetData()
+		{
+			ImportProvider ip = new ImportProvider(_fieldParserFactory);
+			Assert.Throws<NotImplementedException>(() => ip.GetData(null, null, string.Empty));
 		}
 
 		private List<string> TestHeaders(int fieldCount)
@@ -116,19 +81,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 				Enumerable
 				.Range(0, fieldCount)
 				.Select(x => string.Format("col-{0}", x))
-				.ToList();
-		}
-
-		private List<List<string>> TestData(int fieldCount, int rowCount)
-		{
-			return
-				Enumerable
-				.Range(0, rowCount)
-				.Select(row =>
-						Enumerable
-						.Range(0, fieldCount)
-						.Select(col => string.Format("r{0}c{1}", row, col))
-						.ToList())
 				.ToList();
 		}
 	}

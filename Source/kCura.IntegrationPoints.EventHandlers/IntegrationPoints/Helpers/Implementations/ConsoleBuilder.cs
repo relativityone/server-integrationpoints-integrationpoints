@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private const string _VIEW_ERRORS = "View Errors";
 		private const string _STOP = "Stop";
 		private const string _SAVE_AS_PROFILE = "Save as a Profile";
+		private const string _DOWNLOAD_ERROR_FILE = "Download Error File";
 
 		public Console CreateConsole(ButtonStateDTO buttonState, OnClickEventDTO onClickEvents)
 		{
@@ -50,6 +51,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 				ConsoleButton saveAsProfileButton = GetSaveAsProfileButton(onClickEvents.SaveAsProfileOnClickEvent);
 				consoleItems.Add(saveAsProfileButton);
+			}
+
+			if (buttonState.DownloadErrorFileLinkVisible)
+			{
+				ConsoleSeparator separator = new ConsoleSeparator();
+				consoleItems.Add(separator);
+
+				ConsoleButton downloadErrorFileButton = GetDownloadErrorFileLink(buttonState.DownloadErrorFileLinkEnabled, onClickEvents.DownloadErrorFileOnClickEvent);
+				consoleItems.Add(downloadErrorFileButton);
 			}
 
 			return consoleItems;
@@ -125,6 +135,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			{
 				DisplayText = _SAVE_AS_PROFILE,
 				Enabled = true,
+				RaisesPostBack = false,
+				OnClickEvent = onClickEvent
+			};
+		}
+
+		private ConsoleButton GetDownloadErrorFileLink(bool isEnabled, string onClickEvent)
+		{
+			return new ConsoleLinkButton
+			{
+				DisplayText = _DOWNLOAD_ERROR_FILE,
+				Enabled = isEnabled,
 				RaisesPostBack = false,
 				OnClickEvent = onClickEvent
 			};

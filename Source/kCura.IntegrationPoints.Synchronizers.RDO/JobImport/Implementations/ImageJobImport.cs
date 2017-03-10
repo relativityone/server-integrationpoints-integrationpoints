@@ -1,10 +1,8 @@
-﻿using kCura.Relativity.Client;
-using kCura.Relativity.DataReaderClient;
-using kCura.Relativity.ImportAPI;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Data;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.Relativity.DataReaderClient;
+using kCura.Relativity.ImportAPI;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
@@ -46,7 +44,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 
 		protected override ImageImportBulkArtifactJob CreateJob()
 		{
-			//TODO: decide whether to call new production image job based on settings
 			return _importApi.NewImageImportJob();
 		}
 
@@ -56,6 +53,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			ImportJob.SourceData.SourceData = ImageDataTableHelper.GetDataTable(_sourceData);
 			Context.UpdateTransferStatus();
 			ImportJob.Execute();
+
+			if (! string.IsNullOrEmpty(_importSettings.ErrorFilePath))
+			{
+				ImportJob.ExportErrorFile(_importSettings.ErrorFilePath);
+			}
 		}
 	}
 }

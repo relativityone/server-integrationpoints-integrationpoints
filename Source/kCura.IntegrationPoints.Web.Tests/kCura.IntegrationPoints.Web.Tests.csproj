@@ -176,7 +176,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
+      <HintPath>..\packages\SystemWrapper.Interfaces.0.19.0.115\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

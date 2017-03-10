@@ -1,44 +1,52 @@
-﻿using kCura.WinEDDS;
+﻿using System.Collections.Generic;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using System;
 using System.Data;
+using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-	public class OpticonDataReader : IDataReader
+	public class OpticonDataReader : DataReaderBase, IOpticonDataReader
 	{
-		private const char _RECORD_DELIMITER = ',';
-		private const char _QUOTE_DELIMITER = '"';
 		private ImageLoadFile _config;
 		private OpticonFileReader _opticonFileReader;
 		private bool _isClosed;
-		private string _currentLine;
+		private string[] _currentLine;
 		private ulong _documentId;
-		private string _recordDelimiterString;
-		private string _quoteDelimiterString;
-		private string _doubleRecordDelimiterString;
-		private string _doubleQuoteDelimiterString;
+		private string _loadFileDirectory;
+		private DataTable _schemaTable;
+		private Dictionary<string, int> _ordinalMap;
 
-		public OpticonDataReader(ImageLoadFile config)
+		public OpticonDataReader(ImportProviderSettings providerSettings, ImageLoadFile config, OpticonFileReader reader)
 		{
 			_config = config;
+			_opticonFileReader = reader;
+
 			_isClosed = false;
-			_currentLine = string.Empty;
 			_documentId = 0;
 
-			_recordDelimiterString = _RECORD_DELIMITER.ToString();
-			_quoteDelimiterString = _QUOTE_DELIMITER.ToString();
-			_doubleRecordDelimiterString = new string(_RECORD_DELIMITER, 2);
-			_doubleQuoteDelimiterString = new string(_QUOTE_DELIMITER, 2);
+			_loadFileDirectory = Path.GetDirectoryName(providerSettings.LoadFile);
+
+			_schemaTable = new DataTable();
+			_ordinalMap = new Dictionary<string, int>();
+			_currentLine = new string[3];
 		}
 
 		public void Init()
 		{
-			_opticonFileReader = new OpticonFileReader(0, _config, null, Guid.Empty, false);
+			_schemaTable.Columns.Add(OpticonInfo.BATES_NUMBER_FIELD_NAME);
+			_schemaTable.Columns.Add(OpticonInfo.FILE_LOCATION_FIELD_NAME);
+			_schemaTable.Columns.Add(OpticonInfo.DOCUMENT_ID_FIELD_NAME);
+			_ordinalMap[OpticonInfo.BATES_NUMBER_FIELD_NAME] = 0;
+			_ordinalMap[OpticonInfo.FILE_LOCATION_FIELD_NAME] = 1;
+			_ordinalMap[OpticonInfo.DOCUMENT_ID_FIELD_NAME] = 2;
+
 			_opticonFileReader.Initialize();
-			_isClosed = !_opticonFileReader.HasMoreRecords;
 		}
 
 		private void ReadCurrentRecord()
@@ -49,47 +57,67 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 				_documentId++;
 			}
 
-			string[] data = new string[3];
-			data[OpticonInfo.BATES_NUMBER_FIELD_INDEX] = currentRecord.BatesNumber;
-			data[OpticonInfo.FILE_LOCATION_FIELD_INDEX] = currentRecord.FileLocation;
-			data[OpticonInfo.DOCUMENT_ID_FIELD_INDEX] = _documentId.ToString();
-
-			_currentLine = string.Join(_recordDelimiterString, data.Select(x =>
-				_quoteDelimiterString
-				+ x.Replace(_quoteDelimiterString, _doubleQuoteDelimiterString).Replace(_recordDelimiterString, _doubleRecordDelimiterString)
-				+ _quoteDelimiterString
-			));
+			_currentLine[OpticonInfo.BATES_NUMBER_FIELD_INDEX] = currentRecord.BatesNumber;
+			_currentLine[OpticonInfo.DOCUMENT_ID_FIELD_INDEX] = _documentId.ToString();
+			string fileLocation = currentRecord.FileLocation;
+			if (!Path.IsPathRooted(fileLocation))
+			{
+				_currentLine[OpticonInfo.FILE_LOCATION_FIELD_INDEX] = Path.Combine(_loadFileDirectory, fileLocation);
+			}
+			else
+			{
+				_currentLine[OpticonInfo.FILE_LOCATION_FIELD_INDEX] = fileLocation;
+			}
 		}
 
-		//IDataReader Implementation
-
-		public void Close()
+		public long CountRecords()
 		{
-			_opticonFileReader.Close();
+			return _opticonFileReader.CountRecords();
+		}
+
+		public override int FieldCount
+		{
+			get
+			{
+				return 3;
+			}
+		}
+
+		public override bool IsClosed
+		{
+			get
+			{
+				return _isClosed;
+			}
+		}
+
+		public override void Close()
+		{
 			_isClosed = true;
+			_opticonFileReader.Close();
 		}
 
-		public int Depth
+		public override string GetName(int i)
 		{
-			get { return 0; }
+			return _schemaTable.Columns[i].ColumnName;
 		}
 
-		public DataTable GetSchemaTable()
+		public override int GetOrdinal(string name)
 		{
-			throw new NotImplementedException();
+			return _ordinalMap[name];
 		}
 
-		public bool IsClosed
+		public override DataTable GetSchemaTable()
 		{
-			get { return _isClosed; }
+			return _schemaTable;
 		}
 
-		public bool NextResult()
+		public override object GetValue(int i)
 		{
-			throw new NotImplementedException();
+			return _currentLine[i];
 		}
 
-		public bool Read()
+		public override bool Read()
 		{
 			if (_opticonFileReader.HasMoreRecords)
 			{
@@ -102,139 +130,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			}
 		}
 
-		public int FieldCount
+		public override string GetDataTypeName(int i)
 		{
-			get { return 0; }
+			throw new NotImplementedException("IDataReader.GetDataTypeName should not be called on OpticonFileDataReader");
 		}
 
-		public int RecordsAffected
+		public override Type GetFieldType(int i)
 		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public bool GetBoolean(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public byte GetByte(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
-		{
-			throw new NotImplementedException();
-		}
-
-		public char GetChar(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IDataReader GetData(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public string GetDataTypeName(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public DateTime GetDateTime(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public decimal GetDecimal(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public double GetDouble(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Type GetFieldType(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public float GetFloat(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Guid GetGuid(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public short GetInt16(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public int GetInt32(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public long GetInt64(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public string GetName(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public int GetOrdinal(string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		public string GetString(int i)
-		{
-			return _currentLine;
-		}
-
-		public object GetValue(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public int GetValues(object[] values)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool IsDBNull(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public object this[string name]
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public object this[int i]
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public void Dispose()
-		{
-			this.Close();
+			throw new NotImplementedException("IDataReader.GetDataTypeName should not be called on OpticonFileDataReader");
 		}
 	}
 }

@@ -70,6 +70,9 @@
       <HintPath>..\packages\kCuraCore.9.5.85.102\lib\net45\itextsharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Config, Version=9.5.85.102, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Config.9.5.85.102\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
@@ -148,6 +151,10 @@
       <HintPath>..\packages\Relativity.ImportExport.9.5.85.102\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SystemWrapper.Interfaces.0.19.0.115\lib\net45\SystemInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -162,7 +169,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="EnumerableParserTests.cs" />
+    <Compile Include="ImportDataReaderTests.cs" />
+    <Compile Include="ImportFileLocationServiceTests.cs" />
     <Compile Include="ImportPreviewServiceTests.cs" />
     <Compile Include="PreviewJobTests.cs" />
   </ItemGroup>
@@ -174,6 +182,18 @@
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
@@ -182,12 +202,19 @@
       <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
       <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <EmbeddedResource Include="CsvResources\small.csv" />
+    <EmbeddedResource Include="JsonResources\FieldMap-Without-Folder.json" />
+    <EmbeddedResource Include="JsonResources\FieldMap-With-Folder.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

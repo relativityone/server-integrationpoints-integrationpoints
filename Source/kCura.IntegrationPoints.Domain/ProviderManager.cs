@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Domain
 			"kCura.IntegrationPoints.Core",
 			"kCura.IntegrationPoints.Data",
 			"kCura.IntegrationPoints.FtpProvider",
-			"kCura.IntegrationPoints.ImportProvider"
+			"kCura.IntegrationPoints.ImportProvider.Parser"
 		};
 
 		private IProviderFactory _providerFactory;
@@ -121,6 +121,7 @@ namespace kCura.IntegrationPoints.Domain
 			_windsorContainer = new WindsorContainer();
 			IKernel kernel = _windsorContainer.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
+
 			_windsorContainer.Install(
 				FromAssembly.InDirectory(
 					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)

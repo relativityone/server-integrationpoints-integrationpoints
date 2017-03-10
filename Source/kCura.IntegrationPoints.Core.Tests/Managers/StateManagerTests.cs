@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		[TestCase(ProviderType.FTP)]
 		[TestCase(ProviderType.LDAP)]
 		[TestCase(ProviderType.LoadFile)]
+		[TestCase(ProviderType.ImportLoadFile)]
 		[TestCase(ProviderType.Other)]
 		public void GetNonRelativityProviderButtonState__JobsRunning_CanStop(ProviderType providerType)
 		{
@@ -41,17 +42,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsTrue(buttonStates.StopButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
 		}
 
 		[Test]
 		[TestCase(ProviderType.FTP)]
 		[TestCase(ProviderType.LDAP)]
 		[TestCase(ProviderType.LoadFile)]
+		[TestCase(ProviderType.ImportLoadFile)]
 		[TestCase(ProviderType.Other)]
 		public void GetNonRelativityProviderButtonState__NoJobsRunning_CantStop(ProviderType providerType)
 		{
@@ -71,17 +75,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
 		}
 
 		[Test]
 		[TestCase(ProviderType.FTP)]
 		[TestCase(ProviderType.LDAP)]
 		[TestCase(ProviderType.LoadFile)]
+		[TestCase(ProviderType.ImportLoadFile)]
 		[TestCase(ProviderType.Other)]
 		public void GetNonRelativityProviderButtonState__StoppingStage_CantStop(ProviderType providerType)
 		{
@@ -101,11 +108,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
 		}
 
 		[Test]
@@ -153,11 +162,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
 		}
 
 		[Test]
@@ -179,11 +190,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
+			Assert.IsFalse(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
 		}
 
 		[Test]
@@ -205,11 +218,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsTrue(buttonStates.StopButtonEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
 		}
 
 		[Test]
@@ -231,11 +246,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
 		}
 
 		[Test]
@@ -257,11 +274,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
 		}
 
 		[Test]
@@ -283,17 +302,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
 		}
 
 		[Test]
 		[TestCase(ProviderType.FTP)]
 		[TestCase(ProviderType.LDAP)]
 		[TestCase(ProviderType.LoadFile)]
+		[TestCase(ProviderType.ImportLoadFile)]
 		[TestCase(ProviderType.Other)]
 		public void GetOtherProviderButtonState_HasProfileAddPermission_NoJobsRunning(ProviderType providerType)
 		{
@@ -313,11 +335,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 			Assert.IsFalse(buttonStates.StopButtonEnabled);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
 			//Assert Visible
 			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
 			Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
+			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
 		}
 	}
 }

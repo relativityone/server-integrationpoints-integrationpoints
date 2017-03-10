@@ -1,5 +1,6 @@
 ﻿using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
 	public class ImportSettingsBaseBuilder<T> : IImportSettingsBaseBuilder<T> where T : ImportSettingsBase

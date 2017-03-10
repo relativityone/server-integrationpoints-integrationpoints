@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.AccessControl;
 using SystemInterface;
@@ -195,5 +196,19 @@ namespace kCura.IntegrationPoints.Core.Helpers
 			throw new NotImplementedException();
 		}
 
+		public IEnumerable<string> EnumerateFiles(string path)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<string> EnumerateFiles(string path, string searchPattern)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOption)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

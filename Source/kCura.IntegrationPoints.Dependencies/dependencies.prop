@@ -55,8 +55,8 @@
     <ServiceBus_v1_1>ServiceBus.v1_1.1.0.5</ServiceBus_v1_1>
     <StackExchange_Redis>StackExchange.Redis.1.0.328</StackExchange_Redis>
     <System_IdentityModel_Tokens_Jwt>System.IdentityModel.Tokens.Jwt.4.0.2.206221351</System_IdentityModel_Tokens_Jwt>
-    <SystemWrapper_Interfaces>SystemWrapper.Interfaces.0.7.0.0</SystemWrapper_Interfaces>
-    <SystemWrapper_Wrappers>SystemWrapper.Wrappers.0.7.0.0</SystemWrapper_Wrappers>
+    <SystemWrapper_Interfaces>SystemWrapper.Interfaces.0.19.0.115</SystemWrapper_Interfaces>
+    <SystemWrapper_Wrappers>SystemWrapper.Wrappers.0.19.0.115</SystemWrapper_Wrappers>
     <Thinktecture_IdentityModel_Client>Thinktecture.IdentityModel.Client.4.0.1</Thinktecture_IdentityModel_Client>
     <Relativity_ImportExport>Relativity.ImportExport.9.5.85.102</Relativity_ImportExport>
     <Relativity_API>Relativity.API.9.5.85.102</Relativity_API>

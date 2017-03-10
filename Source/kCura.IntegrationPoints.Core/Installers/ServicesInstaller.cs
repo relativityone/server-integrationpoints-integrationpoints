@@ -109,7 +109,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IImportJobFactory>().ImplementedBy<ImportJobFactory>().LifestyleTransient());
 			container.Register(Component.For<RelativityFeaturePathService>().ImplementedBy<RelativityFeaturePathService>().LifestyleTransient());
 			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
-			container.Register(Component.For<IDataReaderWrapperFactory>().ImplementedBy<DataReaderWrapperFactory>().LifestyleTransient());
 			container.Register(Component.For<IEncryptionManager>().ImplementedBy<DefaultEncryptionManager>().LifestyleSingleton());
 			container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
@@ -121,6 +120,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ISavedSearchesTreeCreator>().ImplementedBy<SavedSearchesTreeCreator>());
 			container.Register(Component.For<IWorkspaceManager>().ImplementedBy<WorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<IDirectory>().ImplementedBy<LongPathDirectory>().LifestyleTransient());
+			container.Register(Component.For<IFile>().ImplementedBy<LongPathFile>().LifestyleTransient());
+			container.Register(Component.For<IStreamFactory>().ImplementedBy<StreamFactory>().LifestyleTransient());
 			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifestyleTransient());
 			container.Register(Component.For<KeywordConverter>().ImplementedBy<KeywordConverter>().LifestyleTransient());
 			container.Register(Component.For<KeywordFactory>().ImplementedBy<KeywordFactory>().LifestyleTransient());

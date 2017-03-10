@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -41,10 +40,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ExportProcessRunner exportProcessRunner,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IDataReaderWrapperFactory dataReaderWrapperFactory,
 			IJobService jobService,
-			IDataTransferLocationService dataTransferLocationService,
-			IProviderTypeService providerTypeService
+			IDataTransferLocationService dataTransferLocationService
 		) : base(
 			caseServiceContext,
 			helper,
@@ -57,10 +54,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			statuses,
 			statisticsService,
 			managerFactory,
-			dataReaderWrapperFactory,
 			contextContainerFactory,
-			jobService,
-			providerTypeService)
+			jobService)
 		{
 			_exportProcessRunner = exportProcessRunner;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();

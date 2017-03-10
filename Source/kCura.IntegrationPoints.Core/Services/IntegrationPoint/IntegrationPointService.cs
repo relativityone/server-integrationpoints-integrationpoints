@@ -417,47 +417,22 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		private TaskType GetJobTaskType(SourceProvider sourceProvider, DestinationProvider destinationProvider, string sourceConfiguration = null)
 		{
-
-			TaskType jobTaskType;
-			if (!string.IsNullOrEmpty(sourceConfiguration))
-			{
-				jobTaskType = CheckImageTaskType(sourceConfiguration);
-				if(jobTaskType == TaskType.ImageSyncManager)
-				{
-					return jobTaskType;
-				}
-			}
-
-			jobTaskType =
-				sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
-					? TaskType.ExportService
-					: TaskType.SyncManager;
-
+			//The check on the destinationProvider should come first in the if block.
+			//If destProvider is load file, it should be ExportManager type no matter what the sourceProvider is.
 			if (destinationProvider.Identifier.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
 			{
-				jobTaskType = TaskType.ExportManager;
+				return TaskType.ExportManager;
 			}
-			return jobTaskType;
-		}
-
-		private TaskType CheckImageTaskType(string sourceConfiguration)
-		{
-			TaskType jobTaskType = TaskType.None;
-			try
+			else if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
-				ImportProviderSettings settings = Serializer.Deserialize<ImportProviderSettings>(sourceConfiguration);
-				int importType = int.Parse(settings.ImportType);
-				if (importType != (int)ImportType.ImportTypeValue.Document)
-				{
-					jobTaskType = TaskType.ImageSyncManager;
-				}
+				return TaskType.ExportService;
 			}
-			catch (Exception)
+			else if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE))
 			{
-				_helper.GetLoggerFactory().GetLogger().LogInformation("Integration Point could not be parsed in CheckImageTaskType(). Continuing normal flow.");
+				return TaskType.ImportService;
 			}
 
-			return jobTaskType;
+			return TaskType.SyncManager;
 		}
 
 		private void CheckForOtherJobsExecutingOrInQueue(TaskType taskType, int workspaceArtifactId, int integrationPointArtifactId)
