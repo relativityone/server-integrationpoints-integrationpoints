@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 	public class MassCopyIntegrationPointHelper
 	{
 		public static Data.IntegrationPoint CreateIntegrationPoint(bool logErrors, string name, int destinationProvider, string destinationConfiguration,
-			string sourceConfiguration, string fieldMappings, string emailNotificationRecipients, int sourceProvider, Choice overwriteFields)
+			string sourceConfiguration, string fieldMappings, string emailNotificationRecipients, int sourceProvider, Choice overwriteFields, bool? promoteEligible)
 		{
 			var ip = Substitute.For<Data.IntegrationPoint>();
 			ip.GetField<bool?>(new Guid(IntegrationPointFieldGuids.LogErrors)).Returns(logErrors);
@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 			ip.GetField<string>(new Guid(IntegrationPointFieldGuids.EmailNotificationRecipients)).Returns(emailNotificationRecipients);
 			ip.GetField<int?>(new Guid(IntegrationPointFieldGuids.SourceProvider)).Returns(sourceProvider);
 			ip.GetField<Choice>(new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(overwriteFields);
+			ip.GetField<bool?>(new Guid(IntegrationPointFieldGuids.PromoteEligible)).Returns(promoteEligible);
 
 			return ip;
 		}
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 		public static Data.IntegrationPoint CreateExampleIntegrationPoint()
 		{
 			return CreateIntegrationPoint(true, "example_name", 99, "example_destination_configuration", "example_source_configuration", "example_field_mappings",
-				"example_email_notification", 55, new Choice(Guid.Empty) {Name = "Append Only"});
+				"example_email_notification", 55, new Choice(Guid.Empty) {Name = "Append Only"}, true);
 		}
 
 		public static void MockIntegrationPointName(Data.IntegrationPoint integrationPoint, string name)

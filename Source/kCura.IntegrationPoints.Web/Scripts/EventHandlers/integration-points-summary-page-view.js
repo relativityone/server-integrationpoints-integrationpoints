@@ -61,6 +61,7 @@ $(function integrationPointsSummaryPageView() {
 			this.destinationRdoName = this.destinationConfiguration.ArtifactTypeName;
 			this.sourceProviderName = IP.utils.getViewField(IP.sourceProviderId).siblings('.dynamicViewFieldValue').text();
 			this.sourceConfiguration = "";
+			this.promoteEligible = IP.utils.getViewField(IP.promoteEligibleId).siblings('.dynamicViewFieldValue').text();
 
 			updateSourceConfigurationField();
 		};

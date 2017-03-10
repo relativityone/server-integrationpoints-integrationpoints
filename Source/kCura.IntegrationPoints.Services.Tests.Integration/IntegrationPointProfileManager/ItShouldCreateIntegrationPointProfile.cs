@@ -30,18 +30,19 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 		}
 
 		[Test]
-		[TestCase(false, false, false, "a421248620@kcura.com", "Use Field Settings", "Overlay Only")]
-		[TestCase(true, true, true, "", "Use Field Settings", "Append Only")]
-		[TestCase(false, false, false, null, "Replace Values", "Append/Overlay")]
-		[TestCase(false, false, false, "a937467@kcura.com", "Merge Values", "Append/Overlay")]
+		[TestCase(false, false, false, "a421248620@kcura.com", "Use Field Settings", "Overlay Only", true)]
+		[TestCase(true, true, true, "", "Use Field Settings", "Append Only", false)]
+		[TestCase(false, false, false, null, "Replace Values", "Append/Overlay", false)]
+		[TestCase(false, false, false, "a937467@kcura.com", "Merge Values", "Append/Overlay", false)]
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
-			string fieldOverlayBehavior, string overwriteFieldsChoices)
+			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{
 			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
 
 			var createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId,
 				TargetWorkspaceArtifactId,
-				importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList());
+				importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList(),
+				promoteEligible);
 
 			var createdIntegrationPointProfile = _client.CreateIntegrationPointProfileAsync(createRequest).Result;
 

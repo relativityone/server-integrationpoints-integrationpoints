@@ -56,6 +56,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath)
 		{
+			const int processWaitTimeoutInMin = 5;
+
 			AppInstallRequest appInstallRequest = new AppInstallRequest()
 			{
 				FullFilePath = applicationFilePath,
@@ -73,7 +75,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						throw new Exception($"Failed to install application file: {applicationFilePath} to workspace: {workspaceId}.");
 					}
 
-					Status.WaitForProcessToComplete(proxy, result.ProcessID, (int)TimeSpan.FromMinutes(2).TotalSeconds, 500);
+					Status.WaitForProcessToComplete(proxy, result.ProcessID, (int)TimeSpan.FromMinutes(processWaitTimeoutInMin).TotalSeconds, 500);
 				}
 				catch (Exception ex)
 				{

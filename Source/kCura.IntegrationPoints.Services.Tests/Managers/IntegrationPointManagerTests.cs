@@ -37,16 +37,22 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		[Test]
 		public void ItShouldGrantAccessForView()
 		{
+			// Arrange 
+			const int requiredNumberOfCalls = 5;
+
+			// Act
 			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
 			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View).Returns(true);
 
 			_integrationPointManager.GetAllIntegrationPointsAsync(_WORKSPACE_ID).Wait();
+			_integrationPointManager.GetEligibleToPromoteIntegrationPointsAsync(_WORKSPACE_ID).Wait();
 			_integrationPointManager.GetIntegrationPointArtifactTypeIdAsync(_WORKSPACE_ID).Wait();
 			_integrationPointManager.GetIntegrationPointAsync(_WORKSPACE_ID, 870372).Wait();
 			_integrationPointManager.GetOverwriteFieldsChoicesAsync(_WORKSPACE_ID).Wait();
 
-			_permissionRepository.Received(4).UserHasPermissionToAccessWorkspace();
-			_permissionRepository.Received(4).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View);
+			// Assert
+			_permissionRepository.Received(requiredNumberOfCalls).UserHasPermissionToAccessWorkspace();
+			_permissionRepository.Received(requiredNumberOfCalls).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View);
 		}
 
 		[Test]
@@ -100,10 +106,17 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 		[TestCase(true, false, "Integration Point - View")]
 		public void ItShouldDenyAccessForViewAndLogIt(bool workspaceAccess, bool viewAccess, string missingPermissions)
 		{
+			// Arrange 
+			const int requiredNumberOfCalls = 5;
 			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(workspaceAccess);
 			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View).Returns(viewAccess);
 
+			// Act
 			Assert.That(() => _integrationPointManager.GetAllIntegrationPointsAsync(_WORKSPACE_ID).Wait(),
+				Throws.Exception.With.InnerException.TypeOf<InsufficientPermissionException>()
+					.And.With.InnerException.Message.EqualTo("You do not have permission to access this service."));
+
+			Assert.That(() => _integrationPointManager.GetEligibleToPromoteIntegrationPointsAsync(_WORKSPACE_ID).Wait(),
 				Throws.Exception.With.InnerException.TypeOf<InsufficientPermissionException>()
 					.And.With.InnerException.Message.EqualTo("You do not have permission to access this service."));
 
@@ -119,11 +132,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 				Throws.Exception.With.InnerException.TypeOf<InsufficientPermissionException>()
 					.And.With.InnerException.Message.EqualTo("You do not have permission to access this service."));
 
-			_permissionRepository.Received(4).UserHasPermissionToAccessWorkspace();
-			_permissionRepository.Received(4).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View);
+			// Assert
+			_permissionRepository.Received(requiredNumberOfCalls).UserHasPermissionToAccessWorkspace();
+			_permissionRepository.Received(requiredNumberOfCalls).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View);
 
 			_logger.Received(1)
 				.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", "GetAllIntegrationPointsAsync",
+					missingPermissions);
+			_logger.Received(1)
+				.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", "GetEligibleToPromoteIntegrationPointsAsync",
 					missingPermissions);
 			_logger.Received(1)
 				.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", "GetIntegrationPointArtifactTypeIdAsync",
@@ -239,6 +256,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 			integrationPointRepository.GetIntegrationPoint(Arg.Any<int>()).Throws(expectedException);
 			integrationPointRepository.RunIntegrationPoint(Arg.Any<int>(), Arg.Any<int>()).Throws(expectedException);
 			integrationPointRepository.GetAllIntegrationPoints().Throws(expectedException);
+			integrationPointRepository.GetEligibleToPromoteIntegrationPoints().Throws(expectedException);
 			integrationPointRepository.GetOverwriteFieldChoices().Throws(expectedException);
 			integrationPointRepository.CreateIntegrationPointFromProfile(Arg.Any<int>(), Arg.Any<string>()).Throws(expectedException);
 			integrationPointRepository.GetIntegrationPointArtifactTypeId().Throws(expectedException);
@@ -271,6 +289,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 				Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
 					.And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
 
+			Assert.That(() => _integrationPointManager.GetEligibleToPromoteIntegrationPointsAsync(_WORKSPACE_ID).Wait(),
+				Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
+					.And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
+
 			Assert.That(() => _integrationPointManager.GetOverwriteFieldsChoicesAsync(_WORKSPACE_ID).Wait(),
 				Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
 					.And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
@@ -293,6 +315,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
 				.LogError(expectedException, "Error occurred during request processing in {endpointName}.", "RunIntegrationPointAsync");
 			_logger.Received(1)
 				.LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetAllIntegrationPointsAsync");
+			_logger.Received(1)
+				.LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetEligibleToPromoteIntegrationPointsAsync");
 			_logger.Received(1)
 				.LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetOverwriteFieldsChoicesAsync");
 			_logger.Received(1)

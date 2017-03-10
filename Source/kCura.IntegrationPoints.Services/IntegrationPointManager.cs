@@ -130,6 +130,25 @@ namespace kCura.IntegrationPoints.Services
 			}
 		}
 
+		public async Task<IList<IntegrationPointModel>> GetEligibleToPromoteIntegrationPointsAsync(int workspaceArtifactId)
+		{
+			CheckPermissions(nameof(GetEligibleToPromoteIntegrationPointsAsync), workspaceArtifactId,
+				new[] { new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.View) });
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.GetEligibleToPromoteIntegrationPoints()).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(GetEligibleToPromoteIntegrationPointsAsync), e);
+				throw CreateInternalServerErrorException();
+			}
+		}
+
 		public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
 		{
 			CheckPermissions(nameof(GetOverwriteFieldsChoicesAsync), workspaceArtifactId,

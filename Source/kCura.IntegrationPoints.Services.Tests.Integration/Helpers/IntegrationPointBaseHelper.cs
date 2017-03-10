@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.LogErrors)), Is.EqualTo(expectedIntegrationPointModel.LogErrors));
 			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.Name)), Is.EqualTo(expectedIntegrationPointModel.Name));
 			Assert.That(integrationPointBaseRdo.GetField<int?>(new Guid(guidsConstants.Type)), Is.EqualTo(expectedIntegrationPointModel.Type));
+			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.PromoteEligible)), Is.EqualTo(expectedIntegrationPointModel.PromoteEligible));
 			Assert.That(integrationPointBaseRdo.GetField<Choice>(new Guid(guidsConstants.OverwriteFields)).ArtifactID, Is.EqualTo(expectedIntegrationPointModel.OverwriteFieldsChoiceId));
 
 
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 
 		public static CreateIntegrationPointRequest CreateCreateIntegrationPointRequest(ITestHelper helper, IRepositoryFactory repositoryFactory, int workspaceArtifactId,
 			int savedSearchArtifactId, int targetWorkspaceArtifactId, bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
-			string fieldOverlayBehavior, OverwriteFieldsModel overwriteFieldsModel, List<FieldMap> fieldMappings)
+			string fieldOverlayBehavior, OverwriteFieldsModel overwriteFieldsModel, List<FieldMap> fieldMappings, bool promoteEligible)
 		{
 			var folderPathSourceField = 0;
 			if (useFolderPathInformation)
@@ -92,7 +93,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 				ScheduleRule = new ScheduleModel
 				{
 					EnableScheduler = false
-				}
+				},
+				PromoteEligible = promoteEligible
 			};
 
 			return new CreateIntegrationPointRequest

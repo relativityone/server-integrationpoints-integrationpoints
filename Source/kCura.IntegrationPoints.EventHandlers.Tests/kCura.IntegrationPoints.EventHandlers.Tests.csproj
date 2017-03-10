@@ -130,6 +130,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\EventHandlerCommandExecutorTests.cs" />
+    <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreTests.cs" />

@@ -72,6 +72,13 @@ namespace kCura.IntegrationPoints.Services
 		Task<IList<IntegrationPointModel>> GetAllIntegrationPointsAsync(int workspaceArtifactId);
 
 		/// <summary>
+		/// Get all eligible to promote integration point objects in the workspace.
+		/// </summary>
+		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
+		/// <returns>A list of integration point objects which are eligible to promote</returns>
+		Task<IList<IntegrationPointModel>> GetEligibleToPromoteIntegrationPointsAsync(int workspaceArtifactId);
+
+		/// <summary>
 		/// Retrieve Overwrite Fields choices
 		/// </summary>
 		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>

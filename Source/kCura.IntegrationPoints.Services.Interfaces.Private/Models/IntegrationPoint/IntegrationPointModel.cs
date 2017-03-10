@@ -24,5 +24,6 @@ namespace kCura.IntegrationPoints.Services
 		public int Type { get; set; }
 		public int OverwriteFieldsChoiceId { get; set; }
 		public object SecuredConfiguration { get; set; }
+		public bool PromoteEligible { get; set; }
 	}
 }

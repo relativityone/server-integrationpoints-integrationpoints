@@ -40,7 +40,8 @@ namespace kCura.IntegrationPoints.EventHandlers.MassOperations
 				FieldMappings = integrationPoint.FieldMappings,
 				EmailNotificationRecipients = integrationPoint.EmailNotificationRecipients,
 				SourceProvider = integrationPoint.SourceProvider,
-				OverwriteFields = integrationPoint.OverwriteFields
+				OverwriteFields = integrationPoint.OverwriteFields,
+				PromoteEligible = integrationPoint.PromoteEligible
 			};
 			return ip;
 		}

@@ -201,7 +201,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				NextScheduledRuntimeUTC = DateTime.MaxValue,
 				FieldMappings = "159339",
 				Name = "ip_346",
-				SecuredConfiguration = "{}"
+				SecuredConfiguration = "{}",
+				PromoteEligible = false
 			};
 			var integrationPointProfile = new IntegrationPointProfile
 			{

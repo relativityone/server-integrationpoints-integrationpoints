@@ -162,21 +162,21 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
 		}
 
-		protected IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		protected IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible = true)
 		{
 			IntegrationPointModel integrationModel = new IntegrationPointModel();
-			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite, promoteEligible);
 			return integrationModel;
 		}
 
-		protected IntegrationPointProfileModel CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		protected IntegrationPointProfileModel CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible)
 		{
 			IntegrationPointProfileModel integrationModel = new IntegrationPointProfileModel();
-			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
+			SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite, promoteEligible);
 			return integrationModel;
 		}
 
-		private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+		private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible)
 		{
 			modelBase.Destination = CreateDestinationConfig(overwriteMode);
 			modelBase.DestinationProvider = DestinationProvider.ArtifactId;
@@ -191,6 +191,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Container.Resolve<IIntegrationPointTypeService>()
 					.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
 					.ArtifactId;
+			modelBase.PromoteEligible = promoteEligible;
 		}
 
 		private static int GetRootFolder(ITestHelper helper, int workspaceArtifactId)

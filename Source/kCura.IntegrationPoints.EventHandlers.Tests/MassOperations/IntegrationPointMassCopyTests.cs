@@ -90,9 +90,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 			const string fieldMappings = "expected_field_mappings";
 			const string emailNotificationRecipients = "expected_email_notification";
 			var overwriteFields = new Choice(Guid.Empty) {Name = "Append/Overwrite"};
+			const bool promoteEligible = true;
 
 			Data.IntegrationPoint ip = MassCopyIntegrationPointHelper.CreateIntegrationPoint(logErrors, "name", destinationProvider, destinationConfiguration, sourceConfiguration, fieldMappings,
-				emailNotificationRecipients, sourceProvider, overwriteFields);
+				emailNotificationRecipients, sourceProvider, overwriteFields, promoteEligible);
 
 			_service.IntegrationPointLibrary.Read(Arg.Any<IEnumerable<int>>()).Returns(new List<Data.IntegrationPoint> {ip});
 
@@ -109,6 +110,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.MassOperations
 			Assert.AreEqual(sourceConfiguration, actualIntegrationPoint.SourceConfiguration);
 			Assert.AreEqual(fieldMappings, actualIntegrationPoint.FieldMappings);
 			Assert.AreEqual(emailNotificationRecipients, actualIntegrationPoint.EmailNotificationRecipients);
+			Assert.AreEqual(promoteEligible, actualIntegrationPoint.PromoteEligible);
 		}
 
 		[Test]

@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Data
 		string EmailNotificationRecipients { get; }
 		string HasErrors { get; }
 		string Type { get; }
+		string PromoteEligible { get; }
 		string Name { get; }
 	}
 
@@ -39,6 +40,7 @@ namespace kCura.IntegrationPoints.Data
 		public string EmailNotificationRecipients => IntegrationPointFieldGuids.EmailNotificationRecipients;
 		public string HasErrors => IntegrationPointFieldGuids.HasErrors;
 		public string Type => IntegrationPointFieldGuids.Type;
+		public string PromoteEligible => IntegrationPointFieldGuids.PromoteEligible;
 		public string Name => IntegrationPointFieldGuids.Name;
 	}
 
@@ -59,6 +61,7 @@ namespace kCura.IntegrationPoints.Data
 		public string EmailNotificationRecipients => IntegrationPointProfileFieldGuids.EmailNotificationRecipients;
 		public string HasErrors => Guid.Empty.ToString();
 		public string Type => IntegrationPointProfileFieldGuids.Type;
+		public string PromoteEligible => IntegrationPointProfileFieldGuids.PromoteEligible;
 		public string Name => IntegrationPointProfileFieldGuids.Name;
 	}
 }

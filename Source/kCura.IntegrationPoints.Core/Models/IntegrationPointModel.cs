@@ -41,7 +41,8 @@ namespace kCura.IntegrationPoints.Core.Models
 				EmailNotificationRecipients =
 					string.Join("; ", (NotificationEmails ?? string.Empty).Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
 				LastRuntimeUTC = LastRun,
-				SecuredConfiguration = SecuredConfiguration
+				SecuredConfiguration = SecuredConfiguration,
+				PromoteEligible = PromoteEligible
 			};
 
 			if (point.EnableScheduler.GetValueOrDefault(false))
@@ -77,7 +78,8 @@ namespace kCura.IntegrationPoints.Core.Models
 				LastRun = ip.LastRuntimeUTC,
 				NextRun = ip.NextScheduledRuntimeUTC,
 				Map = ip.FieldMappings,
-				SecuredConfiguration = ip.SecuredConfiguration
+				SecuredConfiguration = ip.SecuredConfiguration,
+				PromoteEligible = ip.PromoteEligible.GetValueOrDefault(true)
 			};
 		}
 
@@ -96,7 +98,8 @@ namespace kCura.IntegrationPoints.Core.Models
 				NotificationEmails = profile.EmailNotificationRecipients ?? string.Empty,
 				LogErrors = profile.LogErrors.GetValueOrDefault(false),
 				NextRun = profile.NextScheduledRuntimeUTC,
-				Map = profile.FieldMappings
+				Map = profile.FieldMappings,
+				PromoteEligible = profile.PromoteEligible.GetValueOrDefault(true)
 			};
 		}
 	}

@@ -102,6 +102,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string HasErrors = @"Has Errors";
 		public const string Type = @"Type";
 		public const string SecuredConfiguration = @"Secured Configuration";
+		public const string PromoteEligible = @"Promote Eligible";
 		public const string Name = @"Name";
 	}
 
@@ -123,6 +124,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string HasErrors = @"a9853e55-0ba0-43d8-a766-747a61471981";
 		public const string Type = @"e646016e-5df6-4440-b218-18a00926d002";
 		public const string SecuredConfiguration = @"48b0a4cb-bc21-45b5-b124-76ae27e03c42";
+		public const string PromoteEligible = @"bf85f332-8c8f-4c69-86fd-6ce4c567ebf9";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
 	}
 
@@ -282,6 +284,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string SourceConfiguration = @"Source Configuration";
 		public const string SourceProvider = @"Source Provider";
 		public const string Type = @"Type";
+		public const string PromoteEligible = @"Promote Eligible";
 		public const string Name = @"Name";
 	}
 
@@ -299,6 +302,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string SourceConfiguration = @"9ed96d44-7767-46f5-a67f-28b48b155ff2";
 		public const string SourceProvider = @"60d3de54-f0d5-4744-a23f-a17609edc537";
 		public const string Type = @"8999dd19-c67c-43e3-88c0-edc989e224cc";
+		public const string PromoteEligible = @"4997cdb4-d8b0-4eaa-8768-061d82aaaccf";
 		public const string Name = @"ad0552e0-4511-4507-a60d-23c0c6d05972";
 	}
 

@@ -56,6 +56,7 @@ var loadData = function (ko, dataContainer) {
 		this.moveExistingDocs = formatToYesOrNo(dataContainer.destinationConfiguration.MoveExistingDocuments);
 		this.exportType = formatExportType(dataContainer.destinationConfiguration.importNativeFile, dataContainer.destinationConfiguration.ImageImport);
 		this.showInstanceInfo = dataContainer.destinationConfiguration.FederatedInstanceArtifactId !== null;
+		this.promoteEligible = dataContainer.promoteEligible;
 	};
 
 	var viewModel = new Model(dataContainer);

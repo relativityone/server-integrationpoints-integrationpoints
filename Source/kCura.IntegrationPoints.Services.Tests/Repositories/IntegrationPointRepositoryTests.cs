@@ -176,6 +176,44 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		}
 
 		[Test]
+		public void ItShouldGetEligibleToPromoteIntegrationPoints()
+		{
+			// Arrange
+			var integrationPoint1 = new Data.IntegrationPoint
+			{
+				ArtifactId = 263,
+				Name = "ip_name_987",
+				SourceProvider = 764,
+				DestinationProvider = 576,
+				PromoteEligible = true
+			};
+			var integrationPoint2 = new Data.IntegrationPoint
+			{
+				ArtifactId = 204,
+				Name = "ip_name_555",
+				SourceProvider = 187,
+				DestinationProvider = 422,
+				PromoteEligible = false
+			};
+
+			var actualResult = new List<Data.IntegrationPoint> { integrationPoint1, integrationPoint2 };
+			var expectedResult = new List<Data.IntegrationPoint> { integrationPoint1 };
+
+			_integrationPointService.GetAllRDOs().Returns(actualResult);
+
+			// Act
+			var result = _integrationPointRepository.GetEligibleToPromoteIntegrationPoints();
+
+			// Assert
+			_integrationPointService.Received(1).GetAllRDOs();
+
+			Assert.That(result, Is.EquivalentTo(expectedResult).
+				Using(new Func<IntegrationPointModel, Data.IntegrationPoint, bool>(
+					(actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider.Value) && (actual.ArtifactId == expected.ArtifactId)
+										&& (actual.DestinationProvider == expected.DestinationProvider.Value))));
+		}
+
+		[Test]
 		public void ItShouldGetIntegrationPointArtifactTypeId()
 		{
 			int expectedArtifactTypeId = 975;
@@ -234,7 +272,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				LogErrors = false,
 				NextScheduledRuntimeUTC = DateTime.MaxValue,
 				FieldMappings = "266304",
-				Name = "ip_159"
+				Name = "ip_159",
+				PromoteEligible = true
 			};
 			var integrationPoint = new Data.IntegrationPoint
 			{

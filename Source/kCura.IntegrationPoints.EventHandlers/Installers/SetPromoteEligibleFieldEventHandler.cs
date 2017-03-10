@@ -6,15 +6,15 @@ using kCura.IntegrationPoints.EventHandlers.Commands.Factories;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
-	[Description("Updates Destination Workspace entires with Federated Instance name.")]
+	[Description("Updates Promote Eligible field for existing Integration Points and Integration Point Profiles.")]
 	[RunOnce(true)]
-	[Guid("C91E34A1-856B-490F-B15D-575CA9021BD2")]
-	public class UpdateDestinationWorkspaceEntriesEventHandler : PostInstallEventHandler
+	[Guid("6D9D621C-D873-47ED-A1D5-528B05184907")]
+	public class SetPromoteEligibleFieldEventHandler : PostInstallEventHandler
 	{
 		public override Response Execute()
 		{
 			var eventHandlerCommandExecutor = new EventHandlerCommandExecutor(Helper.GetLoggerFactory().GetLogger());
-			return eventHandlerCommandExecutor.Execute(UpdateDestinationWorkspaceEntriesFactory.Create(Helper, Helper.GetActiveCaseID()));
+			return eventHandlerCommandExecutor.Execute(SetPromoteEligibleFieldCommandFactory.Create(Helper, Helper.GetActiveCaseID()));
 		}
 	}
 }

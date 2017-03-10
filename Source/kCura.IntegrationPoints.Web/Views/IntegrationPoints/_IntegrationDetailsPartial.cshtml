@@ -20,7 +20,7 @@
 			</div>
 			<div class="field-value">
 				<ul id="isExportType" data-bind="foreach: integrationPointTypes">
-					<li><input type="radio" data-bind="value: artifactID, checked: $parent.type, attr: {id: 'isExportTypeRadio' + artifactID}"/><label data-bind="text: displayName, attr:{for: 'isExportTypeRadio'+artifactID}"></label></li>
+					<li><input type="radio" data-bind="value: artifactID, checked: $parent.type, attr: {id: 'isExportTypeRadio' + artifactID}" /><label data-bind="text: displayName, attr:{for: 'isExportTypeRadio'+artifactID}"></label></li>
 				</ul>
 			</div>
 		</div>
@@ -29,7 +29,17 @@
 			<div data-bind="template: { name: destination.templateID, data: destination }"></div>
 			<div data-bind="template: { name: profile.templateID, data: profile }"></div>
 		</div>
-
+		<div class="field-row" data-bind="visible: isExportType() === true ">
+			<div class="field-label required">
+				Include in ECA Promote List:
+			</div>
+			<div class="field-value">
+				<ul id="promoteEligible">
+					<li><label><input id="enablePromoteEligible" type="radio" name="promoteEligible" value="true" data-bind="checked: promoteEligible" />Yes</label></li>
+					<li><label><input id="disablePromoteEligible" type="radio" name="promoteEligible" value="false" data-bind="checked: promoteEligible" />No</label></li>
+				</ul>
+			</div>
+		</div>
 	</div>
 
 	<div class="card">

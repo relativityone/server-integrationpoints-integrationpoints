@@ -24,9 +24,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 		{
 			base.SuiteSetup();
 
-			var rel1 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "Relativity_Provider_1", "Append Only");
-			var rel2 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "Relativity_Provider_2", "Append Only");
-			var ldap1 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "LDAP_Provider_1", "Append Only");
+			var rel1 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "Relativity_Provider_1", "Append Only", true);
+			var rel2 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "Relativity_Provider_2", "Append Only", false);
+			var ldap1 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "LDAP_Provider_1", "Append Only", true);
 			ldap1.SourceProvider = LdapProvider.ArtifactId;
 
 			_expectedIntegrationPointProfiles = new List<IntegrationPointProfileModel> {rel1, rel2, ldap1};

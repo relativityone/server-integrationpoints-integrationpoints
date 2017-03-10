@@ -66,6 +66,12 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			IList<IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
 			return integrationPoints.Select(x => x.ToIntegrationPointModel()).ToList();
 		}
+		
+		public IList<IntegrationPointModel> GetEligibleToPromoteIntegrationPoints()
+		{
+			IList<IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
+			return integrationPoints.Where(x => x.PromoteEligible.GetValueOrDefault(false)).Select(x => x.ToIntegrationPointModel()).ToList();
+		}
 
 		public int GetIntegrationPointArtifactTypeId()
 		{

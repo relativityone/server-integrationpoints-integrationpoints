@@ -17,6 +17,7 @@
 		string EmailNotificationRecipients { get; }
 		string HasErrors { get; }
 		string Type { get; }
+		string PromoteEligible { get; }
 		string Name { get; }
 	}
 
@@ -37,6 +38,7 @@
 		public string EmailNotificationRecipients => IntegrationPointFieldGuids.EmailNotificationRecipients;
 		public string HasErrors => IntegrationPointFieldGuids.HasErrors;
 		public string Type => IntegrationPointFieldGuids.Type;
+		public string PromoteEligible => IntegrationPointFieldGuids.PromoteEligible;
 		public string Name => IntegrationPointFieldGuids.Name;
 	}
 
@@ -57,6 +59,7 @@
 		public string EmailNotificationRecipients => IntegrationPointProfileFieldGuids.EmailNotificationRecipients;
 		public string HasErrors => string.Empty;
 		public string Type => IntegrationPointProfileFieldGuids.Type;
+		public string PromoteEligible => IntegrationPointProfileFieldGuids.PromoteEligible;
 		public string Name => IntegrationPointProfileFieldGuids.Name;
 	}
 }

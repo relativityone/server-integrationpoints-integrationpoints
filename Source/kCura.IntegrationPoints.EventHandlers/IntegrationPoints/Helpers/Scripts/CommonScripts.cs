@@ -84,6 +84,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 			int nameId = ScriptsHelper.GetArtifactIdByGuid(_guidsConstants.Name);
 			int emailNotificationId = ScriptsHelper.GetArtifactIdByGuid(_guidsConstants.EmailNotificationRecipients);
 			int scheduleRuleId = ScriptsHelper.GetArtifactIdByGuid(_guidsConstants.ScheduleRule);
+			int promoteEligibleId = ScriptsHelper.GetArtifactIdByGuid(_guidsConstants.PromoteEligible);
 
 			StringBuilder ipModelBuilder = new StringBuilder();
 			ipModelBuilder.AppendLine("<script>");
@@ -104,8 +105,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 			ipModelBuilder.AppendLine(FormatIPProperty("logErrorsId", logErrorsId));
 			ipModelBuilder.AppendLine(FormatIPProperty("nameId", nameId));
 			ipModelBuilder.AppendLine(FormatIPProperty("emailNotificationId", emailNotificationId));
+			ipModelBuilder.AppendLine(FormatIPProperty("promoteEligibleId", promoteEligibleId));
 			ipModelBuilder.AppendLine(FormatIPProperty("apiControllerName", apiControllerName));
-
+			
 			ipModelBuilder.AppendLine("IP.params = IP.params || {};");
 			ipModelBuilder.AppendLine($"IP.params['scheduleRuleId'] = '{scheduleRuleId}';");
 			ipModelBuilder.AppendLine($"IP.params['sourceUrl'] = '{sourceViewUrl}';");

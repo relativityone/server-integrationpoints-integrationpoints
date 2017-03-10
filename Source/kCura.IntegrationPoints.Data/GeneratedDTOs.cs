@@ -326,6 +326,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(IntegrationPointFieldGuids.SecuredConfiguration), value);
 			}
 		}
+		[DynamicField(IntegrationPointFields.PromoteEligible, IntegrationPointFieldGuids.PromoteEligible, FieldTypes.YesNo)]
+		public bool? PromoteEligible
+		{
+			get
+			{
+				return GetField<bool?>(new System.Guid(IntegrationPointFieldGuids.PromoteEligible));
+			}
+			set
+			{
+				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.PromoteEligible), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(IntegrationPointFields.Name, IntegrationPointFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
@@ -1167,6 +1179,18 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<int?>(new System.Guid(IntegrationPointProfileFieldGuids.Type), value);
+			}
+		}
+		[DynamicField(IntegrationPointProfileFields.PromoteEligible, IntegrationPointProfileFieldGuids.PromoteEligible, FieldTypes.YesNo)]
+		public bool? PromoteEligible
+		{
+			get
+			{
+				return GetField<bool?>(new System.Guid(IntegrationPointProfileFieldGuids.PromoteEligible));
+			}
+			set
+			{
+				SetField<bool?>(new System.Guid(IntegrationPointProfileFieldGuids.PromoteEligible), value);
 			}
 		}
 		public const int NameFieldLength = 255;

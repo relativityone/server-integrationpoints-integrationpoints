@@ -58,26 +58,34 @@
             </table>
         </td>
     </tr>
-    <tr  data-bind="visible: showInstanceInfo">
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Source Rel. Instance:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: sourceRelativityInstance"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Source Workspace:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: sourceWorkspace"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Source Workspace:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: sourceWorkspace"></td>
+				</tr>
+			</table>
+		</td>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Included in ECA Promote List:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: promoteEligible"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr data-bind="visible: showInstanceInfo">
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Source Rel. Instance:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: sourceRelativityInstance"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
     <tr>
         <td class="editTableColumn">
             <table>
@@ -88,22 +96,22 @@
             </table>
         </td>
     </tr>
+	<tr>
+		<td class="editTableColumn">
+			<table>
+				<tr>
+					<td class="dynamicViewFieldName">Destination Workspace:</td>
+					<td class="dynamicViewFieldValue" data-bind="text: targetWorkspace"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
     <tr  data-bind="visible: showInstanceInfo">
         <td class="editTableColumn">
             <table>
                 <tr>
                     <td class="dynamicViewFieldName">Destination Rel. Instance:</td>
                     <td class="dynamicViewFieldValue" data-bind="text: destinationRelativityInstance"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Destination Workspace:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: targetWorkspace"></td>
                 </tr>
             </table>
         </td>

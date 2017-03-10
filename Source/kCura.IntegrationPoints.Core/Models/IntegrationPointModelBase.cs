@@ -24,5 +24,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string NotificationEmails { get; set; }
 		public DateTime? NextRun { get; set; }
 		public string SecuredConfiguration { get; set; }
+		public bool PromoteEligible { get; set; }
 	}
 }

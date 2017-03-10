@@ -123,6 +123,8 @@ var IP = IP || {};
 		this.logErrors = ko.observable();
 		this.showErrors = ko.observable(false);
 		this.isTypeDisabled = ko.observable(false);
+		this.isExportType = ko.observable(true);
+		this.promoteEligible = ko.observable();
 		this.integrationPointTypes = ko.observableArray();
 		this.type = ko.observable().extend({ required: true });
 		this.isEdit = ko.observable(parseInt(settings.artifactID) > 0);
@@ -170,6 +172,11 @@ var IP = IP || {};
 					settings.logErrors = "true";
 				}
 				self.logErrors(settings.logErrors.toString());
+
+				if (typeof settings.promoteEligible === "undefined") {
+					settings.promoteEligible = "false";
+				}
+				self.promoteEligible(settings.promoteEligible.toString());
 			}
 		}
 
@@ -260,16 +267,15 @@ var IP = IP || {};
 		};
 
 		this.setTypeVisibility = function (type) {
-			var isExportType = true;
 			var exportGuid = "dbb2860a-5691-449b-bc4a-e18d8519eb3a";
 			if (type === undefined || type === 0) {
 				type = self.getSelectedType(exportGuid, function (item, guid) { return item.value === guid }).artifactID;
-				isExportType = true;
+				self.isExportType(true);
 				self.type(type);
 			}
 			else {
 				var guid = self.getSelectedType(type, function (item, artifactID) { return item.artifactID === artifactID }).value;
-				isExportType = guid === exportGuid;
+				self.isExportType(guid === exportGuid);
 			}
 
 			if (self.hasBeenRun() || self.isEdit()) {
@@ -279,10 +285,10 @@ var IP = IP || {};
 				self.isTypeDisabled(true);
 			}
 			else {
-				self.source.displayRelativityInSourceTypes(isExportType);
-				self.source.isSourceProviderDisabled(isExportType);
-				self.destination.isDestinationProviderDisabled(!isExportType);
-				if (isExportType === false) {
+				self.source.displayRelativityInSourceTypes(self.isExportType());
+				self.source.isSourceProviderDisabled(self.isExportType());
+				self.destination.isDestinationProviderDisabled(!self.isExportType());
+				if (self.isExportType() === false) {
 					self.destination.setRelativityAsDestinationProvider();
 				} else {
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";

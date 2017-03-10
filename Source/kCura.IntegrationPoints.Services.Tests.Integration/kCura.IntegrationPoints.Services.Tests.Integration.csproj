@@ -142,6 +142,7 @@
     <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
     <Compile Include="IntegrationPointManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
+    <Compile Include="IntegrationPointManager\ItShouldRetrieveEligibleToPromoteIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveAllIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveIntegrationPointArtifactTypeId.cs" />
     <Compile Include="IntegrationPointProfileManager\IntegrationPointProfilePermissionTests.cs" />
