@@ -259,7 +259,7 @@
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
-    <Compile Include="Repositories\SqlArtifactGuidRepositoryTests.cs" />
+    <Compile Include="Repositories\KeplerArtifactGuidRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

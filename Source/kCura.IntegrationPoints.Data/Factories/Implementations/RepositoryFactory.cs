@@ -29,10 +29,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
 		{
-			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
-			IArtifactGuidRepository artifactGuidRepository = new SqlArtifactGuidRepository(baseContext);
-
-			return artifactGuidRepository;
+			return new KeplerArtifactGuidRepository(workspaceArtifactId, _servicesMgr);
 		}
 
 		public IArtifactTypeRepository GetArtifactTypeRepository()
