@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 			IArtifactGuidRepository artifactGuidRepository,
 			int parentArtifactTypeId)
 		{
-			IObjectTypeRepository objectTypeRepository = RepositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
+			IObjectTypeRepository objectTypeRepository = RepositoryFactory.GetDestinationObjectTypeRepository(workspaceArtifactId);
 
 			// Check workspace for instance of the object type GUID
 			int descriptorArtifactTypeId;

@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int workspaceArtifactId,
 			int sourceWorkspaceDescriptorArtifactTypeId, int? federatedInstanceArtifactId, ISourceWorkspaceRepository sourceWorkspaceRepository)
 		{
-			IWorkspaceRepository workspaceRepository = RepositoryFactory.GetWorkspaceRepository();
+			IWorkspaceRepository workspaceRepository = RepositoryFactory.GetSourceWorkspaceRepository();
 			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(workspaceArtifactId);
 
 			string currentInstanceName = FederatedInstanceManager.LocalInstance.Name;

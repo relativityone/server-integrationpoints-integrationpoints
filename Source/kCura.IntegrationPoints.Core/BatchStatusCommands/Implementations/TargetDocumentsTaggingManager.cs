@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
-using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -13,7 +10,6 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -72,11 +68,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				if (_federatedInstanceArtifactId != null)
-				{
-					return;
-				}
-
 				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId);
 				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId,
 					_sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
@@ -94,11 +85,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			InjectionManager.Instance.Evaluate(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id);
 			try
 			{
-				if (_federatedInstanceArtifactId != null)
-				{
-					return;
-				}
-
 				if (!_errorOccurDuringJobStart)
 				{
 					FieldMap identifier = _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
@@ -114,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					using (TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId))
 					{
 						FieldMap[] fieldsToPush = {identifier};
-						var documentTransferContext = new  DefaultTransferContext(reader);
+						var documentTransferContext = new DefaultTransferContext(reader);
 						if (ScratchTableRepository.Count > 0)
 						{
 							_synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig);

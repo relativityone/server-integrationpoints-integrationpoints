@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.GetFieldRepository(_destinationWorkspaceArtifactId).Returns(_fieldRepository);
 
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
-			_repositoryFactory.GetObjectTypeRepository(_destinationWorkspaceArtifactId).Returns(_objectTypeRepository);
+			_repositoryFactory.GetDestinationObjectTypeRepository(_destinationWorkspaceArtifactId).Returns(_objectTypeRepository);
 
 			_tabRepository = Substitute.For<ITabRepository>();
 			_repositoryFactory.GetTabRepository(_destinationWorkspaceArtifactId).Returns(_tabRepository);

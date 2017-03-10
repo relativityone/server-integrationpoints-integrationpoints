@@ -92,6 +92,8 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <returns>A class implementing the IObjectTypeRepository interface.</returns>
 		IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId);
 
+		IObjectTypeRepository GetDestinationObjectTypeRepository(int workspaceArtifactId);
+
 		/// <summary>
 		/// Returns a class implementing the IPermissionRepository interface.
 		/// </summary>
@@ -154,6 +156,8 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// </summary>
 		/// <returns>A class implementing the IWorkspaceRepository interface.</returns>
 		IWorkspaceRepository GetWorkspaceRepository();
+
+		IWorkspaceRepository GetSourceWorkspaceRepository();
 
 		/// <summary>
 		/// Returns a class implementing the IErrorRepository interface.

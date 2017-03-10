@@ -108,9 +108,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
 		{
-			IObjectTypeRepository repository = new RsapiObjectTypeRepository(_helper, workspaceArtifactId);
+			IObjectTypeRepository repository = new RsapiObjectTypeRepository(workspaceArtifactId, _helper.GetServicesManager());
 
 			return repository;
+		}
+
+		public IObjectTypeRepository GetDestinationObjectTypeRepository(int workspaceArtifactId)
+		{
+			return new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr);
 		}
 
 		public IPermissionRepository GetPermissionRepository(int workspaceArtifactId)
@@ -157,7 +162,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ITabRepository GetTabRepository(int workspaceArtifactId)
 		{
-			ITabRepository tabRepository = new RsapiTabRepository(_helper, workspaceArtifactId);
+			ITabRepository tabRepository = new RsapiTabRepository(_servicesMgr, workspaceArtifactId);
 
 			return tabRepository;
 		}
@@ -165,6 +170,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, objectQueryManagerAdaptor);
+
+			return repository;
+		}
+
+		public IWorkspaceRepository GetSourceWorkspaceRepository()
+		{
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, _helper.GetServicesManager(), -1, (int)ArtifactType.Case);
 			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, objectQueryManagerAdaptor);
 
 			return repository;

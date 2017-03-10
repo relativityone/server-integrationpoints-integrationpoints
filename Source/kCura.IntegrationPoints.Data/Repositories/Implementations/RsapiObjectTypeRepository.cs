@@ -8,13 +8,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RsapiObjectTypeRepository : IObjectTypeRepository
 	{
-		private readonly IHelper _helper;
+		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 
-		public RsapiObjectTypeRepository(IHelper helper, int workspaceArtifactId)
+		public RsapiObjectTypeRepository(int workspaceArtifactId, IServicesMgr servicesMgr)
 		{
-			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
+			_servicesMgr = servicesMgr;
 		}
 
 		public int RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid)
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private int RetrieveObjectTypeDescriptorArtifactTypeId(ObjectType objectType)
 		{
 			ResultSet<ObjectType> resultSet;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			QueryResultSet<ObjectType> queryResults;
 
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				queryResults = rsapiClient.Repositories.ObjectType.Query(objectTypeQuery);
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var objectType = new ObjectType(artifactId);
 
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 

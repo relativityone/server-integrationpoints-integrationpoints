@@ -55,10 +55,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.GetArtifactGuidRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_artifactGuidRepository);
 
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
-			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
+			_repositoryFactory.GetSourceWorkspaceRepository().Returns(_workspaceRepository);
 
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
-			_repositoryFactory.GetObjectTypeRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_objectTypeRepository);
+			_repositoryFactory.GetDestinationObjectTypeRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_objectTypeRepository);
 
 			_tabRepository = Substitute.For<ITabRepository>();
 			_repositoryFactory.GetTabRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_tabRepository);
@@ -76,8 +76,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// Tab repository excluded
 			_repositoryFactory.Received(1).GetSourceWorkspaceRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
 			_repositoryFactory.Received(1).GetArtifactGuidRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
-			_repositoryFactory.Received(1).GetWorkspaceRepository();
-			_repositoryFactory.Received(1).GetObjectTypeRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
+			_repositoryFactory.Received(1).GetSourceWorkspaceRepository();
+			_repositoryFactory.Received(1).GetDestinationObjectTypeRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
 			_repositoryFactory.Received(1).GetFieldRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
 		}
 

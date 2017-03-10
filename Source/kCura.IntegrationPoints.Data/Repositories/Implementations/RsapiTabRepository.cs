@@ -9,12 +9,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RsapiTabRepository : ITabRepository
 	{
-		private readonly IHelper _helper;
+		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 
-		public RsapiTabRepository(IHelper helper, int workspaceArtifactId)
+		public RsapiTabRepository(IServicesMgr servicesMgr, int workspaceArtifactId)
 		{
-			_helper = helper;
+			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 
 			QueryResultSet<Tab> resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			QueryResultSet<Tab> resultSet;
 			try
 			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			ResultSet resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
