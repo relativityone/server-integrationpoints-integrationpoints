@@ -7,6 +7,7 @@
 			var STOP = "Stop";
 			var RETRY_ERRORS = "Retry Errors";
 			var VIEW_ERRORS = "View Errors";
+			var DOWNLOAD_ERROR_FILE = "Download Error File";
 			var hasErrors = integrationPoint.HasErrors;
 			if (hasErrors) {
 				$("input[fafriendlyname='Has Errors'][type='hidden']").siblings('.dynamicViewFieldValue').text("Yes");
@@ -51,6 +52,15 @@
 					$(consoleContainer.find(":contains('" + VIEW_ERRORS + "')")).removeClass("consoleLinkDisabled").addClass("consoleLinkEnabled").attr("onClick", viewErrorsClick).removeAttr('disabled');
 				} else {
 					$(consoleContainer.find(":contains('" + VIEW_ERRORS + "')")).removeClass("consoleLinkEnabled").addClass("consoleLinkDisabled").removeAttr('onClick');
+				}
+			}
+
+			if (buttonStates.DownloadErrorFileLinkVisible) {
+				var downloadErrorsClick = onClickEvents.DownloadErrorFileOnClickEvent;
+				if (hasErrors) {
+					$(consoleContainer.find(":contains('" + DOWNLOAD_ERROR_FILE + "')")).removeClass("consoleLinkDisabled").addClass("consoleLinkEnabled").attr("onClick", downloadErrorsClick).removeAttr('disabled');
+				} else {
+					$(consoleContainer.find(":contains('" + DOWNLOAD_ERROR_FILE + "')")).removeClass("consoleLinkEnabled").addClass("consoleLinkDisabled").removeAttr("onClick").attr("disabled");
 				}
 			}
 
