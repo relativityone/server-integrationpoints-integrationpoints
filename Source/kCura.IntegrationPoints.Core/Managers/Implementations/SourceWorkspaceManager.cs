@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceDto = new SourceWorkspaceDTO
 				{
 					ArtifactId = -1,
-					Name = Utils.GetFormatForWorkspaceOrJobDisplay(currentInstanceName, workspaceDto.Name, workspaceArtifactId),
+					Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, workspaceArtifactId),
 					SourceCaseArtifactId = workspaceArtifactId,
 					SourceCaseName = workspaceDto.Name,
 					SourceInstanceName = currentInstanceName
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			// Check to see if instance should be updated
 			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name || sourceWorkspaceDto.SourceInstanceName != currentInstanceName)
 			{
-				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(currentInstanceName, workspaceDto.Name, workspaceArtifactId);
+				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, workspaceArtifactId);
 				sourceWorkspaceDto.SourceCaseName = workspaceDto.Name;
 				sourceWorkspaceDto.SourceInstanceName = currentInstanceName;
 				sourceWorkspaceRepository.Update(sourceWorkspaceDto);

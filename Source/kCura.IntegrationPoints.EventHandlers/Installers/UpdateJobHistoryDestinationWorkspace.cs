@@ -20,17 +20,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	public class UpdateJobHistoryDestinationWorkspace : PostInstallEventHandler
 	{
 		private IJobHistoryService _jobHistoryService;
-		private IDestinationWorkspaceParser _destinationWorkspaceParser;
+		private IDestinationParser _destinationParser;
 
 		public UpdateJobHistoryDestinationWorkspace()
 		{
 		}
 
 		internal UpdateJobHistoryDestinationWorkspace(IJobHistoryService jobHistoryService,
-			IDestinationWorkspaceParser destinationWorkspaceParser)
+			IDestinationParser destinationParser)
 		{
 			_jobHistoryService = jobHistoryService;
-			_destinationWorkspaceParser = destinationWorkspaceParser;
+			_destinationParser = destinationParser;
 		}
 
 		public override Response Execute()
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 				foreach (Data.JobHistory jobHistory in jobHistories)
 				{
-					string[] elements = _destinationWorkspaceParser.GetElements(jobHistory.DestinationWorkspace);
+					string[] elements = _destinationParser.GetElements(jobHistory.DestinationWorkspace);
 
 					if (elements.Length == 2)
 					{
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		private void ResolveDependencies()
 		{
 			_jobHistoryService = CreateJobHistoryService();
-			_destinationWorkspaceParser = new DestinationWorkspaceParser();
+			_destinationParser = new DestinationParser();
 		}
 
 		private IJobHistoryService CreateJobHistoryService()

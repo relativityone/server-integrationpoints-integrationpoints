@@ -9,10 +9,8 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using NSubstitute;
-using NSubstitute.Core.Arguments;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
@@ -28,7 +26,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		private IJobHistoryAccess _jobHistoryAccess;
 		private IJobHistorySummaryModelBuilder _summaryModelBuilder;
 		private JobHistoryRepository _jobHistoryRepository;
-		private IDestinationWorkspaceParser _destinationWorkspaceParser;
+		private IDestinationParser _destinationParser;
 		private IFederatedInstanceManager _federatedInstanceManager;
 		private IWorkspaceManager _workspaceManager;
 		private IWorkspaceManager _targetWorkspaceManager;
@@ -47,14 +45,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 			_jobHistoryAccess = Substitute.For<IJobHistoryAccess>();
 			_summaryModelBuilder = Substitute.For<IJobHistorySummaryModelBuilder>();
-			_destinationWorkspaceParser = Substitute.For<IDestinationWorkspaceParser>();
+			_destinationParser = new DestinationParser();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 
 			_helperFactory.CreateTargetHelper(_helper, null, Arg.Any<string>()).Returns(_helper);
 			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int>(), Arg.Any<string>()).Returns(_targetHelper);
 
-			_jobHistoryRepository = new JobHistoryRepository(_helper, _helperFactory, _relativityIntegrationPointsRepository, _completedJobsHistoryRepository, 
-				_managerFactory, _contextContainerFactory, _jobHistoryAccess, _summaryModelBuilder, _destinationWorkspaceParser);
+			_jobHistoryRepository = new JobHistoryRepository(_helper, _helperFactory, _relativityIntegrationPointsRepository, _completedJobsHistoryRepository,
+				_managerFactory, _contextContainerFactory, _jobHistoryAccess, _summaryModelBuilder, _destinationParser);
 
 			var contextContainer = Substitute.For<IContextContainer>();
 			var targetContextContainer = Substitute.For<IContextContainer>();
@@ -73,14 +71,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		[Test]
 		public void GoldWorkflow()
 		{
+			string otherInstanceName = "Other Instance";
 			string localInstance = "This Instance";
-			string otherInstance = "Other Instance";
-			string localworkspace1 = "This Instance - Workspace1 - 1";
-			string localworkspace2 = "This Instance - Workspace2 - 4";
-			string otherworkspace1 = "Other Instance - Workspace1 - 11";
-			string otherworkspace2 = "Other Instance - Workspace2 - 14";
-			var integrationPoint1 = new Core.Models.IntegrationPointModel() { ArtifactID = 1 };
-			var integrationPoint2 = new Core.Models.IntegrationPointModel() { ArtifactID = 2 };
+			string otherInstance = $"{otherInstanceName} - 333";
+			string localworkspace1 = "Workspace1 - 1";
+			string localworkspace2 = "Workspace2 - 4";
+			string otherworkspace1 = "Workspace1 - 11";
+			string otherworkspace2 = "Workspace2 - 14";
+			var integrationPoint1 = new Core.Models.IntegrationPointModel {ArtifactID = 1};
+			var integrationPoint2 = new Core.Models.IntegrationPointModel {ArtifactID = 2};
 
 			var request = new JobHistoryRequest
 			{
@@ -90,32 +89,32 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				Page = 0,
 				SortDescending = true
 			};
-			var workspaces = new List<WorkspaceDTO>()
+			var workspaces = new List<WorkspaceDTO>
 			{
-				new WorkspaceDTO() {ArtifactId = 1},
-				new WorkspaceDTO() {ArtifactId = 2},
-				new WorkspaceDTO() {ArtifactId = 3}
+				new WorkspaceDTO {ArtifactId = 1},
+				new WorkspaceDTO {ArtifactId = 2},
+				new WorkspaceDTO {ArtifactId = 3}
 			};
-			var targetWorkspaces = new List<WorkspaceDTO>()
+			var targetWorkspaces = new List<WorkspaceDTO>
 			{
-				new WorkspaceDTO() {ArtifactId = 11},
-				new WorkspaceDTO() {ArtifactId = 12},
-				new WorkspaceDTO() {ArtifactId = 13}
+				new WorkspaceDTO {ArtifactId = 11},
+				new WorkspaceDTO {ArtifactId = 12},
+				new WorkspaceDTO {ArtifactId = 13}
 			};
-			var integrationPoints = new List<Core.Models.IntegrationPointModel>()
+			var integrationPoints = new List<Core.Models.IntegrationPointModel>
 			{
 				integrationPoint1,
 				integrationPoint2
 			};
-			var queryResult1 = new List<JobHistoryModel>()
+			var queryResult1 = new List<JobHistoryModel>
 			{
-				new JobHistoryModel() {DestinationWorkspace = localworkspace1},
-				new JobHistoryModel() {DestinationWorkspace = localworkspace2},
+				new JobHistoryModel {DestinationWorkspace = localworkspace1, DestinationInstance = localInstance},
+				new JobHistoryModel {DestinationWorkspace = localworkspace2, DestinationInstance = localInstance}
 			};
-			var queryResult2 = new List<JobHistoryModel>()
+			var queryResult2 = new List<JobHistoryModel>
 			{
-				new JobHistoryModel() { DestinationWorkspace = otherworkspace1 },
-				new JobHistoryModel() { DestinationWorkspace = otherworkspace2 }
+				new JobHistoryModel {DestinationWorkspace = otherworkspace1, DestinationInstance = otherInstance},
+				new JobHistoryModel {DestinationWorkspace = otherworkspace2, DestinationInstance = otherInstance}
 			};
 			var filteredJobHistories = new List<JobHistoryModel>()
 			{
@@ -129,19 +128,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			};
 
 			var expectedResult = new JobHistorySummaryModel();
-
-			_destinationWorkspaceParser.GetInstanceName(localworkspace1).Returns(localInstance);
-			_destinationWorkspaceParser.GetInstanceName(localworkspace2).Returns(localInstance);
-			_destinationWorkspaceParser.GetInstanceName(otherworkspace1).Returns(otherInstance);
-			_destinationWorkspaceParser.GetInstanceName(otherworkspace2).Returns(otherInstance);
-
-			_federatedInstanceManager.RetrieveFederatedInstanceByName(localInstance).Returns(new FederatedInstanceDto() { ArtifactId = null });
-			_federatedInstanceManager.RetrieveFederatedInstanceByName(otherInstance).Returns(new FederatedInstanceDto() { ArtifactId = 123 });
-
+			
 			_workspaceManager.GetUserWorkspaces().Returns(workspaces);
 			_targetWorkspaceManager.GetUserWorkspaces().Returns(targetWorkspaces);
-			
-			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);
+
+			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints(request.WorkspaceArtifactId).Returns(integrationPoints);
 			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint1.ArtifactID).Returns(queryResult1);
 			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint2.ArtifactID).Returns(queryResult2);
 
@@ -149,15 +140,14 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			expectedJobHistories.AddRange(queryResult1);
 			expectedJobHistories.AddRange(queryResult2);
 
-			var expectedWorkspaces = new Dictionary<string, IList<int>>()
+			var expectedWorkspaces = new Dictionary<int, IList<int>>
 			{
-				{ localInstance, new List<int>() {1, 2, 3} },
-				{ otherInstance, new List<int>() {11, 12, 13} }
+				{-1, new List<int> {1, 2, 3}},
+				{333, new List<int> {11, 12, 13}}
 			};
 
-			_jobHistoryAccess.Filter(Arg.Do<IList<JobHistoryModel>>(x => CollectionAssert.AreEquivalent(x, expectedJobHistories)), 
-				Arg.Do<IDictionary<string, IList<int>>>(x => CollectionAssert.AreEquivalent(x, expectedWorkspaces))).Returns(filteredJobHistories);
-
+			_jobHistoryAccess.Filter(Arg.Do<List<JobHistoryModel>>(x => CollectionAssert.AreEquivalent(x, expectedJobHistories)),
+				Arg.Do<IDictionary<int, IList<int>>>(x => CollectionAssert.AreEquivalent(x, expectedWorkspaces))).Returns(filteredJobHistories);
 			_summaryModelBuilder.Create(request.Page, request.PageSize, Arg.Do<IList<JobHistoryModel>>(x => CollectionAssert.AreEquivalent(x, sortedJobHistories))).Returns(expectedResult);
 
 			var actualResult = _jobHistoryRepository.GetJobHistory(request);
@@ -178,46 +168,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			};
 
 			var integrationPoints = new List<Core.Models.IntegrationPointModel>();
-
 			var queryResult = new List<JobHistoryModel>();
 
-			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);
+			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints(request.WorkspaceArtifactId).Returns(integrationPoints);
 
 			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, Arg.Any<List<int>>()).Returns(queryResult);
 
 			_jobHistoryRepository.GetJobHistory(request);
 
 			_federatedInstanceManager.Received(0).RetrieveFederatedInstanceByName(Arg.Any<string>());
-			_workspaceManager.Received(0).GetUserWorkspaces();
-			_targetWorkspaceManager.Received(0).GetUserWorkspaces();
-		}
-
-		[Test]
-		public void SkipWorkflowWhenFederatedInstanceNotFound()
-		{
-			var request = new JobHistoryRequest
-			{
-				WorkspaceArtifactId = 531,
-				SortColumnName = "sort_column_068",
-				PageSize = 10,
-				Page = 0,
-				SortDescending = true
-			};
-
-			string otherInstance = "Other Instance";
-			string otherworkspace = "Other Instance - Workspace1 - 11";
-
-			var integrationPoints = new List<Core.Models.IntegrationPointModel>() { new Core.Models.IntegrationPointModel() { ArtifactID = 1 } };
-			var queryResult = new List<JobHistoryModel>() { new JobHistoryModel() { DestinationWorkspace = otherworkspace } };
-
-			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoints[0].ArtifactID).Returns(queryResult);
-
-			_destinationWorkspaceParser.GetInstanceName(otherworkspace).Returns(otherInstance);
-			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);
-			_federatedInstanceManager.RetrieveFederatedInstanceByName(otherInstance).Returns((FederatedInstanceDto)null);
-
-			_jobHistoryRepository.GetJobHistory(request);
-
 			_workspaceManager.Received(0).GetUserWorkspaces();
 			_targetWorkspaceManager.Received(0).GetUserWorkspaces();
 		}

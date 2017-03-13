@@ -9,5 +9,7 @@ namespace kCura.IntegrationPoints.Services
 		public DateTime EndTimeUTC { get; set; }
 
 		public string DestinationWorkspace { get; set; }
+
+		public string DestinationInstance { get; set; }
 	}
 }

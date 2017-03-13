@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleTransient());
 			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
 			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleTransient());
-			container.Register(Component.For<IDestinationWorkspaceParser>().ImplementedBy<DestinationWorkspaceParser>().LifestyleTransient());
+			container.Register(Component.For<IDestinationParser>().ImplementedBy<DestinationParser>().LifestyleTransient());
 			container.Register(Component.For<IJobHistoryAccess>().ImplementedBy<JobHistoryAccess>().LifestyleTransient());
 			container.Register(Component.For<IJobHistorySummaryModelBuilder>().ImplementedBy<JobHistorySummaryModelBuilder>().LifestyleTransient());
 			container.Register(Component.For<ILibraryFactory>().ImplementedBy<LibraryFactory>().LifestyleTransient());

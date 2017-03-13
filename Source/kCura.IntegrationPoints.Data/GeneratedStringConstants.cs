@@ -182,6 +182,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string TotalItems = @"Total Items";
 		public const string DestinationWorkspaceInformation = @"Destination Workspace Information";
 		public const string JobType = @"Job Type";
+		public const string DestinationInstance = @"Destination Instance";
 		public const string Name = @"Name";
 	}
 
@@ -199,6 +200,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string TotalItems = @"576189a9-0347-4b20-9369-b16d1ac89b4b";
 		public const string DestinationWorkspaceInformation = @"20a24c4e-55e8-4fc2-abbe-f75c07fad91b";
 		public const string JobType = @"e809db5e-5e99-4a75-98a1-26129313a3f5";
+		public const string DestinationInstance = @"6d91ea1e-7b34-46a9-854e-2b018d4e35ef";
 		public const string Name = @"07061466-5fab-4581-979c-c801e8207370";
 	}
 

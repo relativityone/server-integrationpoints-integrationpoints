@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			{
 				ItemsTransferred = x.ItemsTransferred ?? 0,
 				DestinationWorkspace = x.DestinationWorkspace,
+				DestinationInstance = x.DestinationInstance,
 				EndTimeUTC = x.EndTimeUTC.GetValueOrDefault()
 			}).ToList();
 		}

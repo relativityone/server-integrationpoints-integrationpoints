@@ -39,14 +39,13 @@ namespace kCura.IntegrationPoints.Domain
 			return strBuilder.ToString();
 		}
 
-		public static string GetFormatForWorkspaceOrJobDisplay(string name, int id)
+		public static string GetFormatForWorkspaceOrJobDisplay(string name, int? id)
 		{
-			return $"{name} - {id}";
-		}
-
-		public static string GetFormatForWorkspaceOrJobDisplay(string targetInstance, string name, int id)
-		{
-			return $"{targetInstance} - {GetFormatForWorkspaceOrJobDisplay(name, id)}";
+			if (id.HasValue)
+			{
+				return $"{name} - {id}";
+			}
+			return name;
 		}
 	}
 }

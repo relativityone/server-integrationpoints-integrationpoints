@@ -335,8 +335,8 @@
     <Compile Include="Services\IIntegrationPointValidationService.cs" />
     <Compile Include="Services\ImportTypeService.cs" />
     <Compile Include="Services\IProviderTypeService.cs" />
-    <Compile Include="Services\JobHistory\DestinationWorkspaceParser.cs" />
-    <Compile Include="Services\JobHistory\IDestinationWorkspaceParser.cs" />
+    <Compile Include="Services\JobHistory\DestinationParser.cs" />
+    <Compile Include="Services\JobHistory\IDestinationParser.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />

@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 
 namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public class JobHistoryAccess : IJobHistoryAccess
 	{
-		private readonly IDestinationWorkspaceParser _destinationWorkspaceParser;
+		private readonly IDestinationParser _destinationParser;
 
-		public JobHistoryAccess(IDestinationWorkspaceParser destinationWorkspaceParser)
+		public JobHistoryAccess(IDestinationParser destinationParser)
 		{
-			_destinationWorkspaceParser = destinationWorkspaceParser;
+			_destinationParser = destinationParser;
 		}
 
 		public IList<JobHistoryModel> Filter(IList<JobHistoryModel> allJobHistories, IList<int> workspacesWithAccess)
@@ -18,18 +19,26 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 			return allJobHistories.Where(x => DoesUserHavePermissionToThisDestinationWorkspace(workspacesWithAccess, x.DestinationWorkspace)).ToList();
 		}
 
-		public IList<JobHistoryModel> Filter(IList<JobHistoryModel> allJobHistories, IDictionary<string, IList<int>> workspacesWithAccess)
+		public IList<JobHistoryModel> Filter(IList<JobHistoryModel> allJobHistories, IDictionary<int, IList<int>> workspacesWithAccess)
 		{
 			return allJobHistories.Where(x =>
 			{
-				var instanceName = _destinationWorkspaceParser.GetInstanceName(x.DestinationWorkspace);
-				return DoesUserHavePermissionToThisDestinationWorkspace(workspacesWithAccess[instanceName], x.DestinationWorkspace);
+				int instanceId;
+				if (x.DestinationInstance == FederatedInstanceManager.LocalInstance.Name)
+				{
+					instanceId = -1;
+				}
+				else
+				{
+					instanceId = _destinationParser.GetArtifactId(x.DestinationInstance);
+				}
+				return DoesUserHavePermissionToThisDestinationWorkspace(workspacesWithAccess[instanceId], x.DestinationWorkspace);
 			}).ToList();
 		}
 
 		private bool DoesUserHavePermissionToThisDestinationWorkspace(IList<int> accessibleWorkspaces, string destinationWorkspace)
 		{
-			int workspaceArtifactId = _destinationWorkspaceParser.GetWorkspaceArtifactId(destinationWorkspace);
+			int workspaceArtifactId = _destinationParser.GetArtifactId(destinationWorkspace);
 			return accessibleWorkspaces.Any(t => t == workspaceArtifactId);
 		}
 	}

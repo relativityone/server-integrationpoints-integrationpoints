@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public DestinationWorkspace Create(int targetWorkspaceArtifactId, string targetWorkspaceName, int? federatedInstanceArtifactId, string federatedInstanceName)
 		{
-			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceName, targetWorkspaceName, targetWorkspaceArtifactId);
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(targetWorkspaceName, targetWorkspaceArtifactId);
 
 			var destinationWorkspace = new DestinationWorkspace
 			{
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void Update(DestinationWorkspace destinationWorkspace)
 		{
-			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.DestinationInstanceName, destinationWorkspace.DestinationWorkspaceName,
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.DestinationWorkspaceName,
 				destinationWorkspace.DestinationWorkspaceArtifactID.Value);
 			destinationWorkspace.Name = instanceName;
 

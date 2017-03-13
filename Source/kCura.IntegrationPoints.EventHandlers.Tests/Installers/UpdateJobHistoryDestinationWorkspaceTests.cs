@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 	public class UpdateJobHistoryDestinationWorkspaceTests : TestBase
 	{
 		private IJobHistoryService _jobHistoryService;
-		private IDestinationWorkspaceParser _destinationWorkspaceParser;
+		private IDestinationParser _destinationParser;
 
 		private UpdateJobHistoryDestinationWorkspace _testInstance;
 
@@ -31,8 +31,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
 			_jobHistoryService.GetAll().Returns(new Data.JobHistory[] { jobHistory1, jobHistory2});
 
-			_destinationWorkspaceParser.GetElements(destinationWorkspace1).Returns(destinationWorkspace1.Split('-'));
-			_destinationWorkspaceParser.GetElements(destinationWorkspace2).Returns(destinationWorkspace2.Split('-'));
+			_destinationParser.GetElements(destinationWorkspace1).Returns(destinationWorkspace1.Split('-'));
+			_destinationParser.GetElements(destinationWorkspace2).Returns(destinationWorkspace2.Split('-'));
 
 			_testInstance.ExecuteInternal();
 
@@ -42,9 +42,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		public override void SetUp()
 		{
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
-			_destinationWorkspaceParser = Substitute.For<IDestinationWorkspaceParser>();
+			_destinationParser = Substitute.For<IDestinationParser>();
 
-			_testInstance = new UpdateJobHistoryDestinationWorkspace(_jobHistoryService, _destinationWorkspaceParser);
+			_testInstance = new UpdateJobHistoryDestinationWorkspace(_jobHistoryService, _destinationParser);
 		}
 	}
 }

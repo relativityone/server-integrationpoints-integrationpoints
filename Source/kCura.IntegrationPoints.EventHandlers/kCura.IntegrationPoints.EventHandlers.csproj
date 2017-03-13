@@ -187,11 +187,13 @@
     <Compile Include="Commands\Factories\SetPromoteEligibleFieldCommandFactory.cs" />
     <Compile Include="Commands\Helpers\CommandExecutionException.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommand.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommand.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommand.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
     <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreEventHandlerWrapper.cs" />
     <Compile Include="Installers\Helpers\Factories\CreateTenantIdForSecretStoreFactory.cs" />
+    <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
     <Compile Include="Installers\Helpers\Factories\SecretStoreCleanUpFactory.cs" />
     <Compile Include="Commands\Factories\UpdateDestinationWorkspaceEntriesFactory.cs" />
     <Compile Include="Installers\Helpers\Implementations\CreateTenantIdForSecretStore.cs" />
@@ -203,6 +205,7 @@
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
+    <Compile Include="Installers\RestoreJobHistoryDestinationWorkspaceEventHandler.cs" />
     <Compile Include="Installers\SecretStorePostWorkspaceCreateEventHandler.cs" />
     <Compile Include="Installers\SecretStorePreWorkspaceDeleteEventHandler.cs" />
     <Compile Include="Installers\SecretStoreUninstaller.cs" />

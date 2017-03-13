@@ -78,6 +78,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				TotalItems = testData.DocsTransfered,
 				ItemsWithErrors = 0,
 				DestinationWorkspace = testData.FullName,
+				DestinationInstance = FederatedInstanceManager.LocalInstance.Name,
 				StartTimeUTC = DateTime.Now,
 				EndTimeUTC = DateTime.Now
 			};

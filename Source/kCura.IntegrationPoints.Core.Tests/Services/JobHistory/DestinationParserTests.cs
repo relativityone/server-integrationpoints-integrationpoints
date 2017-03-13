@@ -5,13 +5,13 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
-	public class DestinationWorkspaceParserTests : TestBase
+	public class DestinationParserTests : TestBase
 	{
-		private DestinationWorkspaceParser _destinationWorkspaceParser;
+		private DestinationParser _destinationParser;
 
 		public override void SetUp()
 		{
-			_destinationWorkspaceParser = new DestinationWorkspaceParser();
+			_destinationParser = new DestinationParser();
 		}
 
 		[Test]
@@ -26,9 +26,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[TestCase("workspace- 9", 9)]
 		[TestCase("10", 10)]
 		[TestCase("workspace- 18156165", 18156165)]
-		public void ItShouldParseValidDestinationWorkspace(string destinationWorkspace, int expectedArtifactId)
+		public void ItShouldParseValidDestination(string destination, int expectedArtifactId)
 		{
-			var actualArtifactId = _destinationWorkspaceParser.GetWorkspaceArtifactId(destinationWorkspace);
+			var actualArtifactId = _destinationParser.GetArtifactId(destination);
 
 			Assert.That(actualArtifactId, Is.EqualTo(expectedArtifactId));
 		}
@@ -39,9 +39,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[TestCase("2 -")]
 		[TestCase("workspace - workspace")]
 		[TestCase("workspace - workspace - workspace")]
-		public void ItShouldThrowExceptionForInvalidDestinationWorksapce(string destinationWorkspace)
+		public void ItShouldThrowExceptionForInvalidDestination(string destination)
 		{
-			Assert.That(() => _destinationWorkspaceParser.GetWorkspaceArtifactId(destinationWorkspace),
+			Assert.That(() => _destinationParser.GetArtifactId(destination),
 				Throws.TypeOf<Exception>().With.Message.EqualTo("The formatting of the destination workspace information has changed and cannot be parsed."));
 		}
 
@@ -50,11 +50,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[TestCase("instance1 - workspace1 - 1", "instance1")]
 		[TestCase("instance", "instance")]
 		[TestCase("instance - workspace", "instance")]
-		public void ItShouldReturnInstanceNames(string destinationWorkspace, string expectedInstanceName)
+		public void ItShouldReturnNames(string destination, string expectedName)
 		{
-			var instanceName = _destinationWorkspaceParser.GetInstanceName(destinationWorkspace);
+			var actualName = _destinationParser.GetName(destination);
 
-			Assert.That(instanceName, Is.EqualTo(expectedInstanceName));
+			Assert.That(actualName, Is.EqualTo(expectedName));
 		}
 	}
 }

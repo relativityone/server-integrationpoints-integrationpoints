@@ -2,14 +2,14 @@
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
-	public class DestinationWorkspaceParser : IDestinationWorkspaceParser
+	public class DestinationParser : IDestinationParser
 	{
 		private const char _SEPARATOR = '-';
 
 		private readonly string parsingError =
 			"The formatting of the destination workspace information has changed and cannot be parsed.";
 
-		public int GetWorkspaceArtifactId(string destinationWorkspace)
+		public int GetArtifactId(string destinationWorkspace)
 		{
 			try
 			{
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 		}
 
-		public string GetInstanceName(string destinationWorkspace)
+		public string GetName(string destinationWorkspace)
 		{
 			try
 			{

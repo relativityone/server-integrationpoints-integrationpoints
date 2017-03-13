@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 
 		public override void SetUp()
 		{
-			_jobHistoryAccess = new JobHistoryAccess(new DestinationWorkspaceParser());
+			_jobHistoryAccess = new JobHistoryAccess(new DestinationParser());
 		}
 		
 		[TestCaseSource(nameof(TestCases))]

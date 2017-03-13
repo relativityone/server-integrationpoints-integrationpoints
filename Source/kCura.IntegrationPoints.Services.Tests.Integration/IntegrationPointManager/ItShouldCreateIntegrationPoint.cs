@@ -50,7 +50,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			public string Username { get; set; }
 			public string Password { get; set; }
 		}
-
 		[Test]
 		public void ItShouldCreateExportToLoadFileIntegrationPoint()
 		{

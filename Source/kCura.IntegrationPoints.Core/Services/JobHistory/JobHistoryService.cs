@@ -6,8 +6,6 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
@@ -129,7 +127,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				FederatedInstanceDto federatedInstanceDto =
 					_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(setting.FederatedInstanceArtifactId);
 
-				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, workspaceDto.Name, setting.CaseArtifactId);
+				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, setting.CaseArtifactId);
+				jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
 
 				if (startTimeUtc.HasValue)
 				{
