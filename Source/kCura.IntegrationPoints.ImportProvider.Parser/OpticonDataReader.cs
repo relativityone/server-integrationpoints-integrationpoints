@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	public class OpticonDataReader : DataReaderBase, IOpticonDataReader
 	{
 		private ImageLoadFile _config;
-		private OpticonFileReader _opticonFileReader;
+		private IImageReader _opticonFileReader;
 		private bool _isClosed;
 		private string[] _currentLine;
 		private ulong _documentId;
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private DataTable _schemaTable;
 		private Dictionary<string, int> _ordinalMap;
 
-		public OpticonDataReader(ImportProviderSettings providerSettings, ImageLoadFile config, OpticonFileReader reader)
+		public OpticonDataReader(ImportProviderSettings providerSettings, ImageLoadFile config, IImageReader reader)
 		{
 			_config = config;
 			_opticonFileReader = reader;

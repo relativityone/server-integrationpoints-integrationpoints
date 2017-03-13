@@ -172,6 +172,7 @@
     <Compile Include="ImportDataReaderTests.cs" />
     <Compile Include="ImportFileLocationServiceTests.cs" />
     <Compile Include="ImportPreviewServiceTests.cs" />
+    <Compile Include="OpticonDataReaderTests.cs" />
     <Compile Include="PreviewJobTests.cs" />
   </ItemGroup>
   <ItemGroup>
