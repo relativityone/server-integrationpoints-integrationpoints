@@ -1,4 +1,5 @@
-#jstree-holder-div {
+#jstree-holder-div,
+#destination-jstree-holder-div {
 	position: absolute;
 	margin: 0;
 	padding: 0;
@@ -47,37 +48,41 @@
 	border: 1px solid transparent;
 }
 
-#location-select {
+#location-select, #destination-location-select {
 	width: 100%;
 	border: 1px solid #c1c1c1;
 	position:relative;
 	cursor: pointer;
 }
 
-#location-input {
+#location-input, #destination-location-input {
 	width: 407px;
 	border: 0px;
 	padding-left: 7px;
 	cursor: pointer;
 }
 
-#location-input::-webkit-input-placeholder {
+#location-input::-webkit-input-placeholder,
+#destination-location-input::-webkit-input-placeholder {
    color: #000;
 }
 
-#location-input:-moz-placeholder {
+#location-input:-moz-placeholder,
+#destination-location-input::-webkit-input-placeholder {
    color: #000;
 }
 
-#location-input::-moz-placeholder {
+#location-input::-moz-placeholder,
+#destination-location-input::-webkit-input-placeholder {
    color: #000;
 }
 
-#location-input:-ms-input-placeholder {
+#location-input:-ms-input-placeholder,
+#destination-location-input::-webkit-input-placeholder {
    color: #000;
 }
 
-#location-span {
+#location-span, #destination-location-span {
 	height: 100%;
 	padding-top: 6px;
 	position: absolute;

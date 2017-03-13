@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			target.ExtractedTextEncoding = importSettings.ExtractedTextEncoding;
 			target.ExtractedTextFieldContainsFilePath = importSettings.ExtractedTextFieldContainsFilePath;
 			target.SelectedCasePath = importSettings.SelectedCaseFileRepoPath;
+			target.DestinationFolderArtifactID = importSettings.DestinationFolderArtifactId;
 		}
 	}
 }

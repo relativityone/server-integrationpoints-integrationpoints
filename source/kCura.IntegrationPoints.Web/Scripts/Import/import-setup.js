@@ -13,7 +13,6 @@
 	var FILE_ENCODING_COLUMN_NESTEDVALUE_DD = 'import-nestedValue';
 	var FILE_ENCODING_DATA_SELECTOR = 'dataFileEncodingSelector';
 	var JSTREE_HOLDER_DIV = 'jstree-holder-div';
-	var PROCESSING_SOURCE_DROP_DOWN = 'processingSources';
 	var BODY_CONTAINER = 'bodyContainer';
 	var MODAL_OVERLAY = 'ui-widget-overlay';
 	var MODAL_GRPHIC = 'import-load';
@@ -36,7 +35,7 @@
 	};
 
 	var updateHeaders = function () {
-		if (!isEmpty(windowObj.RelativityImport.koModel.Fileshare())) {
+		if (!(isEmpty(windowObj.RelativityImport.koModel.LoadFile()) || repopulatingSettings)) {
 			$.ajax({
 				url: baseUrlCache + workspaceId + "/api/ImportProviderDocument/LoadFileHeaders",
 				type: 'POST',
@@ -97,13 +96,18 @@
 		}
 	}
 
+	var repopulatingSettings = false;
+
 	var populateCachedState = function () {
 		//Parent
 		var lineNumber = windowObj.RelativityImport.GetCachedUiModel.LineNumber;
 		var importType = windowObj.RelativityImport.GetCachedUiModel.ImportType;
-		var processingSourceLocationStructure = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
+		var loadFile = windowObj.RelativityImport.GetCachedUiModel.LoadFile;
+		var destinationFolderArtifactId = windowObj.RelativityImport.GetCachedUiModel.DestinationFolderArtifactId;
 
 		var ImportTypeEnum = windowObj.RelativityImport.ImportTypeEnum;
+		//set flag to prevent calling update headers until we're done repopulating all of the delimiter values
+		repopulatingSettings = true;
 
 		if (importType === ImportTypeEnum.Document) {
 			//Document
@@ -116,7 +120,8 @@
 			var hasColumnName = windowObj.RelativityImport.GetCachedUiModel.HasColumnName;
 
 			//Document repopulate model
-			windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
+			windowObj.RelativityImport.koModel.LoadFile(loadFile);
+			windowObj.RelativityImport.koModel.DestinationFolderArtifactId(destinationFolderArtifactId);
 			windowObj.RelativityImport.koModel.selectedImportType(importType);
 			windowObj.RelativityImport.koModel.startLine(lineNumber);
 			windowObj.RelativityImport.koModel.DataFileEncodingType(encodingType);
@@ -139,7 +144,8 @@
 			var productionSet = windowObj.RelativityImport.GetCachedUiModel.ProductionArtifactId;
 
 			//ImageProduction repopulate model
-			windowObj.RelativityImport.koModel.Fileshare(processingSourceLocationStructure);
+			windowObj.RelativityImport.koModel.LoadFile(loadFile);
+			windowObj.RelativityImport.koModel.DestinationFolderArtifactId(destinationFolderArtifactId);
 			windowObj.RelativityImport.koModel.startLine(lineNumber);
 			windowObj.RelativityImport.koModel.selectedImportType(importType);
 			windowObj.RelativityImport.koModel.autoNumberPages(autoNumberImages);
@@ -151,6 +157,10 @@
 			windowObj.RelativityImport.koModel.selectedRepo(selectedCaseFileRepoPath);
 			windowObj.RelativityImport.koModel.selectedProductionSets(productionSet);
 		}
+
+		//set flag to false and call updateHeaders now that all of the delimiter values are properly set
+		repopulatingSettings = false;
+		updateHeaders();
 	};
 
 	windowObj.RelativityImport.checkValueForImportType = function () {
@@ -181,9 +191,30 @@
 		$el.children().each(function (i, e) {
 			$(e).toggleClass('location-disabled', !en);
 		});
+
+		var $destinationLoc = $("#destination-location-select");
+		$destinationLoc.toggleClass('location-disabled', !en);
+		$destinationLoc.children().each(function (i, e) {
+			$(e).toggleClass('location-disabled', !en);
+		});
+
 		if (en) {
-			$('#loadData').show();
+			$('#loadFileValidationMessage').show();
 		};
+	};
+
+	windowObj.RelativityImport.getFolderFullName = function (currentFolder, folderId) {
+		if (currentFolder.id === folderId) {
+			return currentFolder.text;
+		} else {
+			for (var i = 0; i < currentFolder.children.length; i++) {
+				var childFolderPath = windowObj.RelativityImport.getFolderFullName(currentFolder.children[i], folderId);
+				if (childFolderPath !== "") {
+					return currentFolder.text + "/" + childFolderPath;
+				}
+			}
+		}
+		return "";
 	};
 
 	windowObj.RelativityImport.enableLoadModal = function (bool) {
@@ -202,9 +233,22 @@
 	windowObj.RelativityImport.locationSelector = new LocationJSTreeSelector();
 
 	//pass in the selectFilesOnly optional parameter so that location-jstree-selector will only allow us to select files
-	windowObj.RelativityImport.locationSelector.init(windowObj.RelativityImport.koModel.Fileshare(), [], {
-		onNodeSelectedEventHandler: function (node) { windowObj.RelativityImport.koModel.Fileshare(node.id) },
+	windowObj.RelativityImport.locationSelector.init(windowObj.RelativityImport.koModel.LoadFile(), [], {
+		onNodeSelectedEventHandler: function (node) { windowObj.RelativityImport.koModel.LoadFile(node.id) },
 		selectFilesOnly: true
+	});
+
+	//Get another LocationJSTreeSelector but pass in the parameters specific to the destination folder UI elements
+	windowObj.RelativityImport.destinationLocationSelector = new LocationJSTreeSelector();
+	windowObj.RelativityImport.destinationLocationSelector.init(windowObj.RelativityImport.koModel.TargetFolder(), [], {
+		dropdownSelector: 'div#destination-location-select',
+		inputSelector: 'input#destination-location-input',
+		browserTreeSelector: 'div#destination-browser-tree',
+		jstreeHolderDivSelector: '#destination-jstree-holder-div',
+		onNodeSelectedEventHandler: function (node) {
+			windowObj.RelativityImport.koModel.DestinationFolderArtifactId(node.id);
+			windowObj.RelativityImport.koModel.TargetFolder(windowObj.RelativityImport.getFolderFullName(windowObj.RelativityImport.koModel.foldersStructure, windowObj.RelativityImport.koModel.DestinationFolderArtifactId()));
+		}
 	});
 
 	//Create a function so that this can be triggered when we get the full model and can check if the destination object is an RDO or not
@@ -256,6 +300,26 @@
 			});
 		};
 		windowObj.RelativityImport.locationSelector.reloadWithRoot(reloadTree);
+	};
+
+	windowObj.RelativityImport.getFolderAndSubFolders = function (folderArtifactId) {
+		$.ajax({
+			type: "POST",
+			url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", root.utils.getParameterByName("AppID", window.top))
+		}).then(function (result) {
+			if (folderArtifactId) {
+				windowObj.RelativityImport.koModel.TargetFolder(windowObj.RelativityImport.getFolderFullName(result, folderArtifactId));
+			}
+			if (!!windowObj.RelativityImport.koModel.TargetFolder() && windowObj.RelativityImport.koModel.TargetFolder().indexOf(result.text) === -1) {
+				windowObj.RelativityImport.koModel.FolderArtifactId("");
+				windowObj.RelativityImport.koModel.TargetFolder("");
+				windowObj.RelativityImport.koModel.TargetFolder.isModified(false);
+			}
+			windowObj.RelativityImport.koModel.foldersStructure = result;
+			windowObj.RelativityImport.destinationLocationSelector.reload(result);
+		}).fail(function (error) {
+			IP.frameMessaging().dFrame.IP.message.error.raise(error);
+		});
 	};
 
 	$.ajax({

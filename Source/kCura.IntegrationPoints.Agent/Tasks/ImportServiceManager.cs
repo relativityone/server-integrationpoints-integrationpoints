@@ -139,6 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				importSettings.StartRecordNumber = Int32.Parse(providerSettings.LineNumber) + 1;
 			}
 
+			importSettings.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
 			return importSettings;
 		}
 

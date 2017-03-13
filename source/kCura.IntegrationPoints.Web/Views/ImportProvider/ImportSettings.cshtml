@@ -28,19 +28,36 @@
 						</div>
 						<div class="field-row">
 							<div class="field-label required">
+								Workspace Destination Folder:
+							</div>
+							<div class="field-value select2-double-width">
+								<div id="destination-location-select" class="select2-container fluid-mock-select filter-container">
+									<input id="destination-location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder" />
+									<span id="destination-location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+								</div>
+								<div id="destination-jstree-holder-div" class="jstree-holder browse" hidden="hidden">
+									<div id="destination-browser-tree" tabindex="0"></div>
+								</div>
+								<div class="import-validation-errors-container">
+									<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: TargetFolder"></span>
+								</div>
+							</div>
+						</div>
+						<div class="field-row">
+							<div class="field-label required">
 								Import Source:
 							</div>
 							<div class="field-value select2-double-width">
 								<div id="location-select" class="select2-container fluid-mock-select filter-container">
-									<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: Fileshare" />
+									<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: LoadFile" />
 									<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
 								</div>
 								<div>
 									<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
 										<div id="browser-tree" tabindex="0"></div>
 									</div>
-									<div class="import-validation-errors-container" id="loadData" style="display: none">
-										<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: Fileshare"></span>
+									<div class="import-validation-errors-container" id="loadFileValidationMessage" style="display: none">
+										<span class="icon-error legal-hold field-validation-error" data-bind="validationMessage: LoadFile"></span>
 									</div>
 								</div>
 							</div>

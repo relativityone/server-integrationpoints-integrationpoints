@@ -125,30 +125,19 @@
 			self.selectedNestedValueAsciiDelimiter(data);
 		};
 
-		self.ProcessingSourceLocationArtifactId = 0;
-
-		self.ProcessingSourceLocationList = ko.observableArray([]);
-
 		self.HasBeenRun = ko.observable(false);
 
-		self.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
+		self.LoadFile = ko.observable().extend({
 			required: true,
 			deferValidation: true
 		});
 
-		self.Fileshare = ko.observable().extend({
-			required: true,
-			deferValidation: true
+		//set up model objects to support DestinationFolder selection
+		self.DestinationFolder = ko.observable();
+		self.DestinationFolderArtifactId = ko.observable();
+		self.TargetFolder = ko.observable().extend({
+			required: true
 		});
-
-		self.GetSelectedProcessingSourceLocationPath = function (artifactId) {
-			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
-				if (item.artifactId === artifactId) {
-					return item;
-				}
-			});
-			return selectedPath;
-		};
 
 		self.DataFileEncodingTypeValue = "Select...";
 		self.ExtractedTextFileEncodingValue = "Select...";
