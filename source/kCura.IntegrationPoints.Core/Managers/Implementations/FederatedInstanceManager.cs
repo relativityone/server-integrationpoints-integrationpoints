@@ -43,7 +43,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			FederatedInstanceDto federatedInstance =
 				federatedInstanceRepository.RetrieveFederatedInstance(instanceName);
 
-			LoadUrl(federatedInstance);
+			if (federatedInstance != null)
+			{
+				LoadUrl(federatedInstance);
+			}
 
 			return federatedInstance;
 		}
@@ -57,7 +60,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				FederatedInstanceDto federatedInstance =
 					federatedInstanceRepository.RetrieveFederatedInstance(artifactId.Value);
 
-				LoadUrl(federatedInstance);
+				if (federatedInstance != null)
+				{
+					LoadUrl(federatedInstance);
+				}
 
 				return federatedInstance;
 			}

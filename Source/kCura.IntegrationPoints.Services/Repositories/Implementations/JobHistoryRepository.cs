@@ -62,16 +62,19 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 						FederatedInstanceDto federatedInstance = federatedInstanceManager.RetrieveFederatedInstanceByName(instanceName);
 
-						IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstance.ArtifactId,
-							integrationPoint.SecuredConfiguration);
+						if (federatedInstance != null)
+						{
+							IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstance.ArtifactId,
+								integrationPoint.SecuredConfiguration);
 
-						IWorkspaceManager workspaceManager =
-							_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(
-								_helper, targetHelper.GetServicesManager()));
+							IWorkspaceManager workspaceManager =
+								_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(
+									_helper, targetHelper.GetServicesManager()));
 
-						IList<int> userWorkspaces = workspaceManager.GetUserWorkspaces().Select(w => w.ArtifactId).ToList();
+							IList<int> userWorkspaces = workspaceManager.GetUserWorkspaces().Select(w => w.ArtifactId).ToList();
 
-						workspacesWithAccess.Add(instanceName, userWorkspaces);
+							workspacesWithAccess.Add(instanceName, userWorkspaces);
+						}
 					}
 				}
 
@@ -80,7 +83,25 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 			IList<JobHistoryModel> jobHistories = _jobHistoryAccess.Filter(allCompletedJobs, workspacesWithAccess);
 
-			return _summaryModelBuilder.Create(request.Page, request.PageSize, jobHistories);
+			IList<JobHistoryModel> orderedJobHistories = SortJobHistories(jobHistories, request);
+
+			return _summaryModelBuilder.Create(request.Page, request.PageSize, orderedJobHistories);
+		}
+
+		private IList<JobHistoryModel> SortJobHistories(IList<JobHistoryModel> jobHistories, JobHistoryRequest request)
+		{
+			System.Reflection.PropertyInfo prop = typeof(JobHistoryModel).GetProperty(request.SortColumnName);
+
+			IEnumerable<JobHistoryModel> orderedJobHistories = null;
+			if (request.SortDescending.HasValue && request.SortDescending == true)
+			{
+				orderedJobHistories = jobHistories.OrderByDescending(x => prop.GetValue(x, null));
+			}
+			else
+			{
+				orderedJobHistories = jobHistories.OrderBy(x => prop.GetValue(x, null));
+			}
+			return orderedJobHistories.ToList();
 		}
 	}
 }
