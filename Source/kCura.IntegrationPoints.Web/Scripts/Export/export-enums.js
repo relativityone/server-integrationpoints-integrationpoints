@@ -1,5 +1,10 @@
 ﻿var ExportEnums = {};
 
+ExportEnums.Defaults = {};
+
+ExportEnums.Defaults.DataFileFormatValue = 0;
+ExportEnums.Defaults.EncodingValue = 'utf-16';
+
 ExportEnums.DataFileFormats = [
   { value: 0, key: "Relativity (.dat)" },
   { value: 1, key: "HTML (.html)" },
@@ -8,6 +13,13 @@ ExportEnums.DataFileFormats = [
 ];
 
 ExportEnums.DataFileFormatEnum = {
+	Concordance: 0,
+	HTML: 1,
+	CSV: 2,
+	Custom: 3
+};
+
+ExportEnums.FileEncoding = {
 	Concordance: 0,
 	HTML: 1,
 	CSV: 2,

@@ -76,7 +76,7 @@
 			}
 		};
 
-		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
+		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
 			required: true
 		});
 
@@ -173,13 +173,13 @@
 
 		this.OverwriteFiles = ko.observable(state.OverwriteFiles || false);
 
-		this.DataFileEncodingTypeValue = state.DataFileEncodingType || "";
+		this.DataFileEncodingTypeValue = state.DataFileEncodingType || ExportEnums.Defaults.EncodingValue;
 
 		this.DataFileEncodingType = ko.observable(self.DataFileEncodingTypeValue).extend({
 			required: true
 		});
 
-		this.TextFileEncodingTypeValue = state.TextFileEncodingType || "";
+		this.TextFileEncodingTypeValue = state.TextFileEncodingType || ExportEnums.Defaults.EncodingValue;
 
 		this.TextFileEncodingType = ko.observable(self.TextFileEncodingTypeValue).extend({
 			required: {
@@ -638,7 +638,7 @@
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.fileShareDisplayText = function () {
-			if(self.Fileshare())
+			if (self.Fileshare())
 				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare();
 			return "Select...";
 		};
