@@ -179,6 +179,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					LogSyncDataError(exception);
 					ItemError(exception.Identifier, exception.Message);
 				}
+				catch (Exception ex)
+				{
+					LogSyncDataError(ex);
+					ItemError(string.Empty, ex.Message);
+				}
 			} while (movedNext);
 
 			_importService.PushBatchIfFull(true);
@@ -538,6 +543,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void LogSyncDataError(ProviderReadDataException exception)
 		{
 			_logger.LogError(exception, "Importing document {DocumentIdentifier} failed with message: {Message}.", exception.Identifier, exception.Message);
+		}
+		private void LogSyncDataError(Exception exception)
+		{
+			_logger.LogError(exception, "Importing object failed with message: {Message}.", exception.Message);
 		}
 
 		private void LogSyncingData()

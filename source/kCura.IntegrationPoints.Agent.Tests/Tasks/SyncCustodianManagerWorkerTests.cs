@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -23,7 +22,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -49,13 +47,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IManagerFactory _managerFactory;
 		private IManagerQueueService _managerQueueService;
 		private JobStatisticsService _statisticsService;
-		private IRSAPIClient _workspaceRsapiClient;
 		private IContextContainerFactory _contextContainerFactory;
 		private IJobService _jobService;
 		private IJobManager _jobManager;
-
 		private SyncCustodianManagerWorker _instance;
-
 		private Job _job;
 		private Data.IntegrationPoint _integrationPoint;
 		private SourceProvider _sourceProvider;
@@ -64,7 +59,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private TaskParameters _taskParams;
 		private List<FieldMap> _fieldsMap;
 		private List<Job> _associatedJobs;
-
 		private IJobStopManager _jobStopManager;
 		private IDataSynchronizer _dataSynchronizer;
 
@@ -98,7 +92,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_jobManager = Substitute.For<IJobManager>();
-			_workspaceRsapiClient = Substitute.For<IRSAPIClient>();
 			_managerQueueService = Substitute.For<IManagerQueueService>();
 			_statisticsService = Substitute.For<JobStatisticsService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
@@ -121,7 +114,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_jobHistoryService,
 				_jobHistoryErrorService,
 				_jobManager,
-				_workspaceRsapiClient,
 				_managerQueueService,
 				_statisticsService,
 				_managerFactory,
@@ -264,7 +256,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_repositoryFactory.GetFieldRepository(_workspaceArtifactId).Returns(_fieldRepository);
 			_fieldRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
 			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
-				_integrationPoint.DestinationConfiguration, _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
+				Arg.Any<string>(), _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
 			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
 				.Returns(_associatedJobs);
@@ -278,7 +270,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>());
 			_jobHistoryErrorService.Received().CommitErrors();
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -300,7 +292,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>());
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
 		}
@@ -311,7 +303,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -344,10 +336,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
-			task.GetType().GetField("_destinationConfiguration", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, jsonParam2);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null);
+			_integrationPoint.DestinationConfiguration = jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
-
+			
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("ReconfigureImportAPISettings",
 				BindingFlags.NonPublic | BindingFlags.Instance);
