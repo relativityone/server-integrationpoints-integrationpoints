@@ -234,7 +234,7 @@
 								</div>
 								<div class="field-row" data-bind="visible: !IsProductionExport()">
 									<div class="field-label required">
-										Production Precedence:
+										Image Precedence:
 									</div>
 									<div class="field-value">
 										<select id="image-production-precedence" data-bind="disable: HasBeenRun(), options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, disable: HasBeenRun(), select2: {}"></select>
@@ -242,7 +242,7 @@
 								</div>
 								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
 									<div class="field-label required">
-										Image Productions:
+										Production Precedence:
 									</div>
 									<div class="field-value">
 										<label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
