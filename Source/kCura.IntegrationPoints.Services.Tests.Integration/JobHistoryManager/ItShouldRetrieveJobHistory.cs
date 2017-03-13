@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -223,7 +224,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			public int WorkspaceId { get; private set; }
 			private string WorkspaceName { get; set; }
 			public int DocsTransfered { get; private set; }
-			public string FullName => $"{WorkspaceName} - {WorkspaceId}";
+			public string FullName => $"{FederatedInstanceManager.LocalInstance.Name} - {WorkspaceName} - {WorkspaceId}";
 			public bool PreventUserAccess { get; set; }
 			public bool DeletedAfterRun { get; set; }
 			public bool IsLdapProvider { get; set; }
