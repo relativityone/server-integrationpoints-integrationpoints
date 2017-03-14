@@ -1,50 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+﻿using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
 	public class SetPromoteEligibleFieldCommand : ICommand
 	{
-		private readonly IRSAPIService _rsapiService;
+		private readonly IDBContext _workspaceDbContext;
 
-		public SetPromoteEligibleFieldCommand(IRSAPIService rsapiService)
+		public SetPromoteEligibleFieldCommand(IDBContext workspaceDbContext)
 		{
-			_rsapiService = rsapiService;
+			_workspaceDbContext = workspaceDbContext;
 		}
 
 		public void Execute()
 		{
-			Update<Data.IntegrationPoint>(new Guid(IntegrationPointFieldGuids.PromoteEligible));
-			Update<IntegrationPointProfile>(new Guid(IntegrationPointProfileFieldGuids.PromoteEligible));
+			UpdateIntegrationPoints();
+			UpdateIntegrationPointProfiles();
 		}
 
-		private void Update<T>(Guid promoteEligibleGuid) where T : BaseRdo, new()
+		private void UpdateIntegrationPoints()
 		{
-			List<T> rdos = GetRdosWithoutPromoteEligibleFieldSet<T>(promoteEligibleGuid);
-			UpdateRdos(promoteEligibleGuid, rdos);
+			_workspaceDbContext.ExecuteNonQuerySQLStatement("UPDATE [IntegrationPoint] SET [PromoteEligible] = 1 WHERE [PromoteEligible] IS NULL");
 		}
 
-		private void UpdateRdos<T>(Guid promoteEligibleGuid, List<T> rdos) where T : BaseRdo, new()
+		private void UpdateIntegrationPointProfiles()
 		{
-			foreach (var rdo in rdos)
-			{
-				rdo.Rdo[promoteEligibleGuid] = new FieldValue(promoteEligibleGuid, true);
-			}
-			_rsapiService.GetGenericLibrary<T>().Update(rdos);
+			_workspaceDbContext.ExecuteNonQuerySQLStatement("UPDATE [IntegrationPointProfile] SET [PromoteEligible] = 1 WHERE [PromoteEligible] IS NULL");
 		}
 
-		private List<T> GetRdosWithoutPromoteEligibleFieldSet<T>(Guid guid) where T : BaseRdo, new()
-		{
-			var query = new Query<RDO>
-			{
-				Condition = new NotCondition(new BooleanCondition(guid, BooleanConditionEnum.IsSet)),
-				Fields = FieldValue.AllFields
-			};
-			return _rsapiService.GetGenericLibrary<T>().Query(query);
-		}
 
 		public string SuccessMessage => "Promote Eligible field successfully updated.";
 		public string FailureMessage => "Failed to update Promote Eligible field.";
