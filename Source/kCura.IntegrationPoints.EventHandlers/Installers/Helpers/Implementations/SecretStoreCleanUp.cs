@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers.Helpers.Implementatio
 					SecretID = secretId,
 					TenantID = tenantId
 				};
-				_secretCatalog.RevokeSecretAsync(secret);
+				_secretCatalog.RevokeSecretAsync(secret).Wait();
 			}
 		}
 
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers.Helpers.Implementatio
 				SecretID = $"tenant{tenantId}encryptionkey",
 				TenantID = tenantId
 			};
-			_secretCatalog.RevokeSecretAsync(secret);
+			_secretCatalog.RevokeSecretAsync(secret).Wait();
 		}
 	}
 }

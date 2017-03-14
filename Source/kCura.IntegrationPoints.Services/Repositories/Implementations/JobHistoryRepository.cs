@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		private IList<JobHistoryModel> SortJobHistories(IList<JobHistoryModel> jobHistories, JobHistoryRequest request)
 		{
-			var sortColumnName = request.SortColumnName ?? nameof(JobHistoryModel.DestinationWorkspace);
+			var sortColumnName =  string.IsNullOrEmpty(request.SortColumnName) ? nameof(JobHistoryModel.DestinationWorkspace) : request.SortColumnName;
 			PropertyInfo prop = typeof(JobHistoryModel).GetProperty(sortColumnName);
 
 			IEnumerable<JobHistoryModel> orderedJobHistories = null;

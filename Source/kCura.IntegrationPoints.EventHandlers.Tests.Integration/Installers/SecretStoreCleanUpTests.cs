@@ -37,9 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		public void ItShouldRemoveSecretAndTenantId()
 		{
 			_secretStoreCleanUp.CleanUpSecretStore();
-
-			Thread.Sleep(1000);
-
+			
 			var sqlStatement = $"SELECT COUNT(*) FROM [SQLSecretStore] WHERE [TenantID] = '{_secretManager.GetTenantID()}'";
 			var secretCount = Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(sqlStatement);
 
