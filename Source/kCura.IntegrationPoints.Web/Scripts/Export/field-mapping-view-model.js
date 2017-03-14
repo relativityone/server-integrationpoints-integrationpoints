@@ -135,7 +135,7 @@
 			availableFields[i].renamedText = "";
 			if (!!mappedFields && mappedFields.length > 0) {
 				var foundElem = mappedFields.find(mappedField => mappedField.destinationField.fieldIdentifier === availableFields[i].fieldIdentifier);
-				if (!!foundElem) {
+				if (!!foundElem && foundElem.sourceField.displayName.trim() !== foundElem.destinationField.displayName.trim()) {
 					availableFields[i].renamedText = foundElem.destinationField.displayName;
 				}
 			}

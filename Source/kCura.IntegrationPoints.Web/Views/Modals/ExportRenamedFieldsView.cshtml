@@ -2,23 +2,23 @@
 <div class="popupTitle" data-bind="text: PopupTitle"></div>
 
 <div class="card">
-	<div class="table select2-container">
-		<div class="cell">
-			<div class="list-title" style="margin: 5px 0px 5px 5px;">Selected Field</div>
+	<div class="field-row">
+		<div class="field-label" style="min-width: 150px">Selected Field:</div>
+		<div class="field-value">
 			<select id="popup-list-available" data-bind="options: selectedFields, optionsText: 'displayName', optionsValue: 'fieldIdentifier', value: selectedFieldId, select2searchable"></select>
 		</div>
-		<div class="cell">
-			<div class="list-title" style="margin: 5px 0px 5px 5px">Renamed Field</div>
-			<div class="field-value">
-				<input id="subdirectory-image-prefix-input" type="text" data-bind="value: fieldRenamedText" />
-				<button id="update-name-button" data-bind="click: update" class="actionButtonSmall">Update</button>
-			</div>
+	</div>
+	<div class="field-row">
+		<div class="field-label" style="min-width: 150px">Renamed Field:</div>
+		<div class="field-value">
+			<input id="subdirectory-image-prefix-input" type="text" data-bind="value: fieldRenamedText" />
 		</div>
 	</div>
 </div>
 
 <div class="popupArtifactActionBar">
-	<button id="ok-button" class="ActionButton" data-bind="click: ok">OK</button>
+	<button id="ok-button" class="ActionButton" data-bind="click: ok">Update</button>
+	<button id="next-button" class="ActionButton" data-bind="click: next">Update and Next</button>
 	<button id="cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
 </div>
 
