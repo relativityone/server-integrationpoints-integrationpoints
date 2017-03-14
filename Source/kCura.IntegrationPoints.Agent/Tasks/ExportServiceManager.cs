@@ -209,6 +209,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			var importSettings = Serializer.Deserialize<ImportSettings>(originalImportApiSettings);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
+			importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
 
 			//Switch to Append/Overlay for error retries where original setting was Append Only
 			if ((_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors) &&
