@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			target.CopyFilesToDocumentRepository = importSettings.CopyFilesToDocumentRepository;
 			target.DisableExtractedTextEncodingCheck = importSettings.DisableExtractedTextEncodingCheck;
 			target.DisableUserSecurityCheck = importSettings.DisableUserSecurityCheck;
-			target.ExtractedTextFieldContainsFilePath = importSettings.ExtractedTextFieldContainsFilePath;                       
+			target.ExtractedTextFieldContainsFilePath = importSettings.ExtractedTextFieldContainsFilePath;
 			target.IdentityFieldId = importSettings.IdentityFieldId;
 			target.MaximumErrorCount = int.MaxValue - 1; //Have to pass in MaxValue - 1 because of how the ImportAPI validation works -AJK 10-July-2012
 			target.NativeFileCopyMode = importSettings.NativeFileCopyMode;
@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			target.ParentObjectIdSourceFieldName = importSettings.ParentObjectIdSourceFieldName;
 			target.SendEmailOnLoadCompletion = importSettings.SendEmailOnLoadCompletion;
 			target.StartRecordNumber = importSettings.StartRecordNumber;
+			target.Billable = importSettings.CopyFilesToDocumentRepository; // mark files as billable only when copying
 		}
 	}
 }
