@@ -17,8 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
 	public class ButtonStateBuilderTests : TestBase
 	{
-		private const string DESTINATION_CONFIGURATION_JSON = @"{'ImageImport':'false'}";
-
 		[SetUp]
 		public override void SetUp()
 		{
