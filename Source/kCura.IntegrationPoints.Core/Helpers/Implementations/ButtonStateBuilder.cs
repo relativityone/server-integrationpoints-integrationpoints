@@ -71,22 +71,18 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId, IntegrationPoint integrationPoint)
 		{
-			if (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile)
-			{
-				return false;
-			}
-			if (providerType == ProviderType.Relativity)
-			{
-				var settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-				if (settings.ImageImport)
-				{
-					return false;
-				}
-			}
-			
+			if (IsNonStoppableBasedOnProviderType(providerType, integrationPoint)) return false;
+
 			StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId);
 			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
 			return integrationPointIsStoppable;
+		}
+
+		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, IntegrationPoint integrationPoint)
+		{
+			var settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+			return (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile) || 
+				(providerType == ProviderType.Relativity && settings != null && settings.ImageImport);
 		}
 	}
 }
