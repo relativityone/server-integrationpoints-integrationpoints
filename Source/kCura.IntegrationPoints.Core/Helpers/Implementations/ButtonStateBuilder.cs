@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
 			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
-			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType, applicationArtifactId, integrationPointArtifactId);
+			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType, applicationArtifactId, integrationPointArtifactId, integrationPoint);
 			bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 			ButtonStateDTO buttonState = _stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
 				integrationPointIsStoppable, hasAddProfilePermission);
@@ -68,12 +69,21 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return _queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
 		}
 
-		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId)
+		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId, IntegrationPoint integrationPoint)
 		{
 			if (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile)
 			{
 				return false;
 			}
+			if (providerType == ProviderType.Relativity)
+			{
+				var settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+				if (settings.ImageImport)
+				{
+					return false;
+				}
+			}
+			
 			StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId);
 			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
 			return integrationPointIsStoppable;
