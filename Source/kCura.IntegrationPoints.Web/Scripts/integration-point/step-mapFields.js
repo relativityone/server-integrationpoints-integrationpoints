@@ -238,6 +238,9 @@ ko.validation.insertValidationMessage = function (element) {
 		this.ImageImport.subscribe(function (value) {
 			if (value === "true") {
 				root.utils.UI.disable("#fieldMappings", true);
+				self.UseFolderPathInformation("false");
+				self.MoveExistingDocuments("false");
+				self.FolderPathSourceField(null);
 				self.autoFieldMapWithCustomOptions(function (identfier) {
 					var name = identfier.name.replace(" [Object Identifier]", "");
 					self.IdentifierField(name);
