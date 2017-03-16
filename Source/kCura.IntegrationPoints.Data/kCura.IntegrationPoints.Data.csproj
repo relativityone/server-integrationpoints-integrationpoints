@@ -341,6 +341,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="RSAPIServiceAdminAccess.cs" />
     <Compile Include="RSAPIServiceGetLibrary.cs" />
     <Compile Include="SecretStore\DefaultSecretCatalogFactory.cs" />
     <Compile Include="SecretStore\ISecretCatalogFactory.cs" />

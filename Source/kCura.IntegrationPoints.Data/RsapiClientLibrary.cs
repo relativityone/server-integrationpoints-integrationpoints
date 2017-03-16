@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Artifact = kCura.Relativity.Client.DTOs.Artifact;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -11,16 +12,22 @@ namespace kCura.IntegrationPoints.Data
 	{
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
+		private readonly ExecutionIdentity _executionIdentity;
 
-		public RsapiClientLibrary(IHelper helper, int workspaceArtifactId)
+		public RsapiClientLibrary(IHelper helper, int workspaceArtifactId) : this(helper, workspaceArtifactId, ExecutionIdentity.CurrentUser)
+		{
+		}
+
+		public RsapiClientLibrary(IHelper helper, int workspaceArtifactId, ExecutionIdentity executionIdentity)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
+			_executionIdentity = executionIdentity;
 		}
 
-		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : kCura.Relativity.Client.DTOs.Artifact
+		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : Artifact
 		{
-			RdoHelper.CheckResult(result);
+			result.CheckResult();
 		}
 
 		private static void CheckObject(T obj)
@@ -34,7 +41,7 @@ namespace kCura.IntegrationPoints.Data
 		public int Create(T integrationPoint)
 		{
 			CheckObject(integrationPoint);
-			return Create(new List<T> { integrationPoint }).First();
+			return Create(new List<T> {integrationPoint}).First();
 		}
 
 		public virtual List<int> Create(IEnumerable<T> integrationPoints)
@@ -46,7 +53,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 
 			WriteResultSet<RDO> result = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -64,7 +71,7 @@ namespace kCura.IntegrationPoints.Data
 			{
 				throw new ArgumentException("artifactID");
 			}
-			return Read(new List<int> { artifactId }).First();
+			return Read(new List<int> {artifactId}).First();
 		}
 
 		public virtual List<T> Read(IEnumerable<int> artifactIds)
@@ -76,7 +83,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 
 			ResultSet<RDO> result = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				result = rsapiClient.Repositories.RDO.Read(local.ToArray());
@@ -84,13 +91,13 @@ namespace kCura.IntegrationPoints.Data
 
 			CheckResult(result);
 
-			return result.Results.Select(x => new T { Rdo = x.Artifact }).ToList();
+			return result.Results.Select(x => new T {Rdo = x.Artifact}).ToList();
 		}
 
 		public bool Update(T obj)
 		{
 			CheckObject(obj);
-			return Update(new List<T> { obj });
+			return Update(new List<T> {obj});
 		}
 
 		public virtual bool Update(IEnumerable<T> objs)
@@ -102,7 +109,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 
 			WriteResultSet<RDO> result = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				result = rsapiClient.Repositories.RDO.Update(localList.Select(x => x.Rdo).ToList());
@@ -118,7 +125,7 @@ namespace kCura.IntegrationPoints.Data
 			{
 				throw new ArgumentException("artifactID");
 			}
-			return Delete(new List<int> { artifactId });
+			return Delete(new List<int> {artifactId});
 		}
 
 		public bool Delete(IEnumerable<int> artifactIds)
@@ -130,7 +137,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 
 			WriteResultSet<RDO> result = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				result = rsapiClient.Repositories.RDO.Delete(localList);
@@ -143,7 +150,7 @@ namespace kCura.IntegrationPoints.Data
 		public bool Delete(T obj)
 		{
 			CheckObject(obj);
-			return Delete(new List<int> { obj.ArtifactId });
+			return Delete(new List<int> {obj.ArtifactId});
 		}
 
 		public bool Delete(IEnumerable<T> objs)
@@ -174,7 +181,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 
 			QueryResultSet<RDO> result = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				result = rsapiClient.Repositories.RDO.Query(q, pageSize);
@@ -182,7 +189,7 @@ namespace kCura.IntegrationPoints.Data
 
 			CheckResult(result);
 
-			return result.Results.Select(x => new T { Rdo = x.Artifact }).ToList();
+			return result.Results.Select(x => new T {Rdo = x.Artifact}).ToList();
 		}
 	}
 }

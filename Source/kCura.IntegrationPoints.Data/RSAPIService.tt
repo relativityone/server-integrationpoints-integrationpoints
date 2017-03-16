@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data
 	foreach  (ObjectTypeDTO objType in objTypes)
 	{
 	#>
-	public IGenericLibrary<<#=objType.Name.ToPascalCase()#>> <#=objType.Name.ToPascalCase()#>Library => GetGenericLibrary<<#=objType.Name.ToPascalCase()#>>();
+	public virtual IGenericLibrary<<#=objType.Name.ToPascalCase()#>> <#=objType.Name.ToPascalCase()#>Library => GetGenericLibrary<<#=objType.Name.ToPascalCase()#>>();
 	<#
 	}
 	#>

@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain;
@@ -47,9 +48,13 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IJobHistorySummaryModelBuilder>().ImplementedBy<JobHistorySummaryModelBuilder>().LifestyleTransient());
 			container.Register(Component.For<ILibraryFactory>().ImplementedBy<LibraryFactory>().LifestyleTransient());
 			container.Register(Component.For<IJobHistoryRepository>().ImplementedBy<JobHistoryRepository>().LifestyleTransient());
-			container.Register(Component.For<IRelativityIntegrationPointsRepository>().ImplementedBy<RelativityIntegrationPointsRepositoryAdminAccess>().LifestyleTransient());
+			container.Register(Component.For<RelativityIntegrationPointsRepositoryAdminAccess>().ImplementedBy<RelativityIntegrationPointsRepositoryAdminAccess>().LifestyleTransient());
+			container.Register(
+				Component.For<IRelativityIntegrationPointsRepository>()
+					.UsingFactoryMethod(k => k.Resolve<RelativityIntegrationPointsRepositoryAdminAccess>(new RSAPIServiceAdminAccess(k.Resolve<IHelper>(), workspaceId)))
+					.LifestyleTransient());
 			container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => Core.Services.ServiceContext.ServiceContextFactory.CreateRSAPIService(k.Resolve<IHelper>(), workspaceId), true));
+			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => ServiceContextFactory.CreateRSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 			container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>().LifestyleSingleton());
 			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
 				() =>
