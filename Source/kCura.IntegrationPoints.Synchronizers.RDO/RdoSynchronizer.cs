@@ -387,15 +387,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
 				settings.DisableNativeValidation = DisableNativeValidation;
 				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
+				settings.CopyFilesToDocumentRepository = true;
 			}
 			else if ((SourceProvider != null) && SourceProvider.Config.AlwaysImportNativeFiles)
 			{
 				nativeFileImportService.ImportNativeFiles = true;
+				nativeFileImportService.SourceFieldName = Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
 				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
 				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
 				settings.DisableNativeValidation = DisableNativeValidation;
 				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
-				nativeFileImportService.SourceFieldName = Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+				settings.CopyFilesToDocumentRepository = false;
 			}
 
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
