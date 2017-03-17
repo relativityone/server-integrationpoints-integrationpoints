@@ -42,22 +42,15 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
 
-			//TODO this is hack for now - remove after enabling I2I in profiles
-			bool isFederatedInstance = false;
-			try
-			{
-				isFederatedInstance = (new JSONSerializer()).Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration).FederatedInstanceArtifactId.HasValue;
-			}
-			catch (Exception)
-			{
-				//ignore
-			}
+			var settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+
+			bool isFederatedInstance = settings.FederatedInstanceArtifactId.HasValue;
 			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
 				ArtifactPermission.Create) && !isFederatedInstance;
 
 			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
 			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
-			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType, applicationArtifactId, integrationPointArtifactId, integrationPoint);
+			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType, applicationArtifactId, integrationPointArtifactId, settings);
 			bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 			ButtonStateDTO buttonState = _stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
 				integrationPointIsStoppable, hasAddProfilePermission);
@@ -69,18 +62,17 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return _queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
 		}
 
-		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId, IntegrationPoint integrationPoint)
+		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId, ImportSettings settings)
 		{
-			if (IsNonStoppableBasedOnProviderType(providerType, integrationPoint)) return false;
+			if (IsNonStoppableBasedOnProviderType(providerType, settings)) return false;
 
 			StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId);
 			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
 			return integrationPointIsStoppable;
 		}
 
-		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, IntegrationPoint integrationPoint)
+		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, ImportSettings settings)
 		{
-			var settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
 			return (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile) || 
 				(providerType == ProviderType.Relativity && settings != null && settings.ImageImport);
 		}
