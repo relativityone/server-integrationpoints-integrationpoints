@@ -127,6 +127,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return sourceJobManager;
 		}
 
+		public IInstanceSettingsManager CreateInstanceSettingsManager(IContextContainer contextContainer)
+		{
+			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
+			return new InstanceSettingsManager(repositoryFactory);
+		}
+
 		#region Private Helpers
 
 		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)

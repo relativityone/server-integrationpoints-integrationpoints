@@ -211,6 +211,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 			importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
 
+			if (importSettings.FederatedInstanceArtifactId.HasValue)
+			{
+				var targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, importSettings.FederatedInstanceCredentials);
+				var contextContainer = ContextContainerFactory.CreateContextContainer(targetHelper);
+				var instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager(contextContainer);
+
+				if (!instanceSettingsManager.RetrieveAllowNoSnapshotImport())
+				{
+					importSettings.ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
+				}
+			}
+
 			//Switch to Append/Overlay for error retries where original setting was Append Only
 			if ((_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors) &&
 				(importSettings.OverwriteMode == OverwriteModeEnum.Append))

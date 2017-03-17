@@ -3,5 +3,7 @@
 	public interface IInstanceSettingsManager
 	{
 		string RetriveCurrentInstanceFriendlyName();
+
+		bool RetrieveAllowNoSnapshotImport();
 	}
 }

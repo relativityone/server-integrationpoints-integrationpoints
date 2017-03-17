@@ -206,7 +206,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IInstanceSettingRepository GetInstanceSettingRepository()
 		{
-			return new InstanceSettingRepository();
+			return new KeplerInstanceSettingRepository(_helper.GetServicesManager());
 		}
 
 		public IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId)

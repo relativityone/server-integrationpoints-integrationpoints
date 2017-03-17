@@ -104,6 +104,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_rdoRepository = Substitute.For<IRdoRepository>();
 			_fieldRepository = Substitute.For<IFieldRepository>();
 
+			var helperFactory = Substitute.For<IHelperFactory>();
+
 			_workspaceArtifactId = 12345;
 
 			_instance = new SyncCustodianManagerWorker(_caseServiceContext,
@@ -119,7 +121,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_managerFactory,
 				_contextContainerFactory,
 				_jobService,
-				_repositoryFactory
+				_repositoryFactory,
+				helperFactory
 				);
 
 			_job = JobHelper.GetJob(
@@ -303,7 +306,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -336,7 +339,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
 			_integrationPoint.DestinationConfiguration = jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 			
