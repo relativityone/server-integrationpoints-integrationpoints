@@ -71,7 +71,7 @@
 			</div>
 			<div class="cell selection-rename">
 				<div class="field-row">
-					<button class="actionButtonSmall" id="renamed-fields-button" data-bind="click: openRenamedFieldsModal">Rename</button>
+					<button class="actionButtonSmall" id="renamed-fields-button" data-bind="click: openRenamedFieldsModal, hidden: isRenameButtonHidden">Rename</button>
 				</div>
 				<div class="field-row map-move" style="margin-top: 150%" data-bind="visible: !$parent.HasBeenRun()">
 					<a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>

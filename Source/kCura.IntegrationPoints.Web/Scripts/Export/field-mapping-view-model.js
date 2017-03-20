@@ -14,6 +14,11 @@
 			message: "Please select at least one field."
 		}
 	});
+
+	self.mappedFields.subscribe(function() {
+		self.isRenameButtonHidden(self.mappedFields().length <= 0);
+	});
+
 	self.selectedMappedFields = ko.observableArray([]);
 
 	var exportRenamedFieldsViewModel = new ExportRenamedFieldsViewModel(function (fields) {
@@ -28,6 +33,8 @@
 		var copy = self.mappedFields().slice(0);
 		exportRenamedFieldsViewModel.open(copy, self.selectedMappedFields());
 	};
+
+	self.isRenameButtonHidden = ko.observable(true);
 
 	self.addField = function () {
 		IP.workspaceFieldsControls.add(

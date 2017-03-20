@@ -40,8 +40,6 @@
 
 		if (!!chosenFields && chosenFields.length > 0) {
 			self.selectedFieldId(chosenFields[0].fieldIdentifier);
-		} else {
-			self.selectedFieldId(fieldsToRename[0].fieldIdentifier);
 		}
 
 		self.view.dialog("open");
