@@ -26,7 +26,7 @@
 
 	self.openRenamedFieldsModal = function () {
 		var copy = self.mappedFields().slice(0);
-		exportRenamedFieldsViewModel.open(copy);
+		exportRenamedFieldsViewModel.open(copy, self.selectedMappedFields());
 	};
 
 	self.addField = function () {

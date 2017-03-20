@@ -35,8 +35,15 @@
 	this.construct = function (view) {
 		self.view = view;
 	};
-	this.open = function (selectedFields) {
-		self.selectedFields(selectedFields);
+	this.open = function (fieldsToRename, chosenFields) {
+		self.selectedFields(fieldsToRename);
+
+		if (!!chosenFields && chosenFields.length > 0) {
+			self.selectedFieldId(chosenFields[0].fieldIdentifier);
+		} else {
+			self.selectedFieldId(fieldsToRename[0].fieldIdentifier);
+		}
+
 		self.view.dialog("open");
 	};
 
