@@ -1,5 +1,7 @@
-﻿var FieldMappingViewModel = function () {
+﻿var FieldMappingViewModel = function (hasBeenRun) {
 	var self = this;
+
+	self.HasBeenRun = hasBeenRun;
 
 	self.setTitle = function (options, item) {
 		options.title = item.displayName;
@@ -15,8 +17,9 @@
 		}
 	});
 
-	self.mappedFields.subscribe(function() {
-		self.isRenameButtonHidden(self.mappedFields().length <= 0);
+	self.mappedFields.subscribe(function () {
+		var isHidden = self.mappedFields().length <= 0 || self.HasBeenRun;
+		self.isRenameButtonHidden(isHidden);
 	});
 
 	self.selectedMappedFields = ko.observableArray([]);
@@ -30,7 +33,10 @@
 	Picker.create("Modals", "export-renamed-fields-modal", "ExportRenamedFieldsView", exportRenamedFieldsViewModel);
 
 	self.openRenamedFieldsModal = function () {
-		var copy = self.mappedFields().slice(0);
+		//Previous solution was using Array.slice() but it performs shallow copy which is not suitable
+		//here as self.mappedFields() is array of objects
+		//We need to deep copy source array so it doesn't get modified on dialog 'Cancel'
+		var copy = $.extend(true, [], self.mappedFields());
 		exportRenamedFieldsViewModel.open(copy, self.selectedMappedFields());
 	};
 

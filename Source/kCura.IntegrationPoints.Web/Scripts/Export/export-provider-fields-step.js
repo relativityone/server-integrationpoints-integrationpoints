@@ -6,7 +6,7 @@
 
 		self.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
-		self.fields = new FieldMappingViewModel();
+		self.fields = new FieldMappingViewModel(self.HasBeenRun());
 
 		self.exportSource = new ExportSourceViewModel(state);
 		self.exportSource.Reload();

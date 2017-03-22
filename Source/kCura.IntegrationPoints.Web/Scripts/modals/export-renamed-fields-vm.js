@@ -18,7 +18,7 @@
 		write: function (item) {
 			if (self.selectedFieldId() !== undefined) {
 				var selField = self.selectedField(self.selectedFieldId());
-				selField.renamedText = item;
+				selField.renamedText = item.trim();
 			}
 		},
 		owner: self
@@ -40,7 +40,12 @@
 
 		if (!!chosenFields && chosenFields.length > 0) {
 			self.selectedFieldId(chosenFields[0].fieldIdentifier);
+		} else {
+			self.selectedFieldId(fieldsToRename[0].fieldIdentifier);
 		}
+
+		var selField = self.selectedField(self.selectedFieldId());
+		self.fieldRenamedText(selField.renamedText);
 
 		self.view.dialog("open");
 	};
