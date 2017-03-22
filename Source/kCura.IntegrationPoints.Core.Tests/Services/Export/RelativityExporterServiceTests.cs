@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		public override void FixtureSetUp()
 		{
 			base.FixtureSetUp();
-			_folderPathReader = Substitute.For<IFolderPathReader>();
 			_helper = Substitute.For<IHelper>();
 			_exporter = Substitute.For<IExporter>();
 			_longTextFieldFactory = Substitute.For<IILongTextStreamFactory>();
@@ -89,6 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 		{
 			_avfIds = new[] { 1, 2 };
 			_jobStopManager = Substitute.For<IJobStopManager>();
+			_folderPathReader = Substitute.For<IFolderPathReader>();
 		}
 
 		[Test]
