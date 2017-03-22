@@ -231,6 +231,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE)));
 		}
 
+		[Test]
+		public void ItShouldNotAllowForUseFolderPathInformationAndFolderPathDynamicTogether()
+		{
+			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Path\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":null,\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"FolderPathInformation\"}]";
+			const string destinationConfig = "{\"FolderPathDynamic\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}"; ;
+
+			var validationModel = GetFieldMapValidationObject(fieldMap);
+			validationModel.DestinationConfiguration = destinationConfig;
+
+			var result = _instance.Validate(validationModel);
+
+			Assert.That(result.IsValid, Is.False);
+			Assert.That(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_DYNAMIC_FOLDER_PATH_AND_FOLDER_PATH_INFORMATION_CONFLICT)));
+		}
+
 		private IntegrationPointProviderValidationModel GetFieldMapValidationObject(string fieldsMap)
 		{
 			return new IntegrationPointProviderValidationModel()

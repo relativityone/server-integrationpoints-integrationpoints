@@ -40,6 +40,8 @@ namespace kCura.IntegrationPoints.Services.Models
 
 		public bool UseFolderPathInformation { get; set; }
 
+		public bool FolderPathDynamic { get; set; }
+
 		public int FolderPathSourceField { get; set; }
 
 		/// <summary>
@@ -59,7 +61,8 @@ namespace kCura.IntegrationPoints.Services.Models
 
 		public string FieldOverlayBehavior { get; set; }
 
-		public RelativityProviderDestinationConfigurationBackwardCompatibility(RelativityProviderDestinationConfiguration destinationConfiguration, string overwriteFieldsChoice)
+		public RelativityProviderDestinationConfigurationBackwardCompatibility(RelativityProviderDestinationConfiguration destinationConfiguration,
+			RelativityProviderSourceConfiguration sourceConfiguration, string overwriteFieldsChoice)
 		{
 			ArtifactTypeID = destinationConfiguration.ArtifactTypeID;
 			DestinationProviderType = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
@@ -75,6 +78,7 @@ namespace kCura.IntegrationPoints.Services.Models
 			ExtractedTextFileEncoding = "utf-16";
 			CustodianManagerFieldContainsLink = true;
 			FieldOverlayBehavior = destinationConfiguration.FieldOverlayBehavior;
+			FolderPathDynamic = sourceConfiguration.FolderPathDynamic;
 		}
 	}
 }

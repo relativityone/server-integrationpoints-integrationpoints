@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Services.Helpers
 			}
 
 			integrationPointModel.SourceConfiguration = new RelativityProviderSourceConfigurationBackwardCompatibility(sourceConfiguration, destinationConfiguration);
-			integrationPointModel.DestinationConfiguration = new RelativityProviderDestinationConfigurationBackwardCompatibility(destinationConfiguration, overwriteFieldsName);
+			integrationPointModel.DestinationConfiguration = new RelativityProviderDestinationConfigurationBackwardCompatibility(destinationConfiguration, sourceConfiguration, overwriteFieldsName);
 		}
 	}
 }

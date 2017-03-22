@@ -9,33 +9,33 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	public class DynamicFolderPathReader : IFolderPathReader
 	{
 		private const string _DYNAMIC_FOLDER_PATH_SQL = @"
-declare @FolderPaths table (ArtifactId int, FolderPath nvarchar(max));
-insert @FolderPaths(ArtifactId) values {0};
+DECLARE @FolderPaths TABLE (ArtifactId INT, FolderPath NVARCHAR(MAX));
+INSERT @FolderPaths(ArtifactId) VALUES {0};
 
-DECLARE @ArtifactId int;
+DECLARE @ArtifactId INT;
+
+DECLARE @path NVARCHAR(MAX);
+DECLARE @docID INT;
+DECLARE @folderID INT;
+DECLARE @current INT;
+
+DECLARE @delimiter NVARCHAR(3) SET @delimiter = CAST('\' AS NVARCHAR(1))
+DECLARE @rootFolderID INT SET @rootFolderID = (SELECT ArtifactID FROM SystemArtifact WITH (NOLOCK) WHERE SystemArtifactIdentifier = 'RootFolder')
 
 DECLARE MY_CURSOR CURSOR 
   LOCAL STATIC READ_ONLY FORWARD_ONLY
 FOR 
-SELECT DISTINCT ArtifactId 
-FROM @FolderPaths
+SELECT ArtifactId FROM @FolderPaths
 
 OPEN MY_CURSOR
 FETCH NEXT FROM MY_CURSOR INTO @ArtifactId
 WHILE @@FETCH_STATUS = 0
 BEGIN
 	--BEGIN RETRIEVING PATH
-	DECLARE @path NVARCHAR(MAX);
-	DECLARE @docID INT = @ArtifactId;
-	DECLARE @folderID INT;
-	DECLARE @current INT;
-
-	DECLARE @delimiter NVARCHAR(3) SET @delimiter = CAST('\' AS NVARCHAR(1))
-	DECLARE @rootFolderID INT SET @rootFolderID = (SELECT ArtifactID FROM SystemArtifact WITH (NOLOCK) WHERE SystemArtifactIdentifier = 'RootFolder')
-
 	SET @path = NULL
+	SET @docID = @ArtifactId
 
-	SELECT TOP 1 @docID = ArtifactID, @folderID = ParentArtifactID_D FROM [Document] WITH (NOLOCK) WHERE [ArtifactId] = @docID
+	SELECT TOP 1 @docID = ArtifactID, @folderID = ParentArtifactID_D FROM Document WITH (NOLOCK) WHERE ArtifactId = @docID
 
 	SET @current = @docID
 
