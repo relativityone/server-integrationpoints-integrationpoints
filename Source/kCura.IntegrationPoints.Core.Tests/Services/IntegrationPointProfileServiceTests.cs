@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private ICaseServiceContext _caseServiceContext;
 		private IContextContainer _contextContainer;
 		private IContextContainerFactory _contextContainerFactory;
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private IManagerFactory _managerFactory;
 		private IntegrationPointProfile _integrationPointProfile;
 		private SourceProvider _sourceProvider;
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_serializer = Substitute.For<ISerializer>();
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();

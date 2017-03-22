@@ -5,30 +5,19 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -44,14 +33,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IHelperFactory _helperFactory;
 		private readonly ICaseServiceContext _context;
 		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly ISerializer _serializer;
-		private readonly IChoiceQuery _choiceQuery;
-		private readonly IJobManager _jobService;
 		private readonly IManagerFactory _managerFactory;
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IIntegrationPointProviderValidator _ipValidator;
-		private readonly IIntegrationPointPermissionValidator _permissionValidator;
-		private readonly IToggleProvider _toggleProvider;
 
 		public JobController(
 			IServiceFactory serviceFactory, 
@@ -59,28 +41,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IHelperFactory helperFactory,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			ISerializer serializer,
-			IChoiceQuery choiceQuery,
-			IJobManager jobService,
-			IManagerFactory managerFactory,
-			IRepositoryFactory repositoryFactory,
-			IIntegrationPointProviderValidator ipValidator,
-			IIntegrationPointPermissionValidator permissionValidator,
-			IToggleProvider toggleProvider)
+			IManagerFactory managerFactory)
 		{
 			_serviceFactory = serviceFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
 			_context = context;
 			_contextContainerFactory = contextContainerFactory;
-			_serializer = serializer;
-			_choiceQuery = choiceQuery;
-			_jobService = jobService;
 			_managerFactory = managerFactory;
-			_repositoryFactory = repositoryFactory;
-			_ipValidator = ipValidator;
-			_permissionValidator = permissionValidator;
-			_toggleProvider = toggleProvider;
 		}
 
 		// POST API/Job/Run
@@ -90,13 +58,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-			IIntegrationPointRepository integrationPointRepository = _repositoryFactory.GetIntegrationPointRepository(_helper.GetActiveCaseID());
 			var integrationPoint = _context.RsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(payload.ArtifactId));
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 
-			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
-				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);
 
 			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
@@ -113,8 +79,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 
-			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper,
-				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);
 
 			HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, integrationPointService.RetryIntegrationPoint);
 			return httpResponseMessage;
@@ -129,8 +94,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			string errorMessage = String.Empty;
 			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
 
-			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper,
-				_context, _contextContainerFactory, _serializer, _choiceQuery, _jobService, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper);
 
 			try
 			{

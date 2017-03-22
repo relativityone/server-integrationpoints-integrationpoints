@@ -16,10 +16,10 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private readonly IManagerFactory _managerFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISerializer _serializer;
-		private readonly IServiceFactory _serviceFactory;
+		private readonly IArtifactServiceFactory _artifactServiceFactory;
 
 		public RelativityProviderValidatorsFactory(ISerializer serializer, IRepositoryFactory repositoryFactory,
-			IHelper helper, IHelperFactory helperFactory, IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, IServiceFactory serviceFactory)
+			IHelper helper, IHelperFactory helperFactory, IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, IArtifactServiceFactory artifactServiceFactory)
 		{
 			_serializer = serializer;
 			_repositoryFactory = repositoryFactory;
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			_helperFactory = helperFactory;
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
-			_serviceFactory = serviceFactory;
+			_artifactServiceFactory = artifactServiceFactory;
 		}
 
 		public FieldsMappingValidator CreateFieldsMappingValidator(int? federatedInstanceArtifactId, string credentials)
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId, string credentials)
 		{
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
-			var artifactService = _serviceFactory.CreateArtifactService(_helper, targetHelper);
+			var artifactService = _artifactServiceFactory.CreateArtifactService(_helper, targetHelper);
 
 			return new ArtifactValidator(artifactService, workspaceArtifactId, artifactTypeName);
 		}

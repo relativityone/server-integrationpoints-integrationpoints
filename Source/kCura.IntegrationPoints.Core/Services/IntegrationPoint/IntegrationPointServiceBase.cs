@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	public abstract class IntegrationPointServiceBase<T> where T : BaseRdo, new()
 	{
 		private readonly IIntegrationPointBaseFieldGuidsConstants _guidsConstants;
-		protected ISerializer Serializer;
+		protected IIntegrationPointSerializer Serializer;
 		protected ICaseServiceContext Context;
 		protected IContextContainer SourceContextContainer;
 
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IHelper helper,
 			ICaseServiceContext context,
 			IChoiceQuery choiceQuery,
-			ISerializer serializer,
+			IIntegrationPointSerializer serializer,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointBaseFieldGuidsConstants guidsConstants,

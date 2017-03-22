@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		public IntegrationPointProfileService(IHelper helper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			ISerializer serializer,
+			IIntegrationPointSerializer serializer,
 			IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory,
 			IIntegrationPointProviderValidator integrationModelValidator,

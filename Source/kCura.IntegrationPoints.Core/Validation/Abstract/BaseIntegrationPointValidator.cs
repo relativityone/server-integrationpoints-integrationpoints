@@ -15,9 +15,9 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 	public abstract class BaseIntegrationPointValidator<TValidator> : IIntegrationPointValidator where TValidator : IValidator
 	{
 		protected readonly ILookup<string, TValidator> _validatorsMap;
-		protected readonly ISerializer _serializer;
+		protected readonly IIntegrationPointSerializer _serializer;
 
-		public BaseIntegrationPointValidator(IEnumerable<TValidator> validators, ISerializer serializer)
+		public BaseIntegrationPointValidator(IEnumerable<TValidator> validators, IIntegrationPointSerializer serializer)
 		{
 			_validatorsMap = validators.ToLookup(x => x.Key);
 			_serializer = serializer;

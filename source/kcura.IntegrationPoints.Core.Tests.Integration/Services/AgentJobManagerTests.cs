@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IEddsServiceContext _eddsServiceContext;
 		private IJobService _jobService;
 		private IHelper _helper;
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private JobTracker _jobTracker;
 		private IWorkspaceDBContext _workspaceDbContext;
 		private JobResourceTracker _jobResource;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			base.SuiteSetup();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>(); ;
 			_jobService = Container.Resolve<IJobService>();
-			_serializer = Container.Resolve<ISerializer>();
+			_serializer = Container.Resolve<IIntegrationPointSerializer>();
 			_helper = Container.Resolve<IHelper>();
 			_workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			_jobResource = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);

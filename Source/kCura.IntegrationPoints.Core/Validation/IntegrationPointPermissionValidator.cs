@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 {
 	public class IntegrationPointPermissionValidator : BaseIntegrationPointValidator<IPermissionValidator>, IIntegrationPointPermissionValidator
 	{
-		public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, ISerializer serializer) : base(validators, serializer)
+		public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, IIntegrationPointSerializer serializer) : base(validators, serializer)
 		{
 		}
 

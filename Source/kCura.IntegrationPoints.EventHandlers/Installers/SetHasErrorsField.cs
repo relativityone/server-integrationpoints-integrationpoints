@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
-			ISerializer serializer = new JSONSerializer();
+			IIntegrationPointSerializer serializer = new IntegrationPointSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, serializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IToggleProvider toggleProvider = new AlwaysDisabledToggleProvider();

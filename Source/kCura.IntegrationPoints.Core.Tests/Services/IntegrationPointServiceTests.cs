@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IContextContainerFactory _contextContainerFactory;
 		private IJobManager _jobManager;
 		private IQueueManager _queueManager;
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private IJobHistoryService _jobHistoryService;
 		private IManagerFactory _managerFactory;
 		private IServiceFactory _serviceFactory;
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_targetPermissionRepository = Substitute.For<IPermissionRepository>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_serializer = Substitute.For<ISerializer>();
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_jobManager = Substitute.For<IJobManager>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_managerFactory = Substitute.For<IManagerFactory>();

@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			var repositoryFactory = new RepositoryFactory(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetServicesManager());
 
 			IIntegrationPointPermissionValidator permissionValidator =
-				new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new JSONSerializer());
+				new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer());
 			_rsapiService = new RSAPIService(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
 			_providerTypeService = new ProviderTypeService(_rsapiService);
 			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, _rsapiService);

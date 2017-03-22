@@ -228,8 +228,10 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="Factories\IArtifactServiceFactory.cs" />
     <Compile Include="Factories\IDataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Factories\Implementations\ArtifactServiceFactory.cs" />
     <Compile Include="Factories\IStreamFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\IHelperFactory.cs" />

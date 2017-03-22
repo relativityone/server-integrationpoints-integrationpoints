@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IHelper helper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			ISerializer serializer, IChoiceQuery choiceQuery,
+			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory,

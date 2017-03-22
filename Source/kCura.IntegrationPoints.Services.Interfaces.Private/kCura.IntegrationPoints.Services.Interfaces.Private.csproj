@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Exceptions\InsufficientPermissionException.cs" />
     <Compile Include="Exceptions\InternalServerErrorException.cs" />
+    <Compile Include="Helpers\IIntegrationPointRuntimeServiceFactory.cs" />
     <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />

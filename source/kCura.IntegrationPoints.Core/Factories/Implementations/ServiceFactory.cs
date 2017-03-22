@@ -1,5 +1,4 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -14,39 +13,48 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ServiceFactory : IServiceFactory
 	{
-		public IIntegrationPointService CreateIntegrationPointService(
-			IHelper helper, 
-			IHelper targetHelper, 
-			ICaseServiceContext caseServiceContext,
-			IContextContainerFactory contextContainerFactory, 
-			ISerializer serializer, 
-			IChoiceQuery choiceQuery,
-			IJobManager jobService, 
-			IManagerFactory managerFactory,
-			IIntegrationPointProviderValidator ipValidator,
-			IIntegrationPointPermissionValidator permissionValidator,
-			IToggleProvider toggleProvider)
+		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly IIntegrationPointSerializer _serializer;
+		private readonly IChoiceQuery _choiceQuery;
+		private readonly IJobManager _jobService;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IIntegrationPointProviderValidator _ipValidator;
+		private readonly IIntegrationPointPermissionValidator _permissionValidator;
+		private readonly IToggleProvider _toggleProvider;
+
+		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
+			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
+			IJobManager jobService, IManagerFactory managerFactory, IIntegrationPointProviderValidator ipValidator,
+			IIntegrationPointPermissionValidator permissionValidator, IToggleProvider toggleProvider)
 		{
-			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper, caseServiceContext, contextContainerFactory, managerFactory, serializer);
+			_toggleProvider = toggleProvider;
+			_permissionValidator = permissionValidator;
+			_ipValidator = ipValidator;
+			_managerFactory = managerFactory;
+			_jobService = jobService;
+			_choiceQuery = choiceQuery;
+			_serializer = serializer;
+			_contextContainerFactory = contextContainerFactory;
+			_caseServiceContext = caseServiceContext;
+		}
+
+		public IIntegrationPointService CreateIntegrationPointService(IHelper helper, IHelper targetHelper)
+		{
+			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper);
 
 			return new IntegrationPointService(
 				helper,
-				caseServiceContext, 
-				contextContainerFactory, 
-				serializer, 
-				choiceQuery, 
-				jobService, 
+				_caseServiceContext, 
+				_contextContainerFactory, 
+				_serializer, 
+				_choiceQuery, 
+				_jobService, 
 				jobHistoryService, 
-				managerFactory,
-				ipValidator,
-				permissionValidator,
-				toggleProvider);
-		}
-
-		public IArtifactService CreateArtifactService(IHelper helper, IHelper targetHelper)
-		{
-			var rsapiClient = targetHelper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
-			return new ArtifactService(rsapiClient, helper);
+				_managerFactory,
+				_ipValidator,
+				_permissionValidator,
+				_toggleProvider);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)
@@ -54,14 +62,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new FieldCatalogService(targetHelper);
 		}
 
-		public IJobHistoryService CreateJobHistoryService(IHelper helper, IHelper targetHelper, ICaseServiceContext caseServiceContext, 
-			IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, ISerializer serializer)
+		public IJobHistoryService CreateJobHistoryService(IHelper helper, IHelper targetHelper)
 		{
-			IContextContainer sourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
-			IContextContainer targetContextContainer = contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
+			IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(helper);
+			IContextContainer targetContextContainer = _contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
 
-			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
-				managerFactory.CreateWorkspaceManager(targetContextContainer), helper, serializer);
+			IJobHistoryService jobHistoryService = new JobHistoryService(_caseServiceContext, _managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
+				_managerFactory.CreateWorkspaceManager(targetContextContainer), helper, _serializer);
 
 			return jobHistoryService;
 		}

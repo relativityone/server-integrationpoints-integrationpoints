@@ -23,9 +23,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly IWorkspaceManager _workspaceManager;
 		private readonly IAPILog _logger;
-		private readonly ISerializer _serializer;
+		private readonly IIntegrationPointSerializer _serializer;
 
-		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, IHelper helper, ISerializer serializer){
+		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, IHelper helper, IIntegrationPointSerializer serializer){
 			_caseServiceContext = caseServiceContext;
 			_federatedInstanceManager = federatedInstanceManager;
 			_workspaceManager = workspaceManager;

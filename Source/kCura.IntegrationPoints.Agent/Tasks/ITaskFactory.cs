@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IManagerFactory _managerFactory;
 		private IHelperFactory _helperFactory;
 		private IServiceFactory _serviceFactory;
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private IToggleProvider _toggleProvider;
 
 		public TaskFactory(IAgentHelper helper)
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		/// <summary>
 		///     For unit tests only
 		/// </summary>
-		internal TaskFactory(IAgentHelper helper, ISerializer serializer, IContextContainerFactory contextContainerFactory, ICaseServiceContext caseServiceContext,
+		internal TaskFactory(IAgentHelper helper, IIntegrationPointSerializer serializer, IContextContainerFactory contextContainerFactory, ICaseServiceContext caseServiceContext,
 			IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory, IAPILog apiLog)
 		{
 			_helper = helper;
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ResolveDependencies(IntegrationPoint integrationPointDto)
 		{
-			_serializer = Container.Resolve<ISerializer>();
+			_serializer = Container.Resolve<IIntegrationPointSerializer>();
 			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			_helperFactory = Container.Resolve<IHelperFactory>();
 			_serviceFactory = Container.Resolve<IServiceFactory>();
@@ -301,7 +301,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			DestinationConfiguration destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, destinationConfiguration.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
-			return _serviceFactory.CreateJobHistoryService(_helper, targetHelper, _caseServiceContext, _contextContainerFactory, _managerFactory, _serializer);
+			return _serviceFactory.CreateJobHistoryService(_helper, targetHelper);
 		}
 
 		#region Logging

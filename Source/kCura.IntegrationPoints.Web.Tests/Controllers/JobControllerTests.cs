@@ -6,18 +6,12 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Hosting;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -28,7 +22,6 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -53,19 +46,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IHelperFactory _helperFactory;
 		private IServiceFactory _serviceFactory;
 		private ICaseServiceContext _caseServiceContext;
-		private ISerializer _serializer;
-		private IChoiceQuery _choiceQuery;
-		private IJobManager _jobManager;
 		private IManagerFactory _managerFactory;
 		private IRepositoryFactory _repositoryFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private IContextContainer _contextContainer;
-		private IIntegrationPointProviderValidator _ipValidator;
-		private IIntegrationPointPermissionValidator _permissionValidator;
 		private JobController _instance;
 		private IRelativityAuditRepository _auditRepository;
 		private IAuditManager _auditManager;
-		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -84,18 +71,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_auditRepository = Substitute.For<IRelativityAuditRepository>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_serializer = Substitute.For<ISerializer>();
-			_choiceQuery = Substitute.For<IChoiceQuery>();
-			_jobManager = Substitute.For<IJobManager>();
 			_contextContainer = Substitute.For<IContextContainer>();
-			_ipValidator = Substitute.For<IIntegrationPointProviderValidator>();
-			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
-			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_serviceFactory.CreateIntegrationPointService(_helper, _helper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
-			_serviceFactory.CreateIntegrationPointService(_helper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+			_serviceFactory.CreateIntegrationPointService(_helper, _helper).Returns(_integrationPointService);
+			_serviceFactory.CreateIntegrationPointService(_helper, _targetHelper).Returns(_integrationPointService);
 			_managerFactory.CreateAuditManager(_contextContainer, _WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
 			_repositoryFactory.GetIntegrationPointRepository(_WORKSPACE_ARTIFACT_ID).Returns(_integrationPointRepository);
 			_auditManager.RelativityAuditRepository.Returns(_auditRepository);
@@ -106,14 +87,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				_helperFactory,
 				_caseServiceContext,
 				_contextContainerFactory,
-				_serializer,
-				_choiceQuery,
-				_jobManager,
-				_managerFactory,
-				_repositoryFactory,
-				_ipValidator,
-				_permissionValidator,
-				_toggleProvider)
+				_managerFactory)
 			{
 				Request = new HttpRequestMessage()
 			};

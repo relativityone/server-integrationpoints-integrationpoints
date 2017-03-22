@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IStateManager stateManager = ManagerFactory.CreateStateManager();
 					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
 					IIntegrationPointPermissionValidator permissionValidator =
-						new IntegrationPointPermissionValidator(new[] {new ViewErrorsPermissionValidator(repositoryFactory)}, new JSONSerializer());
+						new IntegrationPointPermissionValidator(new[] {new ViewErrorsPermissionValidator(repositoryFactory)}, new IntegrationPointSerializer());
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
 					IRSAPIService rsapiService = new RSAPIService(Helper, Helper.GetActiveCaseID());
 					IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
