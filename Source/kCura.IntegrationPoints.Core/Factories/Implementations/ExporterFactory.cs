@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -28,18 +29,21 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IRepositoryFactory _targetRepositoryFactory;
 		private readonly IHelper _helper;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
+		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 
 		public ExporterFactory(
 			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
-			IHelper helper, IFederatedInstanceManager federatedInstanceManager)
+			IHelper helper, IFederatedInstanceManager federatedInstanceManager,
+			IFolderPathReaderFactory folderPathReaderFactory)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
 			_targetRepositoryFactory = targetRepositoryFactory;
 			_helper = helper;
 			_federatedInstanceManager = federatedInstanceManager;
+			_folderPathReaderFactory = folderPathReaderFactory;
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
@@ -94,7 +98,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			}
 			else
 			{
-				return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+				var folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
+				return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, folderPathReader, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
 			}
 		}
 	}

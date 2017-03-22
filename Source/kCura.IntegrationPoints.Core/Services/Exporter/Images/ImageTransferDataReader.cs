@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			FieldMap[] fieldMappings,
 			ICoreContext context,
 			IScratchTableRepository[] scratchTableRepositories) :
-			base(relativityExportService, fieldMappings, context, scratchTableRepositories)
+			base(relativityExportService, fieldMappings, context, scratchTableRepositories, false)
 		{
 			
 		}

@@ -324,7 +324,12 @@
     <Compile Include="Services\DataTransferLocationService.cs" />
     <Compile Include="Services\Exporter\Base\ExporterServiceBase.cs" />
     <Compile Include="Services\Exporter\Base\ExportTransferDataReaderBase.cs" />
+    <Compile Include="Services\Exporter\DynamicFolderPathReader.cs" />
+    <Compile Include="Services\Exporter\EmptyFolderPathReader.cs" />
+    <Compile Include="Services\Exporter\FolderPathReaderFactory.cs" />
+    <Compile Include="Services\Exporter\IFolderPathReader.cs" />
     <Compile Include="Services\Exporter\IExporterTransferConfiguration.cs" />
+    <Compile Include="Services\Exporter\IFolderPathReaderFactory.cs" />
     <Compile Include="Services\Exporter\Images\ImageExporterService.cs" />
     <Compile Include="Services\Exporter\ExporterTransferContext.cs" />
     <Compile Include="Services\Exporter\Images\ImageTransferDataReader.cs" />
