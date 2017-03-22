@@ -314,18 +314,6 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IF NOT EXISTS (SELECT * FROM [eddsdbo].[TOGGLE] WHERE [Name] = &apos;kCura.IntegrationPoints.Web.Toggles.UI.ShowImageImportToggle&apos;)
-        ///BEGIN
-        ///	INSERT INTO [eddsdbo].[Toggle] VALUES (&apos;kCura.IntegrationPoints.Web.Toggles.UI.ShowImageImportToggle&apos;, 1)
-        ///END.
-        /// </summary>
-        internal static string ShowImageImportToggle {
-            get {
-                return ResourceManager.GetString("ShowImageImportToggle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to UPDATE {0}.[{1}]
         ///	SET
         ///		[TotalRecords] = @total,
