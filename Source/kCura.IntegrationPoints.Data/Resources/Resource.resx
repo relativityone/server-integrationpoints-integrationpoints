@@ -160,6 +160,9 @@
   <data name="SetExportProviderToogle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>setexportprovidertoogle.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="ShowImageImportToggle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>showimageimporttoggle.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="UpdateJobStatistics" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>updatejobstatistics.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
