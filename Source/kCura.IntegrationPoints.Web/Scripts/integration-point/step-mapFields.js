@@ -223,6 +223,10 @@ ko.validation.insertValidationMessage = function (element) {
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+
+		var copyNativeFileText = "Copy Native File:";
+		var copyFileToRepositoryText = "Copy Files to Repository:";
+		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
 		/********** Temporary UI Toggle**********/
 		this.ImageImportToggle = ko.observable("false");
@@ -240,6 +244,7 @@ ko.validation.insertValidationMessage = function (element) {
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
 				self.MoveExistingDocuments("false");
+				self.copyNativeLabel(copyFileToRepositoryText);
 				self.FolderPathSourceField(null);
 				self.autoFieldMapWithCustomOptions(function (identfier) {
 					var name = identfier.name.replace(" [Object Identifier]", "");
@@ -247,6 +252,7 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 			}
 			else {
+				self.copyNativeLabel(copyNativeFileText);
 				root.utils.UI.disable("#fieldMappings", false);
 			}
 		});
