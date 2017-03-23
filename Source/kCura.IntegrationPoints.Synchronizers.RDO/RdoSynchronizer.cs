@@ -406,7 +406,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
 
-			if (settings.FolderPathDynamic)
+			if (settings.UseDynamicFolderPath)
 			{
 				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME;
 			}

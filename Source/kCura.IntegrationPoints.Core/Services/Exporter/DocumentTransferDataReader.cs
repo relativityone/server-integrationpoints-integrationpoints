@@ -26,8 +26,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			FieldMap[] fieldMappings,
 			ICoreContext context,
 			IScratchTableRepository[] scratchTableRepositories,
-			bool folderPathDynamic) :
-			base(relativityExportService, fieldMappings, context, scratchTableRepositories, folderPathDynamic)
+			bool useDynamicFolderPath) :
+			base(relativityExportService, fieldMappings, context, scratchTableRepositories, useDynamicFolderPath)
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();

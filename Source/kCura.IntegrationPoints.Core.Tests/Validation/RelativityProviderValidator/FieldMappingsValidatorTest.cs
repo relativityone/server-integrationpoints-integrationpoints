@@ -232,10 +232,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		}
 
 		[Test]
-		public void ItShouldNotAllowForUseFolderPathInformationAndFolderPathDynamicTogether()
+		public void ItShouldNotAllowForUseFolderPathInformationAndUseDynamicFolderPathTogether()
 		{
 			const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Path\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":null,\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"FolderPathInformation\"}]";
-			const string destinationConfig = "{\"FolderPathDynamic\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}"; ;
+			const string destinationConfig = "{\"UseDynamicFolderPath\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}"; ;
 
 			var validationModel = GetFieldMapValidationObject(fieldMap);
 			validationModel.DestinationConfiguration = destinationConfig;

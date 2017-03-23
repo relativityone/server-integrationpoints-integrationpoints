@@ -4,6 +4,6 @@
 	{
 		public int SavedSearchArtifactId { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
-		public bool FolderPathDynamic { get; set; }
+		public bool UseDynamicFolderPath { get; set; }
 	}
 }

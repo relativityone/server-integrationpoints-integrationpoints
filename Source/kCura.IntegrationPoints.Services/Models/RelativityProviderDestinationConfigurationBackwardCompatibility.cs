@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Services.Models
 
 		public bool UseFolderPathInformation { get; set; }
 
-		public bool FolderPathDynamic { get; set; }
+		public bool UseDynamicFolderPath { get; set; }
 
 		public int FolderPathSourceField { get; set; }
 
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Services.Models
 			ExtractedTextFileEncoding = "utf-16";
 			CustodianManagerFieldContainsLink = true;
 			FieldOverlayBehavior = destinationConfiguration.FieldOverlayBehavior;
-			FolderPathDynamic = sourceConfiguration.FolderPathDynamic;
+			UseDynamicFolderPath = sourceConfiguration.UseDynamicFolderPath;
 		}
 	}
 }

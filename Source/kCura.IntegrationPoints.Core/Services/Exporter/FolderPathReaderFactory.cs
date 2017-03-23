@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		public IFolderPathReader Create(ClaimsPrincipal claimsPrincipal, ImportSettings importSettings, string sourceConfiguration)
 		{
-			if (importSettings.FolderPathDynamic)
+			if (importSettings.UseDynamicFolderPath)
 			{
 				var workspaceArtifactId = JsonConvert.DeserializeObject<SourceConfiguration>(sourceConfiguration).SourceWorkspaceArtifactId;
 				var dbContext = claimsPrincipal.GetUnversionContext(workspaceArtifactId).ChicagoContext.DBContext;

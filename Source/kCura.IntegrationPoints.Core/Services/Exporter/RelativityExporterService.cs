@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
 			var documentTransferDataReader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, transferConfiguration.ScratchRepositories,
-				transferConfiguration.ImportSettings.FolderPathDynamic);
+				transferConfiguration.ImportSettings.UseDynamicFolderPath);
 			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader, transferConfiguration) {TotalItemsFound = TotalRecordsFound};
 			return _context ?? (_context = exporterTransferContext);
 		}
