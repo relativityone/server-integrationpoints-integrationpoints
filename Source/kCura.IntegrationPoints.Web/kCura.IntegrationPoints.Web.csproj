@@ -532,6 +532,7 @@
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\EventHandlers\integration-points-summary-page-view.js" />
+    <Content Include="Scripts\Export\export-provider-file-name-vm.js" />
     <Content Include="Scripts\Export\export-source-view-model.js" />
     <Content Include="Scripts\Export\export-summary-page.js" />
     <Content Include="Scripts\ftpProvider\ftp-provider-summary-page.js" />

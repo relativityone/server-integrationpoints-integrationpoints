@@ -205,6 +205,23 @@
 										<select id="exportNativeWithFilenameFromTypeSelector" data-bind="enable: !HasBeenRun(), options: ExportEnums.ExportNativeWithFilenameFromTypes, optionsCaption: 'Select...', optionsText: 'key', optionsValue: 'value', value: SelectedExportNativesWithFileNameFrom, select2: {}"></select>
 									</div>
 								</div>
+								@*<div class="field-row" data-bind="with: exportFileNameViewModel">
+									<div class="field-label">
+										File Name:
+									</div>
+									<div class="field-value">
+										<div data-bind="foreach: metaData">
+											<select data-bind="value: $parent.data()[$data], options: $parent.listData()[$data], optionsText: 'name', optionsValue: 'value', valueAllowUnset: true, select2: {}"/>
+										</div>
+									</div>
+									<div class="field-value">
+										<button id="add-file-name-selection-button" class="actionButtonSmall" data-bind="click: addNewSelection">+</button>
+									</div>	
+									<div class="field-value">
+										<button id="del-file-name-selection-button" class="actionButtonSmall" data-bind="click: removeNewSelection">-</button>
+									</div>
+								</div>*@
+								
 								<div class="field-row">
 									<div class="field-label">
 										Append Original File Name:

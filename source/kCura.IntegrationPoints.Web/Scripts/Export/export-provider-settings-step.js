@@ -643,6 +643,8 @@
 			return "Select...";
 		};
 
+	    this.exportFileNameViewModel = new ExportProviderFileNameViewModel([]);
+
 		this.getSelectedOption = function () {
 			return {
 				"AppendOriginalFileName": self.AppendOriginalFileName(),
