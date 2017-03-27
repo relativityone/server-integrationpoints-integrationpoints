@@ -472,7 +472,6 @@
     <Compile Include="Telemetry\TelemetryManager.cs" />
     <Compile Include="Telemetry\TelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryMetricProviderBase.cs" />
-    <Compile Include="Toggles\RipToR1Toggle.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointProviderValidator.cs" />
     <Compile Include="Validation\Parts\EmailValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\FieldsMappingValidator.cs" />

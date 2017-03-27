@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
@@ -26,7 +25,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			}
 
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-			Domain.Managers.IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory, new AlwaysDisabledToggleProvider());
+			Domain.Managers.IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			Domain.Managers.IInstanceSettingsManager instanceSettingsManager =new InstanceSettingsManager(repositoryFactory);
 			IRelativityProviderConfiguration relativityProviderSourceConfiguration =
 				RelativityProviderSourceConfigurationFactory.Create(helper, federatedInstanceModelFactory, instanceSettingsManager);

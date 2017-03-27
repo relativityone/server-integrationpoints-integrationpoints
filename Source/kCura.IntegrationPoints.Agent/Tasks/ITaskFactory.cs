@@ -50,7 +50,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IHelperFactory _helperFactory;
 		private IServiceFactory _serviceFactory;
 		private IIntegrationPointSerializer _serializer;
-		private IToggleProvider _toggleProvider;
 
 		public TaskFactory(IAgentHelper helper)
 		{
@@ -185,11 +184,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			_helperFactory = Container.Resolve<IHelperFactory>();
 			_serviceFactory = Container.Resolve<IServiceFactory>();
-			_toggleProvider = Container.Resolve<IToggleProvider>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
-			_managerFactory = new ManagerFactory(_helper, _toggleProvider);
+			_managerFactory = new ManagerFactory(_helper);
 			_jobHistoryService = CreateJobHistoryService(integrationPointDto);
 		}
 

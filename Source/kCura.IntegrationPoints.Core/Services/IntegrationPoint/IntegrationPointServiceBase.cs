@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
@@ -20,8 +16,6 @@ using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Toggles;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -37,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		protected IIntegrationPointProviderValidator IntegrationModelValidator;
 		protected IIntegrationPointPermissionValidator _permissionValidator;
 		protected IHelper _helper;
-		protected IToggleProvider _toggleProvider;
 
 		protected static readonly object Lock = new object();
 
@@ -52,8 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IContextContainerFactory contextContainerFactory,
 			IIntegrationPointBaseFieldGuidsConstants guidsConstants,
 			IIntegrationPointProviderValidator integrationModelValidator,
-			IIntegrationPointPermissionValidator permissionValidator,
-			IToggleProvider toggleProvider)
+			IIntegrationPointPermissionValidator permissionValidator)
 		{
 			Serializer = serializer;
 			Context = context;
@@ -64,7 +56,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_permissionValidator = permissionValidator;
 			_helper = helper;
 			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
-			_toggleProvider = toggleProvider;
 		}
 
 		public IList<T> GetAllRDOs()

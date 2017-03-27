@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.EventHandler;
+﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -19,9 +17,6 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.Utility.Extensions;
-using Relativity.Toggles;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -30,7 +25,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private readonly IConsoleBuilder _consoleBuilder;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelperClassFactory _helperClassFactory;
-		private readonly IToggleProvider _toggleProvider;
 		private IButtonStateBuilder _buttonStateBuilder;
 		private IManagerFactory _managerFactory;
 		private IOnClickEventConstructor _onClickEventConstructor;
@@ -40,7 +34,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			_contextContainerFactory = new ContextContainerFactory();
 			_helperClassFactory = new HelperClassFactory();
 			_consoleBuilder = new ConsoleBuilder();
-			_toggleProvider = new AlwaysDisabledToggleProvider();
 		}
 
 		internal ConsoleEventHandler(IButtonStateBuilder buttonStateBuilder, IOnClickEventConstructor onClickEventConstructor, IConsoleBuilder consoleBuilder)
@@ -56,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					_managerFactory = new ManagerFactory(Helper, _toggleProvider);
+					_managerFactory = new ManagerFactory(Helper);
 				}
 				return _managerFactory;
 			}
