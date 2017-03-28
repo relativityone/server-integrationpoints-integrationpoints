@@ -17,7 +17,7 @@
 	<property name="source.dependency.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.192.5\lib\net45" />
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.192.5\lib\net45" />
-	<property name="relativityDependencyVersion" value="9.5.89.44" />
+	<property name="relativityDependencyVersion" value="9.5.103.62" />
 	
 	<!-- Log properties -->
 	<echo message="Root: ${root}" />
@@ -105,10 +105,11 @@
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.WinEDDS.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.WinEDDS.Core.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45\kCura.WinEDDS.ImportExtension.dll"' />
+			<arg line='"${source.packages.directory}\ZetaLongPaths.1.0.0.16\lib\net40-full\ZetaLongPaths.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
-			<arg line='"${lib.directory}\kCura.IntegrationPoints.Injection.dll"' />
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Injection.dll"' />			
 			
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />
