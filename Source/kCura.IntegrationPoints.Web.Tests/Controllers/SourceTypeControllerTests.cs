@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -26,7 +25,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	{
 		private SourceTypeController _instance;
 		private IWindsorContainer _windsorContainer;
-		private IToggleProvider _toggleProvider;
 		private ISourceTypeFactory _sourceTypeFactory;
 		private ICaseServiceContext _iCaseServiceContext;
 		private RSAPIRdoQuery _objTypeQuery;
@@ -35,7 +33,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 		private void SetUpWindsorContainer()
 		{
-			_windsorContainer.Register(Component.For<IToggleProvider>().Instance(_toggleProvider).LifestyleTransient());
 			_windsorContainer.Register(Component.For<ISourceTypeFactory>().Instance(_sourceTypeFactory).LifestyleTransient());
 			_windsorContainer.Register(Component.For<SourceTypeController>());
 			_windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(_iCaseServiceContext).LifestyleTransient());
@@ -46,7 +43,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public override void SetUp()
 		{
 			_windsorContainer = new WindsorContainer();
-			_toggleProvider = NSubstitute.Substitute.For<IToggleProvider>();
 			_sourceTypeFactory = NSubstitute.Substitute.For<ISourceTypeFactory>();
 			_iCaseServiceContext = NSubstitute.Substitute.For<ICaseServiceContext>();
 			_iCaseServiceContext.WorkspaceUserID.Returns(-1);

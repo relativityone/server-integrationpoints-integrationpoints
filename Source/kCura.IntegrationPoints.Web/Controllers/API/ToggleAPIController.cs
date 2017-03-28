@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Core.Services.DestinationTypes;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Synchronizer;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Attributes;
-using kCura.IntegrationPoints.Web.Toggles;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API

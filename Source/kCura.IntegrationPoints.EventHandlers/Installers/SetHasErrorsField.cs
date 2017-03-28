@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core;
@@ -23,15 +20,12 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
-using Relativity.Toggles;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -111,19 +105,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IIntegrationPointSerializer serializer = new IntegrationPointSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, serializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-			IToggleProvider toggleProvider = new AlwaysDisabledToggleProvider();
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory, toggleProvider);
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 
 			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, serializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-			IManagerFactory managerFactory = new ManagerFactory(Helper, toggleProvider);
+			IManagerFactory managerFactory = new ManagerFactory(Helper);
 
 			_caseServiceContext = caseServiceContext;
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), serializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), serializer);
 			
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, 
-				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator, toggleProvider);
+				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator);
 		}
 
 		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)

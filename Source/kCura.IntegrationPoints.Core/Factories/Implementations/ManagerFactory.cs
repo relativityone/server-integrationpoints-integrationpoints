@@ -1,31 +1,23 @@
 ﻿using System;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
-using Relativity.Toggles;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ManagerFactory : IManagerFactory
 	{
 		private readonly IHelper _helper;
-		private readonly IToggleProvider _toggleProvider;
 
-		public ManagerFactory(IHelper helper, IToggleProvider toggleProvider)
+		public ManagerFactory(IHelper helper)
 		{
 			_helper = helper;
-			_toggleProvider = toggleProvider;
 		}
 
 		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
@@ -96,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IFederatedInstanceManager CreateFederatedInstanceManager(IContextContainer contextContainer)
 		{
-			IFederatedInstanceManager manager = new FederatedInstanceManager(CreateRepositoryFactory(contextContainer), _toggleProvider);
+			IFederatedInstanceManager manager = new FederatedInstanceManager(CreateRepositoryFactory(contextContainer));
 
 			return manager;
 		}

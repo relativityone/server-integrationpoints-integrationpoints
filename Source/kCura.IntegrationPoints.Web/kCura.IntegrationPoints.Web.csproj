@@ -398,7 +398,6 @@
     <Compile Include="SignalRHubs\IntegrationPointDataHubInput.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHub.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Toggles\ShowFileShareDataProviderToggle.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />

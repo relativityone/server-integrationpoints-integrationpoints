@@ -5,9 +5,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -21,14 +19,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IManagerFactory _managerFactory;
 		private readonly IIntegrationPointProviderValidator _ipValidator;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
-		private readonly IToggleProvider _toggleProvider;
 
 		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService, IManagerFactory managerFactory, IIntegrationPointProviderValidator ipValidator,
-			IIntegrationPointPermissionValidator permissionValidator, IToggleProvider toggleProvider)
+			IIntegrationPointPermissionValidator permissionValidator)
 		{
-			_toggleProvider = toggleProvider;
 			_permissionValidator = permissionValidator;
 			_ipValidator = ipValidator;
 			_managerFactory = managerFactory;
@@ -53,8 +49,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				jobHistoryService, 
 				_managerFactory,
 				_ipValidator,
-				_permissionValidator,
-				_toggleProvider);
+				_permissionValidator);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)

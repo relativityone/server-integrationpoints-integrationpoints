@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.API;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -14,7 +13,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 		{
 			IRSAPIService rsapiService = new RSAPIService(helper, workspaceArtifactId);
 			IDestinationParser destinationParser = new DestinationParser();
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(new RepositoryFactory(helper, helper.GetServicesManager()), new AlwaysEnabledToggleProvider());
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(new RepositoryFactory(helper, helper.GetServicesManager()));
 			return new RestoreJobHistoryDestinationWorkspaceCommand(rsapiService, destinationParser, federatedInstanceManager);
 		}
 	}

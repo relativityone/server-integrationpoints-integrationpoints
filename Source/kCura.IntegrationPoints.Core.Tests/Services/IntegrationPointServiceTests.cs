@@ -72,7 +72,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationPointProviderValidator _integrationModelValidator;
 		private IIntegrationPointPermissionValidator _permissionValidator;
 		private IntegrationPointModelBase _integrationPointModel;
-		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -106,9 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_permissionValidator.ValidateSave(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
 				Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
-
-			_toggleProvider = Substitute.For<IToggleProvider>();
-
+			
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(
 				_helper,
 				_caseServiceContext,
@@ -119,8 +116,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_jobHistoryService,
 				_managerFactory,
 				_integrationModelValidator,
-				_permissionValidator,
-				_toggleProvider
+				_permissionValidator
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();

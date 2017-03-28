@@ -3,13 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation;
@@ -18,12 +16,10 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain.Models;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
 using Relativity.CustomPages;
-using Relativity.Toggles.Providers;
 using Timer = System.Timers.Timer;
 
 namespace kCura.IntegrationPoints.Web.SignalRHubs
@@ -42,7 +38,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
 
-		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory(), new ManagerFactory(ConnectionHelper.Helper(), new AlwaysDisabledToggleProvider()))
+		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory(), new ManagerFactory(ConnectionHelper.Helper()))
 		{
 			var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
 			var queueManager = _managerFactory.CreateQueueManager(_contextContainer);

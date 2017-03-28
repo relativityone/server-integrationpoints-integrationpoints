@@ -151,14 +151,8 @@
   <data name="RemoveEntryAndCheckBatchStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>removeentryandcheckbatchstatus.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="RipToR1Toggle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>RipToR1Toggle.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="SetBlankLogErrorsToNo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>setblanklogerrorstono.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="SetExportProviderToogle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>setexportprovidertoogle.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="ShowImageImportToggle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>showimageimporttoggle.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
