@@ -9,13 +9,24 @@ var loadData = function (ko, dataContainer) {
 			return ".\\EDDS" + self.settings.SourceWorkspaceArtifactId;
 		}
 
+		var getDestinationDetails = function() {
+			var destinationLocation = "FileShare: " + destinationFolderPrefix() + "\\" + self.settings.Fileshare;
+
+			if (self.settings.IsAutomaticFolderCreationEnabled) {
+				var exportFolderName = "\\" + self.name + "_{TimeStamp}";
+				destinationLocation += exportFolderName;
+			}
+
+			return destinationLocation;
+		}
+
 		this.hasErrors = dataContainer.hasErrors;
 		this.logErrors = dataContainer.logErrors;
 		this.emailNotification = dataContainer.emailNotification;
 		this.name = dataContainer.name;
 		this.settings = dataContainer.sourceConfiguration;
 		this.transferredRdoTypeName = dataContainer.transferredRdoTypeName;
-		this.fileShareLocation = "FileShare: " + destinationFolderPrefix() + "\\" + self.settings.Fileshare;
+		this.fileShareLocation = getDestinationDetails();
 		this.promoteEligible = dataContainer.promoteEligible;
 
 		this.sourceDetails = function () {

@@ -141,6 +141,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.That(exportSettings.ExportFullTextAsFile);
 		}
 
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldSetCorrectAutomaticFolderCreationFlag(bool isAutomaticFolderCreationEnabled)
+		{
+			// Arrange
+			ExportUsingSavedSearchSettings sourceSettings = CreateSourceSettings();
+			sourceSettings.IsAutomaticFolderCreationEnabled = isAutomaticFolderCreationEnabled;
+
+			// Act
+			ExportSettings exportSettings = _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1);
+
+			// Assert
+			Assert.That(exportSettings.IsAutomaticFolderCreationEnabled, Is.EqualTo(isAutomaticFolderCreationEnabled));
+		}
+
 		private ExportUsingSavedSearchSettings CreateSourceSettings()
 		{
 			return new ExportUsingSavedSearchSettings()

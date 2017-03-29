@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
@@ -16,6 +17,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const string _DESTINATION_PATH_KEY = "DestinationPath";
 
 		private const string _LONGT_TEXT_FIELD_KEY = "LongTextFieldName";
+
+		public static readonly string JobName = "IntergationTest";
+
+		public static readonly DateTime JobStart = DateTime.UtcNow;
 
 		#endregion //Fields
 

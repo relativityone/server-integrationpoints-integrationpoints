@@ -16,8 +16,10 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.Relativity.Client;
+using kCura.ScheduleQueue.Core;
 using kCura.Vendor.Castle.Core.Internal;
 using kCura.Vendor.Castle.Windsor;
+using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
@@ -26,6 +28,7 @@ using ArtifactType = Relativity.ArtifactType;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
+using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
@@ -105,9 +108,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new SearchManagerFactory(),
 				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
-					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))),
+					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
+					),
 				helper,
-				jobStats
+				jobStats,
+				GetJobInfo(),
+				new LongPathDirectoryHelper()
 			);
 
 			var exportSettingsBuilder = new ExportSettingsBuilder(helper);
@@ -131,9 +137,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		public void RunTestCase(IExportTestCase testCase)
 		{
 			// Arrange
-			var settings = testCase.Prepare(CreateExportSettings());
+			ExportSettings settings = testCase.Prepare(CreateExportSettings());
 			var directory = new DirectoryInfo(settings.ExportFilesLocation);
-
+			
 			CreateOutputFolder(directory.FullName);
 
 			// Act
@@ -148,7 +154,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
 			// Arrange
-			var settings = testCase.Prepare(CreateExportSettings());
+			ExportSettings settings = testCase.Prepare(CreateExportSettings());
 
 			// Act
 			_instanceUnderTest.StartWith(settings, JobExtensions.CreateJob());
@@ -223,6 +229,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			{
 				_windsorContainer = ContainerInstaller.CreateContainer(_configSettings);
 			}
+		}
+
+		private IJobInfoFactory GetJobInfo()
+		{
+			var jobInfoFactory = _windsorContainer.Resolve<IJobInfoFactory>();
+			var jobInfo = _windsorContainer.Resolve<IJobInfo>();
+
+			jobInfoFactory.Create(Arg.Any<Job>()).Returns(jobInfo);
+
+			jobInfo.GetStartTimeUtc().Returns(ConfigSettings.JobStart);
+			jobInfo.GetName().Returns(ConfigSettings.JobName);
+
+			return jobInfoFactory;
 		}
 
 		#endregion Methods

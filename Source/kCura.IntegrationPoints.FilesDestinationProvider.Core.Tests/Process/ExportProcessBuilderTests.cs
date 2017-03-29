@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using kCura.IntegrationPoint.Tests.Core;
@@ -8,6 +9,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -26,6 +28,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 	[TestFixture]
 	public class ExportProcessBuilderTests : TestBase
 	{
+		private readonly string JobName = "Name";
+		private readonly DateTime JobStart = new DateTime(2020, 1, 1, 10, 30, 30);
+
 		private class BatchReporterMock : IBatchReporter, ILoggingMediator
 		{
 			public event BatchCompleted OnBatchComplete { add { } remove { } }
@@ -59,6 +64,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private IUserNotification _userNotification;
 		private IConfigFactory _configFactory;
 		private JobStatisticsService _jobStatisticsService;
+
+		private IJobInfoFactory _jobInfoFactoryMock;
+		private IJobInfo _jobInfoMock;
+
+		private IDirectoryHelper _directoryHelper;
+
 		private Job _job;
 
 		private Dictionary<int, FieldEntry> AllExportableAvfIds => new Dictionary<int, FieldEntry>
@@ -88,6 +99,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_userNotification = Substitute.For<IUserNotification>();
 			_configFactory = Substitute.For<IConfigFactory>();
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
+
+			_jobInfoFactoryMock = Substitute.For<IJobInfoFactory>();
+			_jobInfoMock = Substitute.For<IJobInfo>();
+			_directoryHelper = Substitute.For<IDirectoryHelper>();
+
+			_jobInfoFactoryMock.Create(Arg.Any<Job>()).Returns(_jobInfoMock);
+
+			_jobInfoMock.GetStartTimeUtc().Returns(JobStart);
+			_jobInfoMock.GetName().Returns(JobName);
+
 			var helper = Substitute.For<IHelper>();
 
 			_loggingMediator.LoggingMediators.Returns(new List<ILoggingMediator>());
@@ -107,7 +128,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				_exporterFactory,
 				_exportFileBuilder,
 				helper,
-				_jobStatisticsService
+				_jobStatisticsService,
+				_jobInfoFactoryMock,
+				_directoryHelper
 			);
 
 			_job = JobExtensions.CreateJob();

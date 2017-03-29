@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.WinEDDS;
 using Relativity;
 

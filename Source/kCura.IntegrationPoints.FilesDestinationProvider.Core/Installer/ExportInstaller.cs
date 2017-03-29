@@ -1,6 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
@@ -45,6 +46,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IProductionService>().ImplementedBy<ProductionService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointValidationService>().ImplementedBy<FileDestinationProviderConfigurationValidator>().Named($"{nameof(FileDestinationProviderConfigurationValidator)}+{nameof(IIntegrationPointValidationService)}").LifestyleTransient());
+
+			container.Register(Component.For<IJobInfoFactory>().ImplementedBy<JobInfoFactory>().LifestyleTransient());
+			container.Register(Component.For<IDirectoryHelper>().ImplementedBy<WinEDDS.Core.IO.LongPathDirectoryHelper>().LifestyleTransient());
+			
 		}
 	}
 }

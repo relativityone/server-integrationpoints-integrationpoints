@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;
@@ -28,6 +29,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly JobStatisticsService _jobStatisticsService;
+		private readonly IJobInfoFactory _jobHistoryFactory;
+		private readonly IDirectoryHelper _dirHelper;
 		private readonly IAPILog _logger;
 		private readonly ICompositeLoggingMediator _loggingMediator;
 		private readonly IManagerFactory<ISearchManager> _searchManagerFactory;
@@ -45,7 +48,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IExporterFactory exporterFactory,
 			IExportFileBuilder exportFileBuilder,
 			IHelper helper,
-			JobStatisticsService jobStatisticsService
+			JobStatisticsService jobStatisticsService,
+			IJobInfoFactory jobHistoryFactory,
+			IDirectoryHelper dirHelper
 		)
 		{
 			_configFactory = configFactory;
@@ -58,6 +63,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_exporterFactory = exporterFactory;
 			_exportFileBuilder = exportFileBuilder;
 			_jobStatisticsService = jobStatisticsService;
+			_jobHistoryFactory = jobHistoryFactory;
+			_dirHelper = dirHelper;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
 		}
 
@@ -69,6 +76,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				var exportFile = _exportFileBuilder.Create(settings);
 				PerformLogin(exportFile);
 				PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds.Select(item => item.Key).ToList(), settings.TextPrecedenceFieldsIds);
+
+				SetRuntimeSettings(exportFile, settings, job);
 				var exporter = _exporterFactory.Create(new ExportDataContext()
 				{
 					ExportFile = exportFile,
@@ -83,6 +92,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				LogCreatingExporterError(e);
 				throw;
 			}
+		}
+
+		private void SetRuntimeSettings(ExportFile exportFile, ExportSettings settings, Job job)
+		{
+			// TODO: move this to WinEDDS
+			IJobInfo jobInfo = _jobHistoryFactory.Create(job);
+			IDestinationFolderHelper destinationFolderHelper = new DestinationFolderHelper(jobInfo, _dirHelper);
+
+			exportFile.FolderPath = destinationFolderHelper.GetFolder(settings);
+			destinationFolderHelper.CreateFolder(exportFile.FolderPath);
 		}
 
 		private void PerformLogin(ExportFile exportFile)

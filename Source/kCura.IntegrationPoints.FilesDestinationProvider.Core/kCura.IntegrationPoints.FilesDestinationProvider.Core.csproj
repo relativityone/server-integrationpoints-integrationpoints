@@ -149,6 +149,14 @@
       <HintPath>..\packages\$(Relativity_OAuth2Client_Interfaces)\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Utility">
+      <HintPath>..\packages\$(kCura_Utility)\lib\net45\kCura.Utility.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ZetaLongPaths">
+      <HintPath>..\packages\$(ZetaLongPaths)\lib\net40-full\ZetaLongPaths.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web.Services" />
@@ -167,8 +175,14 @@
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
     <Compile Include="Helpers\ExportedArtifactNameRepository.cs" />
+    <Compile Include="Helpers\DestinationFolderHelper.cs" />
     <Compile Include="Helpers\IExportedArtifactNameRepository.cs" />
+    <Compile Include="Helpers\IDestinationFolderHelper.cs" />
+    <Compile Include="Helpers\IJobInfo.cs" />
+    <Compile Include="Helpers\IJobInfoFactory.cs" />
     <Compile Include="Helpers\IServiceManagerProvider.cs" />
+    <Compile Include="Helpers\JobInfo.cs" />
+    <Compile Include="Helpers\JobInfoFactory.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
     <Compile Include="Installer\ValidationInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />

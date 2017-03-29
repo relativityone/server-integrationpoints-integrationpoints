@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
 using NSubstitute;
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings = DefaultExportSettingsFactory.Create();
 			_exportedObjectBuilder = Substitute.For<IExportedObjectBuilder>();
+
 			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>(), Substitute.For<IVolumeInfoBuilder>(), _exportedObjectBuilder);
 		}
 
