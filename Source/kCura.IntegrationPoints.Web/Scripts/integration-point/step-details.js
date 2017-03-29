@@ -153,6 +153,7 @@ var IP = IP || {};
 				self.ExtractedTextFieldContainsFilePath = destinationSettings.ExtractedTextFieldContainsFilePath;
 				self.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
 				self.importNativeFile = destinationSettings.importNativeFile;
+				self.IPDestinationSettings = destinationSettings;
 				self.destinationProvider = settings.destinationProvider;
 				self.SecuredConfiguration = settings.SecuredConfiguration;
 

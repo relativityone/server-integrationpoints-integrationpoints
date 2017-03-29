@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			if (settings.ImageImport)
 			{
 				return new ImageExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-					claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+					claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId,settings);
 			}
 			else
 			{
