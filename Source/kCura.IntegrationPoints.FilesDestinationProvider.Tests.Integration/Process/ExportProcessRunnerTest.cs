@@ -190,7 +190,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 							ArtifactID = _configSettings.ProductionArtifactId.ToString(),
 							DisplayName = "Production"
 						}
-					}
+					},
+				SubdirectoryStartNumber = 1
 			};
 
 			return settings;
