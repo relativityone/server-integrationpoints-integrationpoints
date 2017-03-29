@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 using Relativity.Core;
@@ -161,6 +162,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		/// In Overlay mode it allows to switch Yes/No if import API should move documents between folders when use folder path information
 		/// </summary>
 		public bool MoveExistingDocuments { get; set; }
+
+		public string ProductionPrecedence { get; set; }
+		public bool IncludeOriginalImages { get; set; }
+		public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
+
 		public int ProductionArtifactId { get; set; }
 
 		#endregion "Public Properties"
