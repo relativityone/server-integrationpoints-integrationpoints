@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Domain.Models;
@@ -10,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private const string _DYNAMIC_FOLDER_PATH_SQL = @"
 DECLARE @FolderPaths TABLE (ArtifactId INT, FolderPath NVARCHAR(MAX));
-INSERT @FolderPaths(ArtifactId) VALUES {0};
+INSERT @FolderPaths(ArtifactId) (SELECT * FROM @ArtifactIds);
 
 DECLARE @ArtifactId INT;
 
@@ -78,9 +79,17 @@ SELECT * FROM @FolderPaths";
 
 		private void SetFolderPaths(IDictionary<int, ArtifactDTO> artifacts)
 		{
-			string artifactIdsValues = GetArtifactIdsValues(artifacts);
+			DataTable artifactIdsValues = GetArtifactIdsValues(artifacts);
 
-			var dataTable = _dbContext.ExecuteSqlStatementAsDataTable(string.Format(_DYNAMIC_FOLDER_PATH_SQL, artifactIdsValues));
+			SqlParameter parameter = new SqlParameter
+			{
+				SqlDbType = SqlDbType.Structured,
+				TypeName = "IDs",
+				Value = artifactIdsValues,
+				ParameterName = "@ArtifactIds"
+			};
+
+			var dataTable = _dbContext.ExecuteSqlStatementAsDataTable(_DYNAMIC_FOLDER_PATH_SQL, new []{parameter});
 
 			foreach (DataRow dataTableRow in dataTable.Rows)
 			{
@@ -94,9 +103,18 @@ SELECT * FROM @FolderPaths";
 			}
 		}
 
-		private string GetArtifactIdsValues(IDictionary<int, ArtifactDTO> artifacts)
+		private DataTable GetArtifactIdsValues(IDictionary<int, ArtifactDTO> artifacts)
 		{
-			return string.Join(",", artifacts.Select(x => $"({x.Key})"));
+			var dataTable = new DataTable();
+			dataTable.Columns.Add();
+
+			foreach (var artifactDto in artifacts)
+			{
+				var dataRow = dataTable.NewRow();
+				dataRow[0] = artifactDto.Key;
+				dataTable.Rows.Add(dataRow);
+			}
+			return dataTable;
 		}
 	}
 }
