@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
@@ -35,7 +36,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 
 			List<ArtifactDTO> artifactDtos = paths.Select(x => new ArtifactDTO(x.Key, 1, string.Empty, new List<ArtifactFieldDTO>())).ToList();
 
-			_dbContext.ExecuteSqlStatementAsDataTable(Arg.Any<string>()).Returns(dataTable);
+			_dbContext.ExecuteSqlStatementAsDataTable(Arg.Any<string>(), 
+				Arg.Is<IEnumerable<SqlParameter>>(x =>
+				x.First().SqlDbType == SqlDbType.Structured
+				&& x.First().TypeName == "IDs")).Returns(dataTable);
 
 			// Act
 			_instance.SetFolderPaths(artifactDtos);
