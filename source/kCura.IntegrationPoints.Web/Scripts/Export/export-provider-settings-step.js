@@ -14,7 +14,7 @@
 			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
 		}
 
-		this.Fileshare = ko.observable(state.fileshare).extend({
+		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
 		});
 
@@ -732,7 +732,6 @@
 				integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
 				name: ip.name,
 				isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
-				fileShare: ip.sourceConfiguration.Fileshare
 			}));
 
 			self.model.errors = ko.validation.group(self.model);
