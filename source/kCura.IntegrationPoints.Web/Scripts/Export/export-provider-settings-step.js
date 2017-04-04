@@ -4,6 +4,7 @@
 	var viewModel = function (state) {
 		var self = this;
 
+		this.IPName = state.name;
 		this.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
 		this.ArtifactTypeID = state.artifactTypeId;
@@ -638,10 +639,21 @@
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.fileShareDisplayText = function () {
-			if (self.Fileshare())
+			if (self.Fileshare()) {
+				if (self.IsExportFolderCreationEnabled()) {
+					return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare() + "\\" + self.IPName + "_{TimeStamp}";
+				}
+
 				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare();
+			}
 			return "Select...";
 		};
+
+		this.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || false);
+		self.IsExportFolderCreationEnabled.subscribe(function () {
+			self.fileShareDisplayText();
+		});
+
 
 		var availableFields = [];
 		availableFields.push(new AvailableFieldMock("Control Number", 1));
@@ -691,7 +703,8 @@
 				"VolumeMaxSize": self.VolumeMaxSize(),
 				"VolumePrefix": self.VolumePrefix(),
 				"VolumeStartNumber": self.VolumeStartNumber(),
-				"IncludeNativeFilesPath": self.IncludeNativeFilesPath()
+				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
+				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled()
 			};
 		};
 	};
@@ -729,7 +742,9 @@
 				hasBeenRun: ip.hasBeenRun,
 				artifactTypeId: ip.artifactTypeID,
 				defaultRdoTypeId: ip.DefaultRdoTypeId,
-				integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier
+				integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
+				name: ip.name,
+				isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
 			}));
 
 			self.model.errors = ko.validation.group(self.model);

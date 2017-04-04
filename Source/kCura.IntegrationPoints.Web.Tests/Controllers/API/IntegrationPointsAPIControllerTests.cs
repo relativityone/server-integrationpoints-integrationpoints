@@ -3,19 +3,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -26,7 +19,6 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -40,17 +32,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 		private ICPHelper _cpHelper;
 		private IHelper _targetHelper;
-		private ICaseServiceContext _caseServiceContext;
-		private ISerializer _serializer;
-		private IJobManager _jobManager;
-		private IChoiceQuery _choiceQuery;
 		private IHelperFactory _helperFactory;
 		private IServicesMgr _svcMgr;
-		private IContextContainerFactory _contextContainerFactory;
-		private IManagerFactory _managerFactory;
-		private IIntegrationPointProviderValidator _ipValidator;
-		private IIntegrationPointPermissionValidator _permissionValidator;
-		private IToggleProvider _toggleProvider;
 
 		private const int _WORKSPACE_ID = 23432;
 		private const string _CREDENTIALS = "{}";
@@ -65,22 +48,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_cpHelper = Substitute.For<ICPHelper>();
 			_targetHelper = Substitute.For<IHelper>();
 			_svcMgr = Substitute.For<IServicesMgr>();
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_serializer = Substitute.For<ISerializer>();
-			_jobManager = Substitute.For<IJobManager>();
-			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_helperFactory = Substitute.For<IHelperFactory>();
-			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_managerFactory = Substitute.For<IManagerFactory>();
-			_ipValidator = Substitute.For<IIntegrationPointProviderValidator>();
-			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
-			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_cpHelper.GetServicesManager().Returns(_svcMgr);
 			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>()).Returns(Substitute.For<IMetricsManager>());
 
-			_instance = new IntegrationPointsAPIController(_serviceFactory, _relativityUrlHelper, _rdoSynchronizerProvider, _cpHelper, _caseServiceContext, _contextContainerFactory,
-				_serializer, _choiceQuery, _jobManager, _managerFactory, _helperFactory, _ipValidator, _permissionValidator, _toggleProvider) {Request = new HttpRequestMessage()};
+			_instance = new IntegrationPointsAPIController(_serviceFactory, _relativityUrlHelper, _rdoSynchronizerProvider, _cpHelper, _helperFactory) {Request = new HttpRequestMessage()};
 
 			_instance.Request.SetConfiguration(new HttpConfiguration());
 		}
@@ -100,8 +73,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
-				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper).Returns(_integrationPointService);
 
 			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
 
@@ -143,8 +115,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper, _caseServiceContext, _contextContainerFactory, _serializer, _choiceQuery, 
-				_jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider).Returns(_integrationPointService);
+			_serviceFactory.CreateIntegrationPointService(_cpHelper, _targetHelper).Returns(_integrationPointService);
 
 			_integrationPointService.SaveIntegration(Arg.Any<IntegrationPointModel>()).Throws(expectException);
 

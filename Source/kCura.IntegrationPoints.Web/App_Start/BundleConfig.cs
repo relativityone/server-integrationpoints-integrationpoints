@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/jquery-postMessage.js",
 				"~/Scripts/frame-messaging.js"
 			));
-
 			bundles.Add(new ScriptBundle("~/bundles/ipEdit").Include(
 				"~/Scripts/Controls/step-progress.js",
 				"~/Scripts/Controls/Tooltip-ctrl.js",
@@ -44,12 +43,15 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/integration-point/step-details.js",
 				"~/Scripts/integration-point/step-import.js ",
 				"~/Scripts/integration-point/step-mapFields-control.js",
-				"~/Scripts/integration-point/step-mapFields.js",
 				"~/Scripts/integration-point/picker.js",
+				"~/Scripts/export/export-enums.js",
+				"~/Scripts/export/image-production-picker.js",
+				"~/Scripts/integration-point/step-mapFields.js",
 				"~/Scripts/integration-point/tooltip-definitions.js",
 				"~/Scripts/integration-point/tooltip-view-model.js",
 				"~/Scripts/route.js"
-			));
+				));
+
 
 			bundles.Add(new ScriptBundle("~/bundles/exportProvider").Include(
 				// common

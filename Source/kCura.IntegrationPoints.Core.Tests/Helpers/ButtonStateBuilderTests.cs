@@ -8,6 +8,8 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -40,30 +42,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
 		private ButtonStateBuilder _buttonStateBuilder;
 
-		[TestCase(ProviderType.Relativity, true, true, true, true, true)]
-		[TestCase(ProviderType.Other, true, true, true, true, true)]
-		[TestCase(ProviderType.FTP, true, true, true, true, true)]
-		[TestCase(ProviderType.LDAP, true, true, true, true, true)]
-		[TestCase(ProviderType.LoadFile, true, true, true, true, true)]
-		[TestCase(ProviderType.Relativity, false, true, true, true, true)]
-		[TestCase(ProviderType.Relativity, true, false, true, true, true)]
-		[TestCase(ProviderType.Relativity, true, true, false, true, true)]
-		[TestCase(ProviderType.Relativity, true, true, true, false, true)]
-		[TestCase(ProviderType.Relativity, true, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, true, true,false)]
+		[TestCase(ProviderType.Other, true, true, true, true, true, false)]
+		[TestCase(ProviderType.FTP, true, true, true, true, true, false)]
+		[TestCase(ProviderType.LDAP, true, true, true, true, true, false)]
+		[TestCase(ProviderType.LoadFile, true, true, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, false, true, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, false, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, false, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, false, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, true, false, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, true, false, true)]
 		[Test]
 		public void BuildButtonState_GoldWorkflow(ProviderType providerType, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue, bool hasStoppableJobs,
-			bool hasErrors, bool hasAddProfilePermission)
+			bool hasErrors, bool hasAddProfilePermission,bool imageImport)
 		{
 			int applicationArtifactId = 501;
 			int integrationPointArtifactId = 229;
 			int sourceProviderArtifactId = 841;
 			int destinationProviderArtifactId = 273;
-
+			var importSettings = new ImportSettings {ImageImport = imageImport};
 			_rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId).Returns(new Data.IntegrationPoint
 			{
 				HasErrors = hasErrors,
 				SourceProvider = sourceProviderArtifactId,
-				DestinationProvider = destinationProviderArtifactId
+				DestinationProvider = destinationProviderArtifactId,
+				DestinationConfiguration = JsonConvert.SerializeObject(importSettings)
 			});
 
 			_permissionValidator.ValidateViewErrors(applicationArtifactId).Returns(
@@ -82,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
 			_buttonStateBuilder.CreateButtonState(applicationArtifactId, integrationPointArtifactId);
 
-			bool hasTrulyStoppableJobs = hasStoppableJobs && (providerType == ProviderType.Relativity || providerType == ProviderType.LoadFile);
+			bool hasTrulyStoppableJobs = hasStoppableJobs && (providerType == ProviderType.Relativity || providerType == ProviderType.LoadFile) && !imageImport;
 
 			_stateManager.Received(1).GetButtonState(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermission, hasTrulyStoppableJobs, hasAddProfilePermission);
 		}

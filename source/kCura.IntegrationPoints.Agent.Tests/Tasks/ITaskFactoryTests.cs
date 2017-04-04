@@ -1,6 +1,5 @@
 ﻿using Castle.Windsor;
 using Relativity.API;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -23,17 +22,12 @@ using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -42,7 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 	{
 		private IAgentHelper _helper;
 		private IHelper _targetHelper;
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private IContextContainerFactory _contextContainerFactory;
 		private ICaseServiceContext _caseServiceContext;
 		private IRSAPIClient _rsapiClient;
@@ -66,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_helper = Substitute.For<IAgentHelper>();
 			_targetHelper = Substitute.For<IHelper>();
-			_serializer = Substitute.For<ISerializer>();
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_rsapiClient = Substitute.For<IRSAPIClient>();
@@ -85,10 +79,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_helperFactory.CreateTargetHelper(_helper, null, Arg.Any<string>()).Returns(_helper);
 			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int>(), Arg.Any<string>()).Returns(_targetHelper);
 
-			_serviceFactory.CreateJobHistoryService(_helper, _helper, _caseServiceContext, _contextContainerFactory,
-				Arg.Any<IManagerFactory>(), _serializer).Returns(_jobHistoryService);
-			_serviceFactory.CreateJobHistoryService(_helper, _targetHelper, _caseServiceContext, _contextContainerFactory,
-				Arg.Any<IManagerFactory>(), _serializer).Returns(_jobHistoryService);
+			_serviceFactory.CreateJobHistoryService(_helper, _helper).Returns(_jobHistoryService);
+			_serviceFactory.CreateJobHistoryService(_helper, _targetHelper).Returns(_jobHistoryService);
 
 			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _jobHistoryService, _agentService, _jobService,
 				_managerFactory, apiLog);
@@ -207,7 +199,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			container.Resolve<ICaseServiceContext>().Returns(_caseServiceContext);
 			container.Resolve<IRelativityConfigurationFactory>().Returns(_relativityConfigurationFactory);
-			container.Resolve<ISerializer>().Returns(_serializer);
+			container.Resolve<IIntegrationPointSerializer>().Returns(_serializer);
 			container.Resolve<IJobHistoryErrorService>().Returns(_jobHistoryErrorService);
 			container.Resolve<IServiceFactory>().Returns(_serviceFactory);
 			container.Resolve<IContextContainerFactory>().Returns(_contextContainerFactory);

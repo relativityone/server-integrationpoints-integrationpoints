@@ -13,10 +13,8 @@ using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.Web.Toggles;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -25,7 +23,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	{
 		private DestinationTypeController _instance;
 		private IWindsorContainer _windsorContainer;
-		private IToggleProvider _toggleProvider;
 		private IDestinationTypeFactory _destinationTypeFactory;
 		private ICaseServiceContext _iCaseServiceContext;
 		private RSAPIRdoQuery _objTypeQuery;
@@ -34,7 +31,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 		private void SetUpWindsorContainer()
 		{
-			_windsorContainer.Register(Component.For<IToggleProvider>().Instance(_toggleProvider).LifestyleTransient());
 			_windsorContainer.Register(Component.For<IDestinationTypeFactory>().Instance(_destinationTypeFactory).LifestyleTransient());
 			_windsorContainer.Register(Component.For<DestinationTypeController>());
 			_windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(_iCaseServiceContext).LifestyleTransient());
@@ -45,7 +41,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public override void SetUp()
 		{
 			_windsorContainer = new WindsorContainer();
-			_toggleProvider = Substitute.For<IToggleProvider>();
 			_destinationTypeFactory = Substitute.For<IDestinationTypeFactory>();
 			_iCaseServiceContext = Substitute.For<ICaseServiceContext>();
 			_iCaseServiceContext.WorkspaceUserID.Returns(-1);
@@ -97,7 +92,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 
 			_destinationTypeFactory.GetDestinationTypes().Returns(destinationTypeModels);
-			_toggleProvider.IsEnabled<ShowFileShareDataProviderToggle>().Returns(true);
 
 			// Act
 			HttpResponseMessage response = _instance.Get();

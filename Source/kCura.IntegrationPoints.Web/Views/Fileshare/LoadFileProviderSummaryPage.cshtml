@@ -1,9 +1,7 @@
 @{
 	ViewBag.Title = "Settings";
 }
-
-<link href="~/Content/buttermilk-overrides.css" rel="stylesheet"/>
-
+<link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
 <table id="summaryPage" class="innerTabTable">
 	<tr>
 		<td class="editTableColumn">
@@ -64,7 +62,7 @@
 			<table>
 				<tr>
 					<td class="dynamicViewFieldName">Destination details:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: fileShareLocation"></td>
+					<td class="dynamicViewFieldValue longTextField" data-bind="text: fileShareLocation"></td>
 				</tr>
 			</table>
 		</td>
@@ -208,7 +206,6 @@
 		</td>
 	</tr>
 </table>
-
 <script src="~/Scripts/export/export-enums.js"></script>
 <script src="~/Scripts/moment.js"></script>
 <script src="~/Scripts/export/export-summary-page.js"></script>

@@ -8,16 +8,22 @@ namespace kCura.IntegrationPoints.Data
 {
 	public partial class RSAPIService
 	{
+		protected ExecutionIdentity ExecutionIdentity;
 		private readonly IGenericLibraryFactory _genericLibraryFactory;
 		private readonly IDictionary<Type, object> _genericLibraries;
 
 		public IGenericLibrary<T> GetGenericLibrary<T>() where T : BaseRdo, new()
 		{
+			return GetGenericLibrary<T>(ExecutionIdentity);
+		}
+
+		protected IGenericLibrary<T> GetGenericLibrary<T>(ExecutionIdentity executionIdentity) where T : BaseRdo, new()
+		{
 			if (!_genericLibraries.ContainsKey(typeof(T)))
 			{
-				_genericLibraries.Add(typeof(T), _genericLibraryFactory.Create<T>());
+				_genericLibraries.Add(typeof(T), _genericLibraryFactory.Create<T>(executionIdentity));
 			}
-			return (IGenericLibrary<T>) _genericLibraries[typeof(T)];
+			return (IGenericLibrary<T>)_genericLibraries[typeof(T)];
 		}
 
 		public RSAPIService(IHelper helper, int workspaceArtifactId)
@@ -29,6 +35,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			_genericLibraryFactory = genericLibraryFactory;
 			_genericLibraries = new ConcurrentDictionary<Type, object>();
+			ExecutionIdentity = ExecutionIdentity.CurrentUser;
 		}
 	}
 }

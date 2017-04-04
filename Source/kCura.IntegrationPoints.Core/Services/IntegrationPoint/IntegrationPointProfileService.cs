@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -21,13 +18,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		public IntegrationPointProfileService(IHelper helper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			ISerializer serializer,
+			IIntegrationPointSerializer serializer,
 			IChoiceQuery choiceQuery,
 			IManagerFactory managerFactory,
 			IIntegrationPointProviderValidator integrationModelValidator,
-			IIntegrationPointPermissionValidator permissionValidator,
-			IToggleProvider toggleProvider)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator, permissionValidator, toggleProvider)
+			IIntegrationPointPermissionValidator permissionValidator)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointProfileFieldGuidsConstants(), integrationModelValidator, permissionValidator)
 		{
 		}
 

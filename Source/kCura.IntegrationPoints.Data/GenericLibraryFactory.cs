@@ -18,14 +18,14 @@ namespace kCura.IntegrationPoints.Data
 			_secretManager = secretManager;
 		}
 
-		public IGenericLibrary<T> Create<T>() where T : BaseRdo, new()
+		public IGenericLibrary<T> Create<T>(ExecutionIdentity executionIdentity) where T : BaseRdo, new()
 		{
 			if (typeof(T) == typeof(IntegrationPoint))
 			{
-				RsapiClientLibrary<IntegrationPoint> integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(_helper, _workspaceArtifactId);
+				RsapiClientLibrary<IntegrationPoint> integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(_helper, _workspaceArtifactId, executionIdentity);
 				return (IGenericLibrary<T>) new EncryptingRsapiClientLibrary(integrationPointLibrary, _secretCatalogFactory.Create(_workspaceArtifactId), _secretManager);
 			}
-			return new RsapiClientLibrary<T>(_helper, _workspaceArtifactId);
+			return new RsapiClientLibrary<T>(_helper, _workspaceArtifactId, executionIdentity);
 		}
 	}
 }

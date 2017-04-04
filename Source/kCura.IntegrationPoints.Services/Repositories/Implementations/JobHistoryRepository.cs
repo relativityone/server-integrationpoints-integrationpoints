@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public JobHistorySummaryModel GetJobHistory(JobHistoryRequest request)
 		{
-			List<Core.Models.IntegrationPointModel> integrationPoints = _relativityIntegrationPointsRepository.RetrieveIntegrationPoints(request.WorkspaceArtifactId);
+			List<Core.Models.IntegrationPointModel> integrationPoints = _relativityIntegrationPointsRepository.RetrieveIntegrationPoints();
 
 			var allCompletedJobs = new List<JobHistoryModel>();
 			var workspacesWithAccess = new Dictionary<int, IList<int>>();

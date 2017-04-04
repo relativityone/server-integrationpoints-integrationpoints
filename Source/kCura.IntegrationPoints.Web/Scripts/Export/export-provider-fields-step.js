@@ -6,7 +6,7 @@
 
 		self.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
-		self.fields = new FieldMappingViewModel();
+		self.fields = new FieldMappingViewModel(self.HasBeenRun());
 
 		self.exportSource = new ExportSourceViewModel(state);
 		self.exportSource.Reload();
@@ -184,15 +184,21 @@
 				self.model.fields.addField();
 
 				self.model.exportSource.SavedSearchArtifactId.subscribe(function (value) {
-					self.getAvailableFields("SavedSearchArtifactId", value);
+					if (value) {
+						self.getAvailableFields("SavedSearchArtifactId", value);
+					}
 				});
 
 				self.model.exportSource.ProductionId.subscribe(function (value) {
-					self.getAvailableFields("ProductionId", value);
+					if (value) {
+						self.getAvailableFields("ProductionId", value);
+					}
 				});
 
 				self.model.exportSource.ViewId.subscribe(function (value) {
-					self.getAvailableFields("ViewId", value);
+					if (value) {
+						self.getAvailableFields("ViewId", value);
+					}
 				});
 			});
 		};

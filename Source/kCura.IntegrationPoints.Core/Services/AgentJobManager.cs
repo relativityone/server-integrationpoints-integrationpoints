@@ -16,10 +16,10 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IEddsServiceContext _context;
 		private readonly IJobService _jobService;
 		private readonly IAPILog _logger;
-		private readonly ISerializer _serializer;
+		private readonly IIntegrationPointSerializer _serializer;
 		private readonly JobTracker _tracker;
 
-		public AgentJobManager(IEddsServiceContext context, IJobService jobService, IHelper helper, ISerializer serializer, JobTracker tracker)
+		public AgentJobManager(IEddsServiceContext context, IJobService jobService, IHelper helper, IIntegrationPointSerializer serializer, JobTracker tracker)
 		{
 			_context = context;
 			_jobService = jobService;

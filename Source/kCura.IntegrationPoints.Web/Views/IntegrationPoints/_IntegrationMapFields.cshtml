@@ -51,7 +51,7 @@
 	</div>
 	<div class="card">
 		<span class="label title">Settings</span>
-		<img data-bind="visible: IsRelativityProvider(), click: openRelativityProviderSettingsTooltip" class="tooltip-img" id="contextualSettingsHelp" style="padding-left: 5px;"/>
+		<img data-bind="visible: IsRelativityProvider(), click: openRelativityProviderSettingsTooltip" class="tooltip-img" id="contextualSettingsHelp" style="padding-left: 5px;" />
 		<table style="width: 100%;">
 			<tr>
 				<td style="width: 48%; vertical-align: top">
@@ -64,10 +64,54 @@
 						</div>
 						<div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
 							<div class="field-label required">
-								Multi-Select Field<br/>Overlay Behavior:
+								Multi-Select Field<br />Overlay Behavior:
 							</div>
 							<div class="field-value">
 								<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
+							<div class="field-label required">Copy Images:</div>
+							<div class="field-value">
+								<ul>
+									<li>
+										<label><input id="exportImages-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ImageImport">Yes</label>
+									</li>
+									<li>
+										<label><input id="exportImages-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ImageImport">No</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="field-row"  data-bind="visible: ImageImport() == 'true'">
+							<div class="field-label required">
+								Image Precedence:
+							</div>
+							<div class="field-value">
+								<select id="image-production-precedence" data-bind="options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected()">
+							<div class="field-label required">
+								Production Precedence:
+							</div>
+							<div class="field-value">
+								<label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
+								<button id="image-production-precedence-button" data-bind="click: openImageProductionPicker" class="actionButtonSmall">...</button>
+								<input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: isDocument() == 'true'">
+							<div class="field-label required " data-bind="text: copyNativeLabel"></div>
+							<div class="field-value">
+								<ul>
+									<li>
+										<label><input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</label>
+									</li>
+									<li>
+										<label><input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</label>
+									</li>
+								</ul>
 							</div>
 						</div>
 						<div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
@@ -90,7 +134,7 @@
 						</div>
 						<div class="field-row" data-bind="visible: showManager">
 							<div class="field-label required ">
-								Custodian Manager<br/>
+								Custodian Manager<br />
 								Contains Link:
 							</div>
 							<div class="field-value">
@@ -104,7 +148,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true'">
+						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false'">
 							<div class="field-label required ">Use Folder Path Information:</div>
 							<div class="field-value">
 								<ul>
@@ -117,7 +161,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
+						<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
 							<div class="field-label required ">Folder Path Information:</div>
 							<div class="field-value ">
 								<div data-bind="if: IsRelativityProvider()">
@@ -128,7 +172,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true'">
+						<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
 							<div class="field-label required ">Move Existing Documents:</div>
 							<div class="field-value">
 								<ul>
@@ -142,7 +186,7 @@
 							</div>
 						</div>
 					</div>
-					<br/>
+					<br />
 					<div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
 						<span class="extracted-label">Extracted Text</span>
 						<div class="margin-top-8px">
@@ -176,34 +220,7 @@
 						</div>
 					</div>
 				</td>
-				<td style="width: 48%; vertical-align: top">
-					<div class="field-row" data-bind="visible: isDocument() == 'true'">
-						<div class="field-label required ">Copy Native File:</div>
-						<div class="field-value">
-							<ul>
-								<li>
-									<label><input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</label>
-								</li>
-								<li>
-									<label><input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</label>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
-						<div class="field-label required">Export Images:</div>
-						<div class="field-value">
-							<ul>
-								<li>
-									<label><input id="exportImages-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ImageImport">Yes</label>
-								</li>
-								<li>
-									<label><input id="exportImages-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ImageImport">No</label>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</td>
+				<td style="width: 48%; vertical-align: top"></td>
 			</tr>
 		</table>
 	</div>

@@ -128,7 +128,7 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -208,6 +208,7 @@
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />
     <Compile Include="TestCases\Base\MetadataExportTestCaseBase.cs" />
+    <Compile Include="TestCases\ItShouldExportToSubFolder.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithNestedMultipleChoice.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithNotNestedMultipleChoice.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithWindowsANSIEncoding.cs" />
@@ -294,6 +295,10 @@
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
     </ProjectReference>
+    <Reference Include="ZetaLongPaths">
+      <HintPath>..\packages\$(ZetaLongPaths)\lib\net40-full\ZetaLongPaths.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\DefaultPlaceholder.tif">

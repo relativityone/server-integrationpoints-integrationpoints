@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IAPILog _logger;
 		private readonly IManagerQueueService _managerQueueService;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IHelperFactory _helperFactory;
 		private CustodianManagerDataReaderToEnumerableService _convertDataService;
 		private IEnumerable<FieldMap> _custodianManagerFieldMap;
 		private List<CustodianManagerMap> _custodianManagerMap;
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryService jobHistoryService, IJobHistoryErrorService jobHistoryErrorService, IJobManager jobManager,
 			IManagerQueueService managerQueueService, JobStatisticsService statisticsService, IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, IRepositoryFactory repositoryFactory)
+			IJobService jobService, IRepositoryFactory repositoryFactory, IHelperFactory helperFactory)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer,
 				appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
 				jobManager, null, statisticsService, managerFactory,
@@ -62,6 +63,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_managerQueueService = managerQueueService;
 			_repositoryFactory = repositoryFactory;
+			_helperFactory = helperFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncCustodianManagerWorker>();
 		}
 
@@ -331,7 +333,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			importSettings.ObjectFieldIdListContainsArtifactId = new[] { custodianManagerFieldArtifactID };
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
 			importSettings.CustodianManagerFieldContainsLink = false;
-			importSettings.FederatedInstanceCredentials = this.IntegrationPoint.SecuredConfiguration;
+			importSettings.FederatedInstanceCredentials = IntegrationPoint.SecuredConfiguration;
+
+			if (importSettings.FederatedInstanceArtifactId.HasValue)
+			{
+				var targetHelper = _helperFactory.CreateTargetHelper(Helper, importSettings.FederatedInstanceArtifactId, importSettings.FederatedInstanceCredentials);
+				var contextContainer = ContextContainerFactory.CreateContextContainer(targetHelper);
+				var instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager(contextContainer);
+				
+				if (!instanceSettingsManager.RetrieveAllowNoSnapshotImport())
+				{
+					importSettings.ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
+				}
+			}
 
 			string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
 			return newDestinationConfiguration;

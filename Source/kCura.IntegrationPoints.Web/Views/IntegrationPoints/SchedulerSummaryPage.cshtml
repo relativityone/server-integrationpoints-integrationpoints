@@ -1,93 +1,63 @@
 ﻿<link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
-
 <table id="schedulerSummaryPage" class="innerTabTable">
 	<tr>
-		<td class="editTableColumn">
+		<td>
 			<table>
 				<tr>
-					<td class="dynamicViewFieldName">Enable Scheduler:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: enableScheduler"></td>
+					<td class="editTableColumn">
+						<table>
+							<tr>
+								<td class="dynamicViewFieldName">Enable Scheduler:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: enableScheduler"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Frequency:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: frequency"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Reoccur:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: reoccur"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Send On:</td>
+								<td class="dynamicViewFieldValue" data-bind="html: sendOn"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Start Date:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: startDate"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">End Date:</td>
+								<td class="dynamicViewFieldValue breakWord" data-bind="text: endDate"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Scheduled Time:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: scheduledTime"></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</td>
-		<td class="editTableColumn">
+		<td>
 			<table>
 				<tr>
-					<td class="dynamicViewFieldName">Next Scheduled Runtime <br/>(UTC):</td>
-					<td class="dynamicViewFieldValue" data-bind="text: nextRun"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Frequency:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: frequency"></td>
-				</tr>
-			</table>
-		</td>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Last Runtime (UTC)</td>
-					<td class="dynamicViewFieldValue" data-bind="text: lastRun"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Reoccur:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: reoccur"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Send On:</td>
-					<td class="dynamicViewFieldValue" data-bind="html: sendOn"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Start Date:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: startDate"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">End Date:</td>
-					<td class="dynamicViewFieldValue breakWord" data-bind="text: endDate"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Scheduled Time:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: scheduledTime"></td>
+					<td class="editTableColumn">
+						<table>
+							<tr>
+								<td class="dynamicViewFieldName">Next Scheduled Runtime <br />(UTC):</td>
+								<td class="dynamicViewFieldValue" data-bind="text: nextRun"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Last Runtime (UTC)</td>
+								<td class="dynamicViewFieldValue" data-bind="text: lastRun"></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 </table>
-
 <script src="~/Scripts/moment.js"></script>
 <script src="~/Scripts/integration-point/scheduler-summary-page.js"></script>

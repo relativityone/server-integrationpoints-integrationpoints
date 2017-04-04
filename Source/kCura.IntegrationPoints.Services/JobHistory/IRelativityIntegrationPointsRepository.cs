@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public interface IRelativityIntegrationPointsRepository
 	{
-		List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(int workspaceId);
+		List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints();
 	}
 }

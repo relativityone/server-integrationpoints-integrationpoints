@@ -47,5 +47,10 @@ namespace kCura.IntegrationPoints.Domain
 			}
 			return name;
 		}
+
+		public static string GetFormatForWorkspaceOrJobDisplay(string prefix, string name, int id)
+		{
+			return $"{prefix} - {GetFormatForWorkspaceOrJobDisplay(name, id)}";
+		}
 	}
 }

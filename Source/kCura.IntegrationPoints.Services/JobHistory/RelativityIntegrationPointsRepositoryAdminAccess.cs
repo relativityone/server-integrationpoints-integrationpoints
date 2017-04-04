@@ -1,76 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryBuilders;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public class RelativityIntegrationPointsRepositoryAdminAccess : IRelativityIntegrationPointsRepository
 	{
-		private readonly IHelper _helper;
+		private readonly IRSAPIService _rsapiService;
 		private readonly IIntegrationPointByProvidersQueryBuilder _integrationPointByProvidersQueryBuilder;
 		private readonly ISourceProviderArtifactIdByGuidQueryBuilder _sourceProviderArtifactIdByGuidQueryBuilder;
 		private readonly IDestinationProviderArtifactIdByGuidQueryBuilder _destinationProviderArtifactIdByGuidQueryBuilder;
 
-		public RelativityIntegrationPointsRepositoryAdminAccess(IHelper helper,
+		public RelativityIntegrationPointsRepositoryAdminAccess(IRSAPIService rsapiService,
 			IIntegrationPointByProvidersQueryBuilder integrationPointByProvidersQueryBuilder,
 			ISourceProviderArtifactIdByGuidQueryBuilder sourceProviderArtifactIdByGuidQueryBuilder,
 			IDestinationProviderArtifactIdByGuidQueryBuilder destinationProviderArtifactIdByGuidQueryBuilder)
 		{
-			_helper = helper;
+			_rsapiService = rsapiService;
 			_integrationPointByProvidersQueryBuilder = integrationPointByProvidersQueryBuilder;
 			_sourceProviderArtifactIdByGuidQueryBuilder = sourceProviderArtifactIdByGuidQueryBuilder;
 			_destinationProviderArtifactIdByGuidQueryBuilder = destinationProviderArtifactIdByGuidQueryBuilder;
 		}
 
-		public List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(int workspaceId)
+		public List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints()
 		{
-			var sourceProviderIds = RetrieveRelativitySourceProviderIds(workspaceId);
-			var destinationProviderIds = RetrieveRelativityDestinationProviderIds(workspaceId);
+			var sourceProviderIds = RetrieveRelativitySourceProviderIds();
+			var destinationProviderIds = RetrieveRelativityDestinationProviderIds();
 
-			return RetrieveIntegrationPoints(workspaceId, sourceProviderIds, destinationProviderIds);
+			return RetrieveIntegrationPoints(sourceProviderIds, destinationProviderIds);
 		}
 
-		private IList<int> RetrieveRelativitySourceProviderIds(int workspaceId)
+		private IList<int> RetrieveRelativitySourceProviderIds()
 		{
 			var sourceProviderQuery = _sourceProviderArtifactIdByGuidQueryBuilder.Create(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
-			return QueryArtifactIds(workspaceId, sourceProviderQuery);
+			return GetArtifactIds(_rsapiService.SourceProviderLibrary.Query(sourceProviderQuery));
 		}
 
-		private IList<int> RetrieveRelativityDestinationProviderIds(int workspaceId)
+		private IList<int> RetrieveRelativityDestinationProviderIds()
 		{
 			var destinationProviderQuery = _destinationProviderArtifactIdByGuidQueryBuilder.Create(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
-			return QueryArtifactIds(workspaceId, destinationProviderQuery);
+			return GetArtifactIds(_rsapiService.DestinationProviderLibrary.Query(destinationProviderQuery));
 		}
 
-		private List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(int workspaceId, IList<int> sourceProvider, IList<int> destinationProvider)
+		private List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(IList<int> sourceProvider, IList<int> destinationProvider)
 		{
 			Query<RDO> integrationPointsQuery = _integrationPointByProvidersQueryBuilder.CreateQuery(sourceProvider[0], destinationProvider[0]);
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
-			{
-				rsapiClient.APIOptions.WorkspaceID = workspaceId;
-				var result = rsapiClient.Repositories.RDO.Query(integrationPointsQuery);
-				return result.Results.Select(x => new Core.Models.IntegrationPointModel
-				{
-					SecuredConfiguration = x.Artifact[new Guid(IntegrationPointFieldGuids.SecuredConfiguration)].ToString(),
-					ArtifactID = x.Artifact.ArtifactID
-				}).ToList();
-			}
+			return _rsapiService.IntegrationPointLibrary.Query(integrationPointsQuery).Select(Core.Models.IntegrationPointModel.FromIntegrationPoint).ToList();
 		}
 
-		private List<int> QueryArtifactIds(int workspaceId, Query<RDO> query)
+		private List<int> GetArtifactIds<T>(List<T> results) where T : BaseRdo
 		{
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
-			{
-				rsapiClient.APIOptions.WorkspaceID = workspaceId;
-				var result = rsapiClient.Repositories.RDO.Query(query);
-				return result.Results.Select(x => x.Artifact.ArtifactID).ToList();
-			}
+			return results.Select(x => x.ArtifactId).ToList();
 		}
 	}
 }

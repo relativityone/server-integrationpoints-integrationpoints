@@ -84,7 +84,7 @@
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.dll</HintPath>
       <Private>True</Private>
     </Reference>
-	<Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.WinEDDS.Core, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.WinEDDS.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -134,6 +134,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Helpers\DestinationFolderHelperTests.cs" />
     <Compile Include="Logging\CompositeLoggingMediatorTests.cs" />
     <Compile Include="Logging\ExportLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobErrorLoggingMediatorTests.cs" />

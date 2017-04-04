@@ -116,5 +116,12 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Instance of Source Job Manager</returns>
 		ISourceJobManager CreateSourceJobManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates a Instance Settings Manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Instance of Instance Settings Manager</returns>
+		IInstanceSettingsManager CreateInstanceSettingsManager(IContextContainer contextContainer);
 	}
 }

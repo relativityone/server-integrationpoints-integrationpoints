@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Data;
-using Relativity.API;
+﻿using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -7,8 +6,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 	{
 		public static ICommand Create(IHelper helper, int workspaceArtifactId)
 		{
-			IRSAPIService rsapiService = new RSAPIService(helper, workspaceArtifactId);
-			return new SetPromoteEligibleFieldCommand(rsapiService);
+			return new SetPromoteEligibleFieldCommand(helper.GetDBContext(workspaceArtifactId));
 		}
 	}
 }

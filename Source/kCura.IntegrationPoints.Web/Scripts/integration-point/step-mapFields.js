@@ -223,13 +223,17 @@ ko.validation.insertValidationMessage = function (element) {
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+
+		var copyNativeFileText = "Copy Native File:";
+		var copyFileToRepositoryText = "Copy Files to Repository:";
+		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
 		/********** Temporary UI Toggle**********/
 		this.ImageImportToggle = ko.observable("false");
 		root.data.ajax({
 			type: 'get',
 			url: root.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Web.Toggles.UI.ShowImageImportToggle'),
-			success: function(result) {
+			success: function (result) {
 				self.ImageImportToggle(result);
 			}
 		});
@@ -238,15 +242,65 @@ ko.validation.insertValidationMessage = function (element) {
 		this.ImageImport.subscribe(function (value) {
 			if (value === "true") {
 				root.utils.UI.disable("#fieldMappings", true);
+				self.UseFolderPathInformation("false");
+				self.MoveExistingDocuments("false");
+				self.copyNativeLabel(copyFileToRepositoryText);
+				self.FolderPathSourceField(null);
 				self.autoFieldMapWithCustomOptions(function (identfier) {
 					var name = identfier.name.replace(" [Object Identifier]", "");
 					self.IdentifierField(name);
 				});
 			}
 			else {
+				self.copyNativeLabel(copyNativeFileText);
 				root.utils.UI.disable("#fieldMappings", false);
 			}
 		});
+
+		this.ProductionPrecedence = ko.observable(model.IPDestinationSettings.ProductionPrecedence).extend({
+			required: {
+				onlyIf: function () {
+					return self.ImageImport();
+				}
+			}
+		});
+
+		this.IsProductionPrecedenceSelected = function () {
+			return self.ProductionPrecedence() === ExportEnums.ProductionPrecedenceTypeEnum.Produced;
+		}
+
+		var getTextRepresentation = function (value) {
+			if (!value) {
+				return "";
+			}
+
+			return value.map(function (x) {
+				return x.displayName;
+			}).join(", ");
+		};
+
+		this.ImagePrecedence = ko.observable(model.IPDestinationSettings.ImagePrecedence || [])
+			.extend({
+				required: {
+					onlyIf: function () {
+						return self.ImageImport() && self.IsProductionPrecedenceSelected();
+					}
+				}
+			});
+
+		this.ImagePrecedenceSelection = ko.pureComputed(function () {
+			return getTextRepresentation(self.ImagePrecedence());
+		});
+
+		var imageProductionPickerViewModel = new ImageProductionPickerViewModel(function (productions) {
+			self.ImagePrecedence(productions);
+		});
+
+		Picker.create("Fileshare", "imageProductionPicker", "ListPicker", imageProductionPickerViewModel);
+
+		this.openImageProductionPicker = function () {
+			imageProductionPickerViewModel.open(self.ImagePrecedence());
+		};
 
 		this.onDOMLoaded = function () {
 			root.utils.UI.disable("#fieldMappings", self.ImageImport() === "true");
@@ -297,7 +351,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
 		{
 			required: {
-				onlyIf: function() {
+				onlyIf: function () {
 					return self.ExtractedTextFieldContainsFilePath() === 'true';
 				}
 			}
@@ -325,7 +379,7 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 		}
 
-		this.populateExtractedText = function() {
+		this.populateExtractedText = function () {
 			if ($.isEmptyObject(self.mappedWorkspace())) {
 				self.MappedLongTextFields([]);
 			} else {
@@ -567,7 +621,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.GetCatalogFieldMappings = function () {
 			self.CatalogField = {};
 			var destinationWorkspaceID = IP.utils.getParameterByName('AppID', window.top);
-			
+
 			$.ajax({
 				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID),
 				type: 'POST',
@@ -930,6 +984,8 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 					_destination.ImageImport = this.model.ImageImport();
+					_destination.ImagePrecedence = this.model.ImagePrecedence(),
+					_destination.ProductionPrecedence = this.model.ProductionPrecedence(),
 					_destination.IdentifierField = this.model.IdentifierField();
 					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
 

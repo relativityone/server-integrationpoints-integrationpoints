@@ -566,3 +566,7 @@ select option {
 .margin-top-8px {
 	margin-top: 8px;
 }
+
+.longTextField {
+	word-wrap: break-word;
+}

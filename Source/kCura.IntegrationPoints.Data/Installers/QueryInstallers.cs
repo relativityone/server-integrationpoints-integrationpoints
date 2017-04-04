@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<IObjectTypeQuery>().ImplementedBy<SqlObjectTypeQuery>().LifestyleTransient());
 			container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>().LifestyleTransient());
 			container.Register(Component.For<IFileQuery>().ImplementedBy<FileQuery>().LifestyleTransient());
-			container.Register(Component.For<IInstanceSettingRepository>().ImplementedBy<InstanceSettingRepository>().LifestyleSingleton());
+			container.Register(Component.For<IInstanceSettingRepository>().ImplementedBy<KeplerInstanceSettingRepository>().LifestyleSingleton());
 			container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = k.Resolve<IHelper>().GetDBContext(-1)).LifestyleTransient());
 			container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
 			container.Register(Component.For<ISystemEventLoggingService>().ImplementedBy<SystemEventLoggingService>().LifestyleTransient());

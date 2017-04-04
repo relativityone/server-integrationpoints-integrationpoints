@@ -15,20 +15,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private readonly ICPHelper _helper;
 		private readonly IHelperFactory _helperFactory;
-		private readonly IServiceFactory _serviceFactory;
+		private readonly IArtifactServiceFactory _artifactServiceFactory;
 
-		public SearchFolderController(IServiceFactory serviceFactory, IHelperFactory helperFactory, ICPHelper helper)
+		public SearchFolderController(IArtifactServiceFactory artifactServiceFactory, IHelperFactory helperFactory, ICPHelper helper)
 		{
 			_helper = helper;
 			_helperFactory = helperFactory;
-			_serviceFactory = serviceFactory;
+			_artifactServiceFactory = artifactServiceFactory;
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retrieve folders from destination workspace.")]
 		public HttpResponseMessage GetCurrentInstaceFolders(int destinationWorkspaceId)
 		{
-			var artifactService = _serviceFactory.CreateArtifactService(_helper, _helper);
+			var artifactService = _artifactServiceFactory.CreateArtifactService(_helper, _helper);
 			return GetFolders(destinationWorkspaceId, artifactService);
 		}
 
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage GetFederatedInstaceFolders(int destinationWorkspaceId, int federatedInstanceId, [FromBody] object credentials)
 		{
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials.ToString());
-			var artifactService = _serviceFactory.CreateArtifactService(_helper, targetHelper);
+			var artifactService = _artifactServiceFactory.CreateArtifactService(_helper, targetHelper);
 			return GetFolders(destinationWorkspaceId, artifactService);
 		}
 

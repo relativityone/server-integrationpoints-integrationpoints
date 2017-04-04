@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Extensions;
 using kCura.IntegrationPoints.Services.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using Relativity.API;
 
@@ -14,20 +20,22 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
 	public class IntegrationPointRepository : IntegrationPointBaseRepository, IIntegrationPointRepository
 	{
-		private readonly IChoiceQuery _choiceQuery;
-		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IIntegrationPointProfileService _integrationPointProfileService;
+		private readonly IIntegrationPointRuntimeServiceFactory _serviceFactory;
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IUserInfo _userInfo;
+		private readonly IChoiceQuery _choiceQuery;
+		private readonly IIntegrationPointService _integrationPointLocalService;
+		private readonly IIntegrationPointProfileService _integrationPointProfileService;
 
-		public IntegrationPointRepository(IIntegrationPointService integrationPointService, IObjectTypeRepository objectTypeRepository, IUserInfo userInfo,
-			IChoiceQuery choiceQuery, IBackwardCompatibility backwardCompatibility, IIntegrationPointProfileService integrationPointProfileService) : base(backwardCompatibility)
+		public IntegrationPointRepository(IIntegrationPointRuntimeServiceFactory serviceFactory, IObjectTypeRepository objectTypeRepository, IUserInfo userInfo, IChoiceQuery choiceQuery, 
+			IBackwardCompatibility backwardCompatibility, IIntegrationPointService integrationPointLocalService, IIntegrationPointProfileService integrationPointProfileService) : base(backwardCompatibility)
 		{
-			_choiceQuery = choiceQuery;
-			_integrationPointProfileService = integrationPointProfileService;
-			_integrationPointService = integrationPointService;
+			_serviceFactory = serviceFactory;
 			_objectTypeRepository = objectTypeRepository;
 			_userInfo = userInfo;
+			_choiceQuery = choiceQuery;
+			_integrationPointLocalService = integrationPointLocalService;
+			_integrationPointProfileService = integrationPointProfileService;
 		}
 
 		public IntegrationPointModel CreateIntegrationPoint(CreateIntegrationPointRequest request)
@@ -46,30 +54,33 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		public override int Save(IntegrationPointModel model, string overwriteFieldsName)
 		{
 			var integrationPointModel = model.ToCoreModel(overwriteFieldsName);
-			return _integrationPointService.SaveIntegration(integrationPointModel);
+			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
+			return integrationPointRuntimeService.SaveIntegration(integrationPointModel);
 		}
 
 		public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
 		{
-			IntegrationPoint integrationPoint = _integrationPointService.GetRdo(integrationPointArtifactId);
+			IntegrationPoint integrationPoint = _integrationPointLocalService.GetRdo(integrationPointArtifactId);
 			return integrationPoint.ToIntegrationPointModel();
 		}
 
 		public object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			_integrationPointService.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, _userInfo.ArtifactID);
+			IntegrationPoint integrationPoint = _integrationPointLocalService.GetRdo(integrationPointArtifactId);
+			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(Core.Models.IntegrationPointModel.FromIntegrationPoint(integrationPoint));
+			integrationPointRuntimeService.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, _userInfo.ArtifactID);
 			return null;
 		}
 
 		public IList<IntegrationPointModel> GetAllIntegrationPoints()
 		{
-			IList<IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
+			IList<IntegrationPoint> integrationPoints = _integrationPointLocalService.GetAllRDOs();
 			return integrationPoints.Select(x => x.ToIntegrationPointModel()).ToList();
 		}
 		
 		public IList<IntegrationPointModel> GetEligibleToPromoteIntegrationPoints()
 		{
-			IList<IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
+			IList<IntegrationPoint> integrationPoints = _integrationPointLocalService.GetAllRDOs();
 			return integrationPoints.Where(x => x.PromoteEligible.GetValueOrDefault(false)).Select(x => x.ToIntegrationPointModel()).ToList();
 		}
 
@@ -88,8 +99,8 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 		{
 			var profile = _integrationPointProfileService.GetRdo(profileArtifactId);
 			var integrationPointModel = Core.Models.IntegrationPointModel.FromIntegrationPointProfile(profile, integrationPointName);
-
-			var artifactId = _integrationPointService.SaveIntegration(integrationPointModel);
+			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(integrationPointModel);
+			var artifactId = integrationPointRuntimeService.SaveIntegration(integrationPointModel);
 			return GetIntegrationPoint(artifactId);
 		}
 	}

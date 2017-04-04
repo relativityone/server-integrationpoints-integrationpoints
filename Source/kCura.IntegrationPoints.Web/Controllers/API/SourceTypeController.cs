@@ -9,9 +9,6 @@ using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.IntegrationPoints.Web.Toggles;
-using Relativity.Toggles;
-using kCura.IntegrationPoints.ImportProvider;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -20,17 +17,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly ISourceTypeFactory _factory;
 		private readonly ICaseServiceContext _serviceContext;
 		private readonly IObjectTypeQuery _rdoQuery;
-        private readonly IToggleProvider _toggleProvider;
 
         public SourceTypeController(ISourceTypeFactory factory,
-            IToggleProvider toggleProvider,
 			ICaseServiceContext serviceContext,
 			RSAPIRdoQuery objectTypeQuery)
 		{
 			_factory = factory;
 			_rdoQuery = objectTypeQuery;
 			_serviceContext = serviceContext;
-            _toggleProvider = toggleProvider;
 		}
 
 		[HttpGet]

@@ -107,6 +107,7 @@
     <Compile Include="Extensions\IntegrationPointModelExtensions.cs" />
     <Compile Include="Helpers\BackwardCompatibility.cs" />
     <Compile Include="Helpers\IBackwardCompatibility.cs" />
+    <Compile Include="Helpers\IntegrationPointRuntimeServiceFactory.cs" />
     <Compile Include="Helpers\PermissionModel.cs" />
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />

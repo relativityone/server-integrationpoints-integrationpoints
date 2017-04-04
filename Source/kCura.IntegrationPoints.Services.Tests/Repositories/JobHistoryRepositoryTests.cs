@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			_workspaceManager.GetUserWorkspaces().Returns(workspaces);
 			_targetWorkspaceManager.GetUserWorkspaces().Returns(targetWorkspaces);
 
-			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints(request.WorkspaceArtifactId).Returns(integrationPoints);
+			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);
 			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint1.ArtifactID).Returns(queryResult1);
 			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint2.ArtifactID).Returns(queryResult2);
 
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			var integrationPoints = new List<Core.Models.IntegrationPointModel>();
 			var queryResult = new List<JobHistoryModel>();
 
-			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints(request.WorkspaceArtifactId).Returns(integrationPoints);
+			_relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);
 
 			_completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, Arg.Any<List<int>>()).Returns(queryResult);
 

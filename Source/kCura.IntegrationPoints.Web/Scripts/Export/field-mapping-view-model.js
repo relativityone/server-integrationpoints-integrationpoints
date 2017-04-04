@@ -1,5 +1,7 @@
-﻿var FieldMappingViewModel = function () {
+﻿var FieldMappingViewModel = function (hasBeenRun) {
 	var self = this;
+
+	self.HasBeenRun = hasBeenRun;
 
 	self.setTitle = function (options, item) {
 		options.title = item.displayName;
@@ -14,6 +16,12 @@
 			message: "Please select at least one field."
 		}
 	});
+
+	self.mappedFields.subscribe(function () {
+		var isHidden = self.mappedFields().length <= 0 || self.HasBeenRun;
+		self.isRenameButtonHidden(isHidden);
+	});
+
 	self.selectedMappedFields = ko.observableArray([]);
 
 	var exportRenamedFieldsViewModel = new ExportRenamedFieldsViewModel(function (fields) {
@@ -25,9 +33,14 @@
 	Picker.create("Modals", "export-renamed-fields-modal", "ExportRenamedFieldsView", exportRenamedFieldsViewModel);
 
 	self.openRenamedFieldsModal = function () {
-		var copy = self.mappedFields().slice(0);
-		exportRenamedFieldsViewModel.open(copy);
+		//Previous solution was using Array.slice() but it performs shallow copy which is not suitable
+		//here as self.mappedFields() is array of objects
+		//We need to deep copy source array so it doesn't get modified on dialog 'Cancel'
+		var copy = $.extend(true, [], self.mappedFields());
+		exportRenamedFieldsViewModel.open(copy, self.selectedMappedFields());
 	};
+
+	self.isRenameButtonHidden = ko.observable(true);
 
 	self.addField = function () {
 		IP.workspaceFieldsControls.add(
@@ -135,7 +148,7 @@
 			availableFields[i].renamedText = "";
 			if (!!mappedFields && mappedFields.length > 0) {
 				var foundElem = mappedFields.find(mappedField => mappedField.destinationField.fieldIdentifier === availableFields[i].fieldIdentifier);
-				if (!!foundElem) {
+				if (!!foundElem && foundElem.sourceField.displayName.trim() !== foundElem.destinationField.displayName.trim()) {
 					availableFields[i].renamedText = foundElem.destinationField.displayName;
 				}
 			}

@@ -91,7 +91,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				VolumeMaxSize = 4400,
 				VolumePrefix = "VOL",
 				VolumeStartNumber = 1,
-				IncludeNativeFilesPath = false
+				IncludeNativeFilesPath = false,
+				IsAutomaticFolderCreationEnabled = true
 			};
 			var integrationPointModel = new IntegrationPointModel
 			{

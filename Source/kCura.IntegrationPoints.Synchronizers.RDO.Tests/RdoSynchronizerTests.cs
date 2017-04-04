@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
@@ -15,6 +16,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
+using Constants = kCura.IntegrationPoints.Domain.Constants;
 using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
@@ -225,12 +227,52 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.AreEqual(4000001, result.IdentityFieldId);
 			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
 			Assert.AreEqual(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, result.ImportNativeFileCopyMode);
+			Assert.AreEqual(false, result.CopyFilesToDocumentRepository);
 			Assert.IsNull(result.NativeFilePathSourceFieldName);
 			Assert.IsFalse(result.DisableNativeLocationValidation.HasValue);
 			Assert.IsFalse(result.DisableNativeValidation.HasValue);
 			Assert.AreEqual("NATIVE_FILE_PATH_001", nativeFileImportService.DestinationFieldName);
 			Assert.IsNull(nativeFileImportService.SourceFieldName);
 			Assert.IsFalse(nativeFileImportService.ImportNativeFiles);
+		}
+
+		[Test]
+		public void GetSyncDataImportSettings_SetFileLinks_CorrectResult()
+		{
+			//ARRANGE
+			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
+			{
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+			};
+
+			NativeFileImportService nativeFileImportService = new NativeFileImportService();
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false });
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+			rdoSynchronizer.SourceProvider = new SourceProvider()
+			{
+				Config = new SourceProviderConfiguration()
+				{
+					AlwaysImportNativeFiles = true
+				}
+			};
+
+			//ACT
+			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
+
+			Assert.AreEqual(1111111, result.ArtifactTypeId);
+			Assert.AreEqual(2222222, result.CaseArtifactId);
+			Assert.AreEqual(4000001, result.IdentityFieldId);
+			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
+			Assert.AreEqual(ImportNativeFileCopyModeEnum.SetFileLinks, result.ImportNativeFileCopyMode);
+			Assert.AreEqual(false, result.CopyFilesToDocumentRepository);
+			Assert.IsFalse(result.DisableNativeLocationValidation.Value);
+			Assert.IsFalse(result.DisableNativeValidation.Value);
+			Assert.AreEqual("NATIVE_FILE_PATH_001", result.NativeFilePathSourceFieldName);
+			Assert.AreEqual("NATIVE_FILE_PATH_001", nativeFileImportService.DestinationFieldName);
+			Assert.AreEqual(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD, nativeFileImportService.SourceFieldName);
+			Assert.IsTrue(nativeFileImportService.ImportNativeFiles);
 		}
 
 		[Test]
@@ -258,6 +300,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.AreEqual(4000001, result.IdentityFieldId);
 			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
 			Assert.AreEqual(ImportNativeFileCopyModeEnum.CopyFiles, result.ImportNativeFileCopyMode);
+			Assert.AreEqual(true, result.CopyFilesToDocumentRepository);
 			Assert.IsFalse(result.DisableNativeLocationValidation.Value);
 			Assert.IsFalse(result.DisableNativeValidation.Value);
 			Assert.AreEqual("NATIVE_FILE_PATH_001", result.NativeFilePathSourceFieldName);

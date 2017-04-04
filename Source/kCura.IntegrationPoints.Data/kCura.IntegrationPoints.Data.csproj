@@ -232,7 +232,6 @@
     <Compile Include="Repositories\Implementations\HardCodedServiceUrlRepository.cs" />
     <Compile Include="Repositories\Implementations\DestinationProviderRepository.cs" />
     <Compile Include="Repositories\Implementations\DocumentTotalsRepository.cs" />
-    <Compile Include="Repositories\Implementations\InstanceSettingRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepository.cs" />
@@ -277,6 +276,7 @@
     <Compile Include="Repositories\ISourceJobRepository.cs" />
     <Compile Include="Repositories\ITabRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerInstanceSettingRepository.cs" />
     <Compile Include="Repositories\KeplerServiceBase.cs" />
     <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
@@ -341,6 +341,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="RSAPIServiceAdminAccess.cs" />
     <Compile Include="RSAPIServiceGetLibrary.cs" />
     <Compile Include="SecretStore\DefaultSecretCatalogFactory.cs" />
     <Compile Include="SecretStore\ISecretCatalogFactory.cs" />
@@ -407,9 +408,8 @@
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
-    <Content Include="Resources\RipToR1Toggle.sql" />
+    <Content Include="Resources\ShowImageImportToggle.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
-    <Content Include="Resources\SetExportProviderToogle.sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
   <ItemGroup>

@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private IHelper _helper;
 
 		private JobHistoryService _instance;
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private Data.IntegrationPoint _integrationPoint;
 		private ImportSettings _settings;
 		private WorkspaceDTO _workspace;
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_helper = Substitute.For<IHelper>();
-			_serializer = Substitute.For<ISerializer>();
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
 
 			_integrationPoint = new Data.IntegrationPoint()
 			{
