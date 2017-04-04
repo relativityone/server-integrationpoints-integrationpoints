@@ -643,7 +643,17 @@
 			return "Select...";
 		};
 
-	    this.exportFileNameViewModel = new ExportProviderFileNameViewModel([]);
+		var availableFields = [];
+		availableFields.push(new AvailableFieldMock("Control Number", 1));
+		availableFields.push(new AvailableFieldMock("Extracted Text", 2));
+		availableFields.push(new AvailableFieldMock("File Name", 3));
+
+		var selectionList = [];
+		selectionList.push(new ListEntry("Extracted Text", 2));
+		selectionList.push(new ListEntry("-", "-"));
+		selectionList.push(new ListEntry("File Name", 3));
+
+		this.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, selectionList);
 
 		this.getSelectedOption = function () {
 			return {
