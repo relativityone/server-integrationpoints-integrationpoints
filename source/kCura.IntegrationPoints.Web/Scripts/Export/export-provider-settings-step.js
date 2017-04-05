@@ -296,10 +296,10 @@
 		this.ProductionPrecedence.subscribe(function (value) {
 			if (!self.IsProductionExport()) {
 				if (value === ExportEnums.ProductionPrecedenceTypeEnum.Produced) {
-					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.BeginProductionNumber)
+					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.BeginProductionNumber);
 				}
 				else {
-					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.Identifier)
+					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.Identifier);
 				}
 			}
 		});
@@ -665,7 +665,7 @@
 		selectionList.push(new ListEntry("-", "-"));
 		selectionList.push(new ListEntry("File Name", 3));
 
-		this.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, selectionList);
+		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameSelection);
 
 		this.getSelectedOption = function () {
 			return {
@@ -704,7 +704,8 @@
 				"VolumePrefix": self.VolumePrefix(),
 				"VolumeStartNumber": self.VolumeStartNumber(),
 				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
-				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled()
+				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled(),
+				"FileNameSelection": self.exportFileNameViewModel.getSelections()
 			};
 		};
 	};
