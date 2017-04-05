@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -84,9 +83,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		{
 			var caseContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-			var federatedInstanceManager = new FederatedInstanceManager(repositoryFactory, new AlwaysDisabledToggleProvider());
+			var federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-			ISerializer serializer = new JSONSerializer();
+			IIntegrationPointSerializer serializer = new IntegrationPointSerializer();
 			return new JobHistoryService(caseContext, federatedInstanceManager, workspaceManager, Helper, serializer);
 		}
 	}

@@ -20,22 +20,26 @@
 									<ul>
 										<li>
 											<div class="field-value">
-												<label disabled="true"><input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true" />Load File</label>
+												<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true">
+												<label for="export-loadfile-checkbox">Load File</label>
 											</div>
 										</li>
 										<li>
 											<div class="field-value" data-bind="visible: !ExportRdoMode()">
-												<label><input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages" />Images</label>
+												<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages" />
+												<label for="export-images-checkbox">Images</label>
 											</div>
 										</li>
 										<li>
 											<div class="field-value">
-												<label><input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives" />Natives</label>
+												<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives" />
+												<label for="export-natives-checkbox">Natives</label>
 											</div>
 										</li>
 										<li>
 											<div class="field-value">
-												<label><input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles" />Text Fields As Files</label>
+												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles" />
+												<label for="export-text-fields-as-files-checkbox">Text Fields As Files</label>
 											</div>
 										</li>
 									</ul>
@@ -67,6 +71,17 @@
 									<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
 										<div id="browser-tree" tabindex="0"></div>
 									</div>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 48%;">
+							<div class="field-row">
+								<div class="field-label" />
+								<div class="field-value middle-vertical-align">
+									<input id="create-export-directory-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IsExportFolderCreationEnabled" class="middle-vertical-align">
+									<label for="create-export-directory-checkbox">Create Export Directory</label>
 								</div>
 							</div>
 						</td>

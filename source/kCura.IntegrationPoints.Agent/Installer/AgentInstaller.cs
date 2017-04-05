@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Email;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.Synchronizers.RDO;

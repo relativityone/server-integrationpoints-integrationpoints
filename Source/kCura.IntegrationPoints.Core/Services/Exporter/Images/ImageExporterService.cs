@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.API;
@@ -23,6 +24,7 @@ using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Data;
 using Relativity.Toggles;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
+using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 using FileQuery = Relativity.Core.Service.FileQuery;
 using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
 using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
@@ -31,13 +33,21 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class ImageExporterService : ExporterServiceBase
 	{
+		private readonly ImportSettings _settings;
 		private const string ImageNameColumn = "Identifier";
+		private const string NativeNameColumn = "NativeIdentifier";
 		private const string ImageLocationColumn = "Location";
 
-		
 
-		public ImageExporterService(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt, string config, int savedSearchArtifactId) : base(sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt, config, savedSearchArtifactId)
+
+		public ImageExporterService(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
+			IJobStopManager jobStopManager, IHelper helper, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt,
+			string config, int savedSearchArtifactId, ImportSettings settings)
+			: base(
+				sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt,
+				config, savedSearchArtifactId)
 		{
+			_settings = settings;
 		}
 
 		public ImageExporterService(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper) : base(mappedFields, jobStopManager, helper)
@@ -47,12 +57,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
 			var imageTransferDataReader = new ImageTransferDataReader(this, _mappedFields, _baseContext, transferConfiguration.ScratchRepositories);
-			return _context ?? (_context = new ExporterTransferContext(imageTransferDataReader,transferConfiguration));
+			return _context ?? (_context = new ExporterTransferContext(imageTransferDataReader, transferConfiguration));
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			List<ArtifactDTO> result = new List<ArtifactDTO>();
+			List<ArtifactDTO> imagesResult = new List<ArtifactDTO>();
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
 
 			if (retrievedData != null)
@@ -60,100 +70,128 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
-					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
-
+					List<ArtifactFieldDTO> fields = new List<ArtifactFieldDTO>();
 					object[] fieldsValue = (object[])data;
+
 					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
 
-					kCura.Data.DataView imagesDataView = FileQuery.RetrieveAllImagesForDocuments(_baseContext, new []{documentArtifactId});
-					if (imagesDataView.Count > 0)
+					var productionPrecedenceType = GetProductionPrecedenceType();
+					if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
 					{
-
-						for (int index = 0; index < _avfIds.Length; index++)
-						{
-							int artifactId = _fieldArtifactIds[index];
-							object value = fieldsValue[index];
-
-							Exception exception = null;
-							try
-							{
-								if (_multipleObjectFieldArtifactIds.Contains(artifactId))
-								{
-									value = ExportApiDataHelper.SanitizeMultiObjectField(value);
-								}
-								else if (_singleChoiceFieldsArtifactIds.Contains(artifactId))
-								{
-									value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
-								}
-								// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
-								else if (_longTextFieldArtifactIds.Contains(artifactId)
-								         && global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
-								{
-									value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_longTextStreamFactory, documentArtifactId, artifactId)
-										.GetResultsWithoutContextSync();
-								}
-							}
-							catch (Exception ex)
-							{
-								LogRetrievingDataError(ex);
-								exception = ex;
-							}
-
-							fields[index] = new LazyExceptArtifactFieldDto(exception)
-							{
-								Name = _exportJobInfo.ColumnNames[index],
-								ArtifactId = artifactId,
-								Value = value
-							};
-						}
-						for (int index = 0; index < imagesDataView.Table.Rows.Count; index++)
-						{
-							DataRow row = imagesDataView.Table.Rows[index];
-							string fileLocation = (string)row[ImageLocationColumn];
-							string imageFileName = WrapImageFileName((string)row[ImageNameColumn], index);
-							var fileLocationField = new ArtifactFieldDTO()
-							{
-								Name = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME ,
-								Value = fileLocation
-							};
-							var nativeFileNameField = new ArtifactFieldDTO()
-							{
-								Name = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
-								Value = imageFileName
-							};
-
-							var artifactFieldDtos = fields.ToList();
-							artifactFieldDtos.Add(fileLocationField);
-							artifactFieldDtos.Add(nativeFileNameField);
-
-							result.Add(new ArtifactDTO(documentArtifactId, artifactType, string.Empty, artifactFieldDtos));
-						}
-
-						
+						SetProducedImages(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
+					}
+					else
+					{
+						SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
 					}
 				}
 			}
 
-		
-			_retrievedDataCount += result.Count;
+			_retrievedDataCount += imagesResult.Count;
 			_context.TotalItemsFound = _retrievedDataCount;
-			return result.ToArray();
+			return imagesResult.ToArray();
 		}
 
-		//public override int TotalRecordsFound => _retrievedDataCount == 0 ? (int)_exportJobInfo.RowCount : _retrievedDataCount;//TODO: Item Count
-
-		private string WrapImageFileName(string imageFileName, int rowIndex)
+		private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields, int artifactType, List<ArtifactDTO> result)
 		{
-			//Expected input - DocumentName_DocumentNumber_INDEX_GUID
+			kCura.Data.DataView imagesDataView = FileQuery.RetrieveAllImagesForDocuments(_baseContext, new[] { documentArtifactId });
+			if (imagesDataView.Count > 0)
+			{
+				SetupBaseFields(documentArtifactId, fieldsValue, fields);
+				for (int index = 0; index < imagesDataView.Table.Rows.Count; index++)
+				{
+					var artifactDto = CreateImageArtifactDto(imagesDataView.Table.Rows[index], ImageNameColumn,
+						documentArtifactId, fields, artifactType, index);
+					result.Add(artifactDto);
+				}
+			}
+		}
+
+		private void SetProducedImages(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
+		{
+			foreach (var prod in _settings.ImagePrecedence)
+			{
+				var productionArtifactId = Convert.ToInt32(prod.ArtifactID);
+				var producedImages = FileQuery.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(_baseContext, productionArtifactId,
+						new[] { documentArtifactId });
+
+				if (producedImages.Count > 0)
+				{
+					SetupBaseFields(documentArtifactId, fieldsValue, fields);
+					for (int index = 0; index < producedImages.Table.Rows.Count; index++)
+					{
+						var artifactDto = CreateImageArtifactDto(producedImages.Table.Rows[index], NativeNameColumn,
+							documentArtifactId, fields, artifactType, index);
+						result.Add(artifactDto);
+					}
+				}
+			}
+		}
+
+		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, string nativeColumnName, int documentArtifactId,
+			List<ArtifactFieldDTO> fields, int artifactType, int index)
+		{
+			string fileLocation = (string) imageDataRow[ImageLocationColumn];
+			string imageFileName = UnwrapDocumentIdentifierFieldName((string) imageDataRow[nativeColumnName], index);
+
+			var artifactFieldDtos = AddImageFields(fields, fileLocation, imageFileName);
+			var artifactDto = new ArtifactDTO(documentArtifactId, artifactType, string.Empty, artifactFieldDtos);
+			return artifactDto;
+		}
+
+		private List<ArtifactFieldDTO> AddImageFields(List<ArtifactFieldDTO> fields, string fileLocation, string imageFileName)
+		{
+			var fileLocationField = new ArtifactFieldDTO()
+			{
+				Name = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
+				Value = fileLocation
+			};
+			var nativeFileNameField = new ArtifactFieldDTO()
+			{
+				Name = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
+				Value = imageFileName
+			};
+
+			var artifactFieldDtos = fields.ToList();
+			artifactFieldDtos.Add(fileLocationField);
+			artifactFieldDtos.Add(nativeFileNameField);
+			return artifactFieldDtos;
+		}
+
+		private string UnwrapDocumentIdentifierFieldName(string imageFileName, int rowIndex)
+		{
+			//Expected input format for Original Image - DocumentName_DocumentNumber_INDEX_GUID
 			var imageFileNameSplitted = imageFileName?.Split('_');
-			if (imageFileNameSplitted?.Length > 1)
+			if (imageFileNameSplitted?.Length > 1)//Orignal
 			{
 				var documentName = imageFileNameSplitted?[0];
 				var documentNamePostFix = imageFileNameSplitted?[1];
 				imageFileName = $"{documentName}_{documentNamePostFix}";
-				imageFileName = rowIndex == 0 ? imageFileName : $"{imageFileName}_{rowIndex:00}";
 			}
+			imageFileName = BuildDocumentIdentifierFieldName(imageFileName, rowIndex);
 			return imageFileName;
+		}
+
+		private string BuildDocumentIdentifierFieldName(string nativeFileName, int rowIndex)
+		{
+			return rowIndex == 0 ? nativeFileName : $"{nativeFileName}_{rowIndex:00}";
+		}
+
+		private ExportSettings.ProductionPrecedenceType GetProductionPrecedenceType()
+		{
+			try
+			{
+				var productionPrecedence = _settings.ProductionPrecedence;
+				if (String.IsNullOrEmpty(productionPrecedence))
+				{
+					return ExportSettings.ProductionPrecedenceType.Original;
+				}
+				return (ExportSettings.ProductionPrecedenceType)Enum.Parse(typeof(ExportSettings.ProductionPrecedenceType), productionPrecedence);
+			}
+			catch (Exception)
+			{
+				return ExportSettings.ProductionPrecedenceType.Original;
+			}
 		}
 	}
 }

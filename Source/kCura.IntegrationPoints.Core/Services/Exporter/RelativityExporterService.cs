@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
+using Relativity.Toggles;
+using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -45,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
 			if (retrievedData != null)
 			{
-				int artifactType = (int) ArtifactType.Document;
+				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
 					List<ArtifactFieldDTO> fields = new List<ArtifactFieldDTO>(_avfIds.Length);
@@ -53,43 +56,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					object[] fieldsValue = (object[]) data;
 					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
 
-					for (int index = 0; index < _avfIds.Length; index++)
-					{
-						int artifactId = _fieldArtifactIds[index];
-						object value = fieldsValue[index];
-
-						Exception exception = null;
-						try
-						{
-							if (_multipleObjectFieldArtifactIds.Contains(artifactId))
-							{
-								value = ExportApiDataHelper.SanitizeMultiObjectField(value);
-							}
-							else if (_singleChoiceFieldsArtifactIds.Contains(artifactId))
-							{
-								value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
-							}
-							// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
-							else if (_longTextFieldArtifactIds.Contains(artifactId)
-									&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
-							{
-								value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_longTextStreamFactory, documentArtifactId, artifactId)
-									.GetResultsWithoutContextSync();
-							}
-						}
-						catch (Exception ex)
-						{
-							LogRetrievingDataError(ex);
-							exception = ex;
-						}
-
-						fields.Add(new LazyExceptArtifactFieldDto(exception)
-						{
-							Name = _exportJobInfo.ColumnNames[index],
-							ArtifactId = artifactId,
-							Value = value
-						});
-					}
+					SetupBaseFields(documentArtifactId, fieldsValue, fields);
 
 					// TODO: replace String.empty
 					result.Add(new ArtifactDTO(documentArtifactId, artifactType, string.Empty, fields));
@@ -101,5 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_retrievedDataCount += result.Count;
 			return result.ToArray();
 		}
+
+
 	}
 }

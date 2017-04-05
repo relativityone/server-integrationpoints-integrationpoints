@@ -104,5 +104,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public ProductionPrecedenceType ProductionPrecedence { get; set; }
 		public bool IncludeOriginalImages { get; set; }
 		public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
+	    public bool IsAutomaticFolderCreationEnabled { get; set; }
 	}
 }

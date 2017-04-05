@@ -228,8 +228,10 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="Factories\IArtifactServiceFactory.cs" />
     <Compile Include="Factories\IDataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Factories\Implementations\ArtifactServiceFactory.cs" />
     <Compile Include="Factories\IStreamFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\IHelperFactory.cs" />
@@ -475,7 +477,6 @@
     <Compile Include="Telemetry\TelemetryManager.cs" />
     <Compile Include="Telemetry\TelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryMetricProviderBase.cs" />
-    <Compile Include="Toggles\RipToR1Toggle.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointProviderValidator.cs" />
     <Compile Include="Validation\Parts\EmailValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\FieldsMappingValidator.cs" />

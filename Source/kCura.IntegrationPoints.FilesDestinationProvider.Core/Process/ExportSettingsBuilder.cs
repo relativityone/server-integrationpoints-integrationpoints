@@ -104,8 +104,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				ExportNativesToFileNamedFrom = nativeFilenameFromType,
 				ProductionId = sourceSettings.ProductionId,
 				ProductionName = sourceSettings.ProductionName,
-				AppendOriginalFileName = sourceSettings.AppendOriginalFileName
-			};
+				AppendOriginalFileName = sourceSettings.AppendOriginalFileName,
+                IsAutomaticFolderCreationEnabled = sourceSettings.IsAutomaticFolderCreationEnabled
+            };
 
 			return exportSettings;
 		}

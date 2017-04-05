@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private ICaseServiceContext _caseServiceContext;
 		private IContextContainer _contextContainer;
 		private IContextContainerFactory _contextContainerFactory;
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private IManagerFactory _managerFactory;
 		private IntegrationPointProfile _integrationPointProfile;
 		private SourceProvider _sourceProvider;
@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationPointPermissionValidator _permissionValidator;
 		private IntegrationPointProfileService _instance;
 		private IChoiceQuery _choiceQuery;
-		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public override void SetUp()
@@ -52,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
-			_serializer = Substitute.For<ISerializer>();
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_integrationModelValidator = Substitute.For<IIntegrationPointProviderValidator>();
@@ -60,7 +59,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
-			_toggleProvider = Substitute.For<IToggleProvider>();
 
 			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(
 				_helper,
@@ -70,8 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_choiceQuery,
 				_managerFactory,
 				_integrationModelValidator,
-				_permissionValidator,
-				_toggleProvider
+				_permissionValidator
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();

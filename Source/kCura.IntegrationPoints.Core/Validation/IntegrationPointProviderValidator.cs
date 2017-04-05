@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 {
 	public class IntegrationPointProviderValidator : BaseIntegrationPointValidator<IValidator>, IIntegrationPointProviderValidator
 	{
-		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, ISerializer serializer)
+		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, IIntegrationPointSerializer serializer)
 			: base(validators, serializer)
 		{			
 		}

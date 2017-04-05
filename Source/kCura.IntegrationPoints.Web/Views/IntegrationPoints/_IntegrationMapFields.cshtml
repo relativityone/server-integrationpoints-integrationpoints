@@ -83,8 +83,26 @@
 								</ul>
 							</div>
 						</div>
+						<div class="field-row"  data-bind="visible: ImageImport() == 'true'">
+							<div class="field-label required">
+								Image Precedence:
+							</div>
+							<div class="field-value">
+								<select id="image-production-precedence" data-bind="options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, select2: {}"></select>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected()">
+							<div class="field-label required">
+								Production Precedence:
+							</div>
+							<div class="field-value">
+								<label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
+								<button id="image-production-precedence-button" data-bind="click: openImageProductionPicker" class="actionButtonSmall">...</button>
+								<input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
+							</div>
+						</div>
 						<div class="field-row" data-bind="visible: isDocument() == 'true'">
-							<div class="field-label required ">Copy Native File:</div>
+							<div class="field-label required " data-bind="text: copyNativeLabel"></div>
 							<div class="field-value">
 								<ul>
 									<li>

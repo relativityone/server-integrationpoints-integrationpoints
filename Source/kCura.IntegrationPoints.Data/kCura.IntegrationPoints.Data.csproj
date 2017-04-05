@@ -408,9 +408,8 @@
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
-    <Content Include="Resources\RipToR1Toggle.sql" />
+    <Content Include="Resources\ShowImageImportToggle.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
-    <Content Include="Resources\SetExportProviderToogle.sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
   <ItemGroup>

@@ -1,18 +1,10 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class ImportTypeService : IImportTypeService
 	{
-		private readonly IToggleProvider _toggleProvider;
-
-		public ImportTypeService(IToggleProvider toggleProvider)
-		{
-			_toggleProvider = toggleProvider;
-		}
-
 		public List<ImportType> GetImportTypes(bool isRdo)
 		{
 			List<ImportType> importTypes = new List<ImportType>();

@@ -1,80 +1,122 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Helpers;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
+using IIntegrationPointRepository = kCura.IntegrationPoints.Services.Repositories.IIntegrationPointRepository;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
 	public class IntegrationPointRepositoryTests : TestBase
 	{
-		private IntegrationPointRepository _integrationPointRepository;
-		private IIntegrationPointService _integrationPointService;
-		private IIntegrationPointProfileService _integrationPointProfileService;
+		private IIntegrationPointRuntimeServiceFactory _serviceFactory;
+		private IIntegrationPointSerializer _serializer;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IUserInfo _userInfo;
 		private IChoiceQuery _choiceQuery;
 		private IBackwardCompatibility _backwardCompatibility;
+		private IIntegrationPointService _integrationPointLocalService;
+		private IIntegrationPointProfileService _integrationPointProfileService;
+
+		private IIntegrationPointRepository _integrationPointRepository;
+		private IIntegrationPointService _integrationPointService;
+
+		private DestinationConfiguration _destinationConfiguration;
+		private string _serializedDestinationConfiguration;
 
 		public override void SetUp()
 		{
-			_integrationPointService = Substitute.For<IIntegrationPointService>();
+			_serviceFactory = Substitute.For<IIntegrationPointRuntimeServiceFactory>();
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
+			_integrationPointLocalService = Substitute.For<IIntegrationPointService>();
 			_integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_userInfo = Substitute.For<IUserInfo>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_backwardCompatibility = Substitute.For<IBackwardCompatibility>();
 
-			_integrationPointRepository = new IntegrationPointRepository(_integrationPointService, _objectTypeRepository, _userInfo, _choiceQuery, _backwardCompatibility,
-				_integrationPointProfileService);
+			_integrationPointRepository = new IntegrationPointRepository(_serviceFactory, _objectTypeRepository, _userInfo, _choiceQuery,
+				_backwardCompatibility, _integrationPointLocalService, _integrationPointProfileService);
+
+			_integrationPointService = Substitute.For<IIntegrationPointService>();
+
+			_serviceFactory.CreateIntegrationPointRuntimeService(Arg.Any<Core.Models.IntegrationPointModel>()).Returns(_integrationPointService);
 		}
 
 		[Test]
-		public void ItShouldCreateIntegrationPoint()
+		[TestCase(null)]
+		[TestCase(123)]
+		public void ItShouldCreateIntegrationPoint(int? federatedInstanceArtifactId)
 		{
 			var overwriteFieldsChoiceId = 934;
 			var overwriteFieldsChoiceName = "Append/Overlay";
 			var integrationPointArtifactId = 134;
 
-			var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName, integrationPointArtifactId);
+			var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName,
+				integrationPointArtifactId, federatedInstanceArtifactId);
 
-			_integrationPointService.SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.ArtifactID == 0)).Returns(integrationPointArtifactId);
-
-			_integrationPointRepository.CreateIntegrationPoint(createRequest);
-
-			_backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-			_integrationPointService.Received(1).GetRdo(integrationPointArtifactId);
-		}
-
-		[Test]
-		public void ItShouldUpdateIntegrationPoint()
-		{
-			var overwriteFieldsChoiceId = 215;
-			var overwriteFieldsChoiceName = "Append/Overlay";
-			var integrationPointArtifactId = 902;
-
-			var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName, integrationPointArtifactId);
-
-			_integrationPointService.SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.ArtifactID == createRequest.IntegrationPoint.ArtifactId))
+			_integrationPointService.SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.ArtifactID == 0))
 				.Returns(integrationPointArtifactId);
 
 			_integrationPointRepository.CreateIntegrationPoint(createRequest);
 
 			_backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-			_integrationPointService.Received(1).GetRdo(integrationPointArtifactId);
+			_integrationPointLocalService.Received(1).GetRdo(integrationPointArtifactId);
 		}
 
-		private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointArtifactId)
+		[Test]
+		[TestCase(null)]
+		[TestCase(123)]
+		public void ItShouldUpdateIntegrationPoint(int? federatedInstanceArtifactId)
 		{
+			var overwriteFieldsChoiceId = 215;
+			var overwriteFieldsChoiceName = "Append/Overlay";
+			var integrationPointArtifactId = 902;
+
+			var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName,
+				integrationPointArtifactId, federatedInstanceArtifactId);
+
+			_integrationPointService.SaveIntegration(
+				Arg.Is<Core.Models.IntegrationPointModel>(x => x.ArtifactID == createRequest.IntegrationPoint.ArtifactId))
+				.Returns(integrationPointArtifactId);
+
+			_integrationPointRepository.CreateIntegrationPoint(createRequest);
+
+			_backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
+			_integrationPointLocalService.Received(1).GetRdo(integrationPointArtifactId);
+		}
+
+		private void SetUpDestinationConfiguration(int? federatedInstanceArtifactId = null)
+		{
+			_destinationConfiguration = new DestinationConfiguration()
+			{
+				FederatedInstanceArtifactId = federatedInstanceArtifactId
+			};
+
+			_serializedDestinationConfiguration = new IntegrationPointSerializer().Serialize(_destinationConfiguration);
+
+			_serializer.Serialize(_destinationConfiguration).Returns(_serializedDestinationConfiguration);
+			_serializer.Deserialize<DestinationConfiguration>(_serializedDestinationConfiguration)
+				.Returns(_destinationConfiguration);
+		}
+
+		private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointArtifactId, int? federatedInstanceArtifactId = null)
+		{
+			SetUpGetRdo(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName, federatedInstanceArtifactId);
+
 			var createRequest = new UpdateIntegrationPointRequest
 			{
 				WorkspaceArtifactId = 640,
@@ -85,9 +127,22 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 					ScheduleRule = new ScheduleModel
 					{
 						EnableScheduler = false
-					}
+					},
+					DestinationConfiguration = _destinationConfiguration,
+					SecuredConfiguration = "{}"
 				}
 			};
+
+			return createRequest;
+		}
+
+		private Data.IntegrationPoint SetUpGetRdo(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123", int? federatedInstanceArtifactId = null)
+		{
+			SetUpDestinationConfiguration(federatedInstanceArtifactId);
+
+			var integrationPoint = CreateRdo(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName);
+
+			_integrationPointLocalService.GetRdo(integrationPointArtifactId).Returns(integrationPoint);
 
 			_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>
 			{
@@ -96,33 +151,47 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 					Name = overwriteFieldsChoiceName
 				}
 			});
-			_integrationPointService.GetRdo(integrationPointArtifactId).Returns(new Data.IntegrationPoint
+
+			return integrationPoint;
+		}
+
+		private Data.IntegrationPoint CreateRdo(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123")
+		{
+			return new Data.IntegrationPoint
 			{
 				ArtifactId = integrationPointArtifactId,
 				Name = "name_762",
+				DestinationConfiguration = _serializedDestinationConfiguration,
+				DestinationProvider = 715,
+				EmailNotificationRecipients = "emails",
+				EnableScheduler = false,
+				FieldMappings = "",
+				HasErrors = false,
+				JobHistory = null,
+				LastRuntimeUTC = null,
+				LogErrors = false,
 				SourceProvider = 718,
-				DestinationProvider = 715
-			});
-			return createRequest;
+				SourceConfiguration = "",
+				NextScheduledRuntimeUTC = null,
+				OverwriteFields = new Choice(overwriteFieldsChoiceId) {Name = overwriteFieldsChoiceName},
+				ScheduleRule = String.Empty,
+				Type = null,
+				PromoteEligible = false,
+				SecuredConfiguration = string.Empty
+			};
 		}
 
 		[Test]
 		public void ItShouldGetIntegrationPoint()
 		{
 			int artifactId = 884;
-			var integrationPoint = new Data.IntegrationPoint
-			{
-				ArtifactId = 945,
-				Name = "ip_name_126",
-				SourceProvider = 962,
-				DestinationProvider = 577
-			};
+			var integrationPoint = CreateRdo(artifactId);
 
-			_integrationPointService.GetRdo(artifactId).Returns(integrationPoint);
+			_integrationPointLocalService.GetRdo(artifactId).Returns(integrationPoint);
 
 			var result = _integrationPointRepository.GetIntegrationPoint(artifactId);
 
-			_integrationPointService.Received(1).GetRdo(artifactId);
+			_integrationPointLocalService.Received(1).GetRdo(artifactId);
 
 			Assert.That(result.SourceProvider, Is.EqualTo(integrationPoint.SourceProvider));
 			Assert.That(result.DestinationProvider, Is.EqualTo(integrationPoint.DestinationProvider));
@@ -131,13 +200,17 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		}
 
 		[Test]
-		public void ItShouldRunIntegrationPointWithUser()
+		[TestCase(null)]
+		[TestCase(123)]
+		public void ItShouldRunIntegrationPointWithUser(int? federatedInstanceArtifactId)
 		{
 			int workspaceId = 873;
 			int artifactId = 797;
 			int userId = 127;
 
 			_userInfo.ArtifactID.Returns(userId);
+
+			SetUpGetRdo(artifactId, 456, "choice456", federatedInstanceArtifactId);
 
 			_integrationPointRepository.RunIntegrationPoint(workspaceId, artifactId);
 
@@ -147,27 +220,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		[Test]
 		public void ItShouldGetAllIntegrationPoints()
 		{
-			var integrationPoint1 = new Data.IntegrationPoint
-			{
-				ArtifactId = 263,
-				Name = "ip_name_987",
-				SourceProvider = 764,
-				DestinationProvider = 576
-			};
-			var integrationPoint2 = new Data.IntegrationPoint
-			{
-				ArtifactId = 204,
-				Name = "ip_name_555",
-				SourceProvider = 187,
-				DestinationProvider = 422
-			};
+			var integrationPoint1 = CreateRdo(263);
+			var integrationPoint2 = CreateRdo(204);
 
 			var expectedResult = new List<Data.IntegrationPoint> {integrationPoint1, integrationPoint2};
-			_integrationPointService.GetAllRDOs().Returns(expectedResult);
+			_integrationPointLocalService.GetAllRDOs().Returns(expectedResult);
 
 			var result = _integrationPointRepository.GetAllIntegrationPoints();
 
-			_integrationPointService.Received(1).GetAllRDOs();
+			_integrationPointLocalService.Received(1).GetAllRDOs();
 
 			Assert.That(result, Is.EquivalentTo(expectedResult).
 				Using(new Func<IntegrationPointModel, Data.IntegrationPoint, bool>(
@@ -179,33 +240,21 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		public void ItShouldGetEligibleToPromoteIntegrationPoints()
 		{
 			// Arrange
-			var integrationPoint1 = new Data.IntegrationPoint
-			{
-				ArtifactId = 263,
-				Name = "ip_name_987",
-				SourceProvider = 764,
-				DestinationProvider = 576,
-				PromoteEligible = true
-			};
-			var integrationPoint2 = new Data.IntegrationPoint
-			{
-				ArtifactId = 204,
-				Name = "ip_name_555",
-				SourceProvider = 187,
-				DestinationProvider = 422,
-				PromoteEligible = false
-			};
+			var integrationPoint1 = CreateRdo(263);
+			integrationPoint1.PromoteEligible = true;
+
+			var integrationPoint2 = CreateRdo(204); 
 
 			var actualResult = new List<Data.IntegrationPoint> { integrationPoint1, integrationPoint2 };
 			var expectedResult = new List<Data.IntegrationPoint> { integrationPoint1 };
 
-			_integrationPointService.GetAllRDOs().Returns(actualResult);
+			_integrationPointLocalService.GetAllRDOs().Returns(actualResult);
 
 			// Act
 			var result = _integrationPointRepository.GetEligibleToPromoteIntegrationPoints();
 
 			// Assert
-			_integrationPointService.Received(1).GetAllRDOs();
+			_integrationPointLocalService.Received(1).GetAllRDOs();
 
 			Assert.That(result, Is.EquivalentTo(expectedResult).
 				Using(new Func<IntegrationPointModel, Data.IntegrationPoint, bool>(
@@ -252,17 +301,21 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		}
 
 		[Test]
-		public void ItShouldCreateIntegrationPointBasedOnProfile()
+		[TestCase(null)]
+		[TestCase(123)]
+		public void ItShouldCreateIntegrationPointBasedOnProfile(int? federatedInstanceArtifactId)
 		{
 			int profileArtifactId = 565952;
 			string integrationPointName = "ip_name_425";
 			int artifactId = 131510;
 
+			var integrationPoint = SetUpGetRdo(0, 789, "choice789", federatedInstanceArtifactId);
+
 			var profile = new IntegrationPointProfile
 			{
 				OverwriteFields = new Choice(179935),
 				SourceProvider = 237,
-				DestinationConfiguration = "641627",
+				DestinationConfiguration = _serializedDestinationConfiguration,
 				SourceConfiguration = "391908",
 				DestinationProvider = 363,
 				Type = 840,
@@ -275,22 +328,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				Name = "ip_159",
 				PromoteEligible = true
 			};
-			var integrationPoint = new Data.IntegrationPoint
-			{
-				Name = "ip_671",
-				SourceProvider = 743,
-				DestinationProvider = 846
-			};
 
 			_integrationPointProfileService.GetRdo(profileArtifactId).Returns(profile);
 			_integrationPointService.SaveIntegration(Arg.Any<Core.Models.IntegrationPointModel>()).Returns(artifactId);
-			_integrationPointService.GetRdo(artifactId).Returns(integrationPoint);
+			_integrationPointLocalService.GetRdo(artifactId).Returns(integrationPoint);
 
 			_integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName);
 
 			_integrationPointProfileService.Received(1).GetRdo(profileArtifactId);
 			_integrationPointService.Received(1).SaveIntegration(Arg.Is<Core.Models.IntegrationPointModel>(x => x.Name == integrationPointName && x.ArtifactID == 0));
-			_integrationPointService.Received(1).GetRdo(artifactId);
+			_integrationPointLocalService.Received(1).GetRdo(artifactId);
 		}
 	}
 }

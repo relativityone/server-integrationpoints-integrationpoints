@@ -16,16 +16,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private ICredentialProvider _credentialProvider;
 		private IDataTransferLocationServiceFactory _locationServiceFactory;
 		private IDataTransferLocationService _locationService;
+		private IWebApiConfig _webApiConfig;
 
-		public WinEddsLoadFileFactory(ICredentialProvider credentialProvider, IDataTransferLocationServiceFactory locationServiceFactory)
+		public WinEddsLoadFileFactory(ICredentialProvider credentialProvider, IDataTransferLocationServiceFactory locationServiceFactory, IWebApiConfig webApiConfig)
 		{
 			_credentialProvider = credentialProvider;
 			_locationServiceFactory = locationServiceFactory;
+			_webApiConfig = webApiConfig;
 		}
 
 		public LoadFile GetLoadFile(ImportSettingsBase settings)
 		{
-			WinEDDS.Config.WebServiceURL = (new WebApiConfig()).GetWebApiUrl;
+			WinEDDS.Config.WebServiceURL = _webApiConfig.GetWebApiUrl;
 			NetworkCredential cred = _credentialProvider.Authenticate(new System.Net.CookieContainer());
 
 			NativeSettingsFactory factory = new NativeSettingsFactory(cred, settings.WorkspaceId);

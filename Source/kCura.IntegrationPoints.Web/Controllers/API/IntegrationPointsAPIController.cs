@@ -3,27 +3,16 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -33,47 +22,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICPHelper _cpHelper;
-		private readonly ICaseServiceContext _context;
-		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly ISerializer _serializer;
-		private readonly IChoiceQuery _choiceQuery;
-		private readonly IJobManager _jobManager;
-		private readonly IManagerFactory _managerFactory;
 		private readonly IHelperFactory _helperFactory;
-		private readonly IIntegrationPointProviderValidator _ipValidator;
-		private readonly IIntegrationPointPermissionValidator _permissionValidator;
-		private readonly IToggleProvider _toggleProvider;
 
 		public IntegrationPointsAPIController(
 			IServiceFactory serviceFactory,
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
 			ICPHelper cpHelper,
-			ICaseServiceContext context,
-			IContextContainerFactory contextContainerFactory,
-			ISerializer serializer, 
-			IChoiceQuery choiceQuery,
-			IJobManager jobManager,
-			IManagerFactory managerFactory,
-			IHelperFactory helperFactory,
-			IIntegrationPointProviderValidator ipValidator,
-			IIntegrationPointPermissionValidator permissionValidator,
-			IToggleProvider toggleProvider)
+			IHelperFactory helperFactory)
 		{
 			_serviceFactory = serviceFactory;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_cpHelper = cpHelper;
-			_context = context;
-			_contextContainerFactory = contextContainerFactory;
-			_serializer = serializer;
-			_choiceQuery = choiceQuery;
-			_jobManager = jobManager;
-			_managerFactory = managerFactory;
 			_helperFactory = helperFactory;
-			_ipValidator = ipValidator;
-			_permissionValidator = permissionValidator;
-			_toggleProvider = toggleProvider;
 		}
 
 		[HttpGet]
@@ -86,8 +48,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				model.ArtifactID = id;
 				if (id > 0)
 				{
-					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper, 
-						_context ,_contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+					IIntegrationPointService integrationPointService =  _serviceFactory.CreateIntegrationPointService(_cpHelper, _cpHelper);
 					model = integrationPointService.ReadIntegrationPoint(id);
 				}
 				if (model.DestinationProvider == 0)
@@ -125,8 +86,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 							ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(model.Destination);
 							IHelper targetHelper = _helperFactory.CreateTargetHelper(_cpHelper, importSettings.FederatedInstanceArtifactId, model.SecuredConfiguration);
 
-							IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper,
-								_context, _contextContainerFactory, _serializer, _choiceQuery, _jobManager, _managerFactory, _ipValidator, _permissionValidator, _toggleProvider);
+							IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper, targetHelper);
 
 							int createdId;
 							try

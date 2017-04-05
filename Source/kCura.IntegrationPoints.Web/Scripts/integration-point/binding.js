@@ -160,3 +160,11 @@ ko.bindingHandlers.doubleClick = {
 		});
 	}
 };
+
+ko.bindingHandlers.hidden = (function () {
+	function setVisibility(element, valueAccessor) {
+		var hidden = ko.unwrap(valueAccessor());
+		$(element).css('visibility', hidden ? 'hidden' : 'visible');
+	}
+	return { init: setVisibility, update: setVisibility };
+})();

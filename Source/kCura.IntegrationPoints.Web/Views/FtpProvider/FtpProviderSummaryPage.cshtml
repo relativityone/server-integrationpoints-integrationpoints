@@ -1,150 +1,85 @@
 ﻿@{
 	ViewBag.Title = "Settings";
 }
-
 <link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
-
-
 <table id="summaryPage" class="innerTabTable">
 	<tr>
-		<td class="editTableColumn">
+		<td>
 			<table>
 				<tr>
-					<td class="dynamicViewFieldName">Name:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: name"></td>
+					<td class="editTableColumn">
+						<table>
+							<tr>
+								<td class="dynamicViewFieldName">Name:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: name"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Overwrite:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: overwriteMode"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">SourceProvider:</td>
+								<td class="dynamicViewFieldValue breakWord" data-bind="text: sourceProviderName"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Destination RDO:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: destinationRdoName"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Host:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: host"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Port:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: port"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Protocol:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: protocol"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Username:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: userName"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Password:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: password"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Filename Prefix:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: fileNamePrefix"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Timezone Offset:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: timezoneOffset"></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</td>
-		<td class="editTableColumn">
+		<td>
 			<table>
 				<tr>
-					<td class="dynamicViewFieldName">Log Errors:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table><tr></tr></table>
-		</td>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Has Errors:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Overwrite:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: overwriteMode"></td>
-				</tr>
-			</table>
-		</td>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Email Notification Recipients:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">SourceProvider:</td>
-					<td class="dynamicViewFieldValue breakWord" data-bind="text: sourceProviderName"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Destination RDO:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: destinationRdoName"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Host:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: host"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Port:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: port"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Protocol:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: protocol"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Username:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: userName"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Password:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: password"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Filename Prefix:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: fileNamePrefix"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Timezone Offset:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: timezoneOffset"></td>
+					<td class="editTableColumn">
+						<table>
+							<tr>
+								<td class="dynamicViewFieldName">Log Errors:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Has Errors:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Email Notification Recipients:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 </table>
-
 <script src="~/Scripts/ftpProvider/ftp-provider-summary-page.js"></script>

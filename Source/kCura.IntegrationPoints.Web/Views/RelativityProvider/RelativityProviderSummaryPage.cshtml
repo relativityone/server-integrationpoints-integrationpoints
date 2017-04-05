@@ -1,177 +1,98 @@
 ﻿@{
-    ViewBag.Title = "Settings";
+	ViewBag.Title = "Settings";
 }
 <link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
 
 <table id="summaryPage" class="innerTabTable">
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Name:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: name"></td>
-                </tr>
-            </table>
-        </td>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Log Errors:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Export Type:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: exportType"></td>
-                </tr>
-            </table>
-        </td>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Has Errors:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Source Details:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: savedSearch"></td>
-                </tr>
-            </table>
-        </td>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Email Notification Recipients:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
 	<tr>
-		<td class="editTableColumn">
+		<td>
 			<table>
 				<tr>
-					<td class="dynamicViewFieldName">Source Workspace:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: sourceWorkspace"></td>
+					<td class="editTableColumn">
+						<table>
+							<tr>
+								<td class="dynamicViewFieldName">Name:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: name"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Export Type:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: exportType"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Source Details:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: savedSearch"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Source Workspace:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: sourceWorkspace"></td>
+							</tr>
+							<tr data-bind="visible: showInstanceInfo">
+								<td class="dynamicViewFieldName">Source Rel. Instance:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: sourceRelativityInstance"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Transfered Object:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: destinationRdoName"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Destination Workspace:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: targetWorkspace"></td>
+							</tr>
+							<tr data-bind="visible: showInstanceInfo">
+								<td class="dynamicViewFieldName">Destination Rel. Instance:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: destinationRelativityInstance"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Destination Folder:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: targetFolder"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Overwrite:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: overwriteMode"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Multi-Select Overlay:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: multiSelectOverlay"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Use Folder Path Info:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: useFolderPathInfo"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Move Existing Docs:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: moveExistingDocs"></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</td>
-		<td class="editTableColumn">
+		<td>
 			<table>
 				<tr>
-					<td class="dynamicViewFieldName">Included in ECA Promote List:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: promoteEligible"></td>
+					<td class="editTableColumn">
+						<table>
+							<tr>
+								<td class="dynamicViewFieldName">Log Errors:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: logErrors"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Has Errors:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: hasErrors"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Email Notification Recipients:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: emailNotification"></td>
+							</tr>
+							<tr>
+								<td class="dynamicViewFieldName">Included in ECA Promote List:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: promoteEligible"></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-	<tr data-bind="visible: showInstanceInfo">
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Source Rel. Instance:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: sourceRelativityInstance"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Transfered Object:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: destinationRdoName"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-	<tr>
-		<td class="editTableColumn">
-			<table>
-				<tr>
-					<td class="dynamicViewFieldName">Destination Workspace:</td>
-					<td class="dynamicViewFieldValue" data-bind="text: targetWorkspace"></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-    <tr  data-bind="visible: showInstanceInfo">
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Destination Rel. Instance:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: destinationRelativityInstance"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Destination Folder:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: targetFolder"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr></tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Overwrite:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: overwriteMode"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Multi-Select Overlay:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: multiSelectOverlay"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Use Folder Path Info:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: useFolderPathInfo"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td class="editTableColumn">
-            <table>
-                <tr>
-                    <td class="dynamicViewFieldName">Move Existing Docs:</td>
-                    <td class="dynamicViewFieldValue" data-bind="text: moveExistingDocs"></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
 </table>
 <script src="~/Scripts/RelativityProvider/relativity-provider-summary-page.js"></script>

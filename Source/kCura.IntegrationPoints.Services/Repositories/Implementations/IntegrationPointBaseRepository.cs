@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public abstract int Save(IntegrationPointModel model, string overwriteFieldsName);
 		
-		private string GetOverwriteFieldsName(int overwriteFieldsId)
+		protected string GetOverwriteFieldsName(int overwriteFieldsId)
 		{
 			//TODO remove this hack when IntegrationPointModel will start using ChoiceId instead of ChoiceName
 			return GetOverwriteFieldChoices().First(x => x.ArtifactId == overwriteFieldsId).Name;

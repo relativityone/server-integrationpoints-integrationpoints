@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 	[TestFixture]
 	public class IntegrationPointPermissionValidatorTests
 	{
-		private ISerializer _serializer;
+		private IIntegrationPointSerializer _serializer;
 		private IntegrationPointModelBase _model;
 		private int _artifactId = 123456;
 		private SourceProvider _sourceProvider;
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[SetUp]
 		public void SetUp()
 		{
-			_serializer = Substitute.For<ISerializer>();
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_model = new IntegrationPointModelBase() { Destination = $"{{ \"artifactTypeID\": { _artifactId } }}" };
 			_serializer.Deserialize<ImportSettings>(_model.Destination).Returns(new ImportSettings() { ArtifactTypeId = _artifactId });
 			_sourceProvider = new SourceProvider() { ArtifactId = 1000, Identifier = Guid.NewGuid().ToString() };
