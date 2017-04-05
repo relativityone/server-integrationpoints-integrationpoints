@@ -65,6 +65,8 @@
 		destination.SecuredConfiguration = viewModel.SecuredConfiguration();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
+		destination.ProductionImport = viewModel.ProductionImport();
+		destination.ProductionArtifactId = viewModel.ProductionArtifactId();
 		destination.Provider = "relativity";
 		destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
 		destinationJson = JSON.stringify(destination);
@@ -105,13 +107,19 @@
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.savedSearches = ko.observableArray(state.savedSearches);
 		self.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
-		this.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
+		self.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
 		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
 		self.TargetFolder = ko.observable();
 		self.SecuredConfiguration = ko.observable(state.SecuredConfiguration);
+		self.ProductionImport = ko.observable(state.ProductionImport || false);
+		self.ProductionSets = ko.observableArray();
+		self.ProductionArtifactId = ko.observable();
+		self.ProductionArtifactId.subscribe(function(value) {
+			self.ProductionImport(!!value);
+		});
 
 		self.ShowAuthentiactionButton = ko.observable(false);
 		self.AuthenticationFailed = ko.observable(false);
@@ -249,8 +257,12 @@
 					});
 					self.workspaces(result);
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
+					self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 					self.TargetWorkspaceArtifactId.subscribe(function (value) {
 						if (self.TargetWorkspaceArtifactId !== value) {
+
+							self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+
 							self.TargetWorkspaceArtifactId.isModified(false);
 							self.WorkspaceHasChanged = true;
 						}
@@ -267,6 +279,26 @@
 			self.SecuredConfiguration(IP.utils.generateCredentialsData(self.FederatedInstanceArtifactId(), clientId, clientSecret));
 			self.updateWorkspaces();
 		}
+
+		self.getDestinationProductionSets = function (targetWorkspaceId) {
+			if (targetWorkspaceId) {
+				var productionSetsPromise = IP.data.ajax({
+					type: "get",
+					url: IP.utils.generateWebAPIURL("Production/GetProductionsForImport"),
+					data: {
+						sourceWorkspaceArtifactId: targetWorkspaceId
+					}
+				}).fail(function(error) {
+					IP.message.error.raise("No production sets were returned for target workspace.");
+				});
+
+
+				IP.data.deferred().all(productionSetsPromise).then(function(result) {
+					self.ProductionSets(result);
+					self.ProductionArtifactId(state.ProductionArtifactId);
+				});
+			}
+		};
 
 		var authenticateModalViewModel = new AuthenticateViewModel(
 			function (clientId, clientSecret) {
@@ -375,6 +407,8 @@
 			return {
 				"FederatedInstanceArtifactId": self.FederatedInstanceArtifactId(),
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
+				"ProductionImport": self.ProductionImport(),
+				"ProductionArtifactId": self.ProductionArtifactId(),
 				"SecuredConfiguration": self.SecuredConfiguration(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),

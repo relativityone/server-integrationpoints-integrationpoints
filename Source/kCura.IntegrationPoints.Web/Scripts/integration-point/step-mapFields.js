@@ -270,8 +270,8 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 
 		var getTextRepresentation = function (value) {
-			if (!value) {
-				return "";
+			if (!value || value.length === 0) {
+				return "Select...";
 			}
 
 			return value.map(function (x) {

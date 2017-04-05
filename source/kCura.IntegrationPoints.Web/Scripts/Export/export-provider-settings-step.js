@@ -574,8 +574,8 @@
 		this.ExportMultipleChoiceFieldsAsNested = ko.observable(state.ExportMultipleChoiceFieldsAsNested || false);
 
 		var getTextRepresentation = function (value) {
-			if (!value) {
-				return "";
+			if (!value || value.length === 0) {
+				return "Select...";
 			}
 
 			return value.map(function (x) {

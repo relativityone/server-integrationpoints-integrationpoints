@@ -162,6 +162,7 @@
     <Compile Include="JobImport\Implementations\JobImport.cs" />
     <Compile Include="JobImport\Implementations\NativeImportSettingsBuilder.cs" />
     <Compile Include="JobImport\Implementations\NativeJobImport.cs" />
+    <Compile Include="JobImport\Implementations\ProductionImageJobImport.cs" />
     <Compile Include="RdoFieldSynchronizerBase.cs" />
     <Compile Include="IImportApiFactory.cs" />
     <Compile Include="IRelativityFieldQuery.cs" />
