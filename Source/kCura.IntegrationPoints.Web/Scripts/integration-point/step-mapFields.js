@@ -215,36 +215,48 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
-		this.IdentifierField = ko.observable();
+		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
 
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
-
+		
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
+		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 
 		var copyNativeFileText = "Copy Native File:";
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
+		
+		var setCopyFilesLabel = function (isImageImport) {
+			if (isImageImport === "true") {
+				self.copyNativeLabel(copyFileToRepositoryText);
+			} else {
+				self.copyNativeLabel(copyNativeFileText);
+			}
+		}
+		setCopyFilesLabel(this.ImageImport());
+
 		/********** Temporary UI Toggle**********/
-		this.ImageImportToggle = ko.observable("false");
+		this.ImageImportVisible = ko.observable("false");
 		root.data.ajax({
 			type: 'get',
 			url: root.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Web.Toggles.UI.ShowImageImportToggle'),
 			success: function (result) {
-				self.ImageImportToggle(result);
+				self.ImageImportVisible(result && self.IsRelativityProvider());
 			}
 		});
 
 
 		this.ImageImport.subscribe(function (value) {
+			setCopyFilesLabel(value);
 			if (value === "true") {
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
 				self.MoveExistingDocuments("false");
-				self.copyNativeLabel(copyFileToRepositoryText);
 				self.FolderPathSourceField(null);
 				self.autoFieldMapWithCustomOptions(function (identfier) {
 					var name = identfier.name.replace(" [Object Identifier]", "");
@@ -252,7 +264,6 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 			}
 			else {
-				self.copyNativeLabel(copyNativeFileText);
 				root.utils.UI.disable("#fieldMappings", false);
 			}
 		});
@@ -364,9 +375,6 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		});
-
-		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
-		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 
 		this.TotalLongTextFields = {};//has the full set of long text fields in workspace
 
@@ -771,6 +779,10 @@ ko.validation.insertValidationMessage = function (element) {
 			settingsTooltipViewModel.open(event);
 		};
 
+		if (self.IsRelativityProvider() && destinationModel.ProductionImport) {
+			self.ImageImport('true');
+			root.utils.UI.disable("#copyImages", true);
+		}
 	};// end of the viewmodel
 
 
