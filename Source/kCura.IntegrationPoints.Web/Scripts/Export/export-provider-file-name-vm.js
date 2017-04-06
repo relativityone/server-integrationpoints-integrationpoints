@@ -18,8 +18,9 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 
 	var self = this;
 
+	self.Max_Selection_Count = 5;
+
 	self.availableFields = availableFields;
-	self.availableSeparators = ["-", "+", " "];
 
 	self.actualSelectionTypeIndex = 0;
 
@@ -27,68 +28,72 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 	self.listData = ko.observable({});
 	self.data = ko.observable({});
 
-	self.IsRequired = ko.observable(false);
+	self.addNewSelection = function() {
 
-	self.addNewSelection = function(fileNameEntry) {
-
-		var index = self.actualSelectionTypeIndex++;
+		var actualIndex = self.metaData().length;
 		
-		if (!ko.isObservable(self.listData()[index])) {
-			self.listData()[index] = ko.observableArray([]);
+		if (!ko.isObservable(self.listData()[actualIndex])) {
+			self.listData()[actualIndex] = ko.observableArray([]);
 		}
 		
-		
-		if (!ko.isObservable(self.data()[index])){
-			self.data()[index] = ko.observable().extend({
-				required: {onlyIf: self.IsRequired}
-			});
-		}
-		
-		if (index % 2 === 0) {
+		if (actualIndex % 2 === 0) {
 			for (var fieldIndex = 0; fieldIndex < self.availableFields.length; ++fieldIndex) {
 				var field = self.availableFields[fieldIndex];
-				self.listData()[index].push(new ListEntry(field.displayName, field.fieldIdentifier));
-				if (fileNameEntry !== undefined && fileNameEntry.value === field.fieldIdentifier) {
-					self.data()[index](field.fieldIdentifier);
-				}
+				self.listData()[actualIndex].push(new ListEntry(field.displayName, field.fieldIdentifier, "F"));
 			}
 		} else {
-			for (var sepIndex = 0; sepIndex < self.availableSeparators.length; ++sepIndex) {
-				self.listData()[index].push(new ListEntry(self.availableSeparators[sepIndex], self.availableSeparators[sepIndex]));
-
-				if (fileNameEntry !== undefined && fileNameEntry.value === self.availableSeparators[sepIndex]) {
-					self.data()[index](self.availableSeparators[sepIndex]);
-				}
+			for (var sepIndex = 0; sepIndex < ExportEnums.AvailableSeparators.length; ++sepIndex) {
+				self.listData()[actualIndex].push(new ListEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
 			}
 		}
 
-		self.IsRequired(true);
-
-		self.metaData.push(index);
+		self.metaData.push(actualIndex);
+		self.data()[actualIndex](null);
 	};
-	
+
+	self.selectItem = function (fileNameEntry) {
+		var index = self.metaData().length - 1;
+		self.data()[index](fileNameEntry.value);
+	}
+
 	self.removeNewSelection = function() {
 
-		--self.actualSelectionTypeIndex;
-
-		delete self.listData()[self.actualSelectionTypeIndex];
-		delete self.data()[self.actualSelectionTypeIndex];
-
 		self.metaData.pop();
+
+		delete self.listData()[self.metaData().length];
+		delete self.data()[self.metaData().length];
 	};
 
 	self.initViewModel = function (selectionList) {
 
+		for (var selIndex = 0; selIndex < self.Max_Selection_Count; ++selIndex) {
+
+			ko.validation.rules['shouldBeValidated'] = {
+				validator: function(val, currElementIndex) {
+					if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
+						return true;
+					}
+					return val !== undefined && val != null;
+				},
+				message: "Please select value"
+			}
+	
+			ko.validation.registerExtenders();
+
+			self.data()[selIndex] = ko.observable().extend({
+				shouldBeValidated: selIndex
+			});
+		}
+		
 		if (selectionList !== undefined) {
 			for (var selectionIndex = 0; selectionIndex < selectionList.length; ++selectionIndex) {
-				self.addNewSelection(selectionList[selectionIndex]);
+				self.addNewSelection();
+				self.selectItem(selectionList[selectionIndex]);
 			}
 		} else {
-			self.addNewSelection({});
+			self.addNewSelection();
 		}
 	}
-
-	self.initViewModel(selectionList);
 
 	self.getSelections = function () {
 		var selections = [];
@@ -101,10 +106,12 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 	}
 
 	self.addButtonVisible = function() {
-		return self.metaData().length < 5;
+		return self.metaData().length < self.Max_Selection_Count;
 	}
 
 	self.delButtonVisible = function () {
 		return self.metaData().length > 1;
 	}
+
+	self.initViewModel(selectionList);
 }
