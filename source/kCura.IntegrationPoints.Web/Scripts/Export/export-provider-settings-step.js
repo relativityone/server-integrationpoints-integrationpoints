@@ -655,11 +655,7 @@
 		});
 
 
-		var availableFields = [];
-		availableFields.push(new AvailableFieldMock("Control Number", 1));
-		availableFields.push(new AvailableFieldMock("Extracted Text", 2));
-		availableFields.push(new AvailableFieldMock("File Name", 3));
-
+		var availableFields = state.availableFields || [];
 		var selectionList = [];
 		selectionList.push(new ListEntry("Extracted Text", 2));
 		selectionList.push(new ListEntry("-", "-"));
@@ -739,14 +735,15 @@
 			self.ipModel = ip;
 
 			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration,
-			{
-				hasBeenRun: ip.hasBeenRun,
-				artifactTypeId: ip.artifactTypeID,
-				defaultRdoTypeId: ip.DefaultRdoTypeId,
-				integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
-				name: ip.name,
-				isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
-			}));
+				{
+					hasBeenRun: ip.hasBeenRun,
+					artifactTypeId: ip.artifactTypeID,
+					defaultRdoTypeId: ip.DefaultRdoTypeId,
+					integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
+					name: ip.name,
+					isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
+					availableFields: ip.availableFields
+				}));
 
 			self.model.errors = ko.validation.group(self.model);
 		};
