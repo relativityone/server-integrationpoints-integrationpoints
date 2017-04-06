@@ -140,6 +140,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			importSettings.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
+
+			//Copy multi-value and nested delimiter settings chosen on configuration page to importAPI settings
+			importSettings.MultiValueDelimiter = (char)providerSettings.AsciiMultiLine;
+			importSettings.NestedValueDelimiter = (char)providerSettings.AsciiNestedValue;
+
 			return importSettings;
 		}
 

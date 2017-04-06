@@ -1,0 +1,80 @@
+﻿
+using System;
+using System.IO;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
+using NSubstitute;
+using NUnit.Framework;
+
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
+{
+	public class DestinationFolderHelperTests
+	{
+		private const string _FOLDER_PATH = @"\\localhost\Export";
+		private const string _JOB_NAME = "JobName";
+		private readonly DateTime _jobStartTime = DateTime.Now;
+
+		private DestinationFolderHelper _instnaceUnderTest;
+
+		private ExportSettings _exportSettings;
+		private IDirectoryHelper _driHelperMock;
+		private IJobInfo _jobInfoMock;
+
+		[SetUp]
+		public void Init()
+		{
+			_jobInfoMock = Substitute.For<IJobInfo>();
+			_driHelperMock = Substitute.For<IDirectoryHelper>();
+
+			_instnaceUnderTest = new DestinationFolderHelper(_jobInfoMock, _driHelperMock);
+
+			_exportSettings = new ExportSettings()
+			{
+				ExportFilesLocation = _FOLDER_PATH
+			};
+		}
+
+		[Test]
+		public void ItShouldNotCreateSubFolder()
+		{
+			// Arrange
+			_exportSettings.IsAutomaticFolderCreationEnabled = false;
+			// Act
+
+			string retFolderPath = _instnaceUnderTest.GetFolder(_exportSettings);
+
+			// Assert
+			Assert.That(retFolderPath, Is.EqualTo(_FOLDER_PATH));
+		}
+
+		[Test]
+		public void ItShouldCreateSubFolder()
+		{
+			// Arrange
+			_exportSettings.IsAutomaticFolderCreationEnabled = true;
+
+			_jobInfoMock.GetStartTimeUtc().Returns(_jobStartTime);
+			_jobInfoMock.GetName().Returns(_JOB_NAME);
+			// Act
+
+			string retFolderPath = _instnaceUnderTest.GetFolder(_exportSettings);
+
+			// Assert
+			Assert.That(retFolderPath, Is.EqualTo(
+					Path.Combine(_FOLDER_PATH,
+						string.Format(
+							$"{_JOB_NAME}_{_jobStartTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture).Replace(":", "")}"))
+				)
+			);
+		}
+
+		[Test]
+		public void ItShouldCreateFolder()
+		{
+			// Act
+			_instnaceUnderTest.CreateFolder(_FOLDER_PATH);
+
+			// Assert
+			_driHelperMock.Received().CreateDirectory(_FOLDER_PATH);
+		}
+	}
+}
