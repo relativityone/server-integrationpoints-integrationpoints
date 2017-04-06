@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Security.Claims;
+using Castle.MicroKernel.Registration;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
@@ -10,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
@@ -37,6 +39,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId);
 			_destinationWorkspaceDto = _destinationWorkspaceRepository.Create(SourceWorkspaceArtifactId, "DestinationWorkspaceRepositoryTests", -1, "This Instance");
+			var federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
+			var federatedInstanceDto = new FederatedInstanceDto()
+			{
+				ArtifactId = 12345,
+				Name = "federatedInstanceName"
+			};
+			federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(Arg.Any<int>()).Returns(federatedInstanceDto);
+			var thisInstanceDto = new FederatedInstanceDto()
+			{
+				Name = "This Instance",
+				ArtifactId = null
+			};
+			federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(null).Returns(thisInstanceDto);
+			Container.Register(Component.For <IFederatedInstanceManager>().Instance(federatedInstanceManager).IsDefault());
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_scratchTableRepository = repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, "Documents2Tag", "LikeASir");
 			_documentRepository = repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
@@ -81,7 +97,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				ArtifactId = _destinationWorkspaceDto.ArtifactId,
 				DestinationWorkspaceArtifactID = _destinationWorkspaceDto.DestinationWorkspaceArtifactID,
-				DestinationWorkspaceName = expectedWorkspaceName
+				DestinationWorkspaceName = expectedWorkspaceName,
+				DestinationInstanceName = _destinationWorkspaceDto.DestinationInstanceName
 			};
 
 			//Act
@@ -128,7 +145,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			JobHistory linkedJobHistory = _jobHistoryService.GetRdo(batchInstance);
 
 			//Assert
-			Assert.AreEqual($"This Instance - DestinationWorkspaceRepositoryTests - {SourceWorkspaceArtifactId}", linkedJobHistory.DestinationWorkspace);
+			Assert.AreEqual($"DestinationWorkspaceRepositoryTests - {SourceWorkspaceArtifactId}", linkedJobHistory.DestinationWorkspace);
 			CollectionAssert.Contains(linkedJobHistory.DestinationWorkspaceInformation, _destinationWorkspaceDto.ArtifactId);
 		}
 
@@ -173,12 +190,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		public void Create_DestinationWorkspaceDTOWithInvalidWorkspaceId_ThrowsException()
+		public void Create_DestinationWorkspaceDTOWithInvalidWorkspaceId_EmptyArtifactId()
 		{
 			//Arrange
 			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(Helper, -1, Substitute.For<IRSAPIService>());
-			//Act & Assert
-			Assert.Throws<Exception>(() => destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance"), "Unable to create a new instance of Destination Workspace object");
+
+			//Act
+			DestinationWorkspace destinationWorkspace= destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance");
+
+			//Assert
+			Assert.AreEqual(destinationWorkspace.ArtifactId, 0);
 		}
 
 		[Test]
@@ -196,7 +217,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				ArtifactId = 12345,
 				DestinationWorkspaceArtifactID = _destinationWorkspaceDto.DestinationWorkspaceArtifactID,
-				DestinationWorkspaceName = _destinationWorkspaceDto.DestinationWorkspaceName
+				DestinationWorkspaceName = _destinationWorkspaceDto.DestinationWorkspaceName,
+				DestinationInstanceName = _destinationWorkspaceDto.DestinationInstanceName
 			};
 
 			//Act & Assert

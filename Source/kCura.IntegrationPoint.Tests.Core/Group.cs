@@ -94,23 +94,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void AddGroupToWorkspace(int workspaceId, int groupId)
 		{
-			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, false, $"{{workspaceArtifactID:{workspaceId}}}");
+			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, $"{{workspaceArtifactID:{workspaceId}}}");
 			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response);
 			groupSelector.DisabledGroups = new List<GroupRef>();
 			groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(groupId) };
 
 			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, false, parameter);
+			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, parameter);
 		}
 
 		public static void RemoveGroupFromWorkspace(int workspaceId, int groupId)
 		{
-			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, false, $"{{workspaceArtifactID:{workspaceId}}}");
+			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, $"{{workspaceArtifactID:{workspaceId}}}");
 			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response);
 			groupSelector.DisabledGroups = new List<GroupRef> { new GroupRef(groupId) };
 
 			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, false, parameter);
+			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, parameter);
 		}
 	}
 }

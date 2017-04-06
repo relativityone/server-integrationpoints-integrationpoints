@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string parameters = JsonConvert.SerializeObject(user);
-			string response = Rest.PostRequestAsJson("Relativity/User", false, parameters);
+			string response = Rest.PostRequestAsJson("Relativity/User", parameters);
 			JObject resultObject = JObject.Parse(response);
 			user.ArtifactId = resultObject["Results"][0]["ArtifactID"].Value<int>();
 			return user;
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			string url = $"Relativity/User/QueryResult";
 			string QueryInputJSON = string.Format(@"{{""condition"":"" 'Email Address' == '{0}'"", ""fields"":[""*""]}}", email);
-			string response = Rest.PostRequestAsJson(url, false, QueryInputJSON);
+			string response = Rest.PostRequestAsJson(url, QueryInputJSON);
 			JObject userJObject = JObject.Parse(response);
 			UserModel userModel = userJObject.ToObject<UserModel>();
 			return userModel;

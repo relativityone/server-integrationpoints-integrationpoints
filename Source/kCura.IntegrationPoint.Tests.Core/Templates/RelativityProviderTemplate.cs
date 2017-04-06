@@ -13,7 +13,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using NSubstitute;
+using Relativity.Data.Toggles;
 using Relativity.Services.Folder;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -67,6 +70,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				throw;
 			}
 			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
+
+			IToggleProvider toggleProviderMock = Substitute.For<IToggleProvider>();
+			toggleProviderMock.IsEnabled<AOAGToggle>().Returns(true);
+			ToggleProvider.Current = toggleProviderMock;
 		}
 
 		public override void SuiteTeardown()

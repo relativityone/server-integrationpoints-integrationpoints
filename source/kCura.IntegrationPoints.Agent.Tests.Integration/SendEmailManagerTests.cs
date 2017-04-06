@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IJobManager _jobManager;
 		private SendEmailManager _sendEmailManager;
 		private IQueueDBContext _queueContext;
+		private IAgentService _agentService;
 
 		private long _jobId;
 
@@ -40,17 +41,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			base.SuiteSetup();
 			_serializer = Container.Resolve<ISerializer>();
 			_jobManager = this.Container.Resolve<IJobManager>();
+			_agentService = Container.Resolve<IAgentService>();
 			IHelper helper = Container.Resolve<IHelper>();
 			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager, helper);
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
-
+		
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void VerifyGetUnbatchedId()
 		{
 			string jobDetails =
 				"{\"Subject\":\"testing stuff\",\"MessageBody\":\"Hello, this is GeeeRizzle \",\"Emails\":[\"testing1234@kcura.com\",\"kwu@kcura.com\"]}";
+
+			_agentService.CreateQueueTableOnce();
 
 			DataRow row = new CreateScheduledJob(this._queueContext).Execute(
 				SourceWorkspaceArtifactId,
