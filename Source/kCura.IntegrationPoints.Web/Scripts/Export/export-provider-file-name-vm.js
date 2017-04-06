@@ -27,6 +27,8 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 	self.listData = ko.observable({});
 	self.data = ko.observable({});
 
+	self.IsRequired = ko.observable(false);
+
 	self.addNewSelection = function(fileNameEntry) {
 
 		var index = self.actualSelectionTypeIndex++;
@@ -35,13 +37,10 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 			self.listData()[index] = ko.observableArray([]);
 		}
 		
+		
 		if (!ko.isObservable(self.data()[index])){
 			self.data()[index] = ko.observable().extend({
-				required: {
-					onlyIf: function () {
-						return self.actualSelectionTypeIndex > 0;
-					}
-				}
+				required: {onlyIf: self.IsRequired}
 			});
 		}
 		
@@ -63,12 +62,18 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 			}
 		}
 
+		self.IsRequired(true);
+
 		self.metaData.push(index);
 	};
 	
 	self.removeNewSelection = function() {
 
 		--self.actualSelectionTypeIndex;
+
+		delete self.listData()[self.actualSelectionTypeIndex];
+		delete self.data()[self.actualSelectionTypeIndex];
+
 		self.metaData.pop();
 	};
 
@@ -95,7 +100,11 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 		return selections;
 	}
 
-	self.isRequired = function(index) {
-		return index > 0;
+	self.addButtonVisible = function() {
+		return self.metaData().length < 5;
+	}
+
+	self.delButtonVisible = function () {
+		return self.metaData().length > 1;
 	}
 }

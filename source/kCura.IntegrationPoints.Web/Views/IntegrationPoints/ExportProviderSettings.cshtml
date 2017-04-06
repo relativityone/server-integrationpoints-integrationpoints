@@ -226,14 +226,14 @@
 									</div>
 									<div class="field-value">
 										<div data-bind="foreach: metaData">
-											<select data-bind="value: $parent.data()[$data], options: $parent.listData()[$data], optionsText: 'name', optionsValue: 'value', valueAllowUnset: true, select2: {}"/>
+											<select data-bind="value: $parent.data()[$data], options: $parent.listData()[$data], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2: {}"/>
 										</div>
 									</div>
 									<div class="field-value">
-										<button id="add-file-name-selection-button" class="actionButtonSmall" data-bind="click: addNewSelection">+</button>
+										<button id="add-file-name-selection-button" class="actionButtonSmall" data-bind="click: addNewSelection, visible: addButtonVisible()">+</button>
 									</div>	
 									<div class="field-value">
-										<button id="del-file-name-selection-button" class="actionButtonSmall" data-bind="click: removeNewSelection">-</button>
+										<button id="del-file-name-selection-button" class="actionButtonSmall" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
 									</div>
 								</div>
 								

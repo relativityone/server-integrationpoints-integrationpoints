@@ -656,11 +656,6 @@
 
 
 		var availableFields = state.availableFields || [];
-		var selectionList = [];
-		selectionList.push(new ListEntry("Extracted Text", 2));
-		selectionList.push(new ListEntry("-", "-"));
-		selectionList.push(new ListEntry("File Name", 3));
-
 		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameSelection);
 
 		this.getSelectedOption = function () {
