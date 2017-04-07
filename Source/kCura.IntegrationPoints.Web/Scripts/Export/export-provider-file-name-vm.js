@@ -1,17 +1,7 @@
-﻿ListEntry = function (name, value, type) {
+﻿FileNameEntry = function (name, value, type) {
 	this.name = name;
 	this.value = value;
 	this.type = type;
-}
-
-FileNameEntry = function (value, type) {
-	this.value = value;
-	this.type = type;
-}
-
-AvailableFieldMock = function(name, value) {
-	this.displayName = name;
-	this.fieldIdentifier = value;
 }
 
 ExportProviderFileNameViewModel = function(availableFields, selectionList) {
@@ -28,6 +18,9 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 	self.listData = ko.observable({});
 	self.data = ko.observable({});
 
+	self.fieldFileNameEntries = [];
+	self.sepFileNameEntries = [];
+
 	self.addNewSelection = function() {
 
 		var actualIndex = self.metaData().length;
@@ -35,20 +28,27 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 		if (!ko.isObservable(self.listData()[actualIndex])) {
 			self.listData()[actualIndex] = ko.observableArray([]);
 		}
+
+		//if (!ko.isObservable(self.data()[actualIndex])) {
+		//	self.data()[actualIndex] = ko.observable().extend({
+		//		shouldBeValidated: actualIndex
+		//	});
+
+		//	ko.validation.registerExtenders();
+		//}
 		
 		if (actualIndex % 2 === 0) {
 			for (var fieldIndex = 0; fieldIndex < self.availableFields.length; ++fieldIndex) {
 				var field = self.availableFields[fieldIndex];
-				self.listData()[actualIndex].push(new ListEntry(field.displayName, field.fieldIdentifier, "F"));
+				self.listData()[actualIndex].push(new FileNameEntry(field.displayName, field.fieldIdentifier, "F"));
 			}
 		} else {
 			for (var sepIndex = 0; sepIndex < ExportEnums.AvailableSeparators.length; ++sepIndex) {
-				self.listData()[actualIndex].push(new ListEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
+				self.listData()[actualIndex].push(new FileNameEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
 			}
 		}
 
 		self.metaData.push(actualIndex);
-		self.data()[actualIndex](null);
 	};
 
 	self.selectItem = function (fileNameEntry) {
@@ -60,31 +60,51 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 
 		self.metaData.pop();
 
-		delete self.listData()[self.metaData().length];
-		delete self.data()[self.metaData().length];
+		//var delSelIndex = self.metaData().length;
+
+		//self.data()[delSelIndex].rules({ validatable: false });
+
+		//delete self.listData()[delSelIndex];
+		//delete self.data()[delSelIndex];
+
+		//if (!ko.isObservable(self.data()[delSelIndex])) {
+		//	self.data()[delSelIndex] = ko.observable().extend({
+		//		shouldBeValidated: delSelIndex
+		//	});
+		//}
 	};
 
 	self.initViewModel = function (selectionList) {
 
-		for (var selIndex = 0; selIndex < self.Max_Selection_Count; ++selIndex) {
+		ko.validation.rules['shouldBeValidated'] = {
+			validator: function (val, currElementIndex) {
+				if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
+					return true;
+				}
+				return val !== undefined && val != null;
+			},
+			message: "Please select value {0}"
+		}
 
-			ko.validation.rules['shouldBeValidated'] = {
-				validator: function(val, currElementIndex) {
-					if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
-						return true;
-					}
-					return val !== undefined && val != null;
-				},
-				message: "Please select value"
-			}
-	
-			ko.validation.registerExtenders();
+		ko.validation.registerExtenders();
+
+		for (var selIndex = 0; selIndex < self.Max_Selection_Count; ++selIndex) {
 
 			self.data()[selIndex] = ko.observable().extend({
 				shouldBeValidated: selIndex
 			});
+
+			//self.data()[selIndex] = ko.observable().extend({
+			//	validation: function (val, currElementIndex) {
+			//		if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
+			//			return true;
+			//		}
+			//		return val !== undefined && val != null;
+			//	},
+			//	message: "Please select value {0}"
+			//});
 		}
-		
+
 		if (selectionList !== undefined) {
 			for (var selectionIndex = 0; selectionIndex < selectionList.length; ++selectionIndex) {
 				self.addNewSelection();
