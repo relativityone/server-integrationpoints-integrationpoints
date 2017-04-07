@@ -264,6 +264,8 @@
     <Compile Include="Production.cs" />
     <Compile Include="ProductionDataSource.cs" />
     <Compile Include="RelativityApplicationManager.cs" />
+    <Compile Include="ResourcePoolHelper.cs" />
+    <Compile Include="ResourceServerHelper.cs" />
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
@@ -277,6 +279,8 @@
     <Compile Include="TestHelpers\BaseServiceContextHelper.cs" />
     <Compile Include="TestHelpers\ExceptionHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
+    <Compile Include="TestHelpers\ExtendedIArtifactGuidManager.cs" />
+    <Compile Include="TestHelpers\ExtendedIFieldManager.cs" />
     <Compile Include="TestHelpers\ExtendedIKeywordSearchManager.cs" />
     <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />

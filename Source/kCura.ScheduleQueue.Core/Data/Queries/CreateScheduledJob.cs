@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
@@ -53,7 +54,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			sqlParams.Add(!parentJobID.HasValue || parentJobID.Value == 0
 				? new SqlParameter("@ParentJobID", DBNull.Value)
 				: new SqlParameter("@ParentJobID", parentJobID.Value));
-
+			
 			DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 
 			DataRow row = null;
