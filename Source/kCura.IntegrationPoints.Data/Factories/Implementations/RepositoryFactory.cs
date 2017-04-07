@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -237,11 +239,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId);
 			return rdoRepository;
 		}
-
-		public IDocumentTotalsRepository GetDocumentTotalsRepository(int workspaceArtifactId)
-		{
-			return new DocumentTotalsRepository(_helper, workspaceArtifactId);
-		}
 		
         #region Helper Methods
 
@@ -292,7 +289,17 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return contextContainer;
 		}
 
-        #endregion Helper Methods
+		public IRdoStatistics GetRdoStatistics()
+		{
+			return new RdoStatistics(this);
+		}
+
+		public IDocumentTotalStatistics GetDocumentTotalStatistics()
+		{
+			return new DocumentTotalStatistics(_helper, this);
+		}
+
+		#endregion Helper Methods
 
         private class ContextContainer
 		{

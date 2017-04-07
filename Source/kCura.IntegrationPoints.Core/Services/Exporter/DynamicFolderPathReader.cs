@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -79,7 +80,7 @@ SELECT * FROM @FolderPaths";
 
 		private void SetFolderPaths(IDictionary<int, ArtifactDTO> artifacts)
 		{
-			DataTable artifactIdsValues = GetArtifactIdsValues(artifacts);
+			DataTable artifactIdsValues = artifacts.Keys.ToDataTable();
 
 			SqlParameter parameter = new SqlParameter
 			{
@@ -101,20 +102,6 @@ SELECT * FROM @FolderPaths";
 					Value = path
 				});
 			}
-		}
-
-		private DataTable GetArtifactIdsValues(IDictionary<int, ArtifactDTO> artifacts)
-		{
-			var dataTable = new DataTable();
-			dataTable.Columns.Add();
-
-			foreach (var artifactDto in artifacts)
-			{
-				var dataRow = dataTable.NewRow();
-				dataRow[0] = artifactDto.Key;
-				dataTable.Rows.Add(dataRow);
-			}
-			return dataTable;
 		}
 	}
 }

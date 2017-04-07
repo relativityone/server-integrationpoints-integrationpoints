@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NSubstitute;
 

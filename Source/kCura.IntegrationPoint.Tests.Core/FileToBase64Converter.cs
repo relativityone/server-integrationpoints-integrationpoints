@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using System.Text;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
+namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class FileToBase64Converter
 	{

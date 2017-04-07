@@ -296,14 +296,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			query.Condition = new TextCondition(uniqueFieldID, TextConditionEnum.In, managerUniqueIDs);
 			query.Fields.Add(new FieldValue(uniqueFieldID));
 
-			var result = rdoRepository.Query(query);
-			if (!result.Success)
+			QueryResultSet<RDO> result;
+			try
 			{
-				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
-				LogRetrievingManagerArtifactIds(messages);
-				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
-				throw e;
+				result = rdoRepository.Query(query);
 			}
+			catch (AggregateException e)
+			{
+				LogRetrievingCustodianManagersIdsError(e.InnerExceptions.Select(x => x.Message));
+				throw;
+			}
+			
 			IDictionary<string, int> managerIDs =
 				result.Results.ToDictionary(r => r.Artifact.Fields.First(f => f.ArtifactID.Equals(uniqueFieldID)).ToString(),
 					r => r.Artifact.ArtifactID);

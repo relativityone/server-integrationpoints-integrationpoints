@@ -1,7 +1,7 @@
 ﻿@{
 	ViewBag.Title = "Settings";
 }
-<link href="~/Content/buttermilk-overrides.css" rel="stylesheet" />
+<link href="~/Content/buttermilk-overrides.css" rel="stylesheet"/>
 
 <table id="summaryPage" class="innerTabTable">
 	<tr>
@@ -92,7 +92,28 @@
 					</td>
 				</tr>
 			</table>
+			<table>
+				<tr>
+					<td class="editTableColumn">
+						<table>
+							<tr>
+								<td class="dynamicViewFieldName">Total of Documents:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: stats.documents"></td>
+							</tr>
+							<tr data-bind="visible: importNativeFile() && !importImageFile()">
+								<td class="dynamicViewFieldName">Total of Natives:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: stats.natives"></td>
+							</tr>
+							<tr data-bind="visible: importImageFile">
+								<td class="dynamicViewFieldName">Total of Images:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: stats.images"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
 		</td>
 	</tr>
 </table>
 <script src="~/Scripts/RelativityProvider/relativity-provider-summary-page.js"></script>
+<script src="~/Scripts/integration-point/statistics.js"></script>

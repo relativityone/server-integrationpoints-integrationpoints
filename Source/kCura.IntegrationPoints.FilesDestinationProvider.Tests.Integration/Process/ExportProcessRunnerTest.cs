@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
 
-			_workspaceService = new WorkspaceService(new ImportHelper(_configSettings));
+			_workspaceService = new WorkspaceService(new ImportHelper());
 
 			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 

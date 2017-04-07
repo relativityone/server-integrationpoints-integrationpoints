@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model
+namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	public class FolderWithDocuments
 	{

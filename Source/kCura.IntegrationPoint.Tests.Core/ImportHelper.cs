@@ -3,25 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
-using Status = kCura.Relativity.DataReaderClient.Status;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
+namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class ImportHelper
 	{
 		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
-		private readonly ConfigSettings _configSettings;
-
-		internal ImportHelper(ConfigSettings configSettings)
-		{
-			_configSettings = configSettings;
-		}
-
-		internal void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
+		
+		public void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
 			CreateFolders(workspaceArtifactId, documentsTestData);
 
@@ -116,7 +108,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		{
 			if (jobreport.ErrorRows.Any())
 			{
-				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine(error.Message));
+				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine((string) error.Message));
 			}
 		}
 
@@ -124,13 +116,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		{
 			if (jobreport.ErrorRows.Any())
 			{
-				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine(error.Message));
+				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine((string) error.Message));
 			}
 		}
 
-		private static void ImportJobOnMessage(Status status)
+		private static void ImportJobOnMessage(Relativity.DataReaderClient.Status status)
 		{
-			Console.WriteLine(status.Message);
+			Console.WriteLine((string) status.Message);
 		}
 	}
 }

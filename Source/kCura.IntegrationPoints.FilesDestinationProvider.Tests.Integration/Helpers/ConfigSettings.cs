@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Configuration;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
+namespace kCura.IntegrationPoint.Tests.Core
 {
-	internal class DocumentTestDataBuilder
+	public class DocumentTestDataBuilder
 	{
 		public static DocumentsTestData BuildTestData()
 		{

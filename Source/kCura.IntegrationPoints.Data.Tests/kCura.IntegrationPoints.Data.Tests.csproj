@@ -249,6 +249,12 @@
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="SecretStore\SecretManagerTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
+    <Compile Include="Statistics\DocumentTotalStatisticsTests.cs" />
+    <Compile Include="Statistics\ImageFileSizeStatisticsTests.cs" />
+    <Compile Include="Statistics\ImageTotalStatisticsTests.cs" />
+    <Compile Include="Statistics\NativeFileSizeStatisticsTests.cs" />
+    <Compile Include="Statistics\NativeTotalStatisticsTests.cs" />
+    <Compile Include="Statistics\RdoStatisticsTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="BaseRdoTests.cs" />

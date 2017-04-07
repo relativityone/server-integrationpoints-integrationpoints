@@ -88,10 +88,22 @@ namespace kCura.IntegrationPoints.Data
 	public static class ProductionConsts
 	{
 		public static readonly Guid ProductionInformationTypeGuid = new Guid("11F4D584-C2A7-4E13-8458-D2C031FA40B6");
+		public static readonly Guid WithNativesFieldGuid = new Guid("8C8BEC7A-1DF2-4AFC-B87B-AD2ECBE97C34");
+		public static readonly Guid ImageCountFieldGuid = new Guid("D92B5B06-CDF0-44BA-B365-A2396F009C73");
+		public static readonly Guid DocumentFieldGuid = new Guid("1CAA97BA-1D77-40C6-9F9A-F5EA9CEFAF38");
 	}
 
 	public static class SecretStoreConstants
 	{
 		public const string TENANT_ID_PREFIX = "92080CA4-4903-41B0-9E4C-4DC7DF961A8E";
+	}
+
+	public static class DocumentFieldsConstants
+	{
+		public static readonly Guid HasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
+		public static readonly Guid HasImagesFieldGuid = new Guid("2BAACA72-790C-4B87-A7D8-C18C45CAC63D");
+		public static readonly Guid RelativityImageCount = new Guid("D726B2D9-4192-43DF-86EF-27D36560931A");
+
+		public const int HAS_IMAGES_YES_ARTIFACT_ID = 1034243;
 	}
 }

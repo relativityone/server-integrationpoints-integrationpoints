@@ -1,17 +1,16 @@
 ﻿using System.IO;
 using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Model;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
+namespace kCura.IntegrationPoint.Tests.Core
 {
-	internal class WorkspaceService
+	public class WorkspaceService
 	{
 		#region Constructors
 
@@ -34,17 +33,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		#region Methods
 
-		internal int CreateWorkspace(string name)
+		public int CreateWorkspace(string name)
 		{
 			return Workspace.CreateWorkspace(name, _TEMPLATE_WORKSPACE_NAME);
 		}
 
-		internal void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
+		public void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
 			_importHelper.ImportData(workspaceArtifactId, documentsTestData);
 		}
 
-		internal void DeleteWorkspace(int artifactId)
+		public void DeleteWorkspace(int artifactId)
 		{
 			using (var rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
@@ -52,7 +51,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			}
 		}
 
-		internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId, string savedSearchName)
+		public int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId, string savedSearchName)
 		{
 			var fields = defaultFields
 				.Select(x => new FieldRef(x.DisplayName))
@@ -75,12 +74,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			return SavedSearch.Create(workspaceId, search);
 		}
 
-		internal int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
+		public int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
 		{
 			return CreateSavedSearch(defaultFields, additionalFields, workspaceId, _SAVED_SEARCH_NAME);
 		}
 
-		internal int CreateProduction(int workspaceArtifactId, int savedSearchId, string productionName)
+		public int CreateProduction(int workspaceArtifactId, int savedSearchId, string productionName)
 		{
 			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory,
 				@"TestData\DefaultPlaceholder.tif");
@@ -98,7 +97,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			return productionId;
 		}
 
-		internal int GetView(int workspaceId, string viewName)
+		public int GetView(int workspaceId, string viewName)
 		{
 			return View.QueryView(workspaceId, viewName);
 		}
