@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			GC.Collect();
 		}
 
-		protected void SetupBaseFields(int documentArtifactId, object[] fieldsValue, ArtifactFieldDTO[] fields)
+		protected void SetupBaseFields(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields)
 		{
 			for (int index = 0; index < _avfIds.Length; index++)
 			{
@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					}
 					// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
 					else if (_longTextFieldArtifactIds.Contains(artifactId)
-							 && global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
+							&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
 					{
 						value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_longTextStreamFactory, documentArtifactId, artifactId)
 							.GetResultsWithoutContextSync();
@@ -225,12 +225,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					exception = ex;
 				}
 
-				fields[index] = new LazyExceptArtifactFieldDto(exception)
+				fields.Add(new LazyExceptArtifactFieldDto(exception)
 				{
 					Name = _exportJobInfo.ColumnNames[index],
 					ArtifactId = artifactId,
 					Value = value
-				};
+				});
 			}
 		}
 

@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
 								.Select(observer => observer.ScratchTableRepository).ToArray();
 
-						var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService, Identifier);
+						var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService, Identifier, Serializer.Deserialize<ImportSettings>(userImportApiSettings));
 						IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
 						
 						lock (JobStopManager.SyncRoot)

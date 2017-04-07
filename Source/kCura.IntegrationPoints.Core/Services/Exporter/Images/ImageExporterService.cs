@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
-					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
+					List<ArtifactFieldDTO> fields = new List<ArtifactFieldDTO>();
 					object[] fieldsValue = (object[])data;
 
 					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return imagesResult.ToArray();
 		}
 
-		private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, ArtifactFieldDTO[] fields, int artifactType, List<ArtifactDTO> result)
+		private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields, int artifactType, List<ArtifactDTO> result)
 		{
 			kCura.Data.DataView imagesDataView = FileQuery.RetrieveAllImagesForDocuments(_baseContext, new[] { documentArtifactId });
 			if (imagesDataView.Count > 0)
@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private void SetProducedImages(int documentArtifactId, ArtifactFieldDTO[] fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
+		private void SetProducedImages(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
 		{
 			foreach (var prod in _settings.ImagePrecedence)
 			{
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, string nativeColumnName, int documentArtifactId,
-			ArtifactFieldDTO[] fields, int artifactType, int index)
+			List<ArtifactFieldDTO> fields, int artifactType, int index)
 		{
 			string fileLocation = (string) imageDataRow[ImageLocationColumn];
 			string imageFileName = UnwrapDocumentIdentifierFieldName((string) imageDataRow[nativeColumnName], index);
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return artifactDto;
 		}
 
-		private List<ArtifactFieldDTO> AddImageFields(ArtifactFieldDTO[] fields, string fileLocation, string imageFileName)
+		private List<ArtifactFieldDTO> AddImageFields(List<ArtifactFieldDTO> fields, string fileLocation, string imageFileName)
 		{
 			var fileLocationField = new ArtifactFieldDTO()
 			{

@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class DocumentTransferDataReader : ExportTransferDataReaderBase
 	{
-
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
 		private static readonly string _nativeLocationColumn = "Location";
@@ -26,8 +25,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
 			ICoreContext context,
-			IScratchTableRepository[] scratchTableRepositories) :
-			base(relativityExportService, fieldMappings, context, scratchTableRepositories)
+			IScratchTableRepository[] scratchTableRepositories,
+			bool useDynamicFolderPath) :
+			base(relativityExportService, fieldMappings, context, scratchTableRepositories, useDynamicFolderPath)
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
@@ -50,6 +50,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId);
 				return retrievedField.Value;
+			}
+			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD)
+			{
+				return CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME).Value;
 			}
 			else
 			{

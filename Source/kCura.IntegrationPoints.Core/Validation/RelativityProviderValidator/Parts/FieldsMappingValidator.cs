@@ -56,6 +56,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 				}
 			}
 
+			result.Add(ValidateUseDynamicFolderPathSettings(destinationConfiguration));
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
 			result.Add(ValidateSettingsFieldOverlayBehavior(destinationConfiguration));
 			result.Add(ValidateSettingsFolderPathInformation(sourceWorkpaceFields, destinationConfiguration));
@@ -69,6 +70,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
 			public bool UseFolderPathInformation { get; set; }
 			public string FieldOverlayBehavior { get; set; }
+			public bool UseDynamicFolderPath { get; set; }
 		}
 
 		#region Internal validators
@@ -198,7 +200,19 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			return result;
 		}
 
-#endregion
+		private ValidationResult ValidateUseDynamicFolderPathSettings(IntegrationPointDestinationConfiguration destinationConfig)
+		{
+			var result = new ValidationResult();
+
+			if (destinationConfig.UseDynamicFolderPath && destinationConfig.UseFolderPathInformation)
+			{
+				result.Add(new ValidationResult(false, RelativityProviderValidationMessages.FIELD_MAP_DYNAMIC_FOLDER_PATH_AND_FOLDER_PATH_INFORMATION_CONFLICT));
+			}
+
+			return result;
+		}
+
+		#endregion
 
 		private List<ArtifactDTO> RetrieveAllFields(IFieldManager fieldManager, int workspaceId)
 		{
