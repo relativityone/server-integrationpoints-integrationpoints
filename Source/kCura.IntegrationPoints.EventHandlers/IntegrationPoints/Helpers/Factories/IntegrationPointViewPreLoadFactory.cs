@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			{
 				federatedInstanceModelFactory = new IntegrationPointProfileFederatedInstanceModelFactory();
 			}
-
+			
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			Domain.Managers.IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			Domain.Managers.IInstanceSettingsManager instanceSettingsManager =new InstanceSettingsManager(repositoryFactory);

@@ -3,6 +3,8 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using NSubstitute;
 using Relativity.API;
+using Relativity.Services.ArtifactGuid;
+using Relativity.Services.FieldManager;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Permission;
 using Relativity.Services.Search;
@@ -35,6 +37,8 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System).Returns(new ExtendedIKeywordSearchManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIKeywordSearchManager(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIWorkspaceManager(this, ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System).Returns(new ExtendedIArtifactGuidManager(this, ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IFieldManager>(ExecutionIdentity.System).Returns(new ExtendedIFieldManager(this, ExecutionIdentity.System));
 		}
 
 		public T CreateUserProxy<T>() where T : IDisposable

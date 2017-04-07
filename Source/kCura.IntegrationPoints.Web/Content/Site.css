@@ -570,3 +570,16 @@ select option {
 .longTextField {
 	word-wrap: break-word;
 }
+
+#image-production-selection{
+	min-width: 210px !important;
+   	height: 22px;
+   	word-wrap: break-word;
+   	vertical-align: text-bottom;
+   	max-width: 210px;
+   	display: inline-block;
+  	overflow: hidden;
+   	white-space: nowrap;
+   	border-bottom: 1px solid #c1c1c1 !important;
+   	margin-right: 5px;
+}

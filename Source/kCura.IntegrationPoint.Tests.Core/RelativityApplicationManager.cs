@@ -1,29 +1,30 @@
 ﻿using System;
 using System.IO;
-using System.Security.Claims;
-using kCura.Relativity.Client;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.Core;
-using Relativity.Core.Authentication;
 using Relativity.Core.DTO;
 using Relativity.Core.Service;
+using Relativity.Services.ApplicationInstallManager;
+using File = System.IO.File;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class RelativityApplicationManager
 	{
+		private readonly ITestHelper _helper;
 		private readonly LibraryApplicationManager _libraryManager;
 		private readonly ICoreContext _baseServiceContext;
 
-		public RelativityApplicationManager(ClaimsPrincipal claimsPrincipal)
+		public RelativityApplicationManager(ICoreContext coreContext, ITestHelper helper)
 		{
+			_helper = helper;
 			_libraryManager = new LibraryApplicationManager();
-			_baseServiceContext = GetBaseServiceContext(claimsPrincipal, -1);
+			_baseServiceContext = coreContext;
 		}
 
 		public LibraryApplication GetLibraryApplicationDTO(Guid applicationGuid)
 		{
 			LibraryApplication libraryApplicationDto = _libraryManager.Read(_baseServiceContext, applicationGuid);
-
 			return libraryApplicationDto;
 		}
 
@@ -33,15 +34,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_libraryManager.Update((BaseServiceContext)_baseServiceContext, libraryApplication);
 		}
 
-		public void ImportOrUpgradeRelativityApplication(int workspaceArtifactId, string applicationRapFileName = null)
+		public void ImportApplicationToWorkspace(int workspaceArtifactId)
 		{
-			if (SharedVariables.UseLocalRap)
+			var libraryApplication = GetLibraryApplicationDTO(new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+
+			if (libraryApplication != null && libraryApplication.IsVisible)
 			{
-				ImportRapFromLocalLocation(workspaceArtifactId);
+				RemoveApplicationFromLibrary(libraryApplication);
 			}
-			else
+
+			var applicationFilePath = SharedVariables.UseLocalRap ? GetLocalRapPath() : GetBuildPackagesRapPath();
+
+			UpdateLibraryApplicationRap(applicationFilePath, libraryApplication);
+
+			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
 			{
-				ImportRapFromBuildPackages(workspaceArtifactId, applicationRapFileName);
+				applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, libraryApplication.ApplicationGuid).Wait();
 			}
 		}
 
@@ -54,64 +62,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_baseServiceContext.ChicagoContext.DBContext.ExecuteNonQuerySQLStatement(sqlText);
 		}
 
-		private void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath)
+		private void UpdateLibraryApplicationRap(string applicationFilePath, LibraryApplication libraryApplication)
 		{
-			const int processWaitTimeoutInMin = 5;
-
-			AppInstallRequest appInstallRequest = new AppInstallRequest()
-			{
-				FullFilePath = applicationFilePath,
-				ForceFlag = true
-			};
-
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
-			{
-				try
-				{
-					proxy.APIOptions.WorkspaceID = workspaceId;
-					ProcessOperationResult result = proxy.InstallApplication(proxy.APIOptions, appInstallRequest);
-					if (!result.Success)
-					{
-						throw new Exception($"Failed to install application file: {applicationFilePath} to workspace: {workspaceId}.");
-					}
-
-					Status.WaitForProcessToComplete(proxy, result.ProcessID, (int)TimeSpan.FromMinutes(processWaitTimeoutInMin).TotalSeconds, 500);
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"An error occurred attempting to import the application file {applicationFilePath}. Error: {ex.Message}.");
-				}
-			}
+			var rapData = File.ReadAllBytes(applicationFilePath);
+			libraryApplication.FileData = rapData;
+			_libraryManager.Update(_baseServiceContext as BaseServiceContext, libraryApplication, false, false);
 		}
 
-		private void ImportRapFromLocalLocation(int workspaceArtifactId)
+		private string GetLocalRapPath()
 		{
-			string applicationFilePath = SharedVariables.RapFileLocation;
-
-			ImportApplicationToWorkspace(workspaceArtifactId, applicationFilePath);
+			return SharedVariables.RapFileLocation;
 		}
 
-		private void ImportRapFromBuildPackages(int workspaceArtifactId, string applicationRapFileName = null)
+		private string GetBuildPackagesRapPath()
 		{
-			string applicationFilePath = applicationRapFileName == null
-				? Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath,
-					SharedVariables.ApplicationRapFileName)
-				: Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath,
-					applicationRapFileName);
-
-			ImportApplicationToWorkspace(workspaceArtifactId, applicationFilePath);
+			return Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath, SharedVariables.ApplicationRapFileName);
 		}
 
-		private ICoreContext GetBaseServiceContext(ClaimsPrincipal claimsPrincipal, int workspaceId)
-		{
-			try
-			{
-				return claimsPrincipal.GetServiceContextUnversionShortTerm(workspaceId);
-			}
-			catch (Exception exception)
-			{
-				throw new Exception("Unable to initialize the user context.", exception);
-			}
-		}
+		
 	}
 }

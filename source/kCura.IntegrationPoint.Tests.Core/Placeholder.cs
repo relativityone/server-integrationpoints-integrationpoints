@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						}}
 					}}";
 
-			string output = Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, false, json);
+			string output = Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, json);
 			return int.Parse(output);
 		}
 	}

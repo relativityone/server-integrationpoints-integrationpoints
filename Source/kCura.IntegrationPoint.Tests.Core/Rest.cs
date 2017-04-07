@@ -9,8 +9,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private const string _JSON_MIME = "application/json";
 
-		public static string PostRequestAsJson(string serviceMethod, bool isHttps, string parameter = null)
+		public static string PostRequestAsJson(string serviceMethod, string parameter = null)
 		{
+			var isHttps = SharedVariables.ProtocolVersion.Equals("https", StringComparison.InvariantCultureIgnoreCase);
 			return PostRequestAsJsonInternal(serviceMethod, isHttps, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, parameter);
 		}
 
@@ -143,11 +144,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static Uri GetRestUrl(bool isHttp, bool isApiService)
+		public static Uri GetRestUrl(bool isApiService)
 		{
-			string serverBinding = (isHttp) ? "http" : "https";
 			string apiSegment = (isApiService) ? "api" : string.Empty;
-			string url = $"{serverBinding}://{SharedVariables.TargetHost}/relativity.rest/{apiSegment}";
+			string url = $"{SharedVariables.RestServer}/{apiSegment}";
 
 			Uri restUri = new Uri(url);
 			return restUri;

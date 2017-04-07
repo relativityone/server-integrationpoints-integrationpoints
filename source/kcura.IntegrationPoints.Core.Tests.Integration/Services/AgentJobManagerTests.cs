@@ -1,4 +1,5 @@
 ﻿using System;
+using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -11,8 +12,11 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Data.Toggles;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -40,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
+
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>(); ;
 			_jobService = Container.Resolve<IJobService>();
 			_serializer = Container.Resolve<IIntegrationPointSerializer>();

@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
 
+using System;
 using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
@@ -18,6 +19,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private const int _IP_ARTIFACT_ID = 1004242;
 		private const string _LOAD_FILE_PATH = @"DataTransfer\Import\example-load-file.csv";
 		private const string _WORKSPACE_ROOT_LOCATION = @"\\example.host.name\fileshare\EDDS-example-app-id";
+		private const string _DATA_TRANSFER_IMPORT_LOCATION = @"DataTransfer\Import";
 		private const string _IP_NAME = @"Example-IP-Name";
 		private const string _ERROR_FILE_LOCATION =
 			@"\\example.host.name\fileshare\EDDS-example-app-id\DataTransfer\Import\Error_Files\Example-IP-Name-1004242-Error_file.csv";
@@ -55,6 +57,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
 			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_importApiSettings);
 			_locationService.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).ReturnsForAnyArgs(_WORKSPACE_ROOT_LOCATION);
+			_locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).Returns(_DATA_TRANSFER_IMPORT_LOCATION);
 		}
 
 		[Test]
@@ -88,6 +91,35 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 			//Assert
 			Assert.AreEqual(_LOAD_FILE_LOCATION, generatedLoadFilePath);
+		}
+
+		[Test]
+		public void ItShouldThrowWhenLoadFileSettingIsARootedPath()
+		{
+			_providerSettings.LoadFile = @"\\badshare\badpath\badfile.csv";
+			//Arrange
+			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
+				_locationService,
+				_serializer,
+				_directoryHelper);
+
+			//Assert that it throws because we should not have a rooted load file path in the settings object
+			//This would be a security vulnerability
+			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_IP_ARTIFACT_ID));
+		}
+
+		[Test]
+		public void ItShouldThrowWhenNotInTheDataTransferLocation()
+		{
+			_providerSettings.LoadFile = @"badshare\..\..\..\..\badpath\badfile.csv";
+			//Arrange
+			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
+				_locationService,
+				_serializer,
+				_directoryHelper);
+
+			//Assert that it throws because we should not have a load file path that doesn't point to the DataTransfer\Import path
+			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_IP_ARTIFACT_ID));
 		}
 
 		[TestCase(false)]

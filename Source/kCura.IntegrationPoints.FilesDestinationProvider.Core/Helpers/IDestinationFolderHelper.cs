@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 	public interface IDestinationFolderHelper
 	{
 		string GetFolder(ExportSettings exportSettings);
-		void CreateFolder(string path);
+		void CreateDestinationSubFolderIfNeeded(ExportSettings exportSettings, string path);
 	}
 }

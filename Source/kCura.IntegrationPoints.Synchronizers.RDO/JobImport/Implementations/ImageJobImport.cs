@@ -8,17 +8,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
 	public class ImageJobImport : JobImport<ImageImportBulkArtifactJob>
 	{
-		private readonly ImportSettings _importSettings;
-		private readonly IExtendedImportAPI _importApi;
 		private readonly IImportSettingsBaseBuilder<ImageSettings> _builder;
 		private readonly IDataReader _sourceData;
+		protected readonly ImportSettings ImportSettings;
+		protected readonly IExtendedImportAPI ImportApi;
 		public IDataTransferContext Context { get; set; }
 
 		public ImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context)
 		{
 			Context = context;
-			_importSettings = importSettings;
-			_importApi = importApi;
+			ImportSettings = importSettings;
+			ImportApi = importApi;
 			_builder = builder;
 			_sourceData = context.DataReader;
 		}
@@ -44,19 +44,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 
 		protected override ImageImportBulkArtifactJob CreateJob()
 		{
-			return _importApi.NewImageImportJob();
+			return ImportApi.NewImageImportJob();
 		}
 
 		public override void Execute()
 		{
-			_builder.PopulateFrom(_importSettings, ImportJob.Settings);
+			_builder.PopulateFrom(ImportSettings, ImportJob.Settings);
 			ImportJob.SourceData.SourceData = ImageDataTableHelper.GetDataTable(_sourceData);
 			Context.UpdateTransferStatus();
 			ImportJob.Execute();
 
-			if (! string.IsNullOrEmpty(_importSettings.ErrorFilePath))
+			if (! string.IsNullOrEmpty(ImportSettings.ErrorFilePath))
 			{
-				ImportJob.ExportErrorFile(_importSettings.ErrorFilePath);
+				ImportJob.ExportErrorFile(ImportSettings.ErrorFilePath);
 			}
 		}
 	}

@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					}}
 				}}";
 
-			var output = Rest.PostRequestAsJson(_CREATE_PRODUCTION_SERVICE, false, json);
+			var output = Rest.PostRequestAsJson(_CREATE_PRODUCTION_SERVICE, json);
 			return int.Parse(output);
 		}
 
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						  ""productionArtifactID"": {productionId}
 						}}";
 
-			Rest.PostRequestAsJson(_STAGE_PRODUCTION_SERVICE, false, json);
+			Rest.PostRequestAsJson(_STAGE_PRODUCTION_SERVICE, json);
 
 			WaitForProductionStatus(workspaceId, productionId, "Staged");
 		}
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				  ""overrideConflicts"": false
 				}}";
 
-			Rest.PostRequestAsJson(_RUN_PRODUCTION_SERVICE, false, json);
+			Rest.PostRequestAsJson(_RUN_PRODUCTION_SERVICE, json);
 
 			WaitForProductionStatus(workspaceId, productionId, "Produced");
 		}
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					""productionArtifactID"": {productionId}
 				}}";
 
-			var output = Rest.PostRequestAsJson(_READ_PRODUCTION_SERVICE, false, json);
+			var output = Rest.PostRequestAsJson(_READ_PRODUCTION_SERVICE, json);
 			var status = ExtractStatusFromProductionDtoJson(output);
 			return status;
 		}

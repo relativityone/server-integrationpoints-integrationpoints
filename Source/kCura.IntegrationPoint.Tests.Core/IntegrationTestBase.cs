@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -17,6 +19,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		protected IntegrationTestBase()
 		{
+			kCura.Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
+			Config.Config.SetConnectionString(SharedVariables.EddsConnectionString);
+			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>()
+			{
+				{"connectionString", SharedVariables.EddsConnectionString}
+			});
+
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
 				ClaimsPrincipalFactory factory = new ClaimsPrincipalFactory();

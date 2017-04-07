@@ -8,7 +8,7 @@
 			<div class="card">
 
 				<span class="label">Export Detail</span>
-				<img data-bind="click: openExportDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left:5px;" />
+				<img data-bind="click: openExportDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
 				<table style="width: 100%;">
 					<tr>
 						<td style="width: 48%;">
@@ -260,8 +260,8 @@
 										Production Precedence:
 									</div>
 									<div class="field-value">
-										<label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
-										<button id="image-production-precedence-button" data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
+										<label id="image-production-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: ImagePrecedenceSelection"></label>
+										<button id="image-production-precedence-button" style="vertical-align: top" data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
 										<input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
 									</div>
 								</div>
