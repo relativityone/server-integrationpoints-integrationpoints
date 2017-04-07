@@ -146,6 +146,7 @@ var IP = IP || {};
 				self.FieldOverlayBehavior = destinationSettings.FieldOverlayBehavior;
 				self.CustodianManagerFieldContainsLink = destinationSettings.CustodianManagerFieldContainsLink;
 				self.UseFolderPathInformation = destinationSettings.UseFolderPathInformation;
+				self.UseDynamicFolderPath = destinationSettings.UseDynamicFolderPath;
 				self.FolderPathSourceField = destinationSettings.FolderPathSourceField;
 				self.ImageImport = destinationSettings.ImageImport;
 				self.MoveExistingDocuments = destinationSettings.MoveExistingDocuments;

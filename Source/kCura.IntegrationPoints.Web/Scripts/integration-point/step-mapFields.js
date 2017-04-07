@@ -243,6 +243,7 @@ ko.validation.insertValidationMessage = function (element) {
 			if (value === "true") {
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
+				self.UseDynamicFolderPath("false");
 				self.MoveExistingDocuments("false");
 				self.copyNativeLabel(copyFileToRepositoryText);
 				self.FolderPathSourceField(null);
@@ -320,12 +321,44 @@ ko.validation.insertValidationMessage = function (element) {
 		this.SelectedOverwrite.subscribe(function (newValue) {
 			if (newValue != 'Append Only') {
 				self.UseFolderPathInformation("false");
+				self.UseDynamicFolderPath("false");
 				self.FolderPathSourceField(null);
 			} else {
 				self.FieldOverlayBehavior('Use Field Settings');
 			}
 		});
 
+		this.getFolderPathOptions = function (model) {
+			if (!model) {
+				return 'No';
+			}
+			if (model.UseFolderPathInformation == 'true') {
+				return 'Read From Field';
+			}
+			if (model.UseDynamicFolderPath == 'true') {
+				return 'Read From Folder Tree';
+			}
+			return 'No';
+		}
+
+		this.FolderPathOptions = ko.observableArray(['No', 'Read From Field', 'Read From Folder Tree']);
+		this.SelectedFolderPathType = ko.observable(self.getFolderPathOptions(model));
+		this.SelectedFolderPathType.subscribe(function (value) {
+			if (value === 'No') {
+				self.UseFolderPathInformation('false');
+				self.FolderPathSourceField(null);
+				self.UseDynamicFolderPath('false');
+			} else if (value === 'Read From Field') {
+				self.UseFolderPathInformation('true');
+				self.UseDynamicFolderPath('false');
+			} else {
+				self.UseFolderPathInformation('false');
+				self.FolderPathSourceField(null);
+				self.UseDynamicFolderPath('true');
+			}
+		});
+
+		this.UseDynamicFolderPath = ko.observable(model.UseDynamicFolderPath || "false");
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable().extend(
 		{
@@ -786,6 +819,7 @@ ko.validation.insertValidationMessage = function (element) {
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
+				UseDynamicFolderPath: model.UseDynamicFolderPath,
 				SelectedOverwrite: model.SelectedOverwrite,
 				FieldOverlayBehavior: model.FieldOverlayBehavior,
 				FolderPathSourceField: model.FolderPathSourceField,
@@ -867,6 +901,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
+			this.returnModel.UseDynamicFolderPath = this.model.UseDynamicFolderPath();
 			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
 			this.returnModel.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
@@ -982,6 +1017,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
+					_destination.UseDynamicFolderPath = this.model.UseDynamicFolderPath();
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 					_destination.ImageImport = this.model.ImageImport();
 					_destination.ImagePrecedence = this.model.ImagePrecedence(),

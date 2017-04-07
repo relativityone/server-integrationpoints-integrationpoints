@@ -148,7 +148,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false'">
+						<div class="field-row" data-bind="visible: !IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
 							<div class="field-label required ">Use Folder Path Information:</div>
 							<div class="field-value">
 								<ul>
@@ -159,6 +159,12 @@
 										<label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
 									</li>
 								</ul>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
+							<div class="field-label required ">Use Folder Path Information:</div>
+							<div class="field-value">
+								<select id="folderPathInformationSelect" data-bind="options: FolderPathOptions, value: SelectedFolderPathType, select2: {}"></select>
 							</div>
 						</div>
 						<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
@@ -172,7 +178,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
+						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false' && (UseFolderPathInformation() == 'true' || UseDynamicFolderPath() == 'true')">
 							<div class="field-label required ">Move Existing Documents:</div>
 							<div class="field-value">
 								<ul>
