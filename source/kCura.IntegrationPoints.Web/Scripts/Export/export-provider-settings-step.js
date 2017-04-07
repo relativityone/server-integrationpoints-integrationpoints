@@ -75,6 +75,8 @@
 				self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
 				self.loadRootDataTransferLocation();
 			}
+
+			self.exportFileNameViewModel.initViewModel();
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -737,7 +739,7 @@
 					integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
 					name: ip.name,
 					isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
-					availableFields: ip.availableFields
+					availableFields: ip.fileNamingFieldsList
 				}));
 
 			self.model.errors = ko.validation.group(self.model);

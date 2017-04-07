@@ -9,17 +9,19 @@ FileNameEntry = function (value, type) {
 	this.type = type;
 }
 
-AvailableFieldMock = function(name, value) {
+AvailableFieldMock = function (name, value) {
 	this.displayName = name;
 	this.fieldIdentifier = value;
 }
 
-ExportProviderFileNameViewModel = function(availableFields, selectionList) {
+ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 
 	var self = this;
 
 	self.availableFields = availableFields;
 	self.availableSeparators = ["-", "+", " "];
+
+	self.selectionList = selectionList;
 
 	self.actualSelectionTypeIndex = 0;
 
@@ -29,21 +31,21 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 
 	self.IsRequired = ko.observable(false);
 
-	self.addNewSelection = function(fileNameEntry) {
+	self.addNewSelection = function (fileNameEntry) {
 
 		var index = self.actualSelectionTypeIndex++;
-		
+
 		if (!ko.isObservable(self.listData()[index])) {
 			self.listData()[index] = ko.observableArray([]);
 		}
-		
-		
-		if (!ko.isObservable(self.data()[index])){
+
+
+		if (!ko.isObservable(self.data()[index])) {
 			self.data()[index] = ko.observable().extend({
-				required: {onlyIf: self.IsRequired}
+				required: { onlyIf: self.IsRequired }
 			});
 		}
-		
+
 		if (index % 2 === 0) {
 			for (var fieldIndex = 0; fieldIndex < self.availableFields.length; ++fieldIndex) {
 				var field = self.availableFields[fieldIndex];
@@ -65,30 +67,30 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 		self.IsRequired(true);
 
 		self.metaData.push(index);
+
+		$($('#fileNamingContainer div.select2-container')[index]).addClass(index % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator')
 	};
-	
-	self.removeNewSelection = function() {
+
+	self.removeNewSelection = function () {
 
 		--self.actualSelectionTypeIndex;
 
 		delete self.listData()[self.actualSelectionTypeIndex];
 		delete self.data()[self.actualSelectionTypeIndex];
-
+		$($('#fileNamingContainer div.select2-container')[self.actualSelectionTypeIndex]).removeClass('fileNamingType_field', 'fileNamingType_separator')
 		self.metaData.pop();
 	};
 
-	self.initViewModel = function (selectionList) {
+	self.initViewModel = function () {
 
-		if (selectionList !== undefined) {
-			for (var selectionIndex = 0; selectionIndex < selectionList.length; ++selectionIndex) {
-				self.addNewSelection(selectionList[selectionIndex]);
+		if (self.selectionList !== undefined) {
+			for (var selectionIndex = 0; selectionIndex < self.selectionList.length; ++selectionIndex) {
+				self.addNewSelection(self.selectionList[selectionIndex]);
 			}
 		} else {
 			self.addNewSelection({});
 		}
 	}
-
-	self.initViewModel(selectionList);
 
 	self.getSelections = function () {
 		var selections = [];
@@ -100,7 +102,7 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 		return selections;
 	}
 
-	self.addButtonVisible = function() {
+	self.addButtonVisible = function () {
 		return self.metaData().length < 5;
 	}
 

@@ -570,3 +570,13 @@ select option {
 .longTextField {
 	word-wrap: break-word;
 }
+
+.fileNamingType_field {
+	width: 150px !important;	
+	min-width: 0 !important;
+}
+
+.fileNamingType_separator {
+	min-width: 0 !important;
+	width: 75px !important;	
+}

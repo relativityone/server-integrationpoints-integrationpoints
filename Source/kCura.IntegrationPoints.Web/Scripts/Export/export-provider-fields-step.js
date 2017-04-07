@@ -231,7 +231,14 @@
 			}
 
 			self.ipModel.map = self.model.fields.getMappedFields();
-			self.ipModel.availableFields = self.model.fields.availableFields();
+			var fileNamingFieldsList = self.model.fields.availableFields().concat(self.model.fields.mappedFields());
+			fileNamingFieldsList.sort(function(a, b) {
+				if (a.displayName < b.displayName) return -1;
+				if (a.displayName > b.displayName) return 1;
+				return 0;
+			});
+
+			self.ipModel.fileNamingFieldsList = fileNamingFieldsList;
 		};
 
 		self.submit = function () {
