@@ -638,8 +638,6 @@
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
 		};
 
-		this.errors = ko.validation.group(this, { deep: true });
-
 		this.fileShareDisplayText = function () {
 			if (self.Fileshare()) {
 				if (self.IsExportFolderCreationEnabled()) {
@@ -656,9 +654,11 @@
 			self.fileShareDisplayText();
 		});
 
-
 		var availableFields = state.availableFields || [];
 		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameSelection);
+
+		this.errors = ko.validation.group(this, { deep: true });
+		
 
 		this.getSelectedOption = function () {
 			return {

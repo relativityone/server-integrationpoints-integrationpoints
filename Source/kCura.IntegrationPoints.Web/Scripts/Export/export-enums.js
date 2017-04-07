@@ -81,6 +81,14 @@ ExportEnums.ExportNativeWithFilenameFromTypesEnum = {
 };
 
 ExportEnums.ExportNativeWithFilenameFromTypes = [
-  { value: 0, key: "Identifier" },
-  { value: 1, key: "Begin production number" }
+	{ value: 0, key: "Identifier" },
+	{ value: 1, key: "Begin production number" }
+];
+
+ExportEnums.AvailableSeparators = [
+	{ value: "_", display: "_" },
+	{ value: "-", display: "-" },
+	{ value: ".", display: "." },
+	{ value: "<Space>", display: "<Space>" },
+	{ value: "<None>", display: "<None>" }
 ];

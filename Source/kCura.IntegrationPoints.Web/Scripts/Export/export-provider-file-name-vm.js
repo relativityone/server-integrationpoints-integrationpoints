@@ -18,77 +18,79 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 
 	var self = this;
 
+	self.Max_Selection_Count = 5;
 	self.availableFields = availableFields;
 	self.availableSeparators = ["-", "+", " "];
-
 	self.selectionList = selectionList;
-
 	self.actualSelectionTypeIndex = 0;
 
 	self.metaData = ko.observableArray([]);
 	self.listData = ko.observable({});
 	self.data = ko.observable({});
 
-	self.IsRequired = ko.observable(false);
+	self.addNewSelection = function() {
 
-	self.addNewSelection = function (fileNameEntry) {
-
-		var index = self.actualSelectionTypeIndex++;
-
-		if (!ko.isObservable(self.listData()[index])) {
-			self.listData()[index] = ko.observableArray([]);
+		var actualIndex = self.metaData().length;
+		if (!ko.isObservable(self.listData()[actualIndex])) {
+			self.listData()[actualIndex] = ko.observableArray([]);
 		}
-
-
-		if (!ko.isObservable(self.data()[index])) {
-			self.data()[index] = ko.observable().extend({
-				required: { onlyIf: self.IsRequired }
-			});
-		}
-
-		if (index % 2 === 0) {
+		
+		if (actualIndex % 2 === 0) {
 			for (var fieldIndex = 0; fieldIndex < self.availableFields.length; ++fieldIndex) {
 				var field = self.availableFields[fieldIndex];
-				self.listData()[index].push(new ListEntry(field.displayName, field.fieldIdentifier));
-				if (fileNameEntry !== undefined && fileNameEntry.value === field.fieldIdentifier) {
-					self.data()[index](field.fieldIdentifier);
-				}
+				self.listData()[actualIndex].push(new ListEntry(field.displayName, field.fieldIdentifier, "F"));
 			}
 		} else {
-			for (var sepIndex = 0; sepIndex < self.availableSeparators.length; ++sepIndex) {
-				self.listData()[index].push(new ListEntry(self.availableSeparators[sepIndex], self.availableSeparators[sepIndex]));
-
-				if (fileNameEntry !== undefined && fileNameEntry.value === self.availableSeparators[sepIndex]) {
-					self.data()[index](self.availableSeparators[sepIndex]);
-				}
+			for (var sepIndex = 0; sepIndex < ExportEnums.AvailableSeparators.length; ++sepIndex) {
+				self.listData()[actualIndex].push(new ListEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
 			}
 		}
 
-		self.IsRequired(true);
-
-		self.metaData.push(index);
-
-		$($('#fileNamingContainer div.select2-container')[index]).addClass(index % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator')
+		self.metaData.push(actualIndex);
+		self.data()[actualIndex](null);
+		$($('#fileNamingContainer div.select2-container')[actualIndex]).addClass(index % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator')
 	};
 
-	self.removeNewSelection = function () {
+	self.selectItem = function (fileNameEntry) {
+		var index = self.metaData().length - 1;
+		self.data()[index](fileNameEntry.value);
+	}
 
-		--self.actualSelectionTypeIndex;
-
-		delete self.listData()[self.actualSelectionTypeIndex];
-		delete self.data()[self.actualSelectionTypeIndex];
-		$($('#fileNamingContainer div.select2-container')[self.actualSelectionTypeIndex]).removeClass('fileNamingType_field', 'fileNamingType_separator')
+	self.removeNewSelection = function() {
 		self.metaData.pop();
+
+		delete self.listData()[self.metaData().length];
+		delete self.data()[self.metaData().length];
+
+		$($('#fileNamingContainer div.select2-container')[self.actualSelectionTypeIndex]).removeClass('fileNamingType_field', 'fileNamingType_separator')
 	};
 
 	self.initViewModel = function () {
 
-		if (self.selectionList !== undefined) {
-			for (var selectionIndex = 0; selectionIndex < self.selectionList.length; ++selectionIndex) {
-				self.addNewSelection(self.selectionList[selectionIndex]);
+		for (var selIndex = 0; selIndex < self.Max_Selection_Count; ++selIndex) {
+
+			ko.validation.rules['shouldBeValidated'] = {
+				validator: function(val, currElementIndex) {
+					if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
+						return true;
+					}
+					return val !== undefined && val != null;
+				},
+				message: "Please select value"
+			}
+	
+			ko.validation.registerExtenders();
+
+			self.data()[selIndex] = ko.observable().extend({
+				shouldBeValidated: selIndex
+			});
+		}
+		
+				self.addNewSelection();
+				self.selectItem(self.selectionList[selectionIndex]);
 			}
 		} else {
-			self.addNewSelection({});
+			self.addNewSelection();
 		}
 	}
 
@@ -103,7 +105,7 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 	}
 
 	self.addButtonVisible = function () {
-		return self.metaData().length < 5;
+		return self.metaData().length < self.Max_Selection_Count;
 	}
 
 	self.delButtonVisible = function () {
