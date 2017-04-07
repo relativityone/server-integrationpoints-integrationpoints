@@ -48,7 +48,7 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 
 		self.metaData.push(actualIndex);
 		self.data()[actualIndex](null);
-		$($('#fileNamingContainer div.select2-container')[actualIndex]).addClass(index % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator')
+		$($('#fileNamingContainer div.select2-container')[actualIndex]).addClass(actualIndex % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator')
 	};
 
 	self.selectItem = function (fileNameEntry) {
@@ -70,7 +70,7 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		for (var selIndex = 0; selIndex < self.Max_Selection_Count; ++selIndex) {
 
 			ko.validation.rules['shouldBeValidated'] = {
-				validator: function(val, currElementIndex) {
+				validator: function (val, currElementIndex) {
 					if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
 						return true;
 					}
@@ -78,14 +78,16 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 				},
 				message: "Please select value"
 			}
-	
+
 			ko.validation.registerExtenders();
 
 			self.data()[selIndex] = ko.observable().extend({
 				shouldBeValidated: selIndex
 			});
 		}
-		
+
+		if (self.selectionList !== undefined) {
+			for (var selectionIndex = 0; selectionIndex < self.selectionList.length; ++selectionIndex) {
 				self.addNewSelection();
 				self.selectItem(self.selectionList[selectionIndex]);
 			}
@@ -93,7 +95,6 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 			self.addNewSelection();
 		}
 	}
-
 	self.getSelections = function () {
 		var selections = [];
 		for (var index = 0; index < self.metaData().length; ++index) {
