@@ -81,7 +81,7 @@
 								<div class="field-label" />
 								<div class="field-value middle-vertical-align">
 									<input id="create-export-directory-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IsExportFolderCreationEnabled" class="middle-vertical-align">
-									<label for="create-export-directory-checkbox">Create Export Directory</label>
+									<label for="create-export-directory-checkbox">Create Export Folder</label>
 								</div>
 							</div>
 						</td>
@@ -225,14 +225,16 @@
 										File Name:
 									</div>
 									<div class="field-value">
-										<div data-bind="foreach: metaData">
-											<select data-bind="attr: { id: 'fileName-select-' + $index() }, value: $parent.data()[$data], options: $parent.listData()[$data], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2: {}"/>
+										<div data-bind="foreach: visibilityValuesContainer">
+											<div data-bind="visible: $data">
+												<select data-bind="disable: $parents[1].HasBeenRun(), value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2: {}"/>
+											</div>
 										</div>
 									</div>
-									<div class="field-value">
+									<div class="field-value" data-bind="visible: !$parent.HasBeenRun()">
 										<button id="add-file-name-selection-button" class="actionButtonSmall" data-bind="click: addNewSelection, visible: addButtonVisible()">+</button>
 									</div>	
-									<div class="field-value">
+									<div class="field-value" data-bind="visible: !$parent.HasBeenRun()">
 										<button id="del-file-name-selection-button" class="actionButtonSmall" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
 									</div>
 								</div>

@@ -17,6 +17,8 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 	self.metaData = ko.observableArray([]);
 	self.listData = ko.observable({});
 	self.data = ko.observable({});
+	//visibilityValuesContainer
+	self.visibilityValuesContainer = ko.observableArray([]);
 
 	self.fieldFileNameEntries = [];
 	self.sepFileNameEntries = [];
@@ -24,31 +26,12 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 	self.addNewSelection = function() {
 
 		var actualIndex = self.metaData().length;
-		
-		if (!ko.isObservable(self.listData()[actualIndex])) {
-			self.listData()[actualIndex] = ko.observableArray([]);
-		}
-
-		//if (!ko.isObservable(self.data()[actualIndex])) {
-		//	self.data()[actualIndex] = ko.observable().extend({
-		//		shouldBeValidated: actualIndex
-		//	});
-
-		//	ko.validation.registerExtenders();
-		//}
-		
-		if (actualIndex % 2 === 0) {
-			for (var fieldIndex = 0; fieldIndex < self.availableFields.length; ++fieldIndex) {
-				var field = self.availableFields[fieldIndex];
-				self.listData()[actualIndex].push(new FileNameEntry(field.displayName, field.fieldIdentifier, "F"));
-			}
-		} else {
-			for (var sepIndex = 0; sepIndex < ExportEnums.AvailableSeparators.length; ++sepIndex) {
-				self.listData()[actualIndex].push(new FileNameEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
-			}
-		}
 
 		self.metaData.push(actualIndex);
+
+		self.visibilityValuesContainer()[actualIndex](true);
+
+		self.visibilityValuesContainer()[actualIndex].notifySubscribers();
 	};
 
 	self.selectItem = function (fileNameEntry) {
@@ -57,21 +40,10 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 	}
 
 	self.removeNewSelection = function() {
-
 		self.metaData.pop();
 
-		//var delSelIndex = self.metaData().length;
-
-		//self.data()[delSelIndex].rules({ validatable: false });
-
-		//delete self.listData()[delSelIndex];
-		//delete self.data()[delSelIndex];
-
-		//if (!ko.isObservable(self.data()[delSelIndex])) {
-		//	self.data()[delSelIndex] = ko.observable().extend({
-		//		shouldBeValidated: delSelIndex
-		//	});
-		//}
+		var actualIndex = self.metaData().length;
+		self.visibilityValuesContainer()[actualIndex](false);
 	};
 
 	self.initViewModel = function (selectionList) {
@@ -88,21 +60,27 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 
 		ko.validation.registerExtenders();
 
-		for (var selIndex = 0; selIndex < self.Max_Selection_Count; ++selIndex) {
+		for (var actualIndex = 0; actualIndex < self.Max_Selection_Count; ++actualIndex) {
 
-			self.data()[selIndex] = ko.observable().extend({
-				shouldBeValidated: selIndex
+			self.data()[actualIndex] = ko.observable().extend({
+				shouldBeValidated: actualIndex
 			});
 
-			//self.data()[selIndex] = ko.observable().extend({
-			//	validation: function (val, currElementIndex) {
-			//		if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
-			//			return true;
-			//		}
-			//		return val !== undefined && val != null;
-			//	},
-			//	message: "Please select value {0}"
-			//});
+			var newElem = ko.observable(false);
+			self.visibilityValuesContainer.push(newElem);
+
+			self.listData()[actualIndex] = ko.observableArray([]);
+
+			if (actualIndex % 2 === 0) {
+				for (var fieldIndex = 0; fieldIndex < self.availableFields.length; ++fieldIndex) {
+					var field = self.availableFields[fieldIndex];
+					self.listData()[actualIndex].push(new FileNameEntry(field.displayName, field.fieldIdentifier, "F"));
+				}
+			} else {
+				for (var sepIndex = 0; sepIndex < ExportEnums.AvailableSeparators.length; ++sepIndex) {
+					self.listData()[actualIndex].push(new FileNameEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
+				}
+			}
 		}
 
 		if (selectionList !== undefined) {
@@ -119,7 +97,7 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 		var selections = [];
 		for (var index = 0; index < self.metaData().length; ++index) {
 			if (self.data()[index] !== undefined) {
-				selections.push(new FileNameEntry(self.data()[index](), index % 2 === 0 ? "F" : "S"));
+				selections.push(new FileNameEntry("", self.data()[index](), index % 2 === 0 ? "F" : "S"));
 			}
 		}
 		return selections;
