@@ -75,8 +75,6 @@
 				self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
 				self.loadRootDataTransferLocation();
 			}
-
-			self.exportFileNameViewModel.initViewModel();
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -656,6 +654,7 @@
 
 		var availableFields = state.availableFields || [];
 		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameSelection);
+		self.exportFileNameViewModel.initViewModel();
 
 		this.errors = ko.validation.group(this, { deep: true });
 		

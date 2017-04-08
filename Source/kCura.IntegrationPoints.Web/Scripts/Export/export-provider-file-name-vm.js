@@ -11,7 +11,6 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 	self.Max_Selection_Count = 5;
 
 	self.availableFields = availableFields;
-	self.availableSeparators = ["-", "+", " "];
 	self.selectionList = selectionList;
 	self.actualSelectionTypeIndex = 0;
 
@@ -20,9 +19,6 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 	self.data = ko.observable({});
 
 	self.visibilityValuesContainer = ko.observableArray([]);
-
-	self.fieldFileNameEntries = [];
-	self.sepFileNameEntries = [];
 
 	self.addNewSelection = function() {
 
