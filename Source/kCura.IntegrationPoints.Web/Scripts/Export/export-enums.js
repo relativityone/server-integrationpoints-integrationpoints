@@ -89,6 +89,6 @@ ExportEnums.AvailableSeparators = [
 	{ value: "_", display: "_" },
 	{ value: "-", display: "-" },
 	{ value: ".", display: "." },
-	{ value: "<Space>", display: "<Space>" },
-	{ value: "<None>", display: "<None>" }
+	{ value: "(Space)", display: "(Space)" },
+	{ value: "(None)", display: "(None)" }
 ];

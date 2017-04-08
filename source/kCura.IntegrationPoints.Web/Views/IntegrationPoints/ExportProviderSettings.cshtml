@@ -226,7 +226,7 @@
 									</div>
 									<div class="field-value" id="fileNamingContainer">
 										<div data-bind="foreach: visibilityValuesContainer">
-											<div data-bind="visible: $data">
+											<div class="field-value" data-bind="visible: $data">
 												<select data-bind="disable: $parents[1].HasBeenRun(), value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
 											</div>
 										</div>

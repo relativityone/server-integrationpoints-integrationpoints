@@ -20,6 +20,13 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 
 	self.visibilityValuesContainer = ko.observableArray([]);
 
+	self.applyCustomStyles = function() {
+		for (var actualIndex = 0; actualIndex < self.Max_Selection_Count; ++actualIndex) {
+			$($('#fileNamingContainer div.select2-container')[actualIndex])
+				.addClass(actualIndex % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator');
+		}
+	}
+
 	self.addNewSelection = function() {
 
 		var actualIndex = self.metaData().length;
@@ -29,7 +36,6 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		self.visibilityValuesContainer()[actualIndex](true);
 
 		self.visibilityValuesContainer()[actualIndex].notifySubscribers();
-		$($('#fileNamingContainer div.select2-container')[actualIndex]).addClass(actualIndex % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator')
 	};
 
 	self.selectItem = function (fileNameEntry) {
@@ -42,7 +48,6 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 
 		var actualIndex = self.metaData().length;
 		self.visibilityValuesContainer()[actualIndex](false);
-		$($('#fileNamingContainer div.select2-container')[self.actualSelectionTypeIndex]).removeClass('fileNamingType_field', 'fileNamingType_separator')
 	};
 
 	self.initViewModel = function () {
@@ -54,7 +59,7 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 				}
 				return val !== undefined && val != null;
 			},
-			message: "Please select value {0}"
+			message: "Please select value"
 		}
 
 		ko.validation.registerExtenders();
