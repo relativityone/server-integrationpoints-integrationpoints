@@ -4,20 +4,21 @@
 	this.type = type;
 }
 
-ExportProviderFileNameViewModel = function(availableFields, selectionList) {
+ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 
 	var self = this;
 
 	self.Max_Selection_Count = 5;
 
 	self.availableFields = availableFields;
-
+	self.availableSeparators = ["-", "+", " "];
+	self.selectionList = selectionList;
 	self.actualSelectionTypeIndex = 0;
 
 	self.metaData = ko.observableArray([]);
 	self.listData = ko.observable({});
 	self.data = ko.observable({});
-	//visibilityValuesContainer
+
 	self.visibilityValuesContainer = ko.observableArray([]);
 
 	self.fieldFileNameEntries = [];
@@ -32,6 +33,7 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 		self.visibilityValuesContainer()[actualIndex](true);
 
 		self.visibilityValuesContainer()[actualIndex].notifySubscribers();
+		$($('#fileNamingContainer div.select2-container')[actualIndex]).addClass(actualIndex % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator')
 	};
 
 	self.selectItem = function (fileNameEntry) {
@@ -44,9 +46,10 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 
 		var actualIndex = self.metaData().length;
 		self.visibilityValuesContainer()[actualIndex](false);
+		$($('#fileNamingContainer div.select2-container')[self.actualSelectionTypeIndex]).removeClass('fileNamingType_field', 'fileNamingType_separator')
 	};
 
-	self.initViewModel = function (selectionList) {
+	self.initViewModel = function () {
 
 		ko.validation.rules['shouldBeValidated'] = {
 			validator: function (val, currElementIndex) {
@@ -83,16 +86,15 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 			}
 		}
 
-		if (selectionList !== undefined) {
-			for (var selectionIndex = 0; selectionIndex < selectionList.length; ++selectionIndex) {
+		if (self.selectionList !== undefined) {
+			for (var selectionIndex = 0; selectionIndex < self.selectionList.length; ++selectionIndex) {
 				self.addNewSelection();
-				self.selectItem(selectionList[selectionIndex]);
+				self.selectItem(self.selectionList[selectionIndex]);
 			}
 		} else {
 			self.addNewSelection();
 		}
 	}
-
 	self.getSelections = function () {
 		var selections = [];
 		for (var index = 0; index < self.metaData().length; ++index) {
@@ -103,13 +105,11 @@ ExportProviderFileNameViewModel = function(availableFields, selectionList) {
 		return selections;
 	}
 
-	self.addButtonVisible = function() {
+	self.addButtonVisible = function () {
 		return self.metaData().length < self.Max_Selection_Count;
 	}
 
 	self.delButtonVisible = function () {
 		return self.metaData().length > 1;
 	}
-
-	self.initViewModel(selectionList);
 }
