@@ -580,3 +580,9 @@ select option {
 	min-width: 0 !important;
 	width: 75px !important;	
 }
+
+.fileNaming-controlButtons{
+	height: 22px !important;
+	width: 22px !important;
+	padding: 0 !important;
+}
