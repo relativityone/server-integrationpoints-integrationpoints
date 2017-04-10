@@ -70,7 +70,7 @@
 								<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
 							</div>
 						</div>
-						<div class="field-row" id="CopyImages" data-bind="visible: ImageImportVisible()  == true">
+						<div class="field-row" id="copyImages" data-bind="visible: ImageImportVisible()  == true">
 							<div class="field-label required">Copy Images:</div>
 							<div class="field-value">
 								<ul>
@@ -96,7 +96,7 @@
 								Production Precedence:
 							</div>
 							<div class="field-value">
-								<label id="image-production-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: ImagePrecedenceSelection"></label>
+								<label id="image-production-selection" class="precedence-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: ImagePrecedenceSelection"></label>
 								<button id="image-production-precedence-button" style="vertical-align: top" data-bind="click: openImageProductionPicker" class="actionButtonSmall">...</button>
 							</div>
 						</div>

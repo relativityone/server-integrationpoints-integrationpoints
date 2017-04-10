@@ -571,7 +571,7 @@ select option {
 	word-wrap: break-word;
 }
 
-#image-production-selection{
+.precedence-selection{
 	min-width: 210px !important;
    	height: 22px;
    	word-wrap: break-word;

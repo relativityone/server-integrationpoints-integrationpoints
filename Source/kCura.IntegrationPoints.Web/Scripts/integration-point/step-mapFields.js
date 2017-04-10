@@ -655,6 +655,12 @@ ko.validation.insertValidationMessage = function (element) {
 				self.sourceMapped(mapFields(sourceMapped));
 				self.populateExtractedText();
 				self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
+
+				if (self.IsRelativityProvider() && destinationModel.ProductionImport) {
+					self.ImageImport('true');
+					root.utils.UI.disable("#copyImages", true);
+				}
+
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
@@ -812,10 +818,7 @@ ko.validation.insertValidationMessage = function (element) {
 			settingsTooltipViewModel.open(event);
 		};
 
-		if (self.IsRelativityProvider() && destinationModel.ProductionImport) {
-			self.ImageImport('true');
-			root.utils.UI.disable("#copyImages", true);
-		}
+	
 	};// end of the viewmodel
 
 
