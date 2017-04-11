@@ -1,3 +1,7 @@
 ﻿td.breakWord {
 	word-wrap: break-word;
 }
+
+td.dynamicViewFieldValue {
+	word-wrap: break-word;
+}

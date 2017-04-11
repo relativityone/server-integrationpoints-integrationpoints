@@ -20,7 +20,10 @@
 			</div>
 			<div class="field-value">
 				<ul id="isExportType" data-bind="foreach: integrationPointTypes">
-					<li><input type="radio" data-bind="value: artifactID, checked: $parent.type, attr: {id: 'isExportTypeRadio' + artifactID}" /><label data-bind="text: displayName, attr:{for: 'isExportTypeRadio'+artifactID}"></label></li>
+					<li>
+						<input type="radio" data-bind="value: artifactID, checked: $parent.type, attr: {id: 'isExportTypeRadio' + artifactID}, disable: $parent.isTypeDisabled" />
+						<label data-bind="text: displayName, attr:{for: 'isExportTypeRadio'+artifactID}"></label>
+					</li>
 				</ul>
 			</div>
 		</div>

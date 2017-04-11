@@ -115,10 +115,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 			finally
 			{
-				if (_federatedInstanceArtifactId == null)
-				{
-					ScratchTableRepository.Dispose();
-				}
+				ScratchTableRepository.Dispose();
 			}
 		}
 
