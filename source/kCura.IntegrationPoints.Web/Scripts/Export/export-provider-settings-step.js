@@ -580,7 +580,7 @@
 
 			return value.map(function (x) {
 				return x.displayName;
-			}).join(", ");
+			}).join("; ");
 		};
 		this.TextPrecedenceFields = ko.observable(state.TextPrecedenceFields || [])
 			.extend({

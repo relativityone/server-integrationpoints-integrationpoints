@@ -288,7 +288,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 			return value.map(function (x) {
 				return x.displayName;
-			}).join(", ");
+			}).join("; ");
 		};
 
 		this.ImagePrecedence = ko.observable(model.IPDestinationSettings.ImagePrecedence || [])
