@@ -8,6 +8,10 @@ TooltipDefs.ExportDetails = [
 	{
 		name: "Destination Folder", description: "specify the folder into which you want to export the data from the load file. This reads the Default File Repository defined for the Workspace and allows you to select a subfolder of that location. Contact Sys Admin for more details.",
 		subsection: []
+	},
+	{
+		name: "Create Export Folder", description: "when this option is selected an unique export folder will be created with a name of integration point job and a run timestamp.",
+		subsection: []
 	}
 ];
 
