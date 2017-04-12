@@ -215,36 +215,49 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
-		this.IdentifierField = ko.observable();
+		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
 
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
-
+		
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
+		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 
 		var copyNativeFileText = "Copy Native File:";
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
+		
+		var setCopyFilesLabel = function (isImageImport) {
+			if (isImageImport === "true") {
+				self.copyNativeLabel(copyFileToRepositoryText);
+			} else {
+				self.copyNativeLabel(copyNativeFileText);
+			}
+		}
+		setCopyFilesLabel(this.ImageImport());
+
 		/********** Temporary UI Toggle**********/
-		this.ImageImportToggle = ko.observable("false");
+		this.ImageImportVisible = ko.observable("false");
 		root.data.ajax({
 			type: 'get',
 			url: root.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Web.Toggles.UI.ShowImageImportToggle'),
 			success: function (result) {
-				self.ImageImportToggle(result);
+				self.ImageImportVisible(result && self.IsRelativityProvider());
 			}
 		});
 
 
 		this.ImageImport.subscribe(function (value) {
+			setCopyFilesLabel(value);
 			if (value === "true") {
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
+				self.UseDynamicFolderPath("false");
 				self.MoveExistingDocuments("false");
-				self.copyNativeLabel(copyFileToRepositoryText);
 				self.FolderPathSourceField(null);
 				self.autoFieldMapWithCustomOptions(function (identfier) {
 					var name = identfier.name.replace(" [Object Identifier]", "");
@@ -252,7 +265,6 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 			}
 			else {
-				self.copyNativeLabel(copyNativeFileText);
 				root.utils.UI.disable("#fieldMappings", false);
 			}
 		});
@@ -270,13 +282,13 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 
 		var getTextRepresentation = function (value) {
-			if (!value) {
-				return "";
+			if (!value || value.length === 0) {
+				return "Select...";
 			}
 
 			return value.map(function (x) {
 				return x.displayName;
-			}).join(", ");
+			}).join("; ");
 		};
 
 		this.ImagePrecedence = ko.observable(model.IPDestinationSettings.ImagePrecedence || [])
@@ -320,12 +332,44 @@ ko.validation.insertValidationMessage = function (element) {
 		this.SelectedOverwrite.subscribe(function (newValue) {
 			if (newValue != 'Append Only') {
 				self.UseFolderPathInformation("false");
+				self.UseDynamicFolderPath("false");
 				self.FolderPathSourceField(null);
 			} else {
 				self.FieldOverlayBehavior('Use Field Settings');
 			}
 		});
 
+		this.getFolderPathOptions = function (model) {
+			if (!model) {
+				return 'No';
+			}
+			if (model.UseFolderPathInformation == 'true') {
+				return 'Read From Field';
+			}
+			if (model.UseDynamicFolderPath == 'true') {
+				return 'Read From Folder Tree';
+			}
+			return 'No';
+		}
+
+		this.FolderPathOptions = ko.observableArray(['No', 'Read From Field', 'Read From Folder Tree']);
+		this.SelectedFolderPathType = ko.observable(self.getFolderPathOptions(model));
+		this.SelectedFolderPathType.subscribe(function (value) {
+			if (value === 'No') {
+				self.UseFolderPathInformation('false');
+				self.FolderPathSourceField(null);
+				self.UseDynamicFolderPath('false');
+			} else if (value === 'Read From Field') {
+				self.UseFolderPathInformation('true');
+				self.UseDynamicFolderPath('false');
+			} else {
+				self.UseFolderPathInformation('false');
+				self.FolderPathSourceField(null);
+				self.UseDynamicFolderPath('true');
+			}
+		});
+
+		this.UseDynamicFolderPath = ko.observable(model.UseDynamicFolderPath || "false");
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable().extend(
 		{
@@ -364,9 +408,6 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		});
-
-		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
-		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 
 		this.TotalLongTextFields = {};//has the full set of long text fields in workspace
 
@@ -614,6 +655,12 @@ ko.validation.insertValidationMessage = function (element) {
 				self.sourceMapped(mapFields(sourceMapped));
 				self.populateExtractedText();
 				self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
+
+				if (self.IsRelativityProvider() && destinationModel.ProductionImport) {
+					self.ImageImport('true');
+					root.utils.UI.disable("#copyImages", true);
+				}
+
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
@@ -771,6 +818,7 @@ ko.validation.insertValidationMessage = function (element) {
 			settingsTooltipViewModel.open(event);
 		};
 
+	
 	};// end of the viewmodel
 
 
@@ -786,6 +834,7 @@ ko.validation.insertValidationMessage = function (element) {
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
+				UseDynamicFolderPath: model.UseDynamicFolderPath,
 				SelectedOverwrite: model.SelectedOverwrite,
 				FieldOverlayBehavior: model.FieldOverlayBehavior,
 				FolderPathSourceField: model.FolderPathSourceField,
@@ -867,6 +916,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
+			this.returnModel.UseDynamicFolderPath = this.model.UseDynamicFolderPath();
 			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
 			this.returnModel.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
@@ -982,6 +1032,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
+					_destination.UseDynamicFolderPath = this.model.UseDynamicFolderPath();
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 					_destination.ImageImport = this.model.ImageImport();
 					_destination.ImagePrecedence = this.model.ImagePrecedence(),

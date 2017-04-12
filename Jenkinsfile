@@ -18,10 +18,12 @@ type = 'DEV'
 build = "NULL"
 invariantbuild = "NULL"
 installing_relativity = 'true'
-installing_analytics = 'true'
-installing_invariant = 'true'
-installing_datagrid = 'true'
-
+installing_analytics = 'false'
+installing_invariant = 'false'
+installing_datagrid = 'false'
+knife = "C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb"
+username = "testing\\Administrator"
+password = "P@ssw0rd@1"
 
 //region GlobalVariables
 installing_relativity = (installing_relativity == 'true') ? true : false
@@ -36,34 +38,32 @@ def run_list = ""
 def profile = "profile"
 if (components.every()) {
     profile = "profile_all"
-    services = ['kCura EDDS Agent Manager', 'kCura EDDS Web Processing Manager', 'kCura Service Host Manager', 'QueueManager']
-    run_list = "caServerSetup::default,installRelAll::default,updateConfig::default,installInvAll::default,installAnalyticsAll::default,installDataGrid::default,installDataGrid::updateRelativitySQL,installInvAll::invariantEndpoint"
+    run_list = "role-ci::install_relativity,role-ci::install_analytics,role-ci::install_invariant,role-ci::update_config,license::default,role-ci::configure_analytics,role-ci::invariantEndpoint,role-ci::install_elastic,role-ci::upgrade_datagrid_sql"
 } else {
     if (installing_relativity) {
         profile += "_rel"
-        services.add('kCura EDDS Agent Manager')
-        services.add('kCura EDDS Web Processing Manager')
-        services.add('kCura Service Host Manager')
-        if (installing_analytics) {
-            run_list += ",caServerSetup::default"
-        }
-        run_list += ",installRelAll::default,updateConfig::default"
+        run_list += ",role-ci::install_relativity"
     }
     if (installing_analytics) {
         profile += "_ana"
-        if (!installing_analytics) {
-            run_list += ",caServerSetup::default"
-        }
-        run_list += ",installAnalyticsAll::default"
+        run_list += ",role-ci::install_analytics"
     }
     if (installing_invariant) {
         profile += "_inv"
-        services.add('QueueManager')
-        run_list += ",installInvAll::default,installInvAll::invariantEndpoint"
+        run_list += ",role-ci::install_invariant"
+    }
+    if (installing_relativity) {
+        run_list += ",role-ci::update_config,license::default"
+    }
+    if (installing_analytics) {
+        run_list += ",role-ci::configure_analytics"
+    }
+    if (installing_invariant) {
+        run_list += ",role-ci::invariantEndpoint"
     }
     if (installing_datagrid) {
         profile += "_dg"
-        run_list += ",installDataGrid::default,installDataGrid::updateRelativitySQL"
+        run_list += ",role-ci::install_elastic,role-ci::upgrade_datagrid_sql"
     }
     run_list = run_list[1..-1]
 }
@@ -74,7 +74,7 @@ def invariant_branch = 'develop'
 
 def passed = false
 def status = "FAIL"
-
+def ip = ""
 def random_server = ""
 def server_name = ""
 def domain = ""
@@ -88,16 +88,22 @@ def session_id = System.currentTimeMillis().toString()
 def s = relativity_branch + invariant_branch + env.JOB_NAME
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(s.bytes).encodeHex().toString()
 //endregion
-
+  
+def get_ip(name) {
+   def ugly = String.format('python -m vmware.create_ci_environment --platform get_ip_address_of_vm -s %1$s', name)
+   def ip = bat returnStdout: true, script: ugly
+   return ip.trim().split('\r\n')[2]
+}
+  
 stage('Get Server') {
-	def file_name = UUID.randomUUID().toString() + ".txt"
+    def file_name = UUID.randomUUID().toString() + ".txt"
 	def windows_path = $/\\dv-file-01.testing.corp\Testing\TestingData\PooledServers\/$ + file_name
 	def linux_path = "/mnt/dv-file-01.testing.corp/TestingData/PooledServers/" + file_name
 
 	build job: 'Provision.VMware.GetServerFromPool', parameters: [
-		[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
-		string(name: 'temp_file', value: windows_path),
-		string(name: 'pool_name', value: 'cd')]
+        [$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
+        string(name: 'temp_file', value: windows_path),
+        string(name: 'pool_name', value: 'cook')]
 					
 	def file = new File(linux_path)
 	random_server = file.text
@@ -120,68 +126,31 @@ stage('Get Server') {
 	domain = tokens[1] + '.' + tokens[2]
 	
 	for (i = 0; i < number_of_slaves.toInteger(); i++) {
-		names_of_slaves.add("JNK-" + server_name +  "-" + i)
-	}
+        names_of_slaves.add("JNK-" + server_name +  "-" + i)
+    }
+     
+    node ('chef') {
+        ip = get_ip(server_name)
+        echo ip
+    }
 }
 
 // WTF Java has a 64kb limit for any function that it runs.
 // This means that the number of steps that we can run is limited.
 // https://issues.jenkins-ci.org/browse/JENKINS-37984
 def build_tests(String server_name, String domain, String session_id, String relativity_branch, String automation_branch, Boolean installing_invariant, Boolean installing_datagrid) {
-    try {
-    	parallel (
-			//RIP_Integration_Tests: {build job: 'Parameterized.NUnit', parameters: [
-    		//	[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    		//	string(name: 'session_id', value: session_id),
-    		//	string(name: 'SERVER', value: server_name),
-    		//	string(name: 'DOMAIN', value: domain),
-    		//	string(name: 'branch', value: env.BRANCH_NAME),
-    		//	string(name: 'assembly', value: 'lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration'),
-    		//	string(name: 'tests_to_skip', value: '0'),
-    		//	string(name: 'repository', value: 'integrationpoints')]},
-    		RIP_System_Tests: {build job: 'test.Parameterized.Robot', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'RelativityBuild', value: '"NULL"'),
-    			string(name: 'RelativityType', value: '"NULL"'),
-    			string(name: 'branch', value: automation_branch),
-    			string(name: 'config_file', value: 'Config/smokeTests.cfg'),
-    			string(name: 'SUITE', value: 'Relativity.Applications.RelativityIntegrationPoints.SmokeTests')]}
-    	)
-    } finally {
-	    // These jobs still delete the lib folder at startup, any robot tests running after will break :(
-    	parallel(
-    	    Productions_NUnit: {build job: 'Parameterized.NUnit.Category', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'branch', value: 'develop'),
-    			string(name: 'assembly', value: 'Relativity.Productions.NUnit.Integration'),
-    			string(name: 'category', value: 'testtype.ci'),
-    			string(name: 'repository', value: 'Productions')]},
-    		Security_Automated_Tests: {build job: 'Parameterized.NUnit', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'branch', value: 'master'),
-    			string(name: 'assembly', value: 'Security.NUnit.IntegrationTests'),
-    			string(name: 'tests_to_skip', value: '2'),
-    			string(name: 'repository', value: 'SecurityAutomatedTests')]},
-    		Conversion: {build job: 'Parameterized.NUnit.Category', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'branch', value: relativity_branch),
-    			string(name: 'assembly', value: 'Relativity.Conversion.NUnit.Integration'),
-    			string(name: 'category', value: 'testtype.ci'),
-    			string(name: 'repository', value: 'Relativity')]}
-        )
-    }
+		bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.Agent.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Core.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Data.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Services.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Web.Tests.Integration.dll lib\\UnitTests\\kCura.ScheduleQueue.Core.Tests.Integration.dll --where "cat == SmokeTest" --inprocess --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
+		
+		//RIP_System_Tests: {build job: 'test.Parameterized.Robot', parameters: [
+    	//	[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
+    	//	string(name: 'session_id', value: session_id),
+    	//	string(name: 'SERVER', value: server_name),
+    	//	string(name: 'DOMAIN', value: domain),
+    	//	string(name: 'RelativityBuild', value: '"NULL"'),
+    	//	string(name: 'RelativityType', value: '"NULL"'),
+    	//	string(name: 'branch', value: automation_branch),
+    	//	string(name: 'config_file', value: 'Config/smokeTests.cfg'),
+    	//	string(name: 'SUITE', value: 'Relativity.Applications.RelativityIntegrationPoints.SmokeTests')]}
 }
 
 try {
@@ -213,6 +182,14 @@ try {
 			dir('C:/SourceCode/integrationpoints') {
 				bat 'powershell.exe "& {./build.ps1 -test -skip; exit $lastexitcode}"'
 			}			
+
+			dir('C:/SourceCode/integrationpoints') {
+				stash includes: 'lib/UnitTests/*', name: 'testdlls'				
+				stash includes: 'lib/UnitTests/TestData/*', name: 'testdata'				
+				stash includes: 'lib/UnitTests/TestData/IMAGES/*', name: 'testdata_images'				
+				stash includes: 'lib/UnitTests/TestData/NATIVES/*', name: 'testdata_natives'		
+				stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'		
+			}
 		}
 
 	}
@@ -220,180 +197,140 @@ try {
     stage('Install RAID') {
     	parallel Deploy: {
     		build job: "Reporting.RegisterEvent", parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'action', value: '-c'), 
-    			string(name: 'session_id', value: session_id), 
-    			string(name: 'deployment_step', value: 'Talos_Provision_test_CD'), 
-    			string(name: 'host', value: random_server), 
-    			string(name: 'profile', value: profile), 
-    			string(name: 'event_hash', value: event_hash)]
+                [$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
+                string(name: 'action', value: '-c'),
+                string(name: 'session_id', value: session_id),
+                string(name: 'deployment_step', value: 'Talos_Provision_test_CD'),
+                string(name: 'host', value: random_server),
+                string(name: 'profile', value: profile),
+                string(name: 'event_hash', value: event_hash),
+                string(name: 'exclude_verification_steps', value: 'true')]
     						
-    		build job: 'Provision.Chef.UpdateInstallers', parameters: [
-    			string(name: 'type', value: type), 
-    			string(name: 'build', value: build), 
-    			string(name: 'branch', value: relativity_branch), 
-    			string(name: 'invariantbuild', value: invariantbuild), 
-    			string(name: 'invariantbranch', value: invariant_branch),
-    			string(name: 'session_id', value: session_id), 
-    			string(name: 'server', value: server_name),
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name + ' || chef'], nodeEligibility: [$class: 'AllNodeEligibility']]]
+    		build job: 'Provision.Chef.UploadEnvironmentFile', parameters: [
+				string(name: 'type', value: type),
+				string(name: 'build', value: build),
+				string(name: 'branch', value: relativity_branch),
+				string(name: 'invariantbuild', value: invariantbuild),
+				string(name: 'invariantbranch', value: invariant_branch),
+				string(name: 'template', value: "V2"),
+				string(name: 'server', value: server_name),
+				string(name: 'knife', value: "$knife"),
+				string(name: 'session_id', value: session_id),
+				string(name: 'username', value: username),
+				string(name: 'password', value: password),
+				[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name + ' || chef'], nodeEligibility: [$class: 'AllNodeEligibility']]]
     			
-    		build job: 'Provision.Chef.AddRunList', parameters: [
-    			string(name: 'node', value: random_server), 
-    			string(name: 'recipes', value: run_list), 
-    			string(name: 'session_id', value: session_id),  
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name + ' || chef'], nodeEligibility: [$class: 'AllNodeEligibility']]]
+    		node ('chef') {
+			try {
+				bat String.format('knife node run_list add %1$s %3$s -c %2$s', server_name, "$knife", run_list)
+				bat String.format('python -m jeeves.register_event --session_id %1$s -ds chef_setup --status PASS -u --host %2$s --profile %3$s --event_hash %4$s --component relativity --job_link unknown', session_id, random_server, profile, event_hash)
+				} catch(Exception ex)  {
+					bat String.format('python -m jeeves.register_event --session_id %1$s -ds chef_setup --status FAIL -u --host %2$s --profile %3$s --event_hash %4$s --component relativity --job_link unknown', session_id, random_server, profile, event_hash)
+					}
+				try {
+				  bat String.format('python -m jeeves.chef_functions -f run_chef_client -n %1$s -r %2$s -un %3$s -up %4$s', ip, "$knife", "$username", "$password")
+				}catch(Exception ex)  {
+				  echo 'Something failed in the installation'
+				}
+			}
     		
     		if (installing_relativity) {
-    			build job: 'Provision.Chef.WaitForTags', parameters: [
-        			string(name: 'node', value: random_server), 
-        			string(name: 'tags', value: '-t '  + server_name + '-psrel '
-        									  + '-t '  + server_name + '-relativityInstalled '
-        									  + '-t '  + server_name + '-upcfg'), 
-        			string(name: 'session_id', value: session_id),
-        			string(name: 'deployment_step', value: 'Relativity_Installation'),
-        			string(name: 'component', value: 'relativity'),
-        			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
-    		}
-    		
-    	    if (installing_invariant) {
-        		build job: 'Provision.Chef.WaitForTags', parameters: [
-        			string(name: 'node', value: random_server), 
-                    string(name: 'tags', value: '-t '  + server_name + '-invariantInstalled '
-        			    					  + '-t '  + server_name + '-isinv '
-        				    				  + '-t '  + server_name + '-iqinv'),
-        			string(name: 'session_id', value: session_id),
-        			string(name: 'deployment_step', value: 'Invariant_Installation'),
-        			string(name: 'component', value: 'invariant'),
-        			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
-            }
-    
-            if (installing_analytics) {
-        		build job: 'Provision.Chef.WaitForTags', parameters: [
-            		string(name: 'node', value: random_server), 
-            		string(name: 'tags', value: '-t '  + server_name + '-analyticsInstalled'), 
-            		string(name: 'session_id', value: session_id),
-            		string(name: 'deployment_step', value: 'Analytics_Installation'),
-            		string(name: 'component', value: 'analytics'),
-            		[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
-            }
-    
-            if (installing_datagrid) {
-        		build job: 'Provision.Chef.WaitForTags', parameters: [
-            		string(name: 'node', value: random_server), 
-            		string(name: 'tags', value: '-t '  + server_name + '-datagridInstalled '
-            		                          + '-t '  + server_name + '-datagridDone'), 
-            		string(name: 'session_id', value: session_id),
-            		string(name: 'deployment_step', value: 'DataGrid_Installation'),
-            		string(name: 'component', value: 'datagrid'),
-            		[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
-            }
-    
-    	}, ProvisionNodes: {
-    		build job: "Provision.VMware.ExpiryAttribute", parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'node', value: random_server), 
-    			string(name: 'hours', value: '12')]
-    			
-    		build job: "vCenter.create_jenkins_slaves",	parameters: [
-    		[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'TemplateName', value: 'TT-Win7-IE10'), 
-    			string(name: 'VMNames', value: names_of_slaves.toString()), 
-    			string(name: 'StartSequence', value: '1'), 
-    			string(name: 'NumberOfSlaves', value: number_of_slaves), 
-    			string(name: 'JenkinsServer', value: 'POLAND'), 
-    			string(name: 'Label', value: server_name)]
-    			
-    		for (name_of_slave in names_of_slaves){
-    			build job: 'Nodes.PullTestDependencies', parameters: [
-    			    [$class: 'NodeParameterValue', name: 'node_label', labels: [name_of_slave], nodeEligibility: [$class: 'AllNodeEligibility']],
-    				string(name: 'RelativityBuild', value: build),
-    				string(name: 'RelativityType', value: type), 
-    				string(name: 'branch', value: relativity_branch)],
-    				wait: false
-    		}
-    	}, failFast: true
+				build job: 'Provision.Chef.WaitForTags', parameters: [
+					string(name: 'node', value: server_name),
+					string(name: 'tags', value: '-t relativityInstalled'),
+					string(name: 'session_id', value: session_id),
+					string(name: 'deployment_step', value: 'Relativity_Installation'),
+					string(name: 'component', value: 'relativity'),
+					string(name: 'timeout', value: '300'),
+					string(name: 'knife', value: knife),
+					[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
+			}
+			 
+			if (installing_invariant) {
+				build job: 'Provision.Chef.WaitForTags', parameters: [
+					string(name: 'node', value: server_name),
+					string(name: 'tags', value: '-t invariantInstalled'),
+					string(name: 'session_id', value: session_id),
+					string(name: 'deployment_step', value: 'Invariant_Installation'),
+					string(name: 'component', value: 'invariant'),
+					string(name: 'timeout', value: '300'),
+					string(name: 'knife', value: knife),
+					[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
+			}
+		 
+			if (installing_analytics) {
+				build job: 'Provision.Chef.WaitForTags', parameters: [
+					string(name: 'node', value: server_name),
+					string(name: 'tags', value: '-t analyticsInstalled'),
+					string(name: 'session_id', value: session_id),
+					string(name: 'deployment_step', value: 'Analytics_Installation'),
+					string(name: 'component', value: 'analytics'),
+					string(name: 'timeout', value: '300'),
+					string(name: 'knife', value: knife),
+					[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
+			}
+		 
+			if (installing_datagrid) {
+				build job: 'Provision.Chef.WaitForTags', parameters: [
+					string(name: 'node', value: server_name),
+					string(name: 'tags', value: '-t datagridInstalled'),
+					string(name: 'session_id', value: session_id),
+					string(name: 'deployment_step', value: 'DataGrid_Installation'),
+					string(name: 'component', value: 'datagrid'),
+					string(name: 'timeout', value: '300'),
+					string(name: 'knife', value: knife),
+					[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']]]
+			}
+			node(server_name)
+			{
+				def database = server_name + "\\EDDSINSTANCE001"
+			   bat String.format('python -m jeeves.validation -f check_workspace_upgrade -e %1$s', database)
+			}
+		 
+		}, ProvisionNodes: {
+			build job: "Provision.VMware.ExpiryAttribute", parameters: [
+				[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
+				string(name: 'node', value: random_server),
+				string(name: 'hours', value: '12')]
+				 
+			build job: "vCenter.create_jenkins_slaves", parameters: [
+			[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
+				string(name: 'TemplateName', value: 'TT-Win7-IE10-Robot3'),
+				string(name: 'VMNames', value: names_of_slaves.toString()),
+				string(name: 'StartSequence', value: '1'),
+				string(name: 'NumberOfSlaves', value: number_of_slaves),
+				string(name: 'JenkinsServer', value: 'POLAND'),
+				string(name: 'Label', value: server_name)]
+		 
+			for (name_of_slave in names_of_slaves){
+				build job: 'test.Nodes.PullTestDependencies', parameters: [
+					[$class: 'NodeParameterValue', name: 'node_label', labels: [name_of_slave], nodeEligibility: [$class: 'AllNodeEligibility']],
+					string(name: 'RelativityBuild', value: build),
+					string(name: 'RelativityType', value: type),
+					string(name: 'branch', value: relativity_branch),
+					string(name: 'automation', value: automation_branch)],
+					wait: false
+			}
+		}, failFast: true
     }
 
-	stage('Deployment Validation') {
-		build job: 'Provision.Chef.DeleteChef',	parameters: [
-			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-			string(name: 'node', value: random_server)]
-			
-		services_to_check = '"'
-		for (service in services) {
-		    services_to_check += random_server + ';TESTING\\rellockdown;P@ssw0rd@1;' + service + ','
+	node(server_name) {
+		stage('Tests') {
+			bat 'mkdir "C:\\SourceCode\\integrationpoints"'
+			def cmd = "powershell.exe setx JenkinsBuildHost " + random_server + " /m"
+			bat cmd
+
+			dir('C:/SourceCode/integrationpoints') {
+				unstash 'testdlls'
+				unstash 'testdata'
+				unstash 'testdata_images'
+				unstash 'testdata_natives'
+				unstash 'integrationPointsRap'
+
+				build_tests(server_name, domain, session_id, relativity_branch, automation_branch, installing_invariant, installing_datagrid)
+			}	
 		}
-		services_to_check = services_to_check[0..-2] + '"'
-
-		build job: "Provision.ValidateDeployment", parameters: [
-			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-			string(name: 'environment', value: random_server),
-			string(name: 'server_ips', value: random_server),
-			string(name: 'job_name', value: env.JOB_NAME),
-			string(name: 'build_num', value: env.BUILD_NUMBER),
-			string(name: 'UseWIX', value: '--wix'),
-			string(name: 'to', value: 'pletang@kcura.com'),
-			string(name: 'services', value: services_to_check),
-			string(name: 'session_id', value: session_id)]
-	}
-
-	stage('Post Install Setup') {
-	    if (installing_relativity) {
-            build job: 'test.Parameterized.Robot', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'RelativityBuild', value: '"NULL"'),
-    			string(name: 'RelativityType', value: '"NULL"'),
-    			string(name: 'branch', value: 'tag_setup_tests'),
-    			string(name: 'username', value: 'relativity.admin@kcura.com'),
-    			string(name: 'SUITE', value: 'Relativity.RelativitySetup')], propagate: false
-				
-			build job: 'test.Parameterized.Robot', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'RelativityBuild', value: '"NULL"'),
-    			string(name: 'RelativityType', value: '"NULL"'),
-    			string(name: 'branch', value: automation_branch),
-    			string(name: 'config_file', value: 'Config/smokeTests.cfg'),
-				string(name: 'extra_args', value: '--variable BRANCH='+env.BRANCH_NAME),
-    			string(name: 'SUITE', value: 'Automation.PostInstall.InstallApps.UpdateRIPApp')], propagate: false	
-	    }
-	    
-	    if (installing_invariant) {
-            build job: 'test.Parameterized.Robot', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'RelativityBuild', value: '"NULL"'),
-    			string(name: 'RelativityType', value: '"NULL"'),
-    			string(name: 'branch', value: 'tag_setup_tests'),
-    			string(name: 'username', value: 'relativity.admin@kcura.com'),
-    			string(name: 'SUITE', value: 'Relativity.ProcessingSetup')], propagate: false
-	    }
-	    
-	    if (installing_analytics) {
-            build job: 'test.Parameterized.Robot', parameters: [
-    			[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-    			string(name: 'session_id', value: session_id),
-    			string(name: 'SERVER', value: server_name),
-    			string(name: 'DOMAIN', value: domain),
-    			string(name: 'RelativityBuild', value: '"NULL"'),
-    			string(name: 'RelativityType', value: '"NULL"'),
-    			string(name: 'branch', value: 'tag_setup_tests'),
-    			string(name: 'username', value: 'relativity.admin@kcura.com'),
-    			string(name: 'SUITE', value: 'Relativity.AnalyticsSetup')], propagate: false
-	    }
-	}
-	
-	stage('Tests') {
-        build_tests(server_name, domain, session_id, relativity_branch, automation_branch, installing_invariant, installing_datagrid)
-    }
+	}	
 	
 	passed = true
 	status = "PASS"
@@ -402,13 +339,11 @@ finally {
     try {
 		stage('Reporting') {
 		    if (passed) {
-        		build job: "Provision.VMware.DeleteVM", parameters: [
-			        [$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
-			        string(name: 'vm_name', value: server_name)]
-		    } else {
-    			build job: 'Provision.Chef.DeleteChef',	parameters: [
-    				[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name + ' || chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
-    				string(name: 'node', value: random_server)]
+				build job: "Provision.VMware.DeleteVM", parameters: [
+					[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
+					string(name: 'vm_name', value: server_name),
+					string(name: 'knife', value: knife)]
+			} else {
     			
     			build job: "vCenter.shutdown_vms", parameters: [
     				[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name + ' || chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
@@ -426,14 +361,14 @@ finally {
 				string(name: 'job', value: env.BUILD_URL)]
 							
 			build job: "Reporting.AutomationReport", parameters: [
-				[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
+				[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
 				string(name: 'branch', value: relativity_branch),
 				string(name: 'session_id', value: session_id),
 				string(name: 'slack_recipients', value: '#cd_poland'),
 				string(name: 'notify', value: ''),
 				string(name: 'event_hash', value: event_hash),
 				string(name: 'report_health', value: 'report_health'),
-				string(name: 'automation_branch', value: automation_branch)]
+				string(name: 'exclude_post_install_steps', value: 'true')]
 		}
 	}
     finally {
@@ -446,4 +381,3 @@ finally {
 		}
 	}
 }
-

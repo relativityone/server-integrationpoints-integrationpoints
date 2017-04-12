@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
@@ -102,7 +103,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionEmptyValidator>().LifestyleSingleton());
 
-
 			// TODO: yea, we need a better way of getting the target IRepositoryFactory to the IExporterFactory -- biedrzycki: Sept 1, 2016
 			container.Register(Component.For<global::kCura.IntegrationPoints.Core.Factories.IExporterFactory>().UsingFactoryMethod(
 				k =>
@@ -134,7 +134,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 							targetRepositoryFactory = new RepositoryFactory(sourceHelper, targetHelper.GetServicesManager());
 						}
 						IFederatedInstanceManager federatedInstanceManager = k.Resolve<IFederatedInstanceManager>();
-						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager);
+						IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
+						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory);
 					}).LifestyleTransient());
 		}
 	}

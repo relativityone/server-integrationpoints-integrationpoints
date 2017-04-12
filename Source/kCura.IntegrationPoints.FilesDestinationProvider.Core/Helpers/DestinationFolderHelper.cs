@@ -31,9 +31,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 			return folderPath;
 		}
 
-		public void CreateFolder(string path)
+		public void CreateDestinationSubFolderIfNeeded(ExportSettings exportSettings, string path)
 		{
-			_dirHelper.CreateDirectory(path);
+			if (exportSettings.IsAutomaticFolderCreationEnabled)
+			{
+				_dirHelper.CreateDirectory(path);
+			}
 		}
 	}
 }

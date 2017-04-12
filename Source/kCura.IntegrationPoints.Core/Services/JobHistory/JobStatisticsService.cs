@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics {Completed = total, Errored = _rowErrors}, _job.WorkspaceID);
 			_rowErrors = 0;
 			Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
-			historyRdo.ItemsTransferred = stats.Imported;
+			historyRdo.ItemsTransferred = stats.Imported > 0 ? stats.Imported : 0;
 			historyRdo.ItemsWithErrors = stats.Errored;
 			_service.UpdateRdo(historyRdo);
 		}

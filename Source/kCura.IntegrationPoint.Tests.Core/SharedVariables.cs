@@ -31,9 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string RestServer => $"{ProtocolVersion}://{TargetHost}/Relativity.Rest/";
 
-		public static Uri RestClientServiceUri => new Uri($"{RestApi}/api");
-
-		public static string RestApi => $"{ProtocolVersion}://{TargetHost}/Relativity.Rest";
+		public static Uri RestClientServiceUri => new Uri($"{RestServer}/api");
 
 		public static string RelativityWebApiUrl => $"{ProtocolVersion}://{TargetHost}/RelativityWebAPI/";
 
@@ -41,7 +39,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region ConnectionString Settings
 
-		public static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
+		public static string TargetHost => GetTargetHost();
 
 		public static string DatabaseUserId { get; set; } = ConfigurationManager.AppSettings["databaseUserId"];
 
@@ -50,6 +48,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string EddsConnectionString => String.Format(ConfigurationManager.AppSettings["connectionStringEDDS"], TargetHost, DatabaseUserId, DatabasePassword);
 
 		public static string WorkspaceConnectionStringFormat => String.Format(ConfigurationManager.AppSettings["connectionStringWorkspace"], "{0}", TargetHost, DatabaseUserId, DatabasePassword);
+
+		public static int KeplerTimeout => int.Parse(ConfigurationManager.AppSettings["keplerTimeout"]);
 
 		#endregion ConnectionString Settings
 
@@ -87,6 +87,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 			DirectoryInfo latestVersionFolder = buildPackagesBranchDirectory.GetDirectories().OrderByDescending(f => f.LastWriteTime).First();
 
 			return latestVersionFolder?.Name;
+		}
+		
+		private static string GetTargetHost()
+		{
+			string environmentVariableName = ConfigurationManager.AppSettings["JenkinsBuildHostEnvironmentVariableName"];
+
+			if (environmentVariableName != null)
+			{
+				return Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Machine);
+			}
+
+			return ConfigurationManager.AppSettings["targetHost"];
 		}
 	}
 }

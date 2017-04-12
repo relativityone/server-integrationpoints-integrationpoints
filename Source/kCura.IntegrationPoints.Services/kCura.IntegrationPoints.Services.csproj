@@ -111,6 +111,7 @@
     <Compile Include="Helpers\PermissionModel.cs" />
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
+    <Compile Include="Installers\StatisticsManagerInstaller.cs" />
     <Compile Include="Installers\Installer.cs" />
     <Compile Include="Installers\IntegrationPointTypeManagerInstaller.cs" />
     <Compile Include="Installers\JobHistoryManagerInstaller.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Models\LoadFileExportSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderDestinationConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderSourceConfigurationBackwardCompatibility.cs" />
+    <Compile Include="Models\TotalItemsCountSearchDto.cs" />
     <Compile Include="Repositories\IIntegrationPointProfileRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\DocumentRepository.cs" />
@@ -150,6 +152,7 @@
     <Compile Include="Repositories\Implementations\JobHistoryRepository.cs" />
     <Compile Include="ProviderManager.cs" />
     <Compile Include="Repositories\Implementations\ProviderRepository.cs" />
+    <Compile Include="StatisticsManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">

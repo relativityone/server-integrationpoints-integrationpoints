@@ -18,22 +18,27 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class RelativityExporterService : ExporterServiceBase
 	{
-		public RelativityExporterService(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt, string config, int savedSearchArtifactId) : base(sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt, config, savedSearchArtifactId)
+		private readonly IFolderPathReader _folderPathReader;
+
+		public RelativityExporterService(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper,
+			IFolderPathReader folderPathReader, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt, string config, int savedSearchArtifactId)
+			: base(sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt, config, savedSearchArtifactId)
 		{
+			_folderPathReader = folderPathReader;
 		}
 
-		public RelativityExporterService(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper) : base(mappedFields, jobStopManager, helper)
+		internal RelativityExporterService(IExporter exporter, IILongTextStreamFactory longTextStreamFactory, IJobStopManager jobStopManager, IHelper helper,
+			IFolderPathReader folderPathReader, FieldMap[] mappedFields, HashSet<int> longTextField, int[] avfIds)
+			: base(exporter, longTextStreamFactory, jobStopManager, helper, mappedFields, longTextField, avfIds)
 		{
-		}
-
-		internal RelativityExporterService(IExporter exporter, IILongTextStreamFactory longTextStreamFactory, IJobStopManager jobStopManager, IHelper helper, FieldMap[] mappedFields, HashSet<int> longTextField, int[] avfIds) : base(exporter, longTextStreamFactory, jobStopManager, helper, mappedFields, longTextField, avfIds)
-		{
+			_folderPathReader = folderPathReader;
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
-			var documentTransferDataReader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, transferConfiguration.ScratchRepositories);
-			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader,transferConfiguration) {TotalItemsFound = TotalRecordsFound};
+			var documentTransferDataReader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, transferConfiguration.ScratchRepositories,
+				transferConfiguration.ImportSettings.UseDynamicFolderPath);
+			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader, transferConfiguration) {TotalItemsFound = TotalRecordsFound};
 			return _context ?? (_context = exporterTransferContext);
 		}
 
@@ -46,9 +51,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
-					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
+					List<ArtifactFieldDTO> fields = new List<ArtifactFieldDTO>(_avfIds.Length);
 
-					object[] fieldsValue = (object[])data;
+					object[] fieldsValue = (object[]) data;
 					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
 
 					SetupBaseFields(documentArtifactId, fieldsValue, fields);
@@ -57,6 +62,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					result.Add(new ArtifactDTO(documentArtifactId, artifactType, string.Empty, fields));
 				}
 			}
+
+			_folderPathReader.SetFolderPaths(result);
+
 			_retrievedDataCount += result.Count;
 			return result.ToArray();
 		}

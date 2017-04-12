@@ -406,6 +406,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
 
+			if (settings.UseDynamicFolderPath)
+			{
+				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME;
+			}
+
 			if ((SourceProvider != null) && SourceProvider.Config.AlwaysImportNativeFileNames)
 			{
 				// So that the destination workspace file icons correctly display, we give the import API the file name of the document

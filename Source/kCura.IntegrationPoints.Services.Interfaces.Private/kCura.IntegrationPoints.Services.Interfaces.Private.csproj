@@ -94,6 +94,7 @@
     <Compile Include="IIntegrationPointsModule.cs" />
     <Compile Include="IKeplerService.cs" />
     <Compile Include="IProviderManager.cs" />
+    <Compile Include="IStatisticsManager.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Models\IntegrationPoint\LoadFileExportSourceConfiguration.cs" />
     <Compile Include="Models\IntegrationPoint\OverwriteFieldsModel.cs" />
     <Compile Include="Models\IntegrationPoint\ScheduleModel.cs" />
+    <Compile Include="Models\IntegrationPoint\TotalItemsCountSearchModel.cs" />
     <Compile Include="Models\PercentagePushedToReviewModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\JobHistorySummaryModel.cs" />

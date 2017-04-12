@@ -5,6 +5,8 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Data.Toggles;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -36,11 +38,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void DeleteTable_WorkspaceScratchTable()
 		{
 			// arrange
-			string expectedQuery = @"IF EXISTS (SELECT * FROM EDDS123456.INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'prefix__suffix') DROP TABLE [Resource].[prefix__suffix]";
+			string expectedQuery = $"IF EXISTS (SELECT * FROM EDDS{SourceWorkspaceArtifactId}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'prefix__suffix') DROP TABLE [Resource].[prefix__suffix]";
 
-			var resourceDbProvider = Substitute.For<IResourceDbProvider>();
-			resourceDbProvider.GetSchemalessResourceDataBasePrepend(Arg.Any<int>()).Returns("EDDS123456");
-			resourceDbProvider.GetResourceDbPrepend(Arg.Any<int>()).Returns("[Resource]");
+			var resourceDbProvider = new ResourceDbProvider();
 
 			var instance = new ScratchTableRepository(_helper, _documentsRepo, _fileRepo, resourceDbProvider, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
 
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			// arrange
 			var resourceDbProvider = new ResourceDbProvider();
-
+			
 			using (var instance = new ScratchTableRepository(Helper,  _documentsRepo, _fileRepo, resourceDbProvider, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId))
 			{
 				var list = new List<int>() {1, 2};
@@ -69,11 +69,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void GetDocumentIdsDataReaderFromTable_WorkspaceScratchTable()
 		{
 			// arrange
-			string expectedQuery = @"IF EXISTS (SELECT * FROM EDDS123456.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__suffix') SELECT [ArtifactID] FROM [Resource].[prefix__suffix]";
+			string expectedQuery = $"IF EXISTS (SELECT * FROM EDDS{SourceWorkspaceArtifactId}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__suffix') SELECT [ArtifactID] FROM [Resource].[prefix__suffix]";
 
-			var resourceDbProvider = Substitute.For<IResourceDbProvider>();
-			resourceDbProvider.GetSchemalessResourceDataBasePrepend(Arg.Any<int>()).Returns("EDDS123456");
-			resourceDbProvider.GetResourceDbPrepend(Arg.Any<int>()).Returns("[Resource]");
+			var resourceDbProvider = new ResourceDbProvider();
 
 			var instance = new ScratchTableRepository(_helper, _documentsRepo, _fileRepo, resourceDbProvider, _PREFIX, _SUFFIX, SourceWorkspaceArtifactId);
 

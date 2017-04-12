@@ -182,6 +182,7 @@
     <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
@@ -204,10 +205,23 @@
     <Compile Include="QueryBuilders\IIntegrationPointsCompletedJobsQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\AllSourceProvidersQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\DestinationProviderArtifactIdByGuidQueryBuilder.cs" />
+    <Compile Include="QueryBuilders\Implementations\DocumentQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\IntegrationPointByProvidersQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\IntegrationPointsCompletedJobsQueryBuilder.cs" />
+    <Compile Include="QueryBuilders\Implementations\ProductionInformationQueryBuilder.cs" />
+    <Compile Include="QueryBuilders\Implementations\QueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
+    <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
+    <Compile Include="Statistics\IDocumentTotalStatistics.cs" />
+    <Compile Include="Statistics\IImageTotalStatistics.cs" />
+    <Compile Include="Statistics\IImageFileSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\ImageFileSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\ImageTotalStatistics.cs" />
+    <Compile Include="Statistics\INativeFileSizeStatistics.cs" />
+    <Compile Include="Statistics\INativeTotalStatistics.cs" />
+    <Compile Include="Statistics\Implementations\NativeFileSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\NativeTotalStatistics.cs" />
     <Compile Include="Repositories\Implementations\ResourcePoolRepository.cs" />
     <Compile Include="Repositories\Implementations\SavedSearchQueryRepository.cs" />
     <Compile Include="Repositories\IResourcePoolRepository.cs" />
@@ -223,7 +237,6 @@
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Repositories\IArtifactTypeRepository.cs" />
-    <Compile Include="Repositories\IDocumentTotalsRepository.cs" />
     <Compile Include="Repositories\IErrorRepository.cs" />
     <Compile Include="Repositories\IFederatedInstanceRepository.cs" />
     <Compile Include="Repositories\IInstanceSettingRepository.cs" />
@@ -231,7 +244,6 @@
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\HardCodedServiceUrlRepository.cs" />
     <Compile Include="Repositories\Implementations\DestinationProviderRepository.cs" />
-    <Compile Include="Repositories\Implementations\DocumentTotalsRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepository.cs" />
@@ -348,6 +360,9 @@
     <Compile Include="SecretStore\ISecretManager.cs" />
     <Compile Include="SecretStore\SecretManager.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
+    <Compile Include="Statistics\IDocumentStatistics.cs" />
+    <Compile Include="Statistics\IRdoStatistics.cs" />
+    <Compile Include="Statistics\Implementations\RdoStatistics.cs" />
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
     <Compile Include="Transformers\IntegrationPointTransformer.cs" />

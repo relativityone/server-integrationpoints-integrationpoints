@@ -56,8 +56,21 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			IntegrationPoint ip = _integrationPointReader.GetRdo(integrationPointArtifactId);
 			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(ip.SourceConfiguration);
 			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(ip.DestinationConfiguration);
-			return Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId),
-				settings.LoadFile);
+
+			// Retrieve the root path of the workspace file location as well as the relative path of the DataTransfer\Import folder
+			// We will verify that the fullPath of the load File exists in this location
+			string fileLocationRootPath = _locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId);
+			string dataTransferImportPath = _locationService.GetDefaultRelativeLocationFor(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid);
+			
+			// Doing the GetFullPath make sure that if the LoadFile has "../../" in it we get the true path
+			string loadFileFullPath = Path.GetFullPath(Path.Combine(fileLocationRootPath, settings.LoadFile));
+			
+			//We need to do a security check here to ensure that we don't allow paths that are not in the DataTransfer/Import directory
+			if (Path.IsPathRooted(settings.LoadFile) || !loadFileFullPath.StartsWith(Path.Combine(fileLocationRootPath, dataTransferImportPath)))
+			{
+				throw new System.Exception("Invalid Load File Location");
+			}
+			return loadFileFullPath;
 		}
 
 		private string GetErrorFileName(string loadFilePath, string integrationPointName, int integrationPointArtifactId)

@@ -24,8 +24,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
 			ICoreContext context,
-			IScratchTableRepository[] scratchTableRepositories) :
-				base(GenerateDataColumnsFromFieldEntries(fieldMappings))
+			IScratchTableRepository[] scratchTableRepositories,
+			bool useDynamicFolderPath) :
+				base(GenerateDataColumnsFromFieldEntries(fieldMappings, useDynamicFolderPath))
 		{
 			_context = context;
 			_scratchTableRepositories = scratchTableRepositories;
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return _relativityExporterService.HasDataToRetrieve == false;
 		}
 
-		protected static DataColumn[] GenerateDataColumnsFromFieldEntries(FieldMap[] mappingFields)
+		protected static DataColumn[] GenerateDataColumnsFromFieldEntries(FieldMap[] mappingFields, bool useDynamicFolderPath)
 		{
 			List<FieldEntry> fields = mappingFields.Select(field => field.SourceField).ToList();
 
@@ -84,6 +85,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				{
 					DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
 					FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
+					FieldType = FieldType.String
+				});
+			}
+			else if (useDynamicFolderPath)
+			{
+				fields.Add(new FieldEntry()
+				{
+					DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME,
+					FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD,
 					FieldType = FieldType.String
 				});
 			}

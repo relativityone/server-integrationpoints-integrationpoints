@@ -2,7 +2,7 @@
 
 var loadData = function (ko, dataContainer) {
 
-	
+
 
 	var Model = function (dataContainer) {
 		var self = this;
@@ -18,11 +18,11 @@ var loadData = function (ko, dataContainer) {
 		function formatFolderPathInformation(useFolderPathInfo) {
 			var value = formatToYesOrNo(useFolderPathInfo);
 			if (convertToBool(useFolderPathInfo)) {
-				IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function(result) {
+				IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function (result) {
 					var folderPathSourceField = dataContainer.destinationConfiguration.FolderPathSourceField;
 					var fields = ko.utils.arrayFilter(result, function (field) { return field.fieldIdentifier === folderPathSourceField; });
 					if (fields.length > 0) {
-						self.useFolderPathInfo(value +";"+fields[0].actualName);
+						self.useFolderPathInfo(value + ";" + fields[0].actualName);
 					}
 				});
 			} else {
@@ -57,6 +57,12 @@ var loadData = function (ko, dataContainer) {
 		this.exportType = formatExportType(dataContainer.destinationConfiguration.importNativeFile, dataContainer.destinationConfiguration.ImageImport);
 		this.showInstanceInfo = dataContainer.destinationConfiguration.FederatedInstanceArtifactId !== null;
 		this.promoteEligible = dataContainer.promoteEligible;
+
+		this.importNativeFile = ko.observable(dataContainer.destinationConfiguration.importNativeFile == 'true');
+		this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' && (!dataContainer.destinationConfiguration.ImagePrecedence || dataContainer.destinationConfiguration.ImagePrecedence.length == 0));
+
+		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration.SourceWorkspaceArtifactId, dataContainer.sourceConfiguration.SavedSearchArtifactId,
+			this.importNativeFile(), this.importImageFile());
 	};
 
 	var viewModel = new Model(dataContainer);

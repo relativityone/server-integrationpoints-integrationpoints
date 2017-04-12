@@ -194,16 +194,10 @@
     <Compile Include="Helpers\ConfigSettings.cs" />
     <Compile Include="Helpers\ContainerInstaller.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
-    <Compile Include="Helpers\DocumentTestDataBuilder.cs" />
     <Compile Include="Helpers\FileComparer.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
-    <Compile Include="Helpers\FileToBase64Converter.cs" />
-    <Compile Include="Helpers\ImportHelper.cs" />
     <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
     <Compile Include="Helpers\UserPasswordCredentialProvider.cs" />
-    <Compile Include="Helpers\WorkspaceService.cs" />
-    <Compile Include="Model\DocumentsTestData.cs" />
-    <Compile Include="Model\FolderWithDocuments.cs" />
     <Compile Include="Process\ExportProcessRunnerTest.cs" />
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />
@@ -301,52 +295,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\DefaultPlaceholder.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0000757.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0000757.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0000975.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0000975.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0001185.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0001185.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0001185_001.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AMEYERS_0001185_001.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\IMAGES\AZIPPER_0011318.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\NATIVES\AMEYERS_0000757.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\NATIVES\AMEYERS_0001185.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestData\NATIVES\AZIPPER_0011318.msg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
@@ -356,8 +304,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy $(ProjectDir)..\packages\$(Relativity_ImportExport)\lib\native\*  $(ProjectDir)$(OutDir)  /y
 mkdir "$(ProjectDir)..\..\lib\UnitTests"
-xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
-xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R</PostBuildEvent>
+xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

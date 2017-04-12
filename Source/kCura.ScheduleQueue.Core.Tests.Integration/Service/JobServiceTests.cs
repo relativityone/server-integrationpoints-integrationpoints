@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
@@ -16,40 +17,17 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 	[TestFixture]
 	public class JobServiceTests
 	{
-		private const string _AGENT_TYPEID = "AgentTypeID";
-		private const string _AGENT_NAME = "Name";
-		private const string _AGENT_FULLNAMESPACE = "Fullnamespace";
-		private const string _AGENT_GUID = "Guid";
-
 		private IAgentService _agentService;
 		private IHelper _helper;
 		private JobService _instance;
-		private AgentTypeInformation _agentInfo;
 
 		[SetUp]
 		public void SetUp()
 		{
-			//IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
-			using (DataTable table = new DataTable())
-			{
-				table.Columns.Add(new DataColumn(_AGENT_TYPEID, typeof(int)));
-				table.Columns.Add(new DataColumn(_AGENT_NAME, typeof(String)));
-				table.Columns.Add(new DataColumn(_AGENT_FULLNAMESPACE, typeof(String)));
-				table.Columns.Add(new DataColumn(_AGENT_GUID, typeof(Guid)));
-
-				DataRow row = table.NewRow();
-				row[_AGENT_TYPEID] = 999;
-				row[_AGENT_NAME] = "bad agent";
-				row[_AGENT_FULLNAMESPACE] = "whatever";
-				row[_AGENT_GUID] = "f5d67f54-0e70-4fbd-b59e-25383e057311";
-
-				_agentInfo = new AgentTypeInformation(row);
-			}
-
-			_agentService = Substitute.For<IAgentService>();
-			_agentService.QueueTable.Returns(GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
-			_agentService.AgentTypeInformation.Returns(_agentInfo);
+			Config.SetConnectionString(SharedVariables.EddsConnectionString);
+			
 			_helper = Substitute.For<IHelper>();
+			_agentService = new AgentService(_helper, Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_helper.GetDBContext(-1).Returns(new DBContext(new Context(SharedVariables.EddsConnectionString)));
 			_instance = new JobService(_agentService, _helper);
 		}
@@ -72,7 +50,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		}
 
 		[Test]
-		[Description("When we update the stop state, there is a possibility that the job is already removed from the queue. This scenario will occur when the job is finished before we get to update the job.")]
+		[NUnit.Framework.Description("When we update the stop state, there is a possibility that the job is already removed from the queue. This scenario will occur when the job is finished before we get to update the job.")]
 		public void UpdateStopState_JobDoesNotExist()
 		{
 			Assert.Throws<InvalidOperationException>(() => _instance.UpdateStopState( new List<long>() {  987654321 }, StopState.Stopping));
@@ -82,7 +60,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		[TestCase(StopState.None)]
 		[TestCase(StopState.Stopping)]
 		[TestCase(StopState.Unstoppable)]
-		[Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
+		[NUnit.Framework.Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
 		public void UpdateStopState_SomeJobsDoNotExist(StopState state)
 		{
 			// arrange
@@ -95,7 +73,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		[TestCase(StopState.None)]
 		[TestCase(StopState.Stopping)]
 		[TestCase(StopState.Unstoppable)]
@@ -146,7 +124,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		}
 
 		[Test]
-		[Description("This case will occur when a user click on stop right before the agent set the unstoppable flag.")]
+		[NUnit.Framework.Description("This case will occur when a user click on stop right before the agent set the unstoppable flag.")]
 		public void UpdateStopState_SetUnstoppableAfterStopping()
 		{
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);

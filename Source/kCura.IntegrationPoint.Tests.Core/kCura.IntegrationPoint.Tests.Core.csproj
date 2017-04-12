@@ -208,6 +208,18 @@
       <HintPath>..\packages\$(libsodium-net)\lib\Net40\Sodium.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Relativity.DataReaderClient, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.ImportAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Relativity.ImportAPI.Extension, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\$(Relativity_ImportExport)\lib\net45\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -238,6 +250,7 @@
     <Compile Include="Choice.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DocumentTestDataBuilder.cs" />
     <Compile Include="EHHelper.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
@@ -245,11 +258,15 @@
     <Compile Include="Extensions\RelativityQueryExtensions.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
+    <Compile Include="FileToBase64Converter.cs" />
     <Compile Include="Folder.cs" />
+    <Compile Include="ImportHelper.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
+    <Compile Include="Models\DocumentsTestData.cs" />
+    <Compile Include="Models\FolderWithDocuments.cs" />
     <Compile Include="ObjectType.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Models\ImportOverwriteMode.cs" />
@@ -264,6 +281,8 @@
     <Compile Include="Production.cs" />
     <Compile Include="ProductionDataSource.cs" />
     <Compile Include="RelativityApplicationManager.cs" />
+    <Compile Include="ResourcePoolHelper.cs" />
+    <Compile Include="ResourceServerHelper.cs" />
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
@@ -277,6 +296,8 @@
     <Compile Include="TestHelpers\BaseServiceContextHelper.cs" />
     <Compile Include="TestHelpers\ExceptionHelper.cs" />
     <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
+    <Compile Include="TestHelpers\ExtendedIArtifactGuidManager.cs" />
+    <Compile Include="TestHelpers\ExtendedIFieldManager.cs" />
     <Compile Include="TestHelpers\ExtendedIKeywordSearchManager.cs" />
     <Compile Include="TestHelpers\ExtendedIObjectQueryManager.cs" />
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
@@ -291,6 +312,7 @@
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="View.cs" />
     <Compile Include="Workspace.cs" />
+    <Compile Include="WorkspaceService.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Include="App.config" />
@@ -347,13 +369,64 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\DefaultPlaceholder.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0000757.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0000757.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0000975.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0000975.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185_001.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AMEYERS_0001185_001.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\IMAGES\AZIPPER_0011318.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\NATIVES\AMEYERS_0000757.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\NATIVES\AMEYERS_0001185.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\NATIVES\AZIPPER_0011318.msg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
   <Import Project="..\packages\Relativity.ImportExport.9.5.89.44\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.5.89.44\build\Relativity.ImportExport.targets')" />
   <Import Project="..\packages\$(RelativityCore)\build\RelativityCore.targets" Condition="Exists('..\packages\$(RelativityCore)\build\RelativityCore.targets')" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib\UnitTests"
-xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
+xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
+xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

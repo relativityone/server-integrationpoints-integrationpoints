@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_scratchRepositories);
+				_scratchRepositories, false);
 		}
 
 		protected override ExportTransferDataReaderBase CreatetDataReaderTestInstanceWithParameters(
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Export
 				relativityExportService,
 				fieldMappings,
 				context,
-				scratchTableRepositories);
+				scratchTableRepositories, false);
 		}
 	}
 }

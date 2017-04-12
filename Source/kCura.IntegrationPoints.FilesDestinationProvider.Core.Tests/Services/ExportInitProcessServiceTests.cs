@@ -3,6 +3,7 @@ using System.ComponentModel;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using NSubstitute;
@@ -18,7 +19,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		private IHelper _helperMock;
 		private IRepositoryFactory _repositoryFactoryMock;
 		private ExportUsingSavedSearchSettings _exportSettings;
-		private IDocumentTotalsRepository _documentTotalsRepository;
+		private IDocumentTotalStatistics _documentTotalStatistics;
+		private IRdoStatistics _rdoStatistics;
 		private IAPILog _loggerMock;
 
 		private const int _WKSP_ID = 1;
@@ -46,7 +48,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			};
 			_helperMock = Substitute.For<IHelper>();
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
-			_documentTotalsRepository = Substitute.For<IDocumentTotalsRepository>();
+			_documentTotalStatistics = Substitute.For<IDocumentTotalStatistics>();
+			_rdoStatistics = Substitute.For<IRdoStatistics>();
 			_loggerMock = Substitute.For<IAPILog>();
 
 			ILogFactory logFactoryMock = Substitute.For<ILogFactory>();
@@ -57,7 +60,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 
 			apiLog.ForContext<ExportInitProcessService>().Returns(_loggerMock);
 
-			_repositoryFactoryMock.GetDocumentTotalsRepository(_WKSP_ID).Returns(_documentTotalsRepository);
+			_repositoryFactoryMock.GetDocumentTotalStatistics().Returns(_documentTotalStatistics);
+			_repositoryFactoryMock.GetRdoStatistics().Returns(_rdoStatistics);
 
 			_subjectUnderTests = new ExportInitProcessService(_helperMock, _repositoryFactoryMock);
 		}
@@ -69,13 +73,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			const int artifactTypeId = 12345;
 			_exportSettings.ExportType = ExportSettings.ExportType.FolderAndSubfolders.ToString();
 
-			_documentTotalsRepository.GetRdosCount(artifactTypeId, _VIEW_ID).Returns(_EXPECTED_DOC_COUNT);
+			_rdoStatistics.ForView(_WKSP_ID,artifactTypeId, _VIEW_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
 			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, artifactTypeId);
 
 			// Assert
-			_documentTotalsRepository.Received().GetRdosCount(artifactTypeId, _VIEW_ID);
+			_rdoStatistics.Received().ForView(_WKSP_ID,artifactTypeId, _VIEW_ID);
 			Assert.That(returnedValue, Is.EqualTo(_EXPECTED_DOC_COUNT));
 		}
 
@@ -85,13 +89,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			// Arrange
 			_exportSettings.ExportType = ExportSettings.ExportType.SavedSearch.ToString();
 
-			_documentTotalsRepository.GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
+			_documentTotalStatistics.ForSavedSearch(_WKSP_ID,_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
 			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
-			_documentTotalsRepository.Received().GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID);
+			_documentTotalStatistics.Received().ForSavedSearch(_WKSP_ID,_SAVED_SEARCH_ID);
 			Assert.That(returnedValue, Is.EqualTo(_EXPECTED_DOC_COUNT));
 		}
 
@@ -101,13 +105,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			// Arrange
 			_exportSettings.ExportType = ExportSettings.ExportType.ProductionSet.ToString();
 
-			_documentTotalsRepository.GetProductionDocsCount(_PROD_SET_ID).Returns(_EXPECTED_DOC_COUNT);
+			_documentTotalStatistics.ForProduction(_WKSP_ID,_PROD_SET_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
 			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
-			_documentTotalsRepository.Received().GetProductionDocsCount(_PROD_SET_ID);
+			_documentTotalStatistics.Received().ForProduction(_WKSP_ID,_PROD_SET_ID);
 			Assert.That(returnedValue, Is.EqualTo(_EXPECTED_DOC_COUNT));
 		}
 
@@ -119,13 +123,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			// Arrange
 			_exportSettings.ExportType = exportType.ToString();
 
-			_documentTotalsRepository.GetFolderTotalDocsCount(_FOLDER_ID, _VIEW_ID, includeSubFolders).Returns(_EXPECTED_DOC_COUNT);
+			_documentTotalStatistics.ForFolder(_WKSP_ID,_FOLDER_ID, _VIEW_ID, includeSubFolders).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
 			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
-			_documentTotalsRepository.Received().GetFolderTotalDocsCount(_FOLDER_ID, _VIEW_ID, includeSubFolders);
+			_documentTotalStatistics.Received().ForFolder(_WKSP_ID,_FOLDER_ID, _VIEW_ID, includeSubFolders);
 			Assert.That(returnedValue, Is.EqualTo(_EXPECTED_DOC_COUNT));
 		}
 
@@ -140,7 +144,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_exportSettings.StartExportAtRecord = startAtIndex;
 			_exportSettings.ExportType = ExportSettings.ExportType.SavedSearch.ToString();
 
-			_documentTotalsRepository.GetSavedSearchTotalDocsCount(_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
+			_documentTotalStatistics.ForSavedSearch(_WKSP_ID, _SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
 			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);

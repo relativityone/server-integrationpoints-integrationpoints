@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Installers
@@ -39,6 +41,13 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<IDestinationProviderArtifactIdByGuidQueryBuilder>().ImplementedBy<DestinationProviderArtifactIdByGuidQueryBuilder>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointByProvidersQueryBuilder>().ImplementedBy<IntegrationPointByProvidersQueryBuilder>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointsCompletedJobsQueryBuilder>().ImplementedBy<IntegrationPointsCompletedJobsQueryBuilder>().LifestyleSingleton());
+
+			container.Register(Component.For<IDocumentTotalStatistics>().ImplementedBy<DocumentTotalStatistics>().LifestyleSingleton());
+			container.Register(Component.For<INativeTotalStatistics>().ImplementedBy<NativeTotalStatistics>().LifestyleSingleton());
+			container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<NativeFileSizeStatistics>().LifestyleSingleton());
+			container.Register(Component.For<IImageTotalStatistics>().ImplementedBy<ImageTotalStatistics>().LifestyleSingleton());
+			container.Register(Component.For<IImageFileSizeStatistics>().ImplementedBy<ImageFileSizeStatistics>().LifestyleSingleton());
+			container.Register(Component.For<IRdoStatistics>().ImplementedBy<RdoStatistics>().LifestyleSingleton());
 		}
 	}
 }

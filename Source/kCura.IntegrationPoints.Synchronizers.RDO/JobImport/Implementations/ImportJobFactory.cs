@@ -12,6 +12,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			IJobImport rv;
 			switch (GetJobContextType(settings))
 			{
+				case JobContextType.RelativityToRelativityImagesProduction:
+					IImportSettingsBaseBuilder<ImageSettings> imageProductionRelativityToRelativityImportSettingsBuilder = new ImageRelativityToRelativityImportSettingsBuilder(importApi);
+					rv = new ProductionImageJobImport(settings, importApi, imageProductionRelativityToRelativityImportSettingsBuilder, context);
+					break;
 				case JobContextType.RelativityToRelativityImages:
 					IImportSettingsBaseBuilder<ImageSettings> imageRelativityToRelativityImportSettingsBuilder = new ImageRelativityToRelativityImportSettingsBuilder(importApi);
 					rv = new ImageJobImport(settings, importApi, imageRelativityToRelativityImportSettingsBuilder, context);
@@ -34,14 +38,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		enum JobContextType
 		{
 			RelativityToRelativityImages,
+			RelativityToRelativityImagesProduction,
 			ImportImagesFromLoadFile,
 			Native
 		}
 
 		private static JobContextType GetJobContextType(ImportSettings settings)
 		{
-			const string relativity = "relativity";	
-			if (settings.Provider == relativity && settings.ImageImport)
+			const string relativity = "relativity";
+			if (settings.Provider == relativity && settings.ProductionImport && settings.ImageImport)
+			{
+				return JobContextType.RelativityToRelativityImagesProduction;
+			}
+			else if (settings.Provider == relativity && settings.ImageImport)
 			{
 				return JobContextType.RelativityToRelativityImages;
 			}

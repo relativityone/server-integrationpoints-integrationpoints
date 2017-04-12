@@ -538,6 +538,7 @@
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
+    <Content Include="Scripts\integration-point\statistics.js" />
     <Content Include="Scripts\modals\authenticate-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />

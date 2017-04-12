@@ -11,7 +11,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static int Create(string section, string name, string value, ValueType valueType)
 		{
-			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true)
+			)
 			{
 				global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = new global::Relativity.Services.InstanceSetting.InstanceSetting
 				{
@@ -35,7 +36,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static global::Relativity.Services.InstanceSetting.InstanceSetting Query(string section, string name)
 		{
-			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true)
+			)
 			{
 				Query query = new Query();
 				Condition sectionCondition = new TextCondition(InstanceSettingFieldNames.Section, TextConditionEnum.EqualTo, section);
@@ -66,7 +68,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return value;
 			}
 
-			if (String.Equals(instanceSetting.Value, value, StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(instanceSetting.Value, value, StringComparison.OrdinalIgnoreCase))
 			{
 				return value;
 			}
@@ -80,7 +82,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static void Update(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
 		{
-			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true)
+			)
 			{
 				try
 				{

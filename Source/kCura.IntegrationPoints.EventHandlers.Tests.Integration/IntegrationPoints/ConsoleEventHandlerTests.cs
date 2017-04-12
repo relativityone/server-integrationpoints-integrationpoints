@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
@@ -12,6 +13,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -41,6 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 			_rsapiService = Substitute.For<IRSAPIService>();
+			_serializer = new JSONSerializer();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
 			{
@@ -84,6 +87,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private IJobHistoryManager _jobHistoryManager;
 		private IPermissionRepository _permissionRepository;
 		private IIntegrationPointPermissionValidator _permissionValidator;
+		private ISerializer _serializer;
 
 		private ConsoleEventHandler _instance;
 
@@ -104,11 +108,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			bool hasProfileAddPermission)
 		{
 			// ARRANGE
+			var importSettings = new ImportSettings { ImageImport = false };
 			var integrationPoint = new Data.IntegrationPoint
 			{
 				HasErrors = true,
 				SourceProvider = 8392,
-				DestinationProvider = 437
+				DestinationProvider = 437,
+				DestinationConfiguration = _serializer.Serialize(importSettings)
 			};
 
 			string[] viewErrorMessages = {Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW};
@@ -282,11 +288,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		public void GetConsole_NonRelativityProvider_GoldFlow(bool hasJobsExecutingOrInQueue, bool hasStoppableJobs, ProviderType providerType)
 		{
 			// ARRANGE
+			var importSettings = new ImportSettings { ImageImport = false };
 			var integrationPoint = new Data.IntegrationPoint
 			{
 				HasErrors = true,
 				SourceProvider = 8392,
-				DestinationProvider = 243
+				DestinationProvider = 243,
+				DestinationConfiguration = _serializer.Serialize(importSettings)
 			};
 			
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);

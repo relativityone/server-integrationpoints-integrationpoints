@@ -22,16 +22,14 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Web;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services;
-using Relativity.Toggles;
+using Relativity.Core;
+using Relativity.Core.Authentication;
+using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -47,7 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private bool _deleteAgentInTeardown = true;
 		protected DestinationProvider DestinationProvider;
 		protected IEnumerable<SourceProvider> SourceProviders;
-
+		protected ICoreContext CoreContext;
 		protected ICaseServiceContext CaseContext;
 		protected RelativityApplicationManager RelativityApplicationManager;
 
@@ -56,7 +54,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			_workspaceName = workspaceName;
 			_workspaceTemplate = workspaceTemplate;
-			RelativityApplicationManager = new RelativityApplicationManager(ClaimsPrincipal.Current);
+			CoreContext = GetBaseServiceContext(ClaimsPrincipal.Current, -1);
+			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
 		}
 
 		public override void SuiteSetup()
@@ -66,6 +65,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 				WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
+				
 				Install();
 
 				Task.Run(async () => await SetupAsync()).Wait();
@@ -318,18 +318,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected async Task SetupAsync()
 		{
+			await AddAgentServerToResourcePool();
 			await Task.Run(() =>
 			{
-				var libraryApplication =
-					RelativityApplicationManager.GetLibraryApplicationDTO(
-						new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
-
-				if (libraryApplication != null && libraryApplication.IsVisible)
-				{
-					RelativityApplicationManager.RemoveApplicationFromLibrary(libraryApplication);
-				}
-
-				RelativityApplicationManager.ImportOrUpgradeRelativityApplication(WorkspaceArtifactId);
+			
+				RelativityApplicationManager.ImportApplicationToWorkspace(WorkspaceArtifactId);
 				RelativityApplicationManager.DeployIntegrationPointsCustomPage();
 			});
 			if (CreateAgent)
@@ -337,6 +330,24 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());
 				AgentArtifactId = agentCreatedResult.ArtifactID;
 				_deleteAgentInTeardown = agentCreatedResult.Success;
+			}
+		}
+
+		private async Task AddAgentServerToResourcePool()
+		{
+			ResourceServer agentServer = await ResourceServerHelper.GetAgentServer(CoreContext);
+			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default");
+		}
+
+		private ICoreContext GetBaseServiceContext(ClaimsPrincipal claimsPrincipal, int workspaceId)
+		{
+			try
+			{
+				return claimsPrincipal.GetServiceContextUnversionShortTerm(workspaceId);
+			}
+			catch (Exception exception)
+			{
+				throw new Exception("Unable to initialize the user context.", exception);
 			}
 		}
 

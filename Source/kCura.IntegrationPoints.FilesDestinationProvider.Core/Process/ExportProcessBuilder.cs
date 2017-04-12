@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
@@ -101,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IDestinationFolderHelper destinationFolderHelper = new DestinationFolderHelper(jobInfo, _dirHelper);
 
 			exportFile.FolderPath = destinationFolderHelper.GetFolder(settings);
-			destinationFolderHelper.CreateFolder(exportFile.FolderPath);
+			destinationFolderHelper.CreateDestinationSubFolderIfNeeded(settings, exportFile.FolderPath);
 		}
 
 		private void PerformLogin(ExportFile exportFile)

@@ -19,7 +19,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -47,6 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
+			
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
@@ -92,7 +92,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
-			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, integrationModelCreated.Destination, jobHistory.ArtifactId, jobHistory.BatchInstance);
+			string destinationConfig = AppendWebAPIPathToImportSettings(integrationModelCreated.Destination);
+			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, destinationConfig, jobHistory.ArtifactId, jobHistory.BatchInstance);
 			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
@@ -134,5 +135,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				}
 			}
 		}
+
+		#region "Registration helpers"
+		
+		private string AppendWebAPIPathToImportSettings(string importSettings)
+		{
+			var options = _serializer.Deserialize<ImportSettings>(importSettings);
+			options.WebServiceURL = SharedVariables.RelativityWebApiUrl;
+			return _serializer.Serialize(options);
+		}
+
+		#endregion
 	}
 }

@@ -68,13 +68,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 		}
 
 		[Test]
-		public void ItShouldCreateFolder()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldCreateFolder(bool createSubFolder)
 		{
+			_exportSettings.IsAutomaticFolderCreationEnabled = createSubFolder;
 			// Act
-			_instnaceUnderTest.CreateFolder(_FOLDER_PATH);
+			_instnaceUnderTest.CreateDestinationSubFolderIfNeeded(_exportSettings, _FOLDER_PATH);
 
 			// Assert
-			_driHelperMock.Received().CreateDirectory(_FOLDER_PATH);
+			_driHelperMock.Received(createSubFolder ? 1 : 0).CreateDirectory(_FOLDER_PATH);
 		}
 	}
 }

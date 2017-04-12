@@ -70,7 +70,7 @@
 								<select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImportToggle()  == true">
+						<div class="field-row" id="copyImages" data-bind="visible: ImageImportVisible()  == true">
 							<div class="field-label required">Copy Images:</div>
 							<div class="field-value">
 								<ul>
@@ -83,7 +83,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="field-row"  data-bind="visible: ImageImport() == 'true'">
+						<div class="field-row" data-bind="visible:ImageImportVisible()  == true && ImageImport() == 'true'">
 							<div class="field-label required">
 								Image Precedence:
 							</div>
@@ -91,14 +91,13 @@
 								<select id="image-production-precedence" data-bind="options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, select2: {}"></select>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected()">
+						<div class="field-row" data-bind="visible:ImageImportVisible()  == true && IsProductionPrecedenceSelected()  && ImageImport() == 'true'">
 							<div class="field-label required">
 								Production Precedence:
 							</div>
 							<div class="field-value">
-								<label id="image-production-selection" data-bind="text: ImagePrecedenceSelection"></label>
-								<button id="image-production-precedence-button" data-bind="click: openImageProductionPicker" class="actionButtonSmall">...</button>
-								<input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
+								<label id="image-production-selection" class="precedence-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: ImagePrecedenceSelection"></label>
+								<button id="image-production-precedence-button" style="vertical-align: top" data-bind="click: openImageProductionPicker" class="actionButtonSmall">...</button>
 							</div>
 						</div>
 						<div class="field-row" data-bind="visible: isDocument() == 'true'">
@@ -148,7 +147,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false'">
+						<div class="field-row" data-bind="visible: !IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
 							<div class="field-label required ">Use Folder Path Information:</div>
 							<div class="field-value">
 								<ul>
@@ -159,6 +158,12 @@
 										<label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
 									</li>
 								</ul>
+							</div>
+						</div>
+						<div class="field-row" data-bind="visible: IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
+							<div class="field-label required ">Use Folder Path Information:</div>
+							<div class="field-value">
+								<select id="folderPathInformationSelect" data-bind="options: FolderPathOptions, value: SelectedFolderPathType, select2: {}"></select>
 							</div>
 						</div>
 						<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
@@ -172,7 +177,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
+						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false' && (UseFolderPathInformation() == 'true' || UseDynamicFolderPath() == 'true')">
 							<div class="field-label required ">Move Existing Documents:</div>
 							<div class="field-value">
 								<ul>
