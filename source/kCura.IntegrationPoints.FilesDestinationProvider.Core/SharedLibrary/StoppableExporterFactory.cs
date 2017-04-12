@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Core.Export;
+using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 
@@ -44,11 +44,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 				serviceFactory = new WebApiServiceFactory(exportDataContext.ExportFile);
 			}
 			var loadFileFormatterFactory = new kCura.WinEDDS.Core.Export.ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings));
-
+			
 			var exporter = new Exporter(exportDataContext.ExportFile, controller, serviceFactory,
 				loadFileFormatterFactory)
 			{
-				NameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck()
+				NameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck(), 
+				FileHelper = new LongPathFileHelper(),
+				DirectoryHelper = new LongPathDirectoryHelper()
+
 			};
 			return new StoppableExporter(exporter, controller, jobStopManager);
 		}
