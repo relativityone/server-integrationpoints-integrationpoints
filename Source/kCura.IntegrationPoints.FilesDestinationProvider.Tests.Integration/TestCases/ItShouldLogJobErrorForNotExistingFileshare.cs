@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
@@ -35,8 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public void Verify()
 		{
-			string expectedMessage = $"Could not find a part of the path '{_notExistingPath}\\All Documents_export.dat'.";
-			_jobHistoryErrorService.Received().AddError(ErrorTypeChoices.JobHistoryErrorJob, Arg.Is<Exception>(x => x.Message == expectedMessage));
+			_jobHistoryErrorService.Received().AddError(ErrorTypeChoices.JobHistoryErrorJob, Arg.Any<Exception>());
 		}
 	}
 }
