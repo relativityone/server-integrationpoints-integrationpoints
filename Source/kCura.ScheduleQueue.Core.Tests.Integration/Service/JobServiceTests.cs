@@ -24,7 +24,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		[SetUp]
 		public void SetUp()
 		{
-			Config.SetConnectionString(SharedVariables.EddsConnectionString);
+			kCura.Data.RowDataGateway.Config.SetConnectionString(SharedVariables.EddsConnectionString);
 			
 			_helper = Substitute.For<IHelper>();
 			_agentService = new AgentService(_helper, Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));

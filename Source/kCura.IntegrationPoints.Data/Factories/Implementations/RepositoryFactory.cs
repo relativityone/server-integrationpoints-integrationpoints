@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {

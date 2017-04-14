@@ -12,11 +12,8 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Data.Toggles;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {

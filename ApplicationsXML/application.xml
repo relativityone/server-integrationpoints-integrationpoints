@@ -1930,18 +1930,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1021845</ArtifactId>
-      <Keywords />
-      <Name>kCura.Image.Viewer.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1021846</ArtifactId>
-      <Keywords />
-      <Name>kCura.Print.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1023230</ArtifactId>
       <Keywords />
       <Name>Castle.Windsor.dll</Name>
@@ -1998,7 +1986,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2017-03-13T15:13:00.9696623Z</ExtractionDate>
+  <ExtractionDate>2017-04-12T15:26:07.5654132Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
