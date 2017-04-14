@@ -269,7 +269,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-		this.ProductionPrecedence = ko.observable(model.IPDestinationSettings.ProductionPrecedence).extend({
+		this.ProductionPrecedence = ko.observable(model.IPDestinationSettings.ProductionPrecedence || model.ProductionPrecedence).extend({
 			required: {
 				onlyIf: function () {
 					return self.ImageImport();
@@ -291,7 +291,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}).join("; ");
 		};
 
-		this.ImagePrecedence = ko.observable(model.IPDestinationSettings.ImagePrecedence || [])
+		this.ImagePrecedence = ko.observable(model.IPDestinationSettings.ImagePrecedence || model.ImagePrecedence || [])
 			.extend({
 				required: {
 					onlyIf: function () {
@@ -921,6 +921,10 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
+			this.returnModel.ImageImport = this.model.ImageImport();
+			this.returnModel.ImagePrecedence = this.model.ImagePrecedence();
+			this.returnModel.ProductionPrecedence = this.model.ProductionPrecedence();
+
 
 			var map = [];
 			var emptyField = { name: '', identifer: '' };
