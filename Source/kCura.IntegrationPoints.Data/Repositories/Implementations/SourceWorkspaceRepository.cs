@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -26,30 +23,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			try
 			{
 				return _objectTypeRepository.CreateObjectType(SourceWorkspaceDTO.ObjectTypeGuid, Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, parentArtifactTypeId);
-			}
-			catch (Exception e)
-			{
-				throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
-			}
-		}
-
-		public IDictionary<Guid, int> CreateObjectTypeFields(int sourceWorkspaceObjectTypeId, IEnumerable<Guid> fieldGuids)
-		{
-			try
-			{
-				var objectType = new ObjectType {DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId};
-
-				var sourceWorkspaceFields = SourceWorkspaceDTO.Fields.GetFieldsDefinition(objectType);
-
-				var fieldsToCreate = sourceWorkspaceFields.Where(x => fieldGuids.Contains(x.Key)).Select(x => x.Value).ToList();
-
-				var newFields = _fieldRepository.CreateObjectTypeFields(fieldsToCreate);
-
-				IDictionary<Guid, int> guidToIdDictionary = newFields.ToDictionary(
-					x => x.Guids[0],
-					y => y.ArtifactID);
-
-				return guidToIdDictionary;
 			}
 			catch (Exception e)
 			{

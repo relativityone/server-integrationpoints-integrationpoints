@@ -6,9 +6,11 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.RelativitySourceRdo;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Tagging;
@@ -29,8 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 	{
 		private IRepositoryFactory _repositoryFactory;
 		private IDocumentRepository _documentRepository;
-		private SourceWorkspaceManager _sourceWorkspaceManager;
-		private SourceJobManager _sourceJobManager;
+		private ITagsCreator _tagsCreator;
 		private TagSavedSearchManager _tagSavedSearchManager;
 		private ISynchronizerFactory _synchronizerFactory;
 		private IJobHistoryService _jobHistoryService;
@@ -53,9 +54,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
-			_sourceWorkspaceManager = new SourceWorkspaceManager(_repositoryFactory);
-			_sourceJobManager = new SourceJobManager(_repositoryFactory);
 			_helper = Container.Resolve<IHelper>();
+			var managerFactory = new ManagerFactory(_helper);
+			_tagsCreator = managerFactory.CreateTagsCreator(new ContextContainer(_helper));
 			_tagSavedSearchManager = new TagSavedSearchManager(new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper), new TagSavedSearchFolder(_repositoryFactory, _helper));
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
@@ -97,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationModelCreated.Destination);
-			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, _sourceJobManager, _tagSavedSearchManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, destinationConfig, jobHistory.ArtifactId, jobHistory.BatchInstance);
+			TargetDocumentsTaggingManagerFactory targetDocumentsTaggingManagerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _tagsCreator, _tagSavedSearchManager, _documentRepository, _synchronizerFactory, _helper, _serializer, _fieldMaps, integrationModelCreated.SourceConfiguration, destinationConfig, jobHistory.ArtifactId, jobHistory.BatchInstance);
 			IConsumeScratchTableBatchStatus targetDocumentsTaggingManager = targetDocumentsTaggingManagerFactory.BuildDocumentsTagger();
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 

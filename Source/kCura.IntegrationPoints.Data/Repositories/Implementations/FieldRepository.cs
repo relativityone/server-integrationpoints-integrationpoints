@@ -109,5 +109,34 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return newFields;
 			}
 		}
+
+		public int CreateObjectTypeField(Field field)
+		{
+			using (var proxy = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				proxy.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				var createResult = proxy.Repositories.Field.Create(field);
+
+				if (!createResult.Success)
+				{
+					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
+					throw new Exception($"Failed to create fields: {createResult.Message}.");
+				}
+
+				int newFieldId = createResult.Results.First().Artifact.ArtifactID;
+
+				var readResult = proxy.Repositories.Field.Read(newFieldId);
+
+				if (!readResult.Success)
+				{
+					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
+					proxy.Repositories.Field.Delete(newFieldId);
+					throw new Exception($"Failed to create fields: {readResult.Message}.");
+				}
+
+				return newFieldId;
+			}
+		}
 	}
 }

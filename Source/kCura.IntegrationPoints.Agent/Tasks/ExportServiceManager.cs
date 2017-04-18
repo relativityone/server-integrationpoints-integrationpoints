@@ -264,12 +264,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, settings.FederatedInstanceArtifactId, IntegrationPointDto.SecuredConfiguration);
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper,
 				targetHelper.GetServicesManager());
-			ISourceWorkspaceManager sourceWorkspaceManager = ManagerFactory.CreateSourceWorkspaceManager(contextContainer);
-			ISourceJobManager sourceJobManager = ManagerFactory.CreateSourceJobManager(contextContainer);
+			ITagsCreator tagsCreator = ManagerFactory.CreateTagsCreator(contextContainer);
 			ITagSavedSearchManager tagSavedSearchManager = ManagerFactory.CreateTaggingSavedSearchManager(contextContainer);
 
-			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, sourceWorkspaceManager,
-				sourceJobManager, tagSavedSearchManager, SynchronizerFactory,
+			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, tagsCreator, tagSavedSearchManager, SynchronizerFactory,
 				Serializer, _jobHistoryErrorManager, JobStopManager,
 				MappedFields.ToArray(), SourceConfiguration,
 				_updateStatusType, IntegrationPointDto, JobHistoryDto,

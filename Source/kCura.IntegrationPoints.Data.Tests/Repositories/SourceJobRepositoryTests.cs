@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
@@ -79,30 +76,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 			_fieldRepository.Received(1).CreateMultiObjectFieldOnDocument(Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, sourceJobArtifactTypeId);
-		}
-
-		[Test]
-		public void ItShouldCreateObjectTypeFields()
-		{
-			IDictionary<Guid, int> expectedResult = new Dictionary<Guid, int>
-			{
-				{SourceJobDTO.Fields.JobHistoryIdFieldGuid, 545306},
-				{SourceJobDTO.Fields.JobHistoryNameFieldGuid, 264144}
-			};
-
-			int sourceJobArtifactTypeId = 392929;
-			IEnumerable<Guid> fieldGuids = new[] { SourceJobDTO.Fields.JobHistoryIdFieldGuid, SourceJobDTO.Fields.JobHistoryNameFieldGuid };
-
-			_fieldRepository.CreateObjectTypeFields(Arg.Any<List<Field>>()).Returns(expectedResult.Select(x => new Field(x.Value) {Guids = new List<Guid> {x.Key}}).ToList());
-
-			// ACT
-			var actualResult = _instance.CreateObjectTypeFields(sourceJobArtifactTypeId, fieldGuids);
-
-			// ASSERT
-			Assert.That(actualResult.All(x => expectedResult.Keys.Contains(x.Key) && expectedResult[x.Key] == x.Value));
-
-			_fieldRepository.Received(1)
-				.CreateObjectTypeFields(Arg.Is<List<Field>>(x => x.All(y => y.ObjectType.DescriptorArtifactTypeID == sourceJobArtifactTypeId) && x.Count == fieldGuids.Count()));
 		}
 	}
 }

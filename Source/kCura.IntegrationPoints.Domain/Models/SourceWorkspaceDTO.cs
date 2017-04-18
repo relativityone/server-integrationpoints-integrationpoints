@@ -73,77 +73,77 @@ namespace kCura.IntegrationPoints.Domain.Models
 			public static readonly Guid InstanceNameFieldGuid = new Guid("C5212F20-BEC4-426C-AD5C-8EBE2697CB19");
 			public static readonly Guid SourceWorkspaceFieldOnDocumentGuid = new Guid("2fa844e3-44f0-47f9-abb7-d6d8be0c9b8f");
 
-			public static IDictionary<Guid, Field> GetFieldsDefinition(ObjectType objectType)
+			public static IDictionary<Guid, Field> GetFieldsDefinition(int objectTypeDescriptorArtifactTypeId)
 			{
-				var fieldsDefinition = FieldsDefinition;
-				foreach (var keyValuePair in fieldsDefinition)
+				var objectType = new ObjectType
 				{
-					keyValuePair.Value.ObjectType = objectType;
-				}
-				return fieldsDefinition;
+					DescriptorArtifactTypeID = objectTypeDescriptorArtifactTypeId
+				};
+				return new Dictionary<Guid, Field>
+				{
+					{
+						CaseIdFieldNameGuid, new Field
+						{
+							Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+							Guids = new List<Guid> {CaseIdFieldNameGuid},
+							FieldTypeID = FieldType.WholeNumber,
+							ObjectType = objectType,
+							IsRequired = true,
+							Linked = false,
+							OpenToAssociations = false,
+							AllowSortTally = false,
+							AllowGroupBy = false,
+							AllowPivot = false,
+							Width = "100",
+							Wrapping = false
+						}
+					},
+					{
+						CaseNameFieldNameGuid,
+						new Field
+						{
+							Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+							Guids = new List<Guid> {CaseNameFieldNameGuid},
+							FieldTypeID = FieldType.FixedLengthText,
+							ObjectType = objectType,
+							IsRequired = true,
+							IncludeInTextIndex = false,
+							Linked = false,
+							AllowHTML = false,
+							AllowSortTally = false,
+							AllowGroupBy = false,
+							AllowPivot = false,
+							OpenToAssociations = false,
+							Width = "100",
+							Wrapping = false,
+							Unicode = false,
+							Length = 255
+						}
+					},
+					{
+						InstanceNameFieldGuid,
+						new Field
+						{
+							Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
+							Guids = new List<Guid> {InstanceNameFieldGuid},
+							FieldTypeID = FieldType.FixedLengthText,
+							ObjectType = objectType,
+							IsRequired = true,
+							IncludeInTextIndex = false,
+							Linked = false,
+							AllowHTML = false,
+							AllowSortTally = false,
+							AllowGroupBy = false,
+							AllowPivot = false,
+							OpenToAssociations = false,
+							Width = "100",
+							Wrapping = false,
+							Unicode = false,
+							Length = 255
+						}
+					}
+				};
 			}
-
-			private static IDictionary<Guid, Field> FieldsDefinition => new Dictionary<Guid, Field>
-			{
-				{
-					CaseIdFieldNameGuid, new Field
-					{
-						Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
-						Guids = new List<Guid> {CaseIdFieldNameGuid},
-						FieldTypeID = FieldType.WholeNumber,
-						IsRequired = true,
-						Linked = false,
-						OpenToAssociations = false,
-						AllowSortTally = false,
-						AllowGroupBy = false,
-						AllowPivot = false,
-						Width = "100",
-						Wrapping = false
-					}
-				},
-				{
-					CaseNameFieldNameGuid,
-					new Field
-					{
-						Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
-						Guids = new List<Guid> {CaseNameFieldNameGuid},
-						FieldTypeID = FieldType.FixedLengthText,
-						IsRequired = true,
-						IncludeInTextIndex = false,
-						Linked = false,
-						AllowHTML = false,
-						AllowSortTally = false,
-						AllowGroupBy = false,
-						AllowPivot = false,
-						OpenToAssociations = false,
-						Width = "100",
-						Wrapping = false,
-						Unicode = false,
-						Length = 255
-					}
-				},
-				{
-					InstanceNameFieldGuid,
-					new Field
-					{
-						Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
-						Guids = new List<Guid> {InstanceNameFieldGuid},
-						FieldTypeID = FieldType.FixedLengthText,
-						IsRequired = true,
-						IncludeInTextIndex = false,
-						Linked = false,
-						AllowHTML = false,
-						AllowSortTally = false,
-						AllowGroupBy = false,
-						AllowPivot = false,
-						OpenToAssociations = false,
-						Width = "100",
-						Wrapping = false,
-						Unicode = false,
-						Length = 255
-					}
-				}
-			};
 		}
 	}
 }

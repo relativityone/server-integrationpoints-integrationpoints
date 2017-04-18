@@ -24,6 +24,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 		int CreateMultiObjectFieldOnDocument(string name, int associatedObjectTypeDescriptorId);
 
-		List<Field> CreateObjectTypeFields(List<Field> fields); 
+		int CreateObjectTypeField(Field field);
 	}
 }

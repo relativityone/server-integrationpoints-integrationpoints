@@ -40,55 +40,54 @@ namespace kCura.IntegrationPoints.Domain.Models
 			public static readonly Guid JobHistoryNameFieldGuid = new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169");
 			public static readonly Guid JobHistoryFieldOnDocumentGuid = new Guid("7cc3faaf-cbb8-4315-a79f-3aa882f1997f");
 
-			public static IDictionary<Guid, Field> GetFieldsDefinition(ObjectType objectType)
+			public static IDictionary<Guid, Field> GetFieldsDefinition(int objectTypeDescriptorArtifactId)
 			{
-				var fieldsDefinition = FieldsDefinition;
-				foreach (var keyValuePair in fieldsDefinition)
+				var objectType = new ObjectType
 				{
-					keyValuePair.Value.ObjectType = objectType;
-				}
-				return fieldsDefinition;
+					DescriptorArtifactTypeID = objectTypeDescriptorArtifactId
+				};
+				return new Dictionary<Guid, Field>
+				{
+					{
+						JobHistoryIdFieldGuid, new Field
+						{
+							Name = Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
+							Guids = new List<Guid> {JobHistoryIdFieldGuid},
+							FieldTypeID = FieldType.WholeNumber,
+							ObjectType = objectType,
+							IsRequired = true,
+							Linked = false,
+							OpenToAssociations = false,
+							AllowSortTally = false,
+							AllowGroupBy = false,
+							AllowPivot = false,
+							Width = "100",
+							Wrapping = false
+						}
+					},
+					{
+						JobHistoryNameFieldGuid, new Field
+						{
+							Name = Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
+							Guids = new List<Guid> {JobHistoryNameFieldGuid},
+							FieldTypeID = FieldType.FixedLengthText,
+							ObjectType = objectType,
+							IsRequired = true,
+							IncludeInTextIndex = false,
+							Linked = false,
+							AllowHTML = false,
+							AllowSortTally = false,
+							AllowGroupBy = false,
+							AllowPivot = false,
+							OpenToAssociations = false,
+							Width = "100",
+							Wrapping = false,
+							Unicode = false,
+							Length = 255
+						}
+					}
+				};
 			}
-
-			private static IDictionary<Guid, Field> FieldsDefinition => new Dictionary<Guid, Field>
-			{
-				{
-					JobHistoryIdFieldGuid, new Field
-					{
-						Name = Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
-						Guids = new List<Guid> {JobHistoryIdFieldGuid},
-						FieldTypeID = FieldType.WholeNumber,
-						IsRequired = true,
-						Linked = false,
-						OpenToAssociations = false,
-						AllowSortTally = false,
-						AllowGroupBy = false,
-						AllowPivot = false,
-						Width = "100",
-						Wrapping = false
-					}
-				},
-				{
-					JobHistoryNameFieldGuid, new Field
-					{
-						Name = Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
-						Guids = new List<Guid> {JobHistoryNameFieldGuid},
-						FieldTypeID = FieldType.FixedLengthText,
-						IsRequired = true,
-						IncludeInTextIndex = false,
-						Linked = false,
-						AllowHTML = false,
-						AllowSortTally = false,
-						AllowGroupBy = false,
-						AllowPivot = false,
-						OpenToAssociations = false,
-						Width = "100",
-						Wrapping = false,
-						Unicode = false,
-						Length = 255
-					}
-				}
-			};
 		}
 	}
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -95,30 +93,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 			_fieldRepository.Received(1).CreateMultiObjectFieldOnDocument(Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, sourceWorkspaceObjectTypeId);
-		}
-
-		[Test]
-		public void ItShouldCreateObjectTypeFields()
-		{
-			IDictionary<Guid, int> expectedResult = new Dictionary<Guid, int>
-			{
-				{SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, 186267},
-				{SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid, 694575}
-			};
-
-			int sourceWorkspaceObjectTypeId = 213495;
-			IEnumerable<Guid> fieldGuids = new[] {SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid};
-
-			_fieldRepository.CreateObjectTypeFields(Arg.Any<List<Field>>()).Returns(expectedResult.Select(x => new Field(x.Value) {Guids = new List<Guid> {x.Key}}).ToList());
-
-			// ACT
-			var actualResult = _instance.CreateObjectTypeFields(sourceWorkspaceObjectTypeId, fieldGuids);
-
-			// ASSERT
-			Assert.That(actualResult.All(x => expectedResult.Keys.Contains(x.Key) && expectedResult[x.Key] == x.Value));
-
-			_fieldRepository.Received(1)
-				.CreateObjectTypeFields(Arg.Is<List<Field>>(x => x.All(y => y.ObjectType.DescriptorArtifactTypeID == sourceWorkspaceObjectTypeId) && x.Count == fieldGuids.Count()));
 		}
 
 		[Test]
