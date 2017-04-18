@@ -72,11 +72,6 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="Source\kCura.IntegrationPoints.Dependencies\kCura.IntegrationPoints.Dependencies.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
         <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -483,8 +478,6 @@
           <Assembly>lib\kCura.DocumentTransferProvider.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Services.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-          <Assembly>lib\kCura.Image.Viewer.dll</Assembly>
-          <Assembly>lib\kCura.Print.dll</Assembly>
           <Assembly>lib\Castle.Windsor.dll</Assembly>
           <Assembly>lib\Newtonsoft.Json.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Security.dll</Assembly>

@@ -3,6 +3,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 		List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
+			ITagSavedSearchManager tagSavedSearchManager,
 			ISynchronizerFactory synchronizerFactory,
 			ISerializer serializer,
 			IJobHistoryErrorManager jobHistoryErrorManager,

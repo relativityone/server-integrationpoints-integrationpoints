@@ -13,6 +13,8 @@ properties {
     $buildlogs_directory = [System.IO.Path]::Combine($root, 'BuildLogs')
     $pdb_directory = [System.IO.Path]::Combine($root, 'PDBs')
     $doc_directory = [System.IO.Path]::Combine($root, 'Documentation')
+    $nuget_packages_directory = [System.IO.Path]::Combine($source_directory, 'packages')
+    $lib_directory = [System.IO.Path]::Combine($root, 'lib')
 
     #build variables
     $version = '1.0.0.0'

@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			{
 				new Field(1, "Name", "Name", 1, 1, 1, false, false, new FieldValue(_ARTIFACT_NAME), null)
 			});
-			var application = new Application(_APPLICATION_ID, "", "");
+			var application = new EventHandler.Application(_APPLICATION_ID, "", "");
 
 			_instance =
 				new EventHandlers.IntegrationPoints.ConsoleEventHandler(

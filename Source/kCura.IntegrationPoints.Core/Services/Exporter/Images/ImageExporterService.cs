@@ -22,7 +22,6 @@ using Relativity.Core;
 using Relativity.Core.Service;
 using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Data;
-using Relativity.Toggles;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 using FileQuery = Relativity.Core.Service.FileQuery;

@@ -1,19 +1,13 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
-using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.ScheduleQueue.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -21,164 +15,147 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 	public class TargetDocumentsTaggingManagerTests : TestBase
 	{
 		private IRepositoryFactory _repositoryFactory;
+		private ITagsCreator _tagsCreator;
+		private ITagger _tagger;
+		private ITagSavedSearchManager _tagSavedSearchManager;
+		private IAPILog _logger;
 		private IScratchTableRepository _scratchTableRepository;
-		private IDataSynchronizer _synchronizer;
-		private ISourceWorkspaceManager _sourceWorkspaceManager;
-		private ISourceJobManager _sourceJobManager;
-		private IDocumentRepository _documentRepo;
-		private IHelper _helper;
-		private string _importConfig;
 		private int _sourceWorkspaceArtifactId;
 		private int _destinationWorkspaceArtifactId;
 		private int _jobHistoryArtifactId;
 		private int? _federatedInstanceArtifactId;
-
-		private FieldMap[] _fieldMaps;
-		private TargetDocumentsTaggingManager _instance;
-		private Job _job = null;
-
-		private const string _scratchTableName = "IntegrationPoint_Relativity_SourceWorkspace";
-
+		private ImportSettings _importSettings;
 		private readonly string _uniqueJobId = "1_JobIdGuid";
 
-		readonly SourceWorkspaceDTO _sourceWorkspaceDto = new SourceWorkspaceDTO()
-		{
-			Name = "source workspace",
-			ArtifactTypeId = 410,
-			ArtifactId = 987
-		};
-
-		[OneTimeSetUp]
-		public override void FixtureSetUp()
-		{
-			base.FixtureSetUp();
-
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_scratchTableRepository = Substitute.For<IScratchTableRepository>();
-			_synchronizer = Substitute.For<IDataSynchronizer>();
-			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
-			_sourceJobManager = Substitute.For<ISourceJobManager>();
-			_documentRepo = Substitute.For<IDocumentRepository>();
-			_helper = Substitute.For<IHelper>();
-
-			_importConfig = String.Empty;
-			_sourceWorkspaceArtifactId = 100;
-			_destinationWorkspaceArtifactId = 200;
-			_federatedInstanceArtifactId = null;
-			_jobHistoryArtifactId = 300;
-			_fieldMaps = new FieldMap[]
-			{
-				new FieldMap()
-				{
-					DestinationField = new FieldEntry(),
-					SourceField = new FieldEntry()
-				},
-				new FieldMap()
-				{
-					DestinationField = new FieldEntry()
-					{
-						DisplayName = "destination id",
-						FieldIdentifier = "123456"
-					},
-					FieldMapType = FieldMapTypeEnum.Identifier,
-					SourceField = new FieldEntry()
-					{
-						DisplayName = "source id",
-						FieldIdentifier = "789456"
-					}
-					
-				}
-			};
-
-			_repositoryFactory.GetScratchTableRepository(_sourceWorkspaceArtifactId, _scratchTableName, Arg.Any<string>()).ReturnsForAnyArgs(_scratchTableRepository);
-
-			_instance = new TargetDocumentsTaggingManager(_repositoryFactory, _synchronizer, _sourceWorkspaceManager, _sourceJobManager, 
-				_documentRepo, _helper, _fieldMaps, _importConfig, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
-				_federatedInstanceArtifactId, _jobHistoryArtifactId, _uniqueJobId);
-		}
+		private TargetDocumentsTaggingManager _instance;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_tagsCreator = Substitute.For<ITagsCreator>();
+			_tagger = Substitute.For<ITagger>();
+			_tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
+			_logger = Substitute.For<IAPILog>();
+			_scratchTableRepository = Substitute.For<IScratchTableRepository>();
+
+			_importSettings = new ImportSettings();
+			_sourceWorkspaceArtifactId = 320187;
+			_destinationWorkspaceArtifactId = 648827;
+			_federatedInstanceArtifactId = null;
+			_jobHistoryArtifactId = 151262;
+
+			_repositoryFactory.GetScratchTableRepository(_sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCEWORKSPACE, _uniqueJobId)
+				.ReturnsForAnyArgs(_scratchTableRepository);
+
+			var helper = Substitute.For<IHelper>();
+			helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>().Returns(_logger);
+
+			_instance = new TargetDocumentsTaggingManager(_repositoryFactory, _tagsCreator,
+				_tagger, _tagSavedSearchManager, helper, _importSettings, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
+				_federatedInstanceArtifactId, _jobHistoryArtifactId, _uniqueJobId);
 		}
 
 		[Test]
-		public void OnJobStart_CreateSourceWorkspaceAndJobHistory()
+		public void ItShouldCreateTagsOnJobStart()
 		{
-			// arrange
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Returns(_sourceWorkspaceDto);
+			// ACT
+			_instance.OnJobStart(null);
 
-			//act
-			_instance.OnJobStart(_job);
-
-			//assert
-			_sourceWorkspaceManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId);
-			_sourceJobManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
-				_sourceWorkspaceDto.ArtifactTypeId,
-				_sourceWorkspaceDto.ArtifactId,
-				_jobHistoryArtifactId);
+			// ASSERT
+			_tagsCreator.Received(1).CreateTags(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _jobHistoryArtifactId, _federatedInstanceArtifactId);
 		}
 
 		[Test]
-		public void OnJobStart_SourceWorkspaceManagerFails()
+		public void ItShouldLogErrorOnJobStart()
 		{
-			// arrange
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Throws(new Exception());
+			_tagsCreator.When(x => x.CreateTags(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _jobHistoryArtifactId, _federatedInstanceArtifactId))
+				.Do(x => { throw new Exception(); });
 
-			//act
-			Assert.Throws<Exception>(() => _instance.OnJobStart(_job));
+			// ACT
+			Assert.That(() => _instance.OnJobStart(null), Throws.Exception);
 
-			//assert
-			Assert.DoesNotThrow(() => _instance.OnJobComplete(_job));
+			// ASSERT
+			_logger.Received(1).LogError(Arg.Any<Exception>(), Arg.Any<string>());
 		}
 
 		[Test]
-		public void OnJobComplete_ImportTaggingFieldsWhenThereAreDocumentsToTag()
+		public void ItShouldLogErrorOnJobComplete()
 		{
-			//arrange
-			SourceJobDTO job = new SourceJobDTO()
+			_tagger.When(x => x.TagDocuments(Arg.Any<TagsContainer>(), _scratchTableRepository))
+				.Do(x => { throw new Exception(); });
+
+			// ACT
+			Assert.That(() => _instance.OnJobComplete(null), Throws.Exception);
+
+			// ASSERT
+			_logger.Received(1).LogError(Arg.Any<Exception>(), Arg.Any<string>());
+		}
+
+		[Test]
+		public void ItShouldDisposeScratchTableOnJobComplete()
+		{
+			_tagger.When(x => x.TagDocuments(Arg.Any<TagsContainer>(), _scratchTableRepository))
+				.Do(x => { throw new Exception(); });
+
+			// ACT
+			Assert.That(() => _instance.OnJobComplete(null), Throws.Exception);
+
+			// ASSERT
+			_scratchTableRepository.Received(1).Dispose();
+		}
+
+		[Test]
+		public void ItShouldTagDocumentsOnJobComplete()
+		{
+			var tagsContainer = new TagsContainer(null, null);
+			_tagsCreator.CreateTags(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _jobHistoryArtifactId, _federatedInstanceArtifactId).Returns(tagsContainer);
+
+			_instance.OnJobStart(null);
+
+			// ACT
+			_instance.OnJobComplete(null);
+
+			// ASSERT
+			_tagger.Received(1).TagDocuments(tagsContainer, _scratchTableRepository);
+		}
+
+		[Test]
+		public void ItShouldCreateSavedSearchForTaggingOnJobComplete()
+		{
+			var tagsContainer = new TagsContainer(null, null);
+			_tagsCreator.CreateTags(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _jobHistoryArtifactId, _federatedInstanceArtifactId).Returns(tagsContainer);
+
+			_instance.OnJobStart(null);
+
+			// ACT
+			_instance.OnJobComplete(null);
+
+			// ASSERT
+			_tagSavedSearchManager.Received(1).CreateSavedSearchForTagging(_destinationWorkspaceArtifactId, _importSettings, tagsContainer);
+		}
+
+		[Test]
+		public void ItShouldSkipTaggingOnJobCompleteWhenErrorOccuredDuringJobStart()
+		{
+			_tagsCreator.When(x => x.CreateTags(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _jobHistoryArtifactId, _federatedInstanceArtifactId))
+				.Do(x => { throw new Exception(); });
+
+			try
 			{
-				Name = "whatever"
-			};
-
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Returns(_sourceWorkspaceDto);
-			_sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
-				_sourceWorkspaceDto.ArtifactTypeId,
-				_sourceWorkspaceDto.ArtifactId,
-				_jobHistoryArtifactId).Returns(job);
-
-			_scratchTableRepository.Count.Returns(1);
-
-			//act
-			_instance.OnJobStart(_job);
-			_instance.OnJobComplete(_job);
-
-			//assert
-			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig);
-		}
-
-		[Test]
-		public void OnJobComplete_DoesNotImportTaggingFieldsWhenThereIsNoDocumentToTag()
-		{
-			//arrange
-			SourceJobDTO job = new SourceJobDTO()
+				_instance.OnJobStart(null);
+			}
+			catch
 			{
-				Name = "whatever"
-			};
+				//ignore
+			}
 
-			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId).Returns(_sourceWorkspaceDto);
-			_sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
-				_sourceWorkspaceDto.ArtifactTypeId,
-				_sourceWorkspaceDto.ArtifactId,
-				_jobHistoryArtifactId).Returns(job);
+			// ACT
+			_instance.OnJobComplete(null);
 
-			//act
-			_instance.OnJobStart(_job);
-			_instance.OnJobComplete(_job);
-
-			//assert
-			_synchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig);
+			// ASSERT
+			_tagger.DidNotReceiveWithAnyArgs().TagDocuments(Arg.Any<TagsContainer>(), Arg.Any<IScratchTableRepository>());
+			_tagSavedSearchManager.DidNotReceiveWithAnyArgs().CreateSavedSearchForTagging(Arg.Any<int>(), Arg.Any<ImportSettings>(), Arg.Any<TagsContainer>());
 		}
 	}
 }

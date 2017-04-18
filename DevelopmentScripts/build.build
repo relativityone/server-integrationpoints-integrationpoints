@@ -10,7 +10,6 @@
 	<property name="sdk.directory" value="${root}\documentation\sdk" />
 	<property name="examples.directory" value="${root}\documentation\examples" />
 	<property name="source.dependency.MVCContrib.directory" value="${source.dependency.directory}\MVCContrib" />
-	<property name="source.dependency.Injection.directory" value="${source.dependency.directory}\Injection"/>
 	<property name="source.dependency.CastleCore.directory" value="${source.packages.directory}\Castle.Core.3.3.0\lib\net45" />
 	<property name="source.dependency.CastleWindsor.directory" value="${source.packages.directory}\Castle.Windsor.3.3.0\lib\net45" />
 	<property name="source.dependency.NewtonsoftJson.directory" value="${source.packages.directory}\Newtonsoft.Json.6.0.8\lib\net45" />
@@ -43,10 +42,7 @@
 			<!-- kCura Dependencies -->
 			<arg line='/lib:"${source.packages.directory}\kCura.Agent.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\kCura.HTMLSanitizer.0.0.21.7\lib"' />
-			<arg line='/lib:"${source.packages.directory}\Nito.AsyncEx.3.0.1\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\AutoMapper.4.2.1\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Remotion.Linq.2.0.2\lib\net45"' />
-			<arg line='/lib:"${source.packages.directory}\Dynamitey.1.0.2.0\lib\portable-win+net45+sl40+wp80"' />
 			<arg line='/lib:"${source.packages.directory}\kCura.Data.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\kCura.Config.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\kCura.Data.RowDataGateway.${relativityDependencyVersion}\lib\net45"' />
@@ -109,8 +105,7 @@
 			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
-			<arg line='"${lib.directory}\kCura.IntegrationPoints.Injection.dll"' />			
-			
+			<arg line='"${lib.directory}\kCura.IntegrationPoints.Injection.dll"' />						
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Config.dll"' />
 			<arg line='"${lib.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
@@ -202,7 +197,6 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.dependency.NewtonsoftJson.directory}"' />
-			<arg line='/lib:"${source.dependency.Injection.directory}"' />
 			<arg line='"${source.dependency.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.dependency.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />

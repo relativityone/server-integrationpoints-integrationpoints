@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 
@@ -123,5 +124,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Instance of Instance Settings Manager</returns>
 		IInstanceSettingsManager CreateInstanceSettingsManager(IContextContainer contextContainer);
+
+		ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer);
 	}
 }

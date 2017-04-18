@@ -170,6 +170,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public int ProductionArtifactId { get; set; }
 
+		public bool CreateSavedSearchForTagging { get; set; }
+
 		#endregion "Public Properties"
 
 		#region "Internal Properties"

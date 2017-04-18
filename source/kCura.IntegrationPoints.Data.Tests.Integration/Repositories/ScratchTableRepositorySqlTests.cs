@@ -5,8 +5,6 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Data.Toggles;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {

@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			IntegrationPoint.PreMassDeleteEventHandler preMassDeleteEventHandler = new IntegrationPoint.PreMassDeleteEventHandler
 			{
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId),
-				Application = new Application(SourceWorkspaceArtifactId, null, null)
+				Application = new EventHandler.Application(SourceWorkspaceArtifactId, null, null)
 			};
 
 			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			IntegrationPoint.PreMassDeleteEventHandler preMassDeleteEventHandler = new IntegrationPoint.PreMassDeleteEventHandler
 			{
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId),
-				Application = new Application(SourceWorkspaceArtifactId, null, null)
+				Application = new EventHandler.Application(SourceWorkspaceArtifactId, null, null)
 			};
 
 			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(_integrationModel);
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
 				TempTableNameWithParentArtifactsToDelete = _scratchTableRepository.GetTempTableName(),
-				Application =  new Application(SourceWorkspaceArtifactId, null, null),
+				Application =  new EventHandler.Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId)
 			};
 
@@ -199,7 +199,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
 				TempTableNameWithParentArtifactsToDelete = _scratchTableRepository.GetTempTableName(),
-				Application = new Application(SourceWorkspaceArtifactId, null, null),
+				Application = new EventHandler.Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId)
 			};
 
@@ -248,7 +248,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
 				TempTableNameWithParentArtifactsToDelete = _scratchTableRepository.GetTempTableName(),
-				Application = new Application(SourceWorkspaceArtifactId, null, null),
+				Application = new EventHandler.Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId)
 			};
 			
@@ -292,7 +292,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			//Arrange
 			EventHandlers.IntegrationPoints.DeleteEventHandler deleteEventHandler = new EventHandlers.IntegrationPoints.DeleteEventHandler
 			{
-				Application = new Application(SourceWorkspaceArtifactId, null, null),
+				Application = new EventHandler.Application(SourceWorkspaceArtifactId, null, null),
 				Helper = new EHHelper(Helper, SourceWorkspaceArtifactId),
 			};
 
@@ -338,7 +338,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			//Arrange
 			EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler preCascadeDeleteEventHandler = new EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler(_repositoryFactory)
 			{
-				Application = new Application(-1, null, null),
+				Application = new EventHandler.Application(-1, null, null),
 				Helper = new EHHelper(Helper, -1),
 			};
 
@@ -357,7 +357,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			//Arrange
 			EventHandlers.IntegrationPoints.DeleteEventHandler deleteEventHandler = new EventHandlers.IntegrationPoints.DeleteEventHandler()
 			{
-				Application = new Application(-1, null, null),
+				Application = new EventHandler.Application(-1, null, null),
 				Helper = new EHHelper(Helper, -1),
 			};
 

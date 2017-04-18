@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -59,6 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IOnBehalfOfUserClaimsPrincipalFactory _claimPrincipleFactory;
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
 		private ISourceJobManager _sourceJobManager;
+		private ITagSavedSearchManager _tagSavedSearchManager;
 		private IRepositoryFactory _repositoryFactory;
 		private IManagerFactory _managerFactory;
 		private IEnumerable<IBatchStatus> _batchStatuses;
@@ -113,6 +115,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_claimPrincipleFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
+			_tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 
@@ -141,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_synchornizer = Substitute.For<IDataSynchronizer>();
 			_historyManager = Substitute.For<IJobHistoryManager>();
 
-			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _sourceWorkspaceManager, _sourceJobManager,
+			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _sourceWorkspaceManager, _sourceJobManager, _tagSavedSearchManager,
 				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager,
 				Arg.Any<FieldMap[]>(), Arg.Any<SourceConfiguration>(), Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
 				Arg.Any<Data.IntegrationPoint>(), Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
@@ -200,6 +203,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_managerFactory.CreateSourceWorkspaceManager(Arg.Any<IContextContainer>()).Returns(_sourceWorkspaceManager);
 			_managerFactory.CreateSourceJobManager(Arg.Any<IContextContainer>()).Returns(_sourceJobManager);
+			_managerFactory.CreateTaggingSavedSearchManager(Arg.Any<IContextContainer>()).Returns(_tagSavedSearchManager);
 
 			_instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,

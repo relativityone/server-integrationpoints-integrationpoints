@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -297,6 +296,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IDocumentTotalStatistics GetDocumentTotalStatistics()
 		{
 			return new DocumentTotalStatistics(_helper, this);
+		}
+
+		public IKeywordSearchRepository GetKeywordSearchRepository()
+		{
+			return new KeplerKeywordSearchRepository(_servicesMgr);
 		}
 
 		#endregion Helper Methods

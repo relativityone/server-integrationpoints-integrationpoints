@@ -17,8 +17,8 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstrac
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
-using kCura.Vendor.Castle.Core.Internal;
-using kCura.Vendor.Castle.Windsor;
+using Castle.Core.Internal;
+using Castle.Windsor;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;

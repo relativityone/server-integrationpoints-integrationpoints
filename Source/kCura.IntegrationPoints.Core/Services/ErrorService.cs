@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Core.Services
@@ -15,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public virtual void Log(ErrorModel error)
 		{
-			var appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			var appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			var message = $"(Integration Points v({appVersion}) {error.Message}";
 			_createErrorRdo.Execute(error.WorkspaceID, message, error.Exception);
 		}

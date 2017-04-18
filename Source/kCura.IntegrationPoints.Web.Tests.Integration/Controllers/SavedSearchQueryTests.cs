@@ -10,15 +10,9 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Core.Service;
-using Relativity.Services.Field;
-using Relativity.Services.Group;
-using Relativity.Services.Permission;
-using Relativity.Services.Search;
-using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 {

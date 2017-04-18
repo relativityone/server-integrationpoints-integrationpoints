@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
-using Relativity.Toggles;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
