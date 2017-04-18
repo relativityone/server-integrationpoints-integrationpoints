@@ -6,15 +6,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class FieldParserFactory : IFieldParserFactory
 	{
-		IWinEddsLoadFileFactory _winEddsLoadFileFactory;
-		public FieldParserFactory(IWinEddsLoadFileFactory winEddsLoadFileFactory)
+		private IWinEddsLoadFileFactory _winEddsLoadFileFactory;
+		private IWinEddsFileReaderFactory _winEddsFileReaderFactory;
+
+		public FieldParserFactory(IWinEddsLoadFileFactory winEddsLoadFileFactory, IWinEddsFileReaderFactory winEddsFileReaderFactory)
 		{
 			_winEddsLoadFileFactory = winEddsLoadFileFactory;
+			_winEddsFileReaderFactory = winEddsFileReaderFactory;
 		}
 
 		public IFieldParser GetFieldParser(ImportProviderSettings settings)
 		{
-			return new LoadFileFieldParser(_winEddsLoadFileFactory.GetLoadFile(settings));
+			LoadFile config = _winEddsLoadFileFactory.GetLoadFile(settings);
+			kCura.WinEDDS.Api.IArtifactReader loadFileReader = _winEddsFileReaderFactory.GetLoadFileReader(config);
+			return new LoadFileFieldParser(config, loadFileReader);
 		}
 	}
 }

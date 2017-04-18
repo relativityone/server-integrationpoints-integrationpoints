@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -13,12 +14,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	public class DataReaderFactory : IDataReaderFactory
 	{
 		private IWinEddsLoadFileFactory _winEddsLoadFileFactory;
+		private IWinEddsFileReaderFactory _winEddsFileReaderFactory;
 		private IFieldParserFactory _fieldParserFactory;
 
-		public DataReaderFactory(IFieldParserFactory fieldParserFactory, IWinEddsLoadFileFactory winEddsLoadFileFactory)
+		public DataReaderFactory(IFieldParserFactory fieldParserFactory,
+			IWinEddsLoadFileFactory winEddsLoadFileFactory,
+			IWinEddsFileReaderFactory winEddsFileReaderFactory)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_winEddsLoadFileFactory = winEddsLoadFileFactory;
+			_winEddsFileReaderFactory = winEddsFileReaderFactory;
 		}
 
 		public IDataReader GetDataReader(FieldMap[] fieldMaps, string options)
@@ -41,7 +46,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private OpticonDataReader GetOpticonDataReader(ImportProviderSettings settings)
 		{
 			ImageLoadFile config = _winEddsLoadFileFactory.GetImageLoadFile(settings);
-			OpticonFileReader reader = new OpticonFileReader(0, config, null, Guid.Empty, false);
+			IImageReader reader = _winEddsFileReaderFactory.GetOpticonFileReader(config);
 			OpticonDataReader rv = new OpticonDataReader(settings, config, reader);
 			rv.Init();
 			return rv;
@@ -69,7 +74,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 				loadFile.FieldMap.Add(mapItem);
 			}
 
-			LoadFileReader reader = new LoadFileReader(loadFile, false);
+			IArtifactReader reader = _winEddsFileReaderFactory.GetLoadFileReader(loadFile);
 
 			LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader);
 			rv.Init();

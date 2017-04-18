@@ -192,6 +192,7 @@
     </Compile>
     <Compile Include="DataReaderFactory.cs" />
     <Compile Include="Interfaces\IOpticonDataReader.cs" />
+    <Compile Include="Interfaces\IWinEddsFileReaderFactory.cs" />
     <Compile Include="Services\ImportFileLocationService.cs" />
     <Compile Include="FieldParserFactory.cs" />
     <Compile Include="Helpers\PreviewType.cs" />
@@ -209,13 +210,13 @@
     <Compile Include="Interfaces\IFieldParserFactory.cs" />
     <Compile Include="Interfaces\IPreviewJob.cs" />
     <Compile Include="Interfaces\IWinEddsLoadFileFactory.cs" />
-    <Compile Include="LoadFileBase.cs" />
     <Compile Include="LoadFileDataReader.cs" />
     <Compile Include="LoadFileFieldParser.cs" />
     <Compile Include="ImportDataReader.cs" />
     <Compile Include="Services\ImportPreviewService.cs" />
     <Compile Include="Services\Interfaces\IImportFileLocationService.cs" />
     <Compile Include="Services\Interfaces\IImportPreviewService.cs" />
+    <Compile Include="WinEddsFileReaderFactory.cs" />
     <Compile Include="WinEddsLoadFileFactory.cs" />
   </ItemGroup>
   <ItemGroup>
