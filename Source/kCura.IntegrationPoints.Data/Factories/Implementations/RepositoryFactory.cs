@@ -298,6 +298,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new DocumentTotalStatistics(_helper, this);
 		}
 
+		public IKeywordSearchRepository GetKeywordSearchRepository()
+		{
+			return new KeplerKeywordSearchRepository(_servicesMgr);
+		}
+
 		#endregion Helper Methods
 
         private class ContextContainer

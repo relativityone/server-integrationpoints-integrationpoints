@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Data;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -17,28 +13,23 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 	{
 		private readonly int _destinationWorkspaceArtifactId;
 		private readonly int? _federatedInstanceArtifactId;
-		private readonly IDocumentRepository _documentRepository;
-		private readonly FieldMap[] _fields;
-		private readonly string _importConfig;
 		private readonly int _jobHistoryArtifactId;
 		private readonly IAPILog _logger;
-		private readonly ISourceJobManager _sourceJobManager;
 		private readonly int _sourceWorkspaceArtifactId;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
-		private readonly IDataSynchronizer _synchronizer;
+		private readonly ITagsCreator _tagsCreator;
+		private readonly ITagger _tagger;
+		private readonly ITagSavedSearchManager _tagSavedSearchManager;
+		private readonly ImportSettings _importSettings;
 		private bool _errorOccurDuringJobStart;
-		private SourceJobDTO _sourceJobDto;
-		private SourceWorkspaceDTO _sourceWorkspaceDto;
+		private TagsContainer _tagsContainer;
 
 		public TargetDocumentsTaggingManager(
 			IRepositoryFactory repositoryFactory,
-			IDataSynchronizer synchronizer,
-			ISourceWorkspaceManager sourceWorkspaceManager,
-			ISourceJobManager sourceJobManager,
-			IDocumentRepository documentRepository,
+			ITagsCreator tagsCreator,
+			ITagger tagger,
+			ITagSavedSearchManager tagSavedSearchManager,
 			IHelper helper,
-			FieldMap[] fields,
-			string importConfig,
+			ImportSettings importSettings,
 			int sourceWorkspaceArtifactId,
 			int destinationWorkspaceArtifactId,
 			int? federatedInstanceArtifactId,
@@ -47,19 +38,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId,
 				Data.Constants.TEMPORARY_DOC_TABLE_SOURCEWORKSPACE, uniqueJobId);
-			_synchronizer = synchronizer;
-			_sourceWorkspaceManager = sourceWorkspaceManager;
-			_sourceJobManager = sourceJobManager;
-			_documentRepository = documentRepository;
-			_documentRepository.WorkspaceArtifactId = sourceWorkspaceArtifactId;
-			_fields = fields;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>();
 
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_destinationWorkspaceArtifactId = destinationWorkspaceArtifactId;
 			_federatedInstanceArtifactId = federatedInstanceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
-			_importConfig = importConfig;
+			_tagger = tagger;
+			_tagsCreator = tagsCreator;
+			_tagSavedSearchManager = tagSavedSearchManager;
+			_importSettings = importSettings;
 		}
 
 		public IScratchTableRepository ScratchTableRepository { get; }
@@ -68,9 +56,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _federatedInstanceArtifactId);
-				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId,
-					_sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
+				_tagsContainer = _tagsCreator.CreateTags(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _jobHistoryArtifactId, _federatedInstanceArtifactId);
 			}
 			catch (Exception e)
 			{
@@ -87,25 +73,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (!_errorOccurDuringJobStart)
 				{
-					FieldMap identifier = _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
-
-					DataColumn[] columns =
-					{
-						new DataColumn(identifier.SourceField.FieldIdentifier),
-						new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
-						new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD, _sourceJobDto.Name)
-					};
-
-					int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);
-					using (TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId))
-					{
-						FieldMap[] fieldsToPush = {identifier};
-						var documentTransferContext = new DefaultTransferContext(reader);
-						if (ScratchTableRepository.Count > 0)
-						{
-							_synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig);
-						}
-					}
+					_tagger.TagDocuments(_tagsContainer, ScratchTableRepository);
+					_tagSavedSearchManager.CreateSavedSearchForTagging(_destinationWorkspaceArtifactId, _importSettings, _tagsContainer);
 				}
 			}
 			catch (Exception e)

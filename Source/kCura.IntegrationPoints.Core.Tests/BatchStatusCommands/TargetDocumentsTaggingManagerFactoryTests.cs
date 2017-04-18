@@ -3,6 +3,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private IRepositoryFactory _repositoryFactory;
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
 		private ISourceJobManager _sourceJobManager;
+		private ITagSavedSearchManager _tagSavedSearchManager;
 		private IDocumentRepository _documentRepository;
 		private ISynchronizerFactory _synchronizerFactory;
 		private IHelper _helper;
@@ -42,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
+			_tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
 			_synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			_serializer = Substitute.For<ISerializer>();
@@ -62,6 +65,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_repositoryFactory,
 				_sourceWorkspaceManager,
 				_sourceJobManager,
+				_tagSavedSearchManager,
 				_documentRepository,
 				_synchronizerFactory,
 				_helper,
@@ -100,6 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 				_repositoryFactory,
 				_sourceWorkspaceManager,
 				_sourceJobManager,
+				_tagSavedSearchManager,
 				_documentRepository,
 				_synchronizerFactory,
 				_helper,

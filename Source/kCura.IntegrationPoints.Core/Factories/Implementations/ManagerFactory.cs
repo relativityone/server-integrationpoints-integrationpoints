@@ -1,7 +1,9 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
@@ -124,6 +126,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
 			return new InstanceSettingsManager(repositoryFactory);
+		}
+
+		public ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer)
+		{
+			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
+			ITagSavedSearch tagSavedSearch = new TagSavedSearch(repositoryFactory, new MultiObjectSavedSearchCondition(), _helper);
+			ITagSavedSearchFolder tagSavedSearchFolder = new TagSavedSearchFolder(repositoryFactory, _helper);
+			return new TagSavedSearchManager(tagSavedSearch, tagSavedSearchFolder);
 		}
 
 		#region Private Helpers

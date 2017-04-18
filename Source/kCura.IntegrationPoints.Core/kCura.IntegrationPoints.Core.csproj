@@ -571,6 +571,7 @@
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IButtonStateBuilder.cs" />
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
+    <Compile Include="Helpers\IMultiObjectSavedSearchCondition.cs" />
     <Compile Include="Helpers\IRelativePathDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\ButtonStateBuilder.cs" />
     <Compile Include="Helpers\Implementations\DirectoryTreeCreator.cs" />
@@ -585,6 +586,7 @@
     <Compile Include="Helpers\ITreeByParentIdCreator.cs" />
     <Compile Include="Helpers\LongPathDirectory.cs" />
     <Compile Include="Helpers\LongPathFile.cs" />
+    <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
@@ -592,7 +594,17 @@
     <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
     <Compile Include="Managers\Implementations\InstanceSettingsManager.cs" />
+    <Compile Include="Tagging\ITagSavedSearch.cs" />
+    <Compile Include="Tagging\ITagSavedSearchFolder.cs" />
+    <Compile Include="Tagging\ITagSavedSearchManager.cs" />
+    <Compile Include="Tagging\ITagsCreator.cs" />
+    <Compile Include="Tagging\TagSavedSearch.cs" />
+    <Compile Include="Tagging\TagSavedSearchFolder.cs" />
+    <Compile Include="Tagging\TagsContainer.cs" />
+    <Compile Include="Tagging\TagSavedSearchManager.cs" />
+    <Compile Include="Tagging\ITagger.cs" />
     <Compile Include="Managers\Implementations\PermissionManager.cs" />
+    <Compile Include="Tagging\Tagger.cs" />
     <Compile Include="Managers\IPermissionManager.cs" />
     <Compile Include="OAuthHelper.cs" />
     <Compile Include="OAuthServicesManager.cs" />
@@ -671,6 +683,7 @@
     <Compile Include="Services\JobHistory\DestinationParser.cs" />
     <Compile Include="Services\JobHistory\IDestinationParser.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
+    <Compile Include="Tagging\TagsCreator.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointPermissionValidator.cs" />

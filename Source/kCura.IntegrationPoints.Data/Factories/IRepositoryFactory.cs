@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Statistics;
 using Relativity.API;
 
@@ -222,5 +223,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IRdoStatistics GetRdoStatistics();
 
 		IDocumentTotalStatistics GetDocumentTotalStatistics();
+
+		IKeywordSearchRepository GetKeywordSearchRepository();
 	}
 }

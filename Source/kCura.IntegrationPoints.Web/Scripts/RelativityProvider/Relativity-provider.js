@@ -63,6 +63,7 @@
 		var destination = JSON.parse(destinationJson);
 		destination.FederatedInstanceArtifactId = viewModel.FederatedInstanceArtifactId();
 		destination.SecuredConfiguration = viewModel.SecuredConfiguration();
+		destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
 		destination.ProductionImport = viewModel.ProductionImport();
@@ -117,9 +118,11 @@
 		self.ProductionImport = ko.observable(state.ProductionImport || false);
 		self.ProductionSets = ko.observableArray();
 		self.ProductionArtifactId = ko.observable();
-		self.ProductionArtifactId.subscribe(function(value) {
+		self.ProductionArtifactId.subscribe(function (value) {
 			self.ProductionImport(!!value);
 		});
+
+		self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
 
 		self.ShowAuthentiactionButton = ko.observable(false);
 		self.AuthenticationFailed = ko.observable(false);
@@ -185,10 +188,10 @@
 			}
 
 			IP.data.ajax({
-				type: "POST",
-				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId()),
-				data: self.SecuredConfiguration()
-			})
+					type: "POST",
+					url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId()),
+					data: self.SecuredConfiguration()
+				})
 				.then(function (result) {
 					self.TargetFolder(self.getFolderFullName(result, folderArtifactId));
 				})
@@ -288,12 +291,12 @@
 					data: {
 						sourceWorkspaceArtifactId: targetWorkspaceId
 					}
-				}).fail(function(error) {
+				}).fail(function (error) {
 					IP.message.error.raise("No production sets were returned for target workspace.");
 				});
 
 
-				IP.data.deferred().all(productionSetsPromise).then(function(result) {
+				IP.data.deferred().all(productionSetsPromise).then(function (result) {
 					self.ProductionSets(result);
 					self.ProductionArtifactId(state.ProductionArtifactId);
 				});

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
@@ -26,12 +24,14 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly ISourceJobManager _sourceJobManager;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly ISynchronizerFactory _synchronizerFactory;
+		private readonly ITagSavedSearchManager _tagSavedSearchManager;
 		private readonly string _uniqueJobId;
 
 		public TargetDocumentsTaggingManagerFactory(
 			IRepositoryFactory repositoryFactory,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
+			ITagSavedSearchManager tagSavedSearchManager,
 			IDocumentRepository documentRepository,
 			ISynchronizerFactory synchronizerFactory,
 			IHelper helper,
@@ -45,6 +45,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_repositoryFactory = repositoryFactory;
 			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_sourceJobManager = sourceJobManager;
+			_tagSavedSearchManager = tagSavedSearchManager;
 			_documentRepository = documentRepository;
 			_synchronizerFactory = synchronizerFactory;
 			_helper = helper;
@@ -70,24 +71,26 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
 		{
 			var settings = _serializer.Deserialize<SourceConfiguration>(_sourceConfig);
+			var importSettings = _serializer.Deserialize<ImportSettings>(_destinationConfig);
 			var synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
 
-			IConsumeScratchTableBatchStatus tagger = new TargetDocumentsTaggingManager(
+			var tagger = new Tagger(_documentRepository, synchronizer, _helper, _fields, _destinationConfig, settings.SourceWorkspaceArtifactId);
+			var tagsCreator = new TagsCreator(_sourceJobManager, _sourceWorkspaceManager, _helper);
+
+			IConsumeScratchTableBatchStatus taggingManager = new TargetDocumentsTaggingManager(
 				_repositoryFactory,
-				synchronizer,
-				_sourceWorkspaceManager,
-				_sourceJobManager,
-				_documentRepository,
+				tagsCreator,
+				tagger,
+				_tagSavedSearchManager,
 				_helper,
-				_fields.ToArray(),
-				_destinationConfig,
+				importSettings,
 				settings.SourceWorkspaceArtifactId,
 				settings.TargetWorkspaceArtifactId,
 				settings.FederatedInstanceArtifactId,
 				_jobHistoryArtifactId,
 				_uniqueJobId);
 
-			return tagger;
+			return taggingManager;
 		}
 	}
 }

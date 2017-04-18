@@ -178,6 +178,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
 		self.SecuredConfiguration = destinationModel.SecuredConfiguration;
+		self.CreateSavedSearchForTagging = destinationModel.CreateSavedSearchForTagging;
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			uniqueIdIsMapped: {
@@ -196,14 +197,14 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		}).extend(
-		{
-			identifierMustMappedWithAnotherIdentifier: {
-				onlyIf: function () {
-					return self.showErrors() && model.SourceProviderConfiguration.onlyMapIdentifierToIdentifier;
-				},
-				params: this.mappedWorkspace
-			}
-		});
+			{
+				identifierMustMappedWithAnotherIdentifier: {
+					onlyIf: function () {
+						return self.showErrors() && model.SourceProviderConfiguration.onlyMapIdentifierToIdentifier;
+					},
+					params: this.mappedWorkspace
+				}
+			});
 
 		if (typeof model.CustodianManagerFieldContainsLink === "undefined") {
 			model.CustodianManagerFieldContainsLink = "true";
@@ -221,7 +222,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.nativeFilePathOption = ko.observableArray([]);
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
-		
+
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
 		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
 		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
@@ -230,7 +231,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
-		
+
 		var setCopyFilesLabel = function (isImageImport) {
 			if (isImageImport === "true") {
 				self.copyNativeLabel(copyFileToRepositoryText);
@@ -372,13 +373,13 @@ ko.validation.insertValidationMessage = function (element) {
 		this.UseDynamicFolderPath = ko.observable(model.UseDynamicFolderPath || "false");
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable().extend(
-		{
-			required: {
-				onlyIf: function () {
-					return self.UseFolderPathInformation() === 'true';
+			{
+				required: {
+					onlyIf: function () {
+						return self.UseFolderPathInformation() === 'true';
+					}
 				}
-			}
-		});
+			});
 		this.FolderPathFields = ko.observableArray([]);
 		if (self.FolderPathFields.length === 0) {
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function (result) {
@@ -393,13 +394,13 @@ ko.validation.insertValidationMessage = function (element) {
 		this.FolderPathImportProvider = ko.observableArray([]);
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
-		{
-			required: {
-				onlyIf: function () {
-					return self.ExtractedTextFieldContainsFilePath() === 'true';
+			{
+				required: {
+					onlyIf: function () {
+						return self.ExtractedTextFieldContainsFilePath() === 'true';
+					}
 				}
-			}
-		});
+			});
 
 		this.LongTextColumnThatContainsPathToFullText = ko.observable().extend({
 			required: {
@@ -574,8 +575,8 @@ ko.validation.insertValidationMessage = function (element) {
 		root.data.deferred().all(promises).then(
 			function (result) {
 				var destinationFields = result[0],
-						sourceFields = result[1] || [],
-						mapping = result[2];
+					sourceFields = result[1] || [],
+					mapping = result[2];
 
 				self.nativeFilePathOption(sourceFields);
 				self.FolderPathImportProvider(sourceFields);
@@ -662,8 +663,8 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 
 			}).fail(function (result) {
-				IP.message.error.raise(result);
-			});
+			IP.message.error.raise(result);
+		});
 
 		this.GetCatalogFieldMappings = function () {
 			self.CatalogField = {};
@@ -818,7 +819,7 @@ ko.validation.insertValidationMessage = function (element) {
 			settingsTooltipViewModel.open(event);
 		};
 
-	
+
 	};// end of the viewmodel
 
 
@@ -1036,8 +1037,8 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 					_destination.ImageImport = this.model.ImageImport();
 					_destination.ImagePrecedence = this.model.ImagePrecedence(),
-					_destination.ProductionPrecedence = this.model.ProductionPrecedence(),
-					_destination.IdentifierField = this.model.IdentifierField();
+						_destination.ProductionPrecedence = this.model.ProductionPrecedence(),
+						_destination.IdentifierField = this.model.IdentifierField();
 					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
 
 					// pushing extracted text location setting
@@ -1077,6 +1078,7 @@ ko.validation.insertValidationMessage = function (element) {
 				_destination.FieldOverlayBehavior = this.model.FieldOverlayBehavior();
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
+				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
 				d.resolve(this.returnModel);
 			} else {
 				this.model.errors.showAllMessages();

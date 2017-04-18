@@ -566,6 +566,11 @@
     <Compile Include="Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Services\JobHistory\JobHistoryServiceTest.cs" />
+    <Compile Include="Tagging\TaggerTests.cs" />
+    <Compile Include="Tagging\TagSavedSearchFolderTests.cs" />
+    <Compile Include="Tagging\TagSavedSearchManagerTests.cs" />
+    <Compile Include="Tagging\TagSavedSearchTests.cs" />
+    <Compile Include="Tagging\TagsCreatorTests.cs" />
     <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
     <Compile Include="Telemetry\TelemetryMangerTest.cs" />
     <Compile Include="Validation\ArtifactValidatorTests.cs" />

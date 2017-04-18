@@ -173,6 +173,8 @@
     <Compile Include="QueryBuilders\Implementations\QueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
+    <Compile Include="Repositories\IKeywordSearchRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepository.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IImageTotalStatistics.cs" />

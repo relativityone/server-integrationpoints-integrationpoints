@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME = "Temporary Retry Errors Search";
 		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "IntegrationPoint_Relativity_SourceWorkspace";
 		public static Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
+		public const string DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME = "Integration Points";
 	}
 
 	public static class DocumentMultiObjectFields
@@ -103,6 +104,11 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid HasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
 		public static readonly Guid HasImagesFieldGuid = new Guid("2BAACA72-790C-4B87-A7D8-C18C45CAC63D");
 		public static readonly Guid RelativityImageCount = new Guid("D726B2D9-4192-43DF-86EF-27D36560931A");
+
+		public static readonly Guid ControlNumberGuid = new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438");
+		public static readonly Guid FileIconGuid = new Guid("861295b5-5b1d-4830-89e7-77e0a7ef1c30");
+
+		public const string EDIT_FIELD_NAME = "Edit";
 
 		public const int HAS_IMAGES_YES_ARTIFACT_ID = 1034243;
 	}

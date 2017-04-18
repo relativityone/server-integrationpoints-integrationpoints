@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
@@ -84,29 +85,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_helper = helper;
 			_helperFactory = helperFactory;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
-		/*	
-<<<<<<< HEAD
-
-=======
-			_batchStatus = statuses.ToList();
-			_caseServiceContext = caseServiceContext;
-			
-			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
-			_exporterFactory = exporterFactory;
-			_onBehalfOfUserClaimsPrincipalFactory = onBehalfOfUserClaimsPrincipalFactory;
-			_jobHistoryErrorService = jobHistoryErrorService;
-			_jobHistoryService = jobHistoryService;
-			_jobService = jobService;
-			_repositoryFactory = repositoryFactory;
-			_managerFactory = managerFactory;
-			_scheduleRuleFactory = scheduleRuleFactory;
-			_serializer = serializer;
-			_statisticsService = statisticsService;
-			_synchronizerFactory = synchronizerFactory;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceManager>();
-			_taskResult = new TaskResult();
->>>>>>> develop
-*/
 		}
 
 		public override void Execute(Job job)
@@ -288,9 +266,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				targetHelper.GetServicesManager());
 			ISourceWorkspaceManager sourceWorkspaceManager = ManagerFactory.CreateSourceWorkspaceManager(contextContainer);
 			ISourceJobManager sourceJobManager = ManagerFactory.CreateSourceJobManager(contextContainer);
+			ITagSavedSearchManager tagSavedSearchManager = ManagerFactory.CreateTaggingSavedSearchManager(contextContainer);
 
 			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, sourceWorkspaceManager,
-				sourceJobManager, SynchronizerFactory,
+				sourceJobManager, tagSavedSearchManager, SynchronizerFactory,
 				Serializer, _jobHistoryErrorManager, JobStopManager,
 				MappedFields.ToArray(), SourceConfiguration,
 				_updateStatusType, IntegrationPointDto, JobHistoryDto,
