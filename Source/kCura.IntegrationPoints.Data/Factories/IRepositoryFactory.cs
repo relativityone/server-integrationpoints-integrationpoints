@@ -1,7 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Statistics;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Factories
 {
@@ -52,10 +50,12 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IDocumentRepository GetDocumentRepository(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns a class implementing the IFieldRepository interface.
+		/// Returns a class implementing the IFieldQueryRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the IFieldRepository interface.</returns>
+		/// <returns>A class implementing the IFieldQueryRepository interface.</returns>
+		IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId);
+		
 		IFieldRepository GetFieldRepository(int workspaceArtifactId);
 
 		/// <summary>
@@ -138,13 +138,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <returns>A class implementing the ISourceWorkspaceRepository interface.</returns>
 		ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the ISourceWorkspaceJobHistoryRepository interface.
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the ISourceWorkspaceJobHistoryRepository interface.</returns>
-		ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId);
 
 		/// <summary>
 		/// Returns a class implementing the ITabRepository interface.

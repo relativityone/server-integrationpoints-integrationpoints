@@ -161,9 +161,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static string GetDocumentIdentifierFieldName(IFieldRepository fieldRepository)
+		public static string GetDocumentIdentifierFieldName(IFieldQueryRepository fieldQueryRepository)
 		{
-			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFieldsAsync(
+			ArtifactDTO[] fieldArtifacts = fieldQueryRepository.RetrieveFieldsAsync(
 				10,
 				new HashSet<string>(new[]
 				{

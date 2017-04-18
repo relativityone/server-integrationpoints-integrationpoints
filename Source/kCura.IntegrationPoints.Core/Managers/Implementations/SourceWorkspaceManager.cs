@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			ISourceWorkspaceRepository sourceWorkspaceRepository = RepositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
 			IArtifactGuidRepository artifactGuidRepository = RepositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
+			IFieldQueryRepository fieldQueryRepository = RepositoryFactory.GetFieldQueryRepository(destinationWorkspaceArtifactId);
 			IFieldRepository fieldRepository = RepositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
 			int sourceWorkspaceDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceWorkspaceRepository, artifactGuidRepository, (int) ArtifactType.Case);
@@ -34,9 +35,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid,
 				SourceWorkspaceDTO.Fields.InstanceNameFieldGuid
 			};
-			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceWorkspaceRepository, fieldRepository, sourceWorkspaceDescriptorArtifactTypeId);
+			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceWorkspaceRepository, fieldQueryRepository, sourceWorkspaceDescriptorArtifactTypeId);
 			CreateDocumentsFields(sourceWorkspaceDescriptorArtifactTypeId, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, artifactGuidRepository, sourceWorkspaceRepository,
-				fieldRepository);
+				fieldQueryRepository, fieldRepository);
 
 			SourceWorkspaceDTO sourceWorkspaceDto = CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, federatedInstanceArtifactId,
 				sourceWorkspaceRepository);
@@ -63,13 +64,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceDto = new SourceWorkspaceDTO
 				{
 					ArtifactId = -1,
+					ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId,
 					Name = Utils.GetFormatForWorkspaceOrJobDisplay(currentInstanceName, workspaceDto.Name, workspaceArtifactId),
 					SourceCaseArtifactId = workspaceArtifactId,
 					SourceCaseName = workspaceDto.Name,
 					SourceInstanceName = currentInstanceName
 				};
 
-				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceDto);
+				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceDto);
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
 

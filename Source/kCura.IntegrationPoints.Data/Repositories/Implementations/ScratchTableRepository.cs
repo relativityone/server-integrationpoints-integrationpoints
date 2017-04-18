@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IDBContext _caseContext;
 		private readonly IDocumentRepository _documentRepository;
-		private readonly IFieldRepository _fieldRepository;
+		private readonly IFieldQueryRepository _fieldQueryRepository;
 		private readonly IResourceDbProvider _resourceDbProvider;
 		private readonly string _tablePrefix;
 		private readonly string _tableSuffix;
@@ -27,19 +27,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private int _count;
 
 		public ScratchTableRepository(IHelper helper, IDocumentRepository documentRepository,
-			IFieldRepository fieldRepository, IResourceDbProvider resourceDbProvider, string tablePrefix, string tableSuffix, int workspaceId) :
-				this(helper.GetDBContext(workspaceId), documentRepository, fieldRepository, resourceDbProvider,
+			IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider, string tablePrefix, string tableSuffix, int workspaceId) :
+				this(helper.GetDBContext(workspaceId), documentRepository, fieldQueryRepository, resourceDbProvider,
 					tablePrefix, tableSuffix, workspaceId)
 		{
 
 		}
 
-		private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldRepository fieldRepository, IResourceDbProvider resourceDbProvider,
+		private ScratchTableRepository(IDBContext caseContext, IDocumentRepository documentRepository, IFieldQueryRepository fieldQueryRepository, IResourceDbProvider resourceDbProvider,
 			string tablePrefix, string tableSuffix, int workspaceId)
 		{
 			_caseContext = caseContext;
 			_documentRepository = documentRepository;
-			_fieldRepository = fieldRepository;
+			_fieldQueryRepository = fieldQueryRepository;
 			_resourceDbProvider = resourceDbProvider;
 			_tablePrefix = tablePrefix;
 			_tableSuffix = tableSuffix;
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public IScratchTableRepository CopyTempTable(string newTempTablePrefix)
 		{
-			ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldRepository, _resourceDbProvider, newTempTablePrefix, _tableSuffix, _workspaceId);
+			ScratchTableRepository copiedScratchTableRepository = new ScratchTableRepository(_caseContext, _documentRepository, _fieldQueryRepository, _resourceDbProvider, newTempTablePrefix, _tableSuffix, _workspaceId);
 			string sourceTableName = GetTempTableName();
 			string newTableName = copiedScratchTableRepository.GetTempTableName();
 
@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		internal string GetDocumentIdentifierField()
 		{
-			ArtifactDTO[] fieldArtifacts = _fieldRepository.RetrieveFieldsAsync(
+			ArtifactDTO[] fieldArtifacts = _fieldQueryRepository.RetrieveFieldsAsync(
 				10,
 				new HashSet<string>(new[]
 				{

@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IRepositoryFactory _repositoryFactory;
 		private ICaseServiceContext _caseServiceContext;
 		private IDocumentRepository _documentRepository;
-		private IFieldRepository _fieldRepository;
+		private IFieldQueryRepository _fieldQueryRepository;
 		private IResourceDbProvider _resourceDbProvider;
 		private ScratchTableRepository _currentScratchTableRepository;
 		private const string _DOC_IDENTIFIER = "SCRATCH_";
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
-			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
+			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactId);
 			_resourceDbProvider = new ResourceDbProvider();
 		}
 
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 
 			//ACT
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
 			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _documentRepository, _fieldQueryRepository, _resourceDbProvider, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 			_currentScratchTableRepository = scratchTableRepository;
 			string tableName = $"{tablePrefix}_{tableSuffix}";
 

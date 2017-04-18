@@ -35,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private IWorkspaceRepository _workspaceRepository;
 		private IObjectTypeRepository _objectTypeRepository;
 		private ITabRepository _tabRepository;
+		private IFieldQueryRepository _fieldQueryRepository;
 		private IFieldRepository _fieldRepository;
 
 		private SourceWorkspaceManager _instance;
@@ -63,6 +64,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_tabRepository = Substitute.For<ITabRepository>();
 			_repositoryFactory.GetTabRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_tabRepository);
 
+			_fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
+			_repositoryFactory.GetFieldQueryRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_fieldQueryRepository);
+
 			_fieldRepository = Substitute.For<IFieldRepository>();
 			_repositoryFactory.GetFieldRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID).Returns(_fieldRepository);
 
@@ -78,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_repositoryFactory.Received(1).GetArtifactGuidRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
 			_repositoryFactory.Received(1).GetSourceWorkspaceRepository();
 			_repositoryFactory.Received(1).GetDestinationObjectTypeRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
-			_repositoryFactory.Received(1).GetFieldRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
+			_repositoryFactory.Received(1).GetFieldQueryRepository(_DESTINATION_WORKSPACE_ARTIFACT_ID);
 		}
 
 		[Test]
@@ -134,17 +138,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_tabRepository.DidNotReceiveWithAnyArgs().Delete(Arg.Any<int>());
 
 			// Create Object Fields
-			_fieldRepository.DidNotReceiveWithAnyArgs().RetrieveField(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HashSet<string>>());
+			_fieldQueryRepository.DidNotReceiveWithAnyArgs().RetrieveField(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HashSet<string>>());
 			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().CreateObjectTypeFields(Arg.Any<int>(), Arg.Any<IEnumerable<Guid>>());
 
 			// Create Document Fields
 			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().CreateFieldOnDocument(Arg.Any<int>());
-			_fieldRepository.DidNotReceiveWithAnyArgs().RetrieveArtifactViewFieldId(Arg.Any<int>());
+			_fieldQueryRepository.DidNotReceiveWithAnyArgs().RetrieveArtifactViewFieldId(Arg.Any<int>());
 			_fieldRepository.DidNotReceiveWithAnyArgs().UpdateFilterType(Arg.Any<int>(), Arg.Any<string>());
 			_fieldRepository.DidNotReceiveWithAnyArgs().SetOverlayBehavior(Arg.Any<int>(), Arg.Any<bool>());
 
 			// Create Source Workspace DTO
-			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().Create(Arg.Any<int>(), Arg.Any<SourceWorkspaceDTO>());
+			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().Create(Arg.Any<SourceWorkspaceDTO>());
 			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().Update(Arg.Any<SourceWorkspaceDTO>());
 		}
 
@@ -171,24 +175,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepository.GuidsExist(Arg.Is<List<Guid>>(x => VerifyListOfGuids(fieldGuids.Keys, x)))
 				.Returns(fieldGuids);
 
-			_fieldRepository.RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+			_fieldQueryRepository.RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 				FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(1, 0, string.Empty, new List<ArtifactFieldDTO>()));
-			_fieldRepository.RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+			_fieldQueryRepository.RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 				FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(2, 0, string.Empty, new List<ArtifactFieldDTO>()));
-			_fieldRepository.RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
+			_fieldQueryRepository.RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
 				FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(3, 0, string.Empty, new List<ArtifactFieldDTO>()));
 
 			// Create Document Fields
 			_artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid).Returns(false);
 
-			_fieldRepository.RetrieveField((int) Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+			_fieldQueryRepository.RetrieveField((int) Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID, 0, string.Empty, new List<ArtifactFieldDTO>()));
 
-			_fieldRepository.RetrieveArtifactViewFieldId(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID)
+			_fieldQueryRepository.RetrieveArtifactViewFieldId(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID)
 				.Returns(_DOCUMENT_SOURCE_WORKSPACE_ARTIFACT_VIEW_FIELD_ID);
 
 			// Create Source Workspace DTO
@@ -222,20 +226,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_tabRepository.Received(1).Delete(_OBJECT_TYPE_TAB_ID);
 
 			// Create Object Fields
-			_fieldRepository.Received(1).RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+			_fieldQueryRepository.Received(1).RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 				FieldTypes.WholeNumber, Arg.Any<HashSet<string>>());
-			_fieldRepository.Received(1).RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+			_fieldQueryRepository.Received(1).RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 				FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>());
-			_fieldRepository.Received(1).RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
+			_fieldQueryRepository.Received(1).RetrieveField(_OBJECT_TYPE_DESCRIPTOR_ARTIFACT_TYPE_ID, IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
 				FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>());
 			_artifactGuidRepository.Received(1).InsertArtifactGuidsForArtifactIds(Arg.Any<Dictionary<Guid, int>>());
 			
 			// Create Document Fields
 			_artifactGuidRepository.Received(1).GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
-			_fieldRepository.Received(1)
+			_fieldQueryRepository.Received(1)
 				.RetrieveField((int) Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 					FieldTypes.MultipleObject, Arg.Any<HashSet<string>>());
-			_fieldRepository.Received(1).RetrieveArtifactViewFieldId(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID);
+			_fieldQueryRepository.Received(1).RetrieveArtifactViewFieldId(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID);
 			_fieldRepository.Received(1).UpdateFilterType(_DOCUMENT_SOURCE_WORKSPACE_ARTIFACT_VIEW_FIELD_ID, "Popup");
 			_fieldRepository.Received(1).SetOverlayBehavior(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID, true);
 			_artifactGuidRepository.Received(1).InsertArtifactGuidForArtifactId(_DOCUMENT_SOURCE_WORKSPACE_MO_FIELD_ARTIFACT_ID, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
@@ -250,7 +254,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().CreateFieldOnDocument(Arg.Any<int>());
 
 			// Create Source Workspace DTO
-			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().Create(Arg.Any<int>(), Arg.Any<SourceWorkspaceDTO>());
+			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().Create(Arg.Any<SourceWorkspaceDTO>());
 			_sourceWorkspaceRepository.DidNotReceiveWithAnyArgs().Update(Arg.Any<SourceWorkspaceDTO>());
 		}
 

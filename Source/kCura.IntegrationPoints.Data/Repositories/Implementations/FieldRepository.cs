@@ -1,182 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using Relativity.Core.Service;
 using Relativity.Services.FieldManager;
-using ArtifactFieldDTO = kCura.IntegrationPoints.Domain.Models.ArtifactFieldDTO;
+using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class FieldRepository : KeplerServiceBase, IFieldRepository
+	public class FieldRepository : IFieldRepository
 	{
-		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 
-		public FieldRepository(
-			IHelper helper, IServicesMgr servicesMgr,
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor, 
-			int workspaceArtifactId) : base(objectQueryManagerAdaptor)
+		public FieldRepository(IServicesMgr servicesMgr, IHelper helper, int workspaceArtifactId)
 		{
-			_helper = helper;
 			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
-		}
-
-		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeId)
-		{
-			const string longTextFieldName = "Long Text";
-
-			var longTextFieldsQuery = new global::Relativity.Services.ObjectQuery.Query()
-			{
-				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
-			};
-
-			ArtifactDTO[] artifactDtos = null;
-			try
-			{
-				 artifactDtos = await this.RetrieveAllArtifactsAsync(longTextFieldsQuery);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve long text fields", e);	
-			}
-
-			ArtifactFieldDTO[] fieldDtos =
-				artifactDtos.Select(x => new ArtifactFieldDTO()
-				{
-					ArtifactId = x.ArtifactId,
-					FieldType = longTextFieldName,
-					Name = x.TextIdentifier,
-					Value = null // Field RDO's don't have values...setting this to NULL to be explicit
-				}).ToArray();
-
-			return fieldDtos;
-		}
-
-		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldNames)
-		{
-			var fieldQuery = new global::Relativity.Services.ObjectQuery.Query()
-			{
-				Fields = fieldNames.ToArray(),
-				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
-			};
-
-			ArtifactDTO[] fieldArtifactDtos = null;
-			try
-			{
-				fieldArtifactDtos = await this.RetrieveAllArtifactsAsync(fieldQuery);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve fields", e);	
-			}
-
-			return fieldArtifactDtos;
-		}
-
-		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, string displayName, string fieldType, HashSet<string> fieldNames)
-		{
-			var fieldQuery = new global::Relativity.Services.ObjectQuery.Query()
-			{
-				Fields = fieldNames.ToArray(),
-				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId} AND 'DisplayName' == '{displayName}' AND 'Field Type' == '{fieldType}'"
-			};
-
-			ArtifactDTO[] fieldArtifactDtos = null;
-			try
-			{
-				fieldArtifactDtos = await this.RetrieveAllArtifactsAsync(fieldQuery);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to retrieve fields", e);
-			}
-
-			return fieldArtifactDtos;
-		}
-
-		public ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldNames)
-		{
-			return Task.Run(() => RetrieveFieldsAsync(rdoTypeId, fieldNames)).GetResultsWithoutContextSync();
-		}
-
-		public ArtifactDTO RetrieveField(int rdoTypeId, string displayName, string fieldType, HashSet<string> fieldNames)
-		{
-			ArtifactDTO[] fieldsDtos = Task.Run(() => RetrieveFieldsAsync(rdoTypeId, displayName, fieldType, fieldNames)).GetResultsWithoutContextSync();
-			
-			return fieldsDtos.FirstOrDefault();
-		}
-
-		public void Delete(IEnumerable<int> artifactIds)
-		{
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
-			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				rsapiClient.Repositories.Field.Delete(artifactIds.ToArray());
-			}
-		}
-
-		public ResultSet<Relativity.Client.DTOs.Field> Read(Relativity.Client.DTOs.Field dto)
-		{
-			ResultSet<Relativity.Client.DTOs.Field> resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
-			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				try
-				{
-					resultSet = rsapiClient.Repositories.Field.Read(dto);
-				}
-				catch (Exception e)
-				{
-					throw new Exception("Unable to read Field dto", e);
-				}
-
-				return resultSet;
-			}
-		}
-
-		public ArtifactDTO RetrieveTheIdentifierField(int rdoTypeId)
-		{
-			HashSet<string> fieldsToRetrieveWhenQueryFields = new HashSet<string>() { "Name", "Is Identifier" };
-			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeId, fieldsToRetrieveWhenQueryFields).GetResultsWithoutContextSync();
-			ArtifactDTO identifierField = fieldsDtos.First(field => Convert.ToBoolean(field.Fields[1].Value));
-			return identifierField;
-		}
-
-		public ArtifactFieldDTO[] RetrieveBeginBatesFields()
-		{
-			IEnumerable<ArtifactFieldDTO> artifactFieldDTOs;
-			using (IFieldManager fieldManagerProxy =
-				_servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
-			{
-				var result = fieldManagerProxy.RetrieveBeginBatesFieldsAsync(_workspaceArtifactId).Result;
-				artifactFieldDTOs = result.Select(x => new ArtifactFieldDTO()
-				{
-					ArtifactId = x.ArtifactID,
-					Name = x.Name
-				});
-			}
-
-			return artifactFieldDTOs.ToArray();
-		}
-
-		public int? RetrieveArtifactViewFieldId(int fieldArtifactId)
-		{
-			using (IFieldManager fieldManagerProxy =
-				_servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
-			{
-				return fieldManagerProxy.RetrieveArtifactViewFieldIdAsync(_workspaceArtifactId, fieldArtifactId).Result;
-			}
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FieldRepository>();
 		}
 
 		public void UpdateFilterType(int artifactViewFieldId, string filterType)
@@ -194,6 +37,76 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
 				fieldManagerProxy.SetOverlayBehaviorAsync(_workspaceArtifactId, fieldArtifactId, overlayBehavior);
+			}
+		}
+
+		public int CreateMultiObjectFieldOnDocument(string name, int associatedObjectTypeDescriptorId)
+		{
+			var documentObjectType = new ObjectType {DescriptorArtifactTypeID = 10};
+			var associatedObjectType = new ObjectType {DescriptorArtifactTypeID = associatedObjectTypeDescriptorId};
+
+			var field = new Field
+			{
+				Name = name,
+				FieldTypeID = FieldType.MultipleObject,
+				ObjectType = documentObjectType,
+				AssociativeObjectType = associatedObjectType,
+				AllowGroupBy = false,
+				AllowPivot = false,
+				AvailableInFieldTree = false,
+				IsRequired = false,
+				Width = "100"
+			};
+
+			using (var rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				try
+				{
+					return rsapiClient.Repositories.Field.CreateSingle(field);
+				}
+				catch (Exception e)
+				{
+					_logger.LogError(e, "Failed to create MultiObject field on Document for object {name}.", name);
+					throw;
+				}
+			}
+		}
+
+		public List<Field> CreateObjectTypeFields(List<Field> fields)
+		{
+			using (var proxy = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				proxy.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				var createResult = proxy.Repositories.Field.Create(fields);
+
+				if (!createResult.Success)
+				{
+					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
+					throw new Exception($"Failed to create fields: {createResult.Message}.");
+				}
+
+				List<int> newFieldsIds = createResult.Results.Select(x => x.Artifact.ArtifactID).ToList();
+
+				var readResult = proxy.Repositories.Field.Read(newFieldsIds);
+
+				if (!readResult.Success)
+				{
+					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
+					proxy.Repositories.Field.Delete(newFieldsIds);
+					throw new Exception($"Failed to create fields: {readResult.Message}.");
+				}
+
+				var newFields = readResult.Results.Select(x => x.Artifact).ToList();
+				foreach (var fieldResult in newFields)
+				{
+					var fieldGuid = fields.First(x => x.Name == fieldResult.Name).Guids[0];
+					fieldResult.Guids = new List<Guid> {fieldGuid};
+				}
+
+				return newFields;
 			}
 		}
 	}

@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -30,26 +31,28 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			// Set up repositories
 			ISourceJobRepository sourceJobRepository = _repositoryFactory.GetSourceJobRepository(destinationWorkspaceArtifactId);
-			ISourceWorkspaceJobHistoryRepository sourceWorkspaceJobHistoryRepository = _repositoryFactory.GetSourceWorkspaceJobHistoryRepository(sourceWorkspaceArtifactId);
+			IRdoRepository rdoRepository = _repositoryFactory.GetRdoRepository(sourceWorkspaceArtifactId);
 			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(destinationWorkspaceArtifactId);
 			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
 			int sourceJobDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceJobRepository, artifactGuidRepository, sourceWorkspaceArtifactTypeId);
 			var fieldGuids = new List<Guid>(2) { SourceJobDTO.Fields.JobHistoryIdFieldGuid, SourceJobDTO.Fields.JobHistoryNameFieldGuid };
-			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceJobRepository, fieldRepository, sourceJobDescriptorArtifactTypeId);
-			CreateDocumentsFields(sourceJobDescriptorArtifactTypeId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, artifactGuidRepository, sourceJobRepository, fieldRepository);
+			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceJobRepository, fieldQueryRepository, sourceJobDescriptorArtifactTypeId);
+			CreateDocumentsFields(sourceJobDescriptorArtifactTypeId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, artifactGuidRepository, sourceJobRepository, fieldQueryRepository, fieldRepository);
 
 			// Create instance of Job History object
-			SourceWorkspaceJobHistoryDTO sourceWorkspaceJobHistoryDto = sourceWorkspaceJobHistoryRepository.Retrieve(jobHistoryArtifactId);
+			RDO jobHistoryRdo = rdoRepository.ReadSingle(jobHistoryArtifactId);
 			var jobHistoryDto = new SourceJobDTO()
 			{
-				Name = Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspaceJobHistoryDto.Name, jobHistoryArtifactId),
+				ArtifactTypeId = sourceJobDescriptorArtifactTypeId,
+				Name = Utils.GetFormatForWorkspaceOrJobDisplay(jobHistoryRdo.TextIdentifier, jobHistoryArtifactId),
 				SourceWorkspaceArtifactId = sourceWorkspaceRdoInstanceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				JobHistoryName = sourceWorkspaceJobHistoryDto.Name,
+				JobHistoryName = jobHistoryRdo.TextIdentifier,
 			};
 
-			int artifactId = sourceJobRepository.Create(sourceJobDescriptorArtifactTypeId, jobHistoryDto);
+			int artifactId = sourceJobRepository.Create(jobHistoryDto);
 			jobHistoryDto.ArtifactId = artifactId;
 
 			return jobHistoryDto;

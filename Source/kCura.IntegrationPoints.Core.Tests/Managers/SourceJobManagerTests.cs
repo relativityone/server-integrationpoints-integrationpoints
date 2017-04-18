@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -28,13 +29,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private int _sourceWorkspaceRdoInstanceArtifactId;
 		private int _jobHistoryArtifactId;
 		private ISourceJobRepository _sourceJobRepo;
-		private ISourceWorkspaceJobHistoryRepository _sourceWorkspaceJobHistoryRepo;
 		private IArtifactGuidRepository _artifactGuidRepo;
+		private IFieldQueryRepository _fieldQueryRepository;
 		private IFieldRepository _fieldRepository;
 		private IObjectTypeRepository _objectTypeRepository;
 		private ITabRepository _tabRepository;
+		private IRdoRepository _rdoRepository;
+		private RDO _sourceWorkspaceJobHistory;
 		private List<Guid> _objectFieldGuids;
-		private SourceWorkspaceJobHistoryDTO _sourceWorkspaceJobHistory;
 		private Dictionary<Guid, int> _objectFieldToBeCreated;
 
 		[SetUp]
@@ -58,11 +60,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_sourceJobRepo = Substitute.For<ISourceJobRepository>();
 			_repositoryFactory.GetSourceJobRepository(_destinationWorkspaceArtifactId).Returns(_sourceJobRepo);
 
-			_sourceWorkspaceJobHistoryRepo = Substitute.For<ISourceWorkspaceJobHistoryRepository>();
-			_repositoryFactory.GetSourceWorkspaceJobHistoryRepository(_sourceWorkspaceArtifactId).Returns(_sourceWorkspaceJobHistoryRepo);
+			_rdoRepository = Substitute.For<IRdoRepository>();
+			_repositoryFactory.GetRdoRepository(_sourceWorkspaceArtifactId).Returns(_rdoRepository);
 
 			_artifactGuidRepo = Substitute.For<IArtifactGuidRepository>();
 			_repositoryFactory.GetArtifactGuidRepository(_destinationWorkspaceArtifactId).Returns(_artifactGuidRepo);
+
+			_fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
+			_repositoryFactory.GetFieldQueryRepository(_destinationWorkspaceArtifactId).Returns(_fieldQueryRepository);
 
 			_fieldRepository = Substitute.For<IFieldRepository>();
 			_repositoryFactory.GetFieldRepository(_destinationWorkspaceArtifactId).Returns(_fieldRepository);
@@ -73,8 +78,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_tabRepository = Substitute.For<ITabRepository>();
 			_repositoryFactory.GetTabRepository(_destinationWorkspaceArtifactId).Returns(_tabRepository);
 
-			_sourceWorkspaceJobHistory = new SourceWorkspaceJobHistoryDTO() { Name = "MassEditMike" };
-			_sourceWorkspaceJobHistoryRepo.Retrieve(_jobHistoryArtifactId).Returns(_sourceWorkspaceJobHistory);
+			_sourceWorkspaceJobHistory = new RDO() { TextIdentifier = "MassEditMike" };
+			_rdoRepository.ReadSingle(_jobHistoryArtifactId).Returns(_sourceWorkspaceJobHistory);
 			_instance = new SourceJobManager(_repositoryFactory);
 
 			Assert.IsTrue(_instance is DestinationWorkspaceFieldManagerBase, "if the base class changed, the expectation in these tests are probably wrong.");
@@ -94,11 +99,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				_sourceWorkspaceArtifactTypeId, _sourceWorkspaceRdoInstanceArtifactId, _jobHistoryArtifactId);
 
 			// assert
-			_sourceJobRepo.Received(1).Create(typeId, Arg.Any<SourceJobDTO>());
+			_sourceJobRepo.Received(1).Create(Arg.Any<SourceJobDTO>());
 			_artifactGuidRepo.DidNotReceive().InsertArtifactGuidForArtifactId(Arg.Any<int>(), SourceJobDTO.ObjectTypeGuid);
 			_sourceJobRepo.DidNotReceive().CreateObjectTypeFields(Arg.Any<int>(), Arg.Any<IEnumerable<Guid>>());
 			_artifactGuidRepo.DidNotReceive().InsertArtifactGuidsForArtifactIds(Arg.Any<IDictionary<Guid, int>>());
-			_fieldRepository.DidNotReceive()
+			_fieldQueryRepository.DidNotReceive()
 				.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>());
 			_sourceJobRepo.DidNotReceive().CreateFieldOnDocument(typeId);
 		}
@@ -129,9 +134,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 
 			// defined the behavior when we try to create fields
@@ -143,13 +148,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// can't find when searching by name
-			_fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 
 			_sourceJobRepo.CreateFieldOnDocument(typeId).Returns(documentFieldArtifactId);
-			_fieldRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
+			_fieldQueryRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
 
-			_sourceJobRepo.Create(typeId, Arg.Any<SourceJobDTO>()).Returns(sourceJobArtifactId);
+			_sourceJobRepo.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobArtifactId);
 
 			// act
 			SourceJobDTO sourceJobDto = _instance.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
@@ -180,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// expect to associate the field
 			_artifactGuidRepo.Received(1).InsertArtifactGuidForArtifactId(documentFieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 			// expect to create an instance of a source job
-			_sourceJobRepo.Received(1).Create(typeId, Arg.Any<SourceJobDTO>());
+			_sourceJobRepo.Received(1).Create(Arg.Any<SourceJobDTO>());
 
 			ValidateSourceJob(sourceJobDto, sourceJobArtifactId);
 		}
@@ -211,9 +216,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			});
 
 			// fails to retrieve field
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, 
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, 
 				FieldTypes.WholeNumber, Arg.Any<HashSet<string>>()).Throws<Exception>();
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 
 			// defined the behavior when we try to create fields
@@ -225,14 +230,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// can't find when searching by name
-			_fieldRepository
+			_fieldQueryRepository
 				.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 
 			_sourceJobRepo.CreateFieldOnDocument(typeId).Returns(documentFieldArtifactId);
-			_fieldRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
+			_fieldQueryRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
 
-			_sourceJobRepo.Create(typeId, Arg.Any<SourceJobDTO>()).Returns(sourceJobArtifactId);
+			_sourceJobRepo.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobArtifactId);
 
 			// act
 			Assert.Throws<Exception>(() => _instance.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceArtifactTypeId, _sourceWorkspaceRdoInstanceArtifactId, _jobHistoryArtifactId), expectError);
@@ -256,7 +261,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// expect not to associate the field
 			_artifactGuidRepo.DidNotReceive().InsertArtifactGuidForArtifactId(documentFieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 			// expect not to create an instance of a source job
-			_sourceJobRepo.DidNotReceive().Create(typeId, Arg.Any<SourceJobDTO>());
+			_sourceJobRepo.DidNotReceive().Create(Arg.Any<SourceJobDTO>());
 
 		}
 
@@ -286,9 +291,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 			
 			// defined the behavior when we try to create fields
@@ -300,11 +305,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(documentFieldArtifactId, 0, string.Empty, new List<ArtifactFieldDTO>()));
-			_fieldRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
+			_fieldQueryRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
 
-			_sourceJobRepo.Create(typeId, Arg.Any<SourceJobDTO>()).Returns(sourceJobArtifactId);
+			_sourceJobRepo.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobArtifactId);
 
 			// act
 			SourceJobDTO sourceJobDto = _instance.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
@@ -338,7 +343,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// expect to associate the field
 			_artifactGuidRepo.Received(1).InsertArtifactGuidForArtifactId(documentFieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 			// expect to create an instance of a source job
-			_sourceJobRepo.Received(1).Create(typeId, Arg.Any<SourceJobDTO>());
+			_sourceJobRepo.Received(1).Create(Arg.Any<SourceJobDTO>());
 
 			ValidateSourceJob(sourceJobDto, sourceJobArtifactId);
 		}
@@ -367,9 +372,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			});
 
 			// error occurs when trying to retrieve field's artifact id
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
 				.Throws(new Exception());
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 
 			// defined the behavior when we try to create fields
@@ -381,11 +386,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(documentFieldArtifactId, 0, string.Empty, new List<ArtifactFieldDTO>()));
 
 			// can't find artifact view field id
-			_fieldRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns((int?)null);
+			_fieldQueryRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns((int?)null);
 
 			// act
 			Assert.Throws<Exception>(() => _instance.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceArtifactTypeId, _sourceWorkspaceRdoInstanceArtifactId, _jobHistoryArtifactId), expectError);
@@ -408,7 +413,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// expect not to associate the field
 			_artifactGuidRepo.DidNotReceive().InsertArtifactGuidForArtifactId(documentFieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 			// expect not to create an instance of a source job
-			_sourceJobRepo.DidNotReceive().Create(typeId, Arg.Any<SourceJobDTO>());
+			_sourceJobRepo.DidNotReceive().Create(Arg.Any<SourceJobDTO>());
 		}
 
 		[Test]
@@ -436,9 +441,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 
 			// defined the behavior when we try to create fields
@@ -450,11 +455,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(documentFieldArtifactId, 0, string.Empty, new List<ArtifactFieldDTO>()));
 
 			// can't find artifact view field id
-			_fieldRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
+			_fieldQueryRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
 
 			_fieldRepository.When(x => x.SetOverlayBehavior(documentFieldArtifactId, true)).Throw<Exception>();
 
@@ -486,7 +491,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// expect not to associate the field
 			_artifactGuidRepo.DidNotReceive().InsertArtifactGuidForArtifactId(documentFieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 			// expect not to create an instance of a source job
-			_sourceJobRepo.DidNotReceive().Create(typeId, Arg.Any<SourceJobDTO>());
+			_sourceJobRepo.DidNotReceive().Create(Arg.Any<SourceJobDTO>());
 		}
 
 		[Test]
@@ -514,9 +519,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			});
 
 			// object fields are not found when searching by name
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, FieldTypes.WholeNumber, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
-			_fieldRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField(typeId, IntegrationPoints.Domain.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, FieldTypes.FixedLengthText, Arg.Any<HashSet<string>>())
 				.Returns((ArtifactDTO)null);
 
 			// defined the behavior when we try to create fields
@@ -528,11 +533,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_artifactGuidRepo.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid).Returns(false);
 
 			// found a field with the same name
-			_fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
+			_fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, FieldTypes.MultipleObject, Arg.Any<HashSet<string>>())
 				.Returns(new ArtifactDTO(documentFieldArtifactId, 0, string.Empty, new List<ArtifactFieldDTO>()));
 
 			
-			_fieldRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
+			_fieldQueryRepository.RetrieveArtifactViewFieldId(documentFieldArtifactId).Returns(filterType);
 
 			_artifactGuidRepo.When( x => x.InsertArtifactGuidForArtifactId(documentFieldArtifactId,SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid)).Throw<Exception>();
 
@@ -564,17 +569,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// expect to associate the field
 			_artifactGuidRepo.Received(1).InsertArtifactGuidForArtifactId(documentFieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 			// expect not to create an instance of a source job
-			_sourceJobRepo.DidNotReceive().Create(typeId, Arg.Any<SourceJobDTO>());
+			_sourceJobRepo.DidNotReceive().Create(Arg.Any<SourceJobDTO>());
 		}
 
 		private void ValidateSourceJob(SourceJobDTO sourceJob, int sourceJobArtifactId)
 		{
 			Assert.IsNotNull(sourceJob);
-			string expectedName = Utils.GetFormatForWorkspaceOrJobDisplay(_sourceWorkspaceJobHistory.Name, _jobHistoryArtifactId);
+			string expectedName = Utils.GetFormatForWorkspaceOrJobDisplay(_sourceWorkspaceJobHistory.TextIdentifier, _jobHistoryArtifactId);
 			Assert.AreEqual(expectedName, sourceJob.Name);
 			Assert.AreEqual(_sourceWorkspaceRdoInstanceArtifactId, sourceJob.SourceWorkspaceArtifactId);
 			Assert.AreEqual(_jobHistoryArtifactId, sourceJob.JobHistoryArtifactId);
-			Assert.AreEqual(_sourceWorkspaceJobHistory.Name, sourceJob.JobHistoryName);
+			Assert.AreEqual(_sourceWorkspaceJobHistory.TextIdentifier, sourceJob.JobHistoryName);
 			Assert.AreEqual(sourceJobArtifactId, sourceJob.ArtifactId);
 		}
 	}

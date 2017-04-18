@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		protected void CreateObjectFields(List<Guid> fieldGuids,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IFieldRepository fieldRepository,
+			IFieldQueryRepository fieldQueryRepository,
 			int descriptorArtifactTypeId)
 		{
 			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(fieldGuids);
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 				{
 					Guid missingGuid = missingFieldGuids[index];
 					FieldDefinition definition = fieldDefinitions[missingGuid];
-					ArtifactDTO fieldDto = fieldRepository.RetrieveField(descriptorArtifactTypeId, definition.FieldName,
+					ArtifactDTO fieldDto = fieldQueryRepository.RetrieveField(descriptorArtifactTypeId, definition.FieldName,
 						definition.FieldType, new HashSet<string>() {Constants.Fields.ArtifactId});
 					if (fieldDto != null)
 					{
@@ -121,20 +121,20 @@ namespace kCura.IntegrationPoints.Core.Managers
 			Guid documentFieldGuid,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IFieldRepository fieldRepository)
+			IFieldQueryRepository fieldQueryRepository, IFieldRepository fieldRepository)
 		{
 			bool sourceWorkspaceFieldOnDocumentExists = artifactGuidRepository.GuidExists(documentFieldGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
 			{
 				
-				ArtifactDTO fieldDto = fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, FieldName,
+				ArtifactDTO fieldDto = fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, FieldName,
 					FieldTypes.MultipleObject, new HashSet<string>() { Constants.Fields.ArtifactId });
 
 				int sourceWorkspaceFieldArtifactId = fieldDto?.ArtifactId ?? relativityObjectRepository.CreateFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId);
 				
 				try
 				{
-					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
+					int? retrieveArtifactViewFieldId = fieldQueryRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
 						throw new Exception(ErrorMassage);

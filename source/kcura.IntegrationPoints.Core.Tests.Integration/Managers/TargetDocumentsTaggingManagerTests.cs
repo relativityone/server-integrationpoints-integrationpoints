@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		private TagSavedSearchManager _tagSavedSearchManager;
 		private ISynchronizerFactory _synchronizerFactory;
 		private IJobHistoryService _jobHistoryService;
-		private IFieldRepository _fieldRepository;
+		private IFieldQueryRepository _fieldQueryRepository;
 		private FieldMap[] _fieldMaps;
 		private ISerializer _serializer;
 		private IHelper _helper;
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_tagSavedSearchManager = new TagSavedSearchManager(new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper), new TagSavedSearchFolder(_repositoryFactory, _helper));
 			_synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
-			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
+			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactId);
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			string expectedRelativitySourceCase = $"TargetDocumentsTaggingManagerSource - {SourceWorkspaceArtifactId}";
 			DataTable dataTable = Import.GetImportTable(documentIdentifier, numberOfDocuments);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
-			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldRepository), documentIdentifier).ConfigureAwait(false).GetAwaiter().GetResult();
+			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), documentIdentifier).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
@@ -114,9 +114,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		{
 			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
 
-			ArtifactDTO relativitySourceCaseField = _fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_CASE, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
+			ArtifactDTO relativitySourceCaseField = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_CASE, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
 			int? relativitySourceCaseFieldArtifactId = relativitySourceCaseField?.ArtifactId;
-			ArtifactDTO relativitySourceJobField = _fieldRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_JOB, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
+			ArtifactDTO relativitySourceJobField = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, _RELATIVITY_SOURCE_JOB, FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" });
 			int? relativitySourceJobArtifactId = relativitySourceJobField?.ArtifactId;
 
 			ArtifactDTO[] documentArtifacts =

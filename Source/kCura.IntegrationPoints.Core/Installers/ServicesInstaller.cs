@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			{
 				IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
 				IHelper helper = x.Resolve<IHelper>();
-				return new RsapiObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager());
+				return new RsapiObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager(), helper);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleTransient());

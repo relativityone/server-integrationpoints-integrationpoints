@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -69,12 +67,17 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return documentRepository;
 		}
 
-		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
+		public IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId)
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
-			IFieldRepository fieldRepository = new FieldRepository(_helper, _servicesMgr, objectQueryManagerAdaptor, workspaceArtifactId);
+			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_helper, _servicesMgr, objectQueryManagerAdaptor, workspaceArtifactId);
 
-			return fieldRepository;
+			return fieldQueryRepository;
+		}
+
+		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
+		{
+			return new FieldRepository(_servicesMgr, _helper, workspaceArtifactId);
 		}
 
 		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)
@@ -109,14 +112,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
 		{
-			IObjectTypeRepository repository = new RsapiObjectTypeRepository(workspaceArtifactId, _helper.GetServicesManager());
+			IObjectTypeRepository repository = new RsapiObjectTypeRepository(workspaceArtifactId, _helper.GetServicesManager(), _helper);
 
 			return repository;
 		}
 
 		public IObjectTypeRepository GetDestinationObjectTypeRepository(int workspaceArtifactId)
 		{
-			return new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr);
+			return new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper);
 		}
 
 		public IPermissionRepository GetPermissionRepository(int workspaceArtifactId)
@@ -131,12 +134,15 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
 		{
-			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
+			return new ScratchTableRepository(_helper, GetDocumentRepository(workspaceArtifactId), GetFieldQueryRepository(workspaceArtifactId), new ResourceDbProvider(), tablePrefix, tableSuffix, workspaceArtifactId);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
 		{
-			ISourceJobRepository repository = new SourceJobRepository(_helper, _servicesMgr, workspaceArtifactId);
+			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
+			var fieldRepository = GetFieldRepository(workspaceArtifactId);
+			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, _servicesMgr, workspaceArtifactId);
+			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
 			return repository;
 		}
@@ -149,14 +155,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
 		{
-			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(_helper, _servicesMgr, workspaceArtifactId);
-
-			return repository;
-		}
-
-		public ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId)
-		{
-			ISourceWorkspaceJobHistoryRepository repository = new SourceWorkspaceJobHistoryRepository(_helper, workspaceArtifactId);
+			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
+			var fieldRepository = GetFieldRepository(workspaceArtifactId);
+			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, _servicesMgr, workspaceArtifactId);
+			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
 			return repository;
 		}
@@ -235,7 +237,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IRdoRepository GetRdoRepository(int workspaceArtifactId)
 		{
-			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId);
+			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, _helper.GetServicesManager(), workspaceArtifactId);
 			return rdoRepository;
 		}
 		
