@@ -1,5 +1,5 @@
-﻿using IntegrationPointsUITests.Config;
-using IntegrationPointsUITests.Pages;
+﻿using IntegrationPointsUITests.Pages;
+using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 
 namespace IntegrationPointsUITests.Tests
@@ -14,7 +14,7 @@ namespace IntegrationPointsUITests.Tests
             var loginPage = new LoginPage(Driver);
 
             // WHEN / THEN
-            loginPage.Login(TestConfig.Username, TestConfig.Password);
+            loginPage.Login(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
         }
 
     }

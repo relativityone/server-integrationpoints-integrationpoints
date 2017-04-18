@@ -1,4 +1,4 @@
-﻿using IntegrationPointsUITests.Config;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -25,7 +25,7 @@ namespace IntegrationPointsUITests.Tests
 
             Driver = new ChromeDriver(driverService, options);
             Driver.Manage().Window.Maximize();
-            Driver.Url = TestConfig.ServerAddress;
+            Driver.Url = SharedVariables.TargetHost;
         }
 
         [OneTimeTearDown]
