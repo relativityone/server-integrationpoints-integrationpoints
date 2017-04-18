@@ -15,18 +15,19 @@ var loadData = function (ko, dataContainer) {
 			return convertToBool(value) ? "Yes" : "No";
 		};
 
-		function formatFolderPathInformation(useFolderPathInfo) {
-			var value = formatToYesOrNo(useFolderPathInfo);
+		function formatFolderPathInformation(useFolderPathInfo, useDynamicFolderPath) {
 			if (convertToBool(useFolderPathInfo)) {
 				IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function (result) {
 					var folderPathSourceField = dataContainer.destinationConfiguration.FolderPathSourceField;
 					var fields = ko.utils.arrayFilter(result, function (field) { return field.fieldIdentifier === folderPathSourceField; });
 					if (fields.length > 0) {
-						self.useFolderPathInfo(value + ";" + fields[0].actualName);
+						self.useFolderPathInfo("Read From Field:" + fields[0].actualName);
 					}
 				});
+			} else if (convertToBool(useDynamicFolderPath)) {
+				self.useFolderPathInfo("Read From Folder Tree");
 			} else {
-				self.useFolderPathInfo(value);
+				self.useFolderPathInfo("No");
 			}
 		};
 
@@ -52,7 +53,7 @@ var loadData = function (ko, dataContainer) {
 		this.destinationRelativityInstance = dataContainer.destinationConfiguration.DestinationRelativityInstance;
 		this.multiSelectOverlay = dataContainer.destinationConfiguration.FieldOverlayBehavior;
 		this.useFolderPathInfo = ko.observable();
-		formatFolderPathInformation(dataContainer.destinationConfiguration.UseFolderPathInformation);
+		formatFolderPathInformation(dataContainer.destinationConfiguration.UseFolderPathInformation, dataContainer.destinationConfiguration.UseDynamicFolderPath);
 		this.moveExistingDocs = formatToYesOrNo(dataContainer.destinationConfiguration.MoveExistingDocuments);
 		this.exportType = formatExportType(dataContainer.destinationConfiguration.importNativeFile, dataContainer.destinationConfiguration.ImageImport);
 		this.showInstanceInfo = dataContainer.destinationConfiguration.FederatedInstanceArtifactId !== null;
