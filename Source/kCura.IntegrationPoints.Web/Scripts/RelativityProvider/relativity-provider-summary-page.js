@@ -38,6 +38,16 @@ var loadData = function (ko, dataContainer) {
 			return exportType + images + natives;
 		};
 
+		function getTextRepresentation(value) {
+			if (!value || value.length === 0) {
+				return "";
+			}
+
+			return value.map(function (x) {
+				return x.displayName;
+			}).join("; ");
+		};
+
 		this.hasErrors = dataContainer.hasErrors;
 		this.logErrors = dataContainer.logErrors;
 		this.emailNotification = dataContainer.emailNotification;
@@ -61,6 +71,13 @@ var loadData = function (ko, dataContainer) {
 
 		this.importNativeFile = ko.observable(dataContainer.destinationConfiguration.importNativeFile == 'true');
 		this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' && (!dataContainer.destinationConfiguration.ImagePrecedence || dataContainer.destinationConfiguration.ImagePrecedence.length == 0));
+		this.copyImages = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true');
+		this.imagePrecedence = ko.observable(": " + getTextRepresentation(dataContainer.destinationConfiguration.ImagePrecedence));
+		this.productionPrecedence = ko.observable(dataContainer.destinationConfiguration.ProductionPrecedence === 0 ? "Original" : "Produced");
+		this.precedenceSummary = ko.computed(function () {
+			return self.productionPrecedence() +  self.imagePrecedence();
+		}, self);
+		this.copyFilesToRepository = formatToYesOrNo(dataContainer.destinationConfiguration.importNativeFile);
 
 		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration.SourceWorkspaceArtifactId, dataContainer.sourceConfiguration.SavedSearchArtifactId,
 			this.importNativeFile(), this.importImageFile());
