@@ -56,7 +56,11 @@
 	};
 
 	this.next = function () {
-		var nextIndex = self.selectedFields().findIndex(x => x.fieldIdentifier === self.selectedFieldId()) + 1;
+		var currentIndex = self.selectedFields().findIndex(function (selectedField) {
+			return selectedField.fieldIdentifier === self.selectedFieldId();
+		});
+
+		var nextIndex = currentIndex + 1;
 		if (nextIndex >= self.selectedFields().length) {
 			nextIndex = 0;
 		}
