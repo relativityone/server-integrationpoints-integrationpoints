@@ -43,7 +43,7 @@ var loadData = function (ko, dataContainer) {
 				return "";
 			}
 
-			return value.map(function (x) {
+			return ": " + value.map(function (x) {
 				return x.displayName;
 			}).join("; ");
 		};
@@ -72,7 +72,7 @@ var loadData = function (ko, dataContainer) {
 		this.importNativeFile = ko.observable(dataContainer.destinationConfiguration.importNativeFile == 'true');
 		this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' && (!dataContainer.destinationConfiguration.ImagePrecedence || dataContainer.destinationConfiguration.ImagePrecedence.length == 0));
 		this.copyImages = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true');
-		this.imagePrecedence = ko.observable(": " + getTextRepresentation(dataContainer.destinationConfiguration.ImagePrecedence));
+		this.imagePrecedence = ko.observable(getTextRepresentation(dataContainer.destinationConfiguration.ImagePrecedence));
 		this.productionPrecedence = ko.observable(dataContainer.destinationConfiguration.ProductionPrecedence === 0 ? "Original" : "Produced");
 		this.precedenceSummary = ko.computed(function () {
 			return self.productionPrecedence() +  self.imagePrecedence();
