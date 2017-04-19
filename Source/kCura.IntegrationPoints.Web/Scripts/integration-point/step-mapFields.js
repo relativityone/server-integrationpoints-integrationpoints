@@ -304,6 +304,8 @@ ko.validation.insertValidationMessage = function (element) {
 			return getTextRepresentation(self.ImagePrecedence());
 		});
 
+		this.IncludeOriginalImages = ko.observable(model.IPDestinationSettings.IncludeOriginalImages || model.IncludeOriginalImages || false);
+
 		var imageProductionPickerViewModel = new ImageProductionPickerViewModel(function (productions) {
 			self.ImagePrecedence(productions);
 		});
@@ -923,6 +925,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 			this.returnModel.ImageImport = this.model.ImageImport();
 			this.returnModel.ImagePrecedence = this.model.ImagePrecedence();
+			this.returnModel.IncludeOriginalImages = this.model.IncludeOriginalImages();
 			this.returnModel.ProductionPrecedence = this.model.ProductionPrecedence();
 
 
@@ -1040,6 +1043,7 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 					_destination.ImageImport = this.model.ImageImport();
 					_destination.ImagePrecedence = this.model.ImagePrecedence(),
+					_destination.IncludeOriginalImages = this.model.IncludeOriginalImages(),
 					_destination.ProductionPrecedence = this.model.ProductionPrecedence(),
 					_destination.IdentifierField = this.model.IdentifierField();
 					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();

@@ -78,7 +78,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					var productionPrecedenceType = GetProductionPrecedenceType();
 					if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
 					{
-						SetProducedImages(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
+						var producedImagesCount = SetProducedImages(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
+						if (_settings.IncludeOriginalImages && producedImagesCount == 0)
+						{
+							SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+						}
 					}
 					else
 					{
@@ -107,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private void SetProducedImages(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
+		private int SetProducedImages(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
 		{
 			foreach (var prod in _settings.ImagePrecedence)
 			{
@@ -124,8 +128,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							documentArtifactId, fields, artifactType, index);
 						result.Add(artifactDto);
 					}
+					return producedImages.Count;
 				}
 			}
+			return 0;
 		}
 
 		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, string nativeColumnName, int documentArtifactId,
