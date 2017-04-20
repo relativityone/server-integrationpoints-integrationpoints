@@ -700,7 +700,7 @@
 				"VolumeStartNumber": self.VolumeStartNumber(),
 				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
 				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled(),
-				"FileNameSelection": self.exportFileNameViewModel.getSelections()
+				"FileNameParts": self.exportFileNameViewModel.getSelections()
 			};
 		};
 	};

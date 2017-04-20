@@ -196,11 +196,9 @@
     </Reference>
     <Reference Include="kCura.WinEDDS, Version=9.5.126.9, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.5.126.9\lib\net45\kCura.WinEDDS.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.WinEDDS.Core, Version=9.5.126.9, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.5.126.9\lib\net45\kCura.WinEDDS.Core.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.5.126.9, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.5.126.9\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
@@ -541,6 +539,13 @@
     <Compile Include="Extensions\ExportFileExtension.cs" />
     <Compile Include="Helpers\ExportedArtifactNameRepository.cs" />
     <Compile Include="Helpers\DestinationFolderHelper.cs" />
+    <Compile Include="Helpers\FileNaming\DescriptorPartsBuilder.cs" />
+    <Compile Include="Helpers\FileNaming\FieldDescriptorPartFactory.cs" />
+    <Compile Include="Helpers\FileNaming\FileNameProvidersDictionaryBuilder.cs" />
+    <Compile Include="Helpers\FileNaming\IDescriptorPartFactory.cs" />
+    <Compile Include="Helpers\FileNaming\IDescriptorPartsBuilder.cs" />
+    <Compile Include="Helpers\FileNaming\IFileNameProvidersDictionaryBuilder.cs" />
+    <Compile Include="Helpers\FileNaming\SeparatorPartDescriptorFactory.cs" />
     <Compile Include="Helpers\IExportedArtifactNameRepository.cs" />
     <Compile Include="Helpers\IDestinationFolderHelper.cs" />
     <Compile Include="Helpers\IJobInfo.cs" />
@@ -549,6 +554,7 @@
     <Compile Include="Helpers\JobInfo.cs" />
     <Compile Include="Helpers\JobInfoFactory.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
+    <Compile Include="Installer\FileNamingInstaller.cs" />
     <Compile Include="Installer\ValidationInstaller.cs" />
     <Compile Include="Logging\CompositeLoggingMediator.cs" />
     <Compile Include="Logging\ExportLoggingMediator.cs" />

@@ -59,5 +59,6 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public bool IncludeOriginalImages { get; set; }
 		public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
 		public bool IsAutomaticFolderCreationEnabled { get; set; }
+		public IEnumerable<FileNamePartModel> FileNameParts { get; set; }
 	}
 }
