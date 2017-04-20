@@ -147,7 +147,10 @@
 		for (var i = 0; i < availableFields.length; i++) {
 			availableFields[i].renamedText = "";
 			if (!!mappedFields && mappedFields.length > 0) {
-				var foundElem = mappedFields.find(mappedField => mappedField.destinationField.fieldIdentifier === availableFields[i].fieldIdentifier);
+				var foundElem = mappedFields.find(function(mappedField) {
+					return mappedField.destinationField.fieldIdentifier === availableFields[i].fieldIdentifier;
+				});
+
 				if (!!foundElem && foundElem.sourceField.displayName.trim() !== foundElem.destinationField.displayName.trim()) {
 					availableFields[i].renamedText = foundElem.destinationField.displayName;
 				}
