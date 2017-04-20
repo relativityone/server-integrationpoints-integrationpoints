@@ -169,9 +169,14 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataReaderFactoryTests.cs" />
+    <Compile Include="FieldParserFactoryTests.cs" />
     <Compile Include="ImportDataReaderTests.cs" />
     <Compile Include="ImportFileLocationServiceTests.cs" />
     <Compile Include="ImportPreviewServiceTests.cs" />
+    <Compile Include="ImportTransferDataContextTests.cs" />
+    <Compile Include="LoadFileDataReaderTests.cs" />
+    <Compile Include="LoadFileFieldParserTests.cs" />
     <Compile Include="OpticonDataReaderTests.cs" />
     <Compile Include="PreviewJobTests.cs" />
   </ItemGroup>

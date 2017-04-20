@@ -100,6 +100,14 @@
 								<button id="image-production-precedence-button" style="vertical-align: top" data-bind="click: openImageProductionPicker" class="actionButtonSmall">...</button>
 							</div>
 						</div>
+						<div class="field-row" data-bind="visible:ImageImportVisible()  == true && IsProductionPrecedenceSelected()  && ImageImport() == 'true'">
+							<div class="field-label">
+								Include Original Images<br />If Not Produced:
+							</div>
+							<div class="field-value" style="vertical-align: middle;">
+								<input id="image-include-original-images-checkbox" type="checkbox" data-bind="checked: IncludeOriginalImages" />
+							</div>
+						</div>
 						<div class="field-row" data-bind="visible: isDocument() == 'true'">
 							<div class="field-label required " data-bind="text: copyNativeLabel"></div>
 							<div class="field-value">

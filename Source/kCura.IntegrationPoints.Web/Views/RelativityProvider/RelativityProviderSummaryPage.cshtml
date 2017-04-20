@@ -58,9 +58,17 @@
 								<td class="dynamicViewFieldName">Use Folder Path Info:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: useFolderPathInfo"></td>
 							</tr>
-							<tr>
+							<tr data-bind="visible: !copyImages()">
 								<td class="dynamicViewFieldName">Move Existing Docs:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: moveExistingDocs"></td>
+							</tr>
+							<tr data-bind="visible: copyImages()">
+								<td class="dynamicViewFieldName">Image Precedance:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: precedenceSummary"></td>
+							</tr>
+							<tr data-bind="visible: copyImages()">
+								<td class="dynamicViewFieldName">Copy Files to Repository:</td>
+								<td class="dynamicViewFieldValue" data-bind="text: copyFilesToRepository"></td>
 							</tr>
 						</table>
 					</td>
@@ -104,7 +112,7 @@
 								<td class="dynamicViewFieldName">Total of Natives:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: stats.natives"></td>
 							</tr>
-							<tr data-bind="visible: importImageFile">
+							<tr data-bind="visible: importImageFile()">
 								<td class="dynamicViewFieldName">Total of Images:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: stats.images"></td>
 							</tr>
