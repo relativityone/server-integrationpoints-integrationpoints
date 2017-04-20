@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = true});
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false});
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT

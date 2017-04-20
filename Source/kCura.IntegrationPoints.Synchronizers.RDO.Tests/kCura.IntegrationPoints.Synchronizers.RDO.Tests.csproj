@@ -167,6 +167,10 @@
       <HintPath>..\packages\Relativity.Core.9.5.126.9\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.323, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.323\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.300\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
