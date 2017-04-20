@@ -15,18 +15,19 @@ var loadData = function (ko, dataContainer) {
 			return convertToBool(value) ? "Yes" : "No";
 		};
 
-		function formatFolderPathInformation(useFolderPathInfo) {
-			var value = formatToYesOrNo(useFolderPathInfo);
+		function formatFolderPathInformation(useFolderPathInfo, useDynamicFolderPath) {
 			if (convertToBool(useFolderPathInfo)) {
 				IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function (result) {
 					var folderPathSourceField = dataContainer.destinationConfiguration.FolderPathSourceField;
 					var fields = ko.utils.arrayFilter(result, function (field) { return field.fieldIdentifier === folderPathSourceField; });
 					if (fields.length > 0) {
-						self.useFolderPathInfo(value + ";" + fields[0].actualName);
+						self.useFolderPathInfo("Read From Field:" + fields[0].actualName);
 					}
 				});
+			} else if (convertToBool(useDynamicFolderPath)) {
+				self.useFolderPathInfo("Read From Folder Tree");
 			} else {
-				self.useFolderPathInfo(value);
+				self.useFolderPathInfo("No");
 			}
 		};
 
@@ -35,6 +36,16 @@ var loadData = function (ko, dataContainer) {
 			var images = convertToBool(importImages) ? "Images;" : "";
 			var natives = convertToBool(importNatives) ? "Natives;" : "";
 			return exportType + images + natives;
+		};
+
+		function getTextRepresentation(value) {
+			if (!value || value.length === 0) {
+				return "";
+			}
+
+			return ": " + value.map(function (x) {
+				return x.displayName;
+			}).join("; ");
 		};
 
 		this.hasErrors = dataContainer.hasErrors;
@@ -52,7 +63,7 @@ var loadData = function (ko, dataContainer) {
 		this.destinationRelativityInstance = dataContainer.destinationConfiguration.DestinationRelativityInstance;
 		this.multiSelectOverlay = dataContainer.destinationConfiguration.FieldOverlayBehavior;
 		this.useFolderPathInfo = ko.observable();
-		formatFolderPathInformation(dataContainer.destinationConfiguration.UseFolderPathInformation);
+		formatFolderPathInformation(dataContainer.destinationConfiguration.UseFolderPathInformation, dataContainer.destinationConfiguration.UseDynamicFolderPath);
 		this.moveExistingDocs = formatToYesOrNo(dataContainer.destinationConfiguration.MoveExistingDocuments);
 		this.exportType = formatExportType(dataContainer.destinationConfiguration.importNativeFile, dataContainer.destinationConfiguration.ImageImport);
 		this.showInstanceInfo = dataContainer.destinationConfiguration.FederatedInstanceArtifactId !== null;
@@ -60,6 +71,13 @@ var loadData = function (ko, dataContainer) {
 
 		this.importNativeFile = ko.observable(dataContainer.destinationConfiguration.importNativeFile == 'true');
 		this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' && (!dataContainer.destinationConfiguration.ImagePrecedence || dataContainer.destinationConfiguration.ImagePrecedence.length == 0));
+		this.copyImages = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true');
+		this.imagePrecedence = ko.observable(getTextRepresentation(dataContainer.destinationConfiguration.ImagePrecedence));
+		this.productionPrecedence = ko.observable(dataContainer.destinationConfiguration.ProductionPrecedence === 0 ? "Original" : "Produced");
+		this.precedenceSummary = ko.computed(function () {
+			return self.productionPrecedence() +  self.imagePrecedence();
+		}, self);
+		this.copyFilesToRepository = formatToYesOrNo(dataContainer.destinationConfiguration.importNativeFile);
 
 		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration.SourceWorkspaceArtifactId, dataContainer.sourceConfiguration.SavedSearchArtifactId,
 			this.importNativeFile(), this.importImageFile());

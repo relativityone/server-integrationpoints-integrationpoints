@@ -115,6 +115,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 		{
 			windsorContainer.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>());
 			windsorContainer.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>());
+			windsorContainer.Register(Component.For<IWinEddsFileReaderFactory>().ImplementedBy<WinEddsFileReaderFactory>());
 			windsorContainer.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>());
 		}
 

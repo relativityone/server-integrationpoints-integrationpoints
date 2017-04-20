@@ -270,7 +270,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-		this.ProductionPrecedence = ko.observable(model.IPDestinationSettings.ProductionPrecedence).extend({
+		this.ProductionPrecedence = ko.observable(model.IPDestinationSettings.ProductionPrecedence || model.ProductionPrecedence).extend({
 			required: {
 				onlyIf: function () {
 					return self.ImageImport();
@@ -292,7 +292,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}).join("; ");
 		};
 
-		this.ImagePrecedence = ko.observable(model.IPDestinationSettings.ImagePrecedence || [])
+		this.ImagePrecedence = ko.observable(model.IPDestinationSettings.ImagePrecedence || model.ImagePrecedence || [])
 			.extend({
 				required: {
 					onlyIf: function () {
@@ -304,6 +304,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.ImagePrecedenceSelection = ko.pureComputed(function () {
 			return getTextRepresentation(self.ImagePrecedence());
 		});
+
+		this.IncludeOriginalImages = ko.observable(model.IPDestinationSettings.IncludeOriginalImages || model.IncludeOriginalImages || false);
 
 		var imageProductionPickerViewModel = new ImageProductionPickerViewModel(function (productions) {
 			self.ImagePrecedence(productions);
@@ -922,6 +924,11 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
+			this.returnModel.ImageImport = this.model.ImageImport();
+			this.returnModel.ImagePrecedence = this.model.ImagePrecedence();
+			this.returnModel.IncludeOriginalImages = this.model.IncludeOriginalImages();
+			this.returnModel.ProductionPrecedence = this.model.ProductionPrecedence();
+
 
 			var map = [];
 			var emptyField = { name: '', identifer: '' };
@@ -1036,9 +1043,10 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.UseDynamicFolderPath = this.model.UseDynamicFolderPath();
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 					_destination.ImageImport = this.model.ImageImport();
-					_destination.ImagePrecedence = this.model.ImagePrecedence(),
-						_destination.ProductionPrecedence = this.model.ProductionPrecedence(),
-						_destination.IdentifierField = this.model.IdentifierField();
+					_destination.ImagePrecedence = this.model.ImagePrecedence();
+					_destination.ProductionPrecedence = this.model.ProductionPrecedence();
+					_destination.IncludeOriginalImages = this.model.IncludeOriginalImages();
+					_destination.IdentifierField = this.model.IdentifierField();
 					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
 
 					// pushing extracted text location setting

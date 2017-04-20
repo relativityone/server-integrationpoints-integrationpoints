@@ -19,12 +19,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private string[] _currentLine;
 		private int _columnCount;
 		private LoadFile _config;
-		private LoadFileReader _loadFileReader;
+		private IArtifactReader _loadFileReader;
 		private DataTable _schemaTable;
 		private Dictionary<string, int> _ordinalMap;
 		ImportProviderSettings _providerSettings;
 
-		public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, LoadFileReader reader)
+		public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, IArtifactReader reader)
 		{
 			_providerSettings = providerSettings;
 			_config = config;
@@ -139,6 +139,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			}
 			else
 			{
+				Close();
 				return false;
 			}
 		}

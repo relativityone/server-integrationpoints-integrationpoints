@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.IO;
 using System.Reflection;
 
@@ -12,6 +13,7 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Services;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -52,6 +54,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 			//ImportDataReader schema should have no extra columns
 			Assert.AreEqual(fieldMaps.Count, columnNames.Count);
+			//ImportDataReader schema should have number of mapped columns
+			Assert.AreEqual(fieldMaps.Count, idr.FieldCount);
 		}
 
 		[Test]
@@ -81,8 +85,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 				}
 			}
 
-			//ImportDataReader schema should have no extra columns
-			Assert.AreEqual(fieldMaps.Count, columnNames.Count);
+			//ImportDataReader schema should have one extra column (folder mapped to group id field)
+			Assert.AreEqual(fieldMaps.Count + 1, columnNames.Count);
+			//ImportDataReader schema should have same number of columns as source data
+			Assert.AreEqual(fieldMaps.Count + 1, idr.FieldCount);
 		}
 
 		[Test]
@@ -148,6 +154,198 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			}
 
 			Assert.AreEqual(sourceDataTable.Rows.Count, dtRowIndex);
+		}
+
+		[Test]
+		public void ItShouldPassThroughCallsToManageErrorRecords()
+		{
+			//Arrange
+			IDataReader dataSource = Substitute.For<IDataReader, IArtifactReader>();
+			((IArtifactReader) dataSource).ManageErrorRecords(Arg.Any<string>(), Arg.Any<string>()).Returns("Error_file");
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(dataSource);
+
+			//Assert
+			Assert.AreEqual("Error_file", idr.ManageErrorRecords(string.Empty, string.Empty));
+		}
+
+		[Test]
+		public void ItShouldPassThroughCallsToCountRecords()
+		{
+			//Arrange
+			IDataReader dataSource = Substitute.For<IDataReader, IArtifactReader>();
+			((IArtifactReader) dataSource).CountRecords().Returns(1);
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(dataSource);
+
+			//Assert
+			Assert.AreEqual(1, idr.CountRecords());
+		}
+
+		[Test]
+		public void ItShouldNotBeClosed_WhenFirstCreated()
+		{
+			//Arrange
+			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
+			List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
+			idr.Setup(fieldMaps.ToArray());
+
+			//Assert
+			Assert.IsFalse(idr.IsClosed);
+		}
+
+		[Test]
+		public void ItShouldReturnTheCorrectName_WhenFolderMappingIsPresent()
+		{
+			//Arrange
+			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
+			List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
+
+			Dictionary<int, string> nameMap = new Dictionary<int, string>();
+			nameMap[0] = "0";
+			nameMap[1] = "1";
+			nameMap[2] = kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD;
+			nameMap[3] = "2";
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
+			idr.Setup(fieldMaps.ToArray());
+
+			foreach (int key in nameMap.Keys)
+			{
+				Assert.AreEqual(nameMap[key], idr.GetName(key));
+			}
+		}
+
+		[Test]
+		public void ItShouldReturnTheCorrectName_WhenFolderMappingIsNotPresent()
+		{
+			//Arrange
+			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
+			List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITHOUT_FOLDER);
+
+			Dictionary<int, string> nameMap = new Dictionary<int, string>();
+			nameMap[0] = "0";
+			nameMap[1] = "2";
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
+			idr.Setup(fieldMaps.ToArray());
+
+			foreach (int key in nameMap.Keys)
+			{
+				Assert.AreEqual(nameMap[key], idr.GetName(key));
+			}
+		}
+
+		[Test]
+		public void ItShouldReturnTheCorrectOrdinal_WhenFolderMappingIsPresent()
+		{
+			//Arrange
+			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
+			List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
+
+			Dictionary<string, int> ordinalMap = new Dictionary<string, int>();
+			ordinalMap["0"] = 0;
+			ordinalMap["1"] = 1;
+			ordinalMap[kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD] = 2;
+			ordinalMap["2"] = 3;
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
+			idr.Setup(fieldMaps.ToArray());
+
+			foreach (string key in ordinalMap.Keys)
+			{
+				Assert.AreEqual(ordinalMap[key], idr.GetOrdinal(key));
+			}
+		}
+
+		[Test]
+		public void ItShouldReturnTheCorrectOrdinal_WhenFolderMappingIsNotPresent()
+		{
+			//Arrange
+			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
+			List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITHOUT_FOLDER);
+
+			Dictionary<string, int> ordinalMap = new Dictionary<string, int>();
+			ordinalMap["0"] = 0;
+			ordinalMap["2"] = 1;
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
+			idr.Setup(fieldMaps.ToArray());
+
+			foreach (string key in ordinalMap.Keys)
+			{
+				Assert.AreEqual(ordinalMap[key], idr.GetOrdinal(key));
+			}
+		}
+
+		[Test]
+		public void ItShouldBeClosedAfterCloseCalled()
+		{
+			ImportDataReader idr = new ImportDataReader((new DataTable()).CreateDataReader());
+			idr.Close();
+			Assert.IsTrue(idr.IsClosed);
+		}
+
+		[Test]
+		public void ItShouldReturnFalseFromReadWhenClosed()
+		{
+			ImportDataReader idr = new ImportDataReader((new DataTable()).CreateDataReader());
+			idr.Close();
+			Assert.IsFalse(idr.Read());
+		}
+
+		[Test]
+		public void ItShouldThrowNotImplementedForUnusedMethods()
+		{
+			//Arrange
+			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
+			List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
+
+			//Act
+			ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
+			idr.Setup(fieldMaps.ToArray());
+
+			//Assert
+
+			//Methods
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.GetDataTypeName(0));
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.GetFieldType(0));
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.ReadArtifact());
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.GetColumnNames(null));
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.SourceIdentifierValue());
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.AdvanceRecord());
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.OnFatalErrorState());
+			Assert.Throws(typeof(System.NotImplementedException), () => idr.Halt());
+
+			//Properties
+			Assert.Throws(typeof(System.NotImplementedException), () => { bool testProperty = idr.HasMoreRecords; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { int testProperty = idr.CurrentLineNumber; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { long testProperty = idr.SizeInBytes; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { long testProperty = idr.BytesProcessed; });
+
+			//Events
+			IArtifactReader instanceAsArtifactReader = (IArtifactReader)idr;
+
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning += (e) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.DataSourcePrep += (e) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.StatusMessage += (e) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.FieldMapped += (srcField, wsField) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning += (e) => { }; });
+
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning -= (e) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.DataSourcePrep -= (e) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.StatusMessage -= (e) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.FieldMapped -= (srcField, wsField) => { }; });
+			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning -= (e) => { }; });
 		}
 
 		private DataTable SourceDataTable(string resourceName)

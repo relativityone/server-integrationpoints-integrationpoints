@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private const string _ROOTED_IMAGE_PATH = @"C:\Images\ExampleImage.PNG";
 		private const string _UNROOTED_IMAGE_PATH = @"ExampleImage.PNG";
 		private const string _BATES_NUMBER = @"BATES_NUMBER";
+		private const int _RECORD_COUNT = 42;
 
 		OpticonDataReader _instance;
 		IImageReader _opticonFileReader;
@@ -48,6 +49,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 			_opticonFileReader.GetImageRecord().Returns(_imageRecord);
 			_opticonFileReader.HasMoreRecords.Returns(true);
+			_opticonFileReader.CountRecords().Returns(_RECORD_COUNT);
 
 			_instance = new OpticonDataReader(_providerSettings, _imageLoadFile, _opticonFileReader);
 		}
@@ -161,10 +163,91 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_instance.Init();
 
 			//Assert
-			Assert.IsTrue(_instance.Read());
-			Assert.AreEqual(_instance[OpticonInfo.BATES_NUMBER_FIELD_NAME], _instance[OpticonInfo.BATES_NUMBER_FIELD_INDEX]);
-			Assert.AreEqual(_instance[OpticonInfo.DOCUMENT_ID_FIELD_NAME], _instance[OpticonInfo.DOCUMENT_ID_FIELD_INDEX]);
-			Assert.AreEqual(_instance[OpticonInfo.FILE_LOCATION_FIELD_NAME], _instance[OpticonInfo.FILE_LOCATION_FIELD_INDEX]);
+			DataTable schemaTable = _instance.GetSchemaTable();
+			Assert.AreEqual(3, schemaTable.Columns.Count);
+			Assert.AreEqual(OpticonInfo.DOCUMENT_ID_FIELD_NAME, schemaTable.Columns[OpticonInfo.DOCUMENT_ID_FIELD_INDEX].ColumnName);
+			Assert.AreEqual(OpticonInfo.BATES_NUMBER_FIELD_NAME, schemaTable.Columns[OpticonInfo.BATES_NUMBER_FIELD_INDEX].ColumnName);
+			Assert.AreEqual(OpticonInfo.FILE_LOCATION_FIELD_NAME, schemaTable.Columns[OpticonInfo.FILE_LOCATION_FIELD_INDEX].ColumnName);
+		}
+
+		[Test]
+		public void ItShouldHaveCorrectFieldCount()
+		{
+			//Arrange
+
+			//Act
+			_instance.Init();
+
+			//Assert
+			Assert.AreEqual(3, _instance.FieldCount);
+		}
+
+		[Test]
+		public void ItShouldBeClosedAfterCloseCalled()
+		{
+			//Arrange
+
+			//Act
+			_instance.Init();
+			_instance.Close();
+
+			//Assert
+			Assert.IsTrue(_instance.IsClosed);
+		}
+
+		[Test]
+		public void ItShouldReturnCorrectOrdinal()
+		{
+			//Arrange
+
+			//Act
+			_instance.Init();
+
+			//Assert
+			Assert.AreEqual(OpticonInfo.BATES_NUMBER_FIELD_INDEX, _instance.GetOrdinal(OpticonInfo.BATES_NUMBER_FIELD_NAME));
+			Assert.AreEqual(OpticonInfo.DOCUMENT_ID_FIELD_INDEX, _instance.GetOrdinal(OpticonInfo.DOCUMENT_ID_FIELD_NAME));
+			Assert.AreEqual(OpticonInfo.FILE_LOCATION_FIELD_INDEX, _instance.GetOrdinal(OpticonInfo.FILE_LOCATION_FIELD_NAME));
+		}
+
+		[Test]
+		public void ItShouldReturnCorrectName()
+		{
+			//Arrange
+
+			//Act
+			_instance.Init();
+
+			//Assert
+			Assert.AreEqual(OpticonInfo.BATES_NUMBER_FIELD_NAME, _instance.GetName(OpticonInfo.BATES_NUMBER_FIELD_INDEX));
+			Assert.AreEqual(OpticonInfo.DOCUMENT_ID_FIELD_NAME, _instance.GetName(OpticonInfo.DOCUMENT_ID_FIELD_INDEX));
+			Assert.AreEqual(OpticonInfo.FILE_LOCATION_FIELD_NAME, _instance.GetName(OpticonInfo.FILE_LOCATION_FIELD_INDEX));
+		}
+
+		[Test]
+		public void ItShouldReturnCorrectRecordCountFromOpticonFileReader()
+		{
+			//Arrange
+
+			//Act
+			_instance.Init();
+
+			//Assert
+			Assert.AreEqual(_RECORD_COUNT, _instance.CountRecords());
+		}
+
+		[Test]
+		public void ItShouldThrowNotImplementedForUnusedMethods()
+		{
+			//Arrange
+
+			//Act
+			_instance.Init();
+
+			//Assert
+
+			//Methods
+			Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetDataTypeName(0));
+			Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetFieldType(0));
 		}
 	}
 }

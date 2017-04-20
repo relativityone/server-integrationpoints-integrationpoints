@@ -75,14 +75,22 @@ TooltipDefs.RelativityProviderSettingsDetails = [
         name: "Copy Images",
         description: "determines whether Integration Points copies images while syncing data between the source and destination workspaces. When you select Yes, only images are transferred by the integration point and no documents. When you additionally select Yes for the Copy Files to Repository setting, integration point transfers physical image files to the fileshare of the destination workspace.",
         subsection: []
+    }, {
+    	name: "Image Precedence",
+        description: "use this drop-down to indicate whether you want to transfer Original Images or Production Images to your destination workspace. For Production Images, you’ll need to indicate a precedence in the Production Precedence field below.",
+        subsection: []
     },
 	{
 		name: "Use Folder Path Information",
 		description: "allows you to use a metadata field to build the folder structure for the documents that you promote to the review workspace:",
 		subsection: [
 			{
-				s_name: "Select Yes",
-				s_description: "to use a metadata field to build the folder structure for the documents that you promote to the review workspace."
+				s_name: "Read From Field",
+				s_description: "select this to use a metadata field to build the folder structure for the documents that you promote to the destination/review workspace"
+			},
+			{
+				s_name: "Read From Folder Tree",
+				s_description: "select this to use the existing folder tree in the Documents tab to build the folder structure for the documents that you promote to the destination/review workspace."
 			},
 			{
 				s_name: "Select No",
