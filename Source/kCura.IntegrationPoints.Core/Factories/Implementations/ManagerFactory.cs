@@ -111,8 +111,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public ITagsCreator CreateTagsCreator(IContextContainer contextContainer)
 		{
 			var repositoryFactory = CreateRepositoryFactory(contextContainer);
-			ISourceJobManager sourceJobManager = new SourceJobManager(repositoryFactory);
-			ISourceWorkspaceManager sourceWorkspaceManager = new SourceWorkspaceManager(repositoryFactory);
+			ISourceJobManager sourceJobManager = new SourceJobManager(repositoryFactory, _helper);
+			ISourceWorkspaceManager sourceWorkspaceManager = new SourceWorkspaceManager(repositoryFactory, _helper);
 			var relativitySourceRdoHelpersFactory = new RelativitySourceRdoHelpersFactory(repositoryFactory);
 			IRelativitySourceJobRdoInitializer sourceJobRdoInitializer = new RelativitySourceJobRdoInitializer(_helper, repositoryFactory, relativitySourceRdoHelpersFactory);
 			IRelativitySourceWorkspaceRdoInitializer sourceWorkspaceRdoInitializer = new RelativitySourceWorkspaceRdoInitializer(_helper, repositoryFactory, relativitySourceRdoHelpersFactory);

@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -27,13 +28,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
 			_instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
 
+			IHelper helper = Substitute.For<IHelper>();
 			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
 
 			repositoryFactory.GetSourceWorkspaceRepository().Returns(_workspaceRepository);
 			repositoryFactory.GetSourceWorkspaceRepository(_DESTINATION_WORKSPACE_ID).Returns(_sourceWorkspaceRepository);
 			repositoryFactory.GetInstanceSettingRepository().Returns(_instanceSettingRepository);
 
-			_instance = new SourceWorkspaceManager(repositoryFactory);
+			_instance = new SourceWorkspaceManager(repositoryFactory, helper);
 		}
 
 		[Test]
@@ -194,6 +196,37 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_sourceWorkspaceRepository.DidNotReceive().Update(Arg.Any<SourceWorkspaceDTO>());
 			_instanceSettingRepository.DidNotReceive().GetConfigurationValue(Arg.Any<string>(), Arg.Any<string>());
 			_sourceWorkspaceRepository.DidNotReceive().Create(Arg.Any<SourceWorkspaceDTO>());
+		}
+
+		[Test]
+		public void ItShouldShortenSourceWorkspaceName()
+		{
+			int sourceWorkspaceDescriptorArtifactTypeId = 153282;
+
+			string federatedInstanceName = new string('x', 300);
+			int? federatedInstanceArtifactId = 682622;
+			_instanceSettingRepository.GetConfigurationValue("Relativity.Authentication", "FriendlyInstanceName").Returns(federatedInstanceName);
+
+			string workspaceName = "workspace_name_486";
+			_workspaceRepository.Retrieve(_SOURCE_WORKSPACE_ID)
+				.Returns(new WorkspaceDTO
+				{
+					Name = workspaceName
+				});
+
+			_sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(_SOURCE_WORKSPACE_ID, federatedInstanceName, federatedInstanceArtifactId)
+				.Returns((SourceWorkspaceDTO)null);
+
+			var suffix = $" - {workspaceName} - {_SOURCE_WORKSPACE_ID}";
+			string expectedName = federatedInstanceName.Substring(0, 255 - suffix.Length) + suffix;
+
+			// ACT
+			SourceWorkspaceDTO sourceWorkspaceDTO = _instance.CreateSourceWorkspaceDto(_DESTINATION_WORKSPACE_ID, _SOURCE_WORKSPACE_ID, federatedInstanceArtifactId,
+				sourceWorkspaceDescriptorArtifactTypeId);
+
+			// ASSERT
+			Assert.That(sourceWorkspaceDTO.Name.Length, Is.EqualTo(Data.Constants.DEFAULT_NAME_FIELD_LENGTH));
+			Assert.That(sourceWorkspaceDTO.Name, Is.EqualTo(expectedName));
 		}
 
 		private void ValidateSourceWorkspace(SourceWorkspaceDTO sourceWorkspaceDTO, int artifactId, int artifactTypeId, string workspaceName, string instanceName)

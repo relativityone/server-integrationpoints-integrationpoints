@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -26,12 +27,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_sourceJobRepository = Substitute.For<ISourceJobRepository>();
 			_sourceRdoRepository = Substitute.For<IRdoRepository>();
 
+			IHelper helper = Substitute.For<IHelper>();
 			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
 
 			repositoryFactory.GetRdoRepository(_SOURCE_WORKSPACE_ID).Returns(_sourceRdoRepository);
 			repositoryFactory.GetSourceJobRepository(_DESTINATION_WORKSPACE_ID).Returns(_sourceJobRepository);
 
-			_instance = new SourceJobManager(repositoryFactory);
+			_instance = new SourceJobManager(repositoryFactory, helper);
 		}
 
 		[Test]
@@ -56,6 +58,33 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			// ASSERT
 			ValidateSourceJob(sourceJobDto, sourceJobId, jobHistoryRdo.TextIdentifier, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
+		}
+
+		[Test]
+		public void ItShouldShortenSourceJobName()
+		{
+			int jobHistoryArtifactId = 806694;
+			int sourceWorkspaceRdoInstanceArtifactId = 320154;
+			int sourceJobDescriptorArtifactTypeId = 846788;
+
+			RDO jobHistoryRdo = new RDO
+			{
+				TextIdentifier = new string('x', 300)
+			};
+			var sourceJobId = 713321;
+
+			string expectedName = jobHistoryRdo.TextIdentifier.Substring(0, 255 - $" - {jobHistoryArtifactId}".Length) + $" - {jobHistoryArtifactId}";
+
+			_sourceRdoRepository.ReadSingle(jobHistoryArtifactId).Returns(jobHistoryRdo);
+			_sourceJobRepository.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobId);
+
+			//ACT
+			var sourceJobDto = _instance.CreateSourceJobDto(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId,
+				sourceJobDescriptorArtifactTypeId);
+
+			// ASSERT
+			Assert.That(sourceJobDto.Name.Length, Is.EqualTo(Data.Constants.DEFAULT_NAME_FIELD_LENGTH));
+			Assert.That(sourceJobDto.Name, Is.EqualTo(expectedName));
 		}
 
 		private void ValidateSourceJob(SourceJobDTO sourceJob, int sourceJobArtifactId, string jobHistoryName, int jobHistoryId, int sourceWorkspaceRdoInstanceArtifactId)
