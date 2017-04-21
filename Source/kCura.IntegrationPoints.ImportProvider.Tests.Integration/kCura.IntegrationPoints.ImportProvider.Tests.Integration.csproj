@@ -63,7 +63,7 @@
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\packages\kCura.Relativity.Client.9.5.126.9\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <HintPath>..\packages\kCura.Relativity.Client.9.5.127.72\lib\net45\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="NSubstitute">
@@ -74,7 +74,7 @@
     </Reference>
     <Reference Include="Relativity.API, Version=9.5.89.44, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Relativity.API.9.5.126.9\lib\net45\Relativity.API.dll</HintPath>
+      <HintPath>..\packages\Relativity.API.9.5.127.72\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.264\lib\net45\Relativity.Kepler.dll</HintPath>
@@ -270,7 +270,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.5.126.9\lib\native\*  $(ProjectDir)$(OutDir)  /y
+    <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.5.127.72\lib\native\*  $(ProjectDir)$(OutDir)  /y
 mkdir "$(ProjectDir)..\..\lib\UnitTests"
 xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   </PropertyGroup>

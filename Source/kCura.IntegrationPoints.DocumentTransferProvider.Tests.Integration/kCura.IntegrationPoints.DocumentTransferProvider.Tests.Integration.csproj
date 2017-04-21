@@ -40,20 +40,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Config, Version=9.5.126.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Config.9.5.126.9\lib\net45\kCura.Config.dll</HintPath>
+    <Reference Include="kCura.Config, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Config.9.5.127.72\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Crypto, Version=9.5.126.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Crypto.9.5.126.9\lib\net45\kCura.Crypto.dll</HintPath>
+    <Reference Include="kCura.Crypto, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Crypto.9.5.127.72\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data.RowDataGateway, Version=9.5.126.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.126.9\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+    <Reference Include="kCura.Data.RowDataGateway, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.127.72\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Utility, Version=9.5.126.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Utility.9.5.126.9\lib\net45\kCura.Utility.dll</HintPath>
+    <Reference Include="kCura.Utility, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Utility.9.5.127.72\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NSubstitute, Version=1.10.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
@@ -64,12 +64,12 @@
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.5.126.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.5.126.9\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.5.127.72\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces, Version=9.5.126.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.126.9\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Authentication.Interfaces, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.127.72\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
