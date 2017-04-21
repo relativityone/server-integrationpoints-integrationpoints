@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var fieldQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Fields = fieldNames.ToArray(),
-				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId} AND 'DisplayName' == '{displayName}' AND 'Field Type' == '{fieldType}'"
+				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId} AND 'DisplayName' == '{EscapeSingleQuote(displayName)}' AND 'Field Type' == '{fieldType}'"
 			};
 
 			ArtifactDTO[] fieldArtifactDtos = null;
