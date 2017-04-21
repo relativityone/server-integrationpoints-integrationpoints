@@ -141,7 +141,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void PopulateNativeFileNameViewFields(ExportDataContext exportDataContext)
 		{
-			IEnumerable<FieldDescriptorPart> fieldDescriptorParts = exportDataContext.Settings.FileNameParts.OfType<FieldDescriptorPart>();
+			IEnumerable<FieldDescriptorPart> fieldDescriptorParts = exportDataContext.Settings.FileNameParts != null
+				? exportDataContext.Settings.FileNameParts.OfType<FieldDescriptorPart>()
+				: Enumerable.Empty<FieldDescriptorPart>();
 			if (fieldDescriptorParts.Any())
 			{
 				exportDataContext.ExportFile.SelectedNativesNameViewFields = FilterFields(exportDataContext.ExportFile,
