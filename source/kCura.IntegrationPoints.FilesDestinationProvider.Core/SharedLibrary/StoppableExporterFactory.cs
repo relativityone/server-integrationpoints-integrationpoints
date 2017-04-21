@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Core.Export;
 using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Service.Export;
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			var fileNameProviderContainerFactory = new FileNameProviderContainerFactory(fileNameProvidersDictionary);
 			var fileNameProvider = fileNameProviderContainerFactory.Create(exportDataContext.ExportFile);
 
-			var exporter = new Exporter(exportDataContext.ExportFile, controller, serviceFactory,
+			var exporter = new ExtendedExporter(exportDataContext.ExportFile, controller, serviceFactory,
 				loadFileFormatterFactory)
 			{
 				NameTextAndNativesAfterBegBates = nameTextAndNativesAfterBegBates, 

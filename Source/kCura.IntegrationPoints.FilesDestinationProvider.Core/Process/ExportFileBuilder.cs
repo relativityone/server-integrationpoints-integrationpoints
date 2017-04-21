@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Core.Model.Export;
 using Relativity;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
@@ -24,9 +23,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_exportedObjectBuilder = exportedObjectBuilder;
 		}
 
-		public ExportFile Create(ExportSettings exportSettings)
+		public ExtendedExportFile Create(ExportSettings exportSettings)
 		{
-			var exportFile = new ExportFile(exportSettings.ArtifactTypeId);
+			var exportFile = new ExtendedExportFile(exportSettings.ArtifactTypeId);
 
 			ExportFileHelper.SetDefaultValues(exportFile);
 
@@ -66,15 +65,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			switch (exportFile.TypeOfExport)
 			{
 				case ExportFile.ExportType.Production:
-					exportFile.ImagePrecedence = GetProductionImagePrecedenceList(exportSettings, exportFile).ToArray();
+					exportFile.ImagePrecedence = GetProductionImagePrecedenceList(exportFile).ToArray();
 					break;
 				default:
-					exportFile.ImagePrecedence = GetDeafultImagePrecedenceList(exportSettings, exportFile).ToArray();
+					exportFile.ImagePrecedence = GetDeafultImagePrecedenceList(exportSettings).ToArray();
 					break;
 			}
 		}
 
-		private IEnumerable<Pair> GetDeafultImagePrecedenceList(ExportSettings exportSettings, ExportFile exportFile)
+		private IEnumerable<Pair> GetDeafultImagePrecedenceList(ExportSettings exportSettings)
 		{
 			if (exportSettings.ProductionPrecedence == ExportSettings.ProductionPrecedenceType.Produced)
 			{
@@ -89,7 +88,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			}
 		}
 
-		private IEnumerable<Pair> GetProductionImagePrecedenceList(ExportSettings exportSettings, ExportFile exportFile)
+		private IEnumerable<Pair> GetProductionImagePrecedenceList(ExportFile exportFile)
 		{
 			yield return new Pair(exportFile.ArtifactID.ToString(), string.Empty);
 		}

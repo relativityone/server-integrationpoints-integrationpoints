@@ -11,6 +11,8 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Core.Model;
+using kCura.WinEDDS.Core.Model.Export;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 using Relativity;
@@ -72,16 +74,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			try
 			{
 				LogCreatingExporter(settings);
-				var exportFile = _exportFileBuilder.Create(settings);
-				PerformLogin(exportFile);
-				PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds.Select(item => item.Key).ToList(), settings.TextPrecedenceFieldsIds);
+				ExtendedExportFile exportFile = _exportFileBuilder.Create(settings);
 
-				SetRuntimeSettings(exportFile, settings, job);
-				var exporter = _exporterFactory.Create(new ExportDataContext()
+				var exportDataContext = new ExportDataContext()
 				{
 					ExportFile = exportFile,
 					Settings = settings
-				});
+				};
+
+				PerformLogin(exportFile);
+				PopulateExportFieldsSettings(exportDataContext);
+
+				SetRuntimeSettings(exportFile, settings, job);
+				IExporter exporter = _exporterFactory.Create(exportDataContext);
 				AttachHandlers(exporter);
 				SubscribeToJobStatisticsEvents(job);
 				return exporter;
@@ -116,20 +121,34 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.Credential = _credentialProvider.Authenticate(cookieContainer);
 		}
 
-		private void PopulateExportFieldsSettings(ExportFile exportFile, List<int> selectedViewFieldIds, List<int> selectedTextPrecedence)
+		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext)
 		{
 			LogPopulatingFields();
-			using (var searchManager = _searchManagerFactory.Create(exportFile.Credential, exportFile.CookieContainer))
+			using (var searchManager = _searchManagerFactory.Create(exportDataContext.ExportFile.Credential, exportDataContext.ExportFile.CookieContainer))
 			{
-				using (var caseManager = _caseManagerFactory.Create(exportFile.Credential, exportFile.CookieContainer))
+				using (var caseManager = _caseManagerFactory.Create(exportDataContext.ExportFile.Credential, exportDataContext.ExportFile.CookieContainer))
 				{
-					PopulateCaseInfo(exportFile, caseManager);
-					SetRdoModeSpecificSettings(exportFile);
-					SetAllExportableFields(exportFile, searchManager);
+					PopulateCaseInfo(exportDataContext.ExportFile, caseManager);
+					SetRdoModeSpecificSettings(exportDataContext.ExportFile);
+					SetAllExportableFields(exportDataContext.ExportFile, searchManager);
 
-					PopulateViewFields(exportFile, selectedViewFieldIds);
-					PopulateTextPrecedenceFields(exportFile, selectedTextPrecedence);
+					PopulateViewFields(exportDataContext.ExportFile, exportDataContext.Settings.SelViewFieldIds.Select(item => item.Key).ToList());
+					PopulateNativeFileNameViewFields(exportDataContext);
+					PopulateTextPrecedenceFields(exportDataContext.ExportFile, exportDataContext.Settings.TextPrecedenceFieldsIds);
 				}
+			}
+		}
+
+		private void PopulateNativeFileNameViewFields(ExportDataContext exportDataContext)
+		{
+			IEnumerable<FieldDescriptorPart> fieldDescriptorParts = exportDataContext.Settings.FileNameParts.OfType<FieldDescriptorPart>();
+			if (fieldDescriptorParts.Any())
+			{
+				exportDataContext.ExportFile.SelectedNativesNameViewFields = FilterFields(exportDataContext.ExportFile,
+					fieldDescriptorParts
+						.Select(item => item.Value)
+						.ToList())
+					.ToList();
 			}
 		}
 
@@ -161,11 +180,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.SelectedViewFields = FilterFields(exportFile, selectedViewFieldIds);
 
 			exportFile.IdentifierColumnName = exportFile.SelectedViewFields.FirstOrDefault(field => field.Category == FieldCategory.Identifier)?.DisplayName;
-			
+
 			var fileTypeField = exportFile.AllExportableFields.FirstOrDefault(field => field.FieldType == FieldTypeHelper.FieldType.File);
 			if (fileTypeField != null)
 			{
-				exportFile.FileField = new DocumentField(fileTypeField.DisplayName, fileTypeField.FieldArtifactId, (int)fileTypeField.FieldType, 
+				exportFile.FileField = new DocumentField(fileTypeField.DisplayName, fileTypeField.FieldArtifactId, (int)fileTypeField.FieldType,
 					(int)fileTypeField.Category, fileTypeField.FieldCodeTypeID, 0, fileTypeField.AssociativeArtifactTypeID, fileTypeField.IsUnicodeEnabled, null, fileTypeField.EnableDataGrid);
 			}
 

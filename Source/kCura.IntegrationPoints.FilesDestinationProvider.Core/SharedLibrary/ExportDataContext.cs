@@ -1,11 +1,11 @@
 ﻿
-using kCura.WinEDDS;
+using kCura.WinEDDS.Core.Model.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
 	public struct ExportDataContext
 	{
-		public ExportFile ExportFile;
+		public ExtendedExportFile ExportFile;
 		public ExportSettings Settings;
 	}
 }
