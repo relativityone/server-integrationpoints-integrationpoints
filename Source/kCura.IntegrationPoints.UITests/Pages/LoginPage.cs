@@ -10,18 +10,18 @@ namespace IntegrationPointsUITests.Pages
         private readonly IWebDriver _driver;
 
         [FindsBy(How = How.Id, Using = "_email")]
-        private IWebElement _username;
+        private IWebElement _username=null;
 
         [FindsBy(How = How.Id, Using = "continue")]
-        private IWebElement _continueButton;
+        private IWebElement _continueButton = null;
 
-        [FindsBy(How = How.Id, Using = "_password__password_TextBox")]
-        private IWebElement _password;
+		[FindsBy(How = How.Id, Using = "_password__password_TextBox")]
+        private IWebElement _password = null;
 
-        [FindsBy(How = How.Id, Using = "_login")]
-        private IWebElement _loginButton;
+		[FindsBy(How = How.Id, Using = "_login")]
+        private IWebElement _loginButton = null;
 
-        public LoginPage(IWebDriver driver)
+		public LoginPage(IWebDriver driver)
         {
             _driver = driver;
             PageFactory.InitElements(driver, this);
