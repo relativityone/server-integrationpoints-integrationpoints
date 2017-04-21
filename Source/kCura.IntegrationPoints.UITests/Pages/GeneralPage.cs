@@ -10,7 +10,7 @@ namespace IntegrationPointsUITests.Pages
         private readonly IWebDriver _driver;
 
         [FindsBy(How = How.ClassName, Using = "headerUpperRow")]
-        private IWebElement _header;
+        private IWebElement _header=null;
 
         public GeneralPage(IWebDriver driver)
         {
