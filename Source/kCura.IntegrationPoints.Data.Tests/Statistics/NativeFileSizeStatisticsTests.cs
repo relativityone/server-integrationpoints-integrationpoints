@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 	[TestFixture]
 	public class NativeFileSizeStatisticsTests : TestBase
 	{
-		private const string _SQL_TEXT = "SELECT SUM([Size]) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
+		private const string _SQL_TEXT = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 
 		private const int _WORKSPACE_ID = 882826;
 

@@ -18,8 +18,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 	[TestFixture]
 	public class ImageFileSizeStatisticsTests : TestBase
 	{
-		private const string _PRODUCTION_SQL = "SELECT SUM([Size]) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
-		private const string _SQL_TEXT = "SELECT SUM([Size]) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
+		private const string _PRODUCTION_SQL = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
+		private const string _SQL_TEXT = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 
 		private const int _WORKSPACE_ID = 218772;
 
