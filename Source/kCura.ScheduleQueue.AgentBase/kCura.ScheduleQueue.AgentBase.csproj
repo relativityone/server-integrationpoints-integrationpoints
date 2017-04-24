@@ -44,8 +44,8 @@
       <HintPath>..\packages\IdentityModel.1.6.0\lib\net45\IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Agent, Version=9.5.127.72, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.Agent.9.5.127.72\lib\net45\kCura.Agent.dll</HintPath>
+    <Reference Include="kCura.Agent, Version=9.5.131.5, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.Agent.9.5.131.5\lib\net45\kCura.Agent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Config, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
@@ -60,24 +60,24 @@
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Config, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Config.9.5.127.72\lib\net45\kCura.Config.dll</HintPath>
+    <Reference Include="kCura.Config, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Config.9.5.131.5\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Crypto, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Crypto.9.5.127.72\lib\net45\kCura.Crypto.dll</HintPath>
+    <Reference Include="kCura.Crypto, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Crypto.9.5.131.5\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Data.9.5.127.72\lib\net45\kCura.Data.dll</HintPath>
+    <Reference Include="kCura.Data, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Data.9.5.131.5\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data.RowDataGateway, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.127.72\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+    <Reference Include="kCura.Data.RowDataGateway, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.131.5\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Utility, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Utility.9.5.127.72\lib\net45\kCura.Utility.dll</HintPath>
+    <Reference Include="kCura.Utility, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Utility.9.5.131.5\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -140,20 +140,20 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.9.5.127.72\lib\net45\Relativity.dll</HintPath>
+    <Reference Include="Relativity, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.9.5.131.5\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.5.127.72\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.5.131.5\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Authentication, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Authentication.9.5.127.72\lib\net45\Relativity.Authentication.dll</HintPath>
+    <Reference Include="Relativity.Authentication, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Authentication.9.5.131.5\lib\net45\Relativity.Authentication.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.127.72\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Authentication.Interfaces, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.131.5\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
@@ -164,8 +164,8 @@
       <HintPath>..\packages\Relativity.ServiceBus.2.1.9\lib\net45\Relativity.ServiceBus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.PriorityQueue, Version=9.5.127.72, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ServiceBus.PriorityQueue.9.5.127.72\lib\net45\Relativity.ServiceBus.PriorityQueue.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus.PriorityQueue, Version=9.5.131.5, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ServiceBus.PriorityQueue.9.5.131.5\lib\net45\Relativity.ServiceBus.PriorityQueue.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus.Provider.Azure, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -180,8 +180,8 @@
       <HintPath>..\packages\Relativity.ServiceBus.2.1.9\lib\net45\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.Utilities, Version=9.5.127.72, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.Utilities.9.5.127.72\lib\net45\Relativity.ServiceBus.Utilities.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus.Utilities, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.Utilities.9.5.131.5\lib\net45\Relativity.ServiceBus.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
