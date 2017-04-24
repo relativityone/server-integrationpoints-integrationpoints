@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
@@ -11,15 +13,18 @@ namespace kCura.IntegrationPoints.ImportProvider
 	public class ImportProvider : Contracts.Provider.IDataSourceProvider
 	{
 		IFieldParserFactory _fieldParserFactory;
+		private ISerializer _serializer;
 
-		public ImportProvider(IFieldParserFactory fieldParserFactory)
+		public ImportProvider(IFieldParserFactory fieldParserFactory,
+			ISerializer serializer)
 		{
 			_fieldParserFactory = fieldParserFactory;
+			_serializer = serializer;
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			ImportProviderSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
+			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(options);
 			IFieldParser parser = _fieldParserFactory.GetFieldParser(settings);
 			List<FieldEntry> result = new List<FieldEntry>();
 			int idx = 0;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.Core.Models;
@@ -16,20 +17,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private IWinEddsLoadFileFactory _winEddsLoadFileFactory;
 		private IWinEddsFileReaderFactory _winEddsFileReaderFactory;
 		private IFieldParserFactory _fieldParserFactory;
+		private ISerializer _serializer;
 
 		public DataReaderFactory(IFieldParserFactory fieldParserFactory,
 			IWinEddsLoadFileFactory winEddsLoadFileFactory,
-			IWinEddsFileReaderFactory winEddsFileReaderFactory)
+			IWinEddsFileReaderFactory winEddsFileReaderFactory,
+			ISerializer serializer)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_winEddsLoadFileFactory = winEddsLoadFileFactory;
 			_winEddsFileReaderFactory = winEddsFileReaderFactory;
+			_serializer = serializer;
 		}
 
 		public IDataReader GetDataReader(FieldMap[] fieldMaps, string options)
 		{
-			//TODO: use injected Iserializer instead
-			ImportProviderSettings providerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ImportProviderSettings>(options);
+			ImportProviderSettings providerSettings = _serializer.Deserialize<ImportProviderSettings>(options);
 			if (int.Parse(providerSettings.ImportType) == (int)ImportType.ImportTypeValue.Document)
 			{
 				LoadFileDataReader lfdr = GetLoadFileDataReader(fieldMaps, providerSettings);
