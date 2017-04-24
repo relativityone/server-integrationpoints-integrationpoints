@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private static void SetTypeOfImage(ExportSettings exportSettings, ExportFile exportFile)
 		{
-			if (exportSettings.ExportNatives)
+			if (exportSettings.ExportImages)
 			{
 				exportFile.TypeOfImage = ParseImageFileType(exportSettings.ImageType);
 			}
