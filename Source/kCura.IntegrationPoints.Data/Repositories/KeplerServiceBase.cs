@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -35,6 +36,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 			} while (count < totalResult);
 
 			return results.ToArray();
+		}
+
+		protected string EscapeSingleQuote(string s)
+		{
+			return Regex.Replace(s, "'", "\\'");
 		}
 	}
 }

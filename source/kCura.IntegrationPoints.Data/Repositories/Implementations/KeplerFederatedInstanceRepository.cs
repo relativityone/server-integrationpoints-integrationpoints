@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				return RetrieveFederatedInstanceByCondition($"'Name' == '{name}'").FirstOrDefault();
+				return RetrieveFederatedInstanceByCondition($"'Name' == '{EscapeSingleQuote(name)}'").FirstOrDefault();
 			}
 			catch (Exception e)
 			{
