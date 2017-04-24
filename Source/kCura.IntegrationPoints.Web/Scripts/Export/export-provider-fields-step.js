@@ -4,9 +4,7 @@
 	var viewModel = function (state) {
 		var self = this;
 
-		self.HasBeenRun = ko.observable(state.hasBeenRun || false);
-
-		self.fields = new FieldMappingViewModel(self.HasBeenRun());
+		self.fields = new FieldMappingViewModel(false);
 
 		self.exportSource = new ExportSourceViewModel(state);
 		self.exportSource.Reload();
@@ -65,7 +63,6 @@
 			}
 
 			self.model = new viewModel($.extend({}, self.ipModel, {
-				hasBeenRun: ip.hasBeenRun,
 				cache: self.cache
 			}));
 
@@ -207,27 +204,27 @@
 			self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
 
 			switch (self.ipModel.sourceConfiguration.ExportType) {
-				case ExportEnums.SourceOptionsEnum.Folder:
-				case ExportEnums.SourceOptionsEnum.FolderSubfolder:
-					self.ipModel.sourceConfiguration.FolderArtifactId = self.model.exportSource.FolderArtifactId();
-					self.ipModel.sourceConfiguration.FolderArtifactName = self.model.exportSource.FolderArtifactName();
-					self.ipModel.sourceConfiguration.FolderFullName = self.model.exportSource.GetFolderFullName();
+			case ExportEnums.SourceOptionsEnum.Folder:
+			case ExportEnums.SourceOptionsEnum.FolderSubfolder:
+				self.ipModel.sourceConfiguration.FolderArtifactId = self.model.exportSource.FolderArtifactId();
+				self.ipModel.sourceConfiguration.FolderArtifactName = self.model.exportSource.FolderArtifactName();
+				self.ipModel.sourceConfiguration.FolderFullName = self.model.exportSource.GetFolderFullName();
 
-					var selectedView = self.model.exportSource.GetSelectedView();
-					self.ipModel.sourceConfiguration.ViewId = selectedView.artifactId;
-					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
-					break;
+				var selectedView = self.model.exportSource.GetSelectedView();
+				self.ipModel.sourceConfiguration.ViewId = selectedView.artifactId;
+				self.ipModel.sourceConfiguration.ViewName = selectedView.name;
+				break;
 
-				case ExportEnums.SourceOptionsEnum.Production:
-					self.ipModel.sourceConfiguration.ProductionId = self.model.exportSource.ProductionId();
-					self.ipModel.sourceConfiguration.ProductionName = self.model.exportSource.ProductionName();
-					break;
+			case ExportEnums.SourceOptionsEnum.Production:
+				self.ipModel.sourceConfiguration.ProductionId = self.model.exportSource.ProductionId();
+				self.ipModel.sourceConfiguration.ProductionName = self.model.exportSource.ProductionName();
+				break;
 
-				case ExportEnums.SourceOptionsEnum.SavedSearch:
-					var selectedSavedSearch = self.model.exportSource.GetSelectedSavedSearch(self.model.exportSource.SavedSearchArtifactId());
-					self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
-					self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
-					break;
+			case ExportEnums.SourceOptionsEnum.SavedSearch:
+				var selectedSavedSearch = self.model.exportSource.GetSelectedSavedSearch(self.model.exportSource.SavedSearchArtifactId());
+				self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
+				self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
+				break;
 			}
 
 			self.ipModel.map = self.model.fields.getMappedFields();

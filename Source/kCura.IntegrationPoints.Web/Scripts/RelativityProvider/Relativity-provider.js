@@ -107,7 +107,6 @@
 		self.federatedInstances = ko.observableArray(state.federatedInstances);
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.savedSearches = ko.observableArray(state.savedSearches);
-		self.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 		self.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
 		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
@@ -159,7 +158,7 @@
 						self.FederatedInstanceArtifactId(self.federatedInstances()[0].artifactId);
 					}
 					self.updateWorkspaces();
-					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null && !self.disable);
+					self.ShowAuthentiactionButton(self.FederatedInstanceArtifactId() != null);
 					self.FederatedInstanceArtifactId.subscribe(function (value) {
 						var isRemoteInstance = value != null;
 						self.AuthenticationFailed(false);
@@ -228,7 +227,7 @@
 					self.TargetFolder(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
 				}
 			});
-			self.locationSelector.toggle(!self.disable && self.TargetWorkspaceArtifactId.isValid());
+			self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
 		};
 
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
@@ -326,19 +325,10 @@
 		};
 
 		this.TargetFolder.extend({
-			required: {
-				onlyIf: function () {
-					return !self.disable;
-				}
-			}
+			required: true
 		});
-
 		this.TargetWorkspaceArtifactId.extend({
-			required: {
-				onlyIf: function () {
-					return !self.disable;
-				}
-			}
+			required: true
 		}).extend({
 			validation: {
 				validator: function (value) {
@@ -391,11 +381,7 @@
 		});
 
 		this.SavedSearchArtifactId.extend({
-			required: {
-				onlyIf: function () {
-					return !self.disable;
-				}
-			}
+			required: true
 		}).extend({
 			checkSavedSearch: {
 				onlyIf: function () {
