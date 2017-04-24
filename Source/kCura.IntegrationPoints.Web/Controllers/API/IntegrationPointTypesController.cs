@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 
@@ -17,19 +18,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			_integrationPointTypeService = integrationPointTypeService;
 		}
-
-
+        
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve integration point types.")]
 		public HttpResponseMessage Get()
 		{
-			var types = _integrationPointTypeService.GetAllIntegrationPointTypes();
-			var result = types.Select(x => new IntegrationPointTypeModel
+			IList<IntegrationPointType> types = _integrationPointTypeService.GetAllIntegrationPointTypes();
+			IEnumerable<IntegrationPointTypeModel> result = types.Select(x => new IntegrationPointTypeModel
 			{
 				Name = x.Name,
 				ArtifactId = x.ArtifactId,
 				Identifier = x.Identifier
 			});
+            
 			return Request.CreateResponse(HttpStatusCode.OK, result);
 		}
 	}
