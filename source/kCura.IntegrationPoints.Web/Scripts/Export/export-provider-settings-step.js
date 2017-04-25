@@ -5,7 +5,6 @@
 		var self = this;
 
 		this.IPName = state.name;
-		this.HasBeenRun = ko.observable(state.hasBeenRun || false);
 
 		this.ArtifactTypeID = state.artifactTypeId;
 		this.DefaultRdoTypeId = state.defaultRdoTypeId;
@@ -64,17 +63,13 @@
 
 		this.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
-			if (self.HasBeenRun()) {
-				self.locationSelector.toggle(false);
-			} else {
-				self.locationSelector = new LocationJSTreeSelector();
-				self.locationSelector.init(self.Fileshare(), [], {
-					onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
-				});
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.init(self.Fileshare(), [], {
+				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+			});
 
-				self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
-				self.loadRootDataTransferLocation();
-			}
+			self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
+			self.loadRootDataTransferLocation();
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -725,14 +720,13 @@
 			self.ipModel = ip;
 
 			self.model = new viewModel($.extend({}, self.ipModel.sourceConfiguration,
-			{
-				hasBeenRun: ip.hasBeenRun,
-				artifactTypeId: ip.artifactTypeID,
-				defaultRdoTypeId: ip.DefaultRdoTypeId,
-				integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
-				name: ip.name,
-				isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
-			}));
+				{
+					artifactTypeId: ip.artifactTypeID,
+					defaultRdoTypeId: ip.DefaultRdoTypeId,
+					integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
+					name: ip.name,
+					isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
+				}));
 
 			self.model.errors = ko.validation.group(self.model);
 		};
