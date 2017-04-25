@@ -77,12 +77,14 @@ ExportEnums.SourceOptionsEnum = {
 
 ExportEnums.ExportNativeWithFilenameFromTypesEnum = {
 	Identifier: 0,
-	BeginProductionNumber: 1
+	BeginProductionNumber: 1,
+	Custom: 2
 };
 
 ExportEnums.ExportNativeWithFilenameFromTypes = [
 	{ value: 0, key: "Identifier" },
-	{ value: 1, key: "Begin production number" }
+	{ value: 1, key: "Begin production number" },
+	{ value: 2, key: "Custom" }
 ];
 
 ExportEnums.AvailableSeparators = [

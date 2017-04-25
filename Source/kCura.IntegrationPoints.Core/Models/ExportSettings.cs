@@ -55,7 +55,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public enum NativeFilenameFromType
 		{
 			Identifier = 0,
-			Production = 1
+			Production = 1,
+			Custom = 2,
 		}
 
 		public ExportType TypeOfExport { get; set; }

@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 				LogUsingWebApi();
 				serviceFactory = new WebApiServiceFactory(exportDataContext.ExportFile);
 			}
-			var loadFileFormatterFactory = new WinEDDS.Core.Export.ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings));
+			var loadFileFormatterFactory = new ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings));
 
 			bool nameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck();
 			IDictionary<ExportNativeWithFilenameFrom, IFileNameProvider> fileNameProvidersDictionary = _fileNameProvidersDictionaryBuilder.Build(exportDataContext);

@@ -283,6 +283,11 @@
 			}
 		});
 
+		this.IsCustomFileNameOptionSelected = function() {
+			return self.SelectedExportNativesWithFileNameFrom() === ExportEnums.ExportNativeWithFilenameFromTypesEnum.Custom;
+		};
+
+
 		this.ExportImages.subscribe(self._updateImageFileFormat);
 
 		self._updateImageFileFormat();

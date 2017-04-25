@@ -220,7 +220,15 @@
 										<select id="exportNativeWithFilenameFromTypeSelector" data-bind="enable: !HasBeenRun(), options: ExportEnums.ExportNativeWithFilenameFromTypes, optionsCaption: 'Select...', optionsText: 'key', optionsValue: 'value', value: SelectedExportNativesWithFileNameFrom, select2: {}"></select>
 									</div>
 								</div>
-								<div class="field-row" data-bind="with: exportFileNameViewModel">
+								<div class="field-row" data-bind="visible: !IsCustomFileNameOptionSelected()">
+									<div class="field-label">
+										Append Original File Name:	
+									</div>
+									<div class="field-value" style="vertical-align: middle;">
+										<input id="append-original-file-name-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: AppendOriginalFileName" />
+									</div>
+								</div>
+								<div class="field-row" data-bind="visible: IsCustomFileNameOptionSelected(), with: exportFileNameViewModel">
 									<div class="field-label">
 										File Name:
 									</div>
@@ -236,15 +244,6 @@
 									</div>	
 									<div class="field-value" data-bind="visible: !$parent.HasBeenRun()">
 										<button id="del-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
-									</div>
-								</div>
-								
-								<div class="field-row">
-									<div class="field-label">
-										Append Original File Name:
-									</div>
-									<div class="field-value" style="vertical-align: middle;">
-										<input id="append-original-file-name-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: AppendOriginalFileName" />
 									</div>
 								</div>
 							</div>
