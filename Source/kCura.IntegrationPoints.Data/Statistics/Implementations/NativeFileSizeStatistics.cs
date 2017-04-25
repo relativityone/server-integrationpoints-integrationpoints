@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		private int GetTotalFileSize(IList<int> artifactIds, int workspaceArtifactId)
 		{
-			const string sqlText = "SELECT SUM([Size]) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
+			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 
 			DataTable idsDataTable = artifactIds.ToDataTable();
 

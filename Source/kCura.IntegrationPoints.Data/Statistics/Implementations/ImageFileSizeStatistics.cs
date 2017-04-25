@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		private int GetTotalFileSize(IList<int> artifactIds, int workspaceArtifactId)
 		{
-			const string sqlText = "SELECT SUM([Size]) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
+			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 
 			DataTable idsDataTable = artifactIds.ToDataTable();
 
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		private int GetTotalFileSize(int productionSetId, int workspaceArtifactId)
 		{
-			const string sqlText = "SELECT SUM([Size]) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
+			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
 
 			var tableName = $"{_PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX}{productionSetId}";
 

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private LoadFile _loadFile;
 		private ImageLoadFile _imageLoadFile;
 		private ImportSettingsBase _settings;
-		private JSONSerializer _serializer;
+		private ISerializer _serializer;
 
 		[SetUp]
 		public override void SetUp()
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_winEddsFileReaderFactory.GetLoadFileReader(Arg.Any<LoadFile>()).Returns(_loadFileReader);
 			_winEddsFileReaderFactory.GetOpticonFileReader(Arg.Any<ImageLoadFile>()).Returns(_opticonFileReader);
 
-			_instance = new DataReaderFactory(_fieldParserFactory, _winEddsLoadFileFactory, _winEddsFileReaderFactory);
+			_instance = new DataReaderFactory(_fieldParserFactory, _winEddsLoadFileFactory, _winEddsFileReaderFactory, _serializer);
 		}
 
 		[Test]

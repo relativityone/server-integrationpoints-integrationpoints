@@ -545,7 +545,7 @@ ko.validation.insertValidationMessage = function (element) {
 					var fieldFound = fields.length > 0;
 					return {
 						exist: fieldFound,
-						type: fields[0].type
+						type: fieldFound ? fields[0].type : null
 					};
 				}
 				var sourceMapped = [];

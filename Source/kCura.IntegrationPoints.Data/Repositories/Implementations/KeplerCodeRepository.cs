@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var query = new Query()
 			{
-				Condition = $"'Field' == '{name}'",
+				Condition = $"'Field' == '{EscapeSingleQuote(name)}'",
 				Fields = new string[] { "Name" },
 				IncludeIdWindow = false,
 				SampleParameters = null,

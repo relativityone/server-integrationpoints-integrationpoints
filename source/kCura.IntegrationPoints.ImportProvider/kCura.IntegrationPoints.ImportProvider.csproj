@@ -60,6 +60,9 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">
       <HintPath>..\kCura.IntegrationPoints.Contracts\bin\x64\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>

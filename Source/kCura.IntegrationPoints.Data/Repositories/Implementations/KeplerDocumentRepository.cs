@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
+using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public KeplerDocumentRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor) : base(objectQueryManagerAdaptor)
 		{
 			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
-			_objectQueryManagerAdaptor.ArtifactTypeId = (int)ArtifactType.Document;
+			_objectQueryManagerAdaptor.ArtifactTypeId = (int) ArtifactType.Document;
 		}
 
 		public int WorkspaceArtifactId
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<ArtifactDTO> RetrieveDocumentAsync(int documentId, ICollection<int> fieldIds)
 		{
-			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
+			var documentsQuery = new Query
 			{
 				Condition = $"'Artifact ID' == {documentId}",
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
+				documents = await RetrieveAllArtifactsAsync(documentsQuery);
 			}
 			catch (Exception e)
 			{
@@ -54,9 +54,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(string docIdentifierField, ICollection<string> docIdentifierValues)
 		{
-			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
+			var documentsQuery = new Query
 			{
-				Condition = $@"'{docIdentifierField}' in ['{String.Join("','", docIdentifierValues)}']",
+				Condition = $@"'{docIdentifierField}' in ['{string.Join("','", docIdentifierValues)}']",
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
+				documents = await RetrieveAllArtifactsAsync(documentsQuery);
 			}
 			catch (Exception e)
 			{
@@ -80,9 +80,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)
 		{
-			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
+			var documentsQuery = new Query
 			{
-				Condition = $"'Artifact ID' in [{String.Join(",", documentIds)}]",
+				Condition = $"'Artifact ID' in [{string.Join(",", documentIds)}]",
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
+				documents = await RetrieveAllArtifactsAsync(documentsQuery);
 			}
 			catch (Exception e)
 			{
@@ -107,10 +107,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<int[]> RetrieveDocumentByIdentifierPrefixAsync(string documentIdentifierFieldName, string identifierPrefix)
 		{
-			var documentsQuery = new global::Relativity.Services.ObjectQuery.Query()
+			var documentsQuery = new Query
 			{
-				Condition = $"'{ documentIdentifierFieldName }' like '{ identifierPrefix }%'",
-				Fields = new string[] { "ArtifactID" },
+				Condition = $"'{EscapeSingleQuote(documentIdentifierFieldName)}' like '{EscapeSingleQuote(identifierPrefix)}%'",
+				Fields = new[] {"ArtifactID"},
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				var documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
+				var documents = await RetrieveAllArtifactsAsync(documentsQuery);
 				documentArtifactIds = new int[documents.Length];
 
 				for (int index = 0; index < documents.Length; index++)
