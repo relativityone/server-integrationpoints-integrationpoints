@@ -655,7 +655,7 @@
 		});
 
 		var availableFields = state.availableFields || [];
-		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameSelection);
+		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameParts);
 
 		self.exportFileNameViewModel.initViewModel();
 
