@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core
 
 		public IServicesMgr ServicesMgr { get; }
 
-		internal ContextContainer(IHelper helper)
+		public ContextContainer(IHelper helper)
 		{
 			Helper = helper;
 			ServicesMgr = helper.GetServicesManager();

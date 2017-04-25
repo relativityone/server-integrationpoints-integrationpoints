@@ -16,8 +16,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings);
 
 		List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
-			ISourceWorkspaceManager sourceWorkspaceManager,
-			ISourceJobManager sourceJobManager,
+			ITagsCreator tagsCreator,
 			ITagSavedSearchManager tagSavedSearchManager,
 			ISynchronizerFactory synchronizerFactory,
 			ISerializer serializer,

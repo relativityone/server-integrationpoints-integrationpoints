@@ -43,6 +43,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "IntegrationPoint_Relativity_SourceWorkspace";
 		public static Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 		public const string DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME = "Integration Points";
+
+		public const int DEFAULT_NAME_FIELD_LENGTH = 255;
 	}
 
 	public static class DocumentMultiObjectFields
@@ -111,5 +113,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string EDIT_FIELD_NAME = "Edit";
 
 		public const int HAS_IMAGES_YES_ARTIFACT_ID = 1034243;
+
+		public const string POPUP_FILTER_TYPE_NAME = "Popup";
 	}
 }

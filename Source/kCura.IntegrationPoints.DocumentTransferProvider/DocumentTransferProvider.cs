@@ -62,9 +62,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		private ArtifactDTO[] GetRelativityFields(int sourceWorkspaceId, int rdoTypeId)
 		{
 			IRepositoryFactory repositoryFactory = ResolveDependencies<IRepositoryFactory>();
-			IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(sourceWorkspaceId);
+			IFieldQueryRepository fieldQueryRepository = repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);
 
-			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFields(
+			ArtifactDTO[] fieldArtifacts = fieldQueryRepository.RetrieveFields(
 				rdoTypeId,
 				new HashSet<string>(new[]
 				{

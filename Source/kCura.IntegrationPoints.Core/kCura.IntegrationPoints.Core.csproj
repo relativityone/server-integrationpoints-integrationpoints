@@ -594,6 +594,18 @@
     <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
     <Compile Include="Managers\Implementations\InstanceSettingsManager.cs" />
+    <Compile Include="RelativitySourceRdo\IRelativitySourceJobRdoInitializer.cs" />
+    <Compile Include="RelativitySourceRdo\IRelativitySourceRdoDocumentField.cs" />
+    <Compile Include="RelativitySourceRdo\IRelativitySourceRdoFields.cs" />
+    <Compile Include="RelativitySourceRdo\IRelativitySourceRdoHelpersFactory.cs" />
+    <Compile Include="RelativitySourceRdo\IRelativitySourceRdoObjectType.cs" />
+    <Compile Include="RelativitySourceRdo\IRelativitySourceWorkspaceRdoInitializer.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializer.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentField.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceRdoFields.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
     <Compile Include="Tagging\ITagSavedSearch.cs" />
     <Compile Include="Tagging\ITagSavedSearchFolder.cs" />
     <Compile Include="Tagging\ITagSavedSearchManager.cs" />
@@ -609,7 +621,6 @@
     <Compile Include="OAuthHelper.cs" />
     <Compile Include="OAuthServicesManager.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
-    <Compile Include="Managers\DestinationWorkspaceFieldManagerBase.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
     <Compile Include="Managers\IJobStopManager.cs" />
     <Compile Include="Managers\IErrorManager.cs" />

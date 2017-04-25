@@ -34,11 +34,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static FieldMap CreateIdentifierFieldMapForRelativityProvider(int sourceWorkspaceId, int destinationWorkspaceId)
 		{
-			IFieldRepository sourceFieldRepository = _repositoryFactory.GetFieldRepository(sourceWorkspaceId);
-			IFieldRepository destinationFieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceId);
+			IFieldQueryRepository sourceFieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);
+			IFieldQueryRepository destinationFieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(destinationWorkspaceId);
 
-			ArtifactDTO documentIdentifierFieldInSource = sourceFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
-			ArtifactDTO documentIdentifierFieldInDestination = destinationFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO documentIdentifierFieldInSource = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO documentIdentifierFieldInDestination = destinationFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
 
 			FieldMap identifierFieldMap = CreateFieldMapForRelativityProvider(documentIdentifierFieldInSource, documentIdentifierFieldInDestination, FieldMapTypeEnum.Identifier);
 

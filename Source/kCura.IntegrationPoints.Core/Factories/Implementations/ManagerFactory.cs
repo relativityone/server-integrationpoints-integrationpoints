@@ -2,9 +2,9 @@
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.RelativitySourceRdo;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Tagging;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -108,18 +108,15 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return permissionManager;
 		}
 
-		public ISourceWorkspaceManager CreateSourceWorkspaceManager(IContextContainer contextContainer)
+		public ITagsCreator CreateTagsCreator(IContextContainer contextContainer)
 		{
-			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
-			ISourceWorkspaceManager sourceWorkspaceManager = new SourceWorkspaceManager(repositoryFactory);
-			return sourceWorkspaceManager;
-		}
-
-		public ISourceJobManager CreateSourceJobManager(IContextContainer contextContainer)
-		{
-			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
-			ISourceJobManager sourceJobManager = new SourceJobManager(repositoryFactory);
-			return sourceJobManager;
+			var repositoryFactory = CreateRepositoryFactory(contextContainer);
+			ISourceJobManager sourceJobManager = new SourceJobManager(repositoryFactory, _helper);
+			ISourceWorkspaceManager sourceWorkspaceManager = new SourceWorkspaceManager(repositoryFactory, _helper);
+			var relativitySourceRdoHelpersFactory = new RelativitySourceRdoHelpersFactory(repositoryFactory);
+			IRelativitySourceJobRdoInitializer sourceJobRdoInitializer = new RelativitySourceJobRdoInitializer(_helper, repositoryFactory, relativitySourceRdoHelpersFactory);
+			IRelativitySourceWorkspaceRdoInitializer sourceWorkspaceRdoInitializer = new RelativitySourceWorkspaceRdoInitializer(_helper, repositoryFactory, relativitySourceRdoHelpersFactory);
+			return new TagsCreator(sourceJobManager, sourceWorkspaceManager, sourceJobRdoInitializer, sourceWorkspaceRdoInitializer, _helper);
 		}
 
 		public IInstanceSettingsManager CreateInstanceSettingsManager(IContextContainer contextContainer)
