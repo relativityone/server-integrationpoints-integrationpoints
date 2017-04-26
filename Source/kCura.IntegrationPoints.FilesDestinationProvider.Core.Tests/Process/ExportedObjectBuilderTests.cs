@@ -54,6 +54,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.That(_exportFile.LoadFilesPrefix, Is.EqualTo(productionName));
 		}
 
+
+
 		[Test]
 		public void ItShouldSetSavedSearchSettings()
 		{
@@ -94,6 +96,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[TestCase(null, ExportNativeWithFilenameFrom.Identifier)]
 		[TestCase(ExportSettings.NativeFilenameFromType.Identifier, ExportNativeWithFilenameFrom.Identifier)]
 		[TestCase(ExportSettings.NativeFilenameFromType.Production, ExportNativeWithFilenameFrom.Production)]
+		[TestCase(ExportSettings.NativeFilenameFromType.Custom, ExportNativeWithFilenameFrom.Custom)]
 		public void ItShouldSetNativeFilenameFromAccordingly(ExportSettings.NativeFilenameFromType? givenSetting, ExportNativeWithFilenameFrom expectedSetting)
 		{
 			_exportSettings.ExportNativesToFileNamedFrom = givenSetting;

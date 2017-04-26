@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using NUnit.Framework;
 using Relativity.API;
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[SetUp]
 		public override void SetUp()
 		{
-			_exportSettingsBuilder = new ExportSettingsBuilder(NSubstitute.Substitute.For<IHelper>());
+			_exportSettingsBuilder = new ExportSettingsBuilder(NSubstitute.Substitute.For<IHelper>(), NSubstitute.Substitute.For<IDescriptorPartsBuilder>());
 		}
 
 		[Test]

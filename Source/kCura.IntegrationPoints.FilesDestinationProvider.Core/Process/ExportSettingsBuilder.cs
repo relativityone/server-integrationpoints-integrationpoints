@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
@@ -12,9 +12,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 	public class ExportSettingsBuilder : IExportSettingsBuilder
 	{
 		private readonly IAPILog _logger;
+		private readonly IDescriptorPartsBuilder _descriptorPartsBuilder;
 
-		public ExportSettingsBuilder(IHelper helper)
+		public ExportSettingsBuilder(IHelper helper, IDescriptorPartsBuilder descriptorPartsBuilder)
 		{
+			_descriptorPartsBuilder = descriptorPartsBuilder;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportSettingsBuilder>();
 		}
 
@@ -31,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			}
 		}
 
-		private static ExportSettings CreateExportSettings(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId)
+		private ExportSettings CreateExportSettings(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId)
 		{
 			ExportSettings.ImageFileType? imageType;
 			EnumHelper.TryParse(sourceSettings.SelectedImageFileType, out imageType);
@@ -105,7 +107,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				ProductionId = sourceSettings.ProductionId,
 				ProductionName = sourceSettings.ProductionName,
 				AppendOriginalFileName = sourceSettings.AppendOriginalFileName,
-                IsAutomaticFolderCreationEnabled = sourceSettings.IsAutomaticFolderCreationEnabled
+                IsAutomaticFolderCreationEnabled = sourceSettings.IsAutomaticFolderCreationEnabled,
+				FileNameParts = _descriptorPartsBuilder.CreateDescriptorParts(sourceSettings.FileNameParts)
             };
 
 			return exportSettings;

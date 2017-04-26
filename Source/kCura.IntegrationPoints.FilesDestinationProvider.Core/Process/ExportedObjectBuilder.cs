@@ -51,6 +51,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					return ExportNativeWithFilenameFrom.Identifier;
 				case ExportSettings.NativeFilenameFromType.Production:
 					return ExportNativeWithFilenameFrom.Production;
+				case ExportSettings.NativeFilenameFromType.Custom:
+					return ExportNativeWithFilenameFrom.Custom;
 				default:
 					throw new InvalidEnumArgumentException($"Unknown ExportSettings.NativeFilenameFromType ({exportSettingsExportNativesToFileNamedFrom})");
 			}

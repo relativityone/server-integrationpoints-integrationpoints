@@ -58,23 +58,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Config">
-      <HintPath>..\packages\kCura.Config.9.5.103.62\lib\net45\kCura.Config.dll</HintPath>
+      <HintPath>..\packages\kCura.Config.9.5.131.5\lib\net45\kCura.Config.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Crypto">
-      <HintPath>..\packages\kCura.Crypto.9.5.103.62\lib\net45\kCura.Crypto.dll</HintPath>
+      <HintPath>..\packages\kCura.Crypto.9.5.131.5\lib\net45\kCura.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway">
-      <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.103.62\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.131.5\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.5.103.62, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.5.103.62\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.5.131.5\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Utility">
-      <HintPath>..\packages\kCura.Utility.9.5.103.62\lib\net45\kCura.Utility.dll</HintPath>
+      <HintPath>..\packages\kCura.Utility.9.5.131.5\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -85,20 +85,20 @@
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity, Version=9.5.103.62, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.9.5.103.62\lib\net45\Relativity.dll</HintPath>
+    <Reference Include="Relativity, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.9.5.131.5\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.API">
-      <HintPath>..\packages\Relativity.API.9.5.103.62\lib\net45\Relativity.API.dll</HintPath>
+      <HintPath>..\packages\Relativity.API.9.5.131.5\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Authentication.Interfaces">
-      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.103.62\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.131.5\lib\net45\Relativity.Authentication.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core, Version=9.5.103.62, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Core.9.5.103.62\lib\net45\Relativity.Core.dll</HintPath>
+    <Reference Include="Relativity.Core, Version=9.5.131.5, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.Core.9.5.131.5\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.264, Culture=neutral, processorArchitecture=MSIL">
@@ -113,12 +113,12 @@
       <HintPath>..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.5.103.62, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.DataContracts.9.5.103.62\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.5.131.5\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.5.103.62, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.5.103.62\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.5.131.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.5.131.5\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.264, Culture=neutral, processorArchitecture=MSIL">
@@ -223,7 +223,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.5.103.62\lib\native\*  $(ProjectDir)$(OutDir)  /y
+    <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.5.131.5\lib\native\*  $(ProjectDir)$(OutDir)  /y
 mkdir "$(ProjectDir)..\..\lib\UnitTests"
 xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   </PropertyGroup>

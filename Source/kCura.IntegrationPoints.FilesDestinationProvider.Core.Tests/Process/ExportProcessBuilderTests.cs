@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Core.Model.Export;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private ICredentialProvider _credentialProvider;
 		private IExporterFactory _exporterFactory;
 
-		private ExportFile _exportFile;
+		private ExtendedExportFile _exportFile;
 		private ExportDataContext _exportDataContext;
 		private IExportFileBuilder _exportFileBuilder;
 
@@ -138,7 +139,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 		private void MockExportFile()
 		{
-			_exportFile = new ExportFile(1)
+			_exportFile = new ExtendedExportFile(1)
 			{
 				CaseInfo = new CaseInfo
 				{
@@ -419,6 +420,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			// Assert
 			Assert.That(_exportFile.FileField.FieldID, Is.EqualTo(fieldArtifactId));
+		}
+
+		[Test]
+		public void IsShouldPopulateFileNameViewFields()
+		{
+			const int fieldArtifactId = 123456;
+
+			ViewFieldInfo[] fieldInfos = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), true, fieldArtifactId);
+
 		}
 
 		private void MockSearchManagerReturnValue(ViewFieldInfo[] expectedExportableFields)
