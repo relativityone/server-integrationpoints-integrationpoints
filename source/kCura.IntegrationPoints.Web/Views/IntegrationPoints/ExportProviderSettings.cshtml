@@ -178,7 +178,7 @@
 			<div class="field-value">
 				<ul data-bind="foreach: ExportEnums.FilePathType">
 					<li>
-						<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
+						<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }" />
 						<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index(),for: 'filePath_' + $index() }"></label>
 						<!-- ko if: value==2 -->
 						<input type="text" data-bind="enable: $parent.isUserPrefix(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
@@ -235,7 +235,7 @@
 			<div class="field-value" id="fileNamingContainer">
 				<div data-bind="foreach: visibilityValuesContainer">
 					<div class="field-value" data-bind="visible: $data">
-						<select data-bind="disable: $parents[1].HasBeenRun(), value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
+						<select data-bind="value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
 					</div>
 				</div>
 			</div>
