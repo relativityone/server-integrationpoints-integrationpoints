@@ -551,7 +551,6 @@
     <Compile Include="Models\SourceJobDTO.cs" />
     <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
-    <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />
     <Compile Include="Models\JsTreeItemWithParentIdDTO.cs" />
     <Compile Include="Models\ViewDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />

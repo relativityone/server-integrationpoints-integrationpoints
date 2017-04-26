@@ -4,12 +4,10 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -47,8 +45,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
-			ISourceWorkspaceManager sourceWorkspaceManager,
-			ISourceJobManager sourceJobManager,
+			ITagsCreator tagsCreator,
 			ITagSavedSearchManager tagSavedSearchManager,
 			ISynchronizerFactory synchronizerFactory,
 			ISerializer serializer,
@@ -64,15 +61,16 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
 
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, sourceWorkspaceManager,
-				sourceJobManager, tagSavedSearchManager, documentRepository, synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration, 
-				userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
-			
-			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper, _federatedInstanceManager, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager, configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, tagsCreator, tagSavedSearchManager, documentRepository,
+				synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration, userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
 
-			var batchStatusCommands = new List<IBatchStatus>()
+			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper,
+				_federatedInstanceManager, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
+			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager,
+				configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+
+			var batchStatusCommands = new List<IBatchStatus>
 			{
 				destinationFieldsTagger,
 				sourceFieldsTagger,
@@ -81,7 +79,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return batchStatusCommands;
 		}
 
-		public IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings)
+		public IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser,
+			string userImportApiSettings)
 		{
 			if (onBehalfOfUser == 0)
 			{
@@ -95,13 +94,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			if (settings.ImageImport)
 			{
 				return new ImageExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-					claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId,settings);
+					claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId, settings);
 			}
-			else
-			{
-				var folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
-				return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, folderPathReader, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
-			}
+			var folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
+			return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, folderPathReader, claimsPrincipal, mappedFiles, 0, config,
+				savedSearchArtifactId);
 		}
 	}
 }

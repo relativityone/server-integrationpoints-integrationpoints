@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ISerializer _jsonSerializer;
 		private int _workspaceArtifactId;
 		private IRdoRepository _rdoRepository;
-		private IFieldRepository _fieldRepository;
+		private IFieldQueryRepository _fieldQueryRepository;
 
 		[OneTimeSetUp]
 		public override void FixtureSetUp()
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
 
 			_rdoRepository = Substitute.For<IRdoRepository>();
-			_fieldRepository = Substitute.For<IFieldRepository>();
+			_fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
 
 			var helperFactory = Substitute.For<IHelperFactory>();
 
@@ -256,8 +256,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_fieldsMap);
 			_repositoryFactory.GetRdoRepository(_workspaceArtifactId).Returns(_rdoRepository);
 			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(rdoQueryResultSet);
-			_repositoryFactory.GetFieldRepository(_workspaceArtifactId).Returns(_fieldRepository);
-			_fieldRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
+			_repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId).Returns(_fieldQueryRepository);
+			_fieldQueryRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
 			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
 				Arg.Any<string>(), _integrationPoint.SecuredConfiguration).Returns(_dataSynchronizer);
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);

@@ -58,8 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ISynchronizerFactory _synchronizerFactory;
 		private IExporterFactory _exporterFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _claimPrincipleFactory;
-		private ISourceWorkspaceManager _sourceWorkspaceManager;
-		private ISourceJobManager _sourceJobManager;
+		private ITagsCreator _tagsCreator;
 		private ITagSavedSearchManager _tagSavedSearchManager;
 		private IRepositoryFactory _repositoryFactory;
 		private IManagerFactory _managerFactory;
@@ -113,8 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_synchronizerFactory = Substitute.For<ISynchronizerFactory>();
 			_exporterFactory = Substitute.For<IExporterFactory>();
 			_claimPrincipleFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
-			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
-			_sourceJobManager = Substitute.For<ISourceJobManager>();
+			_tagsCreator = Substitute.For<ITagsCreator>();
 			_tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
@@ -144,7 +142,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_synchornizer = Substitute.For<IDataSynchronizer>();
 			_historyManager = Substitute.For<IJobHistoryManager>();
 
-			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _sourceWorkspaceManager, _sourceJobManager, _tagSavedSearchManager,
+			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _tagsCreator, _tagSavedSearchManager,
 				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager,
 				Arg.Any<FieldMap[]>(), Arg.Any<SourceConfiguration>(), Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
 				Arg.Any<Data.IntegrationPoint>(), Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
@@ -201,8 +199,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(_taskParameters);
 			_jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
 
-			_managerFactory.CreateSourceWorkspaceManager(Arg.Any<IContextContainer>()).Returns(_sourceWorkspaceManager);
-			_managerFactory.CreateSourceJobManager(Arg.Any<IContextContainer>()).Returns(_sourceJobManager);
+			_managerFactory.CreateTagsCreator(Arg.Any<IContextContainer>()).Returns(_tagsCreator);
 			_managerFactory.CreateTaggingSavedSearchManager(Arg.Any<IContextContainer>()).Returns(_tagSavedSearchManager);
 
 			_instance = new ExportServiceManager(_helper, _helperFactory,

@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 			var folderPathSourceField = 0;
 			if (useFolderPathInformation)
 			{
-				var artifactFieldDtos = repositoryFactory.GetFieldRepository(workspaceArtifactId).RetrieveLongTextFieldsAsync((int) ArtifactType.Document).Result;
+				var artifactFieldDtos = repositoryFactory.GetFieldQueryRepository(workspaceArtifactId).RetrieveLongTextFieldsAsync((int) ArtifactType.Document).Result;
 				folderPathSourceField = artifactFieldDtos[0].ArtifactId;
 			}
 
