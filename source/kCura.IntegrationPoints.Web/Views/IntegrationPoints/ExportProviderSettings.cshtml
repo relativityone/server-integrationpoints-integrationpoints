@@ -3,448 +3,448 @@
 
 <script id="exportProviderSettingsStep" type="text/html">
 
-	<div id="_main">
-		<div id="exportProviderConfiguration" style="min-width: 900px;">
-			<div class="card">
+<div id="_main">
+<div id="exportProviderConfiguration" style="min-width: 900px;">
+<div class="card">
 
-				<span class="label">Export Detail</span>
-				<img data-bind="click: openExportDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
-				<table style="width: 100%;">
-					<tr>
-						<td style="width: 48%;">
-							<div class="field-row">
-								<div class="field-label required">
-									Export Type:
-								</div>
+	<span class="label">Export Detail</span>
+	<img data-bind="click: openExportDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
+	<table style="width: 100%;">
+		<tr>
+			<td style="width: 48%;">
+				<div class="field-row">
+					<div class="field-label required">
+						Export Type:
+					</div>
+					<div class="field-value">
+						<ul>
+							<li>
 								<div class="field-value">
-									<ul>
-										<li>
-											<div class="field-value">
-												<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true">
-												<label for="export-loadfile-checkbox">Load File</label>
-											</div>
-										</li>
-										<li>
-											<div class="field-value" data-bind="visible: !ExportRdoMode()">
-												<input id="export-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportImages" />
-												<label for="export-images-checkbox">Images</label>
-											</div>
-										</li>
-										<li>
-											<div class="field-value">
-												<input id="export-natives-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportNatives" />
-												<label for="export-natives-checkbox">Natives</label>
-											</div>
-										</li>
-										<li>
-											<div class="field-value">
-												<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportTextFieldsAsFiles" />
-												<label for="export-text-fields-as-files-checkbox">Text Fields As Files</label>
-											</div>
-										</li>
-									</ul>
+									<input id="export-loadfile-checkbox" type="checkbox" disabled="true" checked="true">
+									<label for="export-loadfile-checkbox">Load File</label>
 								</div>
-							</div>
-						</td>
-						<td style="vertical-align: top;">
-							<div class="field-row">
-								<div class="field-label">
-									Overwrite Files:
+							</li>
+							<li>
+								<div class="field-value" data-bind="visible: !ExportRdoMode()">
+									<input id="export-images-checkbox" type="checkbox" data-bind=" checked: ExportImages" />
+									<label for="export-images-checkbox">Images</label>
 								</div>
-								<div class="field-value middle-vertical-align">
-									<input id="overwrite-file-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: OverwriteFiles" class="middle-vertical-align" />
+							</li>
+							<li>
+								<div class="field-value">
+									<input id="export-natives-checkbox" type="checkbox" data-bind=" checked: ExportNatives" />
+									<label for="export-natives-checkbox">Natives</label>
 								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td style="width: 48%;">
-							<div class="field-row">
-								<div class="field-label required">
-									Destination Folder:
+							</li>
+							<li>
+								<div class="field-value">
+									<input id="export-text-fields-as-files-checkbox" type="checkbox" data-bind=" checked: ExportTextFieldsAsFiles" />
+									<label for="export-text-fields-as-files-checkbox">Text Fields As Files</label>
 								</div>
-								<div class="field-value select2-double-width">
-									<div id="location-select" class="select2-container fluid-mock-select filter-container">
-										<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: fileShareDisplayText()" />
-										<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
-									</div>
-									<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
-										<div id="browser-tree" tabindex="0"></div>
-									</div>
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td style="width: 48%;">
-							<div class="field-row">
-								<div class="field-label" />
-								<div class="field-value middle-vertical-align">
-									<input id="create-export-directory-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IsExportFolderCreationEnabled" class="middle-vertical-align">
-									<label for="create-export-directory-checkbox">Create Export Folder</label>
-								</div>
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</td>
+			<td style="vertical-align: top;">
+				<div class="field-row">
+					<div class="field-label">
+						Overwrite Files:
+					</div>
+					<div class="field-value middle-vertical-align">
+						<input id="overwrite-file-checkbox" type="checkbox" data-bind=" checked: OverwriteFiles" class="middle-vertical-align" />
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="width: 48%;">
+				<div class="field-row">
+					<div class="field-label required">
+						Destination Folder:
+					</div>
+					<div class="field-value select2-double-width">
+						<div id="location-select" class="select2-container fluid-mock-select filter-container">
+							<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: fileShareDisplayText()" />
+							<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+						</div>
+						<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
+							<div id="browser-tree" tabindex="0"></div>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="width: 48%;">
+				<div class="field-row">
+					<div class="field-label" />
+					<div class="field-value middle-vertical-align">
+						<input id="create-export-directory-checkbox" type="checkbox" data-bind=" checked: IsExportFolderCreationEnabled" class="middle-vertical-align">
+						<label for="create-export-directory-checkbox">Create Export Folder</label>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
 
 
-			<div class="card">
-				<span class="label">Output Settings</span>
-				<table style="width: 100%;">
-					<tr>
-						<td style="vertical-align: text-top; width: 48%;">
-							<div>
-								<div class="field-row">
-									<p>
-										<h3 style="margin-left: 30px">
-											LOAD FILE OPTIONS
-										</h3>
-									</p>
-								</div>
-								<div class="field-row" data-bind="visible: !ExportRdoMode()">
-									<div class="field-label required">
-										Image File Format:
-									</div>
-									<div class="field-value">
-										<select id="imageDataFileFormatSelector" data-bind="options: ImageFileFormatList, optionsText: 'key', optionsValue: 'value', value: SelectedImageDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										Data File Format:
-									</div>
-									<div class="field-value">
-										<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, disable: HasBeenRun(), select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: isCustom">
-									<div class="field-label">
-										Column:
-									</div>
-									<div class="field-value">
-										<select id="columnSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator, select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: isCustom">
-									<div class="field-label">
-										Quote:
-									</div>
-									<div class="field-value">
-										<select id="quoteSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator, select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: isCustom">
-									<div class="field-label">
-										Newline:
-									</div>
-									<div class="field-value">
-										<select id="newlineSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator, select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: isCustom">
-									<div class="field-label">
-										Multi-Value:
-									</div>
-									<div class="field-value">
-										<select id="multivalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator, select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: isCustom">
-									<div class="field-label">
-										Nested Value:
-									</div>
-									<div class="field-value">
-										<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom() && !HasBeenRun(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator, select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										Data File Encoding:
-									</div>
-									<div class="field-value">
-										<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
-											<optgroup data-bind="attr: {label: label}, foreach: children">
-												<option data-bind="text: displayName, value: name"></option>
-											</optgroup>
-										</select>
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										File Path:
-									</div>
-									<div class="field-value">
-										<ul data-bind="foreach: ExportEnums.FilePathType">
-											<li>
-												<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
-												<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index(),for: 'filePath_' + $index() }"></label>
-												<!-- ko if: value==2 -->
-												<input type="text" data-bind="enable: $parent.isUserPrefix() && !$parent.HasBeenRun(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
-												<!-- /ko -->
-											</li>
-										</ul>
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label">
-										Include Native Files Path:
-									</div>
-									<div class="field-value middle-vertical-align">
-										<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: HasBeenRun() || ExportNatives(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label">
-										Export Multiple Choice<br />Fields As Nested:
-									</div>
-									<div class="field-value middle-vertical-align">
-										<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind="disable: HasBeenRun(), checked: ExportMultipleChoiceFieldsAsNested" class="middle-vertical-align" />
-									</div>
-								</div>
-							</div>
-							<div>
-								<div class="field-row">
-									<p>
-										<h3 style="margin-left: 30px">
-											FILE NAMING OPTIONS
-										</h3>
-									</p>
-								</div>
-								<div class="field-row" data-bind="visible: !ExportRdoMode()">
-									<div class="field-label required">
-										Name Output Files After:
-									</div>
-									<div class="field-value">
-										<select id="exportNativeWithFilenameFromTypeSelector" data-bind="enable: !HasBeenRun(), options: ExportEnums.ExportNativeWithFilenameFromTypes, optionsCaption: 'Select...', optionsText: 'key', optionsValue: 'value', value: SelectedExportNativesWithFileNameFrom, select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: !IsCustomFileNameOptionSelected()">
-									<div class="field-label">
-										Append Original File Name:	
-									</div>
-									<div class="field-value" style="vertical-align: middle;">
-										<input id="append-original-file-name-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: AppendOriginalFileName" />
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: IsCustomFileNameOptionSelected(), with: exportFileNameViewModel">
-									<div class="field-label">
-										File Name:
-									</div>
-									<div class="field-value" id="fileNamingContainer">
-										<div data-bind="foreach: visibilityValuesContainer">
-											<div class="field-value" data-bind="visible: $data">
-												<select data-bind="disable: $parents[1].HasBeenRun(), value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
-											</div>
-										</div>
-									</div>
-									<div class="field-value" data-bind="visible: !$parent.HasBeenRun()">
-										<button id="add-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: addNewSelection, visible: addButtonVisible()">+</button>
-									</div>	
-									<div class="field-value" data-bind="visible: !$parent.HasBeenRun()">
-										<button id="del-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
-									</div>
-								</div>
-							</div>
-						</td>
-						<td style="vertical-align: text-top;">
-							<div data-bind="visible: ExportImages">
-								<div class="field-row">
-									<p>
-										<h3 style="margin-left: 30px">
-											IMAGE
-										</h3>
-									</p>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										File Type:
-									</div>
-									<div class="field-value">
-										<select id="imageFileTypesSelector" data-bind="enable: ExportNatives && !HasBeenRun(), options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: !IsProductionExport()">
-									<div class="field-label required">
-										Image Precedence:
-									</div>
-									<div class="field-value">
-										<select id="image-production-precedence" data-bind="disable: HasBeenRun(), options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, disable: HasBeenRun(), select2: {}"></select>
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
-									<div class="field-label required">
-										Production Precedence:
-									</div>
-									<div class="field-value">
-										<label id="image-production-selection" class="precedence-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: ImagePrecedenceSelection"></label>
-										<button id="image-production-precedence-button" style="vertical-align: top" data-bind="click: openImageProductionPicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-										<input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
-									</div>
-								</div>
-								<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
-									<div class="field-label">
-										Include Original Images<br />If Not Produced:
-									</div>
-									<div class="field-value" style="vertical-align: middle;">
-										<input id="image-include-original-images-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: IncludeOriginalImages" />
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										Subdirectory Prefix:
-									</div>
-									<div class="field-value">
-										<input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix, disable: HasBeenRun()" />
-										<span id="subdirectory-image-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
-									</div>
-								</div>
-							</div>
-							<div data-bind="visible: ExportNatives">
-								<div>
-									<p>
-										<h3 style="margin-left: 30px">
-											NATIVE
-										</h3>
-									</p>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										Subdirectory Prefix:
-									</div>
-									<div class="field-value">
-										<input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix, disable: HasBeenRun()" />
-										<span id="subdirectory-native-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
-									</div>
-								</div>
-							</div>
-							<div data-bind="visible: ExportTextFieldsAsFiles">
-								<div>
-									<p>
-										<h3 style="margin-left: 30px">
-											TEXT
-										</h3>
-									</p>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										Text File Encoding:
-									</div>
-									<div class="field-value">
-										<select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, disable: HasBeenRun(), select2searchable: {}">
-											<optgroup data-bind="attr: {label: label}, foreach: children">
-												<option data-bind="text: displayName, value: name"></option>
-											</optgroup>
-										</select>
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										Text Precedence:
-									</div>
-									<div class="field-value">
-										<label id="text-precedence-selection" class="precedence-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: TextPrecedenceSelection"></label>
-										<button id="text-precedence-button"  style="vertical-align: top" data-bind="click: openTextPrecedencePicker, disable: HasBeenRun()" class="actionButtonSmall">...</button>
-										<input id="text-precedence-input" data-bind="value: TextPrecedenceFields, visible: false" />
-									</div>
-								</div>
-								<div class="field-row">
-									<div class="field-label required">
-										Subdirectory Prefix:
-									</div>
-									<div class="field-value">
-										<input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix, disable: HasBeenRun()" />
-										<span id="subdirectory-text-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
-									</div>
-								</div>
-							</div>
-						</td>
-					</tr>
-				</table>
+<div class="card">
+<span class="label">Output Settings</span>
+<table style="width: 100%;">
+<tr>
+<td style="vertical-align: text-top; width: 48%;">
+	<div>
+		<div class="field-row">
+			<p>
+				<h3 style="margin-left: 30px">
+					LOAD FILE OPTIONS
+				</h3>
+			</p>
+		</div>
+		<div class="field-row" data-bind="visible: !ExportRdoMode()">
+			<div class="field-label required">
+				Image File Format:
 			</div>
-			<div class="card" data-bind="visible: IsVolumeAndSubdirectioryDetailVisible()">
-				<span class="label">Volume & Subdirectory Detail</span>
-				<table style="width: 100%;">
-					<tr>
-						<td style="vertical-align: text-top; width: 48%;">
-							<div>
-								<p>
-									<h3 style="margin-left: 30px">
-										VOLUME
-									</h3>
-								</p>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Prefix:
-								</div>
-								<div class="field-value">
-									<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Start Number:
-								</div>
-								<div class="field-value">
-									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Number Of Digits:
-								</div>
-								<div class="field-value">
-									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Max Size (MB):
-								</div>
-								<div class="field-value">
-									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
-								</div>
-							</div>
-						</td>
-						<td style="vertical-align: text-top;">
-							<div class="field-row">
-								<p>
-									<h3 style="margin-left: 30px">
-										SUBDIRECTORY
-									</h3>
-								</p>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Start Number:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Number Of Digits:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding, disable: HasBeenRun()" />
-								</div>
-							</div>
-							<div class="field-row">
-								<div class="field-label required">
-									Max Files:
-								</div>
-								<div class="field-value">
-									<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles, disable: HasBeenRun()" />
-								</div>
-							</div>
-						</td>
-					</tr>
-				</table>
+			<div class="field-value">
+				<select id="imageDataFileFormatSelector" data-bind="options: ImageFileFormatList, optionsText: 'key', optionsValue: 'value', value: SelectedImageDataFileFormat, select2: {}"></select>
 			</div>
-			<div style="height: 15px;"></div>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Data File Format:
+			</div>
+			<div class="field-value">
+				<select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: ExportEnums.DataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: isCustom">
+			<div class="field-label">
+				Column:
+			</div>
+			<div class="field-value">
+				<select id="columnSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: isCustom">
+			<div class="field-label">
+				Quote:
+			</div>
+			<div class="field-value">
+				<select id="quoteSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: isCustom">
+			<div class="field-label">
+				Newline:
+			</div>
+			<div class="field-value">
+				<select id="newlineSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: isCustom">
+			<div class="field-label">
+				Multi-Value:
+			</div>
+			<div class="field-value">
+				<select id="multivalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: isCustom">
+			<div class="field-label">
+				Nested Value:
+			</div>
+			<div class="field-value">
+				<select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Data File Encoding:
+			</div>
+			<div class="field-value">
+				<select id="dataFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: DataFileEncodingType, select2searchable: {}">
+					<optgroup data-bind="attr: {label: label}, foreach: children">
+						<option data-bind="text: displayName, value: name"></option>
+					</optgroup>
+				</select>
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				File Path:
+			</div>
+			<div class="field-value">
+				<ul data-bind="foreach: ExportEnums.FilePathType">
+					<li>
+						<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
+						<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index(),for: 'filePath_' + $index() }"></label>
+						<!-- ko if: value==2 -->
+						<input type="text" data-bind="enable: $parent.isUserPrefix(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
+						<!-- /ko -->
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label">
+				Include Native Files Path:
+			</div>
+			<div class="field-value middle-vertical-align">
+				<input id="include-native-files-path-checkbox" type="checkbox" data-bind="disable: ExportNatives(), checked: IncludeNativeFilesPath" class="middle-vertical-align" />
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label">
+				Export Multiple Choice<br />Fields As Nested:
+			</div>
+			<div class="field-value middle-vertical-align">
+				<input id="export-multiple-choice-fields-as-nested" type="checkbox" data-bind=" checked: ExportMultipleChoiceFieldsAsNested" class="middle-vertical-align" />
+			</div>
 		</div>
 	</div>
+	<div>
+		<div class="field-row">
+			<p>
+				<h3 style="margin-left: 30px">
+					FILE NAMING OPTIONS
+				</h3>
+			</p>
+		</div>
+		<div class="field-row" data-bind="visible: !ExportRdoMode()">
+			<div class="field-label required">
+				Name Output Files After:
+			</div>
+			<div class="field-value">
+				<select id="exportNativeWithFilenameFromTypeSelector" data-bind="options: ExportEnums.ExportNativeWithFilenameFromTypes, optionsCaption: 'Select...', optionsText: 'key', optionsValue: 'value', value: SelectedExportNativesWithFileNameFrom, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: !IsCustomFileNameOptionSelected()">
+			<div class="field-label">
+				Append Original File Name:
+			</div>
+			<div class="field-value" style="vertical-align: middle;">
+				<input id="append-original-file-name-checkbox" type="checkbox" data-bind=" checked: AppendOriginalFileName" />
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: IsCustomFileNameOptionSelected(), with: exportFileNameViewModel">
+			<div class="field-label">
+				File Name:
+			</div>
+			<div class="field-value" id="fileNamingContainer">
+				<div data-bind="foreach: visibilityValuesContainer">
+					<div class="field-value" data-bind="visible: $data">
+						<select data-bind="disable: $parents[1].HasBeenRun(), value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
+					</div>
+				</div>
+			</div>
+			<div class="field-value">
+				<button id="add-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: addNewSelection, visible: addButtonVisible()">+</button>
+			</div>	
+			<div class="field-value">
+				<button id="del-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
+			</div>
+		</div>
+	</div>
+</td>
+<td style="vertical-align: text-top;">
+	<div data-bind="visible: ExportImages">
+		<div class="field-row">
+			<p>
+				<h3 style="margin-left: 30px">
+					IMAGE
+				</h3>
+			</p>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				File Type:
+			</div>
+			<div class="field-value">
+				<select id="imageFileTypesSelector" data-bind="enable: ExportNatives, options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: !IsProductionExport()">
+			<div class="field-label required">
+				Image Precedence:
+			</div>
+			<div class="field-value">
+				<select id="image-production-precedence" data-bind=" options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, select2: {}"></select>
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
+			<div class="field-label required">
+				Production Precedence:
+			</div>
+			<div class="field-value">
+				<label id="image-production-selection" class="precedence-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: ImagePrecedenceSelection"></label>
+				<button id="image-production-precedence-button" style="vertical-align: top" data-bind="click: openImageProductionPicker" class="actionButtonSmall">...</button>
+				<input id="image-production-precedence-input" data-bind="value: ImagePrecedence, visible: false" />
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
+			<div class="field-label">
+				Include Original Images<br />If Not Produced:
+			</div>
+			<div class="field-value" style="vertical-align: middle;">
+				<input id="image-include-original-images-checkbox" type="checkbox" data-bind=" checked: IncludeOriginalImages" />
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Subdirectory Prefix:
+			</div>
+			<div class="field-value">
+				<input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix" />
+				<span id="subdirectory-image-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
+			</div>
+		</div>
+	</div>
+	<div data-bind="visible: ExportNatives">
+		<div>
+			<p>
+				<h3 style="margin-left: 30px">
+					NATIVE
+				</h3>
+			</p>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Subdirectory Prefix:
+			</div>
+			<div class="field-value">
+				<input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix" />
+				<span id="subdirectory-native-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
+			</div>
+		</div>
+	</div>
+	<div data-bind="visible: ExportTextFieldsAsFiles">
+		<div>
+			<p>
+				<h3 style="margin-left: 30px">
+					TEXT
+				</h3>
+			</p>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Text File Encoding:
+			</div>
+			<div class="field-value">
+				<select id="textFileEncodingSelector" data-bind="foreach: FileEncodingTypeList, value: TextFileEncodingType, select2searchable: {}">
+					<optgroup data-bind="attr: {label: label}, foreach: children">
+						<option data-bind="text: displayName, value: name"></option>
+					</optgroup>
+				</select>
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Text Precedence:
+			</div>
+			<div class="field-value">
+				<label id="text-precedence-selection" class="precedence-selection" data-bind="style: { color: ImagePrecedence().length > 0 ? 'black' : 'darkblue' },text: TextPrecedenceSelection"></label>
+				<button id="text-precedence-button"  style="vertical-align: top" data-bind="click: openTextPrecedencePicker" class="actionButtonSmall">...</button>
+				<input id="text-precedence-input" data-bind="value: TextPrecedenceFields, visible: false" />
+			</div>
+		</div>
+		<div class="field-row">
+			<div class="field-label required">
+				Subdirectory Prefix:
+			</div>
+			<div class="field-value">
+				<input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix" />
+				<span id="subdirectory-text-padding-text" style="padding: 2px" data-bind="text: SubdirectoryDigitText"></span>
+			</div>
+		</div>
+	</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="card" data-bind="visible: IsVolumeAndSubdirectioryDetailVisible()">
+	<span class="label">Volume & Subdirectory Detail</span>
+	<table style="width: 100%;">
+		<tr>
+			<td style="vertical-align: text-top; width: 48%;">
+				<div>
+					<p>
+						<h3 style="margin-left: 30px">
+							VOLUME
+						</h3>
+					</p>
+				</div>
+				<div class="field-row">
+					<div class="field-label required">
+						Prefix:
+					</div>
+					<div class="field-value">
+						<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix" />
+					</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label required">
+						Start Number:
+					</div>
+					<div class="field-value">
+						<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber" />
+					</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label required">
+						Number Of Digits:
+					</div>
+					<div class="field-value">
+						<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding" />
+					</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label required">
+						Max Size (MB):
+					</div>
+					<div class="field-value">
+						<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize" />
+					</div>
+				</div>
+			</td>
+			<td style="vertical-align: text-top;">
+				<div class="field-row">
+					<p>
+						<h3 style="margin-left: 30px">
+							SUBDIRECTORY
+						</h3>
+					</p>
+				</div>
+				<div class="field-row">
+					<div class="field-label required">
+						Start Number:
+					</div>
+					<div class="field-value">
+						<input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber" />
+					</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label required">
+						Number Of Digits:
+					</div>
+					<div class="field-value">
+						<input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding" />
+					</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label required">
+						Max Files:
+					</div>
+					<div class="field-value">
+						<input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles" />
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+<div style="height: 15px;"></div>
+</div>
+</div>
 </script>

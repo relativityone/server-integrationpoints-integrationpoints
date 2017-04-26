@@ -8,61 +8,76 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RsapiObjectTypeRepository : IObjectTypeRepository
 	{
+		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 
-		public RsapiObjectTypeRepository(int workspaceArtifactId, IServicesMgr servicesMgr)
+		public RsapiObjectTypeRepository(int workspaceArtifactId, IServicesMgr servicesMgr, IHelper helper)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			_servicesMgr = servicesMgr;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiObjectTypeRepository>();
 		}
 
-		public int RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid)
+		public int CreateObjectType(Guid objectTypeGuid, string objectTypeName, int parentArtifactTypeId)
 		{
-			var objectType = new ObjectType(objectTypeGuid) {Fields = FieldValue.AllFields};
-			int descriptorArtifactTypeId = RetrieveObjectTypeDescriptorArtifactTypeId(objectType);
-			return descriptorArtifactTypeId;
-		}
+			var objectType = new ObjectType(objectTypeGuid)
+			{
+				Name = objectTypeName,
+				ParentArtifactTypeID = parentArtifactTypeId,
+				CopyInstancesOnParentCopy = false,
+				CopyInstancesOnWorkspaceCreation = false,
+				SnapshotAuditingEnabledOnDelete = false,
+				Pivot = true,
+				Sampling = false,
+				PersistentLists = false
+			};
 
-		public int RetrieveObjectTypeDescriptorArtifactTypeId(int objectTypeArtifactId)
-		{
-			var objectType = new ObjectType(objectTypeArtifactId) {Fields = FieldValue.AllFields};
-			int descriptorArtifactTypeId = RetrieveObjectTypeDescriptorArtifactTypeId(objectType);
-			return descriptorArtifactTypeId;
-		}
-
-		private int RetrieveObjectTypeDescriptorArtifactTypeId(ObjectType objectType)
-		{
-			ResultSet<ObjectType> resultSet;
 			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
-				resultSet = rsapiClient.Repositories.ObjectType.Read(objectType);
+				try
+				{
+					return rsapiClient.Repositories.ObjectType.CreateSingle(objectType);
+				}
+				catch (Exception e)
+				{
+					_logger.LogError(e, "Failed to create ObjectType {name} with {guid}.", objectTypeName, objectTypeGuid);
+					throw;
+				}
 			}
+		}
 
+		public int RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid)
+		{
 			int? descriptorArtifactTypeId = null;
-			if (resultSet.Success && resultSet.Results.Any())
+			try
 			{
-				descriptorArtifactTypeId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
+				using (var rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+					descriptorArtifactTypeId = rsapiClient.Repositories.ObjectType.ReadSingle(objectTypeGuid).DescriptorArtifactTypeID;
+				}
 			}
-
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Failed to retrieve object type with guid {guid}.", objectTypeGuid);
+			}
 			if (!descriptorArtifactTypeId.HasValue)
 			{
-				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectType.Guids[0]));
+				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectTypeGuid));
 			}
-
 			return descriptorArtifactTypeId.Value;
 		}
 
 		public int? RetrieveObjectTypeArtifactId(string objectTypeName)
 		{
-			Query<ObjectType> objectTypeQuery = new Query<ObjectType>();
-
-			TextCondition objectTypeNameCondition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName);
-
-			objectTypeQuery.Fields.Add(new FieldValue("Artifact ID"));
-			objectTypeQuery.Condition = objectTypeNameCondition;
+			Query<ObjectType> objectTypeQuery = new Query<ObjectType>
+			{
+				Condition = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, objectTypeName)
+			};
+			objectTypeQuery.Fields.Add(new FieldValue(ArtifactQueryFieldNames.ArtifactID));
 
 			QueryResultSet<ObjectType> queryResults;
 
@@ -72,26 +87,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				queryResults = rsapiClient.Repositories.ObjectType.Query(objectTypeQuery);
 			}
 
-			int? artifactId = 0;
-			if (queryResults != null && queryResults.Success && queryResults.Results.Any())
+			if (queryResults.Success && queryResults.Results.Any())
 			{
 				Result<ObjectType> result = queryResults.Results.First();
-				artifactId = result.Artifact.ArtifactID;
+				return result.Artifact.ArtifactID;
 			}
 
-			return artifactId > 0 ? artifactId : null;
-		}
-
-		public void Delete(int artifactId)
-		{
-			var objectType = new ObjectType(artifactId);
-
-			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
-			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				rsapiClient.Repositories.ObjectType.Delete(objectType);
-			}
+			return null;
 		}
 	}
 }

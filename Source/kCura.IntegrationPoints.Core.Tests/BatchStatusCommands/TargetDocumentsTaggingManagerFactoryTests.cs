@@ -2,7 +2,6 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -26,8 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private const string _UNIQUE_JOBID = "very unique";
 
 		private IRepositoryFactory _repositoryFactory;
-		private ISourceWorkspaceManager _sourceWorkspaceManager;
-		private ISourceJobManager _sourceJobManager;
+		private ITagsCreator _tagsCreator;
 		private ITagSavedSearchManager _tagSavedSearchManager;
 		private IDocumentRepository _documentRepository;
 		private ISynchronizerFactory _synchronizerFactory;
@@ -42,8 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
-			_sourceJobManager = Substitute.For<ISourceJobManager>();
+			_tagsCreator = Substitute.For<ITagsCreator>();
 			_tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
 			_synchronizerFactory = Substitute.For<ISynchronizerFactory>();
@@ -63,8 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_instance = new TargetDocumentsTaggingManagerFactory
 			(
 				_repositoryFactory,
-				_sourceWorkspaceManager,
-				_sourceJobManager,
+				_tagsCreator,
 				_tagSavedSearchManager,
 				_documentRepository,
 				_synchronizerFactory,
@@ -102,8 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_instance = new TargetDocumentsTaggingManagerFactory
 			(
 				_repositoryFactory,
-				_sourceWorkspaceManager,
-				_sourceJobManager,
+				_tagsCreator,
 				_tagSavedSearchManager,
 				_documentRepository,
 				_synchronizerFactory,

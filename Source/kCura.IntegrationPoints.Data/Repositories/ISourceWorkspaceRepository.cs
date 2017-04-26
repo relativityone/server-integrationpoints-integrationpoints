@@ -22,10 +22,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Creates an instance of the Source Workspace rdo
 		/// </summary>
-		/// <param name="sourceWorkspaceArtifactTypeId">The Source Workspace artifact type id</param>
 		/// <param name="sourceWorkspaceDto">The Source Workspace to create</param>
 		/// <returns>The artifact id of the newly created instance</returns>
-		int Create(int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto);
+		int Create(SourceWorkspaceDTO sourceWorkspaceDto);
 
 		/// <summary>
 		/// Updates the given Source Workspace rdo

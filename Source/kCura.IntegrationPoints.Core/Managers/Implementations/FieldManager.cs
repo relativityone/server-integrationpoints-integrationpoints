@@ -20,26 +20,26 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public int? RetrieveArtifactViewFieldId(int workspaceArtifactId, int fieldArtifactId)
 		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceArtifactId);
-			return fieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceArtifactId);
+			return fieldQueryRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
 		}
 
 		public ArtifactFieldDTO[] RetrieveBeginBatesFields(int workspaceArtifactId)
 		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceArtifactId);
-			return fieldRepository.RetrieveBeginBatesFields();
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceArtifactId);
+			return fieldQueryRepository.RetrieveBeginBatesFields();
 		}
 
 		public ArtifactDTO[] RetrieveFields(int workspaceId, int rdoTypeId, HashSet<string> fieldNames)
 		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceId);
-			return fieldRepository.RetrieveFields(rdoTypeId, fieldNames);
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceId);
+			return fieldQueryRepository.RetrieveFields(rdoTypeId, fieldNames);
 		}
 
 		public ArtifactDTO[] RetrieveFields(int workspaceId, HashSet<string> fieldNames)
 		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceId);
-			return fieldRepository.RetrieveFields(Convert.ToInt32(ArtifactType.Document), fieldNames);
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceId);
+			return fieldQueryRepository.RetrieveFields(Convert.ToInt32(ArtifactType.Document), fieldNames);
 		}
 	}
 }

@@ -516,6 +516,11 @@
     <Compile Include="Managers\FederatedInstanceManagerTests.cs" />
     <Compile Include="Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Managers\WorkspaceManagerTests.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectTypeTests.cs" />
+    <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
     <Compile Include="Services\DataTransferLocationServiceTests.cs" />
     <Compile Include="Services\Export\DynamicFolderPathReaderTests.cs" />
     <Compile Include="Services\Export\ExportTransferDataReaderTestsBase.cs" />

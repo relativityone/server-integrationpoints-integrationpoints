@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 using NSubstitute;
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 		private IEnumerableParserFactory _enumerableParserFactory;
 		private IDataTransferLocationServiceFactory _dataTransferLocationServiceFactory;
 		private IDataTransferLocationService _dataTransferLocationService;
+		private ISerializer _serializer;
 
 		[SetUp]
 		public override void SetUp()
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 			_enumerableParserFactory = Substitute.For<IEnumerableParserFactory>();
 			_dataTransferLocationServiceFactory = Substitute.For<IDataTransferLocationServiceFactory>();
 			_dataTransferLocationService = Substitute.For<IDataTransferLocationService>();
+			_serializer = new JSONSerializer();
 		}
 
 		[Test]
@@ -46,7 +49,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 			_fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
 			_fieldParser.GetFields().Returns(testData);
 
-			ImportProvider ip = new ImportProvider(_fieldParserFactory);
+			ImportProvider ip = new ImportProvider(_fieldParserFactory, _serializer);
 			IEnumerable<FieldEntry> ipFields = ip.GetFields(string.Empty);
 
 			Assert.AreEqual(testData.Count, ipFields.Count());
@@ -64,14 +67,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 		[Test]
 		public void ImportProviderCannotGetBatchableIds()
 		{
-			ImportProvider ip = new ImportProvider(_fieldParserFactory);
+			ImportProvider ip = new ImportProvider(_fieldParserFactory, _serializer);
 			Assert.Throws<NotImplementedException>(() => ip.GetBatchableIds(null, string.Empty));
 		}
 
 		[Test]
 		public void ImportProviderCannotGetData()
 		{
-			ImportProvider ip = new ImportProvider(_fieldParserFactory);
+			ImportProvider ip = new ImportProvider(_fieldParserFactory, _serializer);
 			Assert.Throws<NotImplementedException>(() => ip.GetData(null, null, string.Empty));
 		}
 

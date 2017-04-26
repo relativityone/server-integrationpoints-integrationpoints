@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.RelativitySourceRdo;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
@@ -15,14 +16,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 		private ISourceJobManager _sourceJobManager;
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
 
+		private IRelativitySourceJobRdoInitializer _sourceJobRdoInitializer;
+		private IRelativitySourceWorkspaceRdoInitializer _sourceWorkspaceRdoInitializer;
+
 		public override void SetUp()
 		{
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
+			_sourceJobRdoInitializer = Substitute.For<IRelativitySourceJobRdoInitializer>();
+			_sourceWorkspaceRdoInitializer = Substitute.For<IRelativitySourceWorkspaceRdoInitializer>();
 
 			var helper = Substitute.For<IHelper>();
 
-			_instance = new TagsCreator(_sourceJobManager, _sourceWorkspaceManager, helper);
+			_instance = new TagsCreator(_sourceJobManager, _sourceWorkspaceManager, _sourceJobRdoInitializer, _sourceWorkspaceRdoInitializer, helper);
 		}
 
 		public void ItShouldCreateTags()
@@ -32,19 +38,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			int jobHistoryArtifactId = 847715;
 			int? federatedInstanceArtifactId = 561710;
 
+			int sourceWorkspaceDescriptorArtifactTypeId = 625549;
+			int sourceJobDescriptorArtifactTypeId = 801242;
+
 			var sourceWorkspaceDto = new SourceWorkspaceDTO
 			{
 				ArtifactTypeId = 10,
 				ArtifactId = 831219
 			};
+
 			var sourceJobDto = new SourceJobDTO();
 
-			_sourceWorkspaceManager
-				.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, federatedInstanceArtifactId)
+			_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId)
+				.Returns(sourceWorkspaceDescriptorArtifactTypeId);
+			_sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId, sourceWorkspaceDescriptorArtifactTypeId)
 				.Returns(sourceWorkspaceDto);
 
-			_sourceJobManager
-				.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId, sourceWorkspaceDto.ArtifactId, jobHistoryArtifactId)
+			_sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId).Returns(sourceJobDescriptorArtifactTypeId);
+			_sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId,
+					sourceJobDescriptorArtifactTypeId)
 				.Returns(sourceJobDto);
 
 			// ACT
@@ -54,13 +66,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			Assert.That(tagsContainer.SourceJobDto, Is.EqualTo(sourceJobDto));
 			Assert.That(tagsContainer.SourceWorkspaceDto, Is.EqualTo(sourceWorkspaceDto));
 
-			_sourceWorkspaceManager
-				.Received(1)
-				.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, federatedInstanceArtifactId);
+			_sourceWorkspaceRdoInitializer.Received(1).InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+			_sourceWorkspaceManager.Received(1)
+				.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId, sourceWorkspaceDescriptorArtifactTypeId);
 
-			_sourceJobManager
-				.Received(1)
-				.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId, sourceWorkspaceDto.ArtifactId, jobHistoryArtifactId);
+			_sourceJobRdoInitializer.Received(1).InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId);
+			_sourceJobManager.Received(1)
+				.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId, sourceJobDescriptorArtifactTypeId);
 		}
 	}
 }

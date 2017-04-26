@@ -165,11 +165,6 @@ namespace kCura.IntegrationPoints.Core
 			}
 		}
 
-		public static class RelativityProvider
-		{
-			public const string ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE = "Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
-		}
-
 		public static class Fields
 		{
 			internal static string Name = "Name";
