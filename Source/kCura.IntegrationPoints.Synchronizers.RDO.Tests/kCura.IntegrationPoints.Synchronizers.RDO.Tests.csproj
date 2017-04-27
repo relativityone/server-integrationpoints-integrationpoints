@@ -199,6 +199,7 @@
     <Compile Include="RdoCustodianSynchronizerTests.cs" />
     <Compile Include="RdoSynchronizerTests.cs" />
     <Compile Include="RelativityReaderDecoratorTests.cs" />
+    <Compile Include="TagsSynchronizerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

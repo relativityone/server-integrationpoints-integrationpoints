@@ -215,6 +215,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="TagsSynchronizer.cs" />
     <Compile Include="WorkspaceRef.cs" />
   </ItemGroup>
   <ItemGroup>
