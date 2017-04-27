@@ -228,11 +228,14 @@
 										<input id="append-original-file-name-checkbox" type="checkbox" data-bind="disable: HasBeenRun(), checked: AppendOriginalFileName" />
 									</div>
 								</div>
-								<div class="field-row" data-bind="visible: IsCustomFileNameOptionSelected(), with: exportFileNameViewModel">
+								<div class="field-row" data-bind="visible: IsCustomFileNameOptionSelected()">
 									<div class="field-label">
 										File Name:
 									</div>
-									<div class="field-value" id="fileNamingContainer">
+									<div class="field-value">
+										<button id="file-naming-button"  style="vertical-align: top" data-bind="click: openFileNamingOptionsPicker" class="actionButtonSmall">...</button>
+									</div>
+									@*<div class="field-value" id="fileNamingContainer">
 										<div data-bind="foreach: visibilityValuesContainer">
 											<div class="field-value" data-bind="visible: $data">
 												<select data-bind="disable: $parents[1].HasBeenRun(), value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
@@ -244,7 +247,7 @@
 									</div>	
 									<div class="field-value" data-bind="visible: !$parent.HasBeenRun()">
 										<button id="del-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
-									</div>
+									</div>*@
 								</div>
 							</div>
 						</td>

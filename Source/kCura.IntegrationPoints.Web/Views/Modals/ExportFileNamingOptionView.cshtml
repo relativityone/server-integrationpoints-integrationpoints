@@ -1,0 +1,22 @@
+﻿<div class="popupTitle">File Naming Options</div>
+<div class="card" style="min-width: 400px;">
+	<div class="field-value" id="fileNamingContainer">
+		<div data-bind="foreach: visibilityValuesContainer">
+			<div class="field-value" data-bind="visible: $data">
+				<select data-bind="value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
+			</div>
+		</div>
+	</div>
+	<div class="field-value">
+		<button id="add-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: addNewSelection, visible: addButtonVisible()">+</button>
+	</div>
+	<div class="field-value">
+		<button id="del-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
+	</div>
+</div>
+<div class="popupArtifactActionBar">
+	<button id="apply-button" class="ActionButton" data-bind="click: ok">Apply</button>
+	<button id="cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
+</div>
+<link rel="stylesheet" type="text/css" href="~/Content/site.css">
+<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">

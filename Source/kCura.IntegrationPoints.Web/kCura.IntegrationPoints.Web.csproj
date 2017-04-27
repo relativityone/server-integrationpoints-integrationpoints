@@ -1109,6 +1109,7 @@
     <Content Include="Views\Tooltip\TooltipView.cshtml" />
     <Content Include="Views\Modals\AuthenticationModalView.cshtml" />
     <Content Include="Views\Modals\ExportRenamedFieldsView.cshtml" />
+    <Content Include="Views\Modals\ExportFileNamingOptionView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

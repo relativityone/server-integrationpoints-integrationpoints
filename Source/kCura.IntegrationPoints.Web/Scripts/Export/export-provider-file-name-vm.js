@@ -113,4 +113,22 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 	self.delButtonVisible = function () {
 		return self.metaData().length > 1;
 	}
+
+	this.construct = function (view) {
+		self.view = view;
+	};
+
+	this.open = function () {
+		self.initViewModel();
+
+		self.view.dialog("open");
+	};
+
+	this.ok = function () {
+		self.view.dialog("close");
+	};
+
+	this.cancel = function () {
+		self.view.dialog("close");
+	};
 }
