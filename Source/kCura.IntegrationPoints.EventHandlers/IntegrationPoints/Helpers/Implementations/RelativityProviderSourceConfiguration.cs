@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Queries;
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			SetSourceWorkspaceName(settings);
 			SetTargetWorkspaceName(settings, federatedInstanceModel);
 			SetSavedSearchName(settings);
+			SetProductionName(settings);
 		}
 
 		private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager federatedInstanceManager)
@@ -53,12 +55,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private void SetSavedSearchName(IDictionary<string, object> settings)
 		{
-			int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
-			using (IRSAPIClient client = GetRsapiClient(sourceWorkspaceId))
+			var savedSearchArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId));
+			if (savedSearchArtifactId > 0)
 			{
-				var savedSearchArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId));
-				if (savedSearchArtifactId > 0)
+				int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
+				using (IRSAPIClient client = GetRsapiClient(sourceWorkspaceId))
+				{
 					GetSavedSearchId(settings, client, savedSearchArtifactId);
+				}
 			}
 		}
 
@@ -70,6 +74,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					queryResult.QueryArtifacts[0].getFieldByName("Text Identifier").ToString();
 			else
 				settings[nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)] = 0;
+		}
+
+		private void SetProductionName(IDictionary<string, object> settings)
+		{
+			var productionId = ParseValue<int>(settings, "SourceProductionId");
+			if (productionId > 0)
+			{
+				int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
+				GetProductionById(settings, sourceWorkspaceId, productionId);
+			}
+		}
+
+		private void GetProductionById(IDictionary<string, object> settings, int sourceWorkspaceId, int productionId)
+		{
+			IProductionManager productionManager =
+				_managerFactory.CreateProductionManager(_contextContainerFactory.CreateContextContainer(Helper));
+
+			ProductionDTO production = productionManager.RetrieveProduction(sourceWorkspaceId, productionId);
+			settings["SourceProductionName"] = production?.DisplayName;
 		}
 
 		private void SetTargetWorkspaceName(IDictionary<string, object> settings, FederatedInstanceModel federatedInstanceModel)

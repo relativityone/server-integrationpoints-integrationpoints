@@ -1,7 +1,14 @@
 ﻿var IP = IP || {};
 
-var SavedSearchStatistics = function (workspaceId, savedSearchId, importNatives, importImages) {
+var SavedSearchStatistics = function (sourceConfiguration, destinationConfiguration) {
 	var self = this;
+
+
+	this.importNatives = destinationConfiguration.importNativeFile == 'true';
+	this.importImages = destinationConfiguration.ImageImport == 'true' && (!destinationConfiguration.ImagePrecedence || destinationConfiguration.ImagePrecedence.length == 0);
+	this.workspaceId = sourceConfiguration.SourceWorkspaceArtifactId;
+	this.savedSearchId = sourceConfiguration.SavedSearchArtifactId;
+	this.sourceProductionId = sourceConfiguration.SourceProductionId;
 
 	this.defaultSettings = function () {
 		return {
@@ -57,10 +64,21 @@ var SavedSearchStatistics = function (workspaceId, savedSearchId, importNatives,
 		updateDelegate(result);
 	};
 
-	function getDocsTotal(workspaceId, savedSearchId) {
+	function getDocsTotalForSavedSearch(workspaceId, savedSearchId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
 			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForSavedSearchAsync"),
+			success: self.documents,
+			error: function (err) {
+				console.log(err);
+				self.documents("Error occured");
+			}
+		}));
+	};
+	function getDocsTotalForProduction(workspaceId, productionId) {
+		$.ajax(jQuery.extend(self.defaultSettings(), {
+			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
+			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForProductionAsync"),
 			success: self.documents,
 			error: function (err) {
 				console.log(err);
@@ -101,10 +119,32 @@ var SavedSearchStatistics = function (workspaceId, savedSearchId, importNatives,
 			}
 		}));
 	};
+	function getImagesTotalForProduction(workspaceId, productionId) {
+		$.ajax(jQuery.extend(self.defaultSettings(), {
+			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
+			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesTotalForProductionAsync"),
+			success: self.imagesTotal,
+			error: function (err) {
+				console.log(err);
+				self.imagesTotal(-1);
+			}
+		}));
+	};
 	function getImagesSize(workspaceId, savedSearchId) {
 		$.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
 			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForSavedSearchAsync"),
+			success: self.imagesSize,
+			error: function (err) {
+				console.log(err);
+				self.imagesSize(-1);
+			}
+		}));
+	};
+	function getImagesSizeForProduction(workspaceId, productionId) {
+		$.ajax(jQuery.extend(self.defaultSettings(), {
+			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
+			url: ("/Relativity.Rest/api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForProductionAsync"),
 			success: self.imagesSize,
 			error: function (err) {
 				console.log(err);
@@ -120,18 +160,23 @@ var SavedSearchStatistics = function (workspaceId, savedSearchId, importNatives,
 		var i = Math.floor(Math.log(bytes) / Math.log(k));
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 	}
-
-	getDocsTotal(workspaceId, savedSearchId);
-	if (importNatives && !importImages) {
-		getNativesTotal(workspaceId, savedSearchId);
-		getNativesSize(workspaceId, savedSearchId);
-	}
-	if (importImages) {
-		getImagesTotal(workspaceId, savedSearchId);
-		if (importNatives) {
-			getImagesSize(workspaceId, savedSearchId);
-		} else {
-			self.imagesSize(0);
+	if (self.sourceProductionId) {
+		getDocsTotalForProduction(self.workspaceId, self.sourceProductionId);
+		getImagesTotalForProduction(self.workspaceId, self.sourceProductionId);
+		getImagesSizeForProduction(self.workspaceId, self.sourceProductionId);
+	} else {
+		getDocsTotalForSavedSearch(self.workspaceId, self.savedSearchId);
+		if (self.importNatives && !self.importImages) {
+			getNativesTotal(self.workspaceId, self.savedSearchId);
+			getNativesSize(self.workspaceId, self.savedSearchId);
+		}
+		if (self.importImages) {
+			getImagesTotal(self.workspaceId, self.savedSearchId);
+			if (self.importNatives) {
+				getImagesSize(self.workspaceId, self.savedSearchId);
+			} else {
+				self.imagesSize(0);
+			}
 		}
 	}
 };

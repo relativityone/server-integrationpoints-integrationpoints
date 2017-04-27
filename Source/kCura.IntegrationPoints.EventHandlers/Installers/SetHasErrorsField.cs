@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -102,20 +104,26 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
-			IIntegrationPointSerializer serializer = new IntegrationPointSerializer();
-			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, serializer, jobTracker);
+			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer();
+			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, integrationPointSerializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 
-			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, serializer);
+			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
-			IManagerFactory managerFactory = new ManagerFactory(Helper);
+
+			IConfigFactory configFactory = new ConfigFactory();
+			ICredentialProvider credentialProvider = new TokenCredentialProvider();
+			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
+			ISerializer serializer = new JSONSerializer();
+			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, serializer, tokenProvider);
+			IManagerFactory managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
 
 			_caseServiceContext = caseServiceContext;
-			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), serializer);
-			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), serializer);
+			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
+			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 			
-			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, serializer, 
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, integrationPointSerializer, 
 				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator);
 		}
 

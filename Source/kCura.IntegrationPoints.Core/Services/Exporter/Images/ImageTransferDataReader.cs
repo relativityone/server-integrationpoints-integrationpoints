@@ -27,12 +27,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
 			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
-			//TODO: Image identify if is needed for image transfer
-			//List<int> artifactIds = artifacts.Select(x => x.ArtifactId).ToList();
+			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).Distinct().ToList();
 			//_scratchTableRepositories.ForEach(repo => repo.AddArtifactIdsIntoTempTable(artifactIds));
-
-
-
 			return artifacts;
 		}
 

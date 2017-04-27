@@ -1,5 +1,7 @@
-﻿using kCura.EventHandler;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.EventHandler;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -14,6 +16,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -49,7 +52,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					_managerFactory = new ManagerFactory(Helper);
+					IConfigFactory configFactory = new ConfigFactory();
+					ICredentialProvider credentialProvider = new TokenCredentialProvider();
+					ISerializer serializer = new JSONSerializer();
+					ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
+					IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,
+						serializer, tokenProvider);
+					_managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
 				}
 				return _managerFactory;
 			}

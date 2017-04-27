@@ -1,5 +1,6 @@
-﻿using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+﻿using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
 using kCura.WinEDDS.Service.Export;
 

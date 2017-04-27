@@ -11,6 +11,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId);
 
+		ProductionValidator CreateProductionValidator(int workspaceArtifactId);
+
 		RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix);
 
 		RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId, string credentials);

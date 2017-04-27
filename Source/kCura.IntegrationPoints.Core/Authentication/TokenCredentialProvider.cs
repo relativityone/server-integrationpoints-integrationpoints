@@ -2,7 +2,7 @@
 using System.Net;
 using kCura.WinEDDS.Api;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication
+namespace kCura.IntegrationPoints.Core.Authentication
 {
 	public class TokenCredentialProvider : ICredentialProvider
 	{

@@ -309,8 +309,8 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "ProductionGetProductionsForImport",
-				routeTemplate: "{workspaceID}/api/Production/GetProductionsForImport",
-				defaults: new { controller = "Production", action = "GetProductionsForImport" }
+				routeTemplate: "{workspaceID}/api/Production/GetProductionsForImport/{workspaceArtifactId}/{federatedInstanceId}",
+				defaults: new { controller = "Production", action = "GetProductionsForImport", federatedInstanceId = RouteParameter.Optional }
 			);
 
 			config.Routes.MapHttpRoute(

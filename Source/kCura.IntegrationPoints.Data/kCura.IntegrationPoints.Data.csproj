@@ -98,6 +98,14 @@
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.300\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
@@ -174,6 +182,8 @@
     <Compile Include="QueryBuilders\Implementations\QueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
+    <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
+    <Compile Include="Repositories\IProductionRepository.cs" />
     <Compile Include="Repositories\IKeywordSearchRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepository.cs" />
     <Compile Include="Repositories\Implementations\FieldRepository.cs" />

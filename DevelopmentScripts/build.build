@@ -47,6 +47,7 @@
 			<arg line='/lib:"${source.packages.directory}\kCura.Config.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\kCura.Data.RowDataGateway.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.Private.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.DataContracts.${relativityDependencyVersion}\lib\net45"' />
@@ -185,6 +186,7 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.Private.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.DataContracts.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />

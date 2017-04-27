@@ -378,6 +378,14 @@
       <HintPath>..\packages\RelativityCore.9.5.133.16\lib\net45\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.SDK.Services.Query, Version=9.5.133.16, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.5.133.16\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
@@ -520,6 +528,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -554,11 +563,15 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="Factories\Implementations\ConfigFactory.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />
+    <Compile Include="Factories\IConfigFactory.cs" />
     <Compile Include="Factories\IDataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Factories\Implementations\ArtifactServiceFactory.cs" />
+    <Compile Include="Factories\Implementations\ProductionManagerFactory.cs" />
+    <Compile Include="Factories\IServiceManagerFactory.cs" />
     <Compile Include="Factories\IStreamFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\IHelperFactory.cs" />
@@ -588,6 +601,8 @@
     <Compile Include="Helpers\LongPathDirectory.cs" />
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
+    <Compile Include="IServiceManagerProvider.cs" />
+    <Compile Include="ServiceManagerProvider.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
@@ -617,8 +632,10 @@
     <Compile Include="Tagging\TagSavedSearchManager.cs" />
     <Compile Include="Tagging\ITagger.cs" />
     <Compile Include="Managers\Implementations\PermissionManager.cs" />
+    <Compile Include="Managers\Implementations\ProductionManager.cs" />
     <Compile Include="Tagging\Tagger.cs" />
     <Compile Include="Managers\IPermissionManager.cs" />
+    <Compile Include="Managers\IProductionManager.cs" />
     <Compile Include="OAuthHelper.cs" />
     <Compile Include="OAuthServicesManager.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
@@ -709,6 +726,7 @@
     <Compile Include="Validation\Parts\IntegrationPointTypeValidator.cs" />
     <Compile Include="Validation\Parts\NameValidator.cs" />
     <Compile Include="Validation\Parts\PermissionValidator.cs" />
+    <Compile Include="Validation\Parts\ProductionValidator.cs" />
     <Compile Include="Validation\Parts\SavePermissionValidator.cs" />
     <Compile Include="Validation\Parts\StopJobPermissionValidator.cs" />
     <Compile Include="Validation\Parts\ViewErrorsPermissionValidator.cs" />
@@ -759,7 +777,6 @@
     <Compile Include="Services\IntegrationPoint\IntegrationPointProfileService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointServiceBase.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointTypeService.cs" />
-    <Compile Include="Services\IProductionService.cs" />
     <Compile Include="Services\IArtifactTreeService.cs" />
     <Compile Include="Services\ISavedSearchesTreeService.cs" />
     <Compile Include="Services\IViewService.cs" />
@@ -844,7 +861,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">

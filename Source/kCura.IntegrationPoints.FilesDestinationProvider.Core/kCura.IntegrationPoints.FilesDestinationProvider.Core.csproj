@@ -546,7 +546,6 @@
     <Compile Include="Helpers\IDestinationFolderHelper.cs" />
     <Compile Include="Helpers\IJobInfo.cs" />
     <Compile Include="Helpers\IJobInfoFactory.cs" />
-    <Compile Include="Helpers\IServiceManagerProvider.cs" />
     <Compile Include="Helpers\JobInfo.cs" />
     <Compile Include="Helpers\JobInfoFactory.cs" />
     <Compile Include="Installer\ExportInstaller.cs" />
@@ -575,7 +574,6 @@
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Process\IExportSettingsBuilder.cs" />
-    <Compile Include="Services\ProductionService.cs" />
     <Compile Include="Process\IVolumeInfoBuilder.cs" />
     <Compile Include="Process\VolumeInfoBuilder.cs" />
     <Compile Include="Logging\UserMessageEventArgs.cs" />
@@ -583,7 +581,6 @@
     <Compile Include="Services\ArtifactTreeService.cs" />
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
-    <Compile Include="SharedLibrary\ConfigFactory.cs" />
     <Compile Include="ExportManagers\CoreAuditManager.cs" />
     <Compile Include="ExportManagers\CoreExportManager.cs" />
     <Compile Include="ExportManagers\CoreFieldManager.cs" />
@@ -591,7 +588,6 @@
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\ExportDataContext.cs" />
     <Compile Include="SharedLibrary\ExtendedFieldNameProvider.cs" />
-    <Compile Include="SharedLibrary\IManagerFactory.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />
@@ -604,20 +600,17 @@
     <Compile Include="Validation\Parts\RdoExportSettingsValidator.cs" />
     <Compile Include="Validation\Parts\ViewValidator.cs" />
     <Compile Include="Validation\Parts\PaddingValidator.cs" />
-    <Compile Include="SharedLibrary\ServiceManagerProvider.cs" />
+    <Compile Include="Validation\Parts\ExportProductionValidator.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
     <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
-    <Compile Include="SharedLibrary\IConfigFactory.cs" />
     <Compile Include="SharedLibrary\ICoreExporterStatusNotification.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
-    <Compile Include="SharedLibrary\ProductionManagerFactory.cs" />
     <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
     <Compile Include="Validation\FileDestinationProviderConfigurationValidator.cs" />
     <Compile Include="Validation\FileDestinationProviderValidationMessages.cs" />
     <Compile Include="Validation\FileDestinationProviderValidatorsFactory.cs" />
-    <Compile Include="Validation\Parts\ProductionValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

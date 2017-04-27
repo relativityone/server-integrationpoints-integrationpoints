@@ -108,21 +108,69 @@
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.savedSearches = ko.observableArray(state.savedSearches);
 		self.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
-		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
 		self.FolderArtifactId = ko.observable(state.FolderArtifactId);
 		self.TargetFolder = ko.observable();
 		self.SecuredConfiguration = ko.observable(state.SecuredConfiguration);
-		self.ProductionImport = ko.observable(state.ProductionImport || false);
-		self.ProductionSets = ko.observableArray();
+		self.ProductionImport = ko.observable(state.ProductionImport || false);//Import into production in destination workspace
+		self.SourceProductionSets = ko.observableArray();
+		self.DestinationProductionSets = ko.observableArray();
 		self.ProductionArtifactId = ko.observable();
 		self.ProductionArtifactId.subscribe(function (value) {
 			self.ProductionImport(!!value);
 		});
-
 		self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
+		self.TypeOfExport = ko.observable();//todo:self.TypeOfExport = ko.observable(initTypeOfExport);
+		self.IsSavedSearchSelected = function () {
+			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.SavedSearch;
+		};
+		self.IsProductionSelected = function () {
+			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
+		};
+		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
+			required: {
+				onlyIf: function () {
+					return self.IsSavedSearchSelected();
+				}
+			}
+		});
 
+		self.SourceProductionId = ko.observable().extend({
+			required: {
+				onlyIf: function () {
+					return self.IsProductionSelected();
+				}
+			}
+		});
+		self.SourceOptions = [
+			{ value: 3, key: "Saved Search" },
+			{ value: 2, key: "Production" }
+		];
+		self.TypeOfExport.subscribe(function(value) {
+			if (value === ExportEnums.SourceOptionsEnum.Production) {
+				
+					var productionSetsPromise = IP.data.ajax({
+						type: "get",
+						url: IP.utils.generateWebAPIURL("Production/GetProductionsForExport"),
+						data: {
+							sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
+						}
+					}).fail(function(error) {
+						IP.message.error.raise("No production sets were returned from the source provider.");
+					});
+
+					IP.data.deferred().all(productionSetsPromise).then(function(result) {
+						
+						self.SourceProductionSets(result);
+						self.SourceProductionId(state.SourceProductionId);
+					});
+			}
+		});
+		self.TypeOfExport(state.TypeOfExport);
+		
+
+		
 		self.ShowAuthentiactionButton = ko.observable(false);
 		self.AuthenticationFailed = ko.observable(false);
 
@@ -285,18 +333,16 @@
 		self.getDestinationProductionSets = function (targetWorkspaceId) {
 			if (targetWorkspaceId) {
 				var productionSetsPromise = IP.data.ajax({
-					type: "get",
-					url: IP.utils.generateWebAPIURL("Production/GetProductionsForImport"),
-					data: {
-						sourceWorkspaceArtifactId: targetWorkspaceId
-					}
+					type: "POST",
+					url: IP.utils.generateWebAPIURL("Production/GetProductionsForImport", targetWorkspaceId, self.FederatedInstanceArtifactId()),
+					data: self.SecuredConfiguration()
 				}).fail(function (error) {
 					IP.message.error.raise("No production sets were returned for target workspace.");
 				});
 
 
 				IP.data.deferred().all(productionSetsPromise).then(function (result) {
-					self.ProductionSets(result);
+					self.DestinationProductionSets(result);
 					self.ProductionArtifactId(state.ProductionArtifactId);
 				});
 			}
@@ -381,11 +427,9 @@
 		});
 
 		this.SavedSearchArtifactId.extend({
-			required: true
-		}).extend({
 			checkSavedSearch: {
 				onlyIf: function () {
-					return (typeof self.savedSearches()) !== "undefined";
+					return (typeof self.savedSearches()) !== "undefined" && self.IsSavedSearchSelected();
 				},
 				params: { savedSearches: self.savedSearches }
 			}
@@ -396,8 +440,10 @@
 			return {
 				"FederatedInstanceArtifactId": self.FederatedInstanceArtifactId(),
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
+				"TypeOfExport": self.TypeOfExport(), 
 				"ProductionImport": self.ProductionImport(),
 				"ProductionArtifactId": self.ProductionArtifactId(),
+				"SourceProductionId": self.SourceProductionId(),
 				"SecuredConfiguration": self.SecuredConfiguration(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),

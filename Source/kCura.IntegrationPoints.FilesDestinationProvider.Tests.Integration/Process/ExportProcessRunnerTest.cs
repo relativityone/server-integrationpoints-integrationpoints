@@ -19,6 +19,8 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Castle.Core.Internal;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;

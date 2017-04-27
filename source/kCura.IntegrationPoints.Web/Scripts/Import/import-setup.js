@@ -338,11 +338,8 @@
 	});
 
 	$.ajax({
-		url: root.utils.generateWebAPIURL("Production/GetProductionsForImport"),
-		type: "GET",
-		data: {
-			sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-		},
+		url: root.utils.generateWebAPIURL("Production/GetProductionsForImport", root.utils.getParameterByName("AppID", window.top)),
+		type: "POST",
 		success: function(data) {
 			windowObj.RelativityImport.koModel.productionSets(data);
 		}

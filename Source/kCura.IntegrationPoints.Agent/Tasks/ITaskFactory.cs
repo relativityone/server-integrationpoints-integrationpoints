@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobService = new JobService(_agentService, _helper);
-			_managerFactory = new ManagerFactory(_helper);
+			_managerFactory = new ManagerFactory(_helper, Container.Resolve<IServiceManagerProvider>());
 			_jobHistoryService = CreateJobHistoryService(integrationPointDto);
 		}
 

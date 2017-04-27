@@ -82,6 +82,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
 				public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or the user does not have access.";
 				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
+				public const string PRODUCTION_NO_ACCESS = "The production is no longer available or the user does not have access.";
 				public const string UNABLE_TO_EXPORT = "Job failed. Please ensure that you have valid permissions and a valid saved search.";
 				public const string JOB_HISTORY_NO_VIEW = "User does not have permission to view Job History RDOs.";
 				public const string JOB_HISTORY_NO_EDIT = "User does not have permission to edit Job History RDOs.";

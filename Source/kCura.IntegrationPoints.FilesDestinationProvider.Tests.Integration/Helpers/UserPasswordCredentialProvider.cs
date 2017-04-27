@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers

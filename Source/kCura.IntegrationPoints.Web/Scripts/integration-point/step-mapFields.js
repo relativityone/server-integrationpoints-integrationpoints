@@ -162,6 +162,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
 		var destinationModel = JSON.parse(model.destination);
+		var sourceModel = JSON.parse(model.sourceConfiguration);
 		var artifactTypeId = destinationModel.artifactTypeID;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]).extend({
@@ -231,7 +232,13 @@ ko.validation.insertValidationMessage = function (element) {
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
-
+		this.IsProductionExport = function() {
+			if (sourceModel.TypeOfExport && sourceModel.TypeOfExport === ExportEnums.SourceOptionsEnum.Production) {
+				return true;
+			}
+			return false;
+		};
+		
 		var setCopyFilesLabel = function (isImageImport) {
 			if (isImageImport === "true") {
 				self.copyNativeLabel(copyFileToRepositoryText);
@@ -659,7 +666,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.populateExtractedText();
 				self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
 
-				if (self.IsRelativityProvider() && destinationModel.ProductionImport) {
+				if (self.IsRelativityProvider() && (destinationModel.ProductionImport || self.IsProductionExport())) {
 					self.ImageImport('true');
 					root.utils.UI.disable("#copyImages", true);
 				}

@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		protected readonly IAPILog _logger;
 		protected DataGridContext _dataGridContext;
 		protected IDataTransferContext _context;
+		protected SourceConfiguration _sourceConfiguration;
 		protected int _retrievedDataCount;
 
 
@@ -65,6 +66,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		protected ExporterServiceBase(
+			IExporter exporter,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager,
@@ -73,14 +75,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			FieldMap[] mappedFields,
 			int startAt,
 			string config,
-			int savedSearchArtifactId)
+			int searchArtifactId)
 			: this(mappedFields, jobStopManager, helper)
 		{
-			var settings = JsonConvert.DeserializeObject<SourceConfiguration>(config);
-			_baseContext = claimsPrincipal.GetUnversionContext(settings.SourceWorkspaceArtifactId);
+			_sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
+			_baseContext = claimsPrincipal.GetUnversionContext(_sourceConfiguration.SourceWorkspaceArtifactId);
 
-			IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(settings.TargetWorkspaceArtifactId);
-			ValidateDestinationFields(targetFieldQueryRepository, claimsPrincipal, settings.TargetWorkspaceArtifactId, mappedFields);
+			IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(_sourceConfiguration.TargetWorkspaceArtifactId);
+			ValidateDestinationFields(targetFieldQueryRepository, claimsPrincipal, _sourceConfiguration.TargetWorkspaceArtifactId, mappedFields);
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 
@@ -95,10 +97,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				{
 					case FieldTypeHelper.FieldType.Objects:
 						_multipleObjectFieldArtifactIds.Add(artifactId);
-						IFieldQueryRepository fieldQueryRepository = sourceRepositoryFactory.GetFieldQueryRepository(settings.SourceWorkspaceArtifactId);
+						IFieldQueryRepository fieldQueryRepository = sourceRepositoryFactory.GetFieldQueryRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
 						ArtifactDTO identifierField = fieldQueryRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
 						string identifierFieldName = (string)identifierField.Fields.First(field => field.Name == "Name").Value;
-						IObjectRepository objectRepository = sourceRepositoryFactory.GetObjectRepository(settings.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
+						IObjectRepository objectRepository = sourceRepositoryFactory.GetObjectRepository(_sourceConfiguration.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
 						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, objects, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
 						break;
@@ -112,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						break;
 
 					case FieldTypeHelper.FieldType.MultiCode:
-						ICodeRepository codeRepository = sourceRepositoryFactory.GetCodeRepository(settings.SourceWorkspaceArtifactId);
+						ICodeRepository codeRepository = sourceRepositoryFactory.GetCodeRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
 						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, codes, Constants.IntegrationPoints.InvalidMultiChoicesValueFormat);
 						break;
@@ -125,20 +127,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 
 			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
-
-			_exporter = new SavedSearchExporter
-				(
-				_baseContext,
-				new UserPermissionsMatrix(_baseContext),
-				global::Relativity.ArtifactType.Document,
-				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
-				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
-				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
-				);
+			
+			_exporter = exporter;
 
 			try
 			{
-				_exportJobInfo = _exporter.InitializeExport(savedSearchArtifactId, _avfIds, startAt);
+				_exportJobInfo = _exporter.InitializeExport(searchArtifactId, _avfIds, startAt);
 			}
 			catch (Exception exception)
 			{
@@ -148,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT, exception);
 			}
 
-			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, settings.SourceWorkspaceArtifactId);
+			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, _sourceConfiguration.SourceWorkspaceArtifactId);
 		}
 
 		protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper)

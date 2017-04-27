@@ -97,6 +97,14 @@
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.300\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
@@ -185,6 +193,7 @@
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
+    <Compile Include="Repositories\ProductionRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />
     <Compile Include="Repositories\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\SourceWorkspaceRepositoryTests.cs" />

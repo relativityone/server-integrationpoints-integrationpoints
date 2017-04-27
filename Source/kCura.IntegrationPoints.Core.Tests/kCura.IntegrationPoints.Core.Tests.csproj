@@ -173,6 +173,10 @@
       <HintPath>..\packages\kCuraCore.9.5.133.16\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.WinEDDS, Version=9.5.133.16, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.ImportExport.9.5.133.16\lib\net45\kCura.WinEDDS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -345,6 +349,14 @@
       <HintPath>..\packages\RelativityCore.9.5.133.16\lib\net45\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.SDK.Services.Query, Version=9.5.133.16, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.5.133.16\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
@@ -514,6 +526,7 @@
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
     <Compile Include="Managers\InstanceSettingsManagerTests.cs" />
     <Compile Include="Managers\FederatedInstanceManagerTests.cs" />
+    <Compile Include="Managers\ProductionManagerTests.cs" />
     <Compile Include="Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Managers\WorkspaceManagerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
@@ -584,6 +597,7 @@
     <Compile Include="Validation\IntegrationPointPermissionValidatorTests.cs" />
     <Compile Include="Validation\PermissionValidatorTests.cs" />
     <Compile Include="Validation\NameValidatorTests.cs" />
+    <Compile Include="Validation\ProductionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\FieldMappingsValidatorTest.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderPermissionValidatorTests.cs" />

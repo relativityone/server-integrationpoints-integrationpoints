@@ -1,8 +1,8 @@
 ﻿using kCura.IntegrationPoints.Config;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
-	internal class ConfigFactory : IConfigFactory
+	public class ConfigFactory : IConfigFactory
 	{
 		public IConfig Create()
 		{

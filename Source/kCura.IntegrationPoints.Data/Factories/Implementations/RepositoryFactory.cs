@@ -199,6 +199,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
+		public IProductionRepository GetProductionRepository(int workspaceArtifactId)
+		{
+			IProductionRepository repository = new ProductionRepository(_servicesMgr);
+			return repository;
+		}
+
 		public ISavedSearchQueryRepository GetSavedSearchQueryRepository(int workspaceArtifactId)
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Search);
