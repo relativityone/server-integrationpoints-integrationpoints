@@ -70,6 +70,7 @@
 
 			self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
 			self.loadRootDataTransferLocation();
+			self.exportFileNameViewModel.applyCustomStyles();
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -276,6 +277,11 @@
 			}
 		});
 
+		this.IsCustomFileNameOptionSelected = function() {
+			return self.SelectedExportNativesWithFileNameFrom() === ExportEnums.ExportNativeWithFilenameFromTypesEnum.Custom;
+		};
+
+
 		this.ExportImages.subscribe(self._updateImageFileFormat);
 
 		self._updateImageFileFormat();
@@ -291,10 +297,10 @@
 		this.ProductionPrecedence.subscribe(function (value) {
 			if (!self.IsProductionExport()) {
 				if (value === ExportEnums.ProductionPrecedenceTypeEnum.Produced) {
-					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.BeginProductionNumber)
+					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.BeginProductionNumber);
 				}
 				else {
-					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.Identifier)
+					self.SelectedExportNativesWithFileNameFrom(ExportEnums.ExportNativeWithFilenameFromTypesEnum.Identifier);
 				}
 			}
 		});
@@ -631,8 +637,6 @@
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
 		};
 
-		this.errors = ko.validation.group(this, { deep: true });
-
 		this.fileShareDisplayText = function () {
 			if (self.Fileshare()) {
 				if (self.IsExportFolderCreationEnabled()) {
@@ -648,6 +652,14 @@
 		self.IsExportFolderCreationEnabled.subscribe(function () {
 			self.fileShareDisplayText();
 		});
+
+		var availableFields = state.availableFields || [];
+		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameParts);
+
+		self.exportFileNameViewModel.initViewModel();
+
+		this.errors = ko.validation.group(this, { deep: true });
+		
 
 		this.getSelectedOption = function () {
 			return {
@@ -686,7 +698,8 @@
 				"VolumePrefix": self.VolumePrefix(),
 				"VolumeStartNumber": self.VolumeStartNumber(),
 				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
-				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled()
+				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled(),
+				"FileNameParts": self.exportFileNameViewModel.getSelections()
 			};
 		};
 	};
@@ -726,6 +739,7 @@
 					integrationPointTypeIdentifier: ip.IntegrationPointTypeIdentifier,
 					name: ip.name,
 					isExportFolderCreationEnabled: ip.sourceConfiguration.IsAutomaticFolderCreationEnabled,
+					availableFields: ip.fileNamingFieldsList
 				}));
 
 			self.model.errors = ko.validation.group(self.model);

@@ -584,3 +584,19 @@ select option {
    	border-bottom: 1px solid #c1c1c1 !important;
    	margin-right: 5px;
 }
+
+.fileNamingType_field {
+	width: 150px !important;	
+	min-width: 0 !important;
+}
+
+.fileNamingType_separator {
+	min-width: 0 !important;
+	width: 75px !important;	
+}
+
+.fileNaming-controlButtons{
+	height: 22px !important;
+	width: 22px !important;
+	padding: 0 !important;
+}

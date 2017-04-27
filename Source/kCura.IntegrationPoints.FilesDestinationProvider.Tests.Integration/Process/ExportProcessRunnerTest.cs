@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerFactory(),
 				new SearchManagerFactory(),
-				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper),
+				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper, null),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
 					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
 					),
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new LongPathDirectoryHelper()
 			);
 
-			var exportSettingsBuilder = new ExportSettingsBuilder(helper);
+			var exportSettingsBuilder = new ExportSettingsBuilder(helper, null);
 
 			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder, exportSettingsBuilder, helper);
 		}

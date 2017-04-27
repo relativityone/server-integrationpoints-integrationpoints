@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		[SetUp]
 		public override void SetUp()
 		{
-			
+			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(new TestHelper());
 		}
 
 		[Test]
@@ -216,7 +218,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false});
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT
@@ -248,7 +250,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false });
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 			rdoSynchronizer.SourceProvider = new SourceProvider()
 			{
@@ -260,7 +262,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
-
+			
 			Assert.AreEqual(1111111, result.ArtifactTypeId);
 			Assert.AreEqual(2222222, result.CaseArtifactId);
 			Assert.AreEqual(4000001, result.IdentityFieldId);
@@ -293,7 +295,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
-
+			
 			//ASSERT
 			Assert.AreEqual(1111111, result.ArtifactTypeId);
 			Assert.AreEqual(2222222, result.CaseArtifactId);

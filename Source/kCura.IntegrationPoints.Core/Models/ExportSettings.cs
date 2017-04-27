@@ -2,6 +2,7 @@
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.WinEDDS.Core.Model;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 {
@@ -54,7 +55,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public enum NativeFilenameFromType
 		{
 			Identifier = 0,
-			Production = 1
+			Production = 1,
+			Custom = 2,
 		}
 
 		public ExportType TypeOfExport { get; set; }
@@ -105,5 +107,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public bool IncludeOriginalImages { get; set; }
 		public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
 	    public bool IsAutomaticFolderCreationEnabled { get; set; }
+		public List<DescriptorPart> FileNameParts { get; set; }
 	}
 }

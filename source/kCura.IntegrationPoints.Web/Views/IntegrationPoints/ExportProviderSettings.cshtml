@@ -178,7 +178,7 @@
 			<div class="field-value">
 				<ul data-bind="foreach: ExportEnums.FilePathType">
 					<li>
-						<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }, disable: $parent.HasBeenRun" />
+						<input type="radio" name="filePath" data-bind="checked: $parent.FilePath, checkedValue: $data.value, attr: {id: 'filePath_' + $index() }" />
 						<label data-bind="text: key, attr: {id: 'filePathLabel_' + $index(),for: 'filePath_' + $index() }"></label>
 						<!-- ko if: value==2 -->
 						<input type="text" data-bind="enable: $parent.isUserPrefix(), value: $parent.UserPrefix, attr: { id: 'filePathUserprefix_' + $index() }" />
@@ -220,12 +220,30 @@
 				<select id="exportNativeWithFilenameFromTypeSelector" data-bind="options: ExportEnums.ExportNativeWithFilenameFromTypes, optionsCaption: 'Select...', optionsText: 'key', optionsValue: 'value', value: SelectedExportNativesWithFileNameFrom, select2: {}"></select>
 			</div>
 		</div>
-		<div class="field-row">
+		<div class="field-row" data-bind="visible: !IsCustomFileNameOptionSelected()">
 			<div class="field-label">
 				Append Original File Name:
 			</div>
 			<div class="field-value" style="vertical-align: middle;">
 				<input id="append-original-file-name-checkbox" type="checkbox" data-bind=" checked: AppendOriginalFileName" />
+			</div>
+		</div>
+		<div class="field-row" data-bind="visible: IsCustomFileNameOptionSelected(), with: exportFileNameViewModel">
+			<div class="field-label">
+				File Name:
+			</div>
+			<div class="field-value" id="fileNamingContainer">
+				<div data-bind="foreach: visibilityValuesContainer">
+					<div class="field-value" data-bind="visible: $data">
+						<select data-bind="value: $parent.data()[$index()], options: $parent.listData()[$index()], optionsText: 'name', optionsValue: 'value', optionsCaption: 'Select...', select2searchable: {}"/>
+					</div>
+				</div>
+			</div>
+			<div class="field-value">
+				<button id="add-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: addNewSelection, visible: addButtonVisible()">+</button>
+			</div>	
+			<div class="field-value">
+				<button id="del-file-name-selection-button" class="actionButtonSmall fileNaming-controlButtons" data-bind="click: removeNewSelection, visible: delButtonVisible()">-</button>
 			</div>
 		</div>
 	</div>

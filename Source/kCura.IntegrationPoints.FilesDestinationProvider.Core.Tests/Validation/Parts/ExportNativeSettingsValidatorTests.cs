@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Core.Model.Export;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
@@ -63,7 +64,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 		[TestCase(ExportFile.ExportType.Production, _RDO_ARTIFACT_TYPE_ID, true)]
 		public void ValidateFileTypeRdoExportSettings(ExportFile.ExportType exportType, int artifactTypeId, bool expectedResult)
 		{
-			ExportFile exportFile = new ExportFile(artifactTypeId)
+			ExtendedExportFile exportFile = new ExtendedExportFile(artifactTypeId)
 			{
 				TypeOfExport = exportType,
 				ExportNative = true,

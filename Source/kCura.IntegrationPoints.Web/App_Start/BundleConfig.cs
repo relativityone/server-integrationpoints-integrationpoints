@@ -67,8 +67,9 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/export/text-precedence-picker.js",
 				"~/Scripts/export/image-production-picker.js",
 				"~/Scripts/export/location-jstree-selector.js",
-				"~/Scripts/export/export-provider-settings-step.js"
-			));
+				"~/Scripts/export/export-provider-settings-step.js",
+                "~/Scripts/export/export-provider-file-name-vm.js"
+            ));
 
 			bundles.Add(new ScriptBundle("~/bundles/importProvider").Include(
 				"~/Scripts/Import/import-init.js",
