@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[TestCase(null, null)]
 		public void ItShouldSetCorrectImageTypeWhenCopyingFilesFromRepository(ExportSettings.ImageFileType givenSetting, ExportFile.ImageType expectedSetting)
 		{
-			_exportSettings.ExportNatives = true;
+			_exportSettings.ExportImages = true;
 			_exportSettings.ImageType = givenSetting;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[Test]
 		public void ItShouldThrowExceptionForUnknownImageFileTypeWhenCopyingFromRepository()
 		{
-			_exportSettings.ExportNatives = true;
+			_exportSettings.ExportImages = true;
 
 			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageFileType)).Cast<ExportSettings.ImageFileType>().Max() + 1;
 			_exportSettings.ImageType = incorrectEnumValue;

@@ -1,121 +1,92 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class SourceWorkspaceManager : DestinationWorkspaceFieldManagerBase, ISourceWorkspaceManager
+	public class SourceWorkspaceManager : ISourceWorkspaceManager
 	{
-		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
-			: base(repositoryFactory,
-				IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				SourceWorkspaceDTO.ObjectTypeGuid,
-				Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE)
+		private readonly IAPILog _logger;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private ISourceWorkspaceRepository _sourceWorkspaceRepository;
+
+		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory, IHelper helper)
 		{
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SourceWorkspaceManager>();
+			_repositoryFactory = repositoryFactory;
 		}
 
-		public SourceWorkspaceDTO InitializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int? federatedInstanceArtifactId)
+		public SourceWorkspaceDTO CreateSourceWorkspaceDto(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, int? federatedInstanceArtifactId,
+			int sourceWorkspaceDescriptorArtifactTypeId)
 		{
-			ISourceWorkspaceRepository sourceWorkspaceRepository = RepositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
-			IArtifactGuidRepository artifactGuidRepository = RepositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
-			IFieldRepository fieldRepository = RepositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
-
-			int sourceWorkspaceDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceWorkspaceRepository, artifactGuidRepository, (int) ArtifactType.Case);
-			
-			var fieldGuids = new List<Guid>(3)
-			{
-				SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid,
-				SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid,
-				SourceWorkspaceDTO.Fields.InstanceNameFieldGuid
-			};
-			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceWorkspaceRepository, fieldRepository, sourceWorkspaceDescriptorArtifactTypeId);
-			CreateDocumentsFields(sourceWorkspaceDescriptorArtifactTypeId, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, artifactGuidRepository, sourceWorkspaceRepository,
-				fieldRepository);
-
-			SourceWorkspaceDTO sourceWorkspaceDto = CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, federatedInstanceArtifactId,
-				sourceWorkspaceRepository);
-			return sourceWorkspaceDto;
-		}
-
-		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int workspaceArtifactId,
-			int sourceWorkspaceDescriptorArtifactTypeId, int? federatedInstanceArtifactId, ISourceWorkspaceRepository sourceWorkspaceRepository)
-		{
-			IWorkspaceRepository workspaceRepository = RepositoryFactory.GetSourceWorkspaceRepository();
-			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(workspaceArtifactId);
+			_sourceWorkspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository();
+			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
 
 			string currentInstanceName = FederatedInstanceManager.LocalInstance.Name;
 			if (federatedInstanceArtifactId.HasValue)
 			{
-				IInstanceSettingRepository instanceSettingRepository = RepositoryFactory.GetInstanceSettingRepository();
+				IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
 				currentInstanceName = instanceSettingRepository.GetConfigurationValue("Relativity.Authentication", "FriendlyInstanceName");
 			}
+			string sourceWorkspaceName = GenerateSourceWorkspaceName(currentInstanceName, workspaceDto.Name, sourceWorkspaceArtifactId);
 
-			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(workspaceArtifactId, currentInstanceName, federatedInstanceArtifactId);
-			
+			SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(sourceWorkspaceArtifactId, currentInstanceName, federatedInstanceArtifactId);
+
 			if (sourceWorkspaceDto == null)
 			{
-				sourceWorkspaceDto = new SourceWorkspaceDTO
-				{
-					ArtifactId = -1,
-					Name = Utils.GetFormatForWorkspaceOrJobDisplay(currentInstanceName, workspaceDto.Name, workspaceArtifactId),
-					SourceCaseArtifactId = workspaceArtifactId,
-					SourceCaseName = workspaceDto.Name,
-					SourceInstanceName = currentInstanceName
-				};
-
-				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceDto);
-				sourceWorkspaceDto.ArtifactId = artifactId;
+				return CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceName, workspaceDto.Name, currentInstanceName);
 			}
+			return UpdateSourceWorkspaceDto(sourceWorkspaceDto, sourceWorkspaceDescriptorArtifactTypeId, workspaceDto.Name, sourceWorkspaceName, currentInstanceName);
+		}
 
-			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId;
-
-			// Check to see if instance should be updated
-			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name || sourceWorkspaceDto.SourceInstanceName != currentInstanceName)
+		private string GenerateSourceWorkspaceName(string instanceName, string workspaceName, int workspaceArtifactId)
+		{
+			var name = Utils.GetFormatForWorkspaceOrJobDisplay(instanceName, workspaceName, workspaceArtifactId);
+			if (name.Length > Data.Constants.DEFAULT_NAME_FIELD_LENGTH)
 			{
-				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(currentInstanceName, workspaceDto.Name, workspaceArtifactId);
-				sourceWorkspaceDto.SourceCaseName = workspaceDto.Name;
-				sourceWorkspaceDto.SourceInstanceName = currentInstanceName;
-				sourceWorkspaceRepository.Update(sourceWorkspaceDto);
-			}
+				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened. Full name {name}.", name);
 
+				int overflow = name.Length - Data.Constants.DEFAULT_NAME_FIELD_LENGTH;
+				var trimmedInstanceName = instanceName.Substring(0, instanceName.Length - overflow);
+				name = Utils.GetFormatForWorkspaceOrJobDisplay(trimmedInstanceName, workspaceName, workspaceArtifactId);
+			}
+			return name;
+		}
+
+		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int sourceWorkspaceArtifactId, int sourceWorkspaceDescriptorArtifactTypeId, string sourceWorkspaceName,
+			string workspaceName, string currentInstanceName)
+		{
+			var sourceWorkspaceDto = new SourceWorkspaceDTO
+			{
+				ArtifactId = -1,
+				ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId,
+				Name = sourceWorkspaceName,
+				SourceCaseArtifactId = sourceWorkspaceArtifactId,
+				SourceCaseName = workspaceName,
+				SourceInstanceName = currentInstanceName
+			};
+
+			int artifactId = _sourceWorkspaceRepository.Create(sourceWorkspaceDto);
+			sourceWorkspaceDto.ArtifactId = artifactId;
 			return sourceWorkspaceDto;
 		}
 
-		protected override IDictionary<Guid, FieldDefinition> GetObjectFieldDefinitions()
+		private SourceWorkspaceDTO UpdateSourceWorkspaceDto(SourceWorkspaceDTO sourceWorkspaceDto, int sourceWorkspaceDescriptorArtifactTypeId, string workspaceName,
+			string sourceWorkspaceName, string currentInstanceName)
 		{
-			return new Dictionary<Guid, FieldDefinition>
+			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId;
+			// Check to see if instance should be updated
+			if (sourceWorkspaceDto.SourceCaseName != workspaceName || sourceWorkspaceDto.SourceInstanceName != currentInstanceName)
 			{
-				{
-					SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid,
-					new FieldDefinition
-					{
-						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
-						FieldType = FieldTypes.WholeNumber
-					}
-				},
-				{
-					SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid,
-					new FieldDefinition
-					{
-						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
-						FieldType = FieldTypes.FixedLengthText
-					}
-				},
-				{
-					SourceWorkspaceDTO.Fields.InstanceNameFieldGuid,
-					new FieldDefinition
-					{
-						FieldName = IntegrationPoints.Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
-						FieldType = FieldTypes.FixedLengthText
-					}
-				}
-			};
+				sourceWorkspaceDto.Name = sourceWorkspaceName;
+				sourceWorkspaceDto.SourceCaseName = workspaceName;
+				sourceWorkspaceDto.SourceInstanceName = currentInstanceName;
+				_sourceWorkspaceRepository.Update(sourceWorkspaceDto);
+			}
+			return sourceWorkspaceDto;
 		}
 	}
 }

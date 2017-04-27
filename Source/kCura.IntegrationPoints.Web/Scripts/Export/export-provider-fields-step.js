@@ -4,9 +4,7 @@
 	var viewModel = function (state) {
 		var self = this;
 
-		self.HasBeenRun = ko.observable(state.hasBeenRun || false);
-
-		self.fields = new FieldMappingViewModel(self.HasBeenRun());
+		self.fields = new FieldMappingViewModel(false);
 
 		self.exportSource = new ExportSourceViewModel(state);
 		self.exportSource.Reload();
@@ -65,7 +63,6 @@
 			}
 
 			self.model = new viewModel($.extend({}, self.ipModel, {
-				hasBeenRun: ip.hasBeenRun,
 				cache: self.cache
 			}));
 

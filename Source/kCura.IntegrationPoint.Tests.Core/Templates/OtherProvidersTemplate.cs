@@ -82,9 +82,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private FieldMap[] GetDefaultLdapFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			IFieldRepository workspaceFieldRepository = repositoryFactory.GetFieldRepository(WorkspaceArtifactId);
+			IFieldQueryRepository workspaceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(WorkspaceArtifactId);
 
-			ArtifactDTO documentDto = workspaceFieldRepository.RetrieveTheIdentifierField((int)Relativity.Client.ArtifactType.Document);
+			ArtifactDTO documentDto = workspaceFieldQueryRepository.RetrieveTheIdentifierField((int)Relativity.Client.ArtifactType.Document);
 
 			FieldMap[] map =
 			{

@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 	{
 		private IHelper _helper;
 		private IDocumentRepository _documentsRepo;
-		private IFieldRepository _fileRepo;
+		private IFieldQueryRepository _fileRepo;
 		private IDBContext _dbContext;
 		private const string _PREFIX = "prefix";
 		private const string _SUFFIX = "_suffix";
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_helper = Substitute.For<IHelper>();
 			_helper.GetDBContext(SourceWorkspaceArtifactId).Returns(_dbContext);
 			_documentsRepo = Substitute.For<IDocumentRepository>();
-			_fileRepo = Substitute.For<IFieldRepository>();
+			_fileRepo = Substitute.For<IFieldQueryRepository>();
 		}
 
 		#region SqlGeneration

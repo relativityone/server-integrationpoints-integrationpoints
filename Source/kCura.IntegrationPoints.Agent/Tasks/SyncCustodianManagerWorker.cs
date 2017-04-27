@@ -315,10 +315,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int GetCustodianManagerFieldArtifactID()
 		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(_workspaceArtifactId);
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId);
 			Field dto = new Field(new Guid(CustodianFieldGuids.Manager));
 
-			ResultSet<Field> resultSet = fieldRepository.Read(dto);
+			ResultSet<Field> resultSet = fieldQueryRepository.Read(dto);
 			if (!resultSet.Success)
 			{
 				var messages = resultSet.Results.Where(x => !x.Success).Select(x => x.Message);

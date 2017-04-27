@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;
-			settings.ExportNatives = true;
+			settings.ExportNatives = false;
 			settings.ImageType = ExportSettings.ImageFileType.MultiPage;
 
 			return base.Prepare(settings);

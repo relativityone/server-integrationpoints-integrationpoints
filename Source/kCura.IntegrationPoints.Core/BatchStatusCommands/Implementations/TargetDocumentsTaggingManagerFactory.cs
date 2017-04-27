@@ -1,6 +1,5 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -21,16 +20,14 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISerializer _serializer;
 		private readonly string _sourceConfig;
-		private readonly ISourceJobManager _sourceJobManager;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
+		private readonly ITagsCreator _tagsCreator;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly ITagSavedSearchManager _tagSavedSearchManager;
 		private readonly string _uniqueJobId;
 
 		public TargetDocumentsTaggingManagerFactory(
 			IRepositoryFactory repositoryFactory,
-			ISourceWorkspaceManager sourceWorkspaceManager,
-			ISourceJobManager sourceJobManager,
+			ITagsCreator tagsCreator,
 			ITagSavedSearchManager tagSavedSearchManager,
 			IDocumentRepository documentRepository,
 			ISynchronizerFactory synchronizerFactory,
@@ -43,9 +40,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			string uniqueJobId)
 		{
 			_repositoryFactory = repositoryFactory;
-			_sourceWorkspaceManager = sourceWorkspaceManager;
-			_sourceJobManager = sourceJobManager;
 			_tagSavedSearchManager = tagSavedSearchManager;
+			_tagsCreator = tagsCreator;
 			_documentRepository = documentRepository;
 			_synchronizerFactory = synchronizerFactory;
 			_helper = helper;
@@ -75,11 +71,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			var synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
 
 			var tagger = new Tagger(_documentRepository, synchronizer, _helper, _fields, _destinationConfig, settings.SourceWorkspaceArtifactId);
-			var tagsCreator = new TagsCreator(_sourceJobManager, _sourceWorkspaceManager, _helper);
 
 			IConsumeScratchTableBatchStatus taggingManager = new TargetDocumentsTaggingManager(
 				_repositoryFactory,
-				tagsCreator,
+				_tagsCreator,
 				tagger,
 				_tagSavedSearchManager,
 				_helper,

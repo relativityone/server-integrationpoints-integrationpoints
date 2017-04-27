@@ -185,6 +185,8 @@
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />
+    <Compile Include="Repositories\SourceJobRepositoryTests.cs" />
+    <Compile Include="Repositories\SourceWorkspaceRepositoryTests.cs" />
     <Compile Include="SecretStore\SecretManagerTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
     <Compile Include="Statistics\DocumentTotalStatisticsTests.cs" />
