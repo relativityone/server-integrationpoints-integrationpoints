@@ -221,6 +221,10 @@
       <HintPath>..\packages\Relativity.Vfs.1.0.20\lib\net45\Relativity.Vfs.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.5.103.62, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.5.103.62\lib\net45\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.IdentityModel" />

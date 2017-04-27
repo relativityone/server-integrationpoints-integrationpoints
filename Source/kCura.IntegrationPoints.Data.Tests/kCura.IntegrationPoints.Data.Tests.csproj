@@ -182,6 +182,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="EncryptingRsapiClientLibraryTests.cs" />
+    <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />

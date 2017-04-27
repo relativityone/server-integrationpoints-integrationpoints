@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -69,8 +70,17 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				throw new Exception($"Provided realtive path '{path}' does not match the correct destination folder!");
 			}
+
+			string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
+			string fileShareRootLocationWithRelativePath = Path.Combine(fileShareRootLocation, providerTypeRelativePathPrefix);
+
 			// Get physical path for destination folder eg: \\localhost\FileShare\EDDS123456\Export\SomeFolder
-			string destinationFolderPhysicalPath = Path.Combine(GetWorkspaceFileLocationRootPath(workspaceArtifactId), path);
+			string destinationFolderPhysicalPath = Path.Combine(fileShareRootLocation, path);
+
+			if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
+			{
+				throw new Exception("Given Destination Folder path is invalid!");
+			}
 
 			CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
 			return destinationFolderPhysicalPath;

@@ -554,6 +554,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />
     <Compile Include="Factories\IDataTransferLocationServiceFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />

@@ -112,6 +112,10 @@
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.264\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.5.103.62, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.5.103.62\lib\net45\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />

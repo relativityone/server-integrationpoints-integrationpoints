@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 

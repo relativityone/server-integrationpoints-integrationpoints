@@ -131,6 +131,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception e)
 			{
 				LogDataTransferLocationPreparationError(settings?.Fileshare, e);
+				throw;
 			}
 		}
 
