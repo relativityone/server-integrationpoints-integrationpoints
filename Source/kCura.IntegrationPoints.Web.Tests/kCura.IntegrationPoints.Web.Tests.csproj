@@ -237,6 +237,7 @@
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />
     <Compile Include="DataStructures\FolderTreeTests.cs" />
+    <Compile Include="Helpers\SummaryPageSelectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
