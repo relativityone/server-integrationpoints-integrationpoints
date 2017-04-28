@@ -57,6 +57,7 @@ namespace kCura.IntegrationPoints.Web
 				// common
 				"~/Scripts/export/export-validation.js",
 				"~/Scripts/export/export-enums.js",
+				"~/Scripts/export/export-helpers.js",
 				// fields selection
 				"~/Scripts/export/saved-search-picker.js",
 				"~/Scripts/export/export-provider-fields-step.js",

@@ -20,14 +20,14 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 
 	self.visibilityValuesContainer = ko.observableArray([]);
 
-	self.applyCustomStyles = function() {
+	self.applyCustomStyles = function () {
 		for (var actualIndex = 0; actualIndex < self.Max_Selection_Count; ++actualIndex) {
 			$($('#fileNamingContainer div.select2-container')[actualIndex])
 				.addClass(actualIndex % 2 === 0 ? 'fileNamingType_field' : 'fileNamingType_separator');
 		}
 	}
 
-	self.addNewSelection = function() {
+	self.addNewSelection = function () {
 
 		var actualIndex = self.metaData().length;
 
@@ -43,7 +43,7 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		self.data()[index](fileNameEntry.value);
 	}
 
-	self.removeNewSelection = function() {
+	self.removeNewSelection = function () {
 		self.metaData.pop();
 
 		var actualIndex = self.metaData().length;
@@ -100,7 +100,21 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		var selections = [];
 		for (var index = 0; index < self.metaData().length; ++index) {
 			if (self.data()[index] !== undefined) {
-				selections.push(new FileNameEntry("", self.data()[index](), index % 2 === 0 ? "F" : "S"));
+
+				var fieldValue = self.data()[index]();
+
+				//field
+				if (index % 2 === 0) {
+					var field = self.availableFields.find(function (element) {
+						return element.fieldIdentifier === fieldValue;
+					});
+
+					selections.push(new FileNameEntry(field.displayName, fieldValue, "F"));
+				}
+				//separator
+				else {
+					selections.push(new FileNameEntry("", fieldValue, "S"));
+				}
 			}
 		}
 		return selections;

@@ -1,15 +1,17 @@
 ﻿var IP = IP || {};
 
 var loadData = function (ko, dataContainer) {
-	
+
 	var Model = function (dataContainer) {
 		var self = this;
+
+		var exportHelper = new ExportHelper();
 
 		var destinationFolderPrefix = function () {
 			return ".\\EDDS" + self.settings.SourceWorkspaceArtifactId;
 		}
 
-		var getDestinationDetails = function() {
+		var getDestinationDetails = function () {
 			var destinationLocation = "FileShare: " + destinationFolderPrefix() + "\\" + self.settings.Fileshare;
 
 			if (self.settings.IsAutomaticFolderCreationEnabled) {
@@ -55,14 +57,29 @@ var loadData = function (ko, dataContainer) {
 			return self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production;
 		};
 
+		var getFileNameFormat = function () {
+			var fileNameParts = self.settings.FileNameParts;
+			var fileNameFormat = exportHelper.convertFileNamePartsToText(fileNameParts);
+
+			return fileNameFormat;
+		}
+
 		this.textAndNativeFileNames = function () {
-			var namedAfter = "";
-			for (var i = 0; i < ExportEnums.ExportNativeWithFilenameFromTypes.length; i++) {
-				if (ExportEnums.ExportNativeWithFilenameFromTypes[i].value == self.settings.ExportNativesToFileNamedFrom) {
-					namedAfter = ExportEnums.ExportNativeWithFilenameFromTypes[i].key;
-				}
+			var exportNamingType = ExportEnums.ExportNativeWithFilenameFromTypes.find(function (type) {
+				return type.value === self.settings.ExportNativesToFileNamedFrom;
+			});
+
+			//if naming after 'Identifier' or afer 'Begin production number'
+			if (exportNamingType.value === 0 || exportNamingType.value === 1) {
+				return "Named after: " + exportNamingType.key + (self.settings.AppendOriginalFileName ? "; Append Original File Names" : "");
 			}
-			return "Named after: " + namedAfter + (self.settings.AppendOriginalFileName ? "; Append Original File Names" : "");
+			//if using custom naming pattern
+			else if (exportNamingType.value === 2) {
+				var result = exportNamingType.key + ": ";
+				result += getFileNameFormat();
+
+				return result;
+			}
 		};
 
 		this.volumeInfo = function () {
@@ -79,9 +96,9 @@ var loadData = function (ko, dataContainer) {
 
 		this.exportType = function () {
 			return "Load file"
-			+ (self.settings.ExportImages ? "; Images" : "")
-			+ (self.settings.ExportNatives ? "; Natives" : "")
-			+ (self.settings.ExportFullTextAsFile ? "; Text As Files" : "");
+				+ (self.settings.ExportImages ? "; Images" : "")
+				+ (self.settings.ExportNatives ? "; Natives" : "")
+				+ (self.settings.ExportFullTextAsFile ? "; Text As Files" : "");
 		};
 
 		this.filePath = function () {
@@ -92,8 +109,8 @@ var loadData = function (ko, dataContainer) {
 				}
 			}
 			return (self.settings.IncludeNativeFilesPath ? "Include" : "Do not include")
-			+ ("; " + filePathType)
-			+ (self.settings.FilePath == ExportEnums.FilePathTypeEnum.UserPrefix ? (": " + self.settings.UserPrefix) : "");
+				+ ("; " + filePathType)
+				+ (self.settings.FilePath == ExportEnums.FilePathTypeEnum.UserPrefix ? (": " + self.settings.UserPrefix) : "");
 		};
 
 		this.setEncoding = function (dataFileEncodingName, callback) {
