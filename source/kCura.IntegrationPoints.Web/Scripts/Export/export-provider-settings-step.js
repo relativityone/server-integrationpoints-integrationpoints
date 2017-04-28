@@ -654,15 +654,16 @@
 		});
 
 		var availableFields = state.availableFields || [];
-		var exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameParts);
-		//self.exportFileNameViewModel.initViewModel();
+		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameParts);
+		self.exportFileNameViewModel.initViewModel();
 
-		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", exportFileNameViewModel,
+		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", self.exportFileNameViewModel,
 			{
 				autoOpen: false,
-				modal: false,
-				width: "800px",
+				modal: true,
+				"min-width": "1000px",
 				height: "auto",
+				width: "auto",
 				resizable: false,
 				draggable: false,
 				closeOnEscape: true,
@@ -673,7 +674,7 @@
 			}
 		);
 		this.openFileNamingOptionsPicker = function() {
-			exportFileNameViewModel.open();
+			self.exportFileNameViewModel.open();
 		}
 
 		this.errors = ko.validation.group(this, { deep: true });

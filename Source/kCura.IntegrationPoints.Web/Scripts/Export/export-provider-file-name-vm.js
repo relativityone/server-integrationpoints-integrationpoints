@@ -119,8 +119,6 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 	};
 
 	this.open = function () {
-		self.initViewModel();
-
 		self.view.dialog("open");
 	};
 
