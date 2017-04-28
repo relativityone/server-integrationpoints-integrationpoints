@@ -69,8 +69,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			var settings = _serializer.Deserialize<SourceConfiguration>(_sourceConfig);
 			var importSettings = _serializer.Deserialize<ImportSettings>(_destinationConfig);
 			var synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
+			var tagsSynchronizer = new TagsSynchronizer(synchronizer);
 
-			var tagger = new Tagger(_documentRepository, synchronizer, _helper, _fields, _destinationConfig, settings.SourceWorkspaceArtifactId);
+			var tagger = new Tagger(_documentRepository, tagsSynchronizer, _helper, _fields, _destinationConfig, settings.SourceWorkspaceArtifactId);
 
 			IConsumeScratchTableBatchStatus taggingManager = new TargetDocumentsTaggingManager(
 				_repositoryFactory,

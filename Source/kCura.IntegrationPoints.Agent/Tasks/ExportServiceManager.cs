@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				  statisticsService,
 				  synchronizerFactory)
 		{
-			
+
 			_contextContainerFactory = contextContainerFactory;
 			_repositoryFactory = repositoryFactory;
 			_exporterFactory = exporterFactory;
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 						var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService, Identifier, Serializer.Deserialize<ImportSettings>(userImportApiSettings));
 						IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
-						
+
 						lock (JobStopManager.SyncRoot)
 						{
 							JobHistoryDto = JobHistoryService.GetRdo(Identifier);
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 						if (exporter.TotalRecordsFound > 0)
 						{
-							
+
 							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
 							using (Client.MetricsClient.LogDuration(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
 								Guid.Empty))
@@ -219,23 +219,30 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorManager = ManagerFactory.CreateJobHistoryErrorManager(ContextContainer, SourceConfiguration.SourceWorkspaceArtifactId, uniqueJobId);
 			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, JobHistoryDto.JobType);
 
-			//Quick check to see if saved search is still available before using it for the job
-			ISavedSearchQueryRepository savedSearchRepository =
-				_repositoryFactory.GetSavedSearchQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
-
-			SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch(SourceConfiguration.SavedSearchArtifactId);
-			if (savedSearch == null)
+			if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				LogSavedSearchNotFound(job, SourceConfiguration);
-				throw new Exception(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
-			}
-			_savedSearchArtifactId = SourceConfiguration.SavedSearchArtifactId;
 
-			//Load saved search for just item-level error retries
-			if (_updateStatusType.IsItemLevelErrorRetry())
-			{
-				_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, SourceConfiguration.SavedSearchArtifactId);
-				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
+
+				//Quick check to see if saved search is still available before using it for the job
+				ISavedSearchQueryRepository savedSearchRepository =
+					_repositoryFactory.GetSavedSearchQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+
+				SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch(SourceConfiguration.SavedSearchArtifactId);
+				if (savedSearch == null)
+				{
+					LogSavedSearchNotFound(job, SourceConfiguration);
+					throw new Exception(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
+				}
+				_savedSearchArtifactId = SourceConfiguration.SavedSearchArtifactId;
+
+
+				//Load saved search for just item-level error retries
+				if (_updateStatusType.IsItemLevelErrorRetry())
+				{
+					_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job,
+						SourceConfiguration.SavedSearchArtifactId);
+					_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
+				}
 			}
 		}
 

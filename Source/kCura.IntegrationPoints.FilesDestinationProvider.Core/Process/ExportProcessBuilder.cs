@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -18,6 +19,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity;
 using Relativity.API;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
+using IExporterFactory = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IDirectoryHelper _dirHelper;
 		private readonly IAPILog _logger;
 		private readonly ICompositeLoggingMediator _loggingMediator;
-		private readonly IManagerFactory<ISearchManager> _searchManagerFactory;
+		private readonly IServiceManagerFactory<ISearchManager> _searchManagerFactory;
 		private readonly IUserMessageNotification _userMessageNotification;
 		private readonly IUserNotification _userNotification;
 
@@ -45,7 +47,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IUserNotification userNotification,
 			ICredentialProvider credentialProvider,
 			ICaseManagerFactory caseManagerFactory,
-			IManagerFactory<ISearchManager> searchManagerFactory,
+			IServiceManagerFactory<ISearchManager> searchManagerFactory,
 			IExporterFactory exporterFactory,
 			IExportFileBuilder exportFileBuilder,
 			IHelper helper,

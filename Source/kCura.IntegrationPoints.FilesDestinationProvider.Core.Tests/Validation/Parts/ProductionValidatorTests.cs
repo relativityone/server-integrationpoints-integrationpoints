@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
@@ -19,11 +20,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			var productionId = 42;
 			var production = new ProductionDTO { ArtifactID = productionId.ToString() };
 
-			var productionServiceMock = Substitute.For<IProductionService>();
-			productionServiceMock.GetProductionsForExport(Arg.Any<int>())
+			var productionManager = Substitute.For<IProductionManager>();
+			productionManager.GetProductionsForExport(Arg.Any<int>())
 				.Returns(new[] { production });
 
-			var validator = new ProductionValidator(productionServiceMock);
+			var validator = new ExportProductionValidator(productionManager);
 
 			var exportSettings = new ExportSettings { ProductionId = productionId };
 
@@ -41,11 +42,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			// arrange
 			var productionId = 42;
 
-			var productionServiceMock = Substitute.For<IProductionService>();
-			productionServiceMock.GetProductionsForExport(Arg.Any<int>())
+			var productionManager = Substitute.For<IProductionManager>();
+			productionManager.GetProductionsForExport(Arg.Any<int>())
 				.Returns(Enumerable.Empty<ProductionDTO>());
 
-			var validator = new ProductionValidator(productionServiceMock);
+			var validator = new ExportProductionValidator(productionManager);
 
 			var exportSettings = new ExportSettings { ProductionId = productionId };
 

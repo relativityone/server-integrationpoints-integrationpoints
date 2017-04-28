@@ -22,6 +22,7 @@ using Relativity.Core;
 using Relativity.Core.Service;
 using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Data;
+using Relativity.Toggles;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 using FileQuery = Relativity.Core.Service.FileQuery;
@@ -34,17 +35,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly ImportSettings _settings;
 		private const string ImageNameColumn = "Identifier";
-		private const string NativeNameColumn = "NativeIdentifier";
+		private const string ProductionNameColumn = "BatesNumber";
 		private const string ImageLocationColumn = "Location";
 
 
 
-		public ImageExporterService(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
+		public ImageExporterService(IExporter exporter, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager, IHelper helper, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt,
-			string config, int savedSearchArtifactId, ImportSettings settings)
+			string config, int searchArtifactId, ImportSettings settings)
 			: base(
-				sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt,
-				config, savedSearchArtifactId)
+				exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt,
+				config, searchArtifactId)
 		{
 			_settings = settings;
 		}
@@ -73,20 +74,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					object[] fieldsValue = (object[])data;
 
 					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
-
-					var productionPrecedenceType = GetProductionPrecedenceType();
-					if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
+					if (_sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
 					{
-						var producedImagesCount = SetProducedImages(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
-						if (_settings.IncludeOriginalImages && producedImagesCount == 0)
-						{
-							SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
-						}
+						SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, imagesResult,
+							_sourceConfiguration.SourceProductionId);
 					}
 					else
 					{
-						SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+					    SetImagesBySavedSearch(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
 					}
+					
 				}
 			}
 
@@ -95,7 +92,26 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return imagesResult.ToArray();
 		}
 
-		private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields, int artifactType, List<ArtifactDTO> result)
+	    private void SetImagesBySavedSearch(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
+	        List<ArtifactDTO> imagesResult)
+	    {
+	        var productionPrecedenceType = GetProductionPrecedenceType();
+	        if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
+	        {
+	            var producedImagesCount = SetProducedImagesByPrecedence(documentArtifactId, fields, fieldsValue, artifactType,
+	                imagesResult);
+	            if (_settings.IncludeOriginalImages && producedImagesCount == 0)
+	            {
+	                SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+	            }
+	        }
+	        else
+	        {
+	            SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+	        }
+	    }
+
+	    private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields, int artifactType, List<ArtifactDTO> result)
 		{
 			kCura.Data.DataView imagesDataView = FileQuery.RetrieveAllImagesForDocuments(_baseContext, new[] { documentArtifactId });
 			if (imagesDataView.Count > 0)
@@ -110,34 +126,47 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private int SetProducedImages(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
+		private int SetProducedImagesByPrecedence(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
 		{
 			foreach (var prod in _settings.ImagePrecedence)
 			{
 				var productionArtifactId = Convert.ToInt32(prod.ArtifactID);
-				var producedImages = FileQuery.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(_baseContext, productionArtifactId,
-						new[] { documentArtifactId });
-
-				if (producedImages.Count > 0)
+				var producedImagesCount = SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, result, productionArtifactId);
+				if (producedImagesCount > 0)
 				{
-					SetupBaseFields(documentArtifactId, fieldsValue, fields);
-					for (int index = 0; index < producedImages.Table.Rows.Count; index++)
-					{
-						var artifactDto = CreateImageArtifactDto(producedImages.Table.Rows[index], NativeNameColumn,
-							documentArtifactId, fields, artifactType, index);
-						result.Add(artifactDto);
-					}
-					return producedImages.Count;
+					return producedImagesCount;
 				}
 			}
 			return 0;
 		}
 
-		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, string nativeColumnName, int documentArtifactId,
+		private int SetProducedImagesByProductionId(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
+			List<ArtifactDTO> result, int productionArtifactId)
+		{
+			var producedImages = FileQuery.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(_baseContext,
+				productionArtifactId,
+				new[] {documentArtifactId});
+
+			if (producedImages.Count > 0)
+			{
+				SetupBaseFields(documentArtifactId, fieldsValue, fields);
+				for (int index = 0; index < producedImages.Table.Rows.Count; index++)
+				{
+					var artifactDto = CreateImageArtifactDto(producedImages.Table.Rows[index], ProductionNameColumn,
+						documentArtifactId, fields, artifactType, index);
+					result.Add(artifactDto);
+				
+				}
+				return producedImages.Count;
+			}
+			return 0;
+		}
+
+		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, string imageNameColumn, int documentArtifactId,
 			List<ArtifactFieldDTO> fields, int artifactType, int index)
 		{
 			string fileLocation = (string) imageDataRow[ImageLocationColumn];
-			string imageFileName = UnwrapDocumentIdentifierFieldName((string) imageDataRow[nativeColumnName], index);
+			string imageFileName = UnwrapDocumentIdentifierFieldName((string) imageDataRow[imageNameColumn], index);
 
 			var artifactFieldDtos = AddImageFields(fields, fileLocation, imageFileName);
 			var artifactDto = new ArtifactDTO(documentArtifactId, artifactType, string.Empty, artifactFieldDtos);
@@ -172,8 +201,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				var documentName = imageFileNameSplitted?[0];
 				var documentNamePostFix = imageFileNameSplitted?[1];
 				imageFileName = $"{documentName}_{documentNamePostFix}";
+				imageFileName = BuildDocumentIdentifierFieldName(imageFileName, rowIndex);
 			}
-			imageFileName = BuildDocumentIdentifierFieldName(imageFileName, rowIndex);
 			return imageFileName;
 		}
 

@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
+using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
@@ -36,9 +37,20 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			if (!result.IsValid)
 				return result;
 
-			var savedSearchValidator = _validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId);
-			result.Add(savedSearchValidator.Validate(sourceConfiguration.SavedSearchArtifactId));
-
+			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
+			{
+				var savedSearchValidator =
+					_validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId,
+						sourceConfiguration.SavedSearchArtifactId);
+				result.Add(savedSearchValidator.Validate(sourceConfiguration.SavedSearchArtifactId));
+			}
+			else
+			{
+				var productionValidator =
+					_validatorsFactory.CreateProductionValidator(sourceConfiguration.SourceWorkspaceArtifactId);
+				result.Add(productionValidator.Validate(sourceConfiguration.SourceProductionId));
+			}
+			
 			var destinationWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Destination", sourceConfiguration.FederatedInstanceArtifactId,
 				integrationModel.SecuredConfiguration);
 			result.Add(destinationWorkspaceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));

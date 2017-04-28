@@ -6,7 +6,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -145,6 +144,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// We try to pass DataTransfer\Folder path which is not correct (it should be DataTransfer\Exp\Folder)
 			string path = Path.Combine(_PARENT_FOLDER, folderName);
+
+			string physicalPath = Path.Combine(_RESOURCE_POOL_FILESHARE, _WKSP_FOLDER, path);
+
+			_directoryMock.Exists(physicalPath).Returns(false);
+
+			Assert.Throws<Exception>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
+
+			// Assert
+			_directoryMock.Received(0).CreateDirectory(physicalPath);
+		}
+
+		[Test]
+		public void ItShouldThrowIfPathIsNotChildOfDataTransferLocation()
+		{
+			Guid type = Guid.NewGuid();
+
+			_integrationPointTypeServiceMock.GetIntegrationPointType(type).Returns(
+				new IntegrationPointType
+				{
+					Name = _EXPORT_PROV_TYPE_NAME
+				});
+
+
+			// Pass path that is not child of DataTransfer Location 
+			string path = $"{_PARENT_FOLDER}\\{_EXPORT_PROV_TYPE_NAME}\\..\\..";
 
 			string physicalPath = Path.Combine(_RESOURCE_POOL_FILESHARE, _WKSP_FOLDER, path);
 

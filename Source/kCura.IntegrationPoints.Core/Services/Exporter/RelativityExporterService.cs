@@ -19,9 +19,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly IFolderPathReader _folderPathReader;
 
-		public RelativityExporterService(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper,
-			IFolderPathReader folderPathReader, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt, string config, int savedSearchArtifactId)
-			: base(sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt, config, savedSearchArtifactId)
+		public RelativityExporterService(IExporter exporter, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper,
+			IFolderPathReader folderPathReader, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt, string config, int searchArtifactId)
+			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt, config, searchArtifactId)
 		{
 			_folderPathReader = folderPathReader;
 		}

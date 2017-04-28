@@ -2,6 +2,11 @@
 {
 	public class SourceConfiguration
 	{
+		public enum ExportType
+		{
+			ProductionSet = 2,
+			SavedSearch = 3
+		}
 		public int SavedSearchArtifactId { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int TargetWorkspaceArtifactId { get; set; }
@@ -9,5 +14,9 @@
 		public string SourceWorkspace { get; set; }
 		public string TargetWorkspace { get; set; }
 		public int? FederatedInstanceArtifactId { get; set; }
+
+		public ExportType TypeOfExport { get; set; }
+
+		public int SourceProductionId { get; set; }
 	}
 }

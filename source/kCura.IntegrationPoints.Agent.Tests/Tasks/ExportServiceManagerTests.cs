@@ -32,6 +32,7 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -160,7 +161,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_configuration = new SourceConfiguration()
 			{
 				SourceWorkspaceArtifactId = 8465,
-				SavedSearchArtifactId = 987654
+				SavedSearchArtifactId = 987654,
+				TypeOfExport = SourceConfiguration.ExportType.SavedSearch
 			};
 
 			_taskParameters = new TaskParameters() {BatchInstance = Guid.NewGuid() };

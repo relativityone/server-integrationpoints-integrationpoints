@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		private const int TargetWorkspaceArtifactId = 1075642;
 
 		private readonly string SourceConfiguration =
-			"{\"SavedSearchArtifactId\":" + SavedSearchArtifactId + ",\"SourceWorkspaceArtifactId\":\"" + SourceWorkspaceArtifactId + "\",\"TargetWorkspaceArtifactId\":" + TargetWorkspaceArtifactId + ",\"FolderArtifactId\":\"1039185\",\"FolderArtifactName\":\"Test Folder\"}";
+			"{\"SavedSearchArtifactId\":" + SavedSearchArtifactId + ",\"SourceWorkspaceArtifactId\":\"" + SourceWorkspaceArtifactId + "\",\"TargetWorkspaceArtifactId\":" + TargetWorkspaceArtifactId + ",\"FolderArtifactId\":\"1039185\",\"FolderArtifactName\":\"Test Folder\",\"TypeOfExport\":\"3\"}";
 
 		private readonly string DestinationConfiguration =
 			"{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642}";

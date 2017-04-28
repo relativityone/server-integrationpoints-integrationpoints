@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 					break;
 
 				case ExportSettings.ExportType.ProductionSet:
-					var productionsValidator = _validatorsFactory.CreateProductionValidator();
+					var productionsValidator = _validatorsFactory.CreateExportProductionValidator();
 					result.Add(productionsValidator.Validate(exportSettings));
 					break;
 

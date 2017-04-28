@@ -100,7 +100,21 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		var selections = [];
 		for (var index = 0; index < self.metaData().length; ++index) {
 			if (self.data()[index] !== undefined) {
-				selections.push(new FileNameEntry("", self.data()[index](), index % 2 === 0 ? "F" : "S"));
+
+				var fieldValue = self.data()[index]();
+
+				//field
+				if (index % 2 === 0) {
+					var field = self.availableFields.find(function (element) {
+						return element.fieldIdentifier === fieldValue;
+					});
+
+					selections.push(new FileNameEntry(field.displayName, fieldValue, "F"));
+				}
+				//separator
+				else {
+					selections.push(new FileNameEntry("", fieldValue, "S"));
+				}
 			}
 		}
 		return selections;

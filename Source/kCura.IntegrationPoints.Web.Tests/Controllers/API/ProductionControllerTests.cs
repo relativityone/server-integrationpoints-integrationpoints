@@ -3,11 +3,14 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -15,13 +18,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	public class ProductionControllerTests : TestBase
 	{
 		private ProductionController _controller;
-		private IProductionService _service;
+		private IContextContainerFactory _contextContainerFactory;
+		private IManagerFactory _managerFactory;
+		private ICPHelper _helper;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_service = Substitute.For<IProductionService>();
-			_controller = new ProductionController(_service);
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			_contextContainerFactory.CreateContextContainer(Arg.Any<ICPHelper>()).Returns((IContextContainer) null);
+			_managerFactory = Substitute.For<IManagerFactory>();
+			_helper = Substitute.For<ICPHelper>();
+			_controller = new ProductionController(_contextContainerFactory, _managerFactory, _helper);
 			_controller.Request = new HttpRequestMessage();
 			_controller.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}
@@ -29,6 +37,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		[Test]
 		public void ItShouldReturnSortedProductions()
 		{
+			// Arrange 
 			var production1 = new ProductionDTO
 			{
 				ArtifactID = "1",
@@ -42,17 +51,23 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			var expectedResult = new List<ProductionDTO> {production1, production2};
 
 			var productions = new List<ProductionDTO> {production2, production1};
-			_service.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
 
-			var responseMessage = _controller.GetProductionsForExport(0);
-			var actualResult = ExtractResponse(responseMessage);
+			var productionManager = Substitute.For<Core.Managers.IProductionManager>();
+			productionManager.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
+			_managerFactory.CreateProductionManager(Arg.Any<IContextContainer>()).Returns(productionManager);
+			
+			// Act
+			HttpResponseMessage responseMessage = _controller.GetProductionsForExport(0);
+			IEnumerable<ProductionDTO> actualResult = ExtractResponse(responseMessage);
 
+			// Assert
 			CollectionAssert.AreEqual(expectedResult, actualResult);
 		}
 
 		[Test]
 		public void ItShouldReturnImportProductions()
 		{
+			// Arrange
 			var production1 = new ProductionDTO
 			{
 				ArtifactID = "1",
@@ -74,17 +89,23 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			var expectedResult = new List<ProductionDTO> { production1, production2 };
 
 			var productions = new List<ProductionDTO> { production2, production1, production3 };
-			_service.GetProductionsForImport(0).ReturnsForAnyArgs(productions);
 
-			var responseMessage = _controller.GetProductionsForImport(0);
+			var productionManager = Substitute.For<Core.Managers.IProductionManager>();
+			productionManager.GetProductionsForImport(0).ReturnsForAnyArgs(productions);
+			_managerFactory.CreateProductionManager(Arg.Any<IContextContainer>()).Returns(productionManager);
+
+			// Act
+			var responseMessage = _controller.GetProductionsForImport(0, null);
 			var actualResult = ExtractResponse(responseMessage);
 
+			// Assert
 			CollectionAssert.AreEqual(expectedResult, actualResult);
 		}
 
 		[Test]
 		public void ItShouldSortProductionsIgnoringCase()
 		{
+			// Arrange
 			var production1 = new ProductionDTO
 			{
 				ArtifactID = "1",
@@ -98,11 +119,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			var expectedResult = new List<ProductionDTO> { production1, production2 };
 
 			var productions = new List<ProductionDTO> { production2, production1 };
-			_service.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
 
+			var productionManager = Substitute.For<Core.Managers.IProductionManager>();
+			productionManager.GetProductionsForExport(0).ReturnsForAnyArgs(productions);
+			_managerFactory.CreateProductionManager(Arg.Any<IContextContainer>()).Returns(productionManager);
+
+			// Act
 			var responseMessage = _controller.GetProductionsForExport(0);
 			var actualResult = ExtractResponse(responseMessage);
 
+			// Assert
 			CollectionAssert.AreEqual(expectedResult, actualResult);
 		}
 

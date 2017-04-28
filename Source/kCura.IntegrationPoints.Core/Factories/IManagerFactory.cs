@@ -113,6 +113,13 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <returns>Instance of Instance Settings Manager</returns>
 		IInstanceSettingsManager CreateInstanceSettingsManager(IContextContainer contextContainer);
 
+		/// <summary>
+		/// Creates a Production Manager
+		/// </summary>
+		/// <param name="contextContainer"></param>
+		/// <returns>Instance of Production Manager</returns>
+		IProductionManager CreateProductionManager(IContextContainer contextContainer);
+		
 		ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer);
 	}
 }

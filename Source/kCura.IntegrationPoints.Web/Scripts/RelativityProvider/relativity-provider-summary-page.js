@@ -58,7 +58,11 @@ var loadData = function (ko, dataContainer) {
 		this.targetFolder = dataContainer.sourceConfiguration.TargetFolder;
 		this.sourceWorkspace = dataContainer.sourceConfiguration.SourceWorkspace;
 		this.targetWorkspace = dataContainer.sourceConfiguration.TargetWorkspace;
-		this.savedSearch = "Saved Search: " + dataContainer.sourceConfiguration.SavedSearch;
+		if (dataContainer.sourceConfiguration.SourceProductionId) {
+			this.sourceDetails = "Production Set: " + dataContainer.sourceConfiguration.SourceProductionName;
+		} else {
+			this.sourceDetails = "Saved Search: " + dataContainer.sourceConfiguration.SavedSearch;
+		}
 		this.sourceRelativityInstance = dataContainer.sourceConfiguration.SourceRelativityInstance;
 		this.destinationRelativityInstance = dataContainer.destinationConfiguration.DestinationRelativityInstance;
 		this.multiSelectOverlay = dataContainer.destinationConfiguration.FieldOverlayBehavior;
@@ -79,8 +83,8 @@ var loadData = function (ko, dataContainer) {
 		}, self);
 		this.copyFilesToRepository = formatToYesOrNo(dataContainer.destinationConfiguration.importNativeFile);
 
-		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration.SourceWorkspaceArtifactId, dataContainer.sourceConfiguration.SavedSearchArtifactId,
-			this.importNativeFile(), this.importImageFile());
+		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration, dataContainer.destinationConfiguration);
+		
 	};
 
 	var viewModel = new Model(dataContainer);

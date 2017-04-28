@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;

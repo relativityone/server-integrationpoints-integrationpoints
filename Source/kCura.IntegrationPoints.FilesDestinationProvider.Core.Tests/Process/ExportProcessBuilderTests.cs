@@ -5,10 +5,11 @@ using System.Net;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -22,6 +23,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using IExporterFactory = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
@@ -60,7 +62,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 		private ExportProcessBuilder _exportProcessBuilder;
 		private ICompositeLoggingMediator _loggingMediator;
-		private IManagerFactory<ISearchManager> _searchManagerFactory;
+		private IServiceManagerFactory<ISearchManager> _searchManagerFactory;
 		private IUserMessageNotification _userMessageNotification;
 		private IUserNotification _userNotification;
 		private IConfigFactory _configFactory;
@@ -95,7 +97,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exporterFactory = Substitute.For<IExporterFactory>();
 			_exportFileBuilder = Substitute.For<IExportFileBuilder>();
 			_loggingMediator = Substitute.For<ICompositeLoggingMediator>();
-			_searchManagerFactory = Substitute.For<IManagerFactory<ISearchManager>>();
+			_searchManagerFactory = Substitute.For<IServiceManagerFactory<ISearchManager>>();
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_userNotification = Substitute.For<IUserNotification>();
 			_configFactory = Substitute.For<IConfigFactory>();

@@ -1,4 +1,6 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -8,6 +10,7 @@ using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -17,10 +20,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	public class ManagerFactory : IManagerFactory
 	{
 		private readonly IHelper _helper;
+		private readonly IServiceManagerProvider _serviceManagerProvider;
 
-		public ManagerFactory(IHelper helper)
+		public ManagerFactory(IHelper helper, IServiceManagerProvider serviceManagerProvider)
 		{
 			_helper = helper;
+			_serviceManagerProvider = serviceManagerProvider;
 		}
 
 		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
@@ -123,6 +128,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
 			return new InstanceSettingsManager(repositoryFactory);
+		}
+
+		public IProductionManager CreateProductionManager(IContextContainer contextContainer)
+		{
+			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
+			IFederatedInstanceManager federatedInstanceManager = CreateFederatedInstanceManager(contextContainer);
+
+			return new ProductionManager(repositoryFactory, _serviceManagerProvider, federatedInstanceManager);
 		}
 
 		public ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer)

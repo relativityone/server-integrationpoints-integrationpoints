@@ -53,6 +53,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
 		}
 
+		public ProductionValidator CreateProductionValidator(int workspaceArtifactId)
+		{
+			IProductionManager productionManager =
+				_managerFactory.CreateProductionManager(_contextContainerFactory.CreateContextContainer(_helper));
+			return new ProductionValidator(workspaceArtifactId, productionManager);
+		}
+
 		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix)
 		{
 			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, _helper.GetServicesManager()));

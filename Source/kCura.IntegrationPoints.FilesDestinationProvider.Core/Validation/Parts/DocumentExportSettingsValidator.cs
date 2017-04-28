@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
@@ -23,6 +22,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 				{
 					result.Add(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_UNKNOWN_SUBDIR_PREFIX);
 				}
+				else if (!ValidateSpecialCharactersOccurences(value.SubdirectoryImagePrefix))
+				{
+					result.Add(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_PREFIX_ILLEGAL_CHARACTERS);
+				}
+
 			}
 
 			return result;

@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class ProductionValidator : BasePartsValidator<ExportSettings>
+	public class ExportProductionValidator : BasePartsValidator<ExportSettings>
 	{
-		private readonly IProductionService _productionService;
+		private readonly IProductionManager _productionManager;
 
-		public ProductionValidator(IProductionService productionService)
+		public ExportProductionValidator(IProductionManager productionManager)
 		{
-			_productionService = productionService;
+			_productionManager = productionManager;
 		}
 
 		public override ValidationResult Validate(ExportSettings value)
 		{
 			var result = new ValidationResult();
 
-			var production = _productionService.GetProductionsForExport(value.WorkspaceId)
+			var production = _productionManager.GetProductionsForExport(value.WorkspaceId)
 				.FirstOrDefault(x => x.ArtifactID.Equals(value.ProductionId.ToString()));
 
 			if (production == null)

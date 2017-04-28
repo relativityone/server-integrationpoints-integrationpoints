@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 
@@ -65,6 +65,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			{
 				result.Add(FileDestinationProviderValidationMessages.SETTINGS_NATIVES_UNKNOWN_SUBDIR_PREFIX);
 			}
+			else if (!ValidateSpecialCharactersOccurences(value.SubdirectoryNativePrefix))
+			{
+				result.Add(FileDestinationProviderValidationMessages.SETTINGS_NATIVES_PREFIX_ILLEGAL_CHARACTERS);
+			}
+
 
 			return result;
 		}
@@ -87,9 +92,41 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 				{
 					result.Add(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_SUBDIR_PREFIX);
 				}
+				else if (!ValidateSpecialCharactersOccurences(value.SubdirectoryTextPrefix))
+				{
+					result.Add(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_PREFIX_ILLEGAL_CHARACTERS);
+				}
+
 			}
 
 			return result;
+		}
+
+		internal virtual ValidationResult ValidateVolumePrefix(ExportSettings value)
+		{
+			var result = new ValidationResult();
+
+			if (String.IsNullOrWhiteSpace(value.VolumePrefix))
+			{
+				result.Add(FileDestinationProviderValidationMessages.SETTINGS_VOLUME_PREFIX_UNKNOWN);
+			}
+			else if (!ValidateSpecialCharactersOccurences(value.VolumePrefix))
+			{
+				result.Add(FileDestinationProviderValidationMessages.SETTINGS_VOLUME_PREFIX_ILLEGAL_CHARACTERS);
+			}
+
+
+			return result;
+		}
+
+		protected virtual bool ValidateSpecialCharactersOccurences(string text)
+		{
+			string pattern = "^[^<>:\\\"\\\\\\/|\\?\\*]*$";
+			Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+			Match match = regex.Match(text);
+
+			//If validated string doesn't contain any illegal characters
+			return match.Success;
 		}
 	}
 }

@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -17,6 +18,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
+using Relativity.Core;
+using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -89,16 +92,63 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
-
-
+			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
+			BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
+			IExporterService exporterService;
 			if (settings.ImageImport)
 			{
-				return new ImageExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-					claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId, settings);
+				IExporter exporter;
+				int searchArtifactId;
+				if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
+				{
+					exporter = BuildSavedSearchExporter(baseServiceContext);
+					searchArtifactId = savedSearchArtifactId;
+				}
+				else
+				{
+					exporter = BuildProductionExporter(baseServiceContext);
+					searchArtifactId = sourceConfiguration.SourceProductionId;
+				}
+
+				exporterService = new ImageExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
+					claimsPrincipal, mappedFiles, 0, config, searchArtifactId, settings);
 			}
-			var folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
-			return new RelativityExporterService(_sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper, folderPathReader, claimsPrincipal, mappedFiles, 0, config,
-				savedSearchArtifactId);
+			else
+			{
+				IExporter exporter = BuildSavedSearchExporter(baseServiceContext);
+
+				IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
+                exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
+                    folderPathReader, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+            }
+
+			return exporterService;
+		}
+
+		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService)
+		{
+			return new SavedSearchExporter
+				(
+				baseService,
+				new UserPermissionsMatrix(baseService),
+				global::Relativity.ArtifactType.Document,
+				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
+				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
+				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+				);
+		}
+
+		private IExporter BuildProductionExporter(BaseServiceContext baseService)
+		{
+			return new ProductionExporter
+				(
+				baseService,
+				new UserPermissionsMatrix(baseService),
+				global::Relativity.ArtifactType.Document,
+				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
+				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
+				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+				);
 		}
 	}
 }

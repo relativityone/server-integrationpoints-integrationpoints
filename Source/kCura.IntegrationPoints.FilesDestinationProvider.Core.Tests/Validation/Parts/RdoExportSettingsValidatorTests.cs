@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using NUnit.Framework;
@@ -168,6 +166,49 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_ENCODING)));
 			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_PRECEDENCE)));
 			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_SUBDIR_PREFIX)));
+		}
+
+		[Test]
+		public void ItShouldValidateVolumePrefix()
+		{
+			// arrange
+			var settings = new ExportSettings
+			{
+				VolumePrefix = "VOL"
+			};
+
+			var validator = new RdoExportSettingsValidator();
+
+			// act
+			var actual = validator.ValidateVolumePrefix(settings);
+
+			// assert
+			Assert.IsTrue(actual.IsValid);
+			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+		}
+
+		[Test]
+		[TestCase("VOL<")]
+		[TestCase("\\1234")]
+		[TestCase("V*O/L>U<M:E")]
+		[TestCase("")]
+		[TestCase(null)]
+		public void ItShouldFailValidationForInvalidVolumePrefix(string volumePrefix)
+		{
+			// arrange
+			var settings = new ExportSettings
+			{
+				VolumePrefix = volumePrefix
+			};
+
+			var validator = new RdoExportSettingsValidator();
+
+			// act
+			var actual = validator.ValidateVolumePrefix(settings);
+
+			// assert
+			Assert.IsFalse(actual.IsValid);
+			Assert.That(actual.Messages, Is.Not.Empty);
 		}
 	}
 }

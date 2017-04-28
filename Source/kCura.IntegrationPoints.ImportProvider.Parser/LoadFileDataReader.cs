@@ -66,7 +66,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 					string artifactValue = artifact.ValueAsString;
 					if (((_extractedTextHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.ExtractedTextPathFieldIdentifier)
 					|| (_nativeFileHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.NativeFilePathFieldIdentifier))
-					&& !Path.IsPathRooted(artifactValue)) //Do not rewrite paths if column contains full path info 
+					&& !string.IsNullOrEmpty(artifactValue) //If the path is empty, there is no native and we shouldn't attempt to join the paths
+					&& !Path.IsPathRooted(artifactValue)) //Do not rewrite paths if column contains full path info
 					{
 						_currentLine[artifact.ArtifactID] = Path.Combine(_loadFileDirectory, artifactValue);
 					}
