@@ -32,9 +32,7 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		var actualIndex = self.metaData().length;
 
 		self.metaData.push(actualIndex);
-
 		self.visibilityValuesContainer()[actualIndex](true);
-
 		self.visibilityValuesContainer()[actualIndex].notifySubscribers();
 	};
 
