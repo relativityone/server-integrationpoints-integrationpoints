@@ -78,7 +78,7 @@ var loadData = function (ko, dataContainer) {
 				var result = exportNamingType.key + ": ";
 				result += getFileNameFormat();
 
-				return result;
+				return result + ".{File Extension}";
 			}
 		};
 
