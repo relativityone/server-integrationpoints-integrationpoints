@@ -657,7 +657,9 @@
 
 		self.FileNameParts = ko.observable(state.FileNameParts || []);
 
-		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, state.FileNameParts);
+		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, function (selectedFileNameParts) {
+			self.FileNameParts(selectedFileNameParts);
+		});
 		self.exportFileNameViewModel.initViewModel();
 
 		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", self.exportFileNameViewModel,
@@ -679,11 +681,10 @@
 			}
 		);
 		this.openFileNamingOptionsPicker = function () {
-			self.exportFileNameViewModel.open();
+			self.exportFileNameViewModel.open(self.FileNameParts());
 		}
 
 		this.errors = ko.validation.group(this, { deep: true });
-		
 
 		this.getSelectedOption = function () {
 			return {
@@ -723,7 +724,7 @@
 				"VolumeStartNumber": self.VolumeStartNumber(),
 				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
 				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled(),
-				"FileNameParts": self.exportFileNameViewModel.getSelections()
+				"FileNameParts": self.FileNameParts()
 			};
 		};
 	};

@@ -4,15 +4,15 @@
 	this.type = type;
 }
 
-ExportProviderFileNameViewModel = function (availableFields, selectionList) {
+ExportProviderFileNameViewModel = function (availableFields, okCallback) {
 
 	var self = this;
 
 	self.Max_Selection_Count = 5;
 
 	self.availableFields = availableFields;
-	self.selectionList = selectionList;
 	self.actualSelectionTypeIndex = 0;
+	self.okCallback = okCallback;
 
 	self.metaData = ko.observableArray([]);
 	self.listData = ko.observable({});
@@ -48,11 +48,18 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		self.visibilityValuesContainer()[actualIndex](false);
 	};
 
+	self.clearViewModel = function () {
+		var selectionCount = self.metaData().length;
+		for (var index = 0; index < selectionCount; ++index) {
+			self.removeNewSelection();
+		}
+	}
+
 	self.initViewModel = function () {
 
 		ko.validation.rules['shouldBeValidated'] = {
 			validator: function (val, currElementIndex) {
-				if (currElementIndex >= self.metaData().length || self.metaData().length <= 1) {
+				if (currElementIndex >= self.metaData().length) {
 					return true;
 				}
 				return val !== undefined && val != null;
@@ -83,15 +90,6 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 					self.listData()[actualIndex].push(new FileNameEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
 				}
 			}
-		}
-
-		if (self.selectionList !== undefined) {
-			for (var selectionIndex = 0; selectionIndex < self.selectionList.length; ++selectionIndex) {
-				self.addNewSelection();
-				self.selectItem(self.selectionList[selectionIndex]);
-			}
-		} else {
-			self.addNewSelection();
 		}
 	}
 	self.getSelections = function () {
@@ -130,16 +128,31 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 		self.view = view;
 	};
 
-	this.open = function () {
+	this.open = function (selectionList) {
+
+		self.clearViewModel();
+		self.selectionList = selectionList;
+
+		if (self.selectionList !== undefined && self.selectionList.length > 0) {
+			for (var selectionIndex = 0; selectionIndex < self.selectionList.length; ++selectionIndex) {
+				self.addNewSelection();
+				self.selectItem(self.selectionList[selectionIndex]);
+			}
+		} else {
+			self.addNewSelection();
+		}
+
 		self.view.dialog("open");
 	};
 
 	this.ok = function () {
-		var result = ko.validation.group(self, { deep: true });
-		if (!self.isValid()) {
-			result.showAllMessages(true);
+		var modalErrors = ko.validation.group(self, { deep: true });
+		if (modalErrors().length > 0) {
+			modalErrors.showAllMessages(true);
 			return false;
 		}
+		self.okCallback(self.getSelections());
+
 		self.view.dialog("close");
 	};
 
