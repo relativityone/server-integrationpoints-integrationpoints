@@ -135,6 +135,11 @@ ExportProviderFileNameViewModel = function (availableFields, selectionList) {
 	};
 
 	this.ok = function () {
+		var result = ko.validation.group(self, { deep: true });
+		if (!self.isValid()) {
+			result.showAllMessages(true);
+			return false;
+		}
 		self.view.dialog("close");
 	};
 
