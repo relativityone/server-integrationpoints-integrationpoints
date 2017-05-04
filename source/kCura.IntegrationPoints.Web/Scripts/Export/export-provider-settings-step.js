@@ -657,10 +657,20 @@
 
 		self.FileNameParts = ko.observable(state.FileNameParts || []);
 
+		var exportHelper = new ExportHelper();
+
+		var getFileNameSelectionRepresentation = function() {
+			var fileNameParts = self.FileNameParts();
+			return exportHelper.convertFileNamePartsToText(fileNameParts);
+		};
+
 		self.exportFileNameViewModel = new ExportProviderFileNameViewModel(availableFields, function (selectedFileNameParts) {
 			self.FileNameParts(selectedFileNameParts);
 		});
-		self.exportFileNameViewModel.initViewModel();
+
+		self.FileNameSelection = ko.pureComputed(function () {
+			return getFileNameSelectionRepresentation(self.FileNameParts());
+		});
 
 		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", self.exportFileNameViewModel,
 			{

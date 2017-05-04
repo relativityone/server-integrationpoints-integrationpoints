@@ -159,4 +159,6 @@ ExportProviderFileNameViewModel = function (availableFields, okCallback) {
 	this.cancel = function () {
 		self.view.dialog("close");
 	};
+
+	self.initViewModel();
 }

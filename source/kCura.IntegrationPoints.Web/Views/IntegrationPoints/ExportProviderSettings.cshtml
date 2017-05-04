@@ -229,10 +229,11 @@
 			</div>
 		</div>
 		<div class="field-row" data-bind="visible: IsCustomFileNameOptionSelected()">
-			<div class="field-label">
+			<div class="field-label required">
 				File Name:
 			</div>
 			<div class="field-value">
+				<label id="file-name-selection" class="precedence-selection" data-bind="style: { color: FileNameParts().length > 0 ? 'black' : 'darkblue' },text: FileNameSelection"></label>
 				<button id="file-naming-button" style="vertical-align: top" data-bind="click: openFileNamingOptionsPicker" class="actionButtonSmall">...</button>
 			</div>
 		</div>
