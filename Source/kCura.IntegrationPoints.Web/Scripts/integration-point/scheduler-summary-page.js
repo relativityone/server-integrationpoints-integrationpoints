@@ -24,10 +24,6 @@ var loadData = function (ko, dataContainer) {
 			'128': "day"
 		};
 
-		var isSchedulerEnabled = function (scheduler) {
-			return scheduler.enableScheduler ? "True" : "False";
-		}
-
 		var getLastRun = function (dataContainer) {
 			if (!dataContainer.lastRun)
 				return "";
@@ -75,7 +71,7 @@ var loadData = function (ko, dataContainer) {
 
 		var getSendOn = function (frequency, schedulerSendOn) {
 			if (!schedulerSendOn) {
-				 return "";
+				return "";
 			}
 
 			var sendOnJson = JSON.parse(schedulerSendOn);
@@ -120,7 +116,7 @@ var loadData = function (ko, dataContainer) {
 			return scheduledTime;
 		};
 
-		this.enableScheduler = isSchedulerEnabled(dataContainer.scheduler);
+		this.enableScheduler = dataContainer.scheduler.enableScheduler;
 		this.nextRun = getNextRun(dataContainer);
 		this.lastRun = getLastRun(dataContainer);
 		this.frequency = getFrequency(dataContainer.scheduler);
