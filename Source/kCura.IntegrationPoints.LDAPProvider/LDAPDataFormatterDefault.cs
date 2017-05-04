@@ -1,4 +1,5 @@
 ﻿using System;
+using System.DirectoryServices;
 using System.Text;
 
 namespace kCura.IntegrationPoints.LDAPProvider
@@ -13,59 +14,52 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public object FormatData(object initialData)
 		{
-			string returnValue = null;
-			if (initialData != null)
-			{
-				if (initialData is System.DirectoryServices.ResultPropertyValueCollection)
-				{
-					foreach (var item in initialData as System.DirectoryServices.ResultPropertyValueCollection)
-					{
-						object dataValue = ConvertData(item);
-						if (_settings.MultiValueDelimiter.HasValue)
-						{
-							if (!string.IsNullOrEmpty(returnValue)) returnValue += _settings.MultiValueDelimiter.ToString();
-							returnValue += dataValue;
-						}
-						else
-						{
-							//TODO: determine what we want to do if no delimiter specified,
-						}
-					}
-				}
-			}
-			return returnValue;
+		    if (!(initialData is ResultPropertyValueCollection))
+		    {
+		        throw new InvalidOperationException($"Unsupported data type: {initialData?.GetType().FullName}.");
+            }
+		    string returnValue = null;
+		    foreach (object item in (ResultPropertyValueCollection) initialData)
+		    {
+		        object dataValue = ConvertData(item);
+		        if (_settings.MultiValueDelimiter.HasValue)
+		        {
+		            if (!string.IsNullOrEmpty(returnValue)) returnValue += _settings.MultiValueDelimiter.ToString();
+		            returnValue += dataValue;
+		        }
+		        else
+		        {
+		            throw new InvalidOperationException("LDAPSettings.MultiValueDelimiter has no value.");
+		        }
+		    }
+		    return returnValue;
 		}
 
 		public virtual object ConvertData(object value)
 		{
-			if (value != null)
-			{
-				//if (value.GetType() == Type.GetType("System.Byte[]"))
-				if (value is System.Byte[])
-				{
-					return ConvertByteArray((Byte[])value);
-				}
-				else if (value is System.DateTime)
-				{
-					return ConvertDate((DateTime)value);
-				}
-				else
-				{
-					return value.ToString();
-				}
-			}
-			return value;
+		    if (value == null) return null;
+            
+		    if (value is byte[])
+		    {
+		        return ConvertByteArray((byte[])value);
+		    }
+		    if (value is DateTime)
+		    {
+		        return ConvertDate((DateTime)value);
+		    }
+		    return value.ToString();
 		}
 
-		public virtual object ConvertByteArray(Byte[] value)
+		public virtual object ConvertByteArray(byte[] value)
 		{
-			StringBuilder bString = new StringBuilder();
-			foreach (Byte b in (value))
+			var bString = new StringBuilder();
+			foreach (byte b in value)
 			{
-				bString.Append(Microsoft.VisualBasic.Conversion.Hex(b).ToString().PadLeft(2, '0'));
+				bString.Append(Microsoft.VisualBasic.Conversion.Hex(b).PadLeft(2, '0'));
 			}
 			return bString.ToString();
 		}
+
 		public virtual object ConvertDate(DateTime value)
 		{
 			return value.ToString("s");

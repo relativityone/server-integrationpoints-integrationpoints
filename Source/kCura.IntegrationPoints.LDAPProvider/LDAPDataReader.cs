@@ -6,209 +6,185 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
-	public class LDAPDataReader : IDataReader
-	{
-		private DataTable _dataTable;
-		private bool _readerOpen;
-		private int _position = 0;
-		private IEnumerator<SearchResult> _itemsEnumerator;
-		private List<string> _fields;
-		private ILDAPDataFormatter _dataFormattter;
+    public class LDAPDataReader : IDataReader
+    {
+        public bool IsClosed { get; private set; }
+        public int RecordsAffected { get; private set; }
 
-		public LDAPDataReader(IEnumerable<SearchResult> items, List<string> fields, ILDAPDataFormatter dataFormattter)
-		{
-			_dataFormattter = dataFormattter;
-			_readerOpen = true;
-			_itemsEnumerator = items.GetEnumerator();
-			_fields = fields;
+        private readonly DataTable _schemaTable;
+        private readonly IEnumerator<SearchResult> _itemsEnumerator;
+        private readonly ILDAPDataFormatter _dataFormatter;
 
-			_dataTable = new DataTable();
-			_dataTable.Columns.AddRange(fields.Select(f => new DataColumn(f)).ToArray());
-		}
+        public LDAPDataReader(IEnumerable<SearchResult> items, List<string> fields, ILDAPDataFormatter dataFormatter)
+        {
+            _dataFormatter = dataFormatter;
+            IsClosed = false;
+            _itemsEnumerator = items.GetEnumerator();
 
-		public void Close()
-		{
-			_readerOpen = false;
-			//TODO: is there anything to do?
-			return;
-		}
+            _schemaTable = new DataTable();
+            _schemaTable.Columns.AddRange(fields.Select(f => new DataColumn(f)).ToArray());
+        }
 
-		public int Depth
-		{
-			get { return 0; }
-		}
+        public void Close()
+        {
+            IsClosed = true;
+            //TODO: is there anything to do?
+        }
 
-		public DataTable GetSchemaTable()
-		{
-			return _dataTable;
-		}
+        public int Depth => 0;
 
-		public bool IsClosed
-		{
-			get { return _readerOpen; }
-		}
+        public DataTable GetSchemaTable()
+        {
+            return _schemaTable;
+        }
 
-		public bool NextResult()
-		{
-			return false;
-		}
+        public bool NextResult()
+        {
+            return false;
+        }
 
-		public bool Read()
-		{
-			if (_readerOpen)
-			{
-				_readerOpen = _itemsEnumerator.MoveNext();
-				if (_readerOpen) _position++;
-			}
-			return _readerOpen;
-		}
+        public bool Read()
+        {
+            if (!IsClosed)
+            {
+                IsClosed = !_itemsEnumerator.MoveNext();
+                if (!IsClosed) RecordsAffected++;
+            }
+            return !IsClosed;
+        }
 
-		public int RecordsAffected
-		{
-			get { return _position; }
-		}
+        public void Dispose()
+        {
+            IsClosed = true;
+            _schemaTable.Dispose();
+            _itemsEnumerator.Dispose();
+        }
 
-		public void Dispose()
-		{
-			_readerOpen = false;
-			_dataTable.Dispose();
-			_itemsEnumerator.Dispose();
-		}
+        public int FieldCount => _schemaTable.Columns.Count;
 
-		public int FieldCount
-		{
-			get { return _dataTable.Columns.Count; }
-		}
+        public bool GetBoolean(int i)
+        {
+            return Convert.ToBoolean(GetValue(i));
+        }
 
-		public bool GetBoolean(int i)
-		{
-			return Convert.ToBoolean(GetValue(i));
-		}
+        public byte GetByte(int i)
+        {
+            return Convert.ToByte(GetValue(i));
+        }
 
-		public byte GetByte(int i)
-		{
-			return Convert.ToByte(GetValue(i));
-		}
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        {
+            throw new NotImplementedException();
+        }
 
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
-		{
-			throw new System.NotImplementedException();
-		}
+        public char GetChar(int i)
+        {
+            return Convert.ToChar(GetValue(i));
+        }
 
-		public char GetChar(int i)
-		{
-			return Convert.ToChar(GetValue(i));
-		}
+        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        {
+            throw new NotImplementedException();
+        }
 
-		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
-		{
-			throw new System.NotImplementedException();
-		}
+        public IDataReader GetData(int i)
+        {
+            throw new NotImplementedException();
+        }
 
-		public IDataReader GetData(int i)
-		{
-			throw new System.NotImplementedException();
-		}
+        public string GetDataTypeName(int i)
+        {
+            return _schemaTable.Columns[i].DataType.Name;
+        }
 
-		public string GetDataTypeName(int i)
-		{
-			return _dataTable.Columns[i].DataType.Name;
-		}
+        public DateTime GetDateTime(int i)
+        {
+            return Convert.ToDateTime(GetValue(i));
+        }
 
-		public System.DateTime GetDateTime(int i)
-		{
-			return Convert.ToDateTime(GetValue(i));
-		}
+        public decimal GetDecimal(int i)
+        {
+            return Convert.ToDecimal(GetValue(i));
+        }
 
-		public decimal GetDecimal(int i)
-		{
-			return Convert.ToDecimal(GetValue(i));
-		}
+        public double GetDouble(int i)
+        {
+            return Convert.ToDouble(GetValue(i));
+        }
 
-		public double GetDouble(int i)
-		{
-			return Convert.ToDouble(GetValue(i));
-		}
+        public Type GetFieldType(int i)
+        {
+            return _schemaTable.Columns[i].DataType;
+        }
 
-		public System.Type GetFieldType(int i)
-		{
-			return _dataTable.Columns[i].DataType;
-		}
+        public float GetFloat(int i)
+        {
+            return Convert.ToSingle(GetValue(i));
+        }
 
-		public float GetFloat(int i)
-		{
-			return Convert.ToSingle(GetValue(i));
-		}
+        public Guid GetGuid(int i)
+        {
+            return Guid.Parse(GetValue(i).ToString());
+        }
 
-		public System.Guid GetGuid(int i)
-		{
-			return Guid.Parse(GetValue(i).ToString());
-		}
+        public short GetInt16(int i)
+        {
+            return Convert.ToInt16(GetValue(i));
+        }
 
-		public short GetInt16(int i)
-		{
-			return Convert.ToInt16(GetValue(i));
-		}
+        public int GetInt32(int i)
+        {
+            return Convert.ToInt32(GetValue(i));
+        }
 
-		public int GetInt32(int i)
-		{
-			return Convert.ToInt32(GetValue(i));
-		}
+        public long GetInt64(int i)
+        {
+            return Convert.ToInt64(GetValue(i));
+        }
 
-		public long GetInt64(int i)
-		{
-			return Convert.ToInt64(GetValue(i));
-		}
+        public string GetName(int i)
+        {
+            return _schemaTable.Columns[i].ColumnName;
+        }
 
-		public string GetName(int i)
-		{
-			return _dataTable.Columns[i].ColumnName;
-		}
+        public int GetOrdinal(string name)
+        {
+            return _schemaTable.Columns[name].Ordinal;
+        }
 
-		public int GetOrdinal(string name)
-		{
-			return _dataTable.Columns[name].Ordinal;
-		}
+        public string GetString(int i)
+        {
+            return GetValue(i) as string;
+        }
 
-		public string GetString(int i)
-		{
-			return GetValue(i) as string;
-		}
+        public object GetValue(int i)
+        {
+            // TODO Shouldn't this method return actual value instead of formatted string?
+            return _dataFormatter.FormatData(_itemsEnumerator.Current.Properties[GetName(i)]);
+        }
 
-		public object GetValue(int i)
-		{
-			return _dataFormattter.FormatData(_itemsEnumerator.Current.Properties[_fields[i]]);
-		}
+        public int GetValues(object[] values)
+        {
+            if (values == null) return 0;
 
-		public int GetValues(object[] values)
-		{
-			if (values != null)
-			{
-				int fieldCount = Math.Min(values.Length, _fields.Count);
-				object[] Values = new object[fieldCount];
-				for (int i = 0; i < fieldCount; i++)
-				{
-					Values[i] = GetValue(i);
-				}
-				Array.Copy(Values, values, this.FieldCount);
-				return fieldCount;
-			}
-			return 0;
-		}
+            int fieldCount = Math.Min(values.Length, FieldCount);
+            var newValues = new object[fieldCount];
+            for (var i = 0; i < fieldCount; i++)
+            {
+                newValues[i] = GetValue(i);
+            }
+            Array.Copy(newValues, values, fieldCount);
+            return fieldCount;
+        }
+        
+        // TODO FIXME This method is currently useless, as formatter in GetValue always returns string
+        public bool IsDBNull(int i)
+        {
+            return GetValue(i) is DBNull;
+        }
 
-		public bool IsDBNull(int i)
-		{
-			return (GetValue(i) is System.DBNull);
-		}
+        public object this[string name] => GetValue(GetOrdinal(name));
 
-		public object this[string name]
-		{
-			get { return GetValue(_fields.IndexOf(name)); }
-		}
-
-		public object this[int i]
-		{
-			get { return GetValue(i); }
-		}
-	}
+        public object this[int i] => GetValue(i);
+    }
 }

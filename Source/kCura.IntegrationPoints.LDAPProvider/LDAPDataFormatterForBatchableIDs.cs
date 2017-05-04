@@ -9,12 +9,12 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			: base(settings)
 		{ }
 
-		public override object ConvertByteArray(Byte[] value)
+		public override object ConvertByteArray(byte[] value)
 		{
-			StringBuilder bString = new StringBuilder();
-			foreach (Byte b in ((Byte[])value))
+			var bString = new StringBuilder();
+			foreach (byte b in value)
 			{
-				bString.Append(string.Format("\\{0}", Microsoft.VisualBasic.Conversion.Hex(b).ToString().PadLeft(2, '0')));
+				bString.Append($"\\{Microsoft.VisualBasic.Conversion.Hex(b).PadLeft(2, '0')}");
 			}
 			return bString.ToString();
 		}
