@@ -11,6 +11,7 @@ using System.Text;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Services.Tests.Integration")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Security.Tests")]
 
 namespace kCura.IntegrationPoints.Security
 {

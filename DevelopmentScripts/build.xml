@@ -317,6 +317,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Security.Tests\kCura.IntegrationPoints.Security.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
       </Build>
       <Ignore>
         <Project path="Source\kCura.IntegrationPoints.Documentation\kCura.IntegrationPoints.Documentation.shfbproj" />
