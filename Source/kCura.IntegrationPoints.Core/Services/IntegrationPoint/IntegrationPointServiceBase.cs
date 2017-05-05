@@ -256,10 +256,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				{
 					invalidProperties.Add("Destination RDO");
 				}
-				if (existingDestination.CaseArtifactId != newDestination.CaseArtifactId)
-				{
-					invalidProperties.Add("Case");
-				}
 			}
 			if (existingModel.SourceProvider != model.SourceProvider)
 			{
@@ -270,22 +266,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			// check permission if we want to push
 			// needs to be here because custom page is the only place that has user context
-			SourceProvider provider;
 			try
 			{
-				provider = Context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
+				Context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
 			}
 			catch (Exception e)
 			{
 				throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
-			}
-
-			if (provider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
-			{
-				if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
-				{
-					invalidProperties.Add("Source Configuration");
-				}
 			}
 
 			if (invalidProperties.Any())
