@@ -15,4 +15,25 @@
 
 		return result;
 	}
+
+	self.convertSeparatorDisplayToValue = function(display) {
+		
+		if (display === ExportEnums.SeparatorsDefs.SpaceText) {
+			return ExportEnums.SeparatorsDefs.SpaceVal;
+		}
+		else if (display === ExportEnums.SeparatorsDefs.NoneText) {
+			return ExportEnums.SeparatorsDefs.NoneVal;
+		}
+		return display;
+	}
+
+	self.convertSeparatorValueToDisplay = function (value) {
+		if (value === ExportEnums.SeparatorsDefs.SpaceVal) {
+			return ExportEnums.SeparatorsDefs.SpaceText;
+		}
+		else if (value === ExportEnums.SeparatorsDefs.NoneVal) {
+			return ExportEnums.SeparatorsDefs.NoneText;
+		}
+		return value;
+	}
 };

@@ -87,10 +87,18 @@ ExportEnums.ExportNativeWithFilenameFromTypes = [
 	{ value: 2, key: "Custom" }
 ];
 
+ExportEnums.SeparatorsDefs = {
+	SpaceText: "(Space)",
+	SpaceVal: " ",
+	NoneText: "(None)",
+	NoneVal: ""
+}
+
 ExportEnums.AvailableSeparators = [
 	{ value: "_", display: "_" },
 	{ value: "-", display: "-" },
 	{ value: ".", display: "." },
-	{ value: "(Space)", display: "(Space)" },
-	{ value: "(None)", display: "(None)" }
+	// Because of the issues with epmty string ko binding as a value (in select ctrl) we pass text as a value
+	{ value: ExportEnums.SeparatorsDefs.SpaceText, display: ExportEnums.SeparatorsDefs.SpaceText },
+	{ value: ExportEnums.SeparatorsDefs.NoneText, display: ExportEnums.SeparatorsDefs.NoneText }
 ];

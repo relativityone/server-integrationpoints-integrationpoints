@@ -8,6 +8,7 @@ ExportProviderFileNameViewModel = function (availableFields, okCallback) {
 
 	var self = this;
 
+	var exportHelper = new ExportHelper();
 	self.Max_Selection_Count = 5;
 
 	self.availableFields = availableFields;
@@ -38,7 +39,13 @@ ExportProviderFileNameViewModel = function (availableFields, okCallback) {
 
 	self.selectItem = function (fileNameEntry) {
 		var index = self.metaData().length - 1;
-		self.data()[index](fileNameEntry.value);
+
+		var selValue = fileNameEntry.value;
+		// Value of dropdown Separator is display text as there is the issue with binding empty string (space char) for knockout Select2 ctrl
+		if (fileNameEntry.type === 'S') {
+			selValue = exportHelper.convertSeparatorValueToDisplay(fileNameEntry.value);
+		}
+		self.data()[index](selValue);
 	}
 
 	self.removeNewSelection = function() {
@@ -87,7 +94,8 @@ ExportProviderFileNameViewModel = function (availableFields, okCallback) {
 				}
 			} else {
 				for (var sepIndex = 0; sepIndex < ExportEnums.AvailableSeparators.length; ++sepIndex) {
-					self.listData()[actualIndex].push(new FileNameEntry(ExportEnums.AvailableSeparators[sepIndex].display, ExportEnums.AvailableSeparators[sepIndex].value, "S"));
+					self.listData()[actualIndex].push(new FileNameEntry(ExportEnums.AvailableSeparators[sepIndex].display,
+						ExportEnums.AvailableSeparators[sepIndex].value, "S"));
 				}
 			}
 		}
@@ -109,7 +117,7 @@ ExportProviderFileNameViewModel = function (availableFields, okCallback) {
 				}
 				//separator
 				else {
-					selections.push(new FileNameEntry("", fieldValue, "S"));
+					selections.push(new FileNameEntry(fieldValue, exportHelper.convertSeparatorDisplayToValue(fieldValue), "S"));
 				}
 			}
 		}
