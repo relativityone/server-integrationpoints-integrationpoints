@@ -655,7 +655,18 @@
 
 		var availableFields = state.availableFields || [];
 
-		self.FileNameParts = ko.observable(state.FileNameParts || []);
+		var getDefaultFileSelections = function (availFields) {
+			var field = availFields[0];
+			for (var index = 0; index < availFields.length; ++index) {
+				if (availFields[index].isIdentifier === true) {
+					field = availFields[index];
+					break;
+				}
+			}
+			return [new FileNameEntry(field.displayName, field.fieldIdentifier, "F")];
+		}
+
+		self.FileNameParts = ko.observable(state.FileNameParts || getDefaultFileSelections(availableFields));
 
 		var exportHelper = new ExportHelper();
 
