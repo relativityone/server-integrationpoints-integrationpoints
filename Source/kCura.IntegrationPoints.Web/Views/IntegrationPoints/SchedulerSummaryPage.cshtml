@@ -8,8 +8,14 @@
 						<table>
 							<tr>
 								<td class="dynamicViewFieldName">Enable Scheduler:</td>
-								<td class="dynamicViewFieldValue" data-bind="text: enableScheduler"></td>
+								<td class="dynamicViewFieldValue" data-bind="text: enableScheduler ? 'True' : 'False'"></td>
 							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr data-bind="visible: enableScheduler">
+					<td class="editTableColumn">
+						<table>
 							<tr>
 								<td class="dynamicViewFieldName">Frequency:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: frequency"></td>
@@ -34,8 +40,10 @@
 								<td class="dynamicViewFieldName">Scheduled Time:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: scheduledTime"></td>
 							</tr>
+
 						</table>
 					</td>
+
 				</tr>
 			</table>
 		</td>
