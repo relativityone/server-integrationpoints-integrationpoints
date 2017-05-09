@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
@@ -112,7 +113,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 
-			IConfigFactory configFactory = new ConfigFactory();
+            Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+            IConfigFactory configFactory = new ConfigFactory();
 			ICredentialProvider credentialProvider = new TokenCredentialProvider();
 			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
 			ISerializer serializer = new JSONSerializer();

@@ -48,7 +48,7 @@
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCura.Apps.Common.Data.1.0.192.5\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
-      <Private>True</Private>
+	  <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils, Version=1.0.106.2, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>

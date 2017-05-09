@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
@@ -40,11 +41,14 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
 
-		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory(), 
-			new ManagerFactory(ConnectionHelper.Helper(), new ServiceManagerProvider(new ConfigFactory(), new TokenCredentialProvider(), new JSONSerializer(), new RelativityCoreTokenProvider())))
+		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory())
 		{
 			var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
-			var queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+            Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
+            _managerFactory = new ManagerFactory(ConnectionHelper.Helper(),
+		        new ServiceManagerProvider(new ConfigFactory(), new TokenCredentialProvider(), new JSONSerializer(),
+		            new RelativityCoreTokenProvider()));
+            var queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 			var jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			var stateManager = _managerFactory.CreateStateManager();
 			var repositoryFactory = new RepositoryFactory(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetServicesManager());
@@ -56,12 +60,10 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, _rsapiService);
 		}
 
-		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory,
-			IManagerFactory managerFactory)
+		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory)
 		{
 			_contextContainer = contextContainer;
 			_helperClassFactory = helperClassFactory;
-			_managerFactory = managerFactory;
 
 			if (_tasks == null)
 			{
@@ -76,8 +78,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		internal IntegrationPointDataHub(IButtonStateBuilder buttonStateBuilder, IContextContainer contextContainer, IHelperClassFactory helperClassFactory,
-			IManagerFactory managerFactory) : this(contextContainer, helperClassFactory, managerFactory)
+		internal IntegrationPointDataHub(IButtonStateBuilder buttonStateBuilder, IContextContainer contextContainer, IHelperClassFactory helperClassFactory) 
+            : this(contextContainer, helperClassFactory)
 		{
 			_buttonStateBuilder = buttonStateBuilder;
 		}

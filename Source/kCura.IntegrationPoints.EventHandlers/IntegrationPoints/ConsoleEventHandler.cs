@@ -1,4 +1,5 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Data;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
@@ -52,7 +53,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					IConfigFactory configFactory = new ConfigFactory();
+                    Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+                    IConfigFactory configFactory = new ConfigFactory();
 					ICredentialProvider credentialProvider = new TokenCredentialProvider();
 					ISerializer serializer = new JSONSerializer();
 					ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
