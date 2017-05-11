@@ -21,6 +21,7 @@ using Castle.Core.Internal;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
@@ -99,6 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			configFactoryMock.Create().Returns(configMock);
 
 			var jobHistoryErrorServiceProvider = _windsorContainer.Resolve<JobHistoryErrorServiceProvider>();
+			var fileNameProvidersDictionaryBuilder = _windsorContainer.Resolve<IFileNameProvidersDictionaryBuilder>();
 
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,
@@ -108,7 +110,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerFactory(),
 				new SearchManagerFactory(),
-				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper, null),
+				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper, fileNameProvidersDictionaryBuilder),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
 					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
 					),
