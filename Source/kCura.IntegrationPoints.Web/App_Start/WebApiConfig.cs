@@ -318,8 +318,14 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/Production/GetProductionsForExport",
 				defaults: new { controller = "Production", action = "GetProductionsForExport" }
 			);
-			
-			config.Routes.MapHttpRoute(
+
+            config.Routes.MapHttpRoute(
+                name: "CreateProduction",
+                routeTemplate: "{workspaceID}/api/Production/CreateProductionSet/{productionName}/{workspaceArtifactId}/{federatedInstanceId}",
+                defaults: new { controller = "Production", action = "CreateProductionSet", federatedInstanceId = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
 				name: "GetCurrentInstanceWorkspaces",
 				routeTemplate: "{workspaceID}/api/WorkspaceFinder",
 				defaults: new { controller = "WorkspaceFinder", action = "GetCurrentInstanceWorkspaces" }

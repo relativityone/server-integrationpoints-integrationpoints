@@ -115,6 +115,7 @@
 		self.SecuredConfiguration = ko.observable(state.SecuredConfiguration);
 		self.ProductionImport = ko.observable(state.ProductionImport || false);//Import into production in destination workspace
 		self.SourceProductionSets = ko.observableArray();
+	    self.EnableProductionSet = ko.observable(state.EnableProductionSet || false);
 		self.DestinationProductionSets = ko.observableArray();
 		self.ProductionArtifactId = ko.observable();
 		self.ProductionArtifactId.subscribe(function (value) {
@@ -309,6 +310,13 @@
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
 					self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 					self.TargetWorkspaceArtifactId.subscribe(function (value) {
+                        if (value) {
+                            self.EnableProductionSet(true);
+                        } else {
+                            self.EnableProductionSet(false);
+                            state.ProductionArtifactId = null;
+                            self.ProductionArtifactId(null);
+                        }
 						if (self.TargetWorkspaceArtifactId !== value) {
 
 							self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
@@ -365,10 +373,27 @@
 
 		Picker.create("Modals", "authenticate-modal", "AuthenticationModalView", authenticateModalViewModel);
 
-		self.openAuthenticateModal = function () {
+	    self.openAuthenticateModal = function () {
 			self.AuthenticationFailed(false);
 			authenticateModalViewModel.open(self.SecuredConfiguration());
 		};
+
+	    var createProductionSetModalViewModel = new CreateProductionSetViewModel(
+            function (newProductionArtifactId) {
+                self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+                state.ProductionArtifactId = newProductionArtifactId;
+                self.ProductionArtifactId(newProductionArtifactId);
+                IP.frameMessaging().dFrame.IP.message.notify("New Production has been successfully created.");
+            },
+            function() {
+                IP.frameMessaging().dFrame.IP.message.error.raise("New production can not be created.");
+            });
+
+	    Picker.create("Modals", "create-production-set-modal", "CreateProductionSetModalView", createProductionSetModalViewModel);
+
+        self.openCreateProductionSetModal = function() {
+            createProductionSetModalViewModel.open(self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), self.FederatedInstanceArtifactId());
+        }
 
 		this.TargetFolder.extend({
 			required: true
@@ -416,10 +441,14 @@
 		});
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
-			if (value) {
-				self.getFolderAndSubFolders(value);
-			}
-			if (!self.TargetWorkspaceArtifactId.isValid()) {
+		    if (value) {
+			    self.getFolderAndSubFolders(value);
+			    self.EnableProductionSet(true);
+            } else {
+                self.EnableProductionSet(false);
+                self.ProductionArtifactId(null);
+            }
+		    if (!self.TargetWorkspaceArtifactId.isValid()) {
 				self.TargetFolder("");
 				self.TargetFolder.isModified(false);
 			}

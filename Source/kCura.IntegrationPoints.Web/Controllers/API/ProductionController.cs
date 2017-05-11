@@ -10,6 +10,11 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
+using Relativity.Services.Field;
+using Relativity.Services.Production;
+using Relativity.Productions.Services;
+using PageLevelNumbering = Relativity.Productions.Services.PageLevelNumbering;
+using Production = Relativity.Productions.Services.Production;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -18,13 +23,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly ICPHelper _helper;
+        private readonly IHelperFactory _helperFactory;
 
-		public ProductionController(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory,
-			ICPHelper helper)
+        public ProductionController(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory,
+			ICPHelper helper, IHelperFactory helperFactory)
 		{
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
 			_helper = helper;
+		    _helperFactory = helperFactory;
 		}
 
 		[HttpGet]
@@ -51,5 +58,29 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			return Request.CreateResponse(HttpStatusCode.OK, productions.Where(y => !string.IsNullOrEmpty(y.DisplayName)).OrderBy(y => y.DisplayName));
 		}
-	}
+
+	    [HttpPost]
+	    [LogApiExceptionFilter(Message = "Unable to create new production.")]
+	    public HttpResponseMessage CreateProductionSet(string productionName, int workspaceArtifactId, [FromBody] object credentials, int? federatedInstanceId = null)
+	    {
+            IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials?.ToString());
+            IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager());
+            Core.Managers.IProductionManager productionManager = _managerFactory.CreateProductionManager(contextContainer);
+
+	        var numbering = new PageLevelNumbering()
+	        {
+	            BatesPrefix = "REL"
+	        };
+
+	        var production = new Production()
+	        {
+	            Name = productionName,
+                Numbering = numbering
+	        };
+            
+            int productionArtifactId = productionManager.CreateSingle(workspaceArtifactId, production);
+
+	        return Request.CreateResponse(HttpStatusCode.OK, productionArtifactId);
+	    }
+    }
 }

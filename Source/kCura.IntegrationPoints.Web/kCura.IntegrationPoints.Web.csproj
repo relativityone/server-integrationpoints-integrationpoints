@@ -393,6 +393,14 @@
       <HintPath>..\packages\RelativityCore.9.5.133.16\lib\net45\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
+	<Reference Include="Relativity.Productions.Services.Interfaces, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.SDK.Services.Query, Version=9.5.133.16, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.5.133.16\lib\net45\Relativity.SDK.Services.Query.dll</HintPath>
       <Private>True</Private>
@@ -846,6 +854,7 @@
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
     <Content Include="Scripts\integration-point\statistics.js" />
+    <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
     <Content Include="Scripts\modals\authenticate-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
@@ -1111,6 +1120,7 @@
     <Content Include="Views\Modals\AuthenticationModalView.cshtml" />
     <Content Include="Views\Modals\ExportRenamedFieldsView.cshtml" />
     <Content Include="Views\Modals\ExportFileNamingOptionView.cshtml" />
+    <Content Include="Views\Modals\CreateProductionSetModalView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

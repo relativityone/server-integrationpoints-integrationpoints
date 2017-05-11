@@ -21,15 +21,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IContextContainerFactory _contextContainerFactory;
 		private IManagerFactory _managerFactory;
 		private ICPHelper _helper;
+	    private IHelperFactory _helperFactory;
 
-		[SetUp]
+        [SetUp]
 		public override void SetUp()
 		{
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_contextContainerFactory.CreateContextContainer(Arg.Any<ICPHelper>()).Returns((IContextContainer) null);
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_helper = Substitute.For<ICPHelper>();
-			_controller = new ProductionController(_contextContainerFactory, _managerFactory, _helper);
+		    _helperFactory = Substitute.For<IHelperFactory>();
+            _controller = new ProductionController(_contextContainerFactory, _managerFactory, _helper, _helperFactory);
 			_controller.Request = new HttpRequestMessage();
 			_controller.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}

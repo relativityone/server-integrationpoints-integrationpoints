@@ -18,5 +18,10 @@ namespace kCura.IntegrationPoints.Web.Controllers
         {
             return PartialView();
         }
+
+	    public ActionResult CreateProductionSetModalView()
+	    {
+            return PartialView();
+        }
     }
 }
