@@ -592,11 +592,38 @@ select option {
 
 .fileNamingType_separator {
 	min-width: 0 !important;
-	width: 75px !important;	
+	width: 115px !important;	
 }
 
-.fileNaming-controlButtons{
+.fileNaming-controlButtons {
 	height: 22px !important;
 	width: 22px !important;
 	padding: 0 !important;
+	background-size: 100% !important;
+	border-radius: 50%;
+	vertical-align: middle;
+	border: none;
+	outline:none;
+}
+
+.fileNaming-controlButtons:hover {
+	opacity: 0.5;
+}
+
+#add-file-name-selection-button {
+	background: url(Images/plus-icon.png);
+}
+
+#del-file-name-selection-button {
+	background:url(Images/minus-icon.png);
+}
+
+#file-name-selection{
+	max-width: 100% !important;
+}
+
+@media (max-width: 1368px){
+	#file-name-selection{
+		max-width: 90% !important;
+	}
 }

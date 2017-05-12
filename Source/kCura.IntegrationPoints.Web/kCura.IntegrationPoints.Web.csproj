@@ -745,6 +745,8 @@
     <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\ImportPreview\arrow_collapsed.png" />
     <Content Include="Content\Images\ImportPreview\arrow_expanded.png" />
+    <Content Include="Content\Images\minus-icon.png" />
+    <Content Include="Content\Images\plus-icon.png" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />

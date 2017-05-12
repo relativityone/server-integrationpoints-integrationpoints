@@ -70,7 +70,6 @@
 
 			self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
 			self.loadRootDataTransferLocation();
-			self.exportFileNameViewModel.applyCustomStyles();
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -680,7 +679,7 @@
 		});
 
 		self.FileNameSelection = ko.pureComputed(function () {
-			return getFileNameSelectionRepresentation(self.FileNameParts());
+			return getFileNameSelectionRepresentation(self.FileNameParts()) + ".{File Extension}";
 		});
 
 		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", self.exportFileNameViewModel,

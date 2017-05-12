@@ -150,6 +150,7 @@ ExportProviderFileNameViewModel = function (availableFields, okCallback) {
 			self.addNewSelection();
 		}
 
+		self.applyCustomStyles();
 		self.view.dialog("open");
 	};
 
