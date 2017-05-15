@@ -89,15 +89,16 @@
 					</td>
 				</tr>
 				<tr>
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label">Destination Production Set:</div>
-							<div class="field-value">
-							    <select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'None', value: ProductionArtifactId, enable: EnableProductionSet,  select2searchable: {}"></select>
-                                <button id="create-production-set-button" data-bind="click: openCreateProductionSetModal, enable: EnableProductionSet" class="button generic" style="height:24px;width:27px;font-weight: 300">...</button>
-							</div>
-						</div>
-					</td>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label">Destination Production Set:</div>
+                            <div class="field-value">
+                                <select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'None', value: ProductionArtifactId, enable: EnableProductionSet,  select2searchable: {}"></select>
+                                @*TODO Temporarily hidden Create New Production Set button*@
+                                @*<button id="create-production-set-button" data-bind="click: openCreateProductionSetModal, enable: EnableProductionSet" class="button generic" style="height:24px;width:27px;font-weight: 300">...</button>*@
+                            </div>
+                        </div>
+                    </td>
 				</tr>
 				<tr>
 					<td style="width: 48%;">
