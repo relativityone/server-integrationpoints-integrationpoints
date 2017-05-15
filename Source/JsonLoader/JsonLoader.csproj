@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JsonLoader</RootNamespace>
     <AssemblyName>JsonLoader</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -56,8 +56,8 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler, Version=9.5.35.67, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.5.35.67\lib\net45\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=9.5.142.40, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.EventHandler.9.5.142.40\lib\net462\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">

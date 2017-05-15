@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Core.Contracts.Tests</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Core.Contracts.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.106.2, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.192.5\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.2.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.2\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

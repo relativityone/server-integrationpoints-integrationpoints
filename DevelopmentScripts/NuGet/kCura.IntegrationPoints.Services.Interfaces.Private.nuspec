@@ -12,10 +12,10 @@
     <copyright>Copyright (c) 2016, kCura LLC</copyright>
     <tags>kCura IntegrationPoints Services Interfaces Private</tags>
     <dependencies>
-      <dependency id="Relativity.Kepler" version="1.0.1.149" />
+      <dependency id="Relativity.Kepler" version="1.0.1.333" />
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\lib\kCura.IntegrationPoints.Services.Interfaces.Private.dll" target="lib\net45\" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Services.Interfaces.Private.dll" target="lib\net462\" />
   </files>
 </package>
