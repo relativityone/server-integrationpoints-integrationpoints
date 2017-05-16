@@ -51,5 +51,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			await Manager.SetOverlayBehaviorAsync(workspaceArtifactId, fieldArtifactId, fieldOverlayBehavior);
 		}
+
+		public async Task SetPropagateToAsync(int workspaceArtifactId, int fieldArtifactId, IEnumerable<int> relationalFieldArtifactIDs)
+		{
+			await Manager.SetPropagateToAsync(workspaceArtifactId, fieldArtifactId, relationalFieldArtifactIDs);
+		}
 	}
 }
