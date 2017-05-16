@@ -171,7 +171,7 @@
 		self.TypeOfExport(state.TypeOfExport);
 		
 
-		
+		self.ShowRelativityInstance = ko.observable(false);
 		self.ShowAuthentiactionButton = ko.observable(false);
 		self.AuthenticationFailed = ko.observable(false);
 
@@ -223,6 +223,7 @@
 						}
 						self.ShowAuthentiactionButton(isRemoteInstance);
 					});
+				    self.ShowRelativityInstance(result.length >= 2);
 				},
 				error: function () {
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");

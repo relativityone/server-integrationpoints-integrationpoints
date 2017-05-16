@@ -44,10 +44,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory())
 		{
 			var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
-            Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
-            _managerFactory = new ManagerFactory(ConnectionHelper.Helper(),
-		        new ServiceManagerProvider(new ConfigFactory(), new TokenCredentialProvider(), new JSONSerializer(),
-		            new RelativityCoreTokenProvider()));
+            ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
+		    IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(new ConfigFactory(),
+		        new TokenCredentialProvider(), new JSONSerializer(),
+		        new RelativityCoreTokenProvider(), sqlServiceFactory);
+            _managerFactory = new ManagerFactory(ConnectionHelper.Helper(), serviceManagerProvider);
             var queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 			var jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			var stateManager = _managerFactory.CreateStateManager();

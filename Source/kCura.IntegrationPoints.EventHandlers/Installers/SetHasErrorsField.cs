@@ -113,12 +113,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 
-            Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
             IConfigFactory configFactory = new ConfigFactory();
 			ICredentialProvider credentialProvider = new TokenCredentialProvider();
 			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
 			ISerializer serializer = new JSONSerializer();
-			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, serializer, tokenProvider);
+            ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
+            IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, serializer, tokenProvider, sqlServiceFactory);
 			IManagerFactory managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
 
 			_caseServiceContext = caseServiceContext;

@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
-using Relativity.Services.Field;
-using Relativity.Services.Production;
-using Relativity.Productions.Services;
 using PageLevelNumbering = Relativity.Productions.Services.PageLevelNumbering;
 using Production = Relativity.Productions.Services.Production;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
@@ -27,9 +28,10 @@ namespace kCura.IntegrationPoints.Core
 		#region Constructors
 
 		public ServiceManagerProvider(IConfigFactory configFactory, ICredentialProvider credentialProvider, 
-			ISerializer serializer, ITokenProvider tokenProvider)
+			ISerializer serializer, ITokenProvider tokenProvider, ISqlServiceFactory sqlServiceFactory)
 		{
-			_config = configFactory.Create();
+		    Apps.Common.Config.Manager.Settings.Factory = sqlServiceFactory;
+            _config = configFactory.Create();
 			_credentialProvider = credentialProvider;
 			_serializer = serializer;
 			_tokenProvider = tokenProvider;

@@ -11,11 +11,11 @@
     <copyright>Copyright (c) 2016, kCura LLC</copyright>
     <tags>kCura IntegrationPoints Contracts</tags>
     <dependencies>
-      <dependency id="kCura.EventHandler" version="9.4.241" />
+      <dependency id="kCura.EventHandler" version="9.5.142" />
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\lib\kCura.IntegrationPoints.Contracts.dll" target="lib\net45\" />
-    <file src="..\..\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net45\" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Contracts.dll" target="lib\net462\" />
+    <file src="..\..\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net462\" />
   </files>
 </package>
