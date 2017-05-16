@@ -15,6 +15,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core;
@@ -246,8 +247,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
 			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
 			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
+            var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
 
-			caseServiceContext.RsapiService.Returns(rsapiService);
+            caseServiceContext.RsapiService.Returns(rsapiService);
 			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
 
 			int relatedId = 453245;
@@ -260,7 +262,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IWindsorContainer windsorContainer = new WindsorContainer();
 			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
 			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
-			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
+            windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
+            windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
@@ -290,8 +293,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
 			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
 			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
+		    var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
 
-			caseServiceContext.RsapiService.Returns(rsapiService);
+            caseServiceContext.RsapiService.Returns(rsapiService);
 			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
 
 			int relatedId = 453245;
@@ -305,7 +309,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IWindsorContainer windsorContainer = new WindsorContainer();
 			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
 			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
-			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
+		    windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
+            windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
 			windsorContainer.Register(Component.For<IHelperFactory>().Instance(_helperFactory));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);

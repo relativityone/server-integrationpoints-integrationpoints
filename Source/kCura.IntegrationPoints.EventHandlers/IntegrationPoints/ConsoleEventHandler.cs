@@ -53,13 +53,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-                    Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
                     IConfigFactory configFactory = new ConfigFactory();
 					ICredentialProvider credentialProvider = new TokenCredentialProvider();
 					ISerializer serializer = new JSONSerializer();
 					ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-					IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,
-						serializer, tokenProvider);
+                    ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
+                    IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,
+						serializer, tokenProvider, sqlServiceFactory);
 					_managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
 				}
 				return _managerFactory;

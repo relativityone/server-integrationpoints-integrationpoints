@@ -98,6 +98,14 @@
       <HintPath>..\packages\kCuraCore.9.5.142.40\lib\net45\itextsharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Config, Version=2.1.2.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Config.2.1.2\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Data, Version=2.1.2.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Data.2.1.2\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura.Apps.Common.Utils, Version=2.1.2.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.2\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>

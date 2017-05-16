@@ -15,13 +15,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 	{
 		public static IRelativityProviderConfiguration Create(IEHHelper helper, IFederatedInstanceModelFactory federatedInstanceModelFactory, IInstanceSettingsManager federatedInstanceManager)
 		{
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(helper);
-
 			IConfigFactory configFactory = new ConfigFactory();
 			ICredentialProvider credentialProvider = new TokenCredentialProvider();
 			ISerializer serializer = new JSONSerializer();
 			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,serializer, tokenProvider);
+            ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
+            IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,serializer, tokenProvider, sqlServiceFactory);
 
 			IManagerFactory managerFactory = new ManagerFactory(helper, serviceManagerProvider);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
