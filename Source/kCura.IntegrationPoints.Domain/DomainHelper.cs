@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Domain;
+using Relativity;
 using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Domain
@@ -172,10 +173,21 @@ namespace kCura.IntegrationPoints.Domain
 			dataMarshaller.MarshalDataToDomain(domain, dataDictionary);
 
 			manager.Init();
+
+			var pathToLibrary = GetPathToLibrary();
+
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
-				Constants.IntegrationPoints.APPLICATION_GUID_STRING, domain);
+				Constants.IntegrationPoints.APPLICATION_GUID_STRING, pathToLibrary, domain);
 
 			return manager;
+		}
+
+		private string GetPathToLibrary()
+		{
+			if (global::Relativity.Core.Config.DeveloperMachine)
+				return Path.Combine(SystemConfigHelper.DeveloperPath, "lib");
+
+			return Path.Combine(SystemConfigHelper.GetInstallDirFromRegistry, "Library");
 		}
 
 		private void DeployLibraryFiles(string finalDllPath, RelativityFeaturePathService relativityFeaturePathService)
