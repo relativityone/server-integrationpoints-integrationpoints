@@ -17,7 +17,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-    public class IntegrationPointTypesControllerShould
+    public class IntegrationPointTypesControllerTests
     {
         [Test]
         public void ReturnModelObjectsInRightOrder()

@@ -242,7 +242,7 @@
     <Compile Include="Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Controllers\LdapControllerTests.cs" />
     <Compile Include="Controllers\RelativityControllerTests.cs" />
-    <Compile Include="Controllers\IntegrationPointTypesControllerShould.cs" />
+    <Compile Include="Controllers\IntegrationPointTypesControllerTests.cs" />
     <Compile Include="Controllers\SavedSearchFinderControllerTests.cs" />
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />
