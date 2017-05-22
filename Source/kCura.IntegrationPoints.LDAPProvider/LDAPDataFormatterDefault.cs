@@ -1,22 +1,28 @@
 ﻿using System;
 using System.DirectoryServices;
 using System.Text;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
 	public class LDAPDataFormatterDefault : ILDAPDataFormatter
 	{
 		internal LDAPSettings _settings;
-		public LDAPDataFormatterDefault(LDAPSettings settings)
+	    private readonly IAPILog _logger;
+
+        public LDAPDataFormatterDefault(LDAPSettings settings, IHelper helper)
 		{
 			_settings = settings;
-		}
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<LDAPDataFormatterDefault>();
+        }
 
 		public object FormatData(object initialData)
 		{
 		    if (!(initialData is ResultPropertyValueCollection))
 		    {
-		        throw new InvalidOperationException($"Unsupported data type: {initialData?.GetType().FullName}.");
+		        string message = $"Unsupported data type: {initialData?.GetType().FullName}.";
+		        _logger.LogError(message);
+		        throw new InvalidOperationException(message);
             }
 		    string returnValue = null;
 		    foreach (object item in (ResultPropertyValueCollection) initialData)
@@ -29,7 +35,9 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		        }
 		        else
 		        {
-		            throw new InvalidOperationException("LDAPSettings.MultiValueDelimiter has no value.");
+		            var message = "LDAPSettings.MultiValueDelimiter has no value.";
+		            _logger.LogError(message);
+                    throw new InvalidOperationException(message);
 		        }
 		    }
 		    return returnValue;

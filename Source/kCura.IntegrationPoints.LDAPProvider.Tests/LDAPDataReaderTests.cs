@@ -5,6 +5,7 @@ using System.DirectoryServices;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider.Tests
 {
@@ -14,15 +15,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private List<string> _headers;
         private LDAPSettings _ldapSettings;
         private LDAPDataReader _reader;
-
-        [Test]
-        public void HaveNotHaveBatchResults()
-        {
-            // Act / Assert
-            _reader.NextResult().Should().BeFalse();
-            _reader.Depth.Should().Be(0);
-        }
-
+        
         [SetUp]
         public void CreateProvider()
         {
@@ -43,6 +36,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
                 "Some Int64"
             };
             _ldapSettings = new LDAPSettings();
+            var helper = NSubstitute.Substitute.For<IHelper>();
             _reader = new LDAPDataReader(
                 CreateSearchResults(_headers, new[]
                 {
@@ -58,8 +52,16 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
                     }
                 }),
                 _headers,
-                new LDAPDataFormatterDefault(_ldapSettings)
+                new LDAPDataFormatterDefault(_ldapSettings, helper)
             );
+        }
+
+        [Test]
+        public void HaveNotHaveBatchResults()
+        {
+            // Act / Assert
+            _reader.NextResult().Should().BeFalse();
+            _reader.Depth.Should().Be(0);
         }
 
         [Test]
@@ -150,17 +152,24 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         }
 
         [Test]
-        public void ThrowExceptionOnInvokingUnimplementedMethods()
+        public void ThrowExceptionOnInvokingUnimplementedGetBytesMethod()
         {
             // Act / Assert
-            Action act = () => _reader.GetBytes(0, 0, null, 0, 0);
-            act.ShouldThrow<NotImplementedException>();
+            Assert.Throws<NotImplementedException>(() => _reader.GetBytes(0, 0, null, 0, 0));
+        }
 
-            act = () => _reader.GetChars(0, 0, null, 0, 0);
-            act.ShouldThrow<NotImplementedException>();
+        [Test]
+        public void ThrowExceptionOnInvokingUnimplementedGetCharsMethod()
+        {
+            // Act / Assert
+            Assert.Throws<NotImplementedException>(() => _reader.GetChars(0, 0, null, 0, 0));
+        }
 
-            act = () => _reader.GetData(0);
-            act.ShouldThrow<NotImplementedException>();
+        [Test]
+        public void ThrowExceptionOnInvokingUnimplementedGetDataMethod()
+        {
+            // Act / Assert
+            Assert.Throws<NotImplementedException>(() => _reader.GetData(0));
         }
 
         [Test]

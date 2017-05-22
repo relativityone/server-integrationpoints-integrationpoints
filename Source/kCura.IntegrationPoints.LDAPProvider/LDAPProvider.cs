@@ -15,10 +15,13 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	{
 		private readonly IEncryptionManager _encryptionManager;
 		private readonly IAPILog _logger;
+	    private readonly IHelper _helper;
 
-		public LDAPProvider(IEncryptionManager encryptionManager, IHelper helper)
+
+        public LDAPProvider(IEncryptionManager encryptionManager, IHelper helper)
 		{
 			_encryptionManager = encryptionManager;
+		    _helper = helper;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<LDAPProvider>();
 		}
 
@@ -35,7 +38,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			ldapService.InitializeConnection();
 			IEnumerable<SearchResult> items = ldapService.FetchItems();
 			return new LDAPServiceDataReader(ldapService, entryIds, identifier, fieldsToLoad,
-				new LDAPDataFormatterDefault(settings));
+				new LDAPDataFormatterDefault(settings, _helper));
 		}
 
 		public System.Data.IDataReader GetBatchableIds(FieldEntry identifier, string options)
@@ -48,7 +51,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			LDAPService ldapService = new LDAPService(_logger, settings, fieldsToLoad);
 			ldapService.InitializeConnection();
 			IEnumerable<SearchResult> items = ldapService.FetchItems();
-			return new LDAPDataReader(items, fieldsToLoad, new LDAPDataFormatterForBatchableIDs(settings));
+			return new LDAPDataReader(items, fieldsToLoad, new LDAPDataFormatterForBatchableIDs(settings, _helper));
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
