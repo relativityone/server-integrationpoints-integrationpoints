@@ -1,71 +1,73 @@
 ﻿using System;
+using System.DirectoryServices;
 using System.Text;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
 	public class LDAPDataFormatterDefault : ILDAPDataFormatter
 	{
 		internal LDAPSettings _settings;
-		public LDAPDataFormatterDefault(LDAPSettings settings)
+	    private readonly IAPILog _logger;
+
+        public LDAPDataFormatterDefault(LDAPSettings settings, IHelper helper)
 		{
 			_settings = settings;
-		}
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<LDAPDataFormatterDefault>();
+        }
 
 		public object FormatData(object initialData)
 		{
-			string returnValue = null;
-			if (initialData != null)
-			{
-				if (initialData is System.DirectoryServices.ResultPropertyValueCollection)
-				{
-					foreach (var item in initialData as System.DirectoryServices.ResultPropertyValueCollection)
-					{
-						object dataValue = ConvertData(item);
-						if (_settings.MultiValueDelimiter.HasValue)
-						{
-							if (!string.IsNullOrEmpty(returnValue)) returnValue += _settings.MultiValueDelimiter.ToString();
-							returnValue += dataValue;
-						}
-						else
-						{
-							//TODO: determine what we want to do if no delimiter specified,
-						}
-					}
-				}
-			}
-			return returnValue;
+		    if (!(initialData is ResultPropertyValueCollection))
+		    {
+		        string message = $"Unsupported data type: {initialData?.GetType().FullName}.";
+		        _logger.LogError(message);
+		        throw new InvalidOperationException(message);
+            }
+		    string returnValue = null;
+		    foreach (object item in (ResultPropertyValueCollection) initialData)
+		    {
+		        object dataValue = ConvertData(item);
+		        if (_settings.MultiValueDelimiter.HasValue)
+		        {
+		            if (!string.IsNullOrEmpty(returnValue)) returnValue += _settings.MultiValueDelimiter.ToString();
+		            returnValue += dataValue;
+		        }
+		        else
+		        {
+		            var message = "LDAPSettings.MultiValueDelimiter has no value.";
+		            _logger.LogError(message);
+                    throw new InvalidOperationException(message);
+		        }
+		    }
+		    return returnValue;
 		}
 
 		public virtual object ConvertData(object value)
 		{
-			if (value != null)
-			{
-				//if (value.GetType() == Type.GetType("System.Byte[]"))
-				if (value is System.Byte[])
-				{
-					return ConvertByteArray((Byte[])value);
-				}
-				else if (value is System.DateTime)
-				{
-					return ConvertDate((DateTime)value);
-				}
-				else
-				{
-					return value.ToString();
-				}
-			}
-			return value;
+		    if (value == null) return null;
+            
+		    if (value is byte[])
+		    {
+		        return ConvertByteArray((byte[])value);
+		    }
+		    if (value is DateTime)
+		    {
+		        return ConvertDate((DateTime)value);
+		    }
+		    return value.ToString();
 		}
 
-		public virtual object ConvertByteArray(Byte[] value)
+		public virtual object ConvertByteArray(byte[] value)
 		{
-			StringBuilder bString = new StringBuilder();
-			foreach (Byte b in (value))
+			var bString = new StringBuilder();
+			foreach (byte b in value)
 			{
-				bString.Append(Microsoft.VisualBasic.Conversion.Hex(b).ToString().PadLeft(2, '0'));
+				bString.Append(Microsoft.VisualBasic.Conversion.Hex(b).PadLeft(2, '0'));
 			}
 			return bString.ToString();
 		}
+
 		public virtual object ConvertDate(DateTime value)
 		{
 			return value.ToString("s");
