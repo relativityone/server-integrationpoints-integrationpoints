@@ -49,6 +49,14 @@
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentAssertions, Version=4.19.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.2\lib\net45\FluentAssertions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.19.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.2\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.5.152.107\lib\net462\FreeImageNET.dll</HintPath>
       <Private>True</Private>
@@ -207,6 +215,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="SystemInterface, Version=0.19.0.115, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
       <HintPath>..\packages\SystemWrapper.Interfaces.0.19.0.115\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
@@ -234,6 +243,7 @@
     <Compile Include="Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Controllers\LdapControllerTests.cs" />
     <Compile Include="Controllers\RelativityControllerTests.cs" />
+    <Compile Include="Controllers\IntegrationPointTypesControllerTests.cs" />
     <Compile Include="Controllers\SavedSearchFinderControllerTests.cs" />
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />
@@ -309,7 +319,9 @@
     <None Include="..\kCura.IntegrationPoint.Tests.Core\Release\app.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
