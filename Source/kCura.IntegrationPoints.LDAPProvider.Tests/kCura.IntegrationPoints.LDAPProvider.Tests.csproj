@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.LDAPProvider.Tests</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.LDAPProvider.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -75,9 +75,6 @@
       <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.133.16\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.LDAPProvider">
-      <HintPath>..\kCura.IntegrationPoints.Web\Bin\kCura.IntegrationPoints.LDAPProvider.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.Utility, Version=9.5.133.16, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Utility.9.5.133.16\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
@@ -126,6 +123,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
+      <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
+      <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
