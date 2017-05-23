@@ -75,6 +75,9 @@
       <HintPath>..\packages\kCura.Data.RowDataGateway.9.5.133.16\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.IntegrationPoints.LDAPProvider">
+      <HintPath>..\kCura.IntegrationPoints.Web\Bin\kCura.IntegrationPoints.LDAPProvider.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Utility, Version=9.5.133.16, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Utility.9.5.133.16\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
@@ -120,12 +123,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
-      <Project>{8398B06F-3716-4834-9593-A017F2714261}</Project>
-      <Name>kCura.IntegrationPoints.LDAPProvider</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
