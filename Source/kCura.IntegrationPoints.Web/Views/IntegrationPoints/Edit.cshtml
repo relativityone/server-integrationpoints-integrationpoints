@@ -1,5 +1,4 @@
-﻿@using System.Text.RegularExpressions
-@model kCura.IntegrationPoints.Web.Models.EditPoint
+﻿@model kCura.IntegrationPoints.Web.Models.EditPoint
 
 @section header{
 	<div class="header-actions-container">
@@ -37,17 +36,6 @@
 
 @section scripts
 {
-	@*User-Agent of IE11 is 
-		'"Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729; InfoPath.3; rv:11.0) like Gecko"'
-		If Request.UserAgent matches regular expression then we render shims that provider ES6 features backwards compatibility.
-		We don't check other IE versions because IE11 is only one supported now.
-	*@
-	@if (Regex.IsMatch(Request.UserAgent, @"Trident/7.*rv:11"))
-	{
-		<script src="~/Scripts/es5-shim.min.js"></script>
-		<script src="~/Scripts/es6-shim.min.js"></script>
-	}
-
 	<script src="~/Scripts/iframeResizer.min.js"></script>
 	<script src="~/Scripts/knockout-3.4.0.js"></script>
 	<script src="~/Scripts/knockout.validation.debug.js"></script>
