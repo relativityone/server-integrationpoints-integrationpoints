@@ -72,33 +72,30 @@
 				</tr>
 				<tr>
 					<td style="width: 48%;">
-						<div class="field-row">
+						<div class="field-row" id="locationRow">
 							<div class="field-label required">
-								Destination Folder:
+								Location:
 							</div>
 							<div class="field-value select2-double-width">
-								<div id="location-select" class="select2-container fluid-mock-select filter-container">
-									<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder" />
-									<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
-								</div>
-								<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
-									<div id="browser-tree" tabindex="0"></div>
-								</div>
+							    <ul>
+                                    <li>
+                                        <label><input id="location-0" type="radio" name="location_radio" value="true" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Folder</label>
+                                        <div id="location-select" class="select2-container fluid-mock-select filter-container" style="width: 87%;">
+                                            <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder, enable: LocationFolderChecked() == 'true'" />
+                                            <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+                                        </div>
+                                        <div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden" style="margin-left: 56px;">
+                                            <div id="browser-tree" tabindex="0"></div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label><input id="location-1" type="radio" name="location_radio" value="false" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Production Set</label>
+                                        <select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: ProductionArtifactId, enable: EnableLocationRadio && LocationFolderChecked() == 'false',  select2searchable: {}"></select>
+                                    </li>
+                                </ul>
 							</div>
 						</div>
 					</td>
-				</tr>
-				<tr>
-                    <td style="width: 48%;">
-                        <div class="field-row">
-                            <div class="field-label">Destination Production Set:</div>
-                            <div class="field-value">
-                                <select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'None', value: ProductionArtifactId, enable: EnableProductionSet,  select2searchable: {}"></select>
-                                @*TODO Temporarily hidden Create New Production Set button*@
-                                @*<button id="create-production-set-button" data-bind="click: openCreateProductionSetModal, enable: EnableProductionSet" class="button generic" style="height:24px;width:27px;font-weight: 300">...</button>*@
-                            </div>
-                        </div>
-                    </td>
 				</tr>
 				<tr>
 					<td style="width: 48%;">

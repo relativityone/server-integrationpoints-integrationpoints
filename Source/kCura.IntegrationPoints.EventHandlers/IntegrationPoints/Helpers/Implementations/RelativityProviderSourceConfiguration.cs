@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.Folder;
@@ -17,6 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 	public class RelativityProviderSourceConfiguration : RelativityProviderConfiguration
 	{
 		private const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+		private const string _ERROR_PRODUCTION_SET_NOT_FOUND = "Production Set not found!";
 		private const string SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
 		private const string RELATIVITY_THIS_INSTANCE = "This instance";
 		private readonly IContextContainerFactory _contextContainerFactory;
@@ -40,12 +43,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		public override void UpdateNames(IDictionary<string, object> settings, Artifact artifact)
 		{
 			var federatedInstanceModel = _federatedInstanceModelFactory.Create(settings, artifact);
-			SetFolderName(settings, federatedInstanceModel);
+			SetLocationName(settings, federatedInstanceModel);
 			SetInstanceFriendlyName(settings, _instanceSettingsManager);
 			SetSourceWorkspaceName(settings);
 			SetTargetWorkspaceName(settings, federatedInstanceModel);
 			SetSavedSearchName(settings);
-			SetProductionName(settings);
+			SetSourceProductionName(settings);
 		}
 
 		private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager federatedInstanceManager)
@@ -76,23 +79,42 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				settings[nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)] = 0;
 		}
 
-		private void SetProductionName(IDictionary<string, object> settings)
+		private void SetSourceProductionName(IDictionary<string, object> settings)
 		{
-			var productionId = ParseValue<int>(settings, "SourceProductionId");
-			if (productionId > 0)
+			const string sourceProductionId = "SourceProductionId";
+			const string sourceProductionName = "SourceProductionName";
+			try
 			{
-				int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
-				GetProductionById(settings, sourceWorkspaceId, productionId);
+				var productionId = ParseValue<int>(settings, sourceProductionId);
+				if (productionId > 0)
+				{
+					int sourceWorkspaceId = ParseValue<int>(settings,
+						nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
+
+					settings[sourceProductionName] = GetProductionSetNameById(sourceWorkspaceId, productionId, null);
+				}
+			}
+			catch (Exception ex)
+			{
+				Helper.GetLoggerFactory()
+					.GetLogger()
+					.ForContext<IntegrationPointViewPreLoad>()
+					.LogError(ex, "Destination Production Set not found");
+				settings[sourceProductionId] = 0;
 			}
 		}
 
-		private void GetProductionById(IDictionary<string, object> settings, int sourceWorkspaceId, int productionId)
+		private string GetProductionSetNameById(int workspaceId, int productionId, FederatedInstanceModel federatedInstanceModel)
 		{
-			IProductionManager productionManager =
-				_managerFactory.CreateProductionManager(_contextContainerFactory.CreateContextContainer(Helper));
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, federatedInstanceModel?.FederatedInstanceArtifactId, federatedInstanceModel?.Credentials);
 
-			ProductionDTO production = productionManager.RetrieveProduction(sourceWorkspaceId, productionId);
-			settings["SourceProductionName"] = production?.DisplayName;
+			IProductionManager productionManager =
+				_managerFactory.CreateProductionManager(_contextContainerFactory.CreateContextContainer(Helper,
+						targetHelper.GetServicesManager()));
+
+			ProductionDTO production = productionManager.RetrieveProduction(workspaceId, productionId);
+
+			return production?.DisplayName;
 		}
 
 		private void SetTargetWorkspaceName(IDictionary<string, object> settings, FederatedInstanceModel federatedInstanceModel)
@@ -141,21 +163,65 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 		}
 
-		private void SetFolderName(IDictionary<string, object> settings, FederatedInstanceModel federatedInstanceModel)
+		private void SetLocationName(IDictionary<string, object> settings, FederatedInstanceModel federatedInstanceModel)
+		{
+			int folderArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.FolderArtifactId));
+			var productionArtifactId = ParseValue<int>(settings, nameof(ImportSettings.ProductionArtifactId));
+
+			if (folderArtifactId == 0 && productionArtifactId > 0)
+			{
+				SetDestinationProductionSetName(settings, productionArtifactId, federatedInstanceModel);
+			}
+			else if (folderArtifactId > 0 && productionArtifactId == 0)
+			{
+				SetFolderName(settings, folderArtifactId, federatedInstanceModel);
+			}
+		}
+
+		private void SetDestinationProductionSetName(IDictionary<string, object> settings, int productionArtifactId, FederatedInstanceModel federatedInstanceModel)
+		{
+			const string targetProductionSet = "targetProductionSet";
+			try
+			{
+				int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
+
+
+				string productionSetName = GetProductionSetNameById(targetWorkspaceId,
+					productionArtifactId, federatedInstanceModel);
+
+				if (productionSetName == string.Empty)
+				{
+					productionSetName = _ERROR_PRODUCTION_SET_NOT_FOUND;
+				}
+				settings[targetProductionSet] = productionSetName;
+			}
+			catch (Exception ex)
+			{
+				Helper.GetLoggerFactory()
+					.GetLogger()
+					.ForContext<IntegrationPointViewPreLoad>()
+					.LogError(ex, "Destination Production Set not found");
+				settings[nameof(ImportSettings.ProductionArtifactId)] = 0;
+			}
+		}
+
+		private void SetFolderName(IDictionary<string, object> settings, int folderArtifactId, FederatedInstanceModel federatedInstanceModel)
 		{
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(Helper, federatedInstanceModel.FederatedInstanceArtifactId, federatedInstanceModel.Credentials);
 
 			using (IFolderManager folderManager =
 				targetHelper.GetServicesManager().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser))
 			{
-				int folderArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.FolderArtifactId));
 				int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
+
 				try
 				{
 					var folders = folderManager.GetFolderTreeAsync(targetWorkspaceId, new List<int>(), folderArtifactId).Result;
 					var folderName = FindFolderName(folders[0], folderArtifactId);
 					if (folderName == string.Empty)
+					{
 						folderName = ERROR_FOLDER_NOT_FOUND;
+					}
 					settings[nameof(ExportUsingSavedSearchSettings.TargetFolder)] = folderName;
 				}
 				catch (Exception ex)
