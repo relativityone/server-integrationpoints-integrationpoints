@@ -345,6 +345,17 @@
 	this.timeFormat = ko.observableArray(['AM', 'PM']);//
 	this.selectedTimeFormat = ko.observable(this.options.selectedTimeFormat);
 
+	var convertTimeTo12H = function (time) {
+		if (!time) {
+			return;
+		}
+
+		var convertedTimeTo12H = IP.timeUtil.convert24HourTo12Hour(time);
+
+		self.scheduledTime(convertedTimeTo12H.time);
+		self.selectedTimeFormat(convertedTimeTo12H.timeFormat);
+	}
+
 	this.loadSettings = function (settings) {
 		self.options = $.extend({}, {
 			enabled: "false",
@@ -368,11 +379,7 @@
 		}
 		self.startDate(self.options.startDate);
 		self.endDate(self.options.endDate);
-		var convertedTimeTo12H = IP.timeUtil.convert24HourTo12Hour(self.options.scheduledTime);
-
-		self.scheduledTime(convertedTimeTo12H.time);
-		self.selectedTimeFormat(convertedTimeTo12H.timeFormat);
+		convertTimeTo12H(self.options.scheduledTime);
 		self.timeZoneId(self.options.timeZoneId);
 	};
-
 };
