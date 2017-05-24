@@ -647,7 +647,7 @@
 			return "Select...";
 		};
 
-		this.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || false);
+		this.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true);
 		self.IsExportFolderCreationEnabled.subscribe(function () {
 			self.fileShareDisplayText();
 		});
