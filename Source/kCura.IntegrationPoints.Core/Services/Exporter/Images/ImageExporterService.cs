@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly ImportSettings _settings;
 		private const string ImageNameColumn = "Identifier";
-		private const string ProductionNameColumn = "BatesNumber";
+		private const string ProductionNameColumn = "NativeIdentifier";
 		private const string ImageLocationColumn = "Location";
 
 
