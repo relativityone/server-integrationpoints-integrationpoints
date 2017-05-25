@@ -206,6 +206,7 @@
     <Compile Include="Services\ArtifactTreeServiceTests.cs" />
     <Compile Include="Services\ExportInitProcessServiceTests.cs" />
     <Compile Include="Services\ViewServiceTests.cs" />
+    <Compile Include="SharedLibrary\ExtendedFieldNameProviderTests.cs" />
     <Compile Include="SharedLibrary\StoppableExporterTests.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorTests.cs" />

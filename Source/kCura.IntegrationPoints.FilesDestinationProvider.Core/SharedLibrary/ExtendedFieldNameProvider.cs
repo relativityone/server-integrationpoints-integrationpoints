@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public override string GetDisplayName(ViewFieldInfo fieldInfo)
 		{
-			if (_settings.SelViewFieldIds.Any())
+			if (_settings.SelViewFieldIds != null && _settings.SelViewFieldIds.Any())
 			{
 				if (_settings.SelViewFieldIds.ContainsKey(fieldInfo.AvfId))
 				{
