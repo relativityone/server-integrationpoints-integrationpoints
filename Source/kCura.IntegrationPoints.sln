@@ -190,8 +190,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Sec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDAPProvider.Tests", "kCura.IntegrationPoints.LDAPProvider.Tests\kCura.IntegrationPoints.LDAPProvider.Tests.csproj", "{2034058F-F57F-411A-9699-87BBD72F1598}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain.Tests", "kCura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj", "{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -608,12 +606,6 @@ Global
 		{2034058F-F57F-411A-9699-87BBD72F1598}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2034058F-F57F-411A-9699-87BBD72F1598}.Release|x64.ActiveCfg = Release|Any CPU
 		{2034058F-F57F-411A-9699-87BBD72F1598}.Release|x64.Build.0 = Release|Any CPU
-		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Debug|x64.ActiveCfg = Debug|x64
-		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Debug|x64.Build.0 = Debug|x64
-		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|Any CPU.ActiveCfg = Release|x64
-		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|x64.ActiveCfg = Release|x64
-		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -660,6 +652,5 @@ Global
 		{44849C37-810B-43E8-972B-12D3D0D87A7F} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{D58E7906-E0C5-4138-BE22-D3A300057EB6} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{2034058F-F57F-411A-9699-87BBD72F1598} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
-		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 	EndGlobalSection
 EndGlobal
