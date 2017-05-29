@@ -65,10 +65,10 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			var conditionCollection = new CriteriaCollection();
 
 			var sourceJobCriteria = _multiObjectSavedSearchCondition.CreateConditionForMultiObject(
-				SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, CriteriaConditionEnum.AllOfThese, new List<int> {tagsContainer.SourceJobDto.ArtifactId});
+				SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, CriteriaConditionEnum.IsLike, new List<int> {tagsContainer.SourceJobDto.ArtifactId});
 
 			var sourceWorkspaceCriteria = _multiObjectSavedSearchCondition.CreateConditionForMultiObject(
-				SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, CriteriaConditionEnum.AllOfThese, new List<int> {tagsContainer.SourceWorkspaceDto.ArtifactId});
+				SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, CriteriaConditionEnum.IsLike, new List<int> {tagsContainer.SourceWorkspaceDto.ArtifactId});
 
 			conditionCollection.Conditions.Add(sourceJobCriteria);
 			conditionCollection.Conditions.Add(sourceWorkspaceCriteria);
