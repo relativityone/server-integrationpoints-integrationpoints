@@ -115,11 +115,22 @@
 		self.SecuredConfiguration = ko.observable(state.SecuredConfiguration);
 		self.ProductionImport = ko.observable(state.ProductionImport || false);//Import into production in destination workspace
 		self.SourceProductionSets = ko.observableArray();
-	    self.EnableProductionSet = ko.observable(state.EnableProductionSet || false);
+		self.EnableLocationRadio = ko.observable(state.EnableLocationRadio || false);
+	    self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
-		self.ProductionArtifactId = ko.observable();
+		self.ProductionArtifactId = ko.observable().extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.LocationFolderChecked() === "false";
+		        }
+		    }
+		});
 		self.ProductionArtifactId.subscribe(function (value) {
 			self.ProductionImport(!!value);
+			if (value) {
+				self.FolderArtifactId(undefined);
+				self.locationSelector.toggle(false);
+			}
 		});
 		self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
 		self.TypeOfExport = ko.observable();//todo:self.TypeOfExport = ko.observable(initTypeOfExport);
@@ -269,6 +280,19 @@
 			});
 		};
 
+	    self.LocationFolderChecked.subscribe(function(value) {
+	        if (value === "true") {
+	            self.ProductionArtifactId(null);
+	            self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId());
+	            self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
+	        } else {
+	            self.TargetFolder("");
+	            self.TargetFolder.isModified(false);
+	            self.locationSelector.toggle(false);
+	            self.ProductionArtifactId.isModified(false);
+	        }
+	    });
+
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.TargetFolder(), [], {
@@ -312,9 +336,9 @@
 					self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 					self.TargetWorkspaceArtifactId.subscribe(function (value) {
                         if (value) {
-                            self.EnableProductionSet(true);
+                            self.EnableLocationRadio(true);
                         } else {
-                            self.EnableProductionSet(false);
+                            self.EnableLocationRadio(false);
                             state.ProductionArtifactId = null;
                             self.ProductionArtifactId(null);
                         }
@@ -397,7 +421,11 @@
         }
 
 		this.TargetFolder.extend({
-			required: true
+		    required: {
+		        onlyIf: function () {
+		            return self.LocationFolderChecked() === "true";
+		        }
+		    }
 		});
 		this.TargetWorkspaceArtifactId.extend({
 			required: true
@@ -444,10 +472,12 @@
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 		    if (value) {
 			    self.getFolderAndSubFolders(value);
-			    self.EnableProductionSet(true);
-            } else {
-                self.EnableProductionSet(false);
+			    self.EnableLocationRadio(true);
+			    self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');
+		    } else {
+                self.EnableLocationRadio(false);
                 self.ProductionArtifactId(null);
+                self.ProductionArtifactId.isModified(false);
             }
 		    if (!self.TargetWorkspaceArtifactId.isValid()) {
 				self.TargetFolder("");

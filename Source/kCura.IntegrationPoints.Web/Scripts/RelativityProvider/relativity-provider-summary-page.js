@@ -56,6 +56,9 @@ var loadData = function (ko, dataContainer) {
 		this.sourceProviderName = dataContainer.sourceProviderName;
 		this.destinationRdoName = dataContainer.destinationRdoName;
 		this.targetFolder = dataContainer.sourceConfiguration.TargetFolder;
+		this.showTargetFolder = dataContainer.sourceConfiguration.TargetFolder !== undefined;
+		this.targetProductionSet = dataContainer.sourceConfiguration.targetProductionSet;
+		this.showTargetProductionSet = dataContainer.sourceConfiguration.targetProductionSet !== undefined;
 		this.sourceWorkspace = dataContainer.sourceConfiguration.SourceWorkspace;
 		this.targetWorkspace = dataContainer.sourceConfiguration.TargetWorkspace;
 		if (dataContainer.sourceConfiguration.SourceProductionId) {

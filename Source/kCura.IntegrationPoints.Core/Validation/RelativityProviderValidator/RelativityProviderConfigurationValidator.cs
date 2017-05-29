@@ -1,6 +1,7 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -55,11 +56,20 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 				integrationModel.SecuredConfiguration);
 			result.Add(destinationWorkspaceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
 
-			var destinationFolderValidator = _validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId, ArtifactTypeNames.Folder,
-				sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
-			result.Add(destinationFolderValidator.Validate(destinationConfiguration.DestinationFolderArtifactId));
+		    if (destinationConfiguration.DestinationFolderArtifactId > 0 && destinationConfiguration.ProductionArtifactId == 0)
+		    {
+		        ArtifactValidator destinationFolderValidator =
+		            _validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId,
+		                ArtifactTypeNames.Folder,
+		                sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
+		        result.Add(destinationFolderValidator.Validate(destinationConfiguration.DestinationFolderArtifactId));
+		    }
+            else if (destinationConfiguration.DestinationFolderArtifactId == 0 && destinationConfiguration.ProductionArtifactId > 0)
+		    {
+                //TODO Add validator for destination Production + Validate if any location selected (DestinationFolderArtifactId & ProductionArtifactId == 0)
+            }
 
-			var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
+            var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
 			result.Add(fieldMappingValidator.Validate(integrationModel));
 
 			var transferredObjectValidator = _validatorsFactory.CreateTransferredObjectValidator();

@@ -90,9 +90,10 @@
 }
 
 .location-disabled {
-	background-color: #e8e8e8!important;
-	cursor: default!important;
-	pointer-events: none!important;
+	background-color: #EBEBE4 !important;
+	border: 1px solid #C1C1C1 !important;
+	cursor: default !important;
+	pointer-events: none !important;
 }
 
 @font-face {

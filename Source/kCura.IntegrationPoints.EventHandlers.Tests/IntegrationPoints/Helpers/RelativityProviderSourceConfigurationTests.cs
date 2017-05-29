@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private IContextContainerFactory _contextContainerFactory;
 		private IWorkspaceManager _workspaceManager;
 		private IInstanceSettingsManager _instanceSettingsManager;
-		private const int _FOLDER_ARTIFACT_ID = 0;
+		private const int _FOLDER_ARTIFACT_ID = 123456;
 		private const int _TARGET_WORKSPACE_ID = 1;
 		private const int _SOURCE_WORKSPACE_ID = 2;
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 3;
