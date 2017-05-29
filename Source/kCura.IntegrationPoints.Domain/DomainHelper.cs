@@ -174,20 +174,10 @@ namespace kCura.IntegrationPoints.Domain
 
 			manager.Init();
 
-			var pathToLibrary = GetPathToLibrary();
-
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
-				Constants.IntegrationPoints.APPLICATION_GUID_STRING, pathToLibrary, domain);
+				Constants.IntegrationPoints.APPLICATION_GUID_STRING, domain);
 
 			return manager;
-		}
-
-		private string GetPathToLibrary()
-		{
-			if (global::Relativity.Core.Config.DeveloperMachine)
-				return Path.Combine(SystemConfigHelper.DeveloperPath, "lib");
-
-			return Path.Combine(SystemConfigHelper.GetInstallDirFromRegistry, "Library");
 		}
 
 		private void DeployLibraryFiles(string finalDllPath, RelativityFeaturePathService relativityFeaturePathService)
