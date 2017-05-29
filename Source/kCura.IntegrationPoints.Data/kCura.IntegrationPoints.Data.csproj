@@ -168,6 +168,7 @@
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
+    <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\AllDestinationProvidersQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IDestinationProviderArtifactIdByGuidQueryBuilder.cs" />

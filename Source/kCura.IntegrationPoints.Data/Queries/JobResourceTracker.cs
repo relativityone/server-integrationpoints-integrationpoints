@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-    public class JobResourceTracker
+    public class JobResourceTracker : IJobResourceTracker
     {
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IWorkspaceDBContext _context;
