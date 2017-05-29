@@ -60,10 +60,10 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public virtual object ConvertByteArray(byte[] value)
 		{
-			var bString = new StringBuilder();
+			var bString = new StringBuilder(value.Length * 2);
 			foreach (byte b in value)
 			{
-				bString.Append(Microsoft.VisualBasic.Conversion.Hex(b).PadLeft(2, '0'));
+			    bString.AppendFormat("{0:x2}", b);
 			}
 			return bString.ToString();
 		}
