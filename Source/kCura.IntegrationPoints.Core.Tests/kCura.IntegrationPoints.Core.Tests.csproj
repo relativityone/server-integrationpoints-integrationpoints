@@ -546,6 +546,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectTypeTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
+    <Compile Include="Services\ChoiceServiceTests.cs" />
     <Compile Include="Services\DataTransferLocationServiceTests.cs" />
     <Compile Include="Services\Export\DynamicFolderPathReaderTests.cs" />
     <Compile Include="Services\Export\ExportTransferDataReaderTestsBase.cs" />
