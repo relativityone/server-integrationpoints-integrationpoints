@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				newIntegraionPoint = "//a[@title='New Integration Point']";
 			}
 			
-			driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(15));
+			driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
 			driver.FindElement(By.XPath(newIntegraionPoint)).Click();
 			driver.WaitUntilElementExists(ElementType.Id, externalPage, 5);
 			driver.SwitchTo().Frame(externalPage);

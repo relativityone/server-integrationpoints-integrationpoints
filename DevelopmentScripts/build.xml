@@ -446,15 +446,6 @@
         <Value>true</Value>
         <ErrorMessage>Project does not treat all warnings as errors. Please turn this option on.</ErrorMessage>
       </Rule>
-      <Rule name="NugetRestore">
-        <Extensions>
-          <Extension>.vbproj</Extension>
-          <Extension>.csproj</Extension>
-        </Extensions>
-        <XPath>Target[contains(@Name, 'EnsureNuGetPackageBuildImports')]</XPath>
-        <RuleType>NotExists</RuleType>
-        <ErrorMessage>Do NOT restore nuget packages at project level, do this in the solution!</ErrorMessage>
-      </Rule>
     </Rules>
   </BuildHelper>
   <TestRunner>

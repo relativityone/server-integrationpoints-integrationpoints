@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 				string warningDialogId = "ui-dialog-title-msgDiv";
 
 				_webDriver = Selenium.GetWebDriver(browser);
-				_webDriver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(60));
+				_webDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
 
 				//Act
 				_webDriver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
