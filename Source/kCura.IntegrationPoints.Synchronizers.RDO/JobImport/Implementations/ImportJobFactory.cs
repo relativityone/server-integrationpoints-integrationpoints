@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			return rv;
 		}
 
-		enum JobContextType
+		internal enum JobContextType
 		{
 			RelativityToRelativityImages,
 			RelativityToRelativityImagesProduction,
@@ -43,14 +43,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			Native
 		}
 
-		private static JobContextType GetJobContextType(ImportSettings settings)
+		internal static JobContextType GetJobContextType(ImportSettings settings)
 		{
 			const string relativity = "relativity";
-			if (settings.Provider == relativity && settings.ProductionImport && settings.ImageImport)
+			if (relativity == settings.Provider && settings.ProductionImport && settings.ImageImport)
 			{
 				return JobContextType.RelativityToRelativityImagesProduction;
 			}
-			else if (settings.Provider == relativity && settings.ImageImport)
+			else if (relativity == settings.Provider && settings.ImageImport)
 			{
 				return JobContextType.RelativityToRelativityImages;
 			}

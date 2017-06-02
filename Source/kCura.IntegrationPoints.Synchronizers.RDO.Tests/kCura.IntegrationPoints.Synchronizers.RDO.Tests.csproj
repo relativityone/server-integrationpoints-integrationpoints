@@ -194,6 +194,7 @@
     <Compile Include="ImageDataTableHelperTests.cs" />
     <Compile Include="ImportServiceTests.cs" />
     <Compile Include="ImportSettingsTests.cs" />
+    <Compile Include="JobImport\ImportJobFactoryTests.cs" />
     <Compile Include="RdoCustodianSynchronizerTests.cs" />
     <Compile Include="RdoSynchronizerTests.cs" />
     <Compile Include="RelativityReaderDecoratorTests.cs" />
