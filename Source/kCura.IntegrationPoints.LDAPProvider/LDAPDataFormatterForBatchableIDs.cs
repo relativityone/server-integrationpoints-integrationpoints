@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public override object ConvertByteArray(byte[] value)
 		{
-            var bString = new StringBuilder(value.Length * 2);
+            var bString = new StringBuilder(value.Length * 3);
 			foreach (byte b in value)
 			{
 			    bString.AppendFormat("\\{0:x2}", b);
