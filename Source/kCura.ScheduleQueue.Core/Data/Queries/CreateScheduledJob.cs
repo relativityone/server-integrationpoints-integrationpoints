@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			this.qDBContext = qDBContext;
 		}
 
-		public DataRow Execute(int workspaceID,
+		public DataTable Execute(int workspaceID,
 			int relatedObjectArtifactID,
 			string taskType,
 			DateTime nextRunTime,
@@ -55,13 +55,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 				? new SqlParameter("@ParentJobID", DBNull.Value)
 				: new SqlParameter("@ParentJobID", parentJobID.Value));
 			
-			DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
-
-			DataRow row = null;
-			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
-				row = dataTable.Rows[0];
-
-			return row;
+			return qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 		}
 	}
 }

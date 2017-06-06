@@ -69,21 +69,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
 
-			DataRow row = new CreateScheduledJob(_queueContext).Execute(
-					workspaceID: SourceWorkspaceArtifactId,
-					relatedObjectArtifactID: integrationPoint.ArtifactID,
-					taskType: "ExportService",
-					nextRunTime: DateTime.MaxValue,
-					AgentTypeID: 1,
-					scheduleRuleType: null,
-					serializedScheduleRule: null,
-					jobDetails: jobDetails,
-					jobFlags: 0,
-					SubmittedBy: 777,
-					rootJobID: 1,
-					parentJobID: 1);
+			DataRow row;
+		    using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+		        workspaceID: SourceWorkspaceArtifactId,
+		        relatedObjectArtifactID: integrationPoint.ArtifactID,
+		        taskType: "ExportService",
+		        nextRunTime: DateTime.MaxValue,
+		        AgentTypeID: 1,
+		        scheduleRuleType: null,
+		        serializedScheduleRule: null,
+		        jobDetails: jobDetails,
+		        jobFlags: 0,
+		        SubmittedBy: 777,
+		        rootJobID: 1,
+		        parentJobID: 1))
+		    {
+		        row = dataTable.Rows[0];
+		    }
 
-			Job tempJob = new Job(row);
+                Job tempJob = new Job(row);
 			_jobId = tempJob.JobId;
 
 			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";
@@ -131,21 +135,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 			string jobDetails = string.Format(@"{{""BatchInstance"":""{0}"",""BatchParameters"":null}}", batchInstance.ToString());
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPoint.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
 
-			DataRow row = new CreateScheduledJob(_queueContext).Execute(
-					workspaceID: SourceWorkspaceArtifactId,
-					relatedObjectArtifactID: integrationPoint.ArtifactID,
-					taskType: "ExportService",
-					nextRunTime: DateTime.MaxValue,
-					AgentTypeID: 1,
-					scheduleRuleType: null,
-					serializedScheduleRule: null,
-					jobDetails: jobDetails,
-					jobFlags: 0,
-					SubmittedBy: 777,
-					rootJobID: 1,
-					parentJobID: 1);
+			DataRow row;
+            using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+                    workspaceID: SourceWorkspaceArtifactId,
+                    relatedObjectArtifactID: integrationPoint.ArtifactID,
+                    taskType: "ExportService",
+                    nextRunTime: DateTime.MaxValue,
+                    AgentTypeID: 1,
+                    scheduleRuleType: null,
+                    serializedScheduleRule: null,
+                    jobDetails: jobDetails,
+                    jobFlags: 0,
+                    SubmittedBy: 777,
+                    rootJobID: 1,
+                    parentJobID: 1))
+            {
+                row = dataTable.Rows[0];
+            }
 
-			Job tempJob = new Job(row);
+                Job tempJob = new Job(row);
 			_jobId = tempJob.JobId;
 
 			string runAndStopId = "_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_ctl17_anchor";

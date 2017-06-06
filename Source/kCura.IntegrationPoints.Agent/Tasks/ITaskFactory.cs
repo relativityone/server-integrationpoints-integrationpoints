@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 
@@ -43,8 +44,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IHelperFactory _helperFactory;
 		private IServiceFactory _serviceFactory;
 		private IIntegrationPointSerializer _serializer;
+	    private IJobServiceDataProvider _jobServiceDataProvider;
 
-		public TaskFactory(IAgentHelper helper)
+	    public TaskFactory(IAgentHelper helper)
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
@@ -180,7 +182,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_serviceFactory = Container.Resolve<IServiceFactory>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			_jobService = new JobService(_agentService, _helper);
+		    _jobServiceDataProvider = new JobServiceDataProvider(_agentService, _helper);
+		    _jobService = new JobService(_agentService, _jobServiceDataProvider, _helper);
 			_managerFactory = new ManagerFactory(_helper, Container.Resolve<IServiceManagerProvider>());
 			_jobHistoryService = CreateJobHistoryService(integrationPointDto);
 		}

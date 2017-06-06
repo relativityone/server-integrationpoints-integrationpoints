@@ -13,7 +13,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			this.qDBContext = qDBContext;
 		}
 
-		public DataRow Execute(int agentID, int agentTypeID, int[] resourceGroupArtifactID)
+		public DataTable Execute(int agentID, int agentTypeID, int[] resourceGroupArtifactID)
 		{
 			string sql = string.Format(Resources.GetNextJob, qDBContext.TableName);
 			string ResourceGroupArtifactIDs = string.Join(",", resourceGroupArtifactID);
@@ -37,13 +37,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			sqlParams.Add(new SqlParameter("@AgentID", agentID));
 			sqlParams.Add(new SqlParameter("@AgentTypeID", agentTypeID));
 
-			var dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
-
-			DataRow row = null;
-			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
-				row = dataTable.Rows[0];
-
-			return row;
+			return qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
 		}
 	}
 }

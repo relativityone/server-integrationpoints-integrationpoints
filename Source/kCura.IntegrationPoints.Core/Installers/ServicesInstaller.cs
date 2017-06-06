@@ -48,6 +48,7 @@ using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.ScheduleQueue.Core.Data;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
 
@@ -74,8 +75,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
 			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
-			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
-			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
+            container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
+		    container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>().LifestyleTransient());
+            container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
 			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
 			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());

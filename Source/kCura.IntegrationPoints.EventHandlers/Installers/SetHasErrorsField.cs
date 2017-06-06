@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 
@@ -100,7 +101,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			IJobService jobService = new JobService(agentService, Helper);
+		    IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
+		    IJobService jobService = new JobService(agentService, jobServiceDataProvider, Helper);
 			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
 			IJobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);

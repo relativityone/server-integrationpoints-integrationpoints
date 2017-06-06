@@ -56,29 +56,32 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			_agentService.CreateQueueTableOnce();
 
-			DataRow row = new CreateScheduledJob(this._queueContext).Execute(
-				SourceWorkspaceArtifactId,
-				1,
-				"SendEmaiManager",
-				DateTime.Now.AddDays(30),
-				1,
-				null,
-				null,
-				jobDetails,
-				0,
-				777,
-				1,
-				1);
-			Job tempJob = new Job(row);
-			_jobId = tempJob.JobId;
+		    using (DataTable dataTable = new CreateScheduledJob(this._queueContext).Execute(
+		        SourceWorkspaceArtifactId,
+		        1,
+		        "SendEmaiManager",
+		        DateTime.Now.AddDays(30),
+		        1,
+		        null,
+		        null,
+		        jobDetails,
+		        0,
+		        777,
+		        1,
+		        1))
+		    {
+		        Job tempJob = new Job(dataTable.Rows[0]);
 
-			//Act
-			IEnumerable<string> list = _sendEmailManager.GetUnbatchedIDs(tempJob);
+		        _jobId = tempJob.JobId;
 
-			//Assert
-			Assert.AreEqual(2, list.Count());
-			Assert.IsTrue(list.Contains("testing1234@kcura.com"));
-			Assert.IsTrue(list.Contains("kwu@kcura.com"));
+		        //Act
+		        IEnumerable<string> list = _sendEmailManager.GetUnbatchedIDs(tempJob);
+
+		        //Assert
+		        Assert.AreEqual(2, list.Count());
+		        Assert.IsTrue(list.Contains("testing1234@kcura.com"));
+		        Assert.IsTrue(list.Contains("kwu@kcura.com"));
+		    }
 		}
 	}
 }

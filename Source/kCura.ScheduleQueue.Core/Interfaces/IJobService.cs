@@ -11,8 +11,6 @@ namespace kCura.ScheduleQueue.Core
 
 		Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID);
 
-		ITask GetTask(Job job);
-
 		DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult);
 
 		FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult);

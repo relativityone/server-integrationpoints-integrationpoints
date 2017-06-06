@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -727,7 +728,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule.TimeZoneId = clientTimeZone;
 
 			// act
-			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime();
 
 			// assert
 			if (expectedRunUtcTime == null)
@@ -793,7 +794,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
 
 			// act
-			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime();
 
 			// assert
 			if (expectedRunUtcTime == null)
@@ -827,7 +828,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule.TimeService.UtcNow.Returns(startDate);
 
 			// act
-			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime();
 
 			//assert
 			if (expectedRunUtcTime == null)
@@ -875,7 +876,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
 			
 			// act
-			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime();
 
 			// assert
 			if (expectedRunUtcTime == null)
@@ -906,7 +907,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule.TimeService.UtcNow.Returns(startDate);
 
 			// act
-			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime();
 
 			//assert
 			if (expectedRunUtcTime == null)
@@ -926,18 +927,18 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void NextRunJobServerAhead(string clientTimeZone, string clientLocalTime, string clientStartDate, string serverDateTime, string expectedRunUtcTime)
 		{
 			// arrange
-			DateTime startDate = DateTime.Parse(clientStartDate);
+			DateTime startDate = DateTime.Parse(clientStartDate, CultureInfo.GetCultureInfo("en-us"));
 			DateTime endDate = startDate.AddYears(1);
 			const DaysOfWeek dayToRun = DaysOfWeek.Wednesday;
 
 			// client time
 			TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
-			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+			TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime, CultureInfo.GetCultureInfo("en-us")).TimeOfDay;
 			//For test purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
 			TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
 
 			// server time
-			DateTime serverTime = DateTime.Parse(serverDateTime);
+			DateTime serverTime = DateTime.Parse(serverDateTime, CultureInfo.GetCultureInfo("en-us"));
 
 			PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, startDate, clientlocalTime, endDate, (int)clientUtcOffSet.TotalMinutes, dayToRun, null, null, null, null, clientTimeZone)
 			{
@@ -946,11 +947,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule.TimeService.UtcNow.Returns(serverTime);
 
 			// act
-			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime();
 
 			//assert
 			Assert.IsNotNull(nextRunTime);
-			Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
+			Assert.AreEqual(DateTime.Parse(expectedRunUtcTime, CultureInfo.GetCultureInfo("en-us")), nextRunTime);
 		}
 
 
@@ -1026,7 +1027,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			rule.TimeService.LocalTime.Returns(serverDateTime);
 
 			// act
-			DateTime? nextRunTime = rule.GetNextUTCRunDateTime(null, TaskStatusEnum.None);
+			DateTime? nextRunTime = rule.GetNextUTCRunDateTime();
 
 			// assert
 			if (expectedNextRunTime == null)

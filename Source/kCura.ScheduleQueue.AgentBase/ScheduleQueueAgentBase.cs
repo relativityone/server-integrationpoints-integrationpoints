@@ -4,6 +4,7 @@ using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
@@ -74,7 +75,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			if (this.jobService == null)
 			{
-				this.jobService = new JobService(AgentService, base.Helper);
+			    this.jobService = new JobService(AgentService, new JobServiceDataProvider(AgentService, Helper), Helper);
 			}
 		}
 
@@ -82,11 +83,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		public IAgentService AgentService { get; private set; }
 		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
 
-		public virtual ITask GetTask(Job job)
-		{
-			ITask task = jobService.GetTask(job);
-			return task;
-		}
+	    public abstract ITask GetTask(Job job);
 
 		public TimeProvider TimeProvider
 		{

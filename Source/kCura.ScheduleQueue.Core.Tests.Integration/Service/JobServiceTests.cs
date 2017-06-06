@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using NSubstitute;
 using NUnit.Framework;
@@ -20,8 +21,9 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		private IAgentService _agentService;
 		private IHelper _helper;
 		private JobService _instance;
+	    private JobServiceDataProvider _jobServiceDataProvider;
 
-		[SetUp]
+	    [SetUp]
 		public void SetUp()
 		{
 			kCura.Data.RowDataGateway.Config.SetConnectionString(SharedVariables.EddsConnectionString);
@@ -29,7 +31,8 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			_helper = Substitute.For<IHelper>();
 			_agentService = new AgentService(_helper, Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_helper.GetDBContext(-1).Returns(new DBContext(new Context(SharedVariables.EddsConnectionString)));
-			_instance = new JobService(_agentService, _helper);
+		    _jobServiceDataProvider = new JobServiceDataProvider(_agentService, _helper);
+            _instance = new JobService(_agentService, _jobServiceDataProvider, _helper);
 		}
 
 		[TearDown]

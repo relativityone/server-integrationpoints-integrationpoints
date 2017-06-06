@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using kCura.ScheduleQueue.Core.Core;
+
+namespace kCura.ScheduleQueue.Core.Data
+{
+    public interface IJobServiceDataProvider
+    {
+        DataTable GetJobsByIntegrationPointId(long integrationPointId);
+        DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resurceGroupIdsArray);
+        void UpdateScheduledJob(long jobId, DateTime nextUtcRunDateTime);
+
+        DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+            DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
+            string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
+
+        void DeleteJob(long jobId);
+        DataRow GetJob(long jobId);
+
+        DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, string taskType);
+        DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes);
+        int UpdateStopState(IList<long> jobIds, StopState state);
+        void CleanupJobQueueTable();
+        void UnlockScheduledJob(int agentId);
+    }
+}

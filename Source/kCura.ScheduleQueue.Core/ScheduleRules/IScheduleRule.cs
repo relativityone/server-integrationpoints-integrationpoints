@@ -6,7 +6,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 	{
 		ITimeService TimeService { get; set; }
 		string Description { get; }
-		DateTime? GetNextUTCRunDateTime(DateTime? LastRunTime = null, TaskStatusEnum? lastTaskStatus = null);
+		DateTime? GetNextUTCRunDateTime();
 		string ToSerializedString();
 	}
 }

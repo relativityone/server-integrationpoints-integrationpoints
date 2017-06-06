@@ -352,6 +352,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			}
 
 			public override string Name { get; }
+		    public override ITask GetTask(Job job)
+		    {
+		        throw new NotImplementedException();
+		    }
 		}
 	}
 }

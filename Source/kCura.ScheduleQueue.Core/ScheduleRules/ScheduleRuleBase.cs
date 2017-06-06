@@ -66,7 +66,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			}
 		}
 
-		public abstract DateTime? GetNextUTCRunDateTime(DateTime? lastRunTime = null, TaskStatusEnum? lastTaskStatus = null);
+		public abstract DateTime? GetNextUTCRunDateTime();
 
 		public abstract string Description { get; }
 

@@ -67,23 +67,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				CreateJobHistoryOnIntegrationPoint(model.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
+			    using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+			        workspaceID: WorkspaceArtifactId,
+			        relatedObjectArtifactID: model.ArtifactID,
+			        taskType: "SyncManager",
+			        nextRunTime: DateTime.MaxValue,
+			        AgentTypeID: 1,
+			        scheduleRuleType: null,
+			        serializedScheduleRule: null,
+			        jobDetails: jobDetails,
+			        jobFlags: 0,
+			        SubmittedBy: 777,
+			        rootJobID: 1,
+			        parentJobID: 1))
+			    {
+			        job1 = new Job(dataTable.Rows[0]);
+			    }
 
-				DataRow row1 = new CreateScheduledJob(_queueContext).Execute(
-					workspaceID: WorkspaceArtifactId,
-					relatedObjectArtifactID: model.ArtifactID,
-					taskType: "SyncManager",
-					nextRunTime: DateTime.MaxValue,
-					AgentTypeID: 1,
-					scheduleRuleType: null,
-					serializedScheduleRule: null,
-					jobDetails: jobDetails,
-					jobFlags: 0,
-					SubmittedBy: 777,
-					rootJobID: 1,
-					parentJobID: 1);
-				job1 = new Job(row1);
-
-				// inserts a job entry to the ScheduleQueue table that is locked by the disabled agent
+			    // inserts a job entry to the ScheduleQueue table that is locked by the disabled agent
 				job2 = JobExtensions.Execute(
 					qDBContext: _queueContext,
 					workspaceID: WorkspaceArtifactId,

@@ -79,7 +79,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			TimeZoneId = timeZoneId;
 		}
 
-		public override DateTime? GetNextUTCRunDateTime(DateTime? lastRunTime = null, TaskStatusEnum? lastTaskStatus = null)
+		public override DateTime? GetNextUTCRunDateTime()
 		{
 			EndDateHelperBase endDateHelper;
 			//Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
