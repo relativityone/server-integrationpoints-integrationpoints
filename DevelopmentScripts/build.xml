@@ -479,6 +479,7 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Services.Tests\bin\x64\kCura.IntegrationPoints.Services.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
