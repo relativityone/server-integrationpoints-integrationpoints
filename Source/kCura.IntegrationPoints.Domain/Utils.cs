@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Domain
 		/// </summary>
 		/// <param name="ex">The exception that was raised.</param>
 		/// <returns>A generic exception that can be passed to the host process.</returns>
-		public static Exception GetNonCustomException(System.Exception ex)
+		public static Exception GetNonCustomException(Exception ex)
 		{
 			return new Exception(GetPrintableException(ex));
 		}
@@ -22,12 +22,12 @@ namespace kCura.IntegrationPoints.Domain
 		{
 			var strBuilder = new StringBuilder();
 
-			if (!String.IsNullOrWhiteSpace(ex.Message))
+			if (!string.IsNullOrWhiteSpace(ex.Message))
 			{
 				strBuilder.AppendLine(ex.Message);
 			}
 
-			if (!String.IsNullOrEmpty(ex.StackTrace))
+			if (!string.IsNullOrEmpty(ex.StackTrace))
 			{
 				strBuilder.AppendLine(ex.StackTrace);
 			}
@@ -41,11 +41,7 @@ namespace kCura.IntegrationPoints.Domain
 
 		public static string GetFormatForWorkspaceOrJobDisplay(string name, int? id)
 		{
-			if (id.HasValue)
-			{
-				return $"{name} - {id}";
-			}
-			return name;
+		    return id.HasValue ? $"{name} - {id}" : name;
 		}
 
 		public static string GetFormatForWorkspaceOrJobDisplay(string prefix, string name, int id)

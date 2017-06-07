@@ -327,6 +327,11 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
       </Build>
       <Ignore>
         <Project path="Source\kCura.IntegrationPoints.Documentation\kCura.IntegrationPoints.Documentation.shfbproj" />
@@ -466,6 +471,7 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.Services.Tests\bin\x64\kCura.IntegrationPoints.Services.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.LDAPProvider.Tests\bin\x64\kCura.IntegrationPoints.LDAPProvider.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
