@@ -627,3 +627,30 @@ select option {
 		max-width: 90% !important;
 	}
 }
+
+.addProductionSet-controlButtons {
+	height: 22px !important;
+	width: 22px !important;
+	padding: 0 !important;
+	background-size: 100% !important;
+	border-radius: 50%;
+	vertical-align: middle;
+	border: none;
+	outline:none;
+}
+
+.addProductionSet-controlButtons:hover {
+	opacity: 0.5;
+}
+
+.addProductionSet-controlButtons:disabled {
+	background-color: #EBEBE4 !important;
+	border: 1px solid #C1C1C1 !important;
+	opacity: 0.5;
+	cursor: default !important;
+	pointer-events: none !important;
+}
+
+#add-production-set-selection-button {
+	background: url(Images/plus-icon.png);
+}

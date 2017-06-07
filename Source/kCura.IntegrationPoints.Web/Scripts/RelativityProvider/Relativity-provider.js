@@ -401,23 +401,28 @@
 	    self.openAuthenticateModal = function () {
 			self.AuthenticationFailed(false);
 			authenticateModalViewModel.open(self.SecuredConfiguration());
-		};
+	    };
+		
+	    var creatingProductionSetModalViewModel = new CreatingProductionSetViewModel(
+			function (newProductionArtifactId) {
+				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+				state.ProductionArtifactId = newProductionArtifactId;
+				self.ProductionArtifactId(newProductionArtifactId);
+			}
+		);
+
+	    Picker.create("Modals", "creating-production-set-modal", "CreatingProductionSetModalView", creatingProductionSetModalViewModel);
 
 	    var createProductionSetModalViewModel = new CreateProductionSetViewModel(
-            function (newProductionArtifactId) {
-                self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
-                state.ProductionArtifactId = newProductionArtifactId;
-                self.ProductionArtifactId(newProductionArtifactId);
-                IP.frameMessaging().dFrame.IP.message.notify("New Production has been successfully created.");
-            },
-            function() {
-                IP.frameMessaging().dFrame.IP.message.error.raise("New production can not be created.");
-            });
+            function (newProductionSetName, positionLeft) {
+            	creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), self.FederatedInstanceArtifactId(), positionLeft);
+            }
+		);
 
 	    Picker.create("Modals", "create-production-set-modal", "CreateProductionSetModalView", createProductionSetModalViewModel);
 
         self.openCreateProductionSetModal = function() {
-            createProductionSetModalViewModel.open(self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), self.FederatedInstanceArtifactId());
+        	createProductionSetModalViewModel.open();
         }
 
 		this.TargetFolder.extend({

@@ -690,19 +690,23 @@
       <DependentUpon>controls-grid-pager.scss</DependentUpon>
     </Content>
     <Content Include="Content\controls.grid.css" />
+    <Content Include="Content\create-production-set.css" />
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
+    <Content Include="Content\Images\error_icon_32px.png" />
     <Content Include="Content\Images\grey_close.png" />
     <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\ImportPreview\arrow_collapsed.png" />
     <Content Include="Content\Images\ImportPreview\arrow_expanded.png" />
+    <Content Include="Content\Images\loading_dialog48x48.gif" />
     <Content Include="Content\Images\minus-icon.png" />
     <Content Include="Content\Images\plus-icon.png" />
     <Content Include="Content\Images\select2-spinner.gif" />
     <Content Include="Content\Images\select2.png" />
     <Content Include="Content\Images\select2x2.png" />
     <Content Include="Content\Images\sprite.png" />
+    <Content Include="Content\Images\success_icon_32px.png" />
     <Content Include="Content\import.css" />
     <Content Include="Content\Images\ui-bg_flat_100_666666_40x100.png" />
     <Content Include="Content\integration-points-view.css" />
@@ -821,6 +825,7 @@
     <Content Include="Scripts\integration-point\scheduler.js" />
     <Content Include="Scripts\integration-point\tooltip-definitions.js" />
     <Content Include="Scripts\ldap\ldap-provider-summary-page.js" />
+    <Content Include="Scripts\modals\creating-production-set-modal-vm.js" />
     <Content Include="Scripts\modals\export-renamed-fields-vm.js" />
     <Content Include="Scripts\moment-timezone-utils.js" />
     <Content Include="Scripts\moment-timezone-with-data-2010-2020.js" />
@@ -1075,6 +1080,7 @@
     <Content Include="Views\Modals\ExportRenamedFieldsView.cshtml" />
     <Content Include="Views\Modals\ExportFileNamingOptionView.cshtml" />
     <Content Include="Views\Modals\CreateProductionSetModalView.cshtml" />
+    <Content Include="Views\Modals\CreatingProductionSetModalView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

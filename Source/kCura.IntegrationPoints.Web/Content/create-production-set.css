@@ -1,0 +1,12 @@
+﻿
+.success-img {
+	content:url(Images/success_icon_32px.png);
+}
+
+.error-img {
+	content:url(Images/error_icon_32px.png);
+}
+
+ .loading-dialog-img {
+	content:url(Images/loading_dialog48x48.gif);
+}

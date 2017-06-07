@@ -28,7 +28,7 @@
 		data.session = storage(sessionStorage);
 		data.local = storage(localStorage);
 		var requestCounter = 0;	
-		data.ajax = function (options) {
+		data.ajax = function (options, showOverlayWidget = true) {
 			var ajaxDefaults = {
 				loading: {
 					timeout: 200,
@@ -56,7 +56,7 @@
 				return true;
 			};
 
-			if (settings.loading.timeout > 0) {
+			if (settings.loading.timeout > 0 && showOverlayWidget) {
 				root.modal.open(settings.loading.timeout, (container instanceof jQuery) ? container : $(container));
 			}
 
