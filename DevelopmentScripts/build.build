@@ -16,7 +16,7 @@
 	<property name="source.dependency.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.2.1.3\lib\net462" />
 	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.2.1.3\lib\net462" />
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.2.1.3\lib\net462" />
-	<property name="relativityDependencyVersion" value="9.5.166.10" />
+	<property name="relativityDependencyVersion" value="9.5.175.79" />
 	
 	<!-- Log properties -->
 	<echo message="Root: ${root}" />

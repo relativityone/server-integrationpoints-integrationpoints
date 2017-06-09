@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 			compositeLoggingMediator.AddLoggingMediator(exportLoggingMediator);
 			compositeLoggingMediator.AddLoggingMediator(jobErrorLoggingMediator);
+			compositeLoggingMediator.AddLoggingMediator(new TestLoggingMediator());
 
 			return compositeLoggingMediator;
 		}

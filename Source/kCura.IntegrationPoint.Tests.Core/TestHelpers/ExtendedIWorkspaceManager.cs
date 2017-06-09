@@ -56,5 +56,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			return Manager.RetrieveAllActive();
 		}
+
+	    public Task<bool> WorkspaceExists(WorkspaceRef workspace)
+	    {
+	        return Manager.WorkspaceExists(workspace);
+	    }
 	}
 }
