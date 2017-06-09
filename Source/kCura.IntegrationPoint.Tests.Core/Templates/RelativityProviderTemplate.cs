@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using NSubstitute;
 using Relativity.Data.Toggles;
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
 		{
-			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId},\"FolderArtifactId\":{GetRootFolder(Helper, targetWorkspaceId)}}}";
+			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId},\"FolderArtifactId\":{GetRootFolder(Helper, targetWorkspaceId)},\"TypeOfExport\":{(int)SourceConfiguration.ExportType.SavedSearch}}}";
 		}
 
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode, int? federatedInstanceArtifactId = null)
