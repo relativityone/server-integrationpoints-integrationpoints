@@ -212,6 +212,7 @@
     <Compile Include="IntegrationPoints\IntegrationPointProfilePageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointTypesMigrationEventHandler.cs" />
+    <Compile Include="IntegrationPoints\RemoveResourceFilesEventHandler.cs" />
     <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />
