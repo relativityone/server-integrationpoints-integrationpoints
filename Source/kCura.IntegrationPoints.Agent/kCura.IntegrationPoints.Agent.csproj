@@ -188,6 +188,10 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Polly, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity, Version=9.5.182.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.9.5.182.17\lib\net462\Relativity.dll</HintPath>
       <Private>True</Private>
