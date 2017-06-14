@@ -43,7 +43,7 @@
 						IP.stepDefinitionProvider.loadDefaults();
 						IP.frameMessaging().subscribe('importType', function (data) {
 							if (data === 0) {
-								IP.stepDefinitionProvider.loadDefaults();
+								IP.stepDefinitionProvider.loadDefaults(2);
 								$.stepProgress.showButtons(true, true, false);
 							}
 							else {							
@@ -54,7 +54,8 @@
 										{
 											text: 'Source Information'
 										},
-								]);
+								],
+                                2);
 								$.stepProgress.showButtons(true, false, true);
 							}
 						});

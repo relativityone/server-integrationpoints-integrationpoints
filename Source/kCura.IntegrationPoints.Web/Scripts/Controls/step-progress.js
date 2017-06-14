@@ -113,7 +113,7 @@
 		showButtons: _showButtons
 	});
 
-	$.fn.stepProgress = function (options) {
+	$.fn.stepProgress = function (options, step) {
 		var callArgs = arguments;
 		if (typeof options === "string") {
 			var fn = $.stepProgress[options];
@@ -125,7 +125,7 @@
 		}
 		return this.each(function () {
 			$.fn.stepProgress.defaults = {
-				currentStep: 1,
+				currentStep: step || 1,
 				steps: []
 			};
 
