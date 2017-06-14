@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 				if (fieldInfo.EnableDataGrid && (_dataGridContext == null))
 				{
-					_dataGridContext = new DataGridContext(true);
+					_dataGridContext = new DataGridContext(_baseContext, true);	
 				}
 			}
 
