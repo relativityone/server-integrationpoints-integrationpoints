@@ -306,8 +306,8 @@
       <HintPath>..\packages\RelativityCore.9.5.182.17\lib\net462\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataGrid, Version=10.8.9.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.5.182.17\lib\net462\Relativity.DataGrid.dll</HintPath>
+    <Reference Include="Relativity.DataGrid, Version=10.8.12.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.DataGrid.10.8.12\lib\net462\Relativity.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataGrid.Logging, Version=9.5.182.17, Culture=neutral, processorArchitecture=AMD64">
