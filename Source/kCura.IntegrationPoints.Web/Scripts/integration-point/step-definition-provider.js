@@ -40,10 +40,10 @@
 			]
 		};
 
-		self._updateDOM = function (options) {
+		self._updateDOM = function (options, currentStep) {
 			$('#stepProgress').stepProgress({
 				steps: options
-			});
+			}, currentStep);
 		};
 
 		self._init = function () {
@@ -51,9 +51,9 @@
 			self._updateDOM(self._stepsOptions['initsteps']);
 		};
 
-		self._loadDefaults = function () {
+		self._loadDefaults = function (currentStep) {
 			self._state = ProviderState.IsSet;
-			self._updateDOM(self._stepsOptions['defaultsteps']);
+			self._updateDOM(self._stepsOptions['defaultsteps'], currentStep);
 			
 		};
 
@@ -62,9 +62,9 @@
 			self._updateDOM(self._stepsOptions['inProgress']);
 		};
 
-		self._loadOverride = function (optionsOverride) {
+		self._loadOverride = function (optionsOverride, currentStep) {
 			self._state = ProviderState.IsSet;
-			self._updateDOM(optionsOverride);
+			self._updateDOM(optionsOverride, currentStep);
 		};
 
 		return {

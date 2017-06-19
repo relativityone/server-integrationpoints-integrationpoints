@@ -15,9 +15,21 @@ var LocationJSTreeSelector = function () {
 			$.extend(self.domSelectorSettings, settings);
 		}
 
-		$(self.domSelectorSettings.dropdownSelector).mousedown(function () {
-			self.setTreeVisibility(!self.treeVisible);
-		});
+	    $(self.domSelectorSettings.dropdownSelector).mousedown(function () {
+	        self.setTreeVisibility(!self.treeVisible);
+	    });
+
+	    $(self.domSelectorSettings.dropdownSelector).click(function (e) {
+	        e.stopPropagation();
+	    });
+
+	    $(self.domSelectorSettings.jstreeHolderDivSelector).click(function (e) {
+	        e.stopPropagation();
+	    });
+
+	    $(document).click(function () {
+	        self.setTreeVisibility(false);
+	    });
 
 		if (selectedNode !== undefined) {
 			self.SelectedNode = selectedNode;
