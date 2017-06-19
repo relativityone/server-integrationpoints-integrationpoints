@@ -35,8 +35,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			return workspace;
 		}
-		
-		private IEnumerable<WorkspaceDTO> RetrieveAllActiveWorkspaces()
+
+	    public IEnumerable<WorkspaceDTO> GetUserAvailableDestinationWorkspaces(int sourceWorkspaceId)
+	    {
+	        return GetUserActiveWorkspaces().Where(w => w.ArtifactId != sourceWorkspaceId);
+	    }
+
+	    private IEnumerable<WorkspaceDTO> RetrieveAllActiveWorkspaces()
 		{
 			IWorkspaceRepository repository = _repositoryFactory.GetWorkspaceRepository();
 			return repository.RetrieveAllActive();
