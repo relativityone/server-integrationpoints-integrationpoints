@@ -1,4 +1,5 @@
-﻿using Relativity.API;
+﻿using System;
+using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Exceptions;
 using Relativity.Services.InstanceSetting;
@@ -8,7 +9,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class KeplerInstanceSettingRepository : IInstanceSettingRepository
 	{
 		private readonly IServicesMgr _servicesMgr;
-
 		public KeplerInstanceSettingRepository(IServicesMgr servicesMgr)
 		{
 			_servicesMgr = servicesMgr;

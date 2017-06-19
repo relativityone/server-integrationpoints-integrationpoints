@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly ICaseManagerFactory _caseManagerFactory;
 		private readonly IConfigFactory _configFactory;
 		private readonly ICredentialProvider _credentialProvider;
-		private readonly IExporterFactory _exporterFactory;
+		private readonly IExtendedExporterFactory _extendedExporterFactory;
 		private readonly IExportFileBuilder _exportFileBuilder;
 		private readonly JobStatisticsService _jobStatisticsService;
 		private readonly IJobInfoFactory _jobHistoryFactory;
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			ICredentialProvider credentialProvider,
 			ICaseManagerFactory caseManagerFactory,
 			IServiceManagerFactory<ISearchManager> searchManagerFactory,
-			IExporterFactory exporterFactory,
+			IExtendedExporterFactory extendedExporterFactory,
 			IExportFileBuilder exportFileBuilder,
 			IHelper helper,
 			JobStatisticsService jobStatisticsService,
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_credentialProvider = credentialProvider;
 			_caseManagerFactory = caseManagerFactory;
 			_searchManagerFactory = searchManagerFactory;
-			_exporterFactory = exporterFactory;
+			_extendedExporterFactory = extendedExporterFactory;
 			_exportFileBuilder = exportFileBuilder;
 			_jobStatisticsService = jobStatisticsService;
 			_jobHistoryFactory = jobHistoryFactory;
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				PopulateExportFieldsSettings(exportDataContext);
 
 				SetRuntimeSettings(exportFile, settings, job);
-				IExporter exporter = _exporterFactory.Create(exportDataContext);
+				IExporter exporter = _extendedExporterFactory.Create(exportDataContext);
 				AttachHandlers(exporter);
 				SubscribeToJobStatisticsEvents(job);
 				return exporter;

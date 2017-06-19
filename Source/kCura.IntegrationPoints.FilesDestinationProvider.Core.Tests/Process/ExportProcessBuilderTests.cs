@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 		private ICaseManagerFactory _caseManagerFactory;
 		private ICredentialProvider _credentialProvider;
-		private IExporterFactory _exporterFactory;
+		private IExtendedExporterFactory _exporterFactory;
 
 		private ExtendedExportFile _exportFile;
 		private ExportDataContext _exportDataContext;
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
 			_credentialProvider = Substitute.For<ICredentialProvider>();
-			_exporterFactory = Substitute.For<IExporterFactory>();
+			_exporterFactory = Substitute.For<IExtendedExporterFactory>();
 			_exportFileBuilder = Substitute.For<IExportFileBuilder>();
 			_loggingMediator = Substitute.For<ICompositeLoggingMediator>();
 			_searchManagerFactory = Substitute.For<IServiceManagerFactory<ISearchManager>>();

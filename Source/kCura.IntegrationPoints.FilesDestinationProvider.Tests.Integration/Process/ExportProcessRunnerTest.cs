@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 	[TestFixture]
 	public class ExportProcessRunnerTest
 	{
-		#region Fields
+	    #region Fields
 
 		private readonly string[] _defaultFields = {"Control Number", "File Name", "Issue Designation"};
 		private static readonly ConfigSettings _configSettings = new ConfigSettings {WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")};
@@ -48,8 +48,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private WorkspaceService _workspaceService;
 
 		private static WindsorContainer _windsorContainer;
+	    private IExtendedExporterFactory _extendedExporterFactory;
 
-		#endregion //Fields
+	    #endregion //Fields
 
 		[OneTimeSetUp]
 		public void Init()
@@ -58,7 +59,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_workspaceService = new WorkspaceService(new ImportHelper());
 
-			_configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
+		    _extendedExporterFactory = _windsorContainer.Resolve<IExtendedExporterFactory>();
+
+		    _configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
 			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
@@ -71,20 +74,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				? fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray()
 				: fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
 
-			_configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields,
+		    _configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields,
 				_configSettings.WorkspaceId, _configSettings.SavedSearchArtifactName);
 
 
 			_configSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
-			_workspaceService.ImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
+            _workspaceService.ImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
 
-			_configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
+            _configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
 
-			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId,
-				_configSettings.ProductionArtifactName);
+            _configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId,
+                _configSettings.ProductionArtifactName);
 
-			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
+            CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
 			var helper = _windsorContainer.Resolve<IHelper>();
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
@@ -94,14 +97,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(SharedVariables.RelativityWebApiUrl);
 
-			var instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
-			instanceSettingRepository.GetConfigurationValue(Arg.Any<string>(), Arg.Any<string>()).Returns("false");
-
 			var configFactoryMock = Substitute.For<IConfigFactory>();
 			configFactoryMock.Create().Returns(configMock);
-
-			var jobHistoryErrorServiceProvider = _windsorContainer.Resolve<JobHistoryErrorServiceProvider>();
-			var fileNameProvidersDictionaryBuilder = _windsorContainer.Resolve<IFileNameProvidersDictionaryBuilder>();
 
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,
@@ -111,7 +108,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerFactory(),
 				new SearchManagerFactory(),
-				new StoppableExporterFactory(jobHistoryErrorServiceProvider, instanceSettingRepository, helper, fileNameProvidersDictionaryBuilder),
+				_windsorContainer.Resolve<IExtendedExporterFactory>(),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
 					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
 					),

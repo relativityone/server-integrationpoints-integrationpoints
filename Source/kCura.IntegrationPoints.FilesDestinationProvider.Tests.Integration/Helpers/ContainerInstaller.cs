@@ -13,11 +13,15 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
@@ -27,7 +31,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 {
 	internal class ContainerInstaller
 	{
-		public static WindsorContainer CreateContainer(ConfigSettings configSettings)
+	    private static IInstanceSettingRepository _instanceSettings;
+
+	    public static WindsorContainer CreateContainer(ConfigSettings configSettings)
 		{
 			var windsorContainer = new WindsorContainer();
 			windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(windsorContainer.Kernel));
@@ -43,8 +49,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
             windsorContainer.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
             windsorContainer.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
-			windsorContainer.Register(Component.For<IHelper>().Instance(Substitute.For<IHelper>()).LifestyleTransient());
+			windsorContainer.Register(Component.For<IHelper>().Instance(new TestHelper()).LifestyleTransient());
 
+            windsorContainer.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
+
+            windsorContainer.Register(Component.For<IFactoryConfigBuilder>().ImplementedBy<FactoryConfigBuilder>().LifestyleTransient());
+            _instanceSettings = Substitute.For<IInstanceSettingRepository>();
+		    _instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+		        Domain.Constants.REPLACE_WEB_API_WITH_EXPORT_CORE).Returns("False");
+
+            windsorContainer.Register(Component.For<IInstanceSettingRepository>()
+                .Instance(_instanceSettings)
+                .LifestyleTransient());
+		    windsorContainer.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IJobInfoFactory>().Instance(Substitute.For<IJobInfoFactory>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<IJobInfo>().Instance(Substitute.For<IJobInfo>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<ISerializer>().Instance(Substitute.For<ISerializer>()).LifestyleTransient());

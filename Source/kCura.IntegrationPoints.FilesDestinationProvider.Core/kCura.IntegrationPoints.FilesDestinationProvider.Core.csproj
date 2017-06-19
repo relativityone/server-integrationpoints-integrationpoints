@@ -544,9 +544,14 @@
     <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreProductionManager.cs" />
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
+    <Compile Include="SharedLibrary\FactoryConfigBuilder.cs" />
     <Compile Include="SharedLibrary\ExportDataContext.cs" />
+    <Compile Include="SharedLibrary\ExtendedExporterFactory.cs" />
     <Compile Include="SharedLibrary\ExtendedFieldNameProvider.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensions.cs" />
+    <Compile Include="SharedLibrary\IExtendedExporterFactory.cs" />
+    <Compile Include="SharedLibrary\IFactoryConfigBuilder.cs" />
+    <Compile Include="SharedLibrary\ExporterFactoryConfig.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorBase.cs" />
@@ -560,7 +565,6 @@
     <Compile Include="Validation\Parts\PaddingValidator.cs" />
     <Compile Include="Validation\Parts\ExportProductionValidator.cs" />
     <Compile Include="SharedLibrary\StoppableExporter.cs" />
-    <Compile Include="SharedLibrary\StoppableExporterFactory.cs" />
     <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
     <Compile Include="SharedLibrary\ICoreExporterStatusNotification.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />
