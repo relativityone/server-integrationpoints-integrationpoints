@@ -43,7 +43,8 @@
 			</table>
 		</div>
 		<div class="card">
-			<span class="label">Destination</span>
+		    <span class="label">Destination</span>
+		    <img data-bind="click: openRelativityProviderDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
 			<table style="width: 100%;">
 				<tr data-bind="visible: ShowRelativityInstance()">
 					<td style="width: 48%;">
@@ -129,7 +130,9 @@
 	<script src="~/Scripts/jstree.min.js"></script>
 	<script src="~/Scripts/export/location-jstree-selector.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
-	<script src="~/Scripts/integration-point/picker.js"></script>
+    <script src="~/Scripts/integration-point/picker.js"></script>
+    <script src="~/Scripts/integration-point/tooltip-definitions.js"></script>
+    <script src="~/Scripts/integration-point/tooltip-view-model.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/RelativityProvider/Relativity-provider.js"></script>
 }
