@@ -53,9 +53,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private HttpResponseMessage GetWorkspaces(IWorkspaceManager workspaceManager)
 		{
-			IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserActiveWorkspaces();
-
-			WorkspaceModel[] workspaceModels = userWorkspaces.Select(x =>
+		    int currentWorkspaceId = _helper.GetActiveCaseID();
+		    IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserAvailableDestinationWorkspaces(currentWorkspaceId);
+		    WorkspaceModel[] workspaceModels = userWorkspaces.Select(x =>
 				new WorkspaceModel
 				{
 					DisplayName = Utils.GetFormatForWorkspaceOrJobDisplay(
