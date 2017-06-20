@@ -7,11 +7,11 @@
 			type: "get",
 			dataType: "html"
 		}).then(function (result) {
-			Picker.createDialog(result, view, viewModel, options);
+		    Picker.createDialog(controller, result, view, viewModel, options);
 		});
 		return promise;
 	},
-	createDialog: function (modalHTML, view, viewModel, options) {
+	createDialog: function (controller, modalHTML, view, viewModel, options) {
 		var $myWin = $(window);
 
 		var selectedOptions;
@@ -19,7 +19,7 @@
 			selectedOptions = options;
 			options.position.of = $myWin[0];
 		} else {
-			selectedOptions = Picker.getDefaultOptions();
+		    selectedOptions = Picker.getDefaultOptions(controller);
 			selectedOptions.position.of = $myWin[0];
 		}
 
@@ -33,20 +33,44 @@
 	closeDialog: function (containerId) {
 		$('#' + containerId).dialog('destroy').remove();
 	},
-	getDefaultOptions: function () {
-		return {
-			autoOpen: false,
-			modal: true,
-			width: "auto",
-			height: "auto",
-			resizable: false,
-			draggable: false,
-			closeOnEscape: true,
-			position: {
-				my: "center",
-				at: "center"
-			}
-		};
+	getDefaultOptions: function (controller) {
+	    var options;
+
+	    switch (controller) {
+	    case "Tooltip":
+	        options = {
+	            autoOpen: false,
+	            modal: false,
+	            width: "auto",
+	            height: "auto",
+	            resizable: false,
+	            draggable: false,
+	            closeOnEscape: true,
+	            position: {
+	                my: "center",
+	                at: "center"
+	            }
+	        };
+	        break;
+
+	    default:
+	        options = {
+	            autoOpen: false,
+	            modal: true,
+	            width: "auto",
+	            height: "auto",
+	            resizable: false,
+	            draggable: false,
+	            closeOnEscape: true,
+	            position: {
+	                my: "center",
+	                at: "center"
+	            }
+	        };
+	        break;
+	    }
+
+	    return options;
 	}
 };
 

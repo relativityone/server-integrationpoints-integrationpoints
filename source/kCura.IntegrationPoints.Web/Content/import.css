@@ -80,6 +80,13 @@
 	user-select: none;
 }
 
+.ui-dialog * {
+    -moz-user-select: auto;
+    -webkit-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+}
+
 .select {
 	width: 120px;
 	border-radius: 4px;
