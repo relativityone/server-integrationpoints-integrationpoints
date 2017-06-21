@@ -23,11 +23,12 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
     {
         public const String FTP = "FTP";
         public const String SFTP = "SFTP";
-        public static readonly List<String> All = new List<String>() { FTP, SFTP };
+        public static readonly List<string> All = new List<String>() { FTP, SFTP };
     }
 
     public struct ErrorMessage
     {
         public const String INVALID_HOST_NAME = "Please enter a valid host name. e.g. 172.31.24.97";
+        public const string MISSING_CSV_FILE_NAME = "Please enter a CSV file path. e.g. /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export";
     }
 }
