@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Web.Http;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.DataStructures;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -27,12 +28,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			encodings.Sort((x, y) => String.CompareOrdinal(x.DisplayName, y.DisplayName));
 			return Request.CreateResponse(HttpStatusCode.OK, encodings);
-		}
-
-		private class AvailableEncodingInfo
-		{
-			public string DisplayName { get; set; }
-			public string Name { get; set; }
 		}
 	}
 }

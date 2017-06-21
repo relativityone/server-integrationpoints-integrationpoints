@@ -602,6 +602,7 @@
     <Compile Include="Controllers\IntegrationPointBaseController.cs" />
     <Compile Include="Controllers\ModalsController.cs" />
     <Compile Include="Controllers\TooltipController.cs" />
+    <Compile Include="DataStructures\AvailableEncodingInfo.cs" />
     <Compile Include="DataStructures\ExportSourceOptions.cs" />
     <Compile Include="ErrorFactory.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />

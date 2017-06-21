@@ -214,6 +214,7 @@
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
     <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
+    <Compile Include="Controllers\API\GetAvailableEncodingsControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceFieldControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />
     <Compile Include="Controllers\DestinationTypeControllerTests.cs" />
