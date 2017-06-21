@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			Assert.IsFalse(result, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
 			_savedSearchRepository.Received(1).RetrieveNextDocuments();
-			_savedSearchRepository.Received(1).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(2).AllDocumentsRetrieved();
 		}
 
 		[Test]

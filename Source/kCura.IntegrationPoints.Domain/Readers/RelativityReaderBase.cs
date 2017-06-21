@@ -77,14 +77,20 @@ namespace kCura.IntegrationPoints.Domain.Readers
 			{
 				// Request the saved search documents
 				FetchedArtifacts = FetchArtifactDTOs();
-				if (FetchedArtifacts == null || !FetchedArtifacts.Any())
-				{
-					ReaderOpen = false; // TODO: handle errors?
-				}
-				else
+				if (FetchedArtifacts != null && FetchedArtifacts.Any())
 				{
 					ReadingArtifactIDs = FetchedArtifacts.Select(artifact => artifact.ArtifactId).ToArray();
 					Enumerator = ((IEnumerable<ArtifactDTO>)FetchedArtifacts).GetEnumerator();
+					
+				}
+				else if (!AllArtifactsFetched())
+				{
+					ReadingArtifactIDs = null;
+					Enumerator = null;
+				}
+				else
+				{
+					ReaderOpen = false; // TODO: handle errors?
 				}
 			}
 			catch (Exception ex)

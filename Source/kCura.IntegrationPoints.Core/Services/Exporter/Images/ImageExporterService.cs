@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			List<ArtifactDTO> imagesResult = new List<ArtifactDTO>();
+			var imagesResult = new List<ArtifactDTO>();
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
 
 			if (retrievedData != null)
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
-					List<ArtifactFieldDTO> fields = new List<ArtifactFieldDTO>();
+					var fields = new List<ArtifactFieldDTO>();
 					object[] fieldsValue = (object[])data;
 
 					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
@@ -85,10 +85,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					}
 					
 				}
+				_retrievedDataCount += retrievedData.Length;
 			}
-
-			_retrievedDataCount += imagesResult.Count;
-			_context.TotalItemsFound = _retrievedDataCount;
+			
+			_context.TotalItemsFound = _context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
 			return imagesResult.ToArray();
 		}
 
