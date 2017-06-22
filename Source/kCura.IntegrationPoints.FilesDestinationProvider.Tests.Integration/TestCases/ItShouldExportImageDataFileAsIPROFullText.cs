@@ -16,8 +16,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			settings.ExportImages = true;
 			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.IPRO_FullText;
+		    settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 
-			return base.Prepare(settings);
+            return base.Prepare(settings);
 		}
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)

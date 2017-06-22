@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			settings.ExportImages = true;
 			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.IPRO;
+            settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 
 			return base.Prepare(settings);
 		}
