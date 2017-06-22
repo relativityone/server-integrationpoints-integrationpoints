@@ -28,7 +28,11 @@
 		data.session = storage(sessionStorage);
 		data.local = storage(localStorage);
 		var requestCounter = 0;	
-		data.ajax = function (options, showOverlayWidget = true) {
+		data.ajax = function (options, showOverlayWidget) {
+		    if (showOverlayWidget === undefined) {
+		        showOverlayWidget = true;
+		    }
+
 			var ajaxDefaults = {
 				loading: {
 					timeout: 200,

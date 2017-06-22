@@ -515,6 +515,16 @@
 				"FolderArtifactId": self.FolderArtifactId()
 			}
 		}
+
+	    /********** Tooltips  **********/
+		var destinationTooltipViewModel = new TooltipViewModel(TooltipDefs.RelativityProviderDestinationDetails, TooltipDefs.RelativityProviderDestinationDetailsTitle);
+
+		Picker.create("Tooltip", "tooltipDestinationId", "TooltipView", destinationTooltipViewModel);
+
+	    this.openRelativityProviderDetailsTooltip = function (data, event) {
+	        destinationTooltipViewModel.open(event);
+	    };
+
 	}
 
 	function doesArtifactIdExistInObjectList(list, artifactId) {

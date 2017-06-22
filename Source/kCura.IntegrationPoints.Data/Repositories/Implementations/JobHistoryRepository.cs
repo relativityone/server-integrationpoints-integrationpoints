@@ -14,20 +14,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class JobHistoryRepository : RelativityMassEditBase, IJobHistoryRepository
 	{
 		private readonly IHelper _helper;
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly int _workspaceArtifactId;
-		private readonly IObjectTypeRepository _objectTypeRepository;
-		private readonly IArtifactGuidRepository _artifactGuidRepository;
 
 		internal JobHistoryRepository(IHelper helper, IRepositoryFactory repositoryFactory, int workspaceArtifactId)
 		{
 			_helper = helper;
-			_repositoryFactory = repositoryFactory;
 			_workspaceArtifactId = workspaceArtifactId;
-			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_workspaceArtifactId);
-			_objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(_workspaceArtifactId);
-			_artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(_workspaceArtifactId);
 		}
 
 		public int GetLastJobHistoryArtifactId(int integrationPointArtifactId)

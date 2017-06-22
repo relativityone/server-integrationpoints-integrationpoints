@@ -667,7 +667,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.sourceMapped(mapFields(sourceMapped));
 				self.populateExtractedText();
 				self.LongTextColumnThatContainsPathToFullText(model.LongTextColumnThatContainsPathToFullText);
-			    self.ExtractedTextFileEncoding(model.ExtractedTextFileEncoding);
+				self.ExtractedTextFileEncoding(model.ExtractedTextFileEncoding || "utf-16");
 
 				if (self.IsRelativityProvider() && (destinationModel.ProductionImport || self.IsProductionExport())) {
 					self.ImageImport('true');

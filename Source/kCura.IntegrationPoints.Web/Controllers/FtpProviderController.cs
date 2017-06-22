@@ -43,8 +43,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
                 return response;
             }
 
+            if (settings.ValidateCSVName() == false)
+            {
+                response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME);
+                return response;
+            }
             settings.ValidatePort();
-
             try
             {
                 using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))

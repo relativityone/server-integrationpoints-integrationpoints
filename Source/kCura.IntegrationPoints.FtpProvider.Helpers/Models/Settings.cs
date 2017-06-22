@@ -100,5 +100,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
 
             return valid;
         }
+        public Boolean ValidateCSVName()
+        {
+            return !string.IsNullOrWhiteSpace(this._filename);
+        }
     }
 }
