@@ -72,29 +72,34 @@
 				self.ipModel.sourceConfiguration[fieldName] = fieldValue || 0;
 				self.ipModel.sourceConfiguration.ExportType = self.model.exportSource.TypeOfExport();
 
-				if (!!fieldValue) {
-					root.data.ajax({
-						type: 'post',
-						url: root.utils.generateWebAPIURL('ExportFields/Available'),
-						data: JSON.stringify({
-							options: self.ipModel.sourceConfiguration,
-							type: self.ipModel.source.selectedType,
-							transferredArtifactTypeId: self.ipModel.artifactTypeID
-						})
-					}).then(function (result) {
+                // check if its first run, to prevent mapping clearance when editing IP
+				if (self.model.fields.firstRun){
+					self.model.fields.firstRun = false;
+				}else{
+					if (!!fieldValue) {
+						root.data.ajax({
+							type: 'post',
+							url: root.utils.generateWebAPIURL('ExportFields/Available'),
+							data: JSON.stringify({
+								options: self.ipModel.sourceConfiguration,
+								type: self.ipModel.source.selectedType,
+								transferredArtifactTypeId: self.ipModel.artifactTypeID
+							})
+						}).then(function (result) {
+							self.model.fields.removeAllFields();
+							self.model.fields.selectedAvailableFields(ko.utils.arrayMap(result, function (_item1) {
+								var _field = ko.utils.arrayFilter(self.model.fields.availableFields(), function (_item2) {
+									return _item1.fieldIdentifier === _item2.fieldIdentifier;
+								});
+								return _field[0];
+							}));
+							self.model.fields.addField();
+						}).fail(function (error) {
+							IP.message.error.raise("No available fields were returned from the source provider.");
+						});
+					} else {
 						self.model.fields.removeAllFields();
-						self.model.fields.selectedAvailableFields(ko.utils.arrayMap(result, function (_item1) {
-							var _field = ko.utils.arrayFilter(self.model.fields.availableFields(), function (_item2) {
-								return _item1.fieldIdentifier === _item2.fieldIdentifier;
-							});
-							return _field[0];
-						}));
-						self.model.fields.addField();
-					}).fail(function (error) {
-						IP.message.error.raise("No available fields were returned from the source provider.");
-					});
-				} else {
-					self.model.fields.removeAllFields();
+					}
 				}
 			};
 
@@ -180,6 +185,9 @@
 				self.model.fields.selectedAvailableFields(getMappedFields(mappedFields));
 				self.model.fields.addField();
 
+                // flag used to prevent mapping clearance
+				self.model.fields.firstRun = true;
+				
 				self.model.exportSource.SavedSearchArtifactId.subscribe(function (value) {
 					if (value) {
 						self.getAvailableFields("SavedSearchArtifactId", value);
