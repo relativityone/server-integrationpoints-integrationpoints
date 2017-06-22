@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
 		{
-			IObjectTypeRepository repository = new RsapiObjectTypeRepository(workspaceArtifactId, _helper.GetServicesManager(), _helper);
+			IObjectTypeRepository repository = new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper);
 
 			return repository;
 		}
