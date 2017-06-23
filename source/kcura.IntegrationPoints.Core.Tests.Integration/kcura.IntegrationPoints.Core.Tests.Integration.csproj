@@ -456,7 +456,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Managers\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="ScheduledJobStopStateTests.cs" />
     <Compile Include="Services\AgentJobManagerTests.cs" />
