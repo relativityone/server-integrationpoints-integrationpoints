@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(currentOptions);
 			importSettings.ProductionImport = false;
 			importSettings.ImageImport = false;
+			importSettings.UseDynamicFolderPath = false;
 			return JsonConvert.SerializeObject(importSettings);
 		}
 	}

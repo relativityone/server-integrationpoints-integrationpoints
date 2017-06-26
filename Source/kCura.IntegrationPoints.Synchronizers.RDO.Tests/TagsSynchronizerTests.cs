@@ -31,12 +31,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 		[Test]
 		[Combinatorial]
-		public void ItShouldUpdateImportSettingsForSyncData([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport)
+		public void ItShouldUpdateImportSettingsForSyncData([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
+			[Values(true, false)] bool useDynamicFolderPath)
 		{
 			ImportSettings importSettings = new ImportSettings
 			{
 				ImageImport = imageImport,
-				ProductionImport = productionImport
+				ProductionImport = productionImport,
+				UseDynamicFolderPath = useDynamicFolderPath
 			};
 
 			// ACT
@@ -48,12 +50,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 		[Test]
 		[Combinatorial]
-		public void ItShouldUpdateImportSettingsForSyncData_Records([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport)
+		public void ItShouldUpdateImportSettingsForSyncData_Records([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
+			[Values(true, false)] bool useDynamicFolderPath)
 		{
 			ImportSettings importSettings = new ImportSettings
 			{
 				ImageImport = imageImport,
-				ProductionImport = productionImport
+				ProductionImport = productionImport,
+				UseDynamicFolderPath = useDynamicFolderPath
 			};
 
 			// ACT
@@ -65,12 +69,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 		[Test]
 		[Combinatorial]
-		public void ItShouldUpdateImportSettingsForGetFields([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport)
+		public void ItShouldUpdateImportSettingsForGetFields([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
+			[Values(true, false)] bool useDynamicFolderPath)
 		{
 			ImportSettings importSettings = new ImportSettings
 			{
 				ImageImport = imageImport,
-				ProductionImport = productionImport
+				ProductionImport = productionImport,
+				UseDynamicFolderPath = useDynamicFolderPath
 			};
 
 			// ACT
@@ -83,7 +89,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		private bool AssertOptions(string s)
 		{
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(s);
-			return !importSettings.ImageImport && !importSettings.ProductionImport;
+			return !importSettings.ImageImport && !importSettings.ProductionImport && !importSettings.UseDynamicFolderPath;
 		}
 	}
 }
