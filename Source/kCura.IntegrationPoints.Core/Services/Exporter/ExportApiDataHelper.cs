@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				using (ILongTextStream stream = longTextStreamFactory.CreateLongTextStream(documentArtifactId, fieldArtifactId))
 				{
 					Encoding encoding = stream.IsUnicode ? Encoding.Unicode : Encoding.ASCII;
-					strBuilder  = new StringBuilder((int)stream.Length);
+					strBuilder  = new StringBuilder();
 					byte[] buffer = new byte[bufferSize];
 					int read;
 					while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
