@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class SharedVariables
+	public static class SharedVariables
 	{
 		#region User Settings
 
@@ -19,9 +19,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string UserFullName => $"{RelativityUserLastName}, {RelativityUserFirstName}";
 
-		#endregion User Settings
-
-		#region Relativity Settings
+        #endregion User Settings
+        
+        #region UI Tests Settings
+        public static int UiImplicitWaitInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.implicitWaitInSec"]);
+        public static int UiWaitForAjaxCallsInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.waitForAjaxCallsInSec"]);
+        #endregion UI Tests Settings
+        
+        #region Relativity Settings
 
 		public static string ProtocolVersion => ConfigurationManager.AppSettings["ProtocolVersion"];
 

@@ -5,32 +5,34 @@ using OpenQA.Selenium.Support.PageObjects;
 namespace IntegrationPointsUITests.Pages
 {
 
-    public class LoginPage
+    public class LoginPage : Page
     {
-        private readonly IWebDriver _driver;
-
+        
         [FindsBy(How = How.Id, Using = "_email")]
-        private IWebElement _username=null;
+        protected IWebElement Username;
 
         [FindsBy(How = How.Id, Using = "continue")]
-        private IWebElement _continueButton = null;
+        protected IWebElement ContinueButton;
 
-		[FindsBy(How = How.Id, Using = "_password__password_TextBox")]
-        private IWebElement _password = null;
+        [FindsBy(How = How.Id, Using = "_password__password_TextBox")]
+        protected IWebElement Password;
 
-		[FindsBy(How = How.Id, Using = "_login")]
-        private IWebElement _loginButton = null;
+        [FindsBy(How = How.Id, Using = "_login")]
+        protected IWebElement LoginButton;
 
-		public LoginPage(IWebDriver driver)
+        public LoginPage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
             PageFactory.InitElements(driver, this);
-            ValidatePage();
+        }
+
+        public bool IsOnLoginPage()
+        {
+            return Username.Displayed || Password.Displayed;
         }
 
         public LoginPage ValidatePage()
         {
-            if (!(_username.Displayed || _password.Displayed))
+            if (!IsOnLoginPage())
             {
                 throw new PageException("Can't find required elements.");
             }
@@ -39,13 +41,12 @@ namespace IntegrationPointsUITests.Pages
 
         public GeneralPage Login(string username, string password)
         {
-            _username.SendKeys(username);
-            _continueButton.Click();
-            _password.SendKeys(password);
-            _loginButton.Click();
-            return new GeneralPage(_driver);
+            Username.SendKeys(username);
+            ContinueButton.Click();
+            Password.SendKeys(password);
+            LoginButton.Click();
+            return new GeneralPage(Driver);
         }
-
 
     }
 }
