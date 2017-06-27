@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public static class SharedVariables
+	public class SharedVariables
 	{
 		#region User Settings
 
