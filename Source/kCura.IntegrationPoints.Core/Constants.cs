@@ -69,7 +69,8 @@ namespace kCura.IntegrationPoints.Core
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE = "Unable to save Integration Point.";
 				public const string INSUFFICIENT_PERMISSIONS = "You do not have sufficient permissions. Please contact your system administrator.";
 				public const string INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE = "User does not have sufficient Integration Point permissions.";
-				public const string CURRENT_WORKSPACE_NO_ACCESS = "User does not have permission to access this workspace.";
+			    public const string UNABLE_TO_RUN = "Unable to run Integration Point. Execution contraints are invalid.";
+                public const string CURRENT_WORKSPACE_NO_ACCESS = "User does not have permission to access this workspace.";
 				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "User does not have permission to view Integration Points.";
 				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "User does not have permission to view the Integration Point.";
 				public const string INTEGRATION_POINT_TYPE_NO_EDIT = "User does not have permission to edit Integration Points.";

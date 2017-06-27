@@ -35,7 +35,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IPermissionValidator>().ImplementedBy<RelativityProviderPermissionValidator>().LifestyleTransient());
 
-			container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>().LifestyleTransient());
-		}
+            container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>().LifestyleTransient());
+		    container.Register(Component.For<IIntegrationPointExecutionValidator>().ImplementedBy<IntegrationPointExecutionValidator>().LifestyleTransient());
+        }
 	}
 }
