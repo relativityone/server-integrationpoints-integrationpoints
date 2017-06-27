@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 
 namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
 {
@@ -102,7 +103,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
         }
         public Boolean ValidateCSVName()
         {
-            return !string.IsNullOrWhiteSpace(this._filename);
+            return !string.IsNullOrWhiteSpace(this._filename) 
+                && 
+                this._filename.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
         }
     }
 }
