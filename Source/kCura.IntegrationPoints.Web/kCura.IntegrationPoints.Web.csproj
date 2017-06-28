@@ -714,8 +714,9 @@
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\jstree-fluid.css" />
+    <Content Include="Content\modals.css" />
+    <Content Include="Content\modals.min.css" />
     <Content Include="Content\save-profile-modal.css" />
-    <Content Include="Content\list-picker.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\scheduler.css">
       <DependentUpon>scheduler.scss</DependentUpon>

@@ -23,7 +23,7 @@
 						position: 'center',
 						resizable: false,
 						draggable: false,
-						dialogClass: 'transparent'
+						dialogClass: 'transparent no-shadow'
 					});
 				}
 

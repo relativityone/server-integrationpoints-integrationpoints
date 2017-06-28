@@ -1,34 +1,36 @@
 ﻿<link type="text/css" rel="stylesheet" href="~/Content/create-production-set.css" />
 
-<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" style="z-index: 2009 !important; width: 460px">
-	<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" style="border: none">
-		<span class="ui-dialog-title" id="ui-dialog-title-msgDiv" style="font-size: 140% !important">Creating the Production Set</span>
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-dialog-information">
+	<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+		<span class="ui-dialog-title" id="ui-dialog-title-msgDiv">Creating the Production Set</span>
 	</div>
-	<div id="statusInProgress" data-bind="visible: creatingStatus() === 0" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 0px; height: auto;">
-		<div class="field-row" style="padding: 10px 20px;">
-			<img class="loading-dialog-img" alt="loading dialog" style="display: block; margin: auto;"/>
+	
+	<div id="statusInProgress" data-bind="visible: creatingStatus() === 0" class="ui-dialog-content ui-widget-content">
+		<div class="field-row">
+			<img class="loading-dialog-img" alt="loading dialog"/>
 		</div>
-		<div class="field-row" style="padding: 10px 20px;">
-			<i><label style="font-size: 15px !important">There might be a slight delay while the production set is created in the destination workspace.</label></i>
-		</div>
-	</div>
-	<div id="statusSuccess" data-bind="visible: creatingStatus() === 1" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 0px; height: auto;">
-		<div class="field-row" style="padding: 10px 20px;">
-			<img class="success-img" alt="success" style="vertical-align: middle;"/>
-			<label style="font-size: 15px !important">The Production set was created successfully.</label>
-		</div>
-		<div class="field-row" style="padding: 10px 20px;">
-			<i><label style="font-size: 15px !important">The newly created production set will automatically be set as the destination production set.</label></i>
+		<div class="field-row">
+			<label class="italic">There might be a slight delay while the production set is created in the destination workspace.</label>
 		</div>
 	</div>
-	<div id="statusFail" data-bind="visible: creatingStatus() === 2" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 0px; height: auto;">
-		<div class="field-row" style="padding: 10px 20px;">
-			<img class="error-img" alt="error" style="vertical-align: middle;"/>
-			<label style="font-size: 15px !important">The production set can not be created.</label>
+	
+	<div id="statusSuccess" data-bind="visible: creatingStatus() === 1" class="ui-dialog-content ui-widget-content" >
+		<div class="field-row">
+			<img class="success-img" alt="success"/>
+			<label>The Production set was created successfully.</label>
+		</div>
+		<div class="field-row">
+			<label class="italic">The newly created production set will automatically be set as the destination production set.</label>
+		</div>
+	</div>
+	
+	<div id="statusFail" data-bind="visible: creatingStatus() === 2" class="ui-dialog-content ui-widget-content">
+		<div class="field-row">
+			<img class="error-img" alt="error" />
+			<label>The production set can not be created.</label>
 		</div>
 	</div>
 	<div class="popupArtifactActionBar" data-bind="visible: creatingStatus() === 1 || creatingStatus() === 2">
 		<button id="close-production-set-cancel-button" style="min-width: 80px;" class="ActionButton" data-bind="click: close">Close</button>
 	</div>
 </div>
-<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">

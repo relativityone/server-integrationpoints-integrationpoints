@@ -1,26 +1,27 @@
-﻿
-<div class="popupTitle" data-bind="text: PopupTitle"></div>
+﻿<div class="modal-header">
+    <div class="modal-title" data-bind="text: PopupTitle">
+        Create Production Set
+    </div>
+</div>
 
 <div class="card">
-	<div class="field-row">
-		<div class="field-label" style="min-width: 150px">Selected Field:</div>
-		<div class="field-value">
-			<select id="popup-list-available" data-bind="options: selectedFields, optionsText: 'displayName', optionsValue: 'fieldIdentifier', value: selectedFieldId, select2searchable"></select>
-		</div>
-	</div>
-	<div class="field-row">
-		<div class="field-label" style="min-width: 150px">Renamed Field:</div>
-		<div class="field-value">
-			<input id="subdirectory-image-prefix-input" type="text" data-bind="value: fieldRenamedText" />
-		</div>
-	</div>
+    <div class="field-row">
+        <div class="field-label" style="min-width: 150px">Selected Field:</div>
+        <div class="field-value">
+            <select id="popup-list-available" data-bind="options: selectedFields, optionsText: 'displayName', optionsValue: 'fieldIdentifier', value: selectedFieldId, select2searchable"></select>
+        </div>
+    </div>
+    <div class="field-row">
+        <div class="field-label" style="min-width: 150px">Renamed Field:</div>
+        <div class="field-value">
+            <input id="subdirectory-image-prefix-input" type="text" data-bind="value: fieldRenamedText" />
+        </div>
+    </div>
 </div>
 
-<div class="popupArtifactActionBar">
-	<button id="ok-button" class="ActionButton" data-bind="click: ok">Update</button>
-	<button id="next-button" class="ActionButton" data-bind="click: next">Update and Next</button>
-	<button id="cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
+<div class="modal-footer">
+    <button id="ok-button" class="ActionButton" data-bind="click: ok">Update</button>
+    <button id="next-button" class="ActionButton" data-bind="click: next">Update and Next</button>
+    <button id="cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
 </div>
 
-<link rel="stylesheet" type="text/css" href="~/Content/buttermilk.9_2.min.css">
-<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">

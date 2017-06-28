@@ -1,0 +1,149 @@
+.ui-dialog {
+    padding: 0;
+}
+
+.ui-dialog.ui-widget-content,.ui-dialog .ui-widget-content{
+    background: white;
+    line-height: 1.5;
+}
+.ui-dialog.ui-widget-content.transparent, .ui-dialog.ui-widget-content.transparent .ui-widget-content {
+    background:none;	
+}
+
+.ui-dialog.ui-widget-content.prompt, .prompt .ui-widget-content, .ui-dialog .ui-dialog-information, .ui-dialog .ui-dialog-information .ui-dialog-content {
+    background: #f7f7f7;
+    line-height: 1.5;
+}
+
+.ui-widget-content .jstree-container {
+    background-color: #fff;
+    min-height: 350px;
+    min-width: 500px;
+    max-height: 350px;
+    max-width: 500px;
+    overflow: auto;
+}
+
+.ui-dialog.prompt .ui-dialog-buttonpane, .prompt .ui-widget-content  {
+    background: #f7f7f7;
+    border: none;	
+}
+   
+.ui-dialog.ui-widget-content {	
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+    border-radius: 3px;
+    overflow:hidden;
+}
+
+.ui-dialog.ui-widget-content.no-shadow {
+    box-shadow: none;
+}
+
+.ui-widget-content .card {
+    border: none;
+    box-shadow: none;
+    background: none;
+}	
+
+.ui-widget-content .modal-header {
+    background: #1b54ab;
+    border-bottom: 1px solid #dedede;
+    height: 51px;
+    left: 0;
+    padding: 12px 20px 0;
+    position: relative;
+    top: 0;
+    width: 100%;
+}
+
+.ui-widget-content .modal-title {
+    float: left;
+    font-size: 16px !important;
+    font-weight: 600;
+    height: 24px;
+    padding: 2px 0;
+    text-overflow: ellipsis;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.ui-dialog .ui-widget-content .modal-footer, .ui-dialog  .popupArtifactActionBar
+{
+    font-size: 12px;
+    height: 46px;
+    padding: 12px 20px 0;
+    text-align: right;	
+}
+
+.ui-dialog .ui-widget-content .modal-footer
+{
+    border-top: 1px solid #e3e3e3;
+}
+
+.ui-widget-content .table  { 
+    padding: 10px 0;
+}
+
+.ui-widget-content .table .cell.modal-option 
+{ 
+    background: #f7f7f7;
+    border: 1px solid #c7c7c7;
+    border-radius: 3px;
+    box-shadow: 1px 1px 3px #c7c7c7;
+}
+
+.ui-widget-content .table .modal-option div 
+{
+    padding: 10px;
+    border-bottom: 1px solid #c1c1c1;
+}
+
+.ui-widget-content.ui-dialog-information, .ui-dialog .ui-widget-content.ui-dialog-information 
+{
+    position: relative;   
+    width: 430px;
+}
+
+.ui-widget-content.ui-dialog-information label, .ui-widget-content.ui-dialog-information .ui-dialog-title {
+    font-size: 15px !important; 
+}
+
+.ui-widget-content.ui-dialog-information .ui-dialog-titlebar{
+    border: none;
+}
+
+.ui-widget-content.ui-dialog-information .field-row {
+    padding: 10px;
+}
+
+.ui-widget-content.ui-dialog-information img {
+    vertical-align: middle;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.ui-widget-content .field-row {
+    padding: 10px 20px;
+}
+
+.ui-widget-content .field-row .field-label {
+    min-width: 100px;
+}
+
+.ui-widget-content .field-row .field-value input
+{
+    min-width: 200px;	
+}
+
+.ui-widget-content .modal-footer button {
+    color: white;
+    min-width: 90px;	
+}
+
+.ui-dialog .ui-dialog-buttonpane .button.secondary
+{	
+    border: none; 
+    box-shadow: none;
+}

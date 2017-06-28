@@ -9,4 +9,5 @@
 
  .loading-dialog-img {
 	content:url(Images/loading_dialog48x48.gif);
+    	display: block; margin: auto;
 }

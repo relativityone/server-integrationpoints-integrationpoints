@@ -1,11 +1,13 @@
-﻿<div class="popupTitle" data-bind="text: PopupTitle"></div>
+﻿<div class="modal-header">
+    <div class="modal-title" data-bind="text: PopupTitle"></div>
+</div>
+
 <div class="card">
-	<div class="jstree-container">
-		<div id="saved-search-picker-browser-tree" tabindex="0" />
-	</div>
+    <div class="jstree-container">
+        <div id="saved-search-picker-browser-tree" tabindex="0" />
+    </div>
 </div>
-<div class="popupArtifactActionBar">
-	<button id="saved-search-picker-ok-button" class="ActionButton" data-bind="click: ok">OK</button>
-	<button id="saved-search-picker-cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
+<div class="modal-footer">
+    <button id="saved-search-picker-ok-button" class="ActionButton" data-bind="click: ok">OK</button>
+    <button id="saved-search-picker-cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
 </div>
-<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">

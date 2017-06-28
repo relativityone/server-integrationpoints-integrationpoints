@@ -1,13 +1,17 @@
-<div data-bind="attr: {id: pickerId}">
-    <div class="popupTitle" data-bind="text: PopupTitle"></div>
+<div data-bind="attr: {id: pickerId}">   
+    <div class="modal-header">
+        <div class="modal-title" data-bind="text: PopupTitle"></div>
+    </div>
 
     <div class="card">
         <div class="label" data-bind="text: PickerName"></div>
 
         <div class="table" data-bind="with: model">
-            <div id="available-values-list" class="cell">
-                <div class="list-title" style="margin: 10px 0px 5px 0px;">Available:</div>
-                <select id="popup-list-available" class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
+            <div id="available-values-list" class="cell modal-option">
+                <div class="label">Available</div>
+                <div>
+                    <select id="popup-list-available" class="list-box" name="available" data-bind="options: availableValues, selectedOptions: selectedAvailableValues, optionsText: 'displayName', doubleClick: addValue" multiple="multiple"></select>
+                </div>
             </div>
             <div class="cell selection map-move">
                 <div>
@@ -17,10 +21,12 @@
                     <a href="#" id="remove-all-items" class="icon-move-first" data-bind="click: removeAllValues"></a>
                 </div>
             </div>
-            <div id="selected-values-list" class="cell">
-                <div class="list-title" style="margin: 10px 0px 5px 0px;">Selected:</div>
-                <select id="popup-list-selected" class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>
-            </div>
+            <div id="selected-values-list" class="cell modal-option">
+                <div class="label">Selected</div>
+                <div>
+                    <select id="popup-list-selected" class="list-box" data-bind="options: mappedValues, selectedOptions: selectedMappedValues, optionsText: 'displayName', doubleClick: removeValue" multiple="multiple"></select>				
+                </div>
+            </div>			
             <div class="cell selection map-move" >
                 <div>
                     <a href="#" id="move-item-to-top" class="icon-move-to-top" data-bind="click: moveValueTop"></a>
@@ -28,14 +34,12 @@
                     <a href="#" id="move-item-down" class="icon-move-down" data-bind="click: moveValueDown"></a>
                     <a href="#" id="move-item-to-bottom" class="icon-move-to-bottom" data-bind="click: moveValueBottom"></a>
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
 
-    <div class="popupArtifactActionBar">
+    <div class="modal-footer">
         <button id="ok-button" class="ActionButton" data-bind="click: ok">OK</button>
         <button id="cancel-button" class="ActionButton" data-bind="click: cancel">Cancel</button>
     </div>
 </div>
-<link rel="stylesheet" type="text/css" href="~/Content/buttermilk.9_2.min.css">
-<link rel="stylesheet" type="text/css" href="~/Content/list-picker.css">
