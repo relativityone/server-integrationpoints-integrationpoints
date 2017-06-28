@@ -1,9 +1,11 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Domain.Models;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
@@ -21,8 +23,18 @@ namespace kCura.IntegrationPoints.Core.Validation
         public ValidationResult Validate(IntegrationPointModel integrationModel)
         {
             var result = new ValidationResult();
+            SourceConfiguration sourceConfiguration;
 
-            var sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
+            try
+            {
+                sourceConfiguration =
+                    _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
+
+            }
+            catch (JsonReaderException) //handle case of encrypted sourceConfiguration
+            {
+                return result;
+            }
 
             if (sourceConfiguration.SavedSearchArtifactId != 0)
             {
