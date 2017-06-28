@@ -49,11 +49,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			_keywordSearchRepository.Received(1).CreateSavedSearch(workspaceId, Arg.Is<KeywordSearch>(x => ValidateKeywordSearch(x, sourceJobDto.Name, savedSearchFolderId)));
 		}
 
-		private bool ValidateKeywordSearch(KeywordSearch keywordSearch, string name, int folderId)
+        [Test]
+	    public void ItShouldCreateKeywordSearchForTagging()
+	    {
+	        int workspaceId = 424281;
+	        int savedSearchFolderId = 984452;
+	        SourceJobDTO sourceJobDto = new SourceJobDTO
+	        {
+	            Name = "TwentyFourCharactersLongTwentyFourCharactersLongTwentyFourCharactersLong"
+            };
+            SourceWorkspaceDTO sourceWorkspaceDto = new SourceWorkspaceDTO();
+	        TagsContainer tagsContainer = new TagsContainer(sourceJobDto, sourceWorkspaceDto);
+
+	        var expectedName = "TwentyFourCharactersLo...gTwentyFourCharactersLong";
+
+            // ACT
+            _instance.CreateTagSavedSearch(workspaceId, tagsContainer, savedSearchFolderId);
+
+	        // ASSERT
+	        _keywordSearchRepository.Received(1).CreateSavedSearch(workspaceId, Arg.Is<KeywordSearch>(x => ValidateKeywordSearch(x, expectedName, savedSearchFolderId)));
+        }
+
+        private bool ValidateKeywordSearch(KeywordSearch keywordSearch, string name, int folderId)
 		{
 			return keywordSearch.ArtifactTypeID == (int) ArtifactType.Document
 					&& keywordSearch.SearchContainer.ArtifactID == folderId
-					&& keywordSearch.Name == name
+					&& keywordSearch.Name == name 
 					&& keywordSearch.Fields.Count == 3;
 		}
 	}

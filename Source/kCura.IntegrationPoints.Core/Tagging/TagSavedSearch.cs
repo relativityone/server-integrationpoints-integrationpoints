@@ -43,11 +43,12 @@ namespace kCura.IntegrationPoints.Core.Tagging
 
 		private KeywordSearch CreateKeywordSearchForTagging(TagsContainer tagsContainer, int savedSearchFolderId)
 		{
-			var criteria = CreateWorkspaceAndJobCriteria(tagsContainer);
+		    const int savedSearchNameMaxLength = 50;
+            var criteria = CreateWorkspaceAndJobCriteria(tagsContainer);
 
 			return new KeywordSearch
 			{
-				Name = tagsContainer.SourceJobDto.Name,
+				Name = LimitLength(tagsContainer.SourceJobDto.Name, savedSearchNameMaxLength),
 				ArtifactTypeID = (int) ArtifactType.Document,
 				SearchCriteria = criteria,
 				SearchContainer = new SearchContainerRef(savedSearchFolderId),
@@ -60,7 +61,14 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			};
 		}
 
-		private CriteriaCollection CreateWorkspaceAndJobCriteria(TagsContainer tagsContainer)
+	    private string LimitLength(string name, int maxLength)
+	    {
+	        return name.Length > maxLength
+	            ? name.Remove(maxLength / 2 - 3) + "..." + name.Substring(name.Length - maxLength / 2)
+	            : name;
+	    }
+
+	    private CriteriaCollection CreateWorkspaceAndJobCriteria(TagsContainer tagsContainer)
 		{
 			var conditionCollection = new CriteriaCollection();
 

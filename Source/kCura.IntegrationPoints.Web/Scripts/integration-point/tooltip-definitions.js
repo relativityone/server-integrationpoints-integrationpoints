@@ -37,6 +37,11 @@ TooltipDefs.RelativityProviderDestinationDetails = [
         name: "Plus (+) button",
         description: "by clicking this button you may create a new Production Set in the destination workspace and provide a name for created Production Set, other values will be defaulted.",
         subsection: []
+    },
+    {
+        name: "Create Saved Search",
+        description: "when Create Saved Search is set to Yes it will create a Save Search in a destination folder with a condition to easily locate copied data with this job. Please note that Save Search name is limited to 50 characters and will be cut if exceeded.",
+        subsection: []
     }
 ];
 
