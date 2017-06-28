@@ -186,8 +186,8 @@
 				self.model.fields.addField();
 
                 // flag used to prevent mapping clearance
-				self.model.fields.firstRun = true;
-				
+			    self.model.fields.firstRun = self.ipModel.artifactID > 0;
+
 				self.model.exportSource.SavedSearchArtifactId.subscribe(function (value) {
 					if (value) {
 						self.getAvailableFields("SavedSearchArtifactId", value);
