@@ -96,7 +96,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
 		{
-			return $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId},\"FolderArtifactId\":{GetRootFolder(Helper, targetWorkspaceId)},\"TypeOfExport\":{(int)SourceConfiguration.ExportType.SavedSearch}}}";
+			var sourceConfiguration = new SourceConfiguration()
+			{
+				SavedSearchArtifactId = SavedSearchArtifactId,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				TargetWorkspaceArtifactId = targetWorkspaceId,
+				TypeOfExport = SourceConfiguration.ExportType.SavedSearch
+			};
+			return Container.Resolve<ISerializer>().Serialize(sourceConfiguration);
 		}
 
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode, int? federatedInstanceArtifactId = null)
@@ -106,7 +113,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
 		{
-			ImportSettings destinationConfig = new ImportSettings
+			var destinationConfig = new ImportSettings
 			{
 				ArtifactTypeId = 10,
 				CaseArtifactId = targetWorkspaceId,

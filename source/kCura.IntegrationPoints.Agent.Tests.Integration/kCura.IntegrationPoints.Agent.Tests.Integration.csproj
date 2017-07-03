@@ -155,12 +155,24 @@
       <HintPath>..\packages\Relativity.Data.9.5.182.17\lib\net462\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.DataGrid, Version=10.8.12.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.DataGrid.10.8.12\lib\net462\Relativity.DataGrid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.DataGrid.Logging, Version=9.5.182.17, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.5.182.17\lib\net462\Relativity.DataGrid.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.333, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.333\lib\net462\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.5.182.17, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.5.182.17\lib\net462\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus, Version=2.1.13.2, Culture=neutral, processorArchitecture=MSIL">
@@ -189,6 +201,18 @@
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.333, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.333\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.APM, Version=9.4.139.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.APM.9.4.139\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.139.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.139\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.139.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.139\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.84, Culture=neutral, processorArchitecture=MSIL">

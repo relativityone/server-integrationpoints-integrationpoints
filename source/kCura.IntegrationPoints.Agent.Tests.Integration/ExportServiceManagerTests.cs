@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.Injection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -20,12 +19,12 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using kCura.Data.RowDataGateway;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -40,7 +39,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IQueueDBContext _queueContext;
 		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
 
-		public ExportServiceManagerTests() : base("ExportServiceManagerTests", null)
+		public ExportServiceManagerTests() : base("ExportServiceManagerTests", 
+			"ExportServiceManagerTests_Destination")
 		{ }
 
 		public override void SuiteSetup()
@@ -60,22 +60,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void TestSetup()
 		{
 			_caseContext = Container.Resolve<ICaseServiceContext>();
-			IHelperFactory helperFactory = Container.Resolve<IHelperFactory>();
-			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
-			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
-			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
-			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
-			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
-			ISerializer serializer = Container.Resolve<ISerializer>();
+			var helperFactory = Container.Resolve<IHelperFactory>();
+			var contextContainerFactory = Container.Resolve<IContextContainerFactory>();
+			var synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
+			var exporterFactory = Container.Resolve<IExporterFactory>();
+			var onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
+			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			var managerFactory = Container.Resolve<IManagerFactory>();
+			var serializer = Container.Resolve<ISerializer>();
 			_jobService = Container.Resolve<IJobService>();
 			IScheduleRuleFactory scheduleRuleFactory = new DefaultScheduleRuleFactory();
-			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
-			JobStatisticsService jobStatisticsService = Container.Resolve<JobStatisticsService>();
+			var jobHistoryService = Container.Resolve<IJobHistoryService>();
+			var jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
+			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
 
-			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
-			JobHistoryBatchUpdateStatus jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
+			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
+			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
 			
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
 				_caseContext, contextContainerFactory,
@@ -98,12 +98,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doen't work and need fix")]
 		public void RunRelativityProviderAlone()
 		{
 			// arrange
-			ISerializer serializer = Container.Resolve<ISerializer>();
-			IntegrationPointModel model = new IntegrationPointModel()
+			var serializer = Container.Resolve<ISerializer>();
+			var model = new IntegrationPointModel()
 			{
 				SourceProvider = RelativityProvider.ArtifactId,
 				Name = "ARRRRRRRGGGHHHHH - RunRelativityProviderAlone",
@@ -126,7 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			{
 				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
 
-				TaskParameters parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
+				var parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
 				// act
 				Assert.IsNotNull(job, "There is no job to execute");
@@ -134,7 +133,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				
 				// assert
 				model = RefreshIntegrationModel(model);
-				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+				var jobHistoryService = Container.Resolve<IJobHistoryService>();
 				JobHistory history = jobHistoryService.GetRdo(parameters.BatchInstance);
 
 				Assert.IsNotNull(model);
@@ -153,162 +152,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doen't work and need fix")]
-		public void AgentPickUpRunNowJobWhenScheduledJobIsRunning()
+		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{
-			Job scheduledJob = null;
-			Job job = null;
-			try
-			{
-				// arrange
-				const int fakeAgentId = 78945;
-				ISerializer serializer = Container.Resolve<ISerializer>();
-				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-				IntegrationPointModel model = new IntegrationPointModel()
-				{
-					SourceProvider = RelativityProvider.ArtifactId,
-					Name = "ARRRRRRRGGGHHHHH - AgentPickUpRunNowJobWhenScheduledJobIsRunning",
-					DestinationProvider = DestinationProvider.ArtifactId,
-					SourceConfiguration = CreateDefaultSourceConfig(),
-					Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-					Map = CreateDefaultFieldMap(),
-					Scheduler = new Scheduler()
-					{
-						EnableScheduler = true,
-						StartDate = DateTime.UtcNow.AddDays(-10).ToString(),
-						ScheduledTime = DateTime.UtcNow.AddDays(-10).AddMinutes(30).TimeOfDay.ToString(),
-						Reoccur = 10,
-						SelectedFrequency = ScheduleInterval.Daily.ToString()
-					},
-					SelectedOverwrite = "Append Only",
-					Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
-				};
-				model = CreateOrUpdateIntegrationPoint(model); // create integration point
-				int jobId = GetLastScheduledJobId(SourceWorkspaceArtifactId, model.ArtifactID);
-				scheduledJob = _jobService.GetJob(jobId);
-
-				// run now; job created
-				_jobService.CreateJob(SourceWorkspaceArtifactId, model.ArtifactID, TaskType.ExportService.ToString(),
-					DateTime.UtcNow, serializer.Serialize(new TaskParameters() { BatchInstance = Guid.NewGuid() }), 9,
-					null, null);
-
-				AssignJobToAgent(fakeAgentId, scheduledJob.JobId); // agent pick up scheduled job
-				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
-
-				TaskParameters runNowParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-
-				// act
-				Assert.IsNotNull(job, "There is no job to execute");
-				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(job)); // run the job
-				Assert.That("Unable to execute Integration Point job: There is already a job currently running.", Is.EqualTo(ex.Message));
-
-				// assert
-				model = RefreshIntegrationModel(model);
-				JobHistory runNowJobhistory = jobHistoryService.GetRdo(runNowParameters.BatchInstance);
-
-				Assert.IsNull(runNowJobhistory); // job history is deleted
-				Assert.IsNotNull(model); // ip object does not get deleted
-				Assert.IsFalse(model.HasErrors ?? false);
-
-			}
-			finally
-			{
-				if (scheduledJob != null)
-				{
-					_jobService.DeleteJob(scheduledJob.JobId);
-				}
-				if (job != null)
-				{
-					_jobService.DeleteJob(job.JobId);
-				}
-			}
-		}
-
-		[Test]
-		[Ignore("Test doen't work and need fix")]
-		public void AgentPickUpScheduledJobJobWhenRunNowJobIsRunning()
-		{
-			Job fakeScheduledJob = null;
-			Job job = null;
-
-			try
-			{
-				// arrange
-				const int fakeAgentId = 78945;
-				ISerializer serializer = Container.Resolve<ISerializer>();
-				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-				IntegrationPointModel model = new IntegrationPointModel()
-				{
-					SourceProvider = RelativityProvider.ArtifactId,
-					Name = "ARRRRRRRGGGHHHHH - AgentPickUpScheduledJobJobWhenRunNowJobIsRunning",
-					DestinationProvider = DestinationProvider.ArtifactId,
-					SourceConfiguration = CreateDefaultSourceConfig(),
-					Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-					Map = CreateDefaultFieldMap(),
-					Scheduler = new Scheduler()
-					{
-						EnableScheduler = true,
-						StartDate = DateTime.UtcNow.AddDays(300).ToString(),
-						ScheduledTime = DateTime.UtcNow.AddDays(300).AddMinutes(30).TimeOfDay.ToString(),
-						Reoccur = 10,
-						SelectedFrequency = ScheduleInterval.Daily.ToString()
-					},
-					SelectedOverwrite = "Append Only",
-					Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
-				};
-				model = CreateOrUpdateIntegrationPoint(model); // create integration point
-				int jobId = GetLastScheduledJobId(SourceWorkspaceArtifactId, model.ArtifactID);
-				var integrationPointId = model.ArtifactID;
-
-				fakeScheduledJob = _jobService.GetJob(jobId);
-
-				// a person click run now
-				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointId, 9);
-
-				// run now picked up by an agent
-				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID);
-
-				AssignJobToAgent(fakeAgentId, fakeScheduledJob.JobId); // agent pick up the scheduled job
-				TaskParameters scheduledJobParameters = serializer.Deserialize<TaskParameters>(fakeScheduledJob.JobDetails);
-				TaskParameters runNowJobParam = serializer.Deserialize<TaskParameters>(job.JobDetails);
-
-				// act
-				Assert.IsNotNull(job, "There is no job to execute");
-				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(fakeScheduledJob)); // run the job
-				string exceptionMessage = String.Format("Unable to execute Integration Point job: There is already a job currently running. Job is re-scheduled for {0}.", fakeScheduledJob.NextRunTime);
-				Assert.That(exceptionMessage, Is.EqualTo(ex.Message));
-
-				// assert
-				model = RefreshIntegrationModel(model);
-				JobHistory scheduledJobhistory = jobHistoryService.GetRdo(scheduledJobParameters.BatchInstance);
-				JobHistory history = jobHistoryService.GetRdo(runNowJobParam.BatchInstance);
-
-				Assert.IsNotNull(history); // job history is deleted
-				Assert.IsNotNull(model); // ip object does not get deleted
-				Assert.IsFalse(model.HasErrors ?? false); // expect the error being logged
-			}
-			finally
-			{
-				if (fakeScheduledJob != null)
-				{
-					_jobService.DeleteJob(fakeScheduledJob.JobId);
-				}
-				if (job != null)
-				{
-					_jobService.DeleteJob(job.JobId);
-				}
-			}
-		}
-
-		[Test]
-		[Ignore("Test doen't work and need fix")]
-		public void StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers()
-		{
-			global::kCura.Injection.Injection injection = new global::kCura.Injection.Injection(
-				InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ConvertToKcuraInjection(),
-				new global::kCura.Injection.Behavior.InfiniteLoop(), "TargetDocumentsTaggingManager.OnJobComplete");
-			DateTime startTime = DateTime.UtcNow;
-
 			Job job = null;
 			try
 			{
@@ -318,8 +163,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				IntegrationPointModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
 					"StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers", "Append Only");
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
-
-				InjectionHelper.InitializeAndEnableInjectionPoints(new List<global::kCura.Injection.Injection> { injection });
 
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
 				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
@@ -344,15 +187,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 				_exportManager.Execute(job);
 
-				//when tagging starts
-				InjectionHelper.WaitUntilInjectionPointIsReached(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id, startTime, 15);
-
-				InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => _jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Stopping));
-				const string exceptionMessage = "Invalid operation. Job state failed to update.";
-				Assert.That(exceptionMessage, Is.EqualTo(exception.Message));
-
-				InjectionHelper.RemoveInjectionFromEnvironment(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id);
-				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, model.ArtifactID);
+				var exception = Assert.Throws<ExecuteSQLStatementFailedException>(() => _jobService.UpdateStopState(new List<long> { job.JobId }, StopState.Stopping));
+				const string exceptionMessage = "ERROR : Invalid operation. Attempted to stop an unstoppable job.";
+				Assert.NotNull(exception.InnerException);
+				Assert.That(exceptionMessage, Is.EqualTo(exception.InnerException.Message));
 			}
 			finally
 			{
@@ -360,7 +198,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				{
 					_jobService.DeleteJob(job.JobId);
 				}
-				InjectionHelper.CleanupInjectionPoints(new List<InjectionPoint> { InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.ConvertToKcuraInjection() });
 			}
 		}
 	}

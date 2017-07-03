@@ -115,6 +115,10 @@
       <HintPath>..\packages\Relativity.SecretCatalog.1.0.19\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.5.182.17, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RelativityCore.9.5.182.17\lib\net462\Relativity.SecretCatalog.SQL.SQLCatalog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.5.182.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.DataContracts.9.5.182.17\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
